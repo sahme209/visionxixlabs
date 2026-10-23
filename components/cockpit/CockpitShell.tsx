@@ -27,14 +27,22 @@ const groups = [
   ] },
 ];
 
-export function CockpitShell({ children, email, workspace, roles = [] }: { children?: ReactNode; email: string; workspace?: string; roles?: string[] }) {
+export function CockpitShell({ children, email, workspace, roles = [], workspaceOptions = [], currentWorkspace = "" }: { children?: ReactNode; email: string; workspace?: string; roles?: string[]; workspaceOptions?: { id: string; label: string; role: string }[]; currentWorkspace?: string }) {
   const pathname = usePathname();
+  const showWorkspaceSwitch = workspaceOptions.length > 1 || (workspaceOptions.length > 0 && !workspaceOptions.some(option => option.id === currentWorkspace));
   const active = (href: string) => href === "/control" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
   return <div className="min-h-screen bg-black text-zinc-100 selection:bg-orange-400/25">
     <a href="#cockpit-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-white focus:p-3 focus:text-black">Skip to content</a>
     <aside className="cockpit-sidebar border-b border-white/[0.08] bg-[#111111] lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 lg:flex lg:w-[264px] lg:flex-col lg:border-b-0 lg:border-r">
       <Link href="/control" className="flex h-[72px] items-center gap-2.5 px-5 text-sm font-semibold tracking-tight"><Image src="/vision-xix-logo.png" width={28} height={28} alt="" /><span>Axiom <span className="ml-1 text-zinc-500 font-normal">Control</span></span></Link>
-      <div className="mx-3 hidden rounded-lg border border-white/[0.08] bg-white/[0.025] px-3 py-2.5 lg:block"><p className="truncate text-xs font-medium">{workspace || "Your workspace"}</p><p className="mt-1 text-[11px] text-zinc-400">{roles.length ? roles.join(", ") : "Workspace access unverified"}</p></div>
+      <div className={`mx-3 rounded-lg border border-white/[0.08] bg-white/[0.025] px-3 py-2.5 ${showWorkspaceSwitch ? "block" : "hidden lg:block"}`}>{showWorkspaceSwitch ? <form action="/api/account/workspace" method="post" className="space-y-2">
+        <label htmlFor="active-workspace" className="sr-only">Active workspace</label>
+        <select id="active-workspace" name="organizationId" defaultValue={currentWorkspace} className="w-full min-w-0 rounded border border-white/10 bg-[#151719] px-2 py-1.5 text-xs">
+          {!workspaceOptions.some(option => option.id === currentWorkspace) && <option value={currentWorkspace} disabled>Workspace access unavailable</option>}
+          {workspaceOptions.map(option => <option key={option.id} value={option.id}>{option.label} · {option.role}</option>)}
+        </select>
+        <button type="submit" className="rounded border border-white/10 px-2 py-1 text-[11px] text-zinc-300 hover:bg-white/5">Open workspace</button>
+      </form> : <p className="truncate text-xs font-medium">{workspace || "Your workspace"}</p>}<p className="mt-1 text-[11px] text-zinc-400">{roles.length ? roles.join(", ") : "Workspace access unverified"}</p></div>
       <nav aria-label="Axiom cockpit" className="flex gap-1 overflow-x-auto px-3 pb-3 lg:mt-4 lg:block lg:flex-1 lg:space-y-4 lg:overflow-y-auto">
         {groups.map(group => <div key={group.label} className="flex shrink-0 gap-1 lg:block"><p className="mb-2 hidden px-3 text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-500 lg:block">{group.label}</p>{group.items.map(({href,label,icon:Icon}) => <Link key={href} href={href} aria-current={active(href) ? "page" : undefined} className={`flex min-h-[34px] items-center gap-2.5 whitespace-nowrap rounded-md px-3 py-2 text-[13px] transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-400 ${active(href) ? "bg-white/[0.08] text-white" : "text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-100"}`}><Icon aria-hidden size={15} strokeWidth={1.6} />{label}</Link>)}</div>)}
       </nav>

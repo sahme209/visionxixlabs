@@ -25,3 +25,12 @@ it("searches actual capabilities and never invents MCP or installed state",()=>{
  expect(screen.getByRole("status").textContent).toContain("No browser-managed MCP");
  expect(screen.queryByRole("button",{name:/install|connect/i})).toBeNull();
 });
+it("offers explicit workspace switching without automatically submitting or changing role authority",()=>{
+ render(createElement(CockpitShell,{email:"reviewer@example.test",workspace:"Personal",roles:["owner"],currentWorkspace:"personal",workspaceOptions:[{id:"personal",label:"Personal workspace",role:"owner"},{id:"shared",label:"Shared workspace",role:"security_reviewer"}]}));
+ const choice=screen.getByRole("combobox",{name:"Active workspace"})as HTMLSelectElement;
+ expect(choice.value).toBe("personal");fireEvent.change(choice,{target:{value:"shared"}});
+ const button=screen.getByRole("button",{name:"Open workspace"});
+ expect(button.closest("form")?.getAttribute("method")).toBe("post");
+ expect(button.closest("form")?.getAttribute("action")).toBe("/api/account/workspace");
+ expect(screen.getByRole("option",{name:"Shared workspace · security_reviewer"})).toBeTruthy();
+});

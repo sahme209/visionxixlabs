@@ -12,6 +12,8 @@
  */
 
 import "server-only";
+import { cookies } from "next/headers";
+import { readWorkspaceSelection, WORKSPACE_COOKIE } from "./workspaceSelection";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { id } from "@/lib/domain/ids";
@@ -50,12 +52,22 @@ export async function currentContext(): Promise<CurrentContext> {
     return { isAuthenticated: false, roles: [] };
   }
   const userId = sessionUserId ? id.user(sessionUserId) : id.user(userEmail);
-  const orgId = deriveWorkspaceIdFromEmail(userEmail);
+  const personalOrgId = deriveWorkspaceIdFromEmail(userEmail);
+  const selectedOrgId = sessionUserId ? readWorkspaceSelection((await cookies()).get(WORKSPACE_COOKIE)?.value, sessionUserId) : null;
+  const orgId = selectedOrgId ? id.organization(selectedOrgId) : personalOrgId;
   const roles = await resolveWorkspaceRoles({
     userId: String(userId),
     organizationId: String(orgId),
     email: userEmail,
   });
+  // A preference is never tenant authority. Withhold the selected scope when
+  // membership was revoked/pending/unverifiable, including read-only routes.
+  if (selectedOrgId && !roles.length) return {
+    isAuthenticated: true, userId,
+    ...(sessionUserId ? { sessionUserId: id.user(sessionUserId) } : {}),
+    email: userEmail, displayName: session.user.name ?? userEmail,
+    workspaceLabel: "Workspace access unavailable", roles: [],
+  };
   return {
     isAuthenticated: true,
     userId,
@@ -63,7 +75,7 @@ export async function currentContext(): Promise<CurrentContext> {
     email: userEmail,
     displayName: session.user.name ?? userEmail,
     organizationId: orgId,
-    workspaceLabel: deriveWorkspaceLabel(userEmail),
+    workspaceLabel: selectedOrgId && selectedOrgId !== String(personalOrgId) ? `Shared workspace · ${selectedOrgId.slice(-8)}` : deriveWorkspaceLabel(userEmail),
     roles,
   };
 }

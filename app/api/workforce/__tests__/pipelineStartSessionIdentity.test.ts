@@ -1,6 +1,7 @@
 import { beforeEach, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 const f = vi.hoisted(() => ({ session: vi.fn(), membership: vi.fn(), start: vi.fn() }));
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: () => undefined }) }));
 vi.mock("next-auth", () => ({ getServerSession: f.session }));
 vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 vi.mock("@/lib/auth/ensurePersonalWorkspaceMembership", () => ({ ensurePersonalWorkspaceMembership: vi.fn() }));

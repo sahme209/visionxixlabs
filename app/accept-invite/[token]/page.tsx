@@ -127,9 +127,9 @@ export default async function AcceptInvitePage({
         <p className="text-[11px] text-zinc-500 leading-relaxed mb-4">
           {ROLE_LABEL[role as InviteRole]?.description}
         </p>
-        <Link href="/dashboard" className="text-[11px] font-mono uppercase tracking-wider px-4 py-2 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors inline-block">
+        <form action="/api/account/workspace" method="post"><input type="hidden" name="organizationId" value={organizationId} /><button type="submit" className="text-[11px] font-mono uppercase tracking-wider px-4 py-2 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors inline-block">
           enter dashboard →
-        </Link>
+        </button></form>
       </div>
     </div>
   );
