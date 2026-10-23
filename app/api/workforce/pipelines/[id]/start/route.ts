@@ -11,20 +11,26 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
+import { hasPermission } from "@/lib/axiom/agent/rbacEngine";
+import type { OrgRole } from "@/lib/axiom/enums";
 import { startPipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  if (!isSameOriginRequest(req)) return NextResponse.json({ ok: false, reason: "invalid_request_origin" }, { status: 403 });
   const { id } = await ctx.params;
   const session = await currentContext();
-  if (!session.isAuthenticated || !session.organizationId) {
+  if (!session.isAuthenticated || !session.organizationId || !session.userId || !session.sessionUserId) {
     return NextResponse.json({ ok: false, reason: "auth_required" }, { status: 401 });
   }
+  if (!session.roles.some(role => hasPermission(role as OrgRole, "actions:apply"))) return NextResponse.json({ ok: false, reason: "forbidden_role" }, { status: 403 });
+
   let body: { metadata?: unknown } = {};
   try { body = await req.json() as typeof body; } catch { /* empty */ }
 
-  const triggeredBy = session.userId ?? session.email ?? "unknown";
+  const triggeredBy = session.sessionUserId;
   const result = await startPipelineRun({
     organizationId: String(session.organizationId),
     pipelineId: id,

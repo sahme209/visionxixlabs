@@ -26,6 +26,8 @@ import { prisma } from "@/lib/db";
 export interface CurrentContext {
   isAuthenticated: boolean;
   userId?: UserId;
+  /** Present only when NextAuth supplied a stable ID; userId may retain the legacy email fallback. */
+  sessionUserId?: UserId;
   email?: string;
   displayName?: string;
   organizationId?: OrganizationId;
@@ -57,6 +59,7 @@ export async function currentContext(): Promise<CurrentContext> {
   return {
     isAuthenticated: true,
     userId,
+    ...(sessionUserId ? { sessionUserId: id.user(sessionUserId) } : {}),
     email: userEmail,
     displayName: session.user.name ?? userEmail,
     organizationId: orgId,
