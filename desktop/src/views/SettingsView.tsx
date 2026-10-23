@@ -1,8 +1,8 @@
 import { isVerifiedIntegrationStatus } from "../lib/integrationStatusPresentation";
-import githubLogo from "../assets/providers/github.svg";
-import slackLogo from "../assets/providers/slack.svg";
-import teamsLogo from "../assets/providers/teams.svg";
-import linearLogo from "../assets/providers/linear.svg";
+const githubLogo = new URL("../assets/providers/github.svg", import.meta.url).href;
+const slackLogo = new URL("../assets/providers/slack.svg", import.meta.url).href;
+const teamsLogo = new URL("../assets/providers/teams.svg", import.meta.url).href;
+const linearLogo = new URL("../assets/providers/linear.svg", import.meta.url).href;
 import {parseDesktopUsageSummary,type DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
 import { AGENT_PROFILES } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
@@ -1727,22 +1727,52 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
   const [connectingProvider, setConnectingProvider] = useState<"github" | "slack" | "teams" | "linear" | null>(null);
   const [connectionNote, setConnectionNote] = useState<string | null>(null);
 
+  const [refreshNote, setRefreshNote] = useState<string | null>(null);
+  const integrationMounted = useRef(true);
+  const integrationGeneration = useRef(0);
+  const integrationActionEpoch = useRef(0);
+  const verifiedIntegrationContext = useRef<object | null>(null);
   const loadCloudConnections = useCallback(async () => {
+    const generation = ++integrationGeneration.current;
+    const context = desktopClient.config;
+    const owned = () => integrationMounted.current && generation === integrationGeneration.current && context === desktopClient.config;
     setRefreshing(true);
-    const [result, healthResult] = await Promise.all([
-      desktopClient.integrationStatus(),
-      desktopClient.integrationHealth(),
-    ]);
-    if (result.ok) setIntegrationStatus(result.data);
-    if (healthResult.ok) setHealth(healthResult.data);
-    setRefreshing(false);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const deadline = new Promise<never>((_resolve, reject) => {timer = setTimeout(() => reject(new Error("connection_status_timeout")), 15000);});
+      const [result, healthResult] = await Promise.race([Promise.allSettled([
+        desktopClient.integrationStatus(), desktopClient.integrationHealth(),
+      ] as const), deadline]);
+      if (!owned()) return;
+      const statusAvailable = result.status === "fulfilled" && result.value.ok;
+      const healthAvailable = healthResult.status === "fulfilled" && healthResult.value.ok;
+      verifiedIntegrationContext.current = statusAvailable ? context : null;
+      setIntegrationStatus(result.status === "fulfilled" && result.value.ok ? result.value.data : null);
+      setHealth(healthResult.status === "fulfilled" && healthResult.value.ok ? healthResult.value.data : null);
+      setRefreshNote(!statusAvailable ? "Connection status could not be verified. Try refreshing."
+        : !healthAvailable ? "Connection diagnostics could not be verified. Try refreshing." : null);
+    } catch {
+      if (owned()) {verifiedIntegrationContext.current = null; setIntegrationStatus(null); setHealth(null); setRefreshNote("Connection status could not be verified. Try refreshing.");}
+    } finally {
+      clearTimeout(timer);
+      if (integrationMounted.current && generation === integrationGeneration.current) setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
+    integrationMounted.current = true;
     const initialLoad = window.setTimeout(() => { void loadCloudConnections(); }, 0);
+    const unsubscribe = desktopClient.subscribeContext(() => {
+      integrationActionEpoch.current++; verifiedIntegrationContext.current = null;
+      setIntegrationStatus(null); setHealth(null); setRefreshNote(null); setConnectionNote(null);
+      setGithubValidationNote(null); setSlackValidationNote(null); setTeamsValidationNote(null); setLinearValidationNote(null);
+      setValidatingGitHub(false); setValidatingSlack(false); setValidatingTeams(false); setValidatingLinear(false); setConnectingProvider(null);
+      void loadCloudConnections();
+    });
     window.addEventListener("focus", loadCloudConnections);
     return () => {
-      window.clearTimeout(initialLoad);
+      integrationMounted.current = false; integrationGeneration.current++; integrationActionEpoch.current++; verifiedIntegrationContext.current = null;
+      window.clearTimeout(initialLoad); unsubscribe();
       window.removeEventListener("focus", loadCloudConnections);
     };
   }, [loadCloudConnections]);
@@ -1770,85 +1800,61 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
       ? `GitHub App access was validated previously, but that verification is more than 24 hours old. Run the harmless read-only validation again before relying on it for release evidence.`
       : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
     : "Loading the service-verified GitHub App state.";
-  async function validateGitHub() {
-    setValidatingGitHub(true);
-    setGithubValidationNote(null);
-    const result = await desktopClient.validateGitHubReadOnly();
-    if (result.ok) {
-      setGithubValidationNote("GitHub read-only access is verified for this workspace.");
-      await loadCloudConnections();
-    } else {
-      setGithubValidationNote("GitHub could not complete a read-only validation. Review the App installation and try again.");
-    }
-    setValidatingGitHub(false);
+  function connectionActionOwnership() {
+    const context = desktopClient.config, epoch = integrationActionEpoch.current;
+    return () => integrationMounted.current && epoch === integrationActionEpoch.current
+      && context === desktopClient.config;
   }
-
-  async function validateSlack() {
-    setValidatingSlack(true);
-    setSlackValidationNote(null);
-    const result = await desktopClient.validateSlackConnection();
-    if (result.ok) {
-      setSlackValidationNote("Slack access is verified for this workspace.");
-      await loadCloudConnections();
-    } else {
-      setSlackValidationNote("Slack could not complete a read-only validation. Review the consent record and try again.");
-    }
-    setValidatingSlack(false);
+  async function validateConnection(check: () => Promise<{ok: boolean}>, setBusy: (value: boolean) => void,
+    setNote: (value: string | null) => void, success: string, failure: string) {
+    const owned = connectionActionOwnership(); if (!owned() || verifiedIntegrationContext.current !== desktopClient.config) return;
+    setBusy(true); setNote(null);
+    try {
+      const result = await check(); if (!owned()) return;
+      setNote(result.ok ? success : failure);
+      if (result.ok) await loadCloudConnections();
+    } catch {if (owned()) setNote(failure);}
+    finally {if (integrationMounted.current && owned()) setBusy(false);}
   }
-
-  async function validateTeams() {
-    setValidatingTeams(true);
-    setTeamsValidationNote(null);
-    const result = await desktopClient.validateTeamsConnection();
-    if (result.ok) {
-      setTeamsValidationNote("Microsoft identity is verified for this workspace. Teams message permissions remain separately controlled.");
-      await loadCloudConnections();
-    } else {
-      setTeamsValidationNote("Microsoft could not complete an identity validation. Review the consent record and try again.");
-    }
-    setValidatingTeams(false);
-  }
-
-  async function validateLinear() {
-    setValidatingLinear(true);
-    setLinearValidationNote(null);
-    const result = await desktopClient.validateLinearConnection();
-    if (result.ok) {
-      setLinearValidationNote("Linear app identity is verified for this workspace.");
-      await loadCloudConnections();
-    } else {
-      setLinearValidationNote("Linear could not complete a read-only identity validation. Review consent and try again.");
-    }
-    setValidatingLinear(false);
-  }
+  const validateGitHub = () => validateConnection(() => desktopClient.validateGitHubReadOnly(), setValidatingGitHub, setGithubValidationNote,
+    "GitHub read-only access is verified for this workspace.", "GitHub could not complete a read-only validation. Review the App installation and try again.");
+  const validateSlack = () => validateConnection(() => desktopClient.validateSlackConnection(), setValidatingSlack, setSlackValidationNote,
+    "Slack access is verified for this workspace.", "Slack could not complete a read-only validation. Review the consent record and try again.");
+  const validateTeams = () => validateConnection(() => desktopClient.validateTeamsConnection(), setValidatingTeams, setTeamsValidationNote,
+    "Microsoft identity is verified for this workspace. Teams message permissions remain separately controlled.", "Microsoft could not complete an identity validation. Review the consent record and try again.");
+  const validateLinear = () => validateConnection(() => desktopClient.validateLinearConnection(), setValidatingLinear, setLinearValidationNote,
+    "Linear app identity is verified for this workspace.", "Linear could not complete a read-only identity validation. Review consent and try again.");
 
   const slackCanValidate = collaboration?.some((connection) => connection.provider === "slack" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
   const teamsCanValidate = collaboration?.some((connection) => connection.provider === "teams" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
   const linearCanValidate = collaboration?.some((connection) => connection.provider === "linear" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
 
   async function connectProvider(provider: "github" | "slack" | "teams" | "linear") {
+    const owned = connectionActionOwnership(); if (!owned() || verifiedIntegrationContext.current !== desktopClient.config) return;
     setConnectingProvider(provider);
     setConnectionNote(null);
     try {
       const result = await desktopClient.startIntegrationConnection(provider);
+      if (!owned()) return;
       if (!result.ok) throw new Error(result.error);
       const destination = new URL(result.data.consentUrl);
       const allowedHosts: Record<typeof provider, readonly string[]> = {
         github: ["github.com"], slack: ["slack.com"], teams: ["login.microsoftonline.com"], linear: ["linear.app"],
       };
-      if (destination.protocol !== "https:" || !allowedHosts[provider].includes(destination.hostname)) throw new Error("untrusted_consent_destination");
+      if (destination.protocol !== "https:" || destination.username || destination.password || (destination.port && destination.port !== "443") || !allowedHosts[provider].includes(destination.hostname)) throw new Error("untrusted_consent_destination");
       await open(destination.toString());
-      setConnectionNote("Secure consent opened in your browser. Return here after approval; status refreshes when this window regains focus.");
+      if (owned()) setConnectionNote("Secure consent opened in your browser. Return here after approval; status refreshes when this window regains focus.");
     } catch {
-      setConnectionNote("The secure connection could not be started. Confirm this provider is configured for the workspace and try again.");
+      if (owned()) setConnectionNote("The secure connection could not be started. Confirm this provider is configured for the workspace and try again.");
     } finally {
-      setConnectingProvider(null);
+      if (owned()) setConnectingProvider(null);
     }
   }
 
   const providerStatus = (provider: "slack" | "teams" | "linear") => collaboration?.find((item) => item.provider === provider)?.status ?? "not_connected";
   const providerAction = (provider: "github" | "slack" | "teams" | "linear", status: string, canValidate: boolean, validating: boolean, validate: () => Promise<void>) => {
-    if (integrationStatus?.configuration?.[provider] === false) return <button type="button" onClick={() => void open(`${WEB_BASE}/docs/integration-setup#${provider}`)} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">Setup guide ↗</button>;
+    if (!integrationStatus) return <button type="button" disabled className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500">{refreshing ? "Checking…" : "Status unavailable"}</button>;
+    if (integrationStatus.configuration?.[provider] === false) return <button type="button" onClick={() => void open(`${WEB_BASE}/docs/integration-setup#${provider}`)} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">Setup guide ↗</button>;
     if (canValidate) return <button type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Checking access…" : status === "validation_overdue" ? "Revalidate now" : "Finish connection"}</button>;
     if (status === "active" || status === "validated_read_only") return <WebButton href="/account/integrations" label="Manage" />;
     return <button type="button" disabled={connectingProvider !== null} onClick={() => void connectProvider(provider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{connectingProvider === provider ? "Opening…" : "Connect ↗"}</button>;
@@ -1876,6 +1882,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
       <summary className="cursor-pointer text-sm font-medium text-zinc-200">Cloud account connections <span className="ml-2 text-xs font-normal text-zinc-500">AWS and Azure · read-only</span></summary>
       <div className="mt-4"><AwsReadOnlyEnrollment identity={identity} /><AzureReadOnlyEnrollment identity={identity} /></div>
     </details>
+    {refreshNote && <p role="status" className="mt-3 text-xs text-zinc-400">{refreshNote}</p>}
     {connectionNote && <p role="status" className="mt-3 text-xs text-zinc-400">{connectionNote}</p>}
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
       <p className="text-sm text-zinc-200">What happens when you connect</p>
