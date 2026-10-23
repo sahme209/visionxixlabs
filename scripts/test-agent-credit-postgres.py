@@ -23,7 +23,7 @@ args = parser.parse_args()
 os.umask(0o077)
 repo = Path(__file__).resolve().parents[1]
 output = Path(args.output_dir).expanduser().resolve()
-output.mkdir(mode=0o700, parents=True, exist_ok=True)
+output.mkdir(mode=0o700, parents=True, exist_ok=False)
 if output.stat().st_mode & 0o077:
     raise RuntimeError('test_output_requires_owner_only_permissions')
 binaries = Path(args.pg_bin_dir).resolve()
