@@ -10,6 +10,7 @@
  * this returns, for a complete audit trail even for read-only actions.
  */
 
+import { randomUUID } from "node:crypto";
 import { resolveAgentProfile } from "@/lib/axiom/agentRuntime/agentProfiles";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { NextResponse, type NextRequest } from "next/server";
@@ -160,7 +161,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   async function execute(streaming?: AgentMessageExecutionStream): Promise<Response> {
     streaming?.abortSignal.throwIfAborted();
-    const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
+    const correlationId = idFactory.correlation(`agent_msg_${randomUUID()}`);
     await prisma.$transaction([
       prisma.agentConversationTurn.create({ data: { conversationId, role: "user", content: message } }),
       prisma.agentConversation.update({
