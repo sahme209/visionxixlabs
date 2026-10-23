@@ -45,4 +45,21 @@ describe('verified public webhook dispatch',()=>{
     const f=fixture();f.lookup.get=async()=>({id:'in_other',livemode:false,subscription:'sub_fixture'});
     await expect(reconcilePublicWebhook(event('invoice.paid'),identity,f.lookup,f.reconcile)).rejects.toThrow();expect(f.applied).toHaveLength(0);
   });
+  it('accepts an explicitly configured Clover notification but resolves authority through canonical reads',async()=>{
+    vi.stubEnv('AXIOM_STRIPE_WEBHOOK_API_VERSION','2025-12-15.clover');
+    const f=fixture(); const notification={...event('invoice.paid'),api_version:'2025-12-15.clover',data:{object:{id:'in_fixture',metadata:{intentId:'forged',organizationId:'foreign'},status:'paid'}}};
+    await expect(reconcilePublicWebhook(notification,identity,f.lookup,f.reconcile)).resolves.toEqual({handled:true,outcome:'applied'});
+    expect(f.seen).toEqual([['invoice','in_fixture'],['subscription','sub_fixture']]);
+    expect(f.applied).toEqual([['intent_1',{id:'evt_fixture',type:'invoice.paid',objectId:'in_fixture'}]]);
+  });
+  it('does not accept Clover notifications by default',async()=>{
+    const f=fixture();await expect(reconcilePublicWebhook({...event('invoice.paid'),api_version:'2025-12-15.clover'},identity,f.lookup,f.reconcile)).rejects.toThrow('public_webhook_boundary_invalid');expect(f.seen).toEqual([]);
+  });
+  it.each(['','latest','2026-01-28.clover'])('rejects unreviewed webhook version configuration before provider reads: %s',async version=>{
+    vi.stubEnv('AXIOM_STRIPE_WEBHOOK_API_VERSION',version);const f=fixture();await expect(reconcilePublicWebhook(event('invoice.paid'),identity,f.lookup,f.reconcile)).rejects.toThrow('public_webhook_version_unavailable');expect(f.seen).toEqual([]);
+  });
+  it('requires the delivered version to match the configured webhook version',async()=>{
+    vi.stubEnv('AXIOM_STRIPE_WEBHOOK_API_VERSION','2025-12-15.clover');const f=fixture();await expect(reconcilePublicWebhook(event('invoice.paid'),identity,f.lookup,f.reconcile)).rejects.toThrow('public_webhook_boundary_invalid');expect(f.seen).toEqual([]);
+  });
+
 });

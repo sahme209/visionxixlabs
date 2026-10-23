@@ -14,3 +14,13 @@ export function configuredPublicBillingIdentity(): PublicBillingIdentity {
   if (mode === "live" && process.env.AXIOM_LIVE_BILLING_APPROVED !== "true") throw Error("public_live_billing_not_approved");
   return { accountId, livemode: mode === "live" };
 }
+
+/** The signed notification schema is a separate contract from canonical SDK
+ * retrievals. Only reviewed notification versions may be selected by server
+ * configuration; production keeps its existing version when this is unset. */
+export function configuredPublicWebhookApiVersion(): string {
+  const version = process.env.AXIOM_STRIPE_WEBHOOK_API_VERSION;
+  if (version === undefined) return PUBLIC_STRIPE_API_VERSION;
+  if (version !== PUBLIC_STRIPE_API_VERSION && version !== "2025-12-15.clover") throw Error("public_webhook_version_unavailable");
+  return version;
+}

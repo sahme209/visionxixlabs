@@ -1,5 +1,5 @@
 import "server-only";
-import { PUBLIC_BILLING_POLICY, PUBLIC_STRIPE_API_VERSION } from "./publicBillingConfig";
+import { PUBLIC_BILLING_POLICY, configuredPublicWebhookApiVersion } from "./publicBillingConfig";
 import type { PublicBillingIdentity, PublicBillingTrigger } from "./publicCheckoutService";
 export type PublicLookupKind = "session" | "subscription" | "invoice" | "charge" | "dispute" | "credit_note";
 export interface PublicWebhookLookup { get(kind: PublicLookupKind, id: string): Promise<unknown> }
@@ -11,7 +11,7 @@ const supported = new Set(["checkout.session.completed","checkout.session.async_
 export async function reconcilePublicWebhook(event: unknown, identity: PublicBillingIdentity, lookup: PublicWebhookLookup, reconcile: (intentId: string, trigger: PublicBillingTrigger) => Promise<string>): Promise<{handled:false}|{handled:true;outcome:string}> {
   const e=object(event),payload=object(object(e.data).object);
   if(typeof e.type!=='string'||!supported.has(e.type))return {handled:false};
-  if(typeof e.id!=='string'||!/^evt_[A-Za-z0-9_]{1,180}$/.test(e.id)||typeof payload.id!=='string'||e.livemode!==identity.livemode||e.api_version!==PUBLIC_STRIPE_API_VERSION||e.account!=null&&e.account!==identity.accountId)throw Error('public_webhook_boundary_invalid');
+  if(typeof e.id!=='string'||!/^evt_[A-Za-z0-9_]{1,180}$/.test(e.id)||typeof payload.id!=='string'||e.livemode!==identity.livemode||e.api_version!==configuredPublicWebhookApiVersion()||e.account!=null&&e.account!==identity.accountId)throw Error('public_webhook_boundary_invalid');
   async function read(kind:PublicLookupKind,ref:string){const row=object(await lookup.get(kind,ref));if(row.id!==ref||row.livemode!==identity.livemode)throw Error('public_webhook_object_mismatch');return row;}
   let type=e.type,objectId=payload.id,sub:Record<string,unknown>;
   if(type.startsWith('checkout.session.')) {
