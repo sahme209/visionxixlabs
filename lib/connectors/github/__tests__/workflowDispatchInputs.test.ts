@@ -44,3 +44,16 @@ it('bounds source size',()=>expect(()=>parseWorkflowDispatchInputs('x'.repeat(10
 it.each(['[choice]', '{name: string}', '42', 'true'])('rejects non-string type declarations: %s', type => {
  expect(()=>parseWorkflowDispatchInputs(`on:\n  workflow_dispatch:\n    inputs:\n      x: {type: ${type}}`)).toThrow();
 });
+it('accepts 25 declared inputs and rejects a larger form',()=>{
+ const source=(count:number)=>'on:\n  workflow_dispatch:\n    inputs:\n'+Array.from({length:count},(_,i)=>`      field_${i}: {type: string}`).join('\n');
+ expect(parseWorkflowDispatchInputs(source(25))).toHaveLength(25);
+ expect(()=>parseWorkflowDispatchInputs(source(26))).toThrow();
+});
+it('rejects expressions and unsupported option structures rather than evaluating them',()=>{
+ for(const raw of ['{type: string, default: "${{ secrets.VALUE }}"}','{type: choice, options: [a,a]}','{type: string, options: [a]}']) {
+  expect(()=>parseWorkflowDispatchInputs(`on:\n  workflow_dispatch:\n    inputs:\n      x: ${raw}`)).toThrow();
+ }
+});
+it('bounds UTF-8 bytes rather than just JavaScript character count',()=>{
+ expect(()=>parseWorkflowDispatchInputs('#'+ '界'.repeat(34000)+'\non: workflow_dispatch')).toThrow();
+});
