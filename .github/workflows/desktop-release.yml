@@ -103,10 +103,17 @@ jobs:
           path: .
           format: cyclonedx-json
           output-file: axiom-agent.sbom.cdx.json
-          artifact-name: axiom-sbom
-          # The action defaults to release upload on tags; candidates must not.
+          # Upload the exact output ourselves: artifact-name also renames the
+          # action's payload, which would disagree with candidate provenance.
+          upload-artifact: false
           upload-release-assets: false
 
+      - name: Upload exact SBOM candidate bytes
+        uses: actions/upload-artifact@v4
+        with:
+          name: axiom-sbom
+          path: axiom-agent.sbom.cdx.json
+          if-no-files-found: error
 
       - name: Record SBOM candidate provenance
         env:

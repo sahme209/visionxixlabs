@@ -167,6 +167,15 @@ describe("actual candidate artifact verification boundary", () => {
   });
 });
 
+it("uploads the exact SBOM filename covered by provenance without action renaming", () => {
+  const generation = workflow.jobs.sbom.steps.find(item => item.uses === "anchore/sbom-action@v0")!;
+  expect(generation.with?.["upload-artifact"]).toBe(false);
+  expect(generation.with?.["upload-release-assets"]).toBe(false);
+  const upload = workflow.jobs.sbom.steps.find(item => item.name === "Upload exact SBOM candidate bytes")!;
+  expect(upload.uses).toBe("actions/upload-artifact@v4");
+  expect(upload.with).toMatchObject({ name: "axiom-sbom", path: "axiom-agent.sbom.cdx.json", "if-no-files-found": "error" });
+});
+
 describe("website consumer of actual publication notes", () => {
   it("keeps build-only notarization evidence out of downloadable artifact trust", async () => {
     vi.resetModules();
