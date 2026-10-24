@@ -1092,6 +1092,7 @@ export class DesktopClient {
     filePath?: string;
     mode?: "chat" | "code";
     operationMode?: "inspect" | "engineer" | "deepops";
+    maxDecisionSteps?: number;
     agentProfile?: AgentProfileId;
   }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void; onActivity?: (activity: AgentToolActivity) => void }): Promise<ApiResult<{
     reply: string;

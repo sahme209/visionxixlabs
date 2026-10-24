@@ -1117,3 +1117,13 @@ it("coalesces manual decision reads and discards their result after credentials 
   expect(screen.queryByText("Wrong-context decision must stay hidden.")).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
 });
+
+it("sends an explicit one-call bound and clamps it to the selected mode", async () => {
+  render(createElement(AgentChatView)); await draft(); await openAgentConfiguration();
+  fireEvent.change(screen.getByRole("combobox", { name: "Model-call limit" }), { target: { value: "4" } });
+  fireEvent.click(screen.getByRole("button", { name: "Inspect" }));
+  expect((screen.getByRole("combobox", { name: "Model-call limit" }) as HTMLSelectElement).value).toBe("2");
+  fireEvent.change(screen.getByRole("combobox", { name: "Model-call limit" }), { target: { value: "1" } });
+  fireEvent.click(screen.getByRole("button", { name: "Send" }));
+  await waitFor(() => expect(m.client.sendAgentMessage).toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), expect.objectContaining({ maxDecisionSteps: 1, operationMode: "inspect" }), expect.anything(), expect.anything()));
+});

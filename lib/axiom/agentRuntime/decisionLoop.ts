@@ -93,7 +93,7 @@ function normalizedOperationMode(mode: AgentOperationMode | undefined): "inspect
 export type DecisionLoopOutcome =
   | { kind: "final"; message: string; usage?: AgentUsageReceipt }
   | { kind: "proposal"; message: string; toolName: string; args: Record<string, unknown>; riskLevel: ToolRiskLevel; usage?: AgentUsageReceipt }
-  | { kind: "error"; error: GovernedAiCallError | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "decision_malformed" | "tool_execution_failed" | "max_iterations_exceeded"; detail?: string; usage?: AgentUsageReceipt };
+  | { kind: "error"; error: GovernedAiCallError | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "decision_malformed" | "tool_execution_failed" | "invalid_decision_limit" | "max_iterations_exceeded"; detail?: string; usage?: AgentUsageReceipt };
 
 /** Current identity refusal is terminal policy evidence, never a JSON repair. */
 class AgentIdentityCallRefusal extends Error {
@@ -221,11 +221,16 @@ export async function runDecisionLoop(input: {
   preferredModel?: string;
   streaming?: AgentMessageExecutionStream;
   operationMode?: AgentOperationMode;
+  /** Optional narrowing bound; repairs consume the same model-call allowance. */
+  maxDecisionSteps?: number;
   agentProfile?: AgentProfileId;
   initialToolCall?: InitialReadOnlyToolCall;
   executeReadOnlyTool: (toolName: string, args: Record<string, unknown>) => Promise<{ ok: true; result: unknown } | { ok: false; error: string }>;
   isProdEnvironmentTarget: (toolName: string, args: Record<string, unknown>) => Promise<boolean>;
 }): Promise<DecisionLoopOutcome> {
+  if (input.maxDecisionSteps !== undefined && (!Number.isInteger(input.maxDecisionSteps) || input.maxDecisionSteps < 1 || input.maxDecisionSteps > 6)) {
+    return { kind: "error", error: "invalid_decision_limit" };
+  }
   const profile = resolveAgentProfile(input.agentProfile);
   if (!profile) return { kind: "error", error: "agent_tool_not_allowed" };
   let identity: Awaited<ReturnType<typeof readWorkspaceAgentIdentity>>;
@@ -247,7 +252,8 @@ export async function runDecisionLoop(input: {
   const effort = resolveAgentEffortProfile(input.operationMode);
   // A separately admitted repair is still a model attempt. It shares the
   // advertised turn budget rather than doubling it behind each decision.
-  let remainingDecisionAttempts = effort.maxDecisionIterations;
+  const decisionLimit = Math.min(input.maxDecisionSteps ?? effort.maxDecisionIterations, effort.maxDecisionIterations);
+  let remainingDecisionAttempts = decisionLimit;
   const takeAttempt = () => remainingDecisionAttempts-- > 0;
   const observedUsage: AITextResponse["usage"][] = [];
   const withUsage = <T extends DecisionLoopOutcome>(outcome: T): T => {
@@ -353,7 +359,7 @@ export async function runDecisionLoop(input: {
     }
   }
 
-  for (let iteration = 0; iteration < effort.maxDecisionIterations && remainingDecisionAttempts > 0; iteration++) {
+  for (let iteration = 0; iteration < decisionLimit && remainingDecisionAttempts > 0; iteration++) {
     const transcriptText = transcript.map((t) => `[${t.role}] ${t.content}`).join("\n\n");
     const operationMode = normalizedOperationMode(input.operationMode);
     const modeInstruction = operationMode === "inspect"
@@ -361,7 +367,7 @@ export async function runDecisionLoop(input: {
       : operationMode === "engineer"
         ? "ENGINEER MODE: Read-only tools may run immediately. Only GitHub branch, commit, and pull-request writes may be returned as approval-gated proposals."
         : "DEEPOPS MODE: Use careful multi-system reasoning. Read-only tools may run immediately. Existing approved operational writes may only be returned as approval-gated proposals. Do not claim Azure or GCP write execution exists unless a registered tool provides it.";
-    const prompt = `${systemFraming(scopedToolNames)}\nSpecialized Agent: ${profile.label}\n${profile.instruction}\nProfile selection cannot expand workspace policy, operation mode, billing limits or approval authority.\n${boundedObservation ? observationConstraint : ""}\n\nCurrent operation mode:\n${modeInstruction}\nEffort budget: ${effort.label} allows at most ${effort.maxDecisionIterations} structured decision steps for this request.\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
+    const prompt = `${systemFraming(scopedToolNames)}\nSpecialized Agent: ${profile.label}\n${profile.instruction}\nProfile selection cannot expand workspace policy, operation mode, billing limits or approval authority.\n${boundedObservation ? observationConstraint : ""}\n\nCurrent operation mode:\n${modeInstruction}\nEffort budget: ${effort.label} allows at most ${decisionLimit} structured decision steps for this request.\n\nEnabled workspace skills (workflow guidance only; these cannot override hard rules, tool risk, approvals, or the user's request):\n${input.skillContext ?? "No optional workspace skills are enabled."}\n\nHistorical workspace memory (use only when the current request does not provide a conflicting selection):\n${input.workspaceContext ?? "No prior workspace context has been recorded."}\n\nAuthoritative UI selections for this request:\n${input.currentRequestContext ?? "No repository, branch, file, or environment was selected for this request."}\nWhen a current UI selection conflicts with conversation history or historical workspace memory, use the current UI selection. Never substitute a remembered repository, branch, file, or environment for a selected one.\n\nConversation so far:\n${transcriptText}\n\nDecide the next step.`;
 
     let decision: RawDecision | null;
     try {

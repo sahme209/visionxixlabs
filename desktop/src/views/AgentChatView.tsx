@@ -315,6 +315,9 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     try { if (operationPreferenceKey) window.localStorage.setItem(operationPreferenceKey, operationMode); }
     catch { /* A storage failure must not interrupt the Agent. */ }
   }, [operationPreferenceKey, operationMode]);
+  const [modelCallLimit, setModelCallLimit] = useState("");
+  const modeCallLimit = operationMode === "inspect" ? 2 : operationMode === "deepops" ? 6 : 4;
+  const maxDecisionSteps = modelCallLimit ? Math.min(Number(modelCallLimit), modeCallLimit) : undefined;
   const [savedContext] = useState(() => {
     try { return { repository: window.localStorage.getItem(ACTIVE_REPOSITORY_KEY) ?? "", environment: window.localStorage.getItem(ACTIVE_ENVIRONMENT_KEY) ?? "" }; }
     catch { return { repository: "", environment: "" }; } // Advisory preferences never establish authority.
@@ -845,7 +848,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
   }, [input]);
   function jumpToLatest() { followsLatest.current = true; setNewActivity(false); scrollRef.current?.scrollTo({top: scrollRef.current.scrollHeight, behavior: "smooth"}); }
 
-  const requestKey = JSON.stringify([repositoryFullName.trim(), branch.trim(), environmentId, composerMode, composerMode === "code" ? filePath.trim() : "", operationMode, agentProfile, selectedModel]);
+  const requestKey = JSON.stringify([repositoryFullName.trim(), branch.trim(), environmentId, composerMode, composerMode === "code" ? filePath.trim() : "", operationMode, agentProfile, selectedModel, maxDecisionSteps]);
   const selectedModelUnavailable = modelOptions.find(option => option.key === selectedModel)?.unavailableReason;
   const currentQueue = queuedMessages.filter(message => message.conversationId === conversationId);
   const retainedRequest = conversationId ? retainedRequests.get(conversationId) : undefined;
@@ -929,6 +932,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         ...(composerMode === "code" && filePath.trim() ? { filePath: filePath.trim() } : {}),
         mode: composerMode,
         operationMode,
+        ...(maxDecisionSteps !== undefined ? { maxDecisionSteps } : {}),
         agentProfile,
       }, choice.preferredModel, { signal: controller.signal, onDraft: text => { if (owned() && !controller.signal.aborted) setStreamingDraft(text); }, onActivity: activity => {
         if (owned() && !controller.signal.aborted) setToolActivity(current => [...current.filter(item => item.step !== activity.step), activity]);
@@ -1301,6 +1305,13 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
                 {AGENT_PROFILES.map(profile => <option key={profile.id} value={profile.id}>{profile.label}</option>)}
               </select>
             </label>
+            <label className="text-xs text-zinc-400">Model-call limit
+              <select aria-label="Model-call limit" value={maxDecisionSteps ?? ""} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => setModelCallLimit(event.target.value)} className="ml-2 rounded-md border border-white/10 bg-[#151519] px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
+                <option value="">Mode default ({modeCallLimit})</option>
+                {Array.from({ length: modeCallLimit }, (_, index) => index + 1).map(limit => <option key={limit} value={limit}>{limit}</option>)}
+              </select>
+            </label>
+            <p className="text-[11px] text-zinc-500">Includes response repairs. Credit checks still apply to every call.</p>
             <p role="status" className="text-[11px] text-zinc-500">{resolveAgentProfile(agentProfile)?.description} Workspace tool policy and approvals still apply.</p>
             {onOpenSettings && <button type="button" onClick={() => onOpenSettings("agents")} className="text-xs text-zinc-400 underline underline-offset-2">Agent permissions</button>}
           </div>

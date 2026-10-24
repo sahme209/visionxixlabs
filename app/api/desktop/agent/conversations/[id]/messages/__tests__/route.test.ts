@@ -66,6 +66,19 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(response.status).toBe(400); expect(await response.json()).toMatchObject({ error: "invalid_agent_profile" });
     expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
   });
+  it.each([0, -1, 1.5, 7, "1", null])("refuses invalid model-call limits before creating a turn: %s", async maxDecisionSteps => {
+    const { POST } = await import("../route");
+    const response = await POST(request({ message: "hi", workspaceContext: { maxDecisionSteps } }), params);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: "invalid_decision_limit" });
+    expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+  it("passes the requested one-call bound to the governed runtime", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Observed" });
+    const { POST } = await import("../route");
+    expect((await POST(request({ message: "hi", workspaceContext: { maxDecisionSteps: 1 } }), params)).status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ maxDecisionSteps: 1 }));
+  });
   it("passes a validated profile into the real dispatch boundary and audits only non-sensitive selection fields", async () => {
     mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Reviewed" });
     const { POST } = await import("../route");

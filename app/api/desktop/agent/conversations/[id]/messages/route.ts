@@ -48,6 +48,7 @@ const AI_ERROR_MESSAGES: Record<string, string> = {
   workspace_agent_policy_unavailable: "I couldn't verify this workspace's Agent permissions, so no AI or tool action was attempted.",
   agent_tool_not_allowed: "Organization policy does not allow this Agent to use the requested tool.",
   decision_malformed: "I couldn't form a safe action from the model response after retrying. No change was made. Try once more or choose a different enabled model.",
+  invalid_decision_limit: "Choose a model-call limit between 1 and 6.",
   max_iterations_exceeded: "This request needed too many steps to resolve — try breaking it into a smaller request.",
 };
 
@@ -117,6 +118,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       filePath?: unknown;
       mode?: unknown;
       operationMode?: unknown;
+      maxDecisionSteps?: unknown;
       agentProfile?: unknown;
     };
   } | null;
@@ -135,6 +137,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const selectedModel = typeof preferredModel === "string" ? preferredModel : undefined;
   const rawContext = body?.workspaceContext;
+  const maxDecisionSteps = rawContext?.maxDecisionSteps;
+  if (maxDecisionSteps !== undefined && (typeof maxDecisionSteps !== "number" || !Number.isInteger(maxDecisionSteps) || maxDecisionSteps < 1 || maxDecisionSteps > 6)) {
+    return NextResponse.json({ ok: false, error: "invalid_decision_limit" }, { status: 400 });
+  }
   const repositoryFullName = typeof rawContext?.repositoryFullName === "string" ? rawContext.repositoryFullName.trim() : "";
   const branch = typeof rawContext?.branch === "string" ? rawContext.branch.trim() : "";
   const environmentId = typeof rawContext?.environmentId === "string" ? rawContext.environmentId.trim() : "";
@@ -179,7 +185,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       organizationId, actorUserId: String(actor.userId), correlationId: String(correlationId),
       kind: "agent.profile_selected", subjectKind: "agent_conversation", subjectId: conversationId,
       summary: `Selected ${profile.label}`,
-      detailJson: { agentProfile: profile.id, operationMode },
+      detailJson: { agentProfile: profile.id, operationMode, ...(maxDecisionSteps !== undefined ? { maxDecisionSteps } : {}) },
     });
     streaming?.abortSignal.throwIfAborted();
     const invokedSkillId = parseSkillInvocation(message);
@@ -240,6 +246,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       preferredProvider,
       preferredModel: selectedModel,
       operationMode,
+      maxDecisionSteps: typeof maxDecisionSteps === "number" ? maxDecisionSteps : undefined,
       agentProfile: profile.id,
       initialToolCall,
       executeReadOnlyTool: async (toolName, args) => {

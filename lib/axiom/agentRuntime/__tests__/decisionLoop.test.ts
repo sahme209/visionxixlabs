@@ -316,6 +316,32 @@ describe("runDecisionLoop", () => {
     expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", undefined, "actor", undefined);
   });
 
+  it.each([false, true])("enforces one model attempt including malformed repair (%s)", async malformed => {
+    const extract = vi.fn(async () => {
+      if (malformed) throw new AccountedDecisionMalformed({ promptTokens: 1, completionTokens: 1, totalTokens: 2 });
+      return { action: "call_tool", message: "Inspect", toolName: "list_environments", args: {} };
+    });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "bounded", transcript: [], operationMode: "inspect", maxDecisionSteps: 1,
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    expect(extract).toHaveBeenCalledTimes(1);
+  });
+
+  it("cannot expand the operation mode with a larger request limit", async () => {
+    const extract = vi.fn(async () => ({ action: "call_tool", message: "Inspect", toolName: "list_environments", args: {} }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "bounded", transcript: [], operationMode: "inspect", maxDecisionSteps: 6,
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    expect(extract).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([0, -1, 1.5, 7, NaN, Infinity, "1", null])("rejects invalid model-call limits before admission: %s", async limit => {
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "bounded", transcript: [], maxDecisionSteps: limit as number,
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "error", error: "invalid_decision_limit" });
+    expect(mocks.resolveGovernedAiCall).not.toHaveBeenCalled();
+  });
+
   it("maps legacy modes to conservative effort budgets", () => {
     expect(resolveAgentEffortProfile("ask")).toEqual({ label: "Inspect", maxDecisionIterations: 2 });
     expect(resolveAgentEffortProfile("agent")).toEqual({ label: "Engineer", maxDecisionIterations: 4 });
