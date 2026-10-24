@@ -9,7 +9,7 @@ const { readFileSync, realpathSync } = require('node:fs');
 const { join } = require('node:path');
 const rootPath = realpathSync(join(__dirname, '../..'));
 const sourcePins = {
-  'package-lock.json': 'c00ffaf28d358848943a248c122fc1e6dec9e1dfbc29d744d10b5ccd34777d7e',
+  'package-lock.json': '563b933cccd467783f60d3c8e88d02f855107c2ca9beda5ead13d6bd66a3920c',
   'next.config.ts': '0e92d9076a0fde2e5523d86ff9024b727fdb5a272cb2d55e0159f7d693f1ab7d',
   'tsconfig.json': '49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1',
   'tsconfig.next.json': '1b7acd54eea2b33af5e4c8601132f9244687ed14ebbbb3f330a295d199fdac41',
