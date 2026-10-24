@@ -1,13 +1,8 @@
 import { parseDocument } from "yaml";
 
-export interface WorkflowDispatchInput {
-  name: string;
-  type: "string" | "boolean" | "number" | "choice" | "environment";
-  required: boolean;
-  description: string;
-  options?: string[];
-  defaultValue?: string;
-}
+import type { WorkflowDispatchInput } from "./workflowDispatchInputDto";
+export type { WorkflowDispatchInput } from "./workflowDispatchInputDto";
+
 const invalid = () => new Error("workflow_input_schema_unavailable");
 function record(value: unknown): value is Record<string, unknown> {
   return Boolean(value) && typeof value === "object" && !Array.isArray(value);

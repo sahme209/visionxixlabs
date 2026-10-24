@@ -20,3 +20,7 @@ No deployment/merge authority implied by this feature request. Preserve cockpit 
 - [ ] Release dependency binding: connect exact Airflow run/logical-date dependencies to request version, durable observation, readiness notification and timeline. Reuse scheduler/executor and test stale/reconnect/duplicate/restart cases.
 - [ ] Governed provider execution: separate reviewed merge and dispatch actions; select arbitrary verified workflow inputs only after source/authority checks. Azure adapter remains unavailable without authenticated configuration. Test ambiguous dispatch and recovery.
 - [ ] Full acceptance: actual allowed providers, independent reviewer, visible native checks, exact-source release gates and latest signed installer publication gates. Do not substitute fixtures for live acceptance.
+
+## Expanded scope recorded from user
+- [ ] In-app GitHub release operations: map PR review/checks/authorized merge, workflow discovery/dispatch, run/job/log evidence and authorized cancellation/rerun. Keep backend authority and source-bound approvals; no unsupported-operation claims.
+- [ ] Separate Grok Bot feasibility/design: official persistent-agent product research, supported integration availability, and native governed durable-agent capabilities. Do not confuse with Grok model routing or enable new paid tools/credentials.

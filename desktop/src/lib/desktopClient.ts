@@ -1,3 +1,4 @@
+import type { WorkflowDispatchInput } from "../../../lib/connectors/github/workflowDispatchInputDto";
 import { AGENT_TOOL_ACTIVITY_FEATURE, type AgentToolActivity, type AgentMessageIssue } from "../../../lib/desktop/agentMessageStreamProtocol";
 import type { AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import type {DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
@@ -1018,6 +1019,13 @@ export class DesktopClient {
     truncated: boolean;
   }>> {
     return this.get(`/api/desktop/github/files?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(branch)}`);
+  }
+
+  getGithubWorkflowInputs(repositoryFullName: string, ref: string, path: string): Promise<ApiResult<{
+    source: { repositoryFullName: string; ref: string; path: string; blobSha: string };
+    inputs: WorkflowDispatchInput[];
+  }>> {
+    return this.get(`/api/desktop/github/workflow-inputs?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(ref)}&path=${encodeURIComponent(path)}`);
   }
 
   listEnvironments(): Promise<ApiResult<{
