@@ -986,8 +986,9 @@ it("observes an external rejection by polling without requiring a focus event", 
   const interval = vi.spyOn(window, "setInterval");
   render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "external-rejection", role: "tool_result", content: "External reviewer rejected this proposal." }], actions: [{ ...proposal, status: "rejected" }] } });
-  const polling = interval.mock.calls.find(([, delay]) => delay === 15_000)?.[0];
-  expect(typeof polling).toBe("function");
+  // The button renders before React is required to flush the polling effect.
+  await waitFor(() => expect(typeof interval.mock.calls.find(([, delay]) => delay === 15_000)?.[0]).toBe("function"));
+  const polling = interval.mock.calls.find(([, delay]) => delay === 15_000)![0];
   await act(async () => { (polling as () => void)(); });
   await screen.findByText("External reviewer rejected this proposal.");
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
