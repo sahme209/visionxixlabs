@@ -998,13 +998,18 @@ it("observes an external rejection by polling without requiring a focus event", 
 it("ignores an external-decision read that finishes after the desktop credential changes", async () => {
   const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  const listening = vi.spyOn(window, "addEventListener");
   const view = render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  await waitFor(() => expect(listening.mock.calls.some(([event]) => event === "focus")).toBe(true));
   const old = deferred<unknown>(); m.client.getAgentConversation.mockReturnValueOnce(old.promise);
+  const before = m.client.getAgentConversation.mock.calls.length;
   fireEvent(window, new Event("focus"));
+  await waitFor(() => expect(m.client.getAgentConversation.mock.calls.length).toBe(before + 1));
   m.client.config = { sessionToken: "replacement" }; view.rerender(createElement(AgentChatView));
   await act(async () => { old.resolve({ ok: true, data: { ...summary, turns: [{ id: "old-result", role: "tool_result", content: "Must not show an old workspace result." }], actions: [{ ...proposal, status: "executed" }] } }); });
   expect(screen.queryByText("Must not show an old workspace result.")).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  listening.mockRestore();
 });
 
 it("restores a recorded GitHub commit receipt without sending or approving again", async () => {
@@ -1054,6 +1059,21 @@ it("reconciles a second external decision after cancelling and replacing a propo
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
   expect(m.client.rejectAgentAction).toHaveBeenCalledOnce();
   interval.mockRestore();
+});
+
+it("immediately reconciles an external decision when returning from Settings without focus or a polling tick", async () => {
+  const proposal = { id: "reviewed-away", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+  const view = render(createElement(AgentChatView, { active: true }));
+  await screen.findByRole("button", { name: "Approve & run" });
+  view.rerender(createElement(AgentChatView, { active: false }));
+  m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "reviewed-away-result", role: "tool_result", content: "Independent reviewer decided while Settings was open." }], actions: [{ ...proposal, status: "rejected" }] } });
+  view.rerender(createElement(AgentChatView, { active: true }));
+  await screen.findByText("Independent reviewer decided while Settings was open.");
+  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  expect(m.client.approveAgentAction).not.toHaveBeenCalled();
+  expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
 });
 
 it("manually refreshes an independently reviewed decision without another send or approval", async () => {

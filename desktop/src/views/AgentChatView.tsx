@@ -272,7 +272,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     return () => { messageAbort.current?.abort(); decisionEpoch.current += 1; conversationEpoch.current += 1; activeConversation.current = null; };
   }, [transportContext]);
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
-  const refreshDecision = useRef<(() => void) | null>(null);
+  const refreshDecision = useRef<((manual?: boolean) => void) | null>(null);
+  const decisionViewWasActive = useRef(active);
   const [decisionRefreshing, setDecisionRefreshing] = useState(false);
   const [decisionRefreshNote, setDecisionRefreshNote] = useState<string | null>(null);
   const [evidenceActions, setEvidenceActions] = useState<Proposal[]>([]);
@@ -793,7 +794,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         if (manual && owned()) setDecisionRefreshNote("The decision could not be verified. Try refreshing again.");
       } finally { inFlight = false; if (owned()) setDecisionRefreshing(false); }
     };
-    const manualRefresh = () => { void refresh(true); };
+    const manualRefresh = (manual = true) => { void refresh(manual); };
     refreshDecision.current = manualRefresh;
     const onFocus = () => { void refresh(); };
     window.addEventListener("focus", onFocus);
@@ -801,6 +802,14 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     const interval = window.setInterval(onFocus, 15_000);
     return () => { disposed = true; if (refreshDecision.current === manualRefresh) refreshDecision.current = null; setDecisionRefreshing(false); window.clearInterval(interval); window.removeEventListener("focus", onFocus); document.removeEventListener("visibilitychange", onFocus); };
   }, [active, conversationId, pendingProposal?.id, loadingConversation, sending, decidingId]);
+
+  useEffect(() => {
+    const returning = active && !decisionViewWasActive.current;
+    decisionViewWasActive.current = active;
+    // Internal Settings navigation need not generate a window-focus event.
+    // Use the same owned, coalesced read; never resume or execute a proposal.
+    if (returning) refreshDecision.current?.(false);
+  }, [active]);
 
   async function newConversation() {
     if (renamingBusy || sending || loadingConversation || !rememberCurrentDraft()) return;
