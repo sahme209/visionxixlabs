@@ -1,9 +1,10 @@
+import { ResolutionDraftForm } from "../components/ResolutionDraftForm";
 import { WorkflowCatalogue } from "../components/WorkflowCatalogue";
 import { WorkflowDefinitionInputs } from "../components/WorkflowDefinitionInputs";
 import { singleGithubRepository, workflowFilePath } from "../lib/workflowReadSource";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
 
@@ -253,6 +254,11 @@ export function DeploymentRequestsView() {
   const [loadError, setLoadError] = useState<string>();
   const [lastSuccessfulLoadAt, setLastSuccessfulLoadAt] = useState<Date>();
   const [showForm, setShowForm] = useState(false);
+  const [showResolutionDraft, setShowResolutionDraft] = useState(false);
+  const intakeEpoch = useRef(0);
+  const mounted = useRef(false);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; intakeEpoch.current++; }; }, []);
+  function invalidateRevisionRead() { intakeEpoch.current++; setLoadingRevisionId(undefined); }
   const [revision, setRevision] = useState<RevisionSeed>();
   const [loadingRevisionId, setLoadingRevisionId] = useState<string>();
   const [closingRequestId, setClosingRequestId] = useState<string>();
@@ -363,15 +369,18 @@ export function DeploymentRequestsView() {
   }
 
   async function startRevision(requestId: string) {
+    const epoch = ++intakeEpoch.current, config = desktopClient.config, context = desktopClient.getContextRevision();
+    const owns = () => mounted.current && epoch === intakeEpoch.current && config === desktopClient.config && context === desktopClient.getContextRevision();
     setLoadingRevisionId(requestId);
-    const result = await desktopClient.deploymentRequestForRevision(requestId);
-    setLoadingRevisionId(undefined);
-    if (!result.ok) {
-      setLoadError(`Could not load the request for revision: ${result.error}`);
-      return;
-    }
-    setRevision(result.data);
-    setShowForm(true);
+    try {
+      const result = await desktopClient.deploymentRequestForRevision(requestId);
+      if (!owns()) return;
+      if (!result.ok) { setLoadError(`Could not load the request for revision: ${result.error}`); return; }
+      setShowResolutionDraft(false);
+      setRevision(result.data);
+      setShowForm(true);
+    } catch { if (owns()) setLoadError("The request could not be loaded. Your current intake has been retained."); }
+    finally { if (owns()) setLoadingRevisionId(undefined); }
   }
 
   async function loadRevisionHistory(requestId: string) {
@@ -458,11 +467,14 @@ export function DeploymentRequestsView() {
           <button type="button" onClick={() => void load()} className="btn-secondary">
             Refresh
           </button>
-          <button type="button" onClick={() => { setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
+          <button type="button" onClick={() => { invalidateRevisionRead(); setShowForm(false); setRevision(undefined); setShowResolutionDraft(value => !value); }} className="btn-secondary">{showResolutionDraft ? "Cancel draft" : "Start from ticket"}</button>
+          <button type="button" onClick={() => { invalidateRevisionRead(); setShowResolutionDraft(false); setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
             {showForm ? "Cancel intake" : "New request"}
           </button>
         </div>
       </div>
+
+      {showResolutionDraft && <ResolutionDraftForm onSaved={() => { setShowResolutionDraft(false); void load(); }} />}
 
       {showForm && (
         <DeploymentIntakeForm
@@ -551,6 +563,11 @@ export function DeploymentRequestsView() {
                   Request updated {new Date(request.updatedAt).toLocaleString()}.
                 </p>
                 <div className="flex flex-wrap gap-2">
+                  {request.status === "draft" ? <>
+                    <button type="button" className="btn-primary" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? "Opening…" : "Complete release details"}</button>
+                    <button type="button" className="btn-secondary" disabled={loadingHistoryId === request.id} onClick={() => void loadRevisionHistory(request.id)}>Review history</button>
+                  </> : <>
+
                   <button type="button" className="btn-secondary" onClick={() => setTerraformRequestId(current => current === request.id ? undefined : request.id)}>Review Terraform evidence</button>
                   <button
                     type="button"
@@ -592,9 +609,10 @@ export function DeploymentRequestsView() {
                   >
                     {collectingGitHubEvidenceId === request.id ? "Reading GitHub…" : "Collect GitHub evidence"}
                   </button>
+                  </>}
                 </div>
               </div>
-              <ReleaseContext request={request} />
+              {request.status === "draft" ? <p className="mt-3 text-xs text-amber-200">Draft only. Resolve repository, workflow, readiness and approval details before submitting the release.</p> : <ReleaseContext request={request} />}
               {terraformRequestId === request.id && <TerraformPlanReview key={`${request.id}:${request.version}`} requestId={request.id} requestVersion={request.version} />}
               {githubEvidenceErrors[request.id] && (
                 <p role="alert" className="mt-3 text-xs text-rose-300">
@@ -604,7 +622,7 @@ export function DeploymentRequestsView() {
               {githubEvidence[request.id] && (
                 <GitHubEvidenceCard evidence={githubEvidence[request.id]} />
               )}
-              {request.status === "closed" ? (
+              {request.status === "draft" ? null : request.status === "closed" ? (
                 <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-100">
                   Closure recorded{request.closedAt ? ` ${new Date(request.closedAt).toLocaleString()}` : ""}. This record documents a reported external outcome; it did not dispatch a deployment.
                 </div>
@@ -879,6 +897,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
   const [error, setError] = useState<string>();
   const [submissionId] = useState(() => crypto.randomUUID());
   const [workflowInputIssue, setWorkflowInputIssue] = useState<string>();
+  const completingResolutionDraft = revision?.intake.kind === "resolution_draft";
   const isAdHoc = draft.requestClass === "ad_hoc" || draft.requestClass === "emergency";
 
   function update<K extends keyof typeof draft>(key: K, value: (typeof draft)[K]) {
@@ -1027,10 +1046,11 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
 
   return (
     <form onSubmit={(event) => void submit(event)} className="glass-card p-5 space-y-5">
+      {revision?.intake.kind === "resolution_draft" && <aside className="rounded-lg border border-white/10 p-3 text-xs text-zinc-300"><p className="font-semibold">Original ticket request</p><p className="mt-1 whitespace-pre-wrap">{textValue(revision.intake.requestDetails)}</p>{textValue(revision.intake.ticketUrl) && <p className="mt-1 break-all">{textValue(revision.intake.ticketUrl)}</p>}<p className="mt-2 text-zinc-500">The original draft remains in the immutable record. Complete every required release control before submission.</p></aside>}
       <div>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-white">{revision ? `Revise governed request · v${revision.version} → v${revision.version + 1}` : "New governed deployment request"}</p>
+            <p className="text-sm font-semibold text-white">{completingResolutionDraft ? "Complete release details for submission" : revision ? `Revise governed request · v${revision.version} → v${revision.version + 1}` : "New governed deployment request"}</p>
             <p className="mt-1 text-xs text-zinc-500">Step {step + 1} of {INTAKE_STEPS.length} · {INTAKE_STEPS[step]}</p>
           </div>
           <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Required controls stay visible in sequence</span>
@@ -1147,7 +1167,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
       {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
       <div className="flex items-center justify-between gap-3">
         <button type="button" disabled={step === 0 || submitting} onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(undefined); }} className="btn-secondary disabled:opacity-40">Back</button>
-        <p className="text-xs text-zinc-500">{revision ? "This appends an immutable revision and audit event. It does not deploy." : "This creates a tenant-scoped record and audit event. It does not deploy."}</p>
+        <p className="text-xs text-zinc-500">{completingResolutionDraft ? "This submits the completed release request and preserves the original draft. It does not deploy." : revision ? "This appends an immutable revision and audit event. It does not deploy." : "This creates a tenant-scoped record and audit event. It does not deploy."}</p>
         {step < INTAKE_STEPS.length - 1 ? (
           <button type="button" className="btn-primary" onClick={() => {
             const issue = (step === 2 ? workflowInputIssue : undefined) ?? validateStep(step, draft);
@@ -1157,7 +1177,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
           }}>Continue</button>
         ) : (
           <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
-            {submitting ? (revision ? "Saving revision…" : "Submitting…") : (revision ? "Save immutable revision" : "Submit governed request")}
+            {submitting ? (completingResolutionDraft ? "Submitting…" : revision ? "Saving revision…" : "Submitting…") : (completingResolutionDraft ? "Submit completed request" : revision ? "Save immutable revision" : "Submit governed request")}
           </button>
         )}
       </div>
