@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync, renameSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
@@ -174,6 +174,23 @@ it("uploads the exact SBOM filename covered by provenance without action renamin
   const upload = workflow.jobs.sbom.steps.find(item => item.name === "Upload exact SBOM candidate bytes")!;
   expect(upload.uses).toBe("actions/upload-artifact@v4");
   expect(upload.with).toMatchObject({ name: "axiom-sbom", path: "axiom-agent.sbom.cdx.json", "if-no-files-found": "error" });
+});
+
+it("accepts actual Axiom installer names with interior spaces at both verification boundaries", () => {
+  const cwd = rawCandidate();
+  const manifestPath = "artifacts/windows-x64/candidate-windows-x64.json";
+  const manifest = JSON.parse(readFileSync(join(cwd, manifestPath), "utf8"));
+  const asset = manifest.assets[0];
+  const actualName = `Axiom Agent_${expected.VERSION}_x64_en-US.msi`;
+  renameSync(join(cwd, "artifacts/windows-x64", asset.fileName), join(cwd, "artifacts/windows-x64", actualName));
+  asset.fileName = actualName; json(cwd, manifestPath, manifest);
+  expect(flatten(cwd).status).toBe(0);
+  expect(nodeRun(nodeBlock("publish", "Validate candidate again before signing or upload"), cwd).status).toBe(0);
+});
+it.each(["Axiom/Agent_0.1.21.msi", "Axiom\tAgent_0.1.21.msi", "Axiom$(command)_0.1.21.msi", "Axiom_0.1.21.msi "])("still rejects unsafe installer filename %s", name => {
+  const cwd = rawCandidate();
+  mutate(cwd, "artifacts/windows-x64/candidate-windows-x64.json", value => { (value.assets as Array<{fileName: string}>)[0].fileName = name; });
+  expect(flatten(cwd).status).not.toBe(0);
 });
 
 describe("website consumer of actual publication notes", () => {

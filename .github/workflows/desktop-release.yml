@@ -392,7 +392,7 @@ jobs:
               if (!lines.has(`platform=${manifest.platform}`) || !lines.has(`artifact_signed=${expected}`) || !lines.has('artifact_notarized=false')) throw Error('Signing attestation mismatch');
             }
             for (const asset of manifest.assets) {
-              if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/.test(asset.fileName) || path.basename(asset.fileName) !== asset.fileName || !extensions[manifest.platform].test(asset.fileName) || seenNames.has(asset.fileName) || !/^[a-f0-9]{64}$/.test(asset.sha256) || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0) throw Error('Unsafe or duplicate candidate asset');
+              if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || path.basename(asset.fileName) !== asset.fileName || !extensions[manifest.platform].test(asset.fileName) || seenNames.has(asset.fileName) || !/^[a-f0-9]{64}$/.test(asset.sha256) || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0) throw Error('Unsafe or duplicate candidate asset');
               const matches = files.filter(candidate => path.basename(candidate) === asset.fileName);
               if (matches.length !== 1) throw Error('Missing or colliding candidate asset');
               const bytes = fs.readFileSync(matches[0]);
@@ -469,7 +469,7 @@ jobs:
           if (manifest.schema !== 1 || manifest.sourceSha !== SOURCE_SHA || manifest.releaseTag !== RELEASE_TAG || manifest.version !== VERSION || manifest.runId !== CANDIDATE_RUN_ID || !Array.isArray(manifest.assets) || manifest.assets.length < 5) throw Error('Unapproved candidate identity');
           const names = new Set();
           for (const asset of manifest.assets) {
-            if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/.test(asset.fileName) || path.basename(asset.fileName) !== asset.fileName || names.has(asset.fileName)) throw Error('Invalid candidate file');
+            if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || path.basename(asset.fileName) !== asset.fileName || names.has(asset.fileName)) throw Error('Invalid candidate file');
             const file = path.join('flat', asset.fileName);
             if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw Error('Invalid candidate file');
             const bytes = fs.readFileSync(file);
