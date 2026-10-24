@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { describe, expect, it } from "vitest";
 import { validateWorkflowExecutionContract } from "../workflowExecutionContract";
 
@@ -17,9 +18,17 @@ const yaml = `on:
       target:
         type: environment
 `;
-const check = (inputs: unknown, current = source, content = yaml) => validateWorkflowExecutionContract({ expectedSource: source, currentSource: current, content, inputs });
+const blob = (content: string) => createHash("sha1").update(`blob ${Buffer.byteLength(content, "utf8")}\0`).update(content).digest("hex");
+source.blobSha = blob(yaml);
+const check = (inputs: unknown, current = source, content = yaml) => {
+  const bound = { ...source, blobSha: blob(content) };
+  return validateWorkflowExecutionContract({ expectedSource: bound, currentSource: current === source ? bound : current, content, inputs });
+};
 
 describe("source-bound workflow execution contract", () => {
+  it("rejects source metadata whose blob does not match the actual workflow bytes", () => {
+    expect(validateWorkflowExecutionContract({ expectedSource: source, currentSource: source, content: "on: workflow_dispatch", inputs: {} }).ok).toBe(false);
+  });
   it("accepts exact source and literal typed inputs without creating defaults", () => {
     expect(check({ client: "first", publish: "false", count: "0", target: "staging" })).toEqual({ ok: true, inputs: { client: "first", publish: "false", count: "0", target: "staging" } });
     expect(check({ client: "second" })).toEqual({ ok: true, inputs: { client: "second" } });

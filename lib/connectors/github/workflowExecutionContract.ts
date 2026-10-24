@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { parseWorkflowDispatchInputs } from "./workflowDispatchInputs";
 
 export interface WorkflowExecutionSource {
@@ -9,11 +10,15 @@ export interface WorkflowExecutionSource {
 type Result = { ok: true; inputs: Record<string, string> } | { ok: false; error: "workflow_execution_contract_invalid" };
 const refuse = (): Result => ({ ok: false, error: "workflow_execution_contract_invalid" });
 const keys = ["repositoryFullName", "ref", "path", "blobSha"] as const;
-function validSource(value: WorkflowExecutionSource): boolean {
-  return Boolean(value && /^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(value.repositoryFullName)
-    && value.ref && value.ref === value.ref.trim() && value.ref.length <= 240 && !/[\0\r\n]/.test(value.ref)
-    && /^\.github\/workflows\/[A-Za-z0-9_][A-Za-z0-9_. -]{0,150}\.ya?ml$/.test(value.path)
-    && /^[a-f0-9]{40}$/.test(value.blobSha));
+export function isWorkflowExecutionSource(input: unknown): input is WorkflowExecutionSource {
+  if (!input || typeof input !== "object" || Array.isArray(input)) return false;
+  const value = input as Record<string, unknown>;
+  if (keys.some(key => typeof value[key] !== "string")) return false;
+  const source = value as unknown as WorkflowExecutionSource;
+  return Boolean(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(source.repositoryFullName)
+    && source.ref && source.ref === source.ref.trim() && source.ref.length <= 240 && !/[\0\r\n]/.test(source.ref)
+    && /^\.github\/workflows\/[A-Za-z0-9_][A-Za-z0-9_. -]{0,150}\.ya?ml$/.test(source.path)
+    && /^[a-f0-9]{40}$/.test(source.blobSha));
 }
 
 /** Validate against freshly server-read workflow content, never a client-provided schema.
@@ -26,10 +31,13 @@ export function validateWorkflowExecutionContract(input: {
   content: string;
   inputs: unknown;
 }): Result {
-  if (!validSource(input.expectedSource) || !validSource(input.currentSource)
+  if (!isWorkflowExecutionSource(input.expectedSource) || !isWorkflowExecutionSource(input.currentSource)
     || keys.some(key => input.expectedSource[key] !== input.currentSource[key])) return refuse();
   if (!input.inputs || typeof input.inputs !== "object" || Array.isArray(input.inputs)) return refuse();
   try {
+    if (typeof input.content !== "string" || Buffer.byteLength(input.content, "utf8") > 100_000) return refuse();
+    const blobSha = createHash("sha1").update(`blob ${Buffer.byteLength(input.content, "utf8")}\0`).update(input.content).digest("hex");
+    if (blobSha !== input.currentSource.blobSha) return refuse();
     const fields = parseWorkflowDispatchInputs(input.content);
     const submitted = Object.entries(input.inputs);
     if (submitted.length > 25 || submitted.some(([, value]) => typeof value !== "string")) return refuse();
