@@ -239,6 +239,8 @@ export interface GetFileInput {
   branch: string;
   path: string;
   installationToken: string;
+  /** Optional bounded read for metadata endpoints; legacy callers retain their existing transport. */
+  read?: { signal: AbortSignal; maxBytes: number };
 }
 
 /** Reads one UTF-8 text file through the same tenant-scoped installation token. */
@@ -248,6 +250,7 @@ export async function getFile(input: GetFileInput): Promise<GithubWriteResult<{ 
   const result = await gh<{ type: string; path: string; sha: string; content: string; encoding: string; html_url: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}?ref=${encodeURIComponent(input.branch)}`,
     input.installationToken,
+    input.read ? { bounded: input.read } : {},
   );
   if (!result.ok) return result;
   if (result.data.type !== "file" || result.data.encoding !== "base64") return { ok: false, error: "github_path_is_not_a_text_file" };

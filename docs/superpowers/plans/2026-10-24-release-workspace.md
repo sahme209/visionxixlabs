@@ -14,7 +14,7 @@
 No deployment/merge authority implied by this feature request. Preserve cockpit and recovery backups. No new credentials/spending/grants. Reject malformed/duplicate input names without dropping data; retain unknown values. Handle source changes, disconnected providers and stale Airflow runs honestly.
 
 ## Tasks
-- [ ] Workflow input editor: tests for string roundtrip, duplicate/blank names, invalid JSON recovery, add/remove fields; implement desktop/src/components/WorkflowInputsEditor.tsx and use in DeploymentRequestsView. Keep legacy JSON storage/server validation. Verify focused tests, desktop TS/build, review and native UI.
+- [x] Workflow input editor: tests for string roundtrip, duplicate/blank names, invalid JSON recovery, add/remove fields; implement desktop/src/components/WorkflowInputsEditor.tsx and use in DeploymentRequestsView. Keep legacy JSON storage/server validation. Verify focused tests, desktop TS/build, review and native UI.
 - [ ] Authenticated workflow discovery: read selected tenant repository workflow at exact ref; bounded metadata schema and declared input controls; validate choice/boolean/number/environment fields, required/defaults and unsupported constructs. No guessed schemas or arbitrary URLs.
 - [ ] Intake resolution: application/ticket first, record missing repository/pipeline as owner resolution; retain existing complete execution controls before approval.
 - [ ] Release dependency binding: connect exact Airflow run/logical-date dependencies to request version, durable observation, readiness notification and timeline. Reuse scheduler/executor and test stale/reconnect/duplicate/restart cases.

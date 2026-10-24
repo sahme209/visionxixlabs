@@ -529,3 +529,18 @@ describe("uncertain GitHub writes", () => {
   });
 
 });
+
+describe("bounded workflow metadata file reads", () => {
+  beforeEach(() => vi.clearAllMocks());
+  it("uses GET-only redirect-refusing bounded transport", async () => {
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({type:'file',path:'.github/workflows/deploy.yml',sha:'a'.repeat(40),encoding:'base64',content:Buffer.from('on: workflow_dispatch').toString('base64'),html_url:'https://github.com/acme/widgets'}),{status:200}));
+    const result = await getFile({owner:'acme',repo:'widgets',branch:'main',path:'.github/workflows/deploy.yml',installationToken:'synthetic-token',read:{signal:new AbortController().signal,maxBytes:200000}});
+    expect(result.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/contents/.github/workflows/deploy.yml?ref=main'),expect.objectContaining({method:'GET',redirect:'error',cache:'no-store',credentials:'omit'}));
+  });
+  it("rejects oversized transport bodies before parsing metadata", async () => {
+    fetchMock.mockResolvedValueOnce(new Response('x'.repeat(101),{status:200,headers:{'content-length':'101'}}));
+    const result=await getFile({owner:'acme',repo:'widgets',branch:'main',path:'.github/workflows/deploy.yml',installationToken:'synthetic-token',read:{signal:new AbortController().signal,maxBytes:100}});
+    expect(result).toEqual({ok:false,error:'github_provenance_read_unavailable'});
+  });
+});
