@@ -89,12 +89,12 @@ describe.skipIf(!socket)("ticket resolution drafts on owned PostgreSQL",()=>{
   try{await expect(createReleaseResolutionDraft(db as unknown as DeploymentRequestRepo,input())).rejects.toThrow();expect(await db.tauriDeploymentRequest.count({where:{organizationId:org}})).toBe(0);expect(await db.tauriDeploymentRequestVersion.count({where:{organizationId:org}})).toBe(0);}finally{await db.$executeRawUnsafe(`DROP TRIGGER axiom_owned_resolution_refuse ON "TauriAuditEvent"`);await db.$executeRawUnsafe(`DROP FUNCTION public.axiom_owned_resolution_refuse()`)}
  });
  it("allows one complete version claim and preserves the original ticket",async()=>{
-  const request=input();await createReleaseResolutionDraft(db as unknown as DeploymentRequestRepo,request);const complete={...intake(),id:request.draft.id,tenantId:org};
+  const request=input();await createReleaseResolutionDraft(db as unknown as DeploymentRequestRepo,request);const complete={...intake(),id:request.draft.id,tenantId:org,workflowSource:{repositoryFullName:"owned/checkout",ref:"release/42",path:".github/workflows/release.yml",blobSha:"a".repeat(40)}};
   const revision={organizationId:org,requesterUserId:"owned_user",actorRole:"requester",correlationId:"complete",requestId:request.draft.id,expectedVersion:1,intake:complete};
   const results=await Promise.all([reviseDeploymentRequest(db as unknown as DeploymentRequestRepo,revision),reviseDeploymentRequest(db as unknown as DeploymentRequestRepo,{...revision,correlationId:"competing",intake:{...complete,title:"Competing complete intake"}})]);
   expect(results.filter(r=>r.ok)).toHaveLength(1);expect(results.filter(r=>!r.ok)).toHaveLength(1);
   const stored=await db.tauriDeploymentRequest.findUniqueOrThrow({where:{id:request.draft.id}});expect(stored).toMatchObject({status:"submitted",version:2,submittedAt:expect.any(Date)});
-  const versions=await db.tauriDeploymentRequestVersion.findMany({where:{deploymentRequestId:stored.id},orderBy:{version:"asc"}});expect(versions).toHaveLength(2);expect(versions[0].intakeJson).toMatchObject({kind:"resolution_draft",requestDetails:"Resolve the owning repository."});
+  const versions=await db.tauriDeploymentRequestVersion.findMany({where:{deploymentRequestId:stored.id},orderBy:{version:"asc"}});expect(versions).toHaveLength(2);expect(versions[1].intakeJson).toMatchObject({workflowSource:complete.workflowSource});expect(stored.intakeJson).toMatchObject({workflowSource:complete.workflowSource});expect(versions[0].intakeJson).toMatchObject({kind:"resolution_draft",requestDetails:"Resolve the owning repository."});
  });
  it("refuses another workspace before any storage mutation",async()=>{
   expect(await createReleaseResolutionDraft(db as unknown as DeploymentRequestRepo,{...input(),organizationId:"another_org"})).toMatchObject({ok:false,reason:"tenant_mismatch"});expect(await db.tauriDeploymentRequest.count({where:{organizationId:org}})).toBe(0);

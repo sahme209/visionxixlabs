@@ -8,9 +8,9 @@ import { WorkflowDefinitionInputs } from '../../../desktop/src/components/Workfl
 const source={repositoryFullName:'acme/app',ref:'main',path:'.github/workflows/deploy.yml',blobSha:'a'.repeat(40)};
 const inputs=[{name:'client',type:'choice',required:true,description:'Target client',options:['Acme','Beta']},{name:'dry_run',type:'boolean',required:false,description:'',defaultValue:'false'},{name:'count',type:'number',required:false,description:'',defaultValue:'0'}];
 beforeEach(()=>{m.read.mockReset();m.config={};m.revision=0;m.read.mockResolvedValue({ok:true,data:{source,inputs}})});afterEach(cleanup);
-function Harness({refName='main', initial='{}'}:{refName?:string;initial?:string}){
+function Harness({refName='main', initial='{}',onSourceChange}:{refName?:string;initial?:string;onSourceChange?:(value:typeof source)=>void}){
  const [value,setValue]=useState(initial);const [issue,setIssue]=useState<string>();
- return createElement('div',null,createElement(WorkflowDefinitionInputs,{repositoryFullName:'acme/app',refName,workflowPath:'.github/workflows/deploy.yml',value,onChange:setValue,onIssueChange:setIssue}),createElement('output',{'aria-label':'payload'},value),createElement('button',{disabled:Boolean(issue)},'Submit'));
+ return createElement('div',null,createElement(WorkflowDefinitionInputs,{repositoryFullName:'acme/app',refName,workflowPath:'.github/workflows/deploy.yml',value,onChange:setValue,onIssueChange:setIssue,onSourceChange}),createElement('output',{'aria-label':'payload'},value),createElement('button',{disabled:Boolean(issue)},'Submit'));
 }
 it('reads selected source and renders declared controls without changing recorded values',async()=>{
  render(createElement(Harness));fireEvent.click(screen.getByText('Read workflow fields'));
@@ -58,4 +58,11 @@ it('does not discard invalid manual rows by switching to discovered fields',asyn
 });
 it.each(['0x10',' 2 '])('blocks a manual numeric value that the number control cannot faithfully display: %s',async value=>{
  render(createElement(Harness,{initial:JSON.stringify({client:'Acme',count:value})}));fireEvent.click(screen.getByText('Read workflow fields'));await screen.findByLabelText('count');expect((screen.getByText('Submit') as HTMLButtonElement).disabled).toBe(true);expect(JSON.parse(screen.getByLabelText('payload').textContent!).count).toBe(value);expect((screen.getByLabelText('count') as HTMLInputElement).value).toBe(value);
+});
+
+it('reports an observation only after an exact owned read, never after unmount',async()=>{
+ const changed=vi.fn();const view=render(createElement(Harness,{onSourceChange:changed}));
+ fireEvent.click(screen.getByText('Read workflow fields'));await screen.findByLabelText('client');expect(changed).toHaveBeenCalledWith(source);
+ changed.mockClear();let resolve!:(value:unknown)=>void;m.read.mockReturnValue(new Promise(r=>{resolve=r}));fireEvent.click(screen.getByText('Read workflow fields'));view.unmount();
+ await act(async()=>resolve({ok:true,data:{source,inputs}}));expect(changed).not.toHaveBeenCalled();
 });

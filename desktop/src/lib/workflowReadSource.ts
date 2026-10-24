@@ -14,3 +14,11 @@ export function workflowFilePath(value: string): string {
   if (/^[A-Za-z0-9_][A-Za-z0-9_. -]{0,150}\.ya?ml$/.test(name)) return `.github/workflows/${name}`;
   return /^\.github\/workflows\/[A-Za-z0-9_][A-Za-z0-9_. -]{0,150}\.ya?ml$/.test(name) ? name : "";
 }
+export interface WorkflowSourceObservation { repositoryFullName: string; ref: string; path: string; blobSha: string }
+export function matchingWorkflowObservation(value: unknown, repositoryFullName: string, ref: string, path: string): WorkflowSourceObservation | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return;
+  const source = value as Record<string, unknown>;
+  if (!repositoryFullName || !ref || !path || source.repositoryFullName !== repositoryFullName || source.ref !== ref || source.path !== path
+    || typeof source.blobSha !== "string" || !/^[a-f0-9]{40}$/.test(source.blobSha)) return;
+  return { repositoryFullName, ref, path, blobSha: source.blobSha };
+}

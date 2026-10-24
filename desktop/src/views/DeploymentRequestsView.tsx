@@ -1,10 +1,10 @@
 import { ResolutionDraftForm } from "../components/ResolutionDraftForm";
 import { WorkflowCatalogue } from "../components/WorkflowCatalogue";
 import { WorkflowDefinitionInputs } from "../components/WorkflowDefinitionInputs";
-import { singleGithubRepository, workflowFilePath } from "../lib/workflowReadSource";
+import { matchingWorkflowObservation, singleGithubRepository, workflowFilePath, type WorkflowSourceObservation } from "../lib/workflowReadSource";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
-import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
 
@@ -892,6 +892,11 @@ function ContextSignal({ label, value, detail, tone = "neutral" }: {
 
 function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; revision?: RevisionSeed }) {
   const [draft, setDraft] = useState(() => revision ? draftFromIntake(revision.intake) : initialDraft);
+  const contextRevision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
+  const [sourceObservation, setSourceObservation] = useState(() => ({ value: revision?.intake.workflowSource as unknown, config: desktopClient.config, revision: contextRevision }));
+  const workflowSource = sourceObservation.config === desktopClient.config && sourceObservation.revision === contextRevision
+    ? matchingWorkflowObservation(sourceObservation.value, singleGithubRepository(draft.repositoryUrls), draft.sourceBranch.trim(), workflowFilePath(draft.workflowName)) : undefined;
+  const recordWorkflowSource = useCallback((value: WorkflowSourceObservation) => setSourceObservation({ value, config: desktopClient.config, revision: contextRevision }), [contextRevision]);
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string>();
@@ -977,6 +982,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
       workflowName: draft.workflowName,
       targetEnvironment: draft.targetEnvironment,
       workflowInputs,
+      ...(workflowSource ? { workflowSource } : {}),
       manualSteps,
       lowerEnvironmentTested: splitLines(draft.lowerEnvironments),
       lowerEnvironmentValidation: "yes",
@@ -1108,7 +1114,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
         <Field label="Workflow name / trigger" value={draft.workflowName} onChange={(value) => update("workflowName", value)} required />
         <Field label="Target environment" value={draft.targetEnvironment} onChange={(value) => update("targetEnvironment", value)} required />
         <WorkflowCatalogue repositoryFullName={singleGithubRepository(draft.repositoryUrls)} refName={draft.sourceBranch.trim()} workflowPath={workflowFilePath(draft.workflowName)} onSelect={(path) => update("workflowName", path)} />
-        <WorkflowDefinitionInputs repositoryFullName={singleGithubRepository(draft.repositoryUrls)} refName={draft.sourceBranch.trim()} workflowPath={workflowFilePath(draft.workflowName)} value={draft.workflowInputs} onChange={(value) => update("workflowInputs", value)} onIssueChange={setWorkflowInputIssue} />
+        <WorkflowDefinitionInputs repositoryFullName={singleGithubRepository(draft.repositoryUrls)} refName={draft.sourceBranch.trim()} workflowPath={workflowFilePath(draft.workflowName)} value={draft.workflowInputs} onChange={(value) => update("workflowInputs", value)} onIssueChange={setWorkflowInputIssue} onSourceChange={recordWorkflowSource} />
         <TextArea label="Optional manual instruction" value={draft.manualInstruction} onChange={(value) => update("manualInstruction", value)} />
         {draft.manualInstruction && (
           <>

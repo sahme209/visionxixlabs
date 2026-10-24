@@ -24,13 +24,15 @@ function inputIssue(values: Record<string, string> | null, fields: WorkflowDispa
 }
 
 /** Provider metadata assists intake only; never authorizes a merge or workflow dispatch. */
-export function WorkflowDefinitionInputs({ repositoryFullName, refName, workflowPath, value, onChange, onIssueChange }: {
+export function WorkflowDefinitionInputs({ repositoryFullName, refName, workflowPath, value, onChange, onIssueChange, onSourceChange }: {
   repositoryFullName: string; refName: string; workflowPath: string; value: string;
   onChange: (value: string) => void; onIssueChange: (issue: string | undefined) => void;
+  onSourceChange?: (source: Definition["source"]) => void;
 }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
   const key = JSON.stringify([repositoryFullName, refName, workflowPath, revision]);
-  const current = useRef(key); current.current = key;
+  const current = useRef<string | null>(key); current.current = key;
+  useEffect(() => { current.current = key; return () => { current.current = null; }; }, [key]);
   const [load, setLoad] = useState<{ key: string; status: "loading" | "ready" | "error"; data?: Definition; config: typeof desktopClient.config }>();
   const [manualIssue, setManualIssue] = useState<string>();
   const data = load?.key === key && load.config === desktopClient.config && load.status === "ready" ? load.data : undefined;
@@ -51,6 +53,7 @@ export function WorkflowDefinitionInputs({ repositoryFullName, refName, workflow
         setLoad({ key: owner, config, status: "error" }); return;
       }
       setLoad({ key: owner, config, status: "ready", data: result.data });
+      onSourceChange?.(source);
     } catch { if (current.current === owner && config === desktopClient.config) setLoad({ key: owner, config, status: "error" }); }
   }
   function change(name: string, next: string) {
