@@ -1061,7 +1061,9 @@ it("reconciles a second external decision after cancelling and replacing a propo
   interval.mockRestore();
 });
 
-it("immediately reconciles an external decision when returning from Settings without focus or a polling tick", async () => {
+it.each(["visible", "hidden"] as const)("immediately reconciles an external decision when returning from Settings with visibility %s without focus or a polling tick", async visibility => {
+  const visibilitySpy = vi.spyOn(document, "visibilityState", "get").mockReturnValue(visibility);
+  try {
   const proposal = { id: "reviewed-away", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
   const view = render(createElement(AgentChatView, { active: true }));
@@ -1074,6 +1076,28 @@ it("immediately reconciles an external decision when returning from Settings wit
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
   expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
+  } finally { visibilitySpy.mockRestore(); }
+});
+
+it("keeps background decision polling suppressed while the native document is hidden", async () => {
+  const visibilitySpy = vi.spyOn(document, "visibilityState", "get").mockReturnValue("hidden");
+  let poll: (() => void) | undefined;
+  const originalInterval = window.setInterval.bind(window);
+  const interval = vi.spyOn(window, "setInterval").mockImplementation((handler, delay) => {
+    if (delay === 15_000) poll = handler as () => void;
+    return originalInterval(handler, delay) as unknown as ReturnType<typeof setInterval>;
+  });
+  try {
+    const proposal = { id: "hidden-poll", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
+    m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
+    render(createElement(AgentChatView));
+    await screen.findByRole("button", { name: "Approve & run" });
+    await waitFor(() => expect(poll).toBeTypeOf("function"));
+    const reads = m.client.getAgentConversation.mock.calls.length;
+    await act(async () => { poll?.(); fireEvent(window, new Event("focus")); });
+    expect(m.client.getAgentConversation).toHaveBeenCalledTimes(reads);
+    expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+  } finally { interval.mockRestore(); visibilitySpy.mockRestore(); }
 });
 
 it("manually refreshes an independently reviewed decision without another send or approval", async () => {

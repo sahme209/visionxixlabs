@@ -272,7 +272,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     return () => { messageAbort.current?.abort(); decisionEpoch.current += 1; conversationEpoch.current += 1; activeConversation.current = null; };
   }, [transportContext]);
   const [pendingProposal, setPendingProposal] = useState<Proposal | null>(null);
-  const refreshDecision = useRef<((manual?: boolean) => void) | null>(null);
+  const refreshDecision = useRef<((manual?: boolean, returningToView?: boolean) => void) | null>(null);
   const decisionViewWasActive = useRef(active);
   const [decisionRefreshing, setDecisionRefreshing] = useState(false);
   const [decisionRefreshNote, setDecisionRefreshNote] = useState<string | null>(null);
@@ -770,8 +770,8 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     const owned = () => !disposed && context === desktopClient.config && epoch === conversationEpoch.current
       && decision === decisionEpoch.current && activeConversation.current === owner;
     setDecisionRefreshNote(null);
-    const refresh = async (manual = false) => {
-      if (!owned() || inFlight || (!manual && document.visibilityState === "hidden")) return;
+    const refresh = async (manual = false, returningToView = false) => {
+      if (!owned() || inFlight || (!manual && !returningToView && document.visibilityState === "hidden")) return;
       inFlight = true;
       setDecisionRefreshing(true);
       try {
@@ -797,7 +797,7 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
         if (manual && owned()) setDecisionRefreshNote("The decision could not be verified. Try refreshing again.");
       } finally { inFlight = false; if (owned()) setDecisionRefreshing(false); }
     };
-    const manualRefresh = (manual = true) => { void refresh(manual); };
+    const manualRefresh = (manual = true, returningToView = false) => { void refresh(manual, returningToView); };
     refreshDecision.current = manualRefresh;
     const onFocus = () => { void refresh(); };
     window.addEventListener("focus", onFocus);
@@ -810,8 +810,10 @@ function AgentChatSession({ onOpenSettings, identity, active, requestedSkill, re
     const returning = active && !decisionViewWasActive.current;
     decisionViewWasActive.current = active;
     // Internal Settings navigation need not generate a window-focus event.
+    // Native webviews may remain visibility-hidden during internal navigation.
+    // Allow this explicit return read, while background polling stays suppressed.
     // Use the same owned, coalesced read; never resume or execute a proposal.
-    if (returning) refreshDecision.current?.(false);
+    if (returning) refreshDecision.current?.(false, true);
   }, [active]);
 
   async function newConversation() {
