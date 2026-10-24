@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, readdirSync, rmSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync, mkdtempSync, readdirSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
@@ -153,6 +153,15 @@ describe("actual candidate artifact verification boundary", () => {
     const block = nodeBlock("build", "Record platform candidate provenance");
     expect(nodeRun(block, cwd, { PLATFORM: "linux-x64", TARGET: platforms["linux-x64"] }).status).not.toBe(0);
     expect(nodeRun(block, cwd, { SOURCE_SHA: sha, PLATFORM: "linux-x64", TARGET: platforms["linux-x64"] }).status).toBe(0);
+    // AppImage staging trees contain legitimate library links; they are not installers.
+    const staging = `desktop/src-tauri/target/${platforms["linux-x64"]}/release/bundle/appimage/Axiom.AppDir`;
+    put(cwd, `${staging}/usr/lib/library`, "staging only");
+    symlinkSync("library", join(cwd, staging, "usr/lib/library.so"));
+    expect(nodeRun(block, cwd, { SOURCE_SHA: sha, PLATFORM: "linux-x64", TARGET: platforms["linux-x64"] }).status).toBe(0);
+    const installerLink = `desktop/src-tauri/target/${platforms["linux-x64"]}/release/bundle/appimage/linked.AppImage`;
+    symlinkSync(`Axiom_${expected.VERSION}.AppImage`, join(cwd, installerLink));
+    expect(nodeRun(block, cwd, { SOURCE_SHA: sha, PLATFORM: "linux-x64", TARGET: platforms["linux-x64"] }).status).not.toBe(0);
+    rmSync(join(cwd, installerLink));
     put(cwd, "desktop/src-tauri/Cargo.lock", "unreviewed dependency change");
     expect(nodeRun(block, cwd, { SOURCE_SHA: sha, PLATFORM: "linux-x64", TARGET: platforms["linux-x64"] }).status).not.toBe(0);
   });
@@ -193,7 +202,7 @@ beforeAll(() => {
   // or configured release credentials. No provider/network request occurs.
   keyDirectory = mkdtempSync(join(tmpdir(), "axiom-synthetic-release-key-"));
   const generated = spawnSync("gpg", ["--homedir", keyDirectory, "--batch", "--pinentry-mode", "loopback", "--passphrase", "", "--quick-generate-key", "Axiom isolated release test <fixture@example.invalid>", "ed25519", "sign", "0"], { encoding: "utf8", timeout: 20_000 });
-  expect(generated.status).toBe(0);
+  expect(generated.status, generated.stderr).toBe(0);
   const listed = spawnSync("gpg", ["--homedir", keyDirectory, "--batch", "--with-colons", "--fingerprint"], { encoding: "utf8" });
   fingerprint = listed.stdout.split("\n").find(line => line.startsWith("fpr:"))!.split(":")[9];
   publicKey = spawnSync("gpg", ["--homedir", keyDirectory, "--armor", "--export", fingerprint]).stdout;

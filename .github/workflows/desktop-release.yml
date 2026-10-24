@@ -288,7 +288,9 @@ jobs:
             return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
               const file = path.join(directory, entry.name);
               if (entry.isSymbolicLink()) throw Error('Symlink in candidate output');
-              return entry.isDirectory() ? (entry.name.endsWith('.app') ? [] : walk(file)) : [file];
+              // Ignore unpacked application staging trees; hash only distributable installers.
+              const staging = entry.name.endsWith('.app') || (PLATFORM === 'linux-x64' && entry.name.endsWith('.AppDir'));
+              return entry.isDirectory() ? (staging ? [] : walk(file)) : [file];
             });
           }
           const files = walk(`desktop/src-tauri/target/${TARGET}/release/bundle`).filter(file => /\.(dmg|msi|exe|AppImage|deb|rpm)$/.test(file));
