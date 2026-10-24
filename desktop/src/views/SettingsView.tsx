@@ -429,32 +429,60 @@ const ROLE_SUMMARIES: Record<WorkspaceMember["role"], string> = {
 };
 
 function PermissionsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
-  const [members, setMembers] = useState<WorkspaceMember[] | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [savingUserId, setSavingUserId] = useState<string | null>(null);
-  const canManage = identity.capabilities?.includes("members:manage") ?? false;
+  const context = desktopClient.config;
+  const organizationId = identity.organizationId;
+  const scope = useMemo(() => ({ context, organizationId }), [context, organizationId]);
+  const activeScope = useRef<typeof scope | null>(scope);
+  activeScope.current = scope;
+  const [attempt, setAttempt] = useState(0);
+  type MembershipRead = { currentUserId: string; currentRole: string | null; capabilities: string[]; members: WorkspaceMember[] };
+  const [read, setRead] = useState<{ scope: typeof scope; data: MembershipRead | null; error: string | null } | null>(null);
+  const [saving, setSaving] = useState<{ scope: typeof scope; userId: string } | null>(null);
+  const current = read?.scope === scope ? read : null;
+  const members = current?.data?.members ?? null;
+  const currentUserId = current?.data?.currentUserId ?? null;
+  const error = current?.error ?? null;
+  const savingUserId = saving?.scope === scope ? saving.userId : null;
+  const canManage = current?.data?.capabilities.includes("members:manage") ?? false;
+  const load = useCallback(() => setAttempt(value => value + 1), []);
 
-  const load = useCallback(() => {
-    void desktopClient.listWorkspaceMembers().then((result) => {
-      if (result.ok) { setMembers(result.data.members); setCurrentUserId(result.data.currentUserId); setError(null); }
-      else setError(result.error);
+  useEffect(() => {
+    let alive = true;
+    setRead({ scope, data: null, error: null });
+    void desktopClient.listWorkspaceMembers().then(result => {
+      if (!alive || activeScope.current !== scope || desktopClient.config !== context) return;
+      setRead({ scope, data: result.ok ? result.data : null, error: result.ok ? null : result.error });
+    }).catch(() => {
+      if (alive && activeScope.current === scope && desktopClient.config === context)
+        setRead({ scope, data: null, error: "Workspace permissions could not be verified. Refresh to try again." });
     });
-  }, []);
-  useEffect(() => { load(); }, [load]);
+    window.addEventListener("focus", load);
+    const unsubscribe = desktopClient.subscribeContext?.(load);
+    return () => { alive = false; window.removeEventListener("focus", load); unsubscribe?.(); };
+  }, [scope, context, attempt, load]);
+  useEffect(() => { activeScope.current = scope; return () => { if (activeScope.current === scope) activeScope.current = null; }; }, [scope]);
 
   async function changeRole(userId: string, role: Exclude<WorkspaceMember["role"], "owner">) {
-    setSavingUserId(userId); setError(null);
-    const result = await desktopClient.updateWorkspaceMemberRole(userId, role);
-    setSavingUserId(null);
-    if (!result.ok) { setError(result.error); return; }
-    load();
+    if (!canManage || savingUserId || desktopClient.config !== context) return;
+    setSaving({ scope, userId });
+    try {
+      const result = await desktopClient.updateWorkspaceMemberRole(userId, role);
+      if (activeScope.current !== scope || desktopClient.config !== context) return;
+      setSaving(null);
+      if (!result.ok) { setRead({ scope, data: null, error: result.error }); return; }
+      load();
+    } catch {
+      if (activeScope.current === scope && desktopClient.config === context) {
+        setSaving(null); setRead({ scope, data: null, error: "Workspace role could not be updated. Refresh before trying again." });
+      }
+    }
   }
 
   return <div>
     <SectionHeading title="Permissions" detail="Give people only the authority they need. Every write, approval, deployment, and emergency bypass is checked by the service." />
-    <Notice title={`Your role: ${(identity.role ?? "unassigned").replaceAll("_", " ")}`} detail="Permissions are evaluated from current workspace membership on every request. Removing or changing a role takes effect immediately." />
+    <Notice title={`Your role: ${(current?.data?.currentRole ?? "unverified").replaceAll("_", " ")}`} detail="Permissions are evaluated from current workspace membership on every request. Removing or changing a role takes effect immediately." />
     {error && <p role="alert" className="mb-4 text-[12px] text-rose-300">{error}</p>}
+    <button type="button" onClick={load} disabled={Boolean(savingUserId)} className="mb-4 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 disabled:opacity-50">Refresh members</button>
     <Group label="Workspace members">
       {members === null && !error && <ActionRow title="Loading members…" detail="Reading current workspace authority." action={null} />}
       {(members ?? []).map((member) => {
