@@ -1,3 +1,4 @@
+import { WorkflowInputsEditor } from "../components/WorkflowInputsEditor";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
@@ -875,6 +876,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string>();
   const [submissionId] = useState(() => crypto.randomUUID());
+  const [workflowInputIssue, setWorkflowInputIssue] = useState<string>();
   const isAdHoc = draft.requestClass === "ad_hoc" || draft.requestClass === "emergency";
 
   function update<K extends keyof typeof draft>(key: K, value: (typeof draft)[K]) {
@@ -884,6 +886,8 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError(undefined);
+
+    if (workflowInputIssue) { setStep(2); setError(workflowInputIssue); return; }
 
     for (let candidate = 0; candidate < INTAKE_STEPS.length; candidate += 1) {
       const issue = validateStep(candidate, draft);
@@ -1077,11 +1081,11 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
         <Field label="Target branch" value={draft.targetBranch} onChange={(value) => update("targetBranch", value)} required />
       </Section>}
 
-      {step === 2 && <Section title="Production trigger and exact execution">
+      <div hidden={step !== 2}><Section title="Production trigger and exact execution">
         <Field label="Deployment method" value={draft.deploymentMethod} onChange={(value) => update("deploymentMethod", value)} required />
         <Field label="Workflow name / trigger" value={draft.workflowName} onChange={(value) => update("workflowName", value)} required />
         <Field label="Target environment" value={draft.targetEnvironment} onChange={(value) => update("targetEnvironment", value)} required />
-        <TextArea label="Immutable workflow inputs (JSON string values)" value={draft.workflowInputs} onChange={(value) => update("workflowInputs", value)} required />
+        <WorkflowInputsEditor value={draft.workflowInputs} onChange={(value) => update("workflowInputs", value)} onIssueChange={setWorkflowInputIssue} />
         <TextArea label="Optional manual instruction" value={draft.manualInstruction} onChange={(value) => update("manualInstruction", value)} />
         {draft.manualInstruction && (
           <>
@@ -1089,7 +1093,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
             <TextArea label="How to validate the manual step" value={draft.manualValidationInstruction} onChange={(value) => update("manualValidationInstruction", value)} required />
           </>
         )}
-      </Section>}
+      </Section></div>
 
       {step === 3 && <Section title="Readiness and production validation">
         <Field label="Tested lower environments" value={draft.lowerEnvironments} onChange={(value) => update("lowerEnvironments", value)} required />
@@ -1143,7 +1147,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
         <p className="text-xs text-zinc-500">{revision ? "This appends an immutable revision and audit event. It does not deploy." : "This creates a tenant-scoped record and audit event. It does not deploy."}</p>
         {step < INTAKE_STEPS.length - 1 ? (
           <button type="button" className="btn-primary" onClick={() => {
-            const issue = validateStep(step, draft);
+            const issue = (step === 2 ? workflowInputIssue : undefined) ?? validateStep(step, draft);
             if (issue) { setError(issue); return; }
             setError(undefined);
             setStep((current) => Math.min(INTAKE_STEPS.length - 1, current + 1));
