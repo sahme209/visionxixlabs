@@ -28,7 +28,7 @@ interface DeploymentRequestDelegate {
             correlationId: string;
             intakeJson: unknown;
             version: number;
-            submittedAt: Date;
+            submittedAt: Date | null;
         };
     }): Promise<DeploymentRequestRow>;
     findFirst(args: {

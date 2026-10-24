@@ -1274,6 +1274,12 @@ export class DesktopClient {
     return this.get("/api/desktop/deployments");
   }
 
+  createReleaseResolutionDraft(draft: Record<string, unknown>, idempotencyId: string): Promise<ApiResult<{
+    id: string; title: string; status: string; version: number; correlationId: string; submittedAt: null; replayed: boolean;
+  }>> {
+    return this.post("/api/desktop/deployments/drafts", draft, { "x-correlation-id": idempotencyId });
+  }
+
   createDeploymentRequest(
     intake: Record<string, unknown>,
     idempotencyId: string,
