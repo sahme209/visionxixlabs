@@ -1,3 +1,4 @@
+import { verifyIntakeWorkflowSource } from "@/lib/tauri/intakeWorkflowSource";
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { resolveCorrelationId } from "@/lib/api/correlation";
@@ -80,6 +81,10 @@ export async function PUT(
         });
         if (!parsed.ok) {
             return NextResponse.json({ ok: false, error: "invalid_payload", issues: parsed.issues }, { status: 400 });
+        }
+
+        if (!await verifyIntakeWorkflowSource(String(session.organizationId), parsed.intake, request.signal)) {
+            return NextResponse.json({ ok: false, error: "workflow_source_unverified" }, { status: 409 });
         }
 
         const correlationId = resolveCorrelationId(request.headers);

@@ -56,6 +56,12 @@ export const deploymentIntakeSchema = z.object({
     workflowName: z.string(),
     targetEnvironment: z.string(),
     workflowInputs: z.record(z.string(), z.string()),
+    workflowSource: z.object({
+        repositoryFullName: z.string().regex(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/),
+        ref: z.string().min(1).max(240).refine(value => value === value.trim() && !/[\0\r\n]/.test(value)),
+        path: z.string().regex(/^\.github\/workflows\/[A-Za-z0-9_][A-Za-z0-9_. -]{0,150}\.ya?ml$/),
+        blobSha: z.string().regex(/^[a-f0-9]{40}$/),
+    }).strict().optional(),
     manualSteps: z.array(checklistItemSchema),
     lowerEnvironmentTested: z.array(z.string().trim().min(1)),
     lowerEnvironmentValidation: z.enum(["yes", "no", "not_applicable"]),

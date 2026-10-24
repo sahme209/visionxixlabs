@@ -393,6 +393,13 @@ describe("deployment request persistence", () => {
 });
 
 describe("deployment intake wire schema", () => {
+    it("preserves a strictly shaped workflow observation without trusting authority fields", () => {
+        const workflowSource = { repositoryFullName: "team/service", ref: "main", path: ".github/workflows/release.yml", blobSha: "a".repeat(40) };
+        expect(parseDeploymentIntake({ ...intake(), workflowSource })).toMatchObject({ ok: true, intake: { workflowSource } });
+        expect(parseDeploymentIntake({ ...intake(), workflowSource: { ...workflowSource, approved: true } }).ok).toBe(false);
+        expect(parseDeploymentIntake({ ...intake(), workflowSource: { ...workflowSource, blobSha: "fake" } }).ok).toBe(false);
+    });
+
     it("accepts the complete typed intake contract", () => {
         expect(parseDeploymentIntake(intake())).toMatchObject({ ok: true });
     });

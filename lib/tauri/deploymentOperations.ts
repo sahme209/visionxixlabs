@@ -73,6 +73,8 @@ export interface DeploymentIntake {
   workflowName: string;
   targetEnvironment: string;
   workflowInputs: Record<string, string>;
+  /** Observed source only. Every provider action still needs fresh validation and approval. */
+  workflowSource?: { repositoryFullName: string; ref: string; path: string; blobSha: string };
   manualSteps: ChecklistItem[];
   lowerEnvironmentTested: string[];
   lowerEnvironmentValidation: "yes" | "no" | "not_applicable";
