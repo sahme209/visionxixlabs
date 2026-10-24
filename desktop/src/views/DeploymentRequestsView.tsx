@@ -1,3 +1,4 @@
+import { WorkflowCatalogue } from "../components/WorkflowCatalogue";
 import { WorkflowDefinitionInputs } from "../components/WorkflowDefinitionInputs";
 import { singleGithubRepository, workflowFilePath } from "../lib/workflowReadSource";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
@@ -1086,6 +1087,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
         <Field label="Deployment method" value={draft.deploymentMethod} onChange={(value) => update("deploymentMethod", value)} required />
         <Field label="Workflow name / trigger" value={draft.workflowName} onChange={(value) => update("workflowName", value)} required />
         <Field label="Target environment" value={draft.targetEnvironment} onChange={(value) => update("targetEnvironment", value)} required />
+        <WorkflowCatalogue repositoryFullName={singleGithubRepository(draft.repositoryUrls)} refName={draft.sourceBranch.trim()} workflowPath={workflowFilePath(draft.workflowName)} onSelect={(path) => update("workflowName", path)} />
         <WorkflowDefinitionInputs repositoryFullName={singleGithubRepository(draft.repositoryUrls)} refName={draft.sourceBranch.trim()} workflowPath={workflowFilePath(draft.workflowName)} value={draft.workflowInputs} onChange={(value) => update("workflowInputs", value)} onIssueChange={setWorkflowInputIssue} />
         <TextArea label="Optional manual instruction" value={draft.manualInstruction} onChange={(value) => update("manualInstruction", value)} />
         {draft.manualInstruction && (

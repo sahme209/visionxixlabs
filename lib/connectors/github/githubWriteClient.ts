@@ -46,6 +46,31 @@ export async function getRepositoryDefaultBranch(input: {
     : { ok: false, error: "github_default_branch_unavailable" };
 }
 
+/** Bounded filenames at an explicit ref. Entries are not a claim of workflow_dispatch support. */
+export async function listWorkflowFiles(input: {
+  owner: string; repo: string; ref: string; installationToken: string; signal: AbortSignal;
+}): Promise<GithubWriteResult<Array<{ name: string; path: string; blobSha: string }>>> {
+  const unavailable = { ok: false as const, error: "github_workflow_catalogue_unavailable" };
+  const repositoryPart = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
+  if (!repositoryPart.test(input.owner) || !repositoryPart.test(input.repo) || !input.ref || input.ref.length > 240 || /[\0\r\n]/.test(input.ref)) return unavailable;
+  const result = await gh<unknown>(
+    `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/.github/workflows?ref=${encodeURIComponent(input.ref)}`,
+    input.installationToken, { bounded: { signal: input.signal, maxBytes: 256 * 1024 } },
+  );
+  if (!result.ok || !Array.isArray(result.data) || result.data.length > 200) return unavailable;
+  const files: Array<{ name: string; path: string; blobSha: string }> = [];
+  const seen = new Set<string>();
+  for (const raw of result.data) {
+    if (!raw || typeof raw !== "object" || typeof raw.name !== "string") return unavailable;
+    if (!/\.ya?ml$/.test(raw.name)) continue;
+    if (!/^[A-Za-z0-9_][A-Za-z0-9_. -]{0,150}\.ya?ml$/.test(raw.name) || raw.type !== "file" || raw.path !== `.github/workflows/${raw.name}` || typeof raw.sha !== "string" || !/^[a-f0-9]{40}$/.test(raw.sha) || seen.has(raw.name)) return unavailable;
+    seen.add(raw.name);
+    files.push({ name: raw.name, path: raw.path, blobSha: raw.sha });
+  }
+  files.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+  return { ok: true, data: files };
+}
+
 export function isSafeRepositoryPath(path: string): boolean {
   if (!path || path.length > 1024 || path.startsWith("/") || path.includes("\0")) return false;
   const segments = path.split("/");

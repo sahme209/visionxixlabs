@@ -1021,6 +1021,13 @@ export class DesktopClient {
     return this.get(`/api/desktop/github/files?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(branch)}`);
   }
 
+  listGithubWorkflows(repositoryFullName: string, ref: string): Promise<ApiResult<{
+    repositoryFullName: string; ref: string;
+    files: Array<{ name: string; path: string; blobSha: string }>;
+  }>> {
+    return this.get(`/api/desktop/github/workflows?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(ref)}`);
+  }
+
   getGithubWorkflowInputs(repositoryFullName: string, ref: string, path: string): Promise<ApiResult<{
     source: { repositoryFullName: string; ref: string; path: string; blobSha: string };
     inputs: WorkflowDispatchInput[];
