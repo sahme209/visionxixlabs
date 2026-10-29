@@ -1,12 +1,12 @@
 import {afterEach,expect,it,vi} from 'vitest';
-import {mkdtemp,mkdir,writeFile,appendFile,symlink,rm,stat,rename} from 'node:fs/promises';
+import {mkdtemp,realpath,mkdir,writeFile,appendFile,symlink,rm,stat,rename} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {verifyPackagedMacos} from '../../../scripts/verify-packaged-macos.mjs';
 const roots:string[]=[];
 afterEach(async()=>{for(const root of roots.splice(0))await rm(root,{recursive:true,force:true});});
 async function fixture(overrides:Record<string,unknown>={}){
- const root=await mkdtemp(path.join(tmpdir(),'axiom-package-fixture-'));roots.push(root);const dmg=path.join(root,'Axiom_0.1.21.dmg');await writeFile(dmg,'synthetic package bytes, not a real signed image');
+ const root=await realpath(await mkdtemp(path.join(tmpdir(),'axiom-package-fixture-')));roots.push(root);const dmg=path.join(root,'Axiom_0.1.21.dmg');await writeFile(dmg,'synthetic package bytes, not a real signed image');
  const values:Record<string,unknown>={identifier:'com.visionxixlabs.axiom',version:'0.1.21',executable:'axiom-desktop',arch:'arm64',signature:'Authority=Developer ID Application: Fixture (ABCDE12345)\nTeamIdentifier=ABCDE12345\n',assessment:'accepted\nsource=Notarized Developer ID\n',...overrides};let mounted='';
  const run=vi.fn(async(file:string,args:string[])=>{
   if(file.endsWith('hdiutil')&&args[0]==='attach'){

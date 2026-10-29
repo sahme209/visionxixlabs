@@ -11,7 +11,7 @@ const sha = 'a'.repeat(40);
 const root = realpathSync(process.cwd());
 const manifest = { schema: 1, root, sourceHead: sha, productionEquivalent: false, hashes: Object.fromEntries(Array.from({ length: 16 }, (_, i) => [String(i), sha])), framework: { version: 'test' } };
 function fixture() {
-  const temporary = mkdtempSync(join(tmpdir(), 'website-ci-test-')); directories.push(temporary);
+  const temporary = realpathSync(mkdtempSync(join(tmpdir(), 'website-ci-test-'))); directories.push(temporary);
   const directory = join(temporary, 'axiom-website-Ab1234'); mkdirSync(directory, { mode: 0o700 });
   const config = { root, directory, nonce: 'b'.repeat(32), hashes: manifest.hashes, framework: manifest.framework };
   const put = (name: string, data: unknown) => writeFileSync(join(directory, name), JSON.stringify(data), { mode: 0o600 });

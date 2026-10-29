@@ -46,7 +46,8 @@ export function createReleaseWorkflowEvidenceHttp(supplied:ReleaseWorkflowEviden
    for(const row of candidateRows){const item=validate(await store.get(scope,row.id));if(item.state!=='cancelled'&&Date.parse(item.binding.expiresAt)>Date.now()&&sha256ContentHash({...item.binding,expiresAt:binding.expiresAt})===sha256ContentHash(binding)){existing=item;break}}
    phase='persist_binding';const created=existing??validate(await store.create(scope,binding));
    phase='observe';
-   evidence=[created.state==='observed'&&created.observation?.status==='completed'?created:validate(await withGithubAbort(store.reconcile(scope,{id:created.id,expectedVersion:created.version},signal),signal))];
+   // Persist first. Observation is a separate bounded read with a fresh source proof.
+   evidence=[created];
   }
   else if(input){phase='saved_history';validate(await withGithubAbort(store.get(scope,input.id),signal));phase=input.action==='cancel'?'cancel':'observe';const updated=input.action==='cancel'?await withGithubAbort(store.cancel(scope,{id:input.id,expectedVersion:input.expectedVersion}),signal):await withGithubAbort(store.reconcile(scope,{id:input.id,expectedVersion:input.expectedVersion},signal),signal);evidence=[validate(updated)]}
   else{phase='saved_history';const rows=await withGithubAbort(prisma.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,requestedByUserId:scope.actorUserId,workflowKind:RELEASE_WORKFLOW_EVIDENCE_KIND,AND:[{inputJson:{path:['scope','sessionId'],equals:scope.sessionId}},{inputJson:{path:['binding','planId'],equals:planId}}]},orderBy:[{updatedAt:'desc'},{id:'desc'}],take:6}),signal);truncated=rows.length>5;for(const item of rows.slice(0,5))evidence.push(validate(await withGithubAbort(store.get(scope,item.id),signal)))}
@@ -54,7 +55,8 @@ export function createReleaseWorkflowEvidenceHttp(supplied:ReleaseWorkflowEviden
  }catch(error){
   // Static phase and bounded timing only: never emit request IDs, URLs, payloads,
   // exception messages, user identities or credentials to deployment logs.
-  console.warn('[axiom.release.evidence]',{phase,outcome:'refused',durationMs:Math.min(60000,Math.max(0,Math.round(performance.now()-started)))});
+  const diagnosticReason=error instanceof Error&&['release_source_policy_preflight_required','release_source_policy_unavailable','release_dispatch_provenance_unavailable','release_workflow_evidence_unavailable'].includes(error.message)?error.message:typeof error==='object'&&error!==null&&'code'in error&&error.code==='P2028'?'transaction_timeout':error instanceof Error&&['AbortError','TimeoutError'].includes(error.name)?'read_timeout':'read_refused';
+  console.warn('[axiom.release.evidence]',{phase,reason:diagnosticReason,outcome:'refused',durationMs:Math.min(60000,Math.max(0,Math.round(performance.now()-started)))});
   const status=error instanceof Refusal?error.status:error instanceof z.ZodError||error instanceof SyntaxError?400:409;return reply({ok:false,error:error instanceof Refusal?error.code:status===400?'invalid_workflow_evidence':'workflow_evidence_refresh_required'},status)}};
 }
 export const handleReleaseWorkflowEvidence=createReleaseWorkflowEvidenceHttp();

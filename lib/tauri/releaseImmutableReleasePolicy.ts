@@ -71,7 +71,12 @@ export function createImmutableReleasePolicyReader(deps:ImmutableReleaseDependen
    const finalRelease=releaseSchema.parse(await get(`/releases/tags/${encodeURIComponent(plan.ref)}`));
    if(finalRelease.id!==release.id||finalRelease.published_at!==release.published_at)return null;
    await current();guard();
-   return {proof:{kind:'verified_release_deployment_source_policy_v1' as const,planDigest:sha256ContentHash(plan),sourcePolicy:IMMUTABLE_RELEASE_POLICY},evidence:{repositoryFullName:plan.repositoryFullName,ref:tag.ref,sourceCommitSha:plan.sourceCommitSha,releaseId:release.id,immutable:true as const,policyDigest:sha256ContentHash({releaseId:release.id,tag:tag.ref,sha:tag.object.sha,publishedAt:release.published_at}),observedAt:new Date(now()).toISOString(),expiresAt:new Date(Math.min(deadline,credential.expiresAt-20000,deps.readPurpose==='observation'?Infinity:Date.parse(plan.expiresAt))).toISOString()}};
+   // Network admission and the resulting read lease are separate clocks. A
+   // successful bounded read receives its short observation lease now, rather
+   // than consuming it while credentials/source reads are in flight. Dispatch
+   // keeps the original absolute deadline and execution-window clamp.
+   const observedAt=now(),proofDeadline=deps.readPurpose==='observation'?observedAt+12000:deadline;
+   return {proof:{kind:'verified_release_deployment_source_policy_v1' as const,planDigest:sha256ContentHash(plan),sourcePolicy:IMMUTABLE_RELEASE_POLICY},evidence:{repositoryFullName:plan.repositoryFullName,ref:tag.ref,sourceCommitSha:plan.sourceCommitSha,releaseId:release.id,immutable:true as const,policyDigest:sha256ContentHash({releaseId:release.id,tag:tag.ref,sha:tag.object.sha,publishedAt:release.published_at}),observedAt:new Date(observedAt).toISOString(),expiresAt:new Date(Math.min(proofDeadline,credential.expiresAt-20000,deps.readPurpose==='observation'?Infinity:Date.parse(plan.expiresAt))).toISOString()}};
   } catch { return null; } finally {clearTimeout(timer);controller.abort()}
  };
 }

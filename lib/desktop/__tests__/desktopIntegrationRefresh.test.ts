@@ -6,6 +6,9 @@ vi.mock('../../../desktop/src/lib/preferences',()=>({readDesktopPreferences:asyn
 vi.mock('../../../desktop/src/components/AwsReadOnlyEnrollment',()=>({AwsReadOnlyEnrollment:()=>null}));vi.mock('../../../desktop/src/components/AzureReadOnlyEnrollment',()=>({AzureReadOnlyEnrollment:()=>null}));
 vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{get config(){return f.context;},integrationStatus:f.status,integrationHealth:f.health,startIntegrationConnection:f.start,validateGitHubReadOnly:f.validate,subscribeContext:(callback:()=>void)=>{f.listeners.add(callback);return()=>f.listeners.delete(callback);}}}));
 import{open}from'@tauri-apps/plugin-shell';
+vi.mock('../../../desktop/src/components/AwsGuidedConnection',()=>({AwsGuidedConnection:()=>null}));
+vi.mock('../../../desktop/src/components/AzureGuidedConnection',()=>({AzureGuidedConnection:()=>null}));
+vi.mock('../../../desktop/src/components/GcpGuidedConnection',()=>({GcpGuidedConnection:()=>null}));
 import{SettingsView}from'../../../desktop/src/views/SettingsView';
 const status=(github='not_connected')=>({ok:true,data:{configuration:{github:true,slack:false,teams:false,linear:false},cloud:[],github:{status:github,repositorySelection:'all'},collaboration:[]}});
 beforeEach(()=>{vi.clearAllMocks();f.context={};f.listeners.clear();f.status.mockResolvedValue(status());f.health.mockResolvedValue({ok:false,error:'fixture_unavailable'});});afterEach(()=>{cleanup();vi.useRealTimers();});
@@ -19,12 +22,12 @@ it('recovers validation controls after an unexpected transport rejection',async(
 it('refuses credential-bearing provider consent URLs',async()=>{f.start.mockResolvedValue({ok:true,data:{consentUrl:'https://untrusted-user@github.com/apps/fixture'}});await show();fireEvent.click(await screen.findByRole('button',{name:'Connect ↗'}));await screen.findByText('The secure connection could not be started. Confirm this provider is configured for the workspace and try again.');expect(open).not.toHaveBeenCalled();});
 
 it('bounds a refresh whose transport never settles and allows an explicit retry',async()=>{vi.useFakeTimers();f.status.mockReturnValueOnce(new Promise(()=>{}));render(createElement(SettingsView,{identity:{}as never}));fireEvent.click(screen.getByRole('button',{name:'Integrations'}));await act(async()=>{await vi.advanceTimersByTimeAsync(0);});await act(async()=>{await vi.advanceTimersByTimeAsync(15001);});expect(screen.getByText('Connection status could not be verified. Try refreshing.')).toBeTruthy();expect((screen.getByRole('button',{name:'Refresh verified status'})as HTMLButtonElement).disabled).toBe(false);});
-it('exposes cloud and diagnostics disclosures as operable buttons without starting provider authorization',async()=>{
- await show();const cloud=screen.getByRole('button',{name:/Cloud account connections/});const diagnostics=screen.getByRole('button',{name:'Connection diagnostics'});
- expect(cloud.getAttribute('aria-expanded')).toBe('false');expect(diagnostics.getAttribute('aria-expanded')).toBe('false');
- fireEvent.click(cloud);expect(cloud.getAttribute('aria-expanded')).toBe('true');
+it('shows read-only cloud scope and operable diagnostics without starting provider authorization',async()=>{
+ await show();expect(screen.getByText(/Cloud connections are read-only/)).toBeTruthy();const diagnostics=screen.getByRole('button',{name:'Connection diagnostics'});
+ expect(diagnostics.getAttribute('aria-expanded')).toBe('false');
+ 
  fireEvent.click(diagnostics);expect(diagnostics.getAttribute('aria-expanded')).toBe('true');
- fireEvent.click(cloud);expect(cloud.getAttribute('aria-expanded')).toBe('false');
+ fireEvent.click(diagnostics);expect(diagnostics.getAttribute('aria-expanded')).toBe('false');
  expect(f.start).not.toHaveBeenCalled();expect(f.validate).not.toHaveBeenCalled();expect(open).not.toHaveBeenCalled();
 });
 it('keeps unavailable providers out of operator setup guides and does not start authorization',async()=>{

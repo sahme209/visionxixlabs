@@ -1,4 +1,4 @@
-import { mkdtemp, mkdir, readFile, rm, writeFile, symlink, rename } from "node:fs/promises";
+import { mkdtemp, realpath, mkdir, readFile, rm, writeFile, symlink, rename } from "node:fs/promises";
 import { writeFileSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { createHash } from "node:crypto";
@@ -13,7 +13,7 @@ vi.mock("node:child_process",()=>({execFileSync:m.exec}));
 import { produceCustomerPlan } from "../../../scripts/terraform/customer-plan-producer.mjs";
 let owned="",env:Record<string,string>,profile:ReturnType<typeof customerProfile>;
 beforeEach(async()=>{
- m.exec.mockReset();m.mode="ok";m.outputs=[];m.configProof=[];owned=await mkdtemp(path.join(tmpdir(),"axiom-producer-pure-"));
+ m.exec.mockReset();m.mode="ok";m.outputs=[];m.configProof=[];owned=await realpath(await mkdtemp(path.join(tmpdir(),"axiom-producer-pure-")));
  const checkout=path.join(owned,"checkout"),temp=path.join(owned,"runner-temp"),cli=path.join(owned,"terraform");
  await mkdir(path.join(checkout,"infra"),{recursive:true});await mkdir(path.join(checkout,".github/workflows"),{recursive:true});await mkdir(path.join(checkout,"scripts/terraform"),{recursive:true});await mkdir(temp);
  await writeFile(cli,"SYNTHETIC-EXECUTABLE-NEVER-RUN");await writeFile(path.join(checkout,".github/workflows/plan.yml"),"fixture-workflow");await writeFile(path.join(checkout,"scripts/terraform/customer-plan-producer.mjs"),"fixture-script");await writeFile(path.join(checkout,"infra/.terraform.lock.hcl"),"fixture-lock");

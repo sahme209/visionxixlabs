@@ -7,6 +7,10 @@ private var nativeInputFixtureEpoch:UInt64=0
  static func main()throws {
   var count=0
   func check(_ value:Bool){precondition(value,"one-action input policy regression");count+=1}
+  check(inputDisposableDocumentMayPrepare(document:"",before:"ordinary",after:"edit",nativeConsent:false))
+  check(!inputDisposableDocumentMayPrepare(document:"private-file",before:"Axiom acceptance before",after:"Axiom acceptance after",nativeConsent:false))
+  check(inputDisposableDocumentMayPrepare(document:"private-file",before:"Axiom acceptance before",after:"Axiom acceptance after",nativeConsent:true))
+  for (before,after) in [("ordinary","Axiom acceptance after"),("Axiom acceptance before","arbitrary"),("Axiom acceptance before\n","Axiom acceptance after")] {check(!inputDisposableDocumentMayPrepare(document:"private-file",before:before,after:after,nativeConsent:true))}
   let binding=AxiomInputBinding(ownerDigest:inputDigest("owned"),taskDigest:inputDigest("task1"),windowDigest:inputDigest("pid/launch/window"),targetDigest:inputDigest("TextEdit ordinary AXTextArea"),beforeDigest:inputDigest("old private document marker"),afterDigest:inputDigest("new"),inputSessionId:"input_session_11111111-1111-4111-8111-111111111111",actionId:"input_action_11111111-1111-4111-8111-111111111111",taskVersion:1)
   func gates(_ missing:Int = -1)->AxiomInputGates {AxiomInputGates(pairedOwner:missing != 0,foregroundPolicy:missing != 1,accessibility:missing != 2,ordinaryTextArea:missing != 3,windowCurrent:missing != 4,targetCurrent:missing != 5,beforeCurrent:missing != 6,nativeConfirmed:missing != 7)}
   for missing in 0..<8 {var p=AxiomInputPolicy(binding:binding,deadline:160);check(!p.claim(binding,0,100,gates(missing)));check(p.attemptCount==0)}

@@ -21,3 +21,9 @@ it('separates fresh read-only immutable-source observation from expired executio
  for(const [,init] of f.fetcher.mock.calls)expect(init.method).toBe('GET');
  f.credential.permissions.administration='write';expect(await createImmutableReleasePolicyReader({...f.deps,readPurpose:'observation'})(f.plan,new AbortController().signal)).toBeNull();
 });
+it('issues the observation-only read lease after verification while preserving dispatch and network deadlines',async()=>{
+ const f=fixture();let clock=now;const assertCurrent=vi.fn(async()=>{clock+=400});const deps={...f.deps,now:()=>clock,assertCurrent};
+ const observed=await createImmutableReleasePolicyReader({...deps,readPurpose:'observation'})(f.plan,new AbortController().signal);expect(observed).not.toBeNull();const verified=Date.parse(observed!.evidence.observedAt);expect(verified).toBeGreaterThan(now);expect(Date.parse(observed!.evidence.expiresAt)).toBe(verified+12000);
+ clock=now;const dispatched=await createImmutableReleasePolicyReader(deps)(f.plan,new AbortController().signal);expect(dispatched).not.toBeNull();expect(Date.parse(dispatched!.evidence.expiresAt)).toBe(now+12000);
+ clock=now;const late={...deps,assertCurrent:async()=>{clock+=13000}};expect(await createImmutableReleasePolicyReader({...late,readPurpose:'observation'})(f.plan,new AbortController().signal)).toBeNull();
+});

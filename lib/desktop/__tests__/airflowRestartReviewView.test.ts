@@ -266,7 +266,7 @@ it.each(["password", "token"] as const)("clears the submitted %s after a confirm
   fireEvent.click(screen.getByRole("button", { name: "connection" }));
   await screen.findByText("Secure Airflow connection");
   if (mode === "token") fireEvent.change(screen.getByLabelText("Authentication"), { target: { value: "token" } });
-  fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"), {target:{value:"https://airflow.example.com"}});
+  fireEvent.change(screen.getByLabelText("Airflow HTTPS deployment URL"), {target:{value:"https://airflow.example.com"}});
   if (screen.queryByLabelText("Username")) fireEvent.change(screen.getByLabelText("Username"), {target:{value:"fixture"}});
   const field = screen.getByLabelText(mode === "token" ? "Bearer token" : "Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-only-secret" } });
@@ -278,7 +278,7 @@ it("retains a corrected credential typed while an older connection save is pendi
   const pending = deferred(); mock.saveConnection.mockReturnValue(pending.promise);
   render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
   await screen.findByText("Secure Airflow connection");
-  fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"), {target:{value:"https://airflow.example.com"}});
+  fireEvent.change(screen.getByLabelText("Airflow HTTPS deployment URL"), {target:{value:"https://airflow.example.com"}});
   if (screen.queryByLabelText("Username")) fireEvent.change(screen.getByLabelText("Username"), {target:{value:"fixture"}});
   const field = screen.getByLabelText("Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-old" } });
@@ -291,7 +291,7 @@ it("retains the editable credential when connection validation fails without rep
   mock.saveConnection.mockResolvedValue({ ok: false, error: "connection_validation_failed" });
   render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
   await screen.findByText("Secure Airflow connection");
-  fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"), {target:{value:"https://airflow.example.com"}});
+  fireEvent.change(screen.getByLabelText("Airflow HTTPS deployment URL"), {target:{value:"https://airflow.example.com"}});
   if (screen.queryByLabelText("Username")) fireEvent.change(screen.getByLabelText("Username"), {target:{value:"fixture"}});
   const field = screen.getByLabelText("Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-correctable" } });
@@ -360,9 +360,9 @@ it("labels failed run history and refreshes real history after one reviewed manu
 it("keeps incomplete or non-HTTPS connection forms from submitting credentials",async()=>{
  render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button",{name:"connection"}));await screen.findByText("Secure Airflow connection");
  const connect=screen.getByRole("button",{name:"Validate & connect"})as HTMLButtonElement;expect(connect.disabled).toBe(true);
- fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"),{target:{value:"http://airflow.example.com"}});
+ fireEvent.change(screen.getByLabelText("Airflow HTTPS deployment URL"),{target:{value:"http://airflow.example.com"}});
  fireEvent.change(screen.getByLabelText("Username"),{target:{value:"fixture"}});fireEvent.change(screen.getByLabelText("Password"),{target:{value:"synthetic"}});
- expect(connect.disabled).toBe(true);fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"),{target:{value:"https://airflow.example.com"}});expect(connect.disabled).toBe(false);
+ expect(connect.disabled).toBe(true);fireEvent.change(screen.getByLabelText("Airflow HTTPS deployment URL"),{target:{value:"https://airflow.example.com"}});expect(connect.disabled).toBe(false);
  fireEvent.change(screen.getByLabelText("Authentication"),{target:{value:"token"}});expect(connect.disabled).toBe(true);
  expect(mock.saveConnection).not.toHaveBeenCalled();
 });
