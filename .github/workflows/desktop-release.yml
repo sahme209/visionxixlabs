@@ -35,6 +35,11 @@ on:
         description: 'Exact release tag, for example desktop-v0.1.9'
         required: true
         type: string
+      repair_fixed_draft:
+        description: 'Repair only approved unpublished v0.1.21 manifest names; no publication'
+        required: false
+        default: false
+        type: boolean
       export_fixed_candidate:
         description: 'Export only verified fixed v0.1.21 candidate; no rebuild or publication'
         required: false
@@ -68,7 +73,7 @@ permissions:
 jobs:
   apple-auth-check:
     name: Check Apple authentication only
-    if: github.event_name == 'workflow_dispatch' && inputs.auth_only == true && inputs.export_fixed_candidate != true
+    if: github.event_name == 'workflow_dispatch' && inputs.auth_only == true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true
     runs-on: macos-latest
     timeout-minutes: 2
     env:
@@ -93,7 +98,7 @@ jobs:
           PYTHON
 
   validate-release:
-    if: github.event_name != 'workflow_dispatch' || (inputs.auth_only != true && inputs.export_fixed_candidate != true)
+    if: github.event_name != 'workflow_dispatch' || (inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true)
     name: Validate release identity
     timeout-minutes: 2
     runs-on: ubuntu-latest
@@ -466,7 +471,7 @@ jobs:
 
   export-draft:
     name: Export signed candidate without publication
-    if: github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.export_draft == true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true'
+    if: github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true && inputs.export_draft == true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true'
     # Local approved export boundary: draft only. Human publication remains in
     # the public artifact repository protected job, configured separately.
     needs: [validate-release, verify-candidate]
@@ -637,7 +642,7 @@ jobs:
 
   publish:
     name: Publish approved immutable candidate
-    if: github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.publish == true && vars.AXIOM_DESKTOP_PUBLICATION_READY == 'true'
+    if: github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true && inputs.publish == true && vars.AXIOM_DESKTOP_PUBLICATION_READY == 'true'
     # This flag is an operator readiness attestation, not proof that reviewers
     # exist. Never enable it until actual environment protection is verified.
     environment: desktop-release
@@ -808,7 +813,7 @@ jobs:
 
   export-fixed-candidate:
     name: Export signed candidate without publication
-    if: github.event_name == 'workflow_dispatch' && inputs.export_fixed_candidate == true && inputs.auth_only != true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true'
+    if: github.event_name == 'workflow_dispatch' && inputs.export_fixed_candidate == true && inputs.repair_fixed_draft != true && inputs.auth_only != true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true'
     # Local approved export boundary: draft only. Human publication remains in
     # the public artifact repository protected job, configured separately.
     permissions:
@@ -997,3 +1002,43 @@ jobs:
           path: ${{ runner.temp }}/publication-verification.json
           if-no-files-found: ignore
 
+
+  repair-fixed-draft:
+    name: Repair approved unpublished manifest names
+    if: github.event_name == 'workflow_dispatch' && inputs.repair_fixed_draft == true && inputs.export_fixed_candidate != true && inputs.auth_only != true && inputs.publish != true && inputs.export_draft != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify original successful candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/sahme209/visionxixlabs/actions/runs/40948306389 > accepted-run.json
+          node -e 'const r=require("./accepted-run.json");if(r.id!==40948306389||r.head_sha!=="61434aecd23a593c902c8a13de4eb984ceda3d0b"||r.status!=="completed"||r.conclusion!=="success")throw Error("Original candidate not accepted")'
+      - name: Verify existing key and repair only the reviewed manifest pair
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import >/dev/null 2>&1 || { echo 'Existing signing key import failed.' >&2; exit 1; }
+          unset GPG_PRIVATE_KEY
+          node scripts/repair-fixed-publication-draft.mjs
+      - name: Preserve private recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axiom-v121-draft-name-recovery
+          path: |
+            ${{ runner.temp }}/axiom-v121-draft-recovery/before.json
+            ${{ runner.temp }}/axiom-v121-draft-recovery/old-manifest.json
+            ${{ runner.temp }}/axiom-v121-draft-recovery/old-manifest.json.asc
+            ${{ runner.temp }}/axiom-v121-draft-recovery/after.json
+            ${{ runner.temp }}/axiom-v121-draft-recovery/recovery.json
+          if-no-files-found: ignore
