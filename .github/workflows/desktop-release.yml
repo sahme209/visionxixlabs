@@ -841,6 +841,7 @@ jobs:
           artifact-ids: ${{ steps.accepted.outputs.artifact_id }}
           github-token: ${{ github.token }}
           run-id: '40948306389'
+          merge-multiple: true
           path: flat
 
       - name: Reject existing or unknown public release identity
