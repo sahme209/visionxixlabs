@@ -46,15 +46,20 @@ fn read_selected(app:&tauri::AppHandle)->Result<(String,Value,Value),String>{
  if key.as_ref().map(js_truthy).unwrap_or(false){return selected(None,key,None,None)}
  selected(None,key,crate::secure::read_string(app,"desktop.session.token")?,crate::secure::read_value(app,"desktop.session.meta")?)
 }
+fn secure_nonce()->Result<String,String>{
+ #[cfg(target_os="macos")]{let mut random=[0u8;32];unsafe{libc::arc4random_buf(random.as_mut_ptr().cast(),random.len());}Ok(random.iter().map(|b|format!("{b:02x}")).collect())}
+ #[cfg(not(target_os="macos"))]{Err("native_input_unsupported".into())}
+}
+#[cfg(all(test,not(target_os="macos")))]#[test]fn unsupported_nonce_is_fail_closed(){assert_eq!(secure_nonce(),Err("native_input_unsupported".into()));}
 pub async fn attest(app:&tauri::AppHandle,task_id:&str,version:u32)->Result<Value,String>{
  if !task(task_id)||version>2147483647{return Err("owner_credential_unavailable".into())}
  let (bearer,meta,snapshot)=read_selected(app).map_err(|_|"owner_credential_unavailable")?;
  if meta["expiresAt"].as_str().and_then(|s|chrono::DateTime::parse_from_rfc3339(s).ok()).map(|d|d.timestamp_millis()>chrono::Utc::now().timestamp_millis())!=Some(true){return Err("owner_credential_unavailable".into())}
- let mut random=[0u8;32];#[cfg(unix)]unsafe{libc::arc4random_buf(random.as_mut_ptr().cast(),random.len());}#[cfg(not(unix))]{return Err("native_input_unsupported".into())}
- let nonce:String=random.iter().map(|b|format!("{b:02x}")).collect();
+ let nonce=secure_nonce()?;
  let request_start=monotonic_now()?;
  let client=reqwest::Client::builder().redirect(reqwest::redirect::Policy::none()).connect_timeout(Duration::from_secs(3)).timeout(Duration::from_secs(5)).build().map_err(|_|"owner_service_unavailable")?;
- let (result,server_date)=tokio::time::timeout(Duration::from_secs(5),async{let mut r=client.post(format!("{ORIGIN}/api/desktop/bot/tasks/{task_id}/computer-authority")).bearer_auth(&bearer).json(&json!({"nonce":nonce,"taskVersion":version,"action":"textedit_set_text"})).send().await.map_err(|_|"owner_service_unavailable")?;if r.status()!=reqwest::StatusCode::OK{return Err("owner_service_refused")}if r.content_length().map(|n|n>8192).unwrap_or(false){return Err("owner_service_unavailable")}let date_headers:Vec<_>=r.headers().get_all(reqwest::header::DATE).iter().collect();if date_headers.len()!=1{return Err("owner_proof_time_invalid")}let server_date=date_headers[0].to_str().map_err(|_|"owner_proof_time_invalid")?.to_owned();let mut bytes=Vec::new();while let Some(chunk)=r.chunk().await.map_err(|_|"owner_service_unavailable")?{if bytes.len()+chunk.len()>8192{return Err("owner_service_unavailable")}bytes.extend_from_slice(&chunk)}Ok((serde_json::from_slice::<Value>(&bytes).map_err(|_|"owner_proof_binding_invalid")?,server_date))}).await.map_err(|_|"owner_service_unavailable")?.map_err(|stage|stage)?;
+ let (result,server_date)=tokio::time::timeout(Duration::from_secs(5),async{let mut r=client.post(format!("{ORIGIN}/api/desktop/bot/tasks/{task_id}/computer-authority")).bearer_auth(&bearer).json(&json!({"nonce":nonce,"taskVersion":version,"action":"textedit_set_text"})).send().await.map_err(|_|"owner_service_unavailable")?;if r.status()!=reqwest::StatusCode::OK{return Err("owner_service_refused")}
+ if r.content_length().map(|n|n>8192).unwrap_or(false){return Err("owner_service_unavailable")}let date_headers:Vec<_>=r.headers().get_all(reqwest::header::DATE).iter().collect();if date_headers.len()!=1{return Err("owner_proof_time_invalid")}let server_date=date_headers[0].to_str().map_err(|_|"owner_proof_time_invalid")?.to_owned();let mut bytes=Vec::new();while let Some(chunk)=r.chunk().await.map_err(|_|"owner_service_unavailable")?{if bytes.len()+chunk.len()>8192{return Err("owner_service_unavailable")}bytes.extend_from_slice(&chunk)}Ok((serde_json::from_slice::<Value>(&bytes).map_err(|_|"owner_proof_binding_invalid")?,server_date))}).await.map_err(|_|"owner_service_unavailable")??;
  if !super::exact(&result,&["ok","data"])||result["ok"]!=true||!valid_binding(&result["data"],&nonce,task_id,version,&meta){return Err("owner_proof_binding_invalid".into())}
  if read_selected(app).map_err(|_|"owner_credential_unavailable")?.2!=snapshot{return Err("owner_credential_unavailable".into())}
  let (expiry,deadline)=clock_bound(result["data"]["expiresAt"].as_str().ok_or("owner_proof_time_invalid")?,&server_date,request_start,monotonic_now()?,chrono::Utc::now().timestamp_millis()).ok_or("owner_proof_time_invalid")?;

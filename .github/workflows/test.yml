@@ -38,6 +38,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Root acceptance tests import desktop code; install its locked dependency graph too.
+      - name: Install desktop acceptance dependencies
+        run: npm ci --prefix desktop
+
       - name: Type check
         env:
           # The generated Prisma/application graph exceeds Node's default heap.
