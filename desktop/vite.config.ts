@@ -5,6 +5,7 @@ const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig(async () => ({
   plugins: [react()],
+  resolve: { dedupe: ["zod"] },
   clearScreen: false,
   server: {
     port: 5173,

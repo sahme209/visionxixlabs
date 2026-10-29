@@ -1,11 +1,12 @@
 import 'server-only';
 import {z} from 'zod';
+import {recordOutlookFailure} from './outlookDiagnostics';
 import {createValidationProviderIo} from '@/lib/integrations/validationProviderIo';
 import type {ConnectedActionScope} from '@/lib/integrations/connectedActionContract';
 import {outlookRegistrationSchema,type OutlookRegistration,type OutlookIssuedCredential} from './outlookOAuth';
 import {OUTLOOK_READ_SCOPES,OUTLOOK_ACTION_SCOPES,outlookAccountSchema,type OutlookPurpose} from './outlookConnectionContract';
 import {createOutlookReadinessReader} from './outlookReadiness';
-const profile=z.object({id:z.string().min(1).max(240).regex(/^[^\s\x00-\x1f\x7f]+$/),displayName:z.string().max(240).nullable(),mail:z.string().email().nullable().optional(),userPrincipalName:z.string().max(320).optional()});
+const profile=z.object({id:z.string().min(1).max(240).regex(/^[^\s\x00-\x1f\x7f]+$/),displayName:z.string().max(240).nullable(),mail:z.string().email().nullable().optional(),userPrincipalName:z.string().max(320).nullable().optional()});
 /** Fixed Microsoft endpoints only. Credentials never enter returned errors or read DTOs. */
 export function createOutlookProvider(ports:{clientSecret:()=>string;assertCurrent:(scope:Readonly<ConnectedActionScope>,signal:AbortSignal)=>Promise<void>;fetch?:typeof fetch;now?:()=>number}){
  const fetchImpl=ports.fetch??fetch,now=ports.now??Date.now;
@@ -16,7 +17,7 @@ export function createOutlookProvider(ports:{clientSecret:()=>string;assertCurre
    const io=createValidationProviderIo(input.signal,fetchImpl);
    try{
     const result=await io.read(`https://login.microsoftonline.com/${reg.authority}/oauth2/v2.0/token`,{method:'POST',headers:{Accept:'application/json','Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:reg.clientId,client_secret:secret,grant_type:'authorization_code',code:input.code,redirect_uri:reg.redirectUri,code_verifier:input.verifier,scope:(input.purpose==='read'?OUTLOOK_READ_SCOPES:OUTLOOK_ACTION_SCOPES).join(' ')})});
-    if(result.status!==200){const error=z.object({error:z.enum(['invalid_grant','invalid_client','unauthorized_client','invalid_scope','access_denied'])}).safeParse(result.json);throw Error(error.success?'outlook_exchange_refused':'outlook_exchange_outcome_unknown')}
+    if(result.status!==200){recordOutlookFailure('token',result.json,result.status);const error=z.object({error:z.enum(['invalid_grant','invalid_client','unauthorized_client','invalid_scope','access_denied'])}).safeParse(result.json);throw Error(error.success?'outlook_exchange_refused':'outlook_exchange_outcome_unknown')}
     return result.json;
    }catch(error){if(error instanceof Error&&error.message==='outlook_exchange_refused')throw error;throw Error('outlook_exchange_outcome_unknown')}finally{io.dispose()}
   },
