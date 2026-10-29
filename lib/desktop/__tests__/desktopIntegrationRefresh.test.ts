@@ -4,7 +4,7 @@ const f=vi.hoisted(()=>({status:vi.fn(),health:vi.fn(),start:vi.fn(),validate:vi
 vi.mock('@tauri-apps/plugin-shell',()=>({open:vi.fn()}));vi.mock('@tauri-apps/api/core',()=>({invoke:vi.fn()}));
 vi.mock('../../../desktop/src/lib/preferences',()=>({readDesktopPreferences:async()=>({theme:'dark'}),writeDesktopPreferences:vi.fn()}));
 vi.mock('../../../desktop/src/components/AwsReadOnlyEnrollment',()=>({AwsReadOnlyEnrollment:()=>null}));vi.mock('../../../desktop/src/components/AzureReadOnlyEnrollment',()=>({AzureReadOnlyEnrollment:()=>null}));
-vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{get config(){return f.context;},integrationStatus:f.status,integrationHealth:f.health,startIntegrationConnection:f.start,validateGitHubReadOnly:f.validate,subscribeContext:(callback:()=>void)=>{f.listeners.add(callback);return()=>f.listeners.delete(callback);}}}));
+vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{get config(){return f.context;},getContextRevision:()=>0,integrationStatus:f.status,integrationHealth:f.health,startIntegrationConnection:f.start,validateGitHubReadOnly:f.validate,subscribeContext:(callback:()=>void)=>{f.listeners.add(callback);return()=>f.listeners.delete(callback);}}}));
 import{open}from'@tauri-apps/plugin-shell';
 vi.mock('../../../desktop/src/components/AwsGuidedConnection',()=>({AwsGuidedConnection:()=>null}));
 vi.mock('../../../desktop/src/components/AzureGuidedConnection',()=>({AzureGuidedConnection:()=>null}));

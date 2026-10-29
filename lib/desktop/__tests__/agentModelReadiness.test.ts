@@ -13,7 +13,7 @@ const ready = { ok: true, data: { providers: [{ provider: "vercel_gateway", mode
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done; }); return { promise, resolve }; }
 const summary = { id: "conversation-1", title: "Saved chat", createdAt: "2026-10-16T00:00:00Z", updatedAt: "2026-10-16T00:00:00Z", turnCount: 0 };
 beforeEach(() => {
-  vi.resetAllMocks(); m.preferences.mockResolvedValue(null); window.localStorage.clear(); Element.prototype.scrollTo = vi.fn(); m.client.config = {};
+  vi.resetAllMocks(); m.invoke.mockRejectedValue(new Error("native_fixture_unavailable")); m.preferences.mockResolvedValue(null); window.localStorage.clear(); Element.prototype.scrollTo = vi.fn(); m.client.config = {};
   m.client.listAgentConversations.mockResolvedValue({ ok: true, data: { conversations: [summary] } });
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [] } });
   m.client.aiProviderStatus.mockResolvedValue(ready);
