@@ -35,6 +35,11 @@ on:
         description: 'Exact release tag, for example desktop-v0.1.9'
         required: true
         type: string
+      auth_only:
+        description: 'Read-only Apple authentication check; no build, upload or publication'
+        required: false
+        default: false
+        type: boolean
       export_draft:
         description: 'Export signed verified installers to an unpublished public-repository draft only'
         required: false
@@ -56,7 +61,34 @@ permissions:
   contents: read
 
 jobs:
+  apple-auth-check:
+    name: Check Apple authentication only
+    if: github.event_name == 'workflow_dispatch' && inputs.auth_only == true
+    runs-on: macos-latest
+    timeout-minutes: 2
+    env:
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - name: Validate current notarization credentials without submitting an app
+        shell: bash
+        run: |
+          python3 - <<'PYTHON'
+          import os,subprocess,sys
+          if not all(os.environ.get(k) for k in ['APPLE_ID','APPLE_PASSWORD','APPLE_TEAM_ID']):
+            print('Apple authentication configuration is incomplete.');sys.exit(1)
+          try:
+            result=subprocess.run(['xcrun','notarytool','history','--apple-id',os.environ['APPLE_ID'],'--password',os.environ['APPLE_PASSWORD'],'--team-id',os.environ['APPLE_TEAM_ID'],'--output-format','json'],capture_output=True,text=True,timeout=60)
+          except Exception:
+            print('Apple authentication could not be confirmed within the bounded check.');sys.exit(1)
+          if result.returncode:
+            print('Apple authentication refused (HTTP 401).' if '401' in result.stderr else 'Apple authentication was not confirmed.');sys.exit(1)
+          print('Apple notarization authentication accepted. No app was submitted.')
+          PYTHON
+
   validate-release:
+    if: github.event_name != 'workflow_dispatch' || inputs.auth_only != true
     name: Validate release identity
     timeout-minutes: 2
     runs-on: ubuntu-latest
@@ -429,7 +461,7 @@ jobs:
 
   export-draft:
     name: Export signed candidate without publication
-    if: github.event_name == 'workflow_dispatch' && inputs.export_draft == true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true'
+    if: github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_draft == true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true'
     # Local approved export boundary: draft only. Human publication remains in
     # the public artifact repository protected job, configured separately.
     needs: [validate-release, verify-candidate]
@@ -600,7 +632,7 @@ jobs:
 
   publish:
     name: Publish approved immutable candidate
-    if: github.event_name == 'workflow_dispatch' && inputs.publish == true && vars.AXIOM_DESKTOP_PUBLICATION_READY == 'true'
+    if: github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.publish == true && vars.AXIOM_DESKTOP_PUBLICATION_READY == 'true'
     # This flag is an operator readiness attestation, not proof that reviewers
     # exist. Never enable it until actual environment protection is verified.
     environment: desktop-release
