@@ -1,7 +1,9 @@
 //! Single-window native observation. No input, streaming, disk, upload or model API.
 use serde::Deserialize;
 use serde_json::{json,Value};
+#[cfg(target_os="macos")]
 const MAX_RESPONSE:usize=6*1024*1024;
+#[cfg(any(target_os="macos",test))]
 const MAX_PNG:usize=4*1024*1024;
 #[derive(Debug,Deserialize)]
 #[serde(rename_all="camelCase",deny_unknown_fields)]
@@ -17,9 +19,13 @@ pub struct CurrentInput {owner_context_ref:String,session_id:String,expected_rev
 pub struct StopInput {owner_context_ref:String,session_id:Option<String>}
 fn owner(value:&str)->bool {!value.is_empty()&&value.len()<=240&&value.trim()==value&&!value.chars().any(|c|c.is_control())}
 fn session(value:&str)->bool {let Some(uuid)=value.strip_prefix("observation_") else{return false};uuid.len()==36&&uuid.bytes().enumerate().all(|(i,b)|if [8,13,18,23].contains(&i){b==b'-'}else{b.is_ascii_digit()||(b'a'..=b'f').contains(&b)})}
+#[cfg(any(target_os="macos",test))]
 fn exact(v:&Value,keys:&[&str])->bool {v.as_object().map(|o|o.len()==keys.len()&&keys.iter().all(|k|o.contains_key(*k))).unwrap_or(false)}
+#[cfg(any(target_os="macos",test))]
 fn flags(v:&Value)->bool {v["source"]=="native_selected_window"&&v["inputAvailable"]==false&&v["aiSharingAvailable"]==false&&v["backgroundCapture"]==false}
+#[cfg(any(target_os="macos",test))]
 fn canonical_time(v:&Value)->bool {v.as_str().and_then(|s|chrono::DateTime::parse_from_rfc3339(s).ok().map(|d|d.to_rfc3339_opts(chrono::SecondsFormat::Millis,true)==s)).unwrap_or(false)}
+#[cfg(any(target_os="macos",test))]
 fn checked(operation:i32,v:Value,input:&Value)->Result<Value,String>{
  let valid=match operation {
  0=>flags(&v)&&((exact(&v,&["supported","source","inputAvailable","aiSharingAvailable","backgroundCapture"])&&v["supported"]==true)||(exact(&v,&["supported","reason","source","inputAvailable","aiSharingAvailable","backgroundCapture"])&&v["supported"]==false&&["os_unsupported","runtime_unavailable"].iter().any(|r|v["reason"]==*r))),
