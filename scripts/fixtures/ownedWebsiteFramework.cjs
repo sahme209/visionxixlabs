@@ -1,23 +1,24 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- Test-only preload must precede Next consumers. */
 'use strict';
 // Website-specific adaptation of the independently reviewed ownedNextFrameworkMode.cjs.
-// Same source/dependency pins and sole default change; no Agent context is accepted.
+// Reviewed against the locked Next16.4.2 registry archive. Exact hashes remain
+// mandatory; the sole default change is unchanged and no Agent context is accepted.
 const assert = require('node:assert/strict');
 const { createHash } = require('node:crypto');
 const { readFileSync, realpathSync } = require('node:fs');
 const { join } = require('node:path');
 const rootPath = realpathSync(join(__dirname, '../..'));
 const sourcePins = {
-  'package-lock.json': '24228d15d056785f239f77107cd9ed1f8161beed53e1edc128826e4ce4298fd7',
+  'package-lock.json': '563b933cccd467783f60d3c8e88d02f855107c2ca9beda5ead13d6bd66a3920c',
   'next.config.ts': '0e92d9076a0fde2e5523d86ff9024b727fdb5a272cb2d55e0159f7d693f1ab7d',
   'tsconfig.json': '49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1',
   'tsconfig.next.json': '1b7acd54eea2b33af5e4c8601132f9244687ed14ebbbb3f330a295d199fdac41',
 };
 const dependencyPins = {
-  'next/package.json': '6da8fc4823b66b8f2906d150002618e3f3e0d2446ebf3823b2a2f7efe73a46a4',
-  'next/dist/server/config-shared.js': '2c15353ce27ba7ea7322b53f3194c6d39593936f2c73e303cbd2dd7d37d88f0a',
-  'next/dist/build/load-jsconfig.js': '419d124c1708f6cff3bcd4ad63f379f9e45912c392a8e462bfaf6ef571a222ef',
-  'next/dist/lib/typescript/runTypeScriptCli.js': '7dbbcc8190d3fd835c339cc6feed9e70bd3191f8af6fe5441c06b441626c5f58',
+  'next/package.json': 'e84ada0a68191fed192392bfb8ee35ad4ed8e7439f645a40dd48cf139588ddc5',
+  'next/dist/server/config-shared.js': 'cc8b6197fd97a12b0d9257c9d7d4288347053fc8712b021d03c3bfad7a19cdd3',
+  'next/dist/build/load-jsconfig.js': 'b313de8c53ff3f060b18d199743fa48b0a59ce57b28b95d6095e6104d5163621',
+  'next/dist/lib/typescript/runTypeScriptCli.js': '9462f0a83eb0c24e7cd1c33d22abade44e63664ff2897a74ddb88b70abe3c16a',
   'typescript/package.json': '822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6',
   'typescript/lib/typescript.js': '3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675',
 };
@@ -30,9 +31,9 @@ function captureOwnedWebsiteFramework(root) {
   assert.deepEqual(sourceHashes, sourcePins, 'owned_framework_source_pins');
   for (const [specifier, expected] of Object.entries(dependencyPins)) assert.equal(digest(require.resolve(specifier)), expected, 'owned_framework_dependency_pin');
   const lock = JSON.parse(readFileSync(join(rootPath, 'package-lock.json'), 'utf8'));
-  assert.equal(lock.packages['node_modules/next'].version, '16.3.8', 'owned_framework_next_version');
+  assert.equal(lock.packages['node_modules/next'].version, '16.4.2', 'owned_framework_next_version');
   assert.equal(lock.packages['node_modules/typescript'].version, '5.9.3', 'owned_framework_typescript_version');
-  assert.equal(JSON.parse(readFileSync(require.resolve('next/package.json'), 'utf8')).version, '16.3.8', 'owned_framework_next_version');
+  assert.equal(JSON.parse(readFileSync(require.resolve('next/package.json'), 'utf8')).version, '16.4.2', 'owned_framework_next_version');
   assert.equal(JSON.parse(readFileSync(require.resolve('typescript/package.json'), 'utf8')).version, '5.9.3', 'owned_framework_typescript_version');
   return { root: rootPath, runtime: { node: process.versions.node, platform: process.platform, arch: process.arch, executable: realpathSync(process.execPath), executableSha256: digest(process.execPath) }, sourceHashes };
 }
@@ -54,7 +55,7 @@ function installOwnedWebsiteFramework({ root, role, environment, identity }) {
     report() {
       assert.deepEqual(identity, captureOwnedWebsiteFramework(root), 'owned_framework_identity_changed');
       assert.deepEqual(Object.getOwnPropertyDescriptor(defaults, 'useTypeScriptCli'), modified, 'owned_framework_default_changed');
-      return { mode: 'owned-website-typescript-api', productionEquivalent: false, identity, nextVersion: '16.3.8', typescriptVersion: '5.9.3' };
+      return { mode: 'owned-website-typescript-api', productionEquivalent: false, identity, nextVersion: '16.4.2', typescriptVersion: '5.9.3' };
     },
     restore() {
       assert.ok(installed?.handle === handle, 'owned_framework_restore_lifetime');

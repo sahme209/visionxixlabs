@@ -80,7 +80,7 @@ export async function GET(req: NextRequest) {
   let planTier = "starter";
   try {
     const billing = await readBillingPlan(auth.organizationId);
-    const plan = planForStripeTier(billing.tier);
+    const plan = billing.pricingPlan ?? planForStripeTier(billing.tier);
     monthlyLimit = plan.entitlements.monthlyApiV1Calls;
     planTier = plan.tier;
   } catch { /* fail-open with Starter defaults */ }

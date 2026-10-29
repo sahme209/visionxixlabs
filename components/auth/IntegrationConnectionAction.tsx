@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ConfirmDialog } from "@/components/cockpit/ConfirmDialog";
 
 type Provider = "github" | "slack" | "teams" | "linear";
 
@@ -14,7 +15,7 @@ const CONSENT_HOSTS: Record<Provider, readonly string[]> = {
 function trustedConsentDestination(provider: Provider, value: string): string | null {
   try {
     const destination = new URL(value);
-    if (destination.protocol !== "https:" || !CONSENT_HOSTS[provider].includes(destination.hostname)) return null;
+    if (destination.protocol !== "https:" || destination.username || destination.password || destination.port || !CONSENT_HOSTS[provider].includes(destination.hostname)) return null;
     return destination.toString();
   } catch {
     return null;
@@ -26,14 +27,14 @@ export function IntegrationConnectionAction({
   label,
   connected,
   suspended = false,
-  setupAvailable,
+  configured = true,
   installationRowId,
 }: {
   provider: Provider;
   label: string;
   connected: boolean;
   suspended?: boolean;
-  setupAvailable: boolean;
+  configured?: boolean;
   installationRowId?: string | null;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -41,6 +42,7 @@ export function IntegrationConnectionAction({
   const [working, setWorking] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const menu = useRef<HTMLDivElement>(null);
+  const manageButton = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -59,6 +61,7 @@ export function IntegrationConnectionAction({
   }, [menuOpen]);
 
   async function connect() {
+    if (!configured) return;
     setWorking("connect");
     setError(null);
     try {
@@ -104,7 +107,7 @@ export function IntegrationConnectionAction({
     } catch {
       setWorking(null);
       setConfirmDisconnect(false);
-      setError(`${label} was not changed. Try again.`);
+      setError(`${label} update was not confirmed. Refresh its status before trying again; the request may have completed.`);
     }
   }
 
@@ -114,11 +117,13 @@ export function IntegrationConnectionAction({
         <button
           type="button"
           onClick={() => void connect()}
-          disabled={!setupAvailable || working !== null}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg bg-zinc-100 px-3.5 text-xs font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-zinc-600"
+          disabled={working !== null || !configured}
+          aria-label={!configured ? `Connect ${label}` : undefined}
+          className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-[#f3f3f3] px-3.5 text-[13px] font-normal text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:bg-white/[0.06] disabled:text-zinc-600"
         >
-          {working === "connect" ? "Connecting…" : setupAvailable ? "Connect ↗" : "Setup required"}
+          {working === "connect" ? "Connecting…" : "Connect ↗"}
         </button>
+        {!configured && <p className="text-right text-[10px] text-zinc-500">Service connection unavailable</p>}
         {error && <p role="status" className="max-w-56 text-right text-[10px] leading-4 text-rose-300">{error}</p>}
       </div>
     );
@@ -128,36 +133,26 @@ export function IntegrationConnectionAction({
     <div ref={menu} className="relative flex flex-col items-end gap-1.5">
       <button
         type="button"
+        ref={manageButton}
         aria-haspopup="menu"
         aria-expanded={menuOpen}
         onClick={() => setMenuOpen((open) => !open)}
         disabled={working !== null}
-        className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-white/[0.1] bg-white/[0.025] px-3.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] disabled:opacity-50"
+        className="inline-flex min-h-8 items-center gap-2 rounded-full border border-white/[0.1] bg-white/[0.025] px-3.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] disabled:opacity-50"
       >
         {working ? "Updating…" : "Manage"}
         <span aria-hidden className={`text-[9px] text-zinc-500 transition ${menuOpen ? "rotate-180" : ""}`}>▼</span>
       </button>
       {menuOpen && (
         <div role="menu" className="absolute right-0 top-11 z-20 w-44 overflow-hidden rounded-xl border border-white/[0.1] bg-[#191a1c] p-1.5 shadow-[0_20px_60px_rgba(0,0,0,0.55)]">
-          <button type="button" role="menuitem" onClick={() => void connect()} className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.07] hover:text-white">Reconnect</button>
+          <button type="button" role="menuitem" disabled={!configured} onClick={() => void connect()} className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.07] hover:text-white">Reconnect</button>
           <button type="button" role="menuitem" onClick={() => void transition(suspended ? "resume" : "suspend")} className="w-full rounded-lg px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.07] hover:text-white">{suspended ? "Resume" : "Pause"}</button>
           <div className="my-1 border-t border-white/[0.07]" />
           <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); setConfirmDisconnect(true); }} className="w-full rounded-lg px-3 py-2 text-left text-xs text-rose-300 hover:bg-rose-400/[0.08]">Disconnect</button>
         </div>
       )}
       {error && <p role="status" className="max-w-56 text-right text-[10px] leading-4 text-rose-300">{error}</p>}
-      {confirmDisconnect && (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/70 p-5 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby={`${provider}-disconnect-title`}>
-          <div className="w-full max-w-sm rounded-2xl border border-white/[0.1] bg-[#17181a] p-5 shadow-2xl">
-            <h2 id={`${provider}-disconnect-title`} className="text-base font-semibold text-white">Disconnect {label}?</h2>
-            <p className="mt-2 text-sm leading-6 text-zinc-500">Axiom will stop using this connection. Existing deployment and audit records remain intact.</p>
-            <div className="mt-6 flex justify-end gap-2">
-              <button type="button" onClick={() => setConfirmDisconnect(false)} className="rounded-lg px-3 py-2 text-xs text-zinc-400 hover:bg-white/[0.06] hover:text-white">Cancel</button>
-              <button type="button" onClick={() => void transition("disconnect")} disabled={working !== null} className="rounded-lg bg-rose-400 px-3 py-2 text-xs font-semibold text-rose-950 disabled:opacity-50">{working === "disconnect" ? "Disconnecting…" : "Disconnect"}</button>
-            </div>
-          </div>
-        </div>
-      )}
+      {confirmDisconnect && <ConfirmDialog title={`Disconnect ${label}?`} onCancel={() => setConfirmDisconnect(false)} onConfirm={() => void transition("disconnect")} confirmLabel="Disconnect" returnFocusRef={manageButton} busy={working !== null}>Axiom will stop using this connection. Existing deployment and audit records remain intact.</ConfirmDialog>}
     </div>
   );
 }

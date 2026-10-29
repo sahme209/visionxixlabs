@@ -33,3 +33,20 @@ describe("workspace skill catalog", () => {
     expect(result).toEqual({ ok: false, error: "skill_not_installed", skillId: "aws-ecs-release" });
   });
 });
+
+it.each(['repository-code-review','debugging-investigation','terraform-review'])('requires an enabled installation before loading %s guidance',async(skillId)=>{
+ const findMany=vi.fn().mockResolvedValue([]);
+ expect(await resolveInstalledSkillContext({agentSkillInstallation:{findMany}},'org-1',skillId)).toMatchObject({ok:false,error:'skill_not_installed'});
+ findMany.mockResolvedValue([{skillId,status:'enabled'}]);
+ const result=await resolveInstalledSkillContext({agentSkillInstallation:{findMany}},'org-1',skillId);
+ expect(result.ok).toBe(true);
+ if(result.ok){expect(result.invokedSkill?.id).toBe(skillId);expect(result.prompt).toContain('Explicitly invoked skill');expect(result.invokedSkill?.toolNames.some(name=>/commit|deploy|create|configure/.test(name))).toBe(false);}
+});
+
+it('requires installation before resolving the Microsoft Learn MCP workflow',async()=>{
+ const findMany=vi.fn().mockResolvedValue([]);
+ expect(await resolveInstalledSkillContext({agentSkillInstallation:{findMany}},'org-A','microsoft-learn-docs')).toMatchObject({ok:false,error:'skill_not_installed'});
+ findMany.mockResolvedValue([{skillId:'microsoft-learn-docs',status:'enabled'}]);
+ const result=await resolveInstalledSkillContext({agentSkillInstallation:{findMany}},'org-A','microsoft-learn-docs');
+ expect(result.ok).toBe(true);if(result.ok)expect(result.invokedSkill?.toolNames).toEqual(['search_microsoft_docs']);
+});

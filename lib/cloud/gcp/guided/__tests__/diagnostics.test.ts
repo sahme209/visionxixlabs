@@ -1,0 +1,4 @@
+import {it,expect} from 'vitest';
+import {safeGcpGuidedDiagnostic,GcpGuidedProviderFailure} from '../diagnostics';
+it('redacts arbitrary exceptions and invalid injected classifications',()=>{expect(safeGcpGuidedDiagnostic(new Error('secret-token state user'), 'exchange')).toEqual({phase:'exchange',reason:'unconfirmed'});expect(safeGcpGuidedDiagnostic(new GcpGuidedProviderFailure({phase:'secret' as any,reason:'unconfirmed'}),'projects_read')).toEqual({phase:'projects_read',reason:'unconfirmed'})});
+it('preserves only finite fixed fields and valid HTTP status',()=>{expect(safeGcpGuidedDiagnostic(new GcpGuidedProviderFailure({phase:'projects_read',reason:'service_disabled',httpStatus:403}),'authority')).toEqual({phase:'projects_read',reason:'service_disabled',httpStatus:403});expect(safeGcpGuidedDiagnostic(new GcpGuidedProviderFailure({phase:'exchange',reason:'http_refused',httpStatus:999}),'authority')).toEqual({phase:'exchange',reason:'http_refused'})});

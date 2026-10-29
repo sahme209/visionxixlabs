@@ -1,8 +1,8 @@
 /** @vitest-environment jsdom */
 import {createElement} from "react";
-import {act, cleanup, fireEvent, render, screen, waitFor} from "@testing-library/react";
+import {act, cleanup, fireEvent, render, screen, waitFor, within} from "@testing-library/react";
 import {afterEach, beforeEach, expect, it, vi} from "vitest";
-const m = vi.hoisted(() => ({open: vi.fn(), listeners: new Set<() => void>(), revision: 0, client: {config: {}, subscribeContext: (fn: () => void) => {m.listeners.add(fn); return () => {m.listeners.delete(fn);};}, getContextRevision: () => m.revision, listAgentSkills: vi.fn(), integrationStatus: vi.fn(), airflowConnection: vi.fn(), updateAgentSkill: vi.fn(), startIntegrationConnection: vi.fn(), validateGitHubReadOnly: vi.fn()}}));
+const m = vi.hoisted(() => ({open: vi.fn(), listeners: new Set<() => void>(), revision: 0, client: {config: {}, subscribeContext: (fn: () => void) => {m.listeners.add(fn); return () => {m.listeners.delete(fn);};}, getContextRevision: () => m.revision, listAgentSkills: vi.fn(), integrationStatus: vi.fn(), airflowConnection: vi.fn(), updateAgentSkill: vi.fn(), startIntegrationConnection: vi.fn(), listSlackChannels:vi.fn(),validateGitHubReadOnly: vi.fn(), verifyExistingGitHubConnection:vi.fn(),confirmExistingGitHubConnection:vi.fn(),reloadGitHubReconnectStatus:vi.fn(),githubReconnectNeedsReload:()=>false}}));
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({desktopClient: m.client}));
 vi.mock("@tauri-apps/plugin-shell", () => ({open: m.open}));
 import {PluginsSkillsView} from "../../../desktop/src/views/PluginsSkillsView";
@@ -33,11 +33,13 @@ it("never opens a late consent URL after credential context changes", async () =
   await act(async () => {old.resolve(ok({consentUrl: "https://github.com/login/oauth/authorize?state=old"}));});
   expect(m.open).not.toHaveBeenCalled();
 });
-it("recovers a rejected mutation and allows a subsequent explicit retry", async () => {
+it("recovers a rejected mutation after an explicit catalog verification", async () => {
   m.client.updateAgentSkill.mockRejectedValueOnce(new Error("PRIVATE_RAW_ERROR")).mockResolvedValueOnce(ok({status: "enabled"})); show();
   fireEvent.click(await screen.findByRole("button", {name: "Add"}));
   await screen.findByText(/Could not update Safe change/);
   expect(screen.queryByText(/PRIVATE_RAW_ERROR/)).toBeNull();
+  expect((screen.getByRole("button", {name: "Add"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", {name: "Refresh capabilities"}));
   await waitFor(() => expect((screen.getByRole("button", {name: "Add"}) as HTMLButtonElement).disabled).toBe(false));
   fireEvent.click(screen.getByRole("button", {name: "Add"}));
   await screen.findByText(/Safe change is now enabled/);
@@ -106,4 +108,96 @@ it("hands an enabled skill to the Agent without installation mutation", async ()
   fireEvent.click(await screen.findByRole("button", {name: "Use in Agent"}));
   expect(onUseSkill).toHaveBeenCalledWith(skill.id);
   expect(m.client.updateAgentSkill).not.toHaveBeenCalled();
+});
+
+it("publishes Airflow readiness while the independent integration inventory is pending", async () => {
+  const inventory = deferred(); m.client.integrationStatus.mockReturnValueOnce(inventory.promise);
+  m.client.airflowConnection.mockResolvedValue(ok({status: "connected"}));
+  show();
+  await waitFor(() => expect(within(screen.getByText("Apache Airflow").parentElement!).getByText("connected")).toBeTruthy());
+  await act(async () => {inventory.resolve(ok({configuration: {}, github: {status: "not_connected"}, cloud: [], collaboration: []}));});
+});
+it("shows existing Azure and GCP inventory and opens settings without starting provider consent", async () => {
+  const onOpenSettings = vi.fn();
+  m.client.integrationStatus.mockResolvedValue(ok({configuration: {github: true, slack: false, teams: false, linear: false}, github: {status: "not_connected"}, cloud: [{provider: "azure", status: "connected", lastTransitionAt: null}, {provider: "gcp", status: "not_connected", lastTransitionAt: null}], collaboration: []}));
+  render(createElement(PluginsSkillsView, {onOpenSettings, onOpenAirflow() {}, canManage: false}));
+  const azure = await screen.findByText("Microsoft Azure");
+  const gcp = screen.getByText("Google Cloud");
+  await waitFor(() => expect(within(azure.parentElement!).getByText("connected")).toBeTruthy());
+  expect(within(gcp.parentElement!).getByText("not connected")).toBeTruthy();
+  const card = azure.parentElement!.parentElement!.parentElement!;
+  fireEvent.click(within(card).getByRole("button", {name: "Manage"}));
+  expect(onOpenSettings).toHaveBeenCalledTimes(1);
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", {name: "installed"}));
+  expect(screen.getByText("Microsoft Azure")).toBeTruthy();
+  expect(screen.queryByText("Google Cloud")).toBeNull();
+});
+
+it("requires a fresh catalog after an uncertain skill change before allowing another mutation", async () => {
+  const refresh = deferred();
+  m.client.updateAgentSkill.mockRejectedValue(new Error("offline after send"));
+  m.client.listAgentSkills.mockResolvedValueOnce(ok({skills: [skill], storageAvailable: true})).mockReturnValueOnce(refresh.promise);
+  show(); fireEvent.click(await screen.findByRole("button", {name: "Add"}));
+  await screen.findByText(/Could not update Safe change/);
+  expect((screen.getByRole("button", {name: "Add"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button", {name: "Refresh capabilities"}));
+  await act(async () => { refresh.resolve(ok({skills: [{...skill, status: "disabled"}], storageAvailable: true})); });
+  await screen.findByRole("button", {name: "Enable"});
+  expect(m.client.updateAgentSkill).toHaveBeenCalledTimes(1);
+  expect((screen.getByRole("button", {name: "Enable"}) as HTMLButtonElement).disabled).toBe(false);
+});
+
+it("filters enabled and disabled skills separately with explicit saved status", async () => {
+  m.client.listAgentSkills.mockResolvedValue(ok({skills: [{...skill, status: "enabled"}, {...skill, id: "second", name: "Release guidance", status: "disabled"}], storageAvailable: true}));
+  show(); await screen.findByText("Release guidance");
+  fireEvent.click(screen.getByRole("button", {name: "Enabled"}));
+  expect(screen.getByText("Safe change")).toBeTruthy();
+  expect(screen.queryByText("Release guidance")).toBeNull();
+  fireEvent.click(screen.getByRole("button", {name: "Disabled"}));
+  expect(screen.queryByText("Safe change")).toBeNull();
+  expect(screen.getByText("Release guidance")).toBeTruthy();
+  expect(screen.getByText("Installed · disabled")).toBeTruthy();
+});
+
+it("does not offer consent before inventory verifies configuration or after an inventory failure", async () => {
+  const inventory = deferred();
+  m.client.integrationStatus.mockReturnValueOnce(inventory.promise);
+  show(); await screen.findByText("Safe change");
+  for (const button of screen.queryAllByRole("button", {name: "Connect ↗"})) {
+    expect((button as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(button);
+  }
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+  await act(async () => {inventory.resolve({ok: false, error: "offline"});});
+  await screen.findByText(/Integration status is unavailable/);
+  for (const button of screen.queryAllByRole("button", {name: "Connect ↗"})) {
+    expect((button as HTMLButtonElement).disabled).toBe(true);
+    fireEvent.click(button);
+  }
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+  expect(screen.getByText("Safe change")).toBeTruthy();
+});
+
+const reconnectChallenge={challengeId:'github_reconnect_12345678-1234-4123-8123-123456789abc',version:0,expiresAt:'2099-01-01T00:00:00Z',accountLogin:'verified-team',accountType:'Organization',repositorySelection:'selected',providerWritesPerformed:false};
+function revoked(){m.client.integrationStatus.mockResolvedValue(ok({configuration:{github:true},github:{status:'revoked',repositorySelection:'selected'},cloud:[],collaboration:[]}));m.client.verifyExistingGitHubConnection.mockResolvedValue(ok(reconnectChallenge))}
+it('reviews actual verified GitHub account before explicit reconnect and holds unknown until status reload',async()=>{revoked();m.client.confirmExistingGitHubConnection.mockResolvedValue({ok:false});show();fireEvent.click(await screen.findByRole('button',{name:'Connect',exact:true}));await screen.findByText(/Verified account: verified-team/);expect(m.client.confirmExistingGitHubConnection).not.toHaveBeenCalled();fireEvent.click(screen.getByText('Reconnect verified installation'));await screen.findByText('Reload GitHub status');expect(m.client.confirmExistingGitHubConnection).toHaveBeenCalledWith(reconnectChallenge.challengeId,expect.any(AbortSignal));expect(screen.queryByRole('button',{name:'Connect',exact:true})).toBeNull();m.client.reloadGitHubReconnectStatus.mockResolvedValue(ok({github:{status:'revoked',repositorySelection:'selected'},cloud:[],collaboration:[]}));fireEvent.click(screen.getByText('Reload GitHub status'));await screen.findByRole('button',{name:'Connect',exact:true});expect(m.client.confirmExistingGitHubConnection).toHaveBeenCalledTimes(1)});
+it('never exposes reconnect recovery to nonmanaging members',async()=>{revoked();show(false);await screen.findByText('Safe change');expect(screen.queryByRole('button',{name:'Connect',exact:true})).toBeNull();expect(m.client.verifyExistingGitHubConnection).not.toHaveBeenCalled()});
+it('discards late verified account after context changes',async()=>{revoked();const old=deferred();m.client.verifyExistingGitHubConnection.mockReturnValueOnce(old.promise);show();fireEvent.click(await screen.findByRole('button',{name:'Connect',exact:true}));await act(async()=>changeContext());await act(async()=>old.resolve(ok(reconnectChallenge)));expect(screen.queryByText(/Verified account:/)).toBeNull();expect(m.client.confirmExistingGitHubConnection).not.toHaveBeenCalled()});
+
+it('uses one primary Connect action and shows pending state without auto confirmation',async()=>{revoked();const old=deferred();m.client.verifyExistingGitHubConnection.mockReturnValueOnce(old.promise);show();const connect=await screen.findByRole('button',{name:'Connect',exact:true});expect(screen.queryByText('Verify existing connection')).toBeNull();expect(screen.getByText('Connect in browser ↗').closest('details')?.open).toBe(false);fireEvent.click(connect);expect(await screen.findByRole('button',{name:'Connecting…'})).toBeTruthy();expect(m.client.confirmExistingGitHubConnection).not.toHaveBeenCalled();await act(async()=>old.resolve(ok(reconnectChallenge)));await screen.findByText(/Verified account: verified-team/);expect(m.client.confirmExistingGitHubConnection).not.toHaveBeenCalled()});
+
+it('active Slack Manage opens the shared workspace manager rather than generic settings',async()=>{const settings=vi.fn();m.client.integrationStatus.mockResolvedValue(ok({configuration:{slack:true},github:{status:'not_connected',repositorySelection:'selected'},cloud:[],collaboration:[{provider:'slack',status:'active'}]}));m.client.listSlackChannels.mockResolvedValue(ok({workspaceId:'T123',workspaceName:'Actual Slack workspace',connectionVersion:'2030-01-01T00:00:00.000Z',channels:[]}));render(createElement(PluginsSkillsView,{canManage:true,onOpenSettings:settings,onOpenAirflow(){}}));fireEvent.click(await screen.findByRole('button',{name:'Manage',exact:true}));await screen.findByText('Actual Slack workspace');expect(settings).not.toHaveBeenCalled();expect(m.client.listSlackChannels).toHaveBeenCalledTimes(1)});
+
+it('labels canonical Azure access read-only and manages it without enabling execution', async()=>{
+ m.client.integrationStatus.mockResolvedValue(ok({github:{status:'not_connected'},cloud:[{provider:'azure',status:'read_only_connected',lastTransitionAt:null}],collaboration:[]}));
+ const settings=vi.fn();render(createElement(PluginsSkillsView,{onOpenSettings:settings,onOpenAirflow(){},canManage:true}));
+ const azure=await screen.findByText('Microsoft Azure');const row=azure.closest('.min-h-\\[78px\\]') ?? azure.parentElement!.parentElement!.parentElement!;
+ expect(within(row as HTMLElement).getByText('Read-only connected')).toBeTruthy();
+ expect(within(row as HTMLElement).getByText(/Agent scans and deployments remain unavailable/)).toBeTruthy();
+ fireEvent.click(within(row as HTMLElement).getByRole('button',{name:'Manage'}));expect(settings).toHaveBeenCalledOnce();expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
+it.each([['read_only_connected','Manage'],['not_connected','Connect']])('keeps AWS %s access and ECS deployment setup distinct',async(status,label)=>{
+ m.client.integrationStatus.mockResolvedValue(ok({github:{status:'not_connected'},cloud:[{provider:'aws',status,lastTransitionAt:null}],collaboration:[]}));const settings=vi.fn();render(createElement(PluginsSkillsView,{onOpenSettings:settings,onOpenAirflow(){},canManage:true}));const title=await screen.findByText('AWS ECS');const row=title.parentElement!.parentElement!.parentElement!;
+ expect(within(row).getByText(/Read-only AWS account access and EC2 metadata/)).toBeTruthy();expect(within(row).getByText(/ECS deployment requires a separately configured workflow/)).toBeTruthy();expect(within(row).queryByText(/OIDC-backed ECS deployments/)).toBeNull();if(status==='read_only_connected')expect(within(row).getByText('Read-only connected')).toBeTruthy();fireEvent.click(within(row).getByRole('button',{name:label==='Connect'?'Connect AWS':label,exact:true}));expect(settings).toHaveBeenCalledOnce();expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
 });

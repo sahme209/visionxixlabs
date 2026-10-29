@@ -44,6 +44,8 @@ export interface DesktopAsset {
 export interface DesktopReleaseManifest {
   /** Honest source — "github_release" when found, "none" when no release yet. */
   source: "github_release" | "none";
+  /** Older published installers from the same bounded GitHub response. */
+  previousReleases?: Array<{ tag: string; htmlUrl: string; publishedAt: string }>;
   /** Release tag (e.g. "desktop-v0.1.0"). */
   tag?: string;
   /** Public release page URL. */
@@ -271,6 +273,11 @@ async function fetchLatestRelease(): Promise<DesktopReleaseManifest> {
 
   return {
     source: "github_release",
+    previousReleases: desktopReleases
+      .filter(release => release.tag_name !== latest.tag_name && /^desktop-v\d+\.\d+\.\d+$/.test(release.tag_name) && Number.isFinite(Date.parse(release.published_at)) && (release.assets ?? []).some(asset => classifyAsset(asset.name) !== null))
+      .sort((a, b) => Date.parse(b.published_at) - Date.parse(a.published_at))
+      .slice(0, 10)
+      .map(release => ({ tag: release.tag_name, htmlUrl: `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/tag/${encodeURIComponent(release.tag_name)}`, publishedAt: release.published_at })),
     tag: latest.tag_name,
     htmlUrl: latest.html_url,
     publishedAt: latest.published_at,

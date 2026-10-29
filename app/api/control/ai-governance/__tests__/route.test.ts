@@ -18,7 +18,7 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.isAdminOrOwner }));
-vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
+vi.mock("@/lib/audit/requiredAudit", () => ({ recordRequiredAudit: mocks.recordAudit }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ provider: "vercel_gateway", configured: true }] }) }));
 vi.mock("@/lib/ai/gatewayModelCatalog", async (original) => ({ ...await original<typeof import("@/lib/ai/gatewayModelCatalog")>(), loadGatewayModelCatalog: mocks.loadModels }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", async (original) => {
@@ -92,4 +92,46 @@ describe("/api/control/ai-governance", () => {
     expect(mocks.saveIdentity).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-session", updatedBy: "user-1" }));
     expect(mocks.recordAudit).toHaveBeenCalled();
   });
+  it.each(["P2021","P2022"])("reports %s identity storage readiness without exposing metadata", async code => {
+    mocks.readIdentity.mockRejectedValue({code,message:"private schema detail"});
+    const { GET }=await import("../route");const response=await GET();const body=await response.json();
+    expect(response.status).toBe(200);expect(body.data.agentIdentityState).toBe("migration_pending");expect(body.data.agentIdentity).toBeNull();expect(JSON.stringify(body)).not.toContain("private schema");
+  });
+  it("distinguishes an empty ready identity store from failed storage",async()=>{
+    const { GET }=await import("../route");const response=await GET();expect((await response.json()).data.agentIdentityState).toBe("ready");
+  });
+  it.each(["P2021","P2022"])("returns bounded503 for an identity save with %s",async code=>{
+    mocks.saveIdentity.mockRejectedValueOnce({code,message:"private schema detail"});
+    const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"Axiom",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();
+    expect(response.status).toBe(503);expect(body.error).toBe("agent_identity_migration_pending");expect(JSON.stringify(body)).not.toContain("private schema");expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+  it("does not report identity-save success when its audit cannot be recorded",async()=>{
+    mocks.recordAudit.mockRejectedValueOnce(Error("private audit failure"));
+    const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"Axiom",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();
+    expect(response.status).toBe(503);expect(body.error).toBe("policy_audit_unconfirmed");expect(JSON.stringify(body)).not.toContain("private audit");expect(mocks.saveIdentity).toHaveBeenCalledOnce();
+  });
+
+  it("does not label an unknown identity read failure as migration pending",async()=>{
+    mocks.readIdentity.mockRejectedValueOnce(Error("private connection diagnostic"));const { GET }=await import("../route");const response=await GET();const body=await response.json();expect(body.data.agentIdentityState).toBe("unavailable");expect(JSON.stringify(body)).not.toContain("private connection");
+  });
+  it("keeps unknown identity write failures generic and does not invoke error-code coercion",async()=>{
+    const toString=vi.fn(()=>"P2021");mocks.saveIdentity.mockRejectedValueOnce({code:{toString},message:"private connection diagnostic"});const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"Axiom",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();expect(response.status).toBe(503);expect(body.error).toBe("agent_identity_unavailable");expect(JSON.stringify(body)).not.toContain("private connection");expect(toString).not.toHaveBeenCalled();expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { section: "provider_policy", enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "service-default" }, fallbackOrder: ["vercel_gateway"] },
+    { section: "autonomy", mode: "observer", perCycleActionLimit: 1 },
+    { section: "budget", defaultMaxCostCents: 100 },
+  ])("does not confirm $section when its required audit fails after mutation", async body => {
+    mocks.recordAudit.mockRejectedValueOnce(Error("private audit diagnostic"));
+    mocks.upsertCharter.mockResolvedValue({ mode: "observer", resolved: { perCycleActionLimit: 1 } });
+    const { PATCH } = await import("../route");
+    const result = await PATCH(request(body));
+    expect(result.status).toBe(503);
+    const payload = await result.json();
+    expect(payload.error).toBe("policy_audit_unconfirmed");
+    expect(JSON.stringify(payload)).not.toContain("private audit");
+    expect(mocks.recordAudit).toHaveBeenCalledOnce();
+  });
+
 });

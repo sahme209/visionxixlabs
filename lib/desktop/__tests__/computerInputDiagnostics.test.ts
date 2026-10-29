@@ -1,0 +1,14 @@
+import {it,expect} from 'vitest';
+import {computerInputStatusSchema,computerInputRecoveryMessage,safeComputerInputError} from '../../../desktop/src/lib/computerInputContract';
+const status={source:'native_selected_window_input',supported:true,inputAvailable:false,typeAvailable:false,pressAvailable:false,ownerAuthorityAvailable:false,foregroundPolicyAvailable:true,aiSharingAvailable:false,backgroundInput:false};
+it.each(['owner_credential_unavailable','owner_service_unavailable','owner_service_refused','owner_proof_invalid','owner_proof_time_invalid','owner_proof_binding_invalid','owner_proof_native_rejected'])('shows only the safe %s stage while refusing input',reason=>{const result=computerInputStatusSchema.parse({...status,reason});expect(result.inputAvailable).toBe(false);expect(result.ownerAuthorityAvailable).toBe(false);expect(computerInputRecoveryMessage(reason)).toContain('No input was enabled.');expect(computerInputRecoveryMessage(reason)).not.toContain('not enabled for this workspace')});
+it('rejects arbitrary native diagnostics and never reflects unknown error values',()=>{expect(computerInputStatusSchema.safeParse({...status,reason:'private_token_example'}).success).toBe(false);expect(computerInputRecoveryMessage('private_token_example')).not.toContain('private_token_example');expect(computerInputStatusSchema.safeParse({...status,inputAvailable:true,typeAvailable:true,ownerAuthorityAvailable:true,reason:'owner_service_unavailable'}).success).toBe(false)});
+
+it('maps the actual native Accessibility refusal to the existing permission recovery',()=>{expect(computerInputRecoveryMessage('accessibility_unavailable')).toBe(computerInputRecoveryMessage('accessibility_permission_required'));expect(computerInputRecoveryMessage('accessibility_unavailable')).toContain('Mac accessibility access is required')});
+
+it('uses actionable fixed native preparation messages without reflecting private error text',()=>{for(const code of ['native_input_target_unavailable','native_input_ambiguous_window','native_input_expired','native_input_session_changed','native_input_accessibility_unavailable'])expect(computerInputRecoveryMessage(code)).not.toContain('could not be confirmed');expect(safeComputerInputError('native_input_target_unavailable')).toBe('native_input_target_unavailable');expect(safeComputerInputError('native_input_target_unavailable: private window')).toBe('input_unavailable');expect(computerInputRecoveryMessage('private bearer secret')).not.toContain('secret')});
+it('explains saved or autosaved TextEdit targets without exposing their location',()=>{
+ expect(safeComputerInputError('native_input_saved_document')).toBe('native_input_saved_document');
+ expect(computerInputRecoveryMessage('native_input_saved_document')).toContain('saved or autosaved');
+ expect(computerInputRecoveryMessage('native_input_saved_document')).toContain('No text was changed');
+});

@@ -47,9 +47,14 @@ interface AwsCredsBlob {
   externalId: string;
   region: string;
   awsAccountId: string;
+  leadId: string;
+  leadUpdatedAt: Date;
+  userId: string;
+  userEmail: string;
+  encryptedCredRef: string;
 }
 
-async function resolveAwsCredsForOrg(organizationId: string): Promise<AwsCredsBlob | null> {
+async function resolveAwsCredsForOrg(organizationId: string, expectedAccountId: string): Promise<AwsCredsBlob | null> {
   // Resolve credentials the same way /api/scan/trigger does: scan all
   // cloud-operator Leads, look up the linked user's email separately
   // (Lead has no `user` relation defined), derive the workspace id,
@@ -61,7 +66,7 @@ async function resolveAwsCredsForOrg(organizationId: string): Promise<AwsCredsBl
     where: { source: "cloud-operator", userId: { not: null } },
     orderBy: { updatedAt: "desc" },
     take: 200, // bound the worst case
-    select: { id: true, userId: true, fullPayload: true },
+    select: { id: true, userId: true, fullPayload: true, updatedAt: true },
   });
   const userIds = candidates
     .map((l) => l.userId)
@@ -91,8 +96,10 @@ async function resolveAwsCredsForOrg(organizationId: string): Promise<AwsCredsBl
       const externalId = typeof obj.externalId === "string" ? obj.externalId : null;
       const region = typeof obj.region === "string" ? obj.region : "us-east-1";
       const awsAccountId = typeof obj.awsAccountId === "string" ? obj.awsAccountId : null;
-      if (!roleArn || !externalId || !awsAccountId) continue;
-      return { roleArn, externalId, region, awsAccountId };
+      if (!roleArn || !externalId || !awsAccountId || awsAccountId !== expectedAccountId
+        || !new RegExp(`^arn:(aws|aws-us-gov|aws-cn):iam::${expectedAccountId}:role/[A-Za-z0-9_+=,.@/\\-]+$`).test(roleArn)) continue;
+      if (!(lead.updatedAt instanceof Date) || !Number.isFinite(lead.updatedAt.getTime())) continue;
+      return { roleArn, externalId, region, awsAccountId, leadId: lead.id, leadUpdatedAt: lead.updatedAt, userId: lead.userId!, userEmail, encryptedCredRef: aws.encryptedCredRef };
     } catch {
       continue;
     }
@@ -103,6 +110,7 @@ async function resolveAwsCredsForOrg(organizationId: string): Promise<AwsCredsBl
 export async function GET(req: NextRequest) {
   // Vercel cron auth: expects Bearer CRON_SECRET when set.
   const expected = process.env.CRON_SECRET;
+  if (!expected) return NextResponse.json({ error: "cron_unavailable" }, { status: 503 });
   if (expected) {
     const auth = req.headers.get("authorization") ?? "";
     if (auth !== `Bearer ${expected}`) {
@@ -117,6 +125,7 @@ export async function GET(req: NextRequest) {
     cloudAccountId: string;
     frequency: string;
     consecutiveFailures: number;
+    updatedAt: Date;
   }> = [];
   try {
     due = await prisma.axiomScheduledRun.findMany({
@@ -128,6 +137,7 @@ export async function GET(req: NextRequest) {
         cloudAccountId: true,
         frequency: true,
         consecutiveFailures: true,
+        updatedAt: true,
       },
     });
   } catch (err) {
@@ -141,12 +151,22 @@ export async function GET(req: NextRequest) {
   let succeeded = 0;
   let failed = 0;
   for (const sched of due) {
+    if (!(sched.updatedAt instanceof Date) || !Number.isFinite(sched.updatedAt.getTime())) {failed++; continue;}
+    let scheduleVersion = sched.updatedAt;
     const correlationId = `sched_${sched.id.slice(0, 8)}_${Date.now().toString(36)}` as CorrelationId;
-    const creds = await resolveAwsCredsForOrg(sched.organizationId);
+    const account = await prisma.cloudAccount.findFirst({
+      where: { id: sched.cloudAccountId, organizationId: sched.organizationId, provider: "aws", enabled: true, credentialRef: null },
+      select: {id: true, organizationId: true, provider: true, externalAccountId: true, enabled: true, credentialRef: true, updatedAt: true},
+    });
+    const eligible = account && account.updatedAt instanceof Date && Number.isFinite(account.updatedAt.getTime())
+      && sched.updatedAt instanceof Date && Number.isFinite(sched.updatedAt.getTime()) && account.id === sched.cloudAccountId && account.organizationId === sched.organizationId
+      && account.provider === "aws" && account.enabled && account.credentialRef === null && /^\d{12}$/.test(account.externalAccountId);
+    // Modern enrollment never falls back to the legacy Lead credential store.
+    const creds = eligible ? await resolveAwsCredsForOrg(sched.organizationId, account.externalAccountId) : null;
     if (!creds) {
       // No credentials available — disable so we stop hitting the same row.
-      await prisma.axiomScheduledRun.update({
-        where: { id: sched.id },
+      await prisma.axiomScheduledRun.updateMany({
+        where: { id: sched.id, organizationId: sched.organizationId, cloudAccountId: sched.cloudAccountId, enabled: true, updatedAt: scheduleVersion },
         data: { enabled: false, lastDiffSummary: "Disabled: no credentials available." },
       });
       failed++;
@@ -154,6 +174,24 @@ export async function GET(req: NextRequest) {
     }
 
     try {
+      const current = await prisma.cloudAccount.findFirst({where: {id: account!.id, organizationId: sched.organizationId, provider: "aws", enabled: true, credentialRef: null, updatedAt: account!.updatedAt}});
+      if (!current || !current.enabled || current.credentialRef !== null || current.externalAccountId !== creds.awsAccountId) throw new Error("scheduled_account_changed");
+      const activeSchedule = await prisma.axiomScheduledRun.findFirst({where: {id: sched.id, organizationId: sched.organizationId, cloudAccountId: sched.cloudAccountId, enabled: true, updatedAt: sched.updatedAt}});
+      if (!activeSchedule || !activeSchedule.enabled) throw new Error("scheduled_authority_changed");
+      const currentLead = await prisma.lead.findFirst({where: {id: creds.leadId, userId: creds.userId, source: "cloud-operator", updatedAt: creds.leadUpdatedAt}, select: {fullPayload: true}});
+      const currentUser = await prisma.user.findFirst({where: {id: creds.userId, email: creds.userEmail}, select: {email: true}});
+      const connector = (currentLead?.fullPayload as {connectors?: {aws?: {status?: unknown; encryptedCredRef?: unknown}}} | null)?.connectors?.aws;
+      if (!currentUser?.email || deriveWorkspaceIdFromEmail(currentUser.email.toLowerCase()) !== sched.organizationId
+        || connector?.status !== "linked" || connector.encryptedCredRef !== creds.encryptedCredRef) throw new Error("scheduled_credential_changed");
+      // A short lease prevents overlapping ticks from dispatching the same due
+      // revision. A crashed attempt can be reconsidered after the lease expires.
+      const claimTime = new Date(Math.max(Date.now(), sched.updatedAt.getTime() + 1));
+      const claimed = await prisma.axiomScheduledRun.updateMany({
+        where: {id: sched.id, organizationId: sched.organizationId, cloudAccountId: sched.cloudAccountId, enabled: true, updatedAt: scheduleVersion, nextRunAt: {lte: now}},
+        data: {updatedAt: claimTime, nextRunAt: new Date(claimTime.getTime() + 7 * 60 * 1000)},
+      });
+      if (claimed.count !== 1) throw new Error("scheduled_scan_already_claimed");
+      scheduleVersion = claimTime;
       const live = await runMultiRegionAwsInventory({
         organizationId: ids.organization(sched.organizationId),
         roleArn: creds.roleArn,
@@ -161,6 +199,7 @@ export async function GET(req: NextRequest) {
         discoveryRegion: creds.region,
         perCallTimeoutMs: 8_000,
       });
+      if (live.accountId !== creds.awsAccountId) throw new Error("scheduled_account_identity_mismatch");
       const persisted = await persistScanRun({
         organizationId: ids.organization(sched.organizationId),
         userId: ids.user(`scheduler:${sched.id}`),
@@ -174,8 +213,9 @@ export async function GET(req: NextRequest) {
         source: live.source,
         summary: `Scheduled scan · ${live.snapshot.resources.length} resources · ${live.findings.length} findings`,
       });
-      await prisma.axiomScheduledRun.update({
-        where: { id: sched.id },
+      if (!persisted) throw new Error("scheduled_scan_persistence_unavailable");
+      const recorded = await prisma.axiomScheduledRun.updateMany({
+        where: { id: sched.id, organizationId: sched.organizationId, cloudAccountId: sched.cloudAccountId, enabled: true, updatedAt: scheduleVersion },
         data: {
           nextRunAt: nextRunFromCron(sched.frequency),
           lastRunId: persisted?.runId ?? null,
@@ -183,6 +223,7 @@ export async function GET(req: NextRequest) {
           consecutiveFailures: 0,
         },
       });
+      if (recorded.count !== 1) throw new Error("scheduled_result_authority_changed");
       await auditRecord({
         organizationId: ids.organization(sched.organizationId),
         actorUserId: ids.user(`scheduler:${sched.id}`),
@@ -196,11 +237,11 @@ export async function GET(req: NextRequest) {
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
       const nextFailures = sched.consecutiveFailures + 1;
-      await prisma.axiomScheduledRun.update({
-        where: { id: sched.id },
+      await prisma.axiomScheduledRun.updateMany({
+        where: { id: sched.id, organizationId: sched.organizationId, cloudAccountId: sched.cloudAccountId, enabled: true, updatedAt: scheduleVersion },
         data: {
           consecutiveFailures: nextFailures,
-          enabled: nextFailures < MAX_FAILURES_BEFORE_DISABLE,
+          ...(nextFailures >= MAX_FAILURES_BEFORE_DISABLE ? {enabled: false} : {}),
           lastDiffSummary: `Failed: ${msg.slice(0, 200)}`,
           nextRunAt: nextRunFromCron(sched.frequency),
         },

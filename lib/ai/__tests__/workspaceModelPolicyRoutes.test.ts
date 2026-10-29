@@ -9,6 +9,7 @@ vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ st
 vi.mock("@/lib/ai/gatewayModelCatalog", async original => ({ ...await original<typeof import("@/lib/ai/gatewayModelCatalog")>(), loadGatewayModelCatalog: mocks.catalog }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", async original => ({ ...await original<typeof import("@/lib/ai/workspaceProviderPolicy")>(), saveWorkspaceAIProviderPolicy: mocks.save, loadWorkspaceAIProviderPolicyWithState: async () => ({ storageState: "ready", policy: null }) }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.audit }));
+vi.mock("@/lib/audit/requiredAudit", () => ({ recordRequiredAudit: mocks.audit }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: mocks.audit }));
 vi.mock("@/lib/axiom/agentRuntime/agentIdentityPolicy", () => ({ agentToolCatalog: vi.fn(), normalizeAgentIdentityInput: vi.fn(), readWorkspaceAgentIdentity: vi.fn(), saveWorkspaceAgentIdentity: vi.fn() }));
 vi.mock("@/lib/autonomy/tenantCharterStore", () => ({ readTenantCharter: vi.fn(), upsertTenantCharter: vi.fn() }));

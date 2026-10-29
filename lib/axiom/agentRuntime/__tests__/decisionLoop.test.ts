@@ -9,6 +9,7 @@ vi.mock("../governedAiCall", () => ({ resolveGovernedAiCall: mocks.resolveGovern
 vi.mock("../agentIdentityPolicy", () => ({ readWorkspaceAgentIdentity: mocks.readWorkspaceAgentIdentity }));
 
 import { resolveAgentEffortProfile, runDecisionLoop } from "../decisionLoop";
+import { AccountedDecisionMalformed } from "@/lib/ai/accountedDecisionMalformed";
 
 function governed(extractImpl: (text: string, schemaHint: string, correlationId: string) => Promise<unknown>) {
   return {
@@ -32,6 +33,54 @@ describe("runDecisionLoop", () => {
     });
   });
 
+  it("bounds every model transcript while preserving latest intent and selected scope across tool steps",async()=>{
+    const prompts:string[]=[];
+    const extract=vi.fn(async(text:string)=>{prompts.push(text);return prompts.length===1?{action:"call_tool",toolName:"list_environments",args:{},message:"Read recorded environments"}:{action:"respond",message:"Reviewed partial evidence"}});
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const current="CURRENT USER REQUEST "+"界".repeat(5000),selection="Repository: selected/current\nBranch: safe-current";
+    const result=await runDecisionLoop({organizationId:"o",userId:"actor",correlationId:"bounded",transcript:[...Array.from({length:300},(_,i)=>({role:"assistant" as const,content:`old-${i} `+"x".repeat(5000)})),{role:"user",content:current}],workspaceContext:"Recently used repositories: stale/previous",currentRequestContext:selection,maxDecisionSteps:2,executeReadOnlyTool:async()=>({ok:true,result:{environments:"x".repeat(24000)}}),isProdEnvironmentTarget:noopProdCheck});
+    expect(result.kind).toBe("final");expect(prompts).toHaveLength(2);
+    for(const prompt of prompts){const text=prompt.split("Conversation so far:\n")[1].split("\n\nDecide the next step.")[0];expect(Buffer.byteLength(text)).toBeLessThanOrEqual(65536);expect(text).toContain(current);expect(text).not.toContain("old-0 ");expect(prompt).toContain(selection);expect(prompt).toContain("When a current UI selection conflicts");}
+    expect(prompts[1]).toContain("Content truncated");
+  });
+  it('refuses another model step or write proposal when current source evidence exceeds the prompt budget',async()=>{
+    const extract=vi.fn().mockResolvedValueOnce({action:'call_tool',toolName:'read_github_file',args:{repositoryFullName:'owner/repo',branch:'main',path:'large.ts'},message:'Read complete source'}).mockResolvedValueOnce({action:'call_tool',toolName:'commit_github_file',args:{repositoryFullName:'owner/repo',branch:'main',path:'large.ts',content:'unsafe partial replacement'},message:'Write partial file'});
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));const execute=vi.fn(async()=>({ok:true as const,result:{content:'x'.repeat(70000),sha:'a'.repeat(40)}}));
+    const result=await runDecisionLoop({organizationId:'o',userId:'actor',correlationId:'large-source',transcript:[{role:'user',content:'Review and fix this complete file'}],maxDecisionSteps:2,executeReadOnlyTool:execute,isProdEnvironmentTarget:noopProdCheck});
+    expect(result).toMatchObject({kind:'final',message:'Evidence exceeded this request context limit; inspect a smaller scope before proposing changes.'});expect(extract).toHaveBeenCalledOnce();expect(execute).toHaveBeenCalledOnce();expect(result.kind).not.toBe('proposal');
+  });
+  it('preserves complete current file evidence and existing approval-gated code proposals when it fits',async()=>{
+    const source='complete-source '+ 'x'.repeat(16000);const prompts:string[]=[];const extract=vi.fn(async(text:string)=>{prompts.push(text);return prompts.length===1?{action:'call_tool',toolName:'read_github_file',args:{repositoryFullName:'owner/repo',branch:'main',path:'file.ts'},message:'Read source'}:{action:'call_tool',toolName:'commit_github_file',args:{repositoryFullName:'owner/repo',branch:'main',path:'file.ts',content:'complete replacement',message:'Reviewed update'},message:'Propose reviewed change'}});
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));const execute=vi.fn(async()=>({ok:true as const,result:{content:source,sha:'a'.repeat(40)}}));const result=await runDecisionLoop({organizationId:'o',userId:'actor',correlationId:'complete-source',transcript:[{role:'user',content:'Review and fix the whole selected file'}],maxDecisionSteps:2,executeReadOnlyTool:execute,isProdEnvironmentTarget:noopProdCheck});expect(result.kind).toBe('proposal');expect(prompts[1]).toContain(source);expect(execute).toHaveBeenCalledOnce();
+  });
+  it('shows an omission marker for a short DB-limited tail without dropping the current request',async()=>{const prompts:string[]=[];mocks.resolveGovernedAiCall.mockResolvedValue(governed(async text=>{prompts.push(text);return{action:'respond',message:'Reviewed bounded history'}}));await runDecisionLoop({organizationId:'o',userId:'actor',correlationId:'sentinel',earlierHistoryOmitted:true,transcript:[{role:'assistant',content:'Prior short reply'},{role:'user',content:'Current short request'}],executeReadOnlyTool:noopReadOnly,isProdEnvironmentTarget:noopProdCheck});expect(prompts[0]).toContain('Earlier conversation omitted');expect(prompts[0]).toContain('Current short request')});
+  it("refuses abnormal direct runtime input before AI admission without silently trimming the request",async()=>{const result=await runDecisionLoop({organizationId:"o",userId:"actor",correlationId:"bounded",transcript:[{role:"user",content:"x".repeat(32769)}],executeReadOnlyTool:noopReadOnly,isProdEnvironmentTarget:noopProdCheck});expect(result).toMatchObject({kind:"error",error:"decision_malformed"});expect(mocks.resolveGovernedAiCall).not.toHaveBeenCalled()});
+  it.each(["disabled", "removed", "unavailable"] as const)("refuses another model decision after Agent policy becomes %s during a tool read", async change => {
+    const extract = vi.fn(async () => ({ action: "call_tool", message: "Inspect", toolName: "list_environments", args: {} }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    const tool = vi.fn(async () => {
+      if (change === "unavailable") mocks.readWorkspaceAgentIdentity.mockRejectedValue(new Error("private storage error"));
+      else mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: change !== "disabled", allowedTools: [] });
+      return { ok: true as const, result: { environments: [] } };
+    });
+    expect(await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck }))
+      .toMatchObject({ kind: "error", error: change === "disabled" ? "workspace_agent_disabled" : change === "removed" ? "agent_tool_not_allowed" : "workspace_agent_policy_unavailable" });
+    expect(extract).toHaveBeenCalledOnce(); expect(tool).toHaveBeenCalledOnce();
+  });
+
+  it("does not purchase an accounted JSON repair after the Agent is disabled", async () => {
+    const extract = vi.fn(async () => {
+      mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: false, allowedTools: [] });
+      throw new AccountedDecisionMalformed({ promptTokens: 1, completionTokens: 1, totalTokens: 2 });
+    });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    expect(await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck }))
+      .toMatchObject({ kind: "error", error: "workspace_agent_disabled", usage: { decisionSteps: 1, totalTokens: 2 } });
+    expect(extract).toHaveBeenCalledOnce();
+  });
+
   it("fails closed before inference when the workspace Agent is disabled", async () => {
     mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: false, allowedTools: [] });
     const result = await runDecisionLoop({
@@ -40,6 +89,24 @@ describe("runDecisionLoop", () => {
     });
     expect(result).toEqual({ kind: "error", error: "workspace_agent_disabled" });
     expect(mocks.resolveGovernedAiCall).not.toHaveBeenCalled();
+  });
+
+  it("ignores an optional repository grounding hint outside the current allowlist and completes the permitted environment request", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
+    let step = 0;
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ++step === 1
+      ? { action: "call_tool", message: "Reading environment names.", toolName: "list_environments", args: {} }
+      : { action: "respond", message: "The configured environment is staging." }));
+    const executed: string[] = [];
+    const result = await runDecisionLoop({
+      organizationId: "o", userId: "actor", correlationId: "grounding-policy", operationMode: "inspect",
+      transcript: [{ role: "user", content: "List configured environment names; no changes." }],
+      initialToolCall: { toolName: "inspect_github_repository", args: { repositoryFullName: "fixture/repo", branch: "main" }, message: "Optional repository grounding." },
+      executeReadOnlyTool: async name => { executed.push(name); return { ok: true, result: { environments: [{ name: "staging" }] } }; },
+      isProdEnvironmentTarget: noopProdCheck,
+    });
+    expect(result).toMatchObject({ kind: "final", message: "The configured environment is staging." });
+    expect(executed).toEqual(["list_environments"]);
   });
 
   it("blocks a registered tool omitted from the Agent identity allowlist", async () => {
@@ -54,6 +121,41 @@ describe("runDecisionLoop", () => {
     expect(result).toEqual(expect.objectContaining({ kind: "error", error: "agent_tool_not_allowed" }));
   });
 
+  it.each([
+    {tools: ["read_github_file", "commit_github_file"], profile: "coding" as const},
+    {tools: ["commit_github_file"], profile: "coding" as const},
+    {tools: ["read_github_file", "trigger_aws_deploy", "list_integrations"], profile: "coding" as const},
+  ])("does not recommend discovery tools excluded by the effective identity/profile ($tools)", async ({tools, profile}) => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: tools});
+    const extract = vi.fn(async (prompt: string) => { expect(prompt).toBeTruthy(); return {action: "respond", message: "I can only use the available tools."}; });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [{role: "user", content: "Update the selected file"}], agentProfile: profile, executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck});
+    const prompt = String(extract.mock.calls[0]?.[0] ?? "");
+    for (const excluded of ["list_github_files", "inspect_github_repository", "search_github_code", "check_deploy_status"]) expect(prompt).not.toContain(excluded);
+    expect(prompt).not.toContain("Prefer calling list_integrations");
+  });
+  it("retains discovery guidance when those capabilities are actually allowed", async () => {
+    const tools = ["inspect_github_repository", "search_github_code", "list_github_files"];
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: tools});
+    const extract = vi.fn(async (prompt: string) => { expect(prompt).toBeTruthy(); return {action: "respond", message: "Ready to inspect available evidence."}; });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [{role: "user", content: "Review this repository"}], agentProfile: "coding", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck});
+    const prompt = String(extract.mock.calls[0]?.[0] ?? "");
+    for (const enabled of tools) expect(prompt).toContain(`- ${enabled} (risk: low)`);
+    expect(prompt).toContain("call inspect_github_repository");
+    expect(prompt).toContain("call search_github_code");
+    expect(prompt).not.toContain("No discovery tools are available");
+  });
+  it("keeps cloud-only evidence capabilities visible without claiming discovery is unavailable", async () => {
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: ["list_cloud_accounts", "read_aws_inventory"]});
+    const extract = vi.fn(async (prompt: string) => { expect(prompt).toBeTruthy(); return {action: "respond", message: "Only bounded cloud evidence is available."}; });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [{role: "user", content: "What cloud evidence is available?"}], agentProfile: "cloud_deployment", executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck});
+    const prompt = String(extract.mock.calls[0]?.[0] ?? "");
+    expect(prompt).toContain("- read_aws_inventory (risk: low)");
+    expect(prompt).toContain("- list_cloud_accounts (risk: low)");
+    expect(prompt).not.toContain("No discovery tools are available");
+  });
   it("returns the governed-AI error directly when the workspace hasn't enabled AI", async () => {
     mocks.resolveGovernedAiCall.mockResolvedValue({ ok: false, error: "workspace_ai_disabled" });
     const result = await runDecisionLoop({
@@ -234,6 +336,32 @@ describe("runDecisionLoop", () => {
     expect(deepops).toEqual({ kind: "error", error: "max_iterations_exceeded" });
     expect(extract).toHaveBeenCalledTimes(6);
     expect(mocks.resolveGovernedAiCall).toHaveBeenCalledWith("o", undefined, "actor", undefined);
+  });
+
+  it.each([false, true])("enforces one model attempt including malformed repair (%s)", async malformed => {
+    const extract = vi.fn(async () => {
+      if (malformed) throw new AccountedDecisionMalformed({ promptTokens: 1, completionTokens: 1, totalTokens: 2 });
+      return { action: "call_tool", message: "Inspect", toolName: "list_environments", args: {} };
+    });
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "bounded", transcript: [], operationMode: "inspect", maxDecisionSteps: 1,
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    expect(extract).toHaveBeenCalledTimes(1);
+  });
+
+  it("cannot expand the operation mode with a larger request limit", async () => {
+    const extract = vi.fn(async () => ({ action: "call_tool", message: "Inspect", toolName: "list_environments", args: {} }));
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+    await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "bounded", transcript: [], operationMode: "inspect", maxDecisionSteps: 6,
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    expect(extract).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([0, -1, 1.5, 7, NaN, Infinity, "1", null])("rejects invalid model-call limits before admission: %s", async limit => {
+    const result = await runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "bounded", transcript: [], maxDecisionSteps: limit as number,
+      executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck });
+    expect(result).toMatchObject({ kind: "error", error: "invalid_decision_limit" });
+    expect(mocks.resolveGovernedAiCall).not.toHaveBeenCalled();
   });
 
   it("maps legacy modes to conservative effort budgets", () => {
@@ -488,14 +616,22 @@ describe("runDecisionLoop", () => {
 
 
 describe("streaming cancellation does not grant a paid repair or tool execution", () => {
-  it("stops on stream uncertainty without a second extraction", async () => {
+  it("does not mistake an unaccounted parser exception for permission to make a repair call",async()=>{
+    const extract=vi.fn(async()=>{throw new SyntaxError("synthetic unaccounted failure");});
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled:true,allowedTools:["list_environments"]});
+    mocks.resolveGovernedAiCall.mockResolvedValue({ok:true,extract});
+    const tool=vi.fn();
+    await expect(runDecisionLoop({organizationId:"o",userId:"actor",correlationId:"unaccounted",transcript:[],executeReadOnlyTool:tool,isProdEnvironmentTarget:noopProdCheck})).rejects.toBeInstanceOf(SyntaxError);
+    expect(extract).toHaveBeenCalledOnce();expect(tool).not.toHaveBeenCalled();
+  });
+  it.each([false, true])("stops on dispatch uncertainty without a second extraction (streaming=%s)", async streaming => {
     const { AgentStreamInterrupted } = await import("@/lib/ai/streamedDecisionMessage");
     mocks.readWorkspaceAgentIdentity.mockResolvedValue({ enabled: true, allowedTools: ["list_environments"] });
     const extract = vi.fn(async () => { throw new AgentStreamInterrupted(); });
     mocks.resolveGovernedAiCall.mockResolvedValue({ ok: true, extract });
     const tool = vi.fn();
     await expect(runDecisionLoop({ organizationId: "o", userId: "actor", correlationId: "c", transcript: [], executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck,
-      streaming: { abortSignal: new AbortController().signal, onDraft: () => undefined },
+      ...(streaming ? { streaming: { abortSignal: new AbortController().signal, onDraft: () => undefined } } : {}),
     })).rejects.toMatchObject({ name: "AgentStreamInterrupted" });
     expect(extract).toHaveBeenCalledOnce(); expect(tool).not.toHaveBeenCalled();
   });
@@ -583,4 +719,92 @@ describe("specialized Agent permission ceilings", () => {
       executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck })).toMatchObject({ kind: "final", message: expect.stringContaining("No operational action was proposed") });
   });
 
+});
+
+describe("actual read-only tool activity", () => {
+  beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: ["read_github_file", "commit_github_file"]});
+  });
+  it.each([true, false])("observes real tool start and returned outcome without arguments (%s)", async ok => {
+    const activity = vi.fn();
+    let decisions = 0;
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ++decisions === 1
+      ? {action: "call_tool", message: "Read", toolName: "read_github_file", args: {path: "private.ts"}}
+      : {action: "respond", message: "Reviewed"}));
+    const outcome = await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      streaming: {abortSignal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity},
+      executeReadOnlyTool: async () => {
+        expect(activity).toHaveBeenCalledWith({step: 1, toolName: "read_github_file", state: "running"});
+        return ok ? {ok: true, result: {private: "not in activity"}} : {ok: false, error: "private failure"};
+      }, isProdEnvironmentTarget: noopProdCheck});
+    expect(outcome.kind).toBe("final");
+    expect(activity.mock.calls.map(([event]) => event)).toEqual([
+      {step: 1, toolName: "read_github_file", state: "running"},
+      {step: 1, toolName: "read_github_file", state: ok ? "completed" : "failed"},
+    ]);
+  });
+  it("never represents a proposed write as an executing tool", async () => {
+    const activity = vi.fn(), tool = vi.fn();
+    mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({action: "call_tool", message: "Propose", toolName: "commit_github_file", args: {}})));
+    expect(await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+      streaming: {abortSignal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity},
+      executeReadOnlyTool: tool, isProdEnvironmentTarget: noopProdCheck})).toMatchObject({kind: "proposal"});
+    expect(activity).not.toHaveBeenCalled(); expect(tool).not.toHaveBeenCalled();
+  });
+});
+
+it("includes initial repository grounding in tool progress without an extra model step", async () => {
+  vi.resetAllMocks();
+  mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: ["read_github_file"]});
+  const extract = vi.fn(async () => ({action: "respond", message: "Reviewed"})), activity = vi.fn();
+  mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+  const result = await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+    initialToolCall: {toolName: "read_github_file", args: {path: "file.ts"}, message: "Grounding"},
+    streaming: {abortSignal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity},
+    executeReadOnlyTool: noopReadOnly, isProdEnvironmentTarget: noopProdCheck});
+  expect(result.kind).toBe("final");
+  expect(activity.mock.calls.map(([event]) => event.state)).toEqual(["running", "completed"]);
+  expect(extract).toHaveBeenCalledOnce();
+});
+it("does not publish completed tool progress after cancellation during a read", async () => {
+  vi.resetAllMocks();
+  mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: ["read_github_file"]});
+  const controller = new AbortController(), activity = vi.fn(), extract = vi.fn();
+  mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+  await expect(runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+    initialToolCall: {toolName: "read_github_file", args: {}, message: "Grounding"},
+    streaming: {abortSignal: controller.signal, onDraft: vi.fn(), onActivity: activity},
+    executeReadOnlyTool: async () => { controller.abort(); return {ok: true, result: {}}; },
+    isProdEnvironmentTarget: noopProdCheck})).rejects.toMatchObject({name: "AbortError"});
+  expect(activity.mock.calls.map(([event]) => event.state)).toEqual(["running"]);
+  expect(extract).not.toHaveBeenCalled();
+});
+
+it("emits no progress for a read tool denied by current workspace policy", async () => {
+  vi.resetAllMocks();
+  mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled: true, allowedTools: []});
+  mocks.resolveGovernedAiCall.mockResolvedValue(governed(async () => ({action: "call_tool", message: "Read", toolName: "read_github_file", args: {}})));
+  const activity = vi.fn(), execute = vi.fn();
+  expect(await runDecisionLoop({organizationId: "o", userId: "actor", correlationId: "c", transcript: [],
+    streaming: {abortSignal: new AbortController().signal, onDraft: vi.fn(), onActivity: activity},
+    executeReadOnlyTool: execute, isProdEnvironmentTarget: noopProdCheck})).toMatchObject({kind: "error", error: "agent_tool_not_allowed"});
+  expect(activity).not.toHaveBeenCalled(); expect(execute).not.toHaveBeenCalled();
+});
+
+it("rechecks Airflow tool permission after the provider read before sending observation data to another model decision",async()=>{
+ const identity={enabled:true,allowedTools:['read_airflow_tasks']};
+ mocks.readWorkspaceAgentIdentity.mockResolvedValue(identity);
+ const extract=vi.fn().mockResolvedValue({action:'call_tool',message:'Read task state',toolName:'read_airflow_tasks',args:{dagId:'daily',runId:'run'}});
+ mocks.resolveGovernedAiCall.mockResolvedValue(governed(extract));
+ const execute=vi.fn(async()=>{mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled:true,allowedTools:[]});return {ok:true as const,result:{kind:'airflow_observation',tasks:[{taskId:'private-task'}]}};});
+ const result=await runDecisionLoop({organizationId:'o',userId:'actor',correlationId:'c',agentProfile:'automation',operationMode:'inspect',transcript:[{role:'user',content:'Inspect the selected run'}],executeReadOnlyTool:execute,isProdEnvironmentTarget:noopProdCheck});
+ expect(result).toMatchObject({kind:'error',error:'agent_tool_not_allowed'});expect(extract).toHaveBeenCalledOnce();
+});
+
+it("keeps the Automation profile read-only even with a broadly allowed identity and DeepOps mode",async()=>{
+ mocks.readWorkspaceAgentIdentity.mockResolvedValue({enabled:true,allowedTools:['read_airflow_tasks','trigger_aws_deploy']});
+ mocks.resolveGovernedAiCall.mockResolvedValue(governed(async()=>({action:'call_tool',message:'Run it',toolName:'trigger_aws_deploy',args:{environmentId:'prod'}})));
+ const execute=vi.fn();const result=await runDecisionLoop({organizationId:'o',userId:'actor',correlationId:'c',agentProfile:'automation',operationMode:'deepops',transcript:[{role:'user',content:'Restart production'}],executeReadOnlyTool:execute,isProdEnvironmentTarget:noopProdCheck});
+ expect(result).toMatchObject({kind:'error',error:'agent_tool_not_allowed'});expect(execute).not.toHaveBeenCalled();
 });

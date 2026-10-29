@@ -8,7 +8,6 @@
 
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
-import { extractAzureKeyVaults } from "@/lib/cloud/azure/azureKeyVaultExtractor";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -19,11 +18,13 @@ export async function GET(req: NextRequest) {
   try {
     const ctx = await currentContext();
     if (!ctx.isAuthenticated) throw AxiomErrors.validation("auth.required", "Sign in required.");
-    const result = await extractAzureKeyVaults();
+    // Deployment-host credentials are not a tenant-owned connection.
+    // Keep internal extractors separate from this authenticated tenant view.
+    const result = { mode: "blocked" as const, total: 0, noSoftDeleteCount: 0, noPurgeProtectionCount: 0, publicAccessCount: 0, vaults: [], durationMs: 0, limitations: ["tenant_connection_required: Tenant-scoped Azure Key Vault inventory is not wired to this view. Use the verified desktop Azure connection."] };
     return apiOk(result, {
       correlationId,
       safetyContract: "axiom_os_state_read_only",
-      sourceMode: asApiSourceMode(result.mode === "live" ? "live" : "preview"),
+      sourceMode: asApiSourceMode("preview"),
     });
   } catch (err) {
     return apiErr(err, { correlationId, safetyContract: "axiom_os_state_read_only" });

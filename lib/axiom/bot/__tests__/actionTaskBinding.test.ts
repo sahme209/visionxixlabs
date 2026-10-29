@@ -1,0 +1,10 @@
+import {it,expect,vi} from 'vitest';
+import {readBotActionTaskBinding,assertBotActionTaskBinding} from '../actionTaskBinding';
+import {savedBotTaskContentHash} from '../savedTaskSchema';
+const taskId='bot_'+'a'.repeat(64),content={title:'Follow up',instruction:'Prepare one reviewed action',context:''};
+const row={id:taskId,organizationId:'org',createdByUserId:'requester',status:'draft',version:2,...content,contentHash:savedBotTaskContentHash(content)};
+function fixture(patch={}){return {$queryRaw:vi.fn(async()=>[{...row,...patch}])} as any}
+it('binds the server-owned exact saved task and content digest under a row lock',async()=>{const tx=fixture(),binding=await readBotActionTaskBinding(tx,'org','requester',{taskId,expectedVersion:2});expect(binding).toEqual({kind:'saved_bot_task_v1',taskId,taskVersion:2,contentHash:row.contentHash});expect(tx.$queryRaw.mock.calls[0][0].join('')).toContain('FOR SHARE');await assertBotActionTaskBinding(tx,'org','requester',binding)});
+it.each([{organizationId:'other'},{createdByUserId:'other'},{version:3},{status:'completed'},{instruction:'tampered'},{contentHash:'f'.repeat(64)}])('refuses a changed task or forged source %j',async patch=>{await expect(readBotActionTaskBinding(fixture(patch),'org','requester',{taskId,expectedVersion:2})).rejects.toThrow('bot_action_task_changed')});
+it('rejects caller-supplied hashes, extra authority and invalid versions',async()=>{const tx=fixture();for(const ref of [{taskId,expectedVersion:2,contentHash:row.contentHash},{taskId,expectedVersion:-1},{taskId:'other',expectedVersion:2}])await expect(readBotActionTaskBinding(tx,'org','requester',ref)).rejects.toThrow();expect(tx.$queryRaw).not.toHaveBeenCalled()});
+it('leaves legacy unbound operations unchanged, but refuses a changed bound version',async()=>{const tx=fixture();await assertBotActionTaskBinding(tx,'org','requester',undefined);expect(tx.$queryRaw).not.toHaveBeenCalled();await expect(assertBotActionTaskBinding(fixture({version:3}),'org','requester',{kind:'saved_bot_task_v1',taskId,taskVersion:2,contentHash:row.contentHash})).rejects.toThrow()});

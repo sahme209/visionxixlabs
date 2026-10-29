@@ -1,3 +1,5 @@
+import { verifyIntakeWorkflowSource } from "@/lib/tauri/intakeWorkflowSource";
+import { releaseAirflowDependencySchema } from "@/lib/integrations/airflow/releaseDependencySchema";
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { resolveCorrelationId } from "@/lib/api/correlation";
@@ -42,6 +44,7 @@ interface PlaybookSummaryRepo {
 }
 
 interface ReleaseContextSummary {
+    batches: { selectedRunCount: number };
     window: {
         startUtc: string;
         endUtc: string;
@@ -96,6 +99,7 @@ function count(value: unknown): number {
  */
 function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
     const intake = record(intakeJson);
+    const batches = releaseAirflowDependencySchema.safeParse(intake.airflowDependency);
     const noPrRequired = intake.noPrRequired === true;
     const developmentReady = intake.developmentReady === true;
     const productionReady = intake.productionReady === true;
@@ -112,6 +116,7 @@ function summarizeReleaseContext(intakeJson: unknown): ReleaseContextSummary {
         rollbackAvailability !== "yes" ? "A verified rollback path has not been recorded." : null,
     ].filter((value): value is string => Boolean(value));
     return {
+        batches: { selectedRunCount: batches.success ? batches.data.runs.length : 0 },
         window: text(intake.windowStartUtc) && text(intake.windowEndUtc) ? {
             startUtc: text(intake.windowStartUtc)!,
             endUtc: text(intake.windowEndUtc)!,
@@ -274,6 +279,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 error: "invalid_payload",
                 issues: parsed.issues,
             }, { status: 400 });
+        }
+
+        if (!await verifyIntakeWorkflowSource(String(session.organizationId), parsed.intake, request.signal)) {
+            return NextResponse.json({ ok: false, error: "workflow_source_unverified" }, { status: 409 });
         }
 
         const correlationId = resolveCorrelationId(request.headers);

@@ -47,7 +47,7 @@ export const CODE_PROPOSE_SYSTEM_PROMPT = [
   "  - If the instruction is ambiguous, state your assumption clearly before patching.",
   "  - If the instruction asks for something destructive or out of scope, refuse and explain why.",
   "",
-  "The runtime gate will require two human approvers before this patch is shipped — focus on correctness, not on persuading reviewers.",
+  "The configured approval gate must authorize repository writes. Approval principals may include authenticated API keys; do not claim two distinct human reviewers. Focus on correctness, not on persuading reviewers.",
 ].join("\n");
 
 export function buildCodeProposeMessages(input: CodeProposeInput): CodeProposeMessages {

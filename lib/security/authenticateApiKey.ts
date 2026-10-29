@@ -215,7 +215,7 @@ export async function authenticateApiKey(input: AuthenticateInput): Promise<Auth
     let monthlyLimit: number | null = null;
     try {
       const billing = await readBillingPlan(matched.organizationId);
-      const plan = planForStripeTier(billing.tier);
+      const plan = billing.pricingPlan ?? planForStripeTier(billing.tier);
       monthlyLimit = plan.entitlements.monthlyApiV1Calls;
     } catch {
       // Fall back to "starter" defaults rather than locking out.

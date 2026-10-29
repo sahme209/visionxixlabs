@@ -1,0 +1,42 @@
+import { beforeEach, expect, it, vi } from "vitest";
+import type { OrganizationId, UserId } from "@/lib/domain/ids";
+const mocks = vi.hoisted(() => ({ aws: vi.fn(), azure: vi.fn(), azureStorage: vi.fn(), gcp: vi.fn() }));
+vi.mock("../aws/awsServiceInventoryExtractor", () => ({ buildAwsServiceInventory: mocks.aws }));
+vi.mock("../azure/azureLiveInventory", () => ({ extractAzureLiveInventory: mocks.azure }));
+vi.mock("../azure/azureStorageExtractor", () => ({ extractAzureStorageAccounts: mocks.azureStorage }));
+vi.mock("../gcp/gcpLiveInventory", () => ({ extractGcpLiveInventory: mocks.gcp }));
+import { buildUnifiedInventory } from "../unifiedInventoryBuilder";
+beforeEach(() => {
+    vi.resetAllMocks();
+    mocks.aws.mockResolvedValue({ accountIdLastFour: "1234", ec2: { mode: "live", total: 2, publicIpCount: 0 }, s3: { mode: "live", total: 3, publiclyExposedCount: 0, unencryptedCount: 0 }, rds: { mode: "live", total: 1, publiclyAccessibleCount: 0, unencryptedCount: 0 }, iam: { mode: "live", usersWithoutMfaCount: 0, rolesWithWildcardTrustCount: 0, totalUsers: 1 }, lambda: { mode: "live", total: 1 }, loadBalancers: { publicCount: 0 } });
+    mocks.azure.mockResolvedValue({ mode: "blocked", counts: { vmCount: 0, storageAccountCount: 0, vnetCount: 0, nsgCount: 0 }, limitations: [] });
+    mocks.azureStorage.mockResolvedValue({ mode: "blocked", total: 0, limitations: [] });
+    mocks.gcp.mockResolvedValue({ mode: "live", projectId: "host-private-project", counts: { instanceCount: 91, bucketCount: 82, firewallRuleCount: 73 }, publicBucketCount: 64, allOpenFirewallCount: 55, limitations: [] });
+});
+it.each(["tenant-a", "tenant-b"])("does not mix host GCP inventory into %s while preserving scoped AWS", async tenant => {
+    const input = { tenantId: tenant as OrganizationId, actorUserId: "reader" as UserId };
+    const report = await buildUnifiedInventory(input);
+    expect(mocks.aws).toHaveBeenCalledWith(input);
+    expect(report.sections.find(section => section.cloud === "aws")).toMatchObject({ mode: "live", totals: { compute: 2, storage: 3, database: 1 } });
+    const gcp = report.sections.find(section => section.cloud === "gcp")!;
+    expect(gcp).toMatchObject({ mode: "blocked", totals: { compute: 0, storage: 0, database: 0 }, publicExposureCount: 0 });
+    expect(gcp.scopeId).toBeUndefined();
+    expect(gcp.limitations.join(" ")).toContain("tenant_connection_required");
+    expect(report.totalResources).toBe(6);
+    expect(JSON.stringify(report)).not.toContain("host-private-project");
+    expect(mocks.gcp).not.toHaveBeenCalled();
+});
+it("withholds both host Azure inventories while preserving tenant-bound AWS", async () => {
+    mocks.azure.mockResolvedValue({ mode: "live", subscriptionId: "host-private-subscription", counts: { vmCount: 70, storageAccountCount: 60, vnetCount: 50, nsgCount: 40 }, publicIpExposedVmCount: 30, unencryptedStorageCount: 20, limitations: [] });
+    mocks.azureStorage.mockResolvedValue({ mode: "live", total: 60, publicBlobAccessCount: 40, publicNetworkCount: 30, nonHttpsCount: 20, weakTlsCount: 10, accounts: [{ name: "host-private-storage" }], limitations: [] });
+    const report = await buildUnifiedInventory({ tenantId: "other-tenant" as OrganizationId });
+    const azure = report.sections.find(section => section.cloud === "azure")!;
+    expect(azure).toMatchObject({ mode: "blocked", totals: { compute: 0, storage: 0, database: 0 }, publicExposureCount: 0, unencryptedCount: 0, identityWeaknessCount: 0 });
+    expect(azure.scopeId).toBeUndefined();
+    expect(azure.limitations.join(" ")).toContain("verified desktop Azure connection");
+    expect(JSON.stringify(report)).not.toContain("host-private");
+    expect(mocks.azure).not.toHaveBeenCalled();
+    expect(mocks.azureStorage).not.toHaveBeenCalled();
+    expect(mocks.gcp).not.toHaveBeenCalled();
+    expect(report.totalResources).toBe(6);
+});

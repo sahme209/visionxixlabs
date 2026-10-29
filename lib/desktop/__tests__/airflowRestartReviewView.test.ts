@@ -158,7 +158,7 @@ it("does not replace newer DAG catalogs with an older workspace load", async () 
   await screen.findByText("Synthetic restart");
   fireEvent.click(screen.getByRole("button", { name: "Reject" }));
   await screen.findByText("Action rejected and recorded.");
-  fireEvent.click(screen.getByRole("button", { name: "dags" }));
+  fireEvent.click(screen.getByRole("button", { name: "Workflows" }));
   await screen.findByRole("option", { name: "Current DAG" });
   await act(async () => pending.resolve({ ok: true, data: { dags: [{ dagId: "old-dag", displayName: "Obsolete DAG" }] } }));
   expect(screen.queryByRole("option", { name: "Obsolete DAG" })).toBeNull();
@@ -249,7 +249,7 @@ it("refuses running or refreshing history for a DAG removed by the refreshed cat
   mock.dags.mockResolvedValue({ ok: true, data: { dags: [] } });
   fireEvent.click(screen.getByRole("button", { name: "Reject" }));
   await screen.findByText("Action rejected and recorded.");
-  fireEvent.click(screen.getByRole("button", { name: "dags" }));
+  fireEvent.click(screen.getByRole("button", { name: "Workflows" }));
   await waitFor(() => expect(screen.queryByRole("option", { name: "Batch DAG" })).toBeNull());
   expect((screen.getByRole("button", { name: "Run now" }) as HTMLButtonElement).disabled).toBe(true);
   expect(screen.queryByText("old-run")).toBeNull();
@@ -264,7 +264,10 @@ it.each(["password", "token"] as const)("clears the submitted %s after a confirm
   mock.saveConnection.mockResolvedValue({ ok: true });
   render(createElement(AirflowAutomationView));
   fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  await screen.findByText("Secure Airflow connection");
   if (mode === "token") fireEvent.change(screen.getByLabelText("Authentication"), { target: { value: "token" } });
+  fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"), {target:{value:"https://airflow.example.com"}});
+  if (screen.queryByLabelText("Username")) fireEvent.change(screen.getByLabelText("Username"), {target:{value:"fixture"}});
   const field = screen.getByLabelText(mode === "token" ? "Bearer token" : "Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-only-secret" } });
   fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
@@ -274,6 +277,9 @@ it.each(["password", "token"] as const)("clears the submitted %s after a confirm
 it("retains a corrected credential typed while an older connection save is pending", async () => {
   const pending = deferred(); mock.saveConnection.mockReturnValue(pending.promise);
   render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  await screen.findByText("Secure Airflow connection");
+  fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"), {target:{value:"https://airflow.example.com"}});
+  if (screen.queryByLabelText("Username")) fireEvent.change(screen.getByLabelText("Username"), {target:{value:"fixture"}});
   const field = screen.getByLabelText("Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-old" } });
   fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
@@ -284,9 +290,124 @@ it("retains a corrected credential typed while an older connection save is pendi
 it("retains the editable credential when connection validation fails without replaying the save", async () => {
   mock.saveConnection.mockResolvedValue({ ok: false, error: "connection_validation_failed" });
   render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button", { name: "connection" }));
+  await screen.findByText("Secure Airflow connection");
+  fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"), {target:{value:"https://airflow.example.com"}});
+  if (screen.queryByLabelText("Username")) fireEvent.change(screen.getByLabelText("Username"), {target:{value:"fixture"}});
   const field = screen.getByLabelText("Password") as HTMLInputElement;
   fireEvent.change(field, { target: { value: "synthetic-correctable" } });
   fireEvent.click(screen.getByRole("button", { name: "Validate & connect" }));
-  await screen.findByText("connection_validation_failed");
+  await screen.findByText("The Airflow connection could not be validated. Check the endpoint and credentials, then try again.");
   expect(field.value).toBe("synthetic-correctable"); expect(mock.saveConnection).toHaveBeenCalledTimes(1);
+});
+
+
+it.each(["http", "network"])("does not mislabel an unavailable %s connection lookup as a disconnected workspace", async failure => {
+  if (failure === "http") mock.connection.mockResolvedValueOnce({ok:false,error:"airflow_storage_unavailable"});
+  else mock.connection.mockRejectedValueOnce(new Error("private upstream failure"));
+  render(createElement(AirflowAutomationView));
+  await screen.findByText("Airflow connection status unavailable");
+  expect(screen.queryByText("Connect Airflow first")).toBeNull();
+  expect(mock.saveConnection).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button",{name:"Retry connection status"}));
+  await screen.findByText("Connect Airflow first");
+  fireEvent.click(screen.getByRole("button",{name:"Open connection setup"}));
+  await screen.findByText("Secure Airflow connection");
+  expect(mock.saveConnection).not.toHaveBeenCalled();
+  expect(mock.trigger).not.toHaveBeenCalled();
+});
+it("keeps pending connection discovery distinct from not connected", async () => {
+  const pending=deferred();mock.connection.mockReturnValueOnce(pending.promise);
+  render(createElement(AirflowAutomationView));
+  await screen.findByText("Checking Airflow connection…");
+  expect(screen.queryByText("Connect Airflow first")).toBeNull();
+  await act(async()=>pending.resolve({ok:true,data:{connected:false,status:"disconnected"}}));
+  await screen.findByText("Connect Airflow first");
+});
+
+it.each(["http", "network"])("invalidates the DAG catalog after a failed %s refresh instead of keeping a runnable stale DAG", async failure => {
+  mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"connected"}});
+  render(createElement(AirflowAutomationView)); await screen.findByRole("option",{name:"Batch DAG"});
+  if(failure === "http") mock.dags.mockResolvedValue({ok:false,error:"private-provider-diagnostic"});
+  else mock.dags.mockRejectedValue(new Error("private-provider-diagnostic"));
+  fireEvent.click(screen.getByRole("button",{name:"Refresh Airflow workspace"}));
+  await screen.findByText(/DAG catalog could not be verified/);
+  expect(screen.queryByRole("option",{name:"Batch DAG"})).toBeNull();
+  expect((screen.getByRole("button",{name:"Run now"})as HTMLButtonElement).disabled).toBe(true);
+  expect(screen.queryByText("private-provider-diagnostic")).toBeNull();
+});
+it("distinguishes an unavailable approval read from an empty approval queue and does not retain approval buttons",async()=>{
+  render(createElement(AirflowAutomationView)); await screen.findByText("Connect Airflow first");
+  fireEvent.click(screen.getByRole("button",{name:"approvals"})); await screen.findByText("Synthetic restart");
+  mock.automations.mockResolvedValue({ok:false,error:"private-history-diagnostic"});
+  fireEvent.click(screen.getByRole("button",{name:"Refresh Airflow workspace"}));
+  await screen.findByText(/Automation history could not be verified/);
+  expect(screen.queryByText("No actions are waiting for approval.")).toBeNull();
+  expect(screen.queryByRole("button",{name:"Approve service restart"})).toBeNull();
+});
+it("labels failed run history and refreshes real history after one reviewed manual run",async()=>{
+  mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"connected"}});
+  mock.runs.mockResolvedValueOnce({ok:false,error:"upstream-secret"}).mockResolvedValue({ok:true,data:{runs:[{dagRunId:"fresh-run",state:"queued"}]}});
+  mock.trigger.mockResolvedValue({ok:true});
+  render(createElement(AirflowAutomationView)); await screen.findByText(/Run history could not be verified/);
+  fireEvent.click(screen.getByRole("button",{name:"Run now"}));
+  expect(mock.trigger).not.toHaveBeenCalled();
+  expect(screen.getByRole("alertdialog",{name:"Run Airflow DAG"})).toBeTruthy();
+  fireEvent.click(screen.getByRole("button",{name:"Confirm DAG run"}));
+  await screen.findByText("fresh-run");
+  expect(mock.trigger).toHaveBeenCalledExactlyOnceWith("batch-dag");
+  expect(screen.queryByText("upstream-secret")).toBeNull();
+});
+it("keeps incomplete or non-HTTPS connection forms from submitting credentials",async()=>{
+ render(createElement(AirflowAutomationView)); fireEvent.click(screen.getByRole("button",{name:"connection"}));await screen.findByText("Secure Airflow connection");
+ const connect=screen.getByRole("button",{name:"Validate & connect"})as HTMLButtonElement;expect(connect.disabled).toBe(true);
+ fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"),{target:{value:"http://airflow.example.com"}});
+ fireEvent.change(screen.getByLabelText("Username"),{target:{value:"fixture"}});fireEvent.change(screen.getByLabelText("Password"),{target:{value:"synthetic"}});
+ expect(connect.disabled).toBe(true);fireEvent.change(screen.getByLabelText("Airflow HTTPS origin"),{target:{value:"https://airflow.example.com"}});expect(connect.disabled).toBe(false);
+ fireEvent.change(screen.getByLabelText("Authentication"),{target:{value:"token"}});expect(connect.disabled).toBe(true);
+ expect(mock.saveConnection).not.toHaveBeenCalled();
+});
+it("watches run state only after opt-in and stops polling on tab change or unmount",async()=>{
+ mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"connected"}});
+ const view=render(createElement(AirflowAutomationView));await screen.findByText("No runs returned.");
+ const visibility=vi.spyOn(document,"visibilityState","get").mockReturnValue("visible");
+ vi.useFakeTimers();
+ try {
+  const before=mock.runs.mock.calls.length;
+  await act(async()=>{await vi.advanceTimersByTimeAsync(30000);});expect(mock.runs).toHaveBeenCalledTimes(before);
+  fireEvent.click(screen.getByRole("button",{name:"Auto-refresh runs"}));
+  await act(async()=>{await vi.advanceTimersByTimeAsync(15000);});expect(mock.runs).toHaveBeenCalledTimes(before+1);
+  fireEvent.click(screen.getByRole("button",{name:"automations"}));
+  await act(async()=>{await vi.advanceTimersByTimeAsync(30000);});expect(mock.runs).toHaveBeenCalledTimes(before+1);
+  view.unmount();await act(async()=>{await vi.advanceTimersByTimeAsync(30000);});expect(mock.runs).toHaveBeenCalledTimes(before+1);
+  expect(mock.trigger).not.toHaveBeenCalled();expect(mock.create).not.toHaveBeenCalled();
+ } finally {vi.useRealTimers();visibility.mockRestore();}
+});
+it("does not refresh an abandoned view after a submitted action settles",async()=>{
+ const pending=deferred();mock.reject.mockReturnValue(pending.promise);
+ const view=render(createElement(AirflowAutomationView));await screen.findByText("Connect Airflow first");fireEvent.click(screen.getByRole("button",{name:"approvals"}));await screen.findByText("Synthetic restart");
+ fireEvent.click(screen.getByRole("button",{name:"Reject"}));const reads=mock.connection.mock.calls.length;view.unmount();
+ await act(async()=>pending.resolve({ok:true}));expect(mock.connection).toHaveBeenCalledTimes(reads);expect(mock.reject).toHaveBeenCalledTimes(1);
+});
+it("retains an automation draft through pending, failed and recovered catalog refreshes while holding submission",async()=>{
+ mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"connected"}});
+ render(createElement(AirflowAutomationView));await screen.findByRole('option',{name:'Batch DAG'});fireEvent.click(screen.getByRole('button',{name:'automations'}));
+ fireEvent.change(screen.getByLabelText('Name'),{target:{value:'Preserve this rule draft'}});
+ const pending=deferred();mock.dags.mockReturnValueOnce(pending.promise);
+ fireEvent.click(screen.getByRole('button',{name:'Refresh Airflow workspace'}));
+ expect((screen.getByLabelText('Name')as HTMLInputElement).value).toBe('Preserve this rule draft');
+ expect((screen.getByRole('button',{name:'Create automation'})as HTMLButtonElement).disabled).toBe(true);
+ await act(async()=>pending.resolve({ok:false,error:'provider_unavailable'}));await screen.findByText(/DAG catalog could not be verified/);
+ expect((screen.getByLabelText('Name')as HTMLInputElement).value).toBe('Preserve this rule draft');
+ fireEvent.click(screen.getByRole('button',{name:'Refresh Airflow workspace'}));await screen.findByRole('option',{name:'Batch DAG'});
+ expect((screen.getByLabelText('Name')as HTMLInputElement).value).toBe('Preserve this rule draft');expect(mock.create).not.toHaveBeenCalled();
+});
+it("returns keyboard focus to Run now after canceling its review",async()=>{
+ mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:'connected'}});render(createElement(AirflowAutomationView));await screen.findByRole('option',{name:'Batch DAG'});
+ const opener=screen.getByRole('button',{name:'Run now'});opener.focus();fireEvent.click(opener);fireEvent.click(screen.getByRole('button',{name:'Cancel'}));expect(document.activeElement).toBe(opener);expect(mock.trigger).not.toHaveBeenCalled();
+});
+
+it("keeps unknown provider errors private and never treats an uncertain run as safe to retry",async()=>{
+ mock.connection.mockResolvedValue({ok:true,data:{connected:true,status:"active"}});mock.trigger.mockResolvedValue({ok:false,error:"private-provider-host-and-diagnostic"});
+ render(createElement(AirflowAutomationView));await screen.findByText("No runs returned.");fireEvent.click(screen.getByRole("button",{name:"Run now"}));fireEvent.click(screen.getByRole("button",{name:"Confirm DAG run"}));
+ await screen.findByText("The action's outcome could not be confirmed. Refresh and review its history before retrying.");expect(screen.queryByText("private-provider-host-and-diagnostic")).toBeNull();expect(mock.trigger).toHaveBeenCalledTimes(1);
 });

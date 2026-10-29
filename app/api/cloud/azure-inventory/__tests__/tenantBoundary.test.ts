@@ -1,0 +1,13 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({context:vi.fn(),inventory:vi.fn(),storage:vi.fn(),vaults:vi.fn()}));
+vi.mock('@/lib/auth/currentContext',()=>({currentContext:m.context}));
+vi.mock('@/lib/cloud/azure/azureLiveInventory',()=>({extractAzureLiveInventory:m.inventory}));
+vi.mock('@/lib/cloud/azure/azureStorageExtractor',()=>({extractAzureStorageAccounts:m.storage}));
+vi.mock('@/lib/cloud/azure/azureKeyVaultExtractor',()=>({extractAzureKeyVaults:m.vaults}));
+import {GET as inventory,POST as inventoryPost} from '../route';
+import {GET as storage,POST as storagePost} from '../../azure-storage/route';
+import {GET as vaults,POST as vaultsPost} from '../../azure-keyvaults/route';
+const cases=[['azure-inventory',inventory,inventoryPost,{counts:{vmCount:0,storageAccountCount:0,vnetCount:0,nsgCount:0},publicIpExposedVmCount:0,unencryptedStorageCount:0}],['azure-storage',storage,storagePost,{total:0,publicBlobAccessCount:0,publicNetworkCount:0,nonHttpsCount:0,weakTlsCount:0,accounts:[]}],['azure-keyvaults',vaults,vaultsPost,{total:0,noSoftDeleteCount:0,noPurgeProtectionCount:0,publicAccessCount:0,vaults:[]}]] as const;
+beforeEach(()=>{vi.resetAllMocks();m.context.mockResolvedValue({isAuthenticated:true,organizationId:'other-tenant',userId:'reader'});for(const extract of [m.inventory,m.storage,m.vaults])extract.mockResolvedValue({mode:'live',subscriptionId:'host-private-subscription',counts:{vmCount:91,storageAccountCount:82,vnetCount:73,nsgCount:64},accounts:[{name:'host-private-storage'}],vaults:[{name:'host-private-vault'}],total:7,limitations:[]})});
+for(const[path,get,post,shape]of cases){it.each([get,post])(`${path} withholds host subscription inventory for tenant requests`,async handler=>{const response=await handler(new NextRequest(`https://axiom.test/api/cloud/${path}`));const body=await response.json();expect(body).toMatchObject({ok:true,data:{mode:'blocked',...shape}});expect(body.data.subscriptionId).toBeUndefined();expect(body.data.limitations.join(' ')).toContain('tenant_connection_required');expect(JSON.stringify(body)).not.toContain('host-private');expect(m.inventory).not.toHaveBeenCalled();expect(m.storage).not.toHaveBeenCalled();expect(m.vaults).not.toHaveBeenCalled()});it(`${path} retains unauthenticated refusal without host extraction`,async()=>{m.context.mockResolvedValue({isAuthenticated:false});const response=await get(new NextRequest(`https://axiom.test/api/cloud/${path}`));expect((await response.json()).ok).toBe(false);expect(m.inventory).not.toHaveBeenCalled();expect(m.storage).not.toHaveBeenCalled();expect(m.vaults).not.toHaveBeenCalled()})}

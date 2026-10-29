@@ -1,0 +1,12 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const io=vi.hoisted(()=>({origin:vi.fn(),rate:vi.fn()}));
+vi.mock('@/lib/auth/requestOrigin',()=>({isSameOriginRequest:io.origin}));
+vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:io.rate}));
+import {createServiceNowRefreshHttp} from '../serviceNowRefreshHttp';
+const actor={organizationId:'org',userId:'owner',canManageConnections:true},input={connectionId:'connection',revision:'2030-01-01T00:00:00.000Z'};
+const request=(value:unknown=input)=>new NextRequest('https://visionxixlabs.com/api/account/integrations/servicenow/refresh',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(value)});
+beforeEach(()=>{io.origin.mockReturnValue(true);io.rate.mockReturnValue({allowed:true})});
+it('is default unavailable without explicit activation and current administrator',async()=>{const refresh=vi.fn();const off=createServiceNowRefreshHttp({enabled:()=>false,readCurrentActor:async()=>actor,refresh});expect((await off(request())).status).toBe(503);expect(refresh).not.toHaveBeenCalled();const unauthorized=createServiceNowRefreshHttp({enabled:()=>true,readCurrentActor:async()=>null,refresh});expect((await unauthorized(request())).status).toBe(401)});
+it('binds owner server-side and accepts only exact connection/revision',async()=>{const refresh=vi.fn().mockResolvedValue({connectionId:'connection',status:'connected_read_only'}),handle=createServiceNowRefreshHttp({enabled:()=>true,readCurrentActor:async()=>actor,refresh});expect((await handle(request())).status).toBe(200);expect(refresh).toHaveBeenCalledWith(actor,input,expect.any(AbortSignal));refresh.mockClear();expect((await handle(request({...input,organizationId:'other'}))).status).toBe(400);expect(refresh).not.toHaveBeenCalled();io.origin.mockReturnValue(false);expect((await handle(request())).status).toBe(403)});
+it('returns only bounded recovery states without provider/private error content',async()=>{const refresh=vi.fn().mockRejectedValue(Error('servicenow_refresh_outcome_unknown')),handle=createServiceNowRefreshHttp({enabled:()=>true,readCurrentActor:async()=>actor,refresh});expect(await(await handle(request())).json()).toEqual({ok:false,error:'servicenow_refresh_outcome_unknown',retryAllowed:false});refresh.mockRejectedValue(Error('PRIVATE_TOKEN_VALUE'));expect(JSON.stringify(await(await handle(request())).json())).not.toContain('PRIVATE_TOKEN_VALUE')});

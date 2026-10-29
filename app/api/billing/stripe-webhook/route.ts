@@ -1,3 +1,5 @@
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
+import { publicBillingRuntime } from "@/lib/billing/publicBillingRuntime";
 import { ownedWebhookPost } from "@/lib/billing/ownedCheckoutBridge/http";
 /**
  * POST /api/billing/stripe-webhook
@@ -66,7 +68,7 @@ export async function POST(req: NextRequest) {
   if (owned) return owned;
   const correlationId = resolveCorrelationId(req.headers);
 
-  if (!isSelfServiceBillingEnabled()) {
+  if (!isSelfServiceBillingEnabled() && !publicBillingPolicyEnabled()) {
     return NextResponse.json(
       { ok: false, error: { code: "billing.disabled", userMessage: "Self-service billing is not active." }, meta: { correlationId, generatedAt: new Date().toISOString() } },
       { status: 503 },
@@ -98,6 +100,15 @@ export async function POST(req: NextRequest) {
       { ok: false, error: { code: "stripe.body_invalid", userMessage: "Webhook body is not valid JSON." }, meta: { correlationId, generatedAt: new Date().toISOString() } },
       { status: 400 },
     );
+  }
+
+  if (publicBillingPolicyEnabled()) {
+    try {
+      const result = await (await publicBillingRuntime()).webhook(event);
+      if(result.handled) return NextResponse.json({ok:true,outcome:result.outcome},{status:200});
+    } catch {
+      return NextResponse.json({ok:false,error:{code:"billing.verification_unavailable",userMessage:"Subscription evidence or storage could not be confirmed. Retry this event."}},{status:503});
+    }
   }
 
   const obj = event.data?.object;

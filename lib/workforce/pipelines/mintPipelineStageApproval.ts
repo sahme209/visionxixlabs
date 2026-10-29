@@ -17,6 +17,7 @@
  */
 
 import "server-only";
+import { mintCodingArtifactApproval } from "./mintCodingArtifactApproval";
 
 import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
@@ -48,6 +49,7 @@ export const PIPELINE_ORCHESTRATOR_ENGINEER_ID = "pipeline_orchestrator";
 export async function mintPipelineStageApproval(
   input: MintPipelineStageApprovalInput,
 ): Promise<MintPipelineStageApprovalResult> {
+  if (input.pipelineId === "ai_coding" && input.stageId === "code_gate") return mintCodingArtifactApproval(input);
   // approvalRequestId is the join key the engine + queue + decide route share.
   const approvalRequestId = `apr_pipe_${input.stageRunId}_${Date.now().toString(36)}`;
 

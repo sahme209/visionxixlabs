@@ -4,6 +4,17 @@ import { AirflowClient } from "../airflowClient";
 afterEach(() => vi.unstubAllGlobals());
 
 describe("AirflowClient", () => {
+  it("cancels both authorization and exact run reads with the observation signal", async () => {
+    const controller = new AbortController();
+    const fetcher = vi.fn().mockImplementation(async (_url, init) => {
+      expect(init.signal.aborted).toBe(false);
+      controller.abort();
+      return new Response(JSON.stringify({ access_token: "fixture-only" }));
+    });
+    vi.stubGlobal("fetch", fetcher);
+    await expect(new AirflowClient("https://airflow.example.com", { authMode: "username_password", username: "fixture", password: "fixture" }).getDagRun("daily", "exact", controller.signal)).rejects.toThrow();
+    expect(fetcher).toHaveBeenCalledTimes(1);
+  });
   it("rejects an invalid explicit run identity before sending credentials", async () => {
     const fetcher = vi.fn(); vi.stubGlobal("fetch", fetcher);
     await expect(new AirflowClient("https://airflow.example.com", { authMode: "token", token: "fixture-token" }).triggerDag("daily", {}, "../other")).rejects.toThrow("invalid_airflow_run_id");

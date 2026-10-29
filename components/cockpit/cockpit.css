@@ -1,0 +1,15 @@
+/* Keep private surfaces legible while the application font is loading. */
+.cockpit-content, .cockpit-sidebar { font-family: var(--font-inter, Inter), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+/* Private product surfaces only; public marketing keeps its existing styles. */
+.cockpit-content { --cockpit-surface: #171717; font-size: 13px; line-height: 1.5; }
+.cockpit-content h1 { font-size: 24px; font-weight: 500; letter-spacing: -.035em; line-height: 32px; }
+.cockpit-content h2 { letter-spacing: -.02em; }
+.cockpit-content :is(.text-zinc-500, .text-zinc-600) { color: #a1a1aa; }
+.cockpit-content :is(button, input, select, summary, a):focus-visible { outline: 2px solid #fb923c; outline-offset: 3px; }
+.cockpit-content :is(button, input, select) { scroll-margin-block: 5rem; }
+.cockpit-content .rounded-3xl { border-radius: 16px; }
+.cockpit-content :is(.mt-10, .mt-12) { margin-top: 28px; }
+.cockpit-content .space-y-10 > :not([hidden]) ~ :not([hidden]) { margin-top: 28px; }
+@media (prefers-reduced-motion: reduce) { .cockpit-content *, .cockpit-sidebar * { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
+@media (max-width: 639px) { .cockpit-content :is(button, select) { min-height: 40px; } }
+.cockpit-content [role="tabpanel"] > .mt-10:first-child { margin-top: 0; }

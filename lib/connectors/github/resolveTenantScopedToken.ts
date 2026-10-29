@@ -16,7 +16,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import { resolveGithubInstallationToken } from "./githubAppAuth";
+import { resolveGithubInstallationToken, type GithubReadPermissionProfile } from "./githubAppAuth";
 
 export interface RepoRef {
   owner: string;
@@ -45,7 +45,7 @@ export interface InstallationRepo {
  * option expects.
  */
 export async function resolveTenantScopedToken(organizationId: string, repo: RepoRef,
-  expectedInstallation?: { id: string; githubInstallationId: string; updatedAt: Date; signal?: AbortSignal; permissionProfile?: "provenance_read" },
+  expectedInstallation?: { id: string; githubInstallationId: string; updatedAt: Date; signal?: AbortSignal; permissionProfile?: GithubReadPermissionProfile },
   installationRepo: InstallationRepo = prisma as unknown as InstallationRepo,
 ): Promise<ResolveTenantScopedTokenResult> {
   const installation = await installationRepo.gitHubInstallation.findFirst({

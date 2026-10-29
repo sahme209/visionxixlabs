@@ -1,0 +1,10 @@
+import {z} from 'zod';
+const id=z.string().min(1).max(160).regex(/^[A-Za-z0-9_-]+$/);
+export const awsGuidedChoiceSchema=z.object({id,name:z.string().min(1).max(120),accountId:z.string().regex(/^\d{12}$/),region:z.string().regex(/^us-(?:east|west)-[12]$/),readScope:z.literal('EC2 instance metadata; no changes')}).strict();
+export const awsGuidedFlowSchema=z.object({id,clientRequestId:z.string().uuid(),version:z.number().int().min(0).max(5),state:z.enum(['review','waiting_for_aws','verifying','connected_read_only','unknown','cancelled','expired','disconnected']),expiresAt:z.string().datetime(),attemptCount:z.number().int().min(0).max(1),choice:awsGuidedChoiceSchema,proposal:z.object({roleArn:z.string().max(600),brokerPrincipalArn:z.string().max(600),templateDigest:z.string().regex(/^[a-f0-9]{64}$/),policyDigest:z.string().regex(/^[a-f0-9]{64}$/),proposalDigest:z.string().regex(/^[a-f0-9]{64}$/)}).strict(),launchUrl:z.string().url().max(8192).optional(),canReview:z.boolean(),canCancel:z.boolean(),deploymentAvailable:z.literal(false)}).strict();
+export const awsGuidedResponseSchema=z.object({available:z.boolean(),reason:z.enum(['ready','policy_or_hosting_unavailable','account_selection_unavailable','storage_unavailable']),choices:z.array(awsGuidedChoiceSchema).max(50),flows:z.array(awsGuidedFlowSchema).max(10)}).strict();
+export const awsGuidedRequestSchema=z.discriminatedUnion('action',[z.object({action:z.literal('start'),choiceId:id,clientRequestId:z.string().uuid()}).strict(),z.object({action:z.literal('review'),flowId:id,expectedVersion:z.literal(0),proposalDigest:z.string().regex(/^[a-f0-9]{64}$/)}).strict(),z.object({action:z.literal('cancel'),flowId:id,expectedVersion:z.number().int().min(0).max(5)}).strict(),z.object({action:z.literal('recover'),flowId:id,expectedVersion:z.number().int().min(0).max(5)}).strict()]);
+export type AwsGuidedResponse=z.infer<typeof awsGuidedResponseSchema>;
+export type AwsGuidedFlow=z.infer<typeof awsGuidedFlowSchema>;
+export type AwsGuidedChoice=z.infer<typeof awsGuidedChoiceSchema>;
+export const parseAwsGuidedResponse=(x:unknown)=>awsGuidedResponseSchema.parse(x);

@@ -25,6 +25,12 @@ export interface AirflowDagRun {
   endedAt: string | null;
 }
 
+export interface AirflowTaskInstance {
+  taskId: string; mapIndex: number; tryNumber: number; state: string | null;
+  startedAt: string | null; endedAt: string | null;
+}
+export interface AirflowTaskPage { tasks: AirflowTaskInstance[]; totalEntries: number; offset: number }
+
 function unsafeAddress(address: string): boolean {
   if (address === "::" || address === "::1") return true;
   const normalized = address.toLowerCase();
@@ -37,31 +43,37 @@ function unsafeAddress(address: string): boolean {
     || (parts[0] === 192 && parts[1] === 168);
 }
 
-/** Validates the user-controlled Airflow origin before every connection save. */
+/** Validates a public HTTPS origin and optional opaque deployment ID before save. */
 export async function validateAirflowBaseUrl(value: string): Promise<string> {
   let url: URL;
   try { url = new URL(value); } catch { throw new Error("airflow_url_invalid"); }
   if (url.protocol !== "https:" || url.username || url.password || url.search || url.hash) throw new Error("airflow_https_url_required");
-  if (url.pathname !== "/" && url.pathname !== "") throw new Error("airflow_origin_only_required");
+  // Check the unnormalized path: URL parsing otherwise erases dot segments.
+  const rawMatch = value.match(/^https:\/\/[^\\/?#\s]+([^?#\s]*)$/i);
+  if (!rawMatch) throw new Error("airflow_deployment_url_invalid");
+  const rawPath = rawMatch[1];
+  if (!/^(?:\/|\/[A-Za-z0-9_-]+\/?)?$/.test(rawPath)
+    || /^\/(?:api|auth|home)\/?$/i.test(rawPath)) throw new Error("airflow_deployment_url_invalid");
   const hostname = url.hostname.toLowerCase();
   if (hostname === "localhost" || hostname.endsWith(".localhost") || hostname.endsWith(".local") || hostname.endsWith(".internal")) throw new Error("airflow_private_host_blocked");
   const allowlist = (process.env.AIRFLOW_ALLOWED_HOSTS ?? "").split(",").map((item) => item.trim().toLowerCase()).filter(Boolean);
   if (allowlist.length > 0 && !allowlist.includes(hostname)) throw new Error("airflow_host_not_allowed");
   const addresses = isIP(hostname) ? [{ address: hostname }] : await lookup(hostname, { all: true, verbatim: true });
   if (addresses.length === 0 || addresses.some(({ address }) => unsafeAddress(address))) throw new Error("airflow_private_host_blocked");
-  return `${url.origin}`;
+  return `${url.origin}${rawPath.replace(/\/$/, "")}`;
 }
 
 export class AirflowClient {
   constructor(private readonly baseUrl: string, private readonly credential: AirflowCredential) {}
 
-  private async authorization(): Promise<string> {
+  private async authorization(signal?: AbortSignal): Promise<string> {
+    signal?.throwIfAborted();
     if (this.credential.authMode === "token") return `Bearer ${this.credential.token}`;
     const response = await fetch(`${this.baseUrl}/auth/token`, {
       method: "POST",
       redirect: "error",
       cache: "no-store",
-      signal: AbortSignal.timeout(15_000),
+      signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(15_000)]) : AbortSignal.timeout(15_000),
       headers: { "content-type": "application/json", accept: "application/json" },
       body: JSON.stringify({ username: this.credential.username, password: this.credential.password }),
     });
@@ -72,12 +84,16 @@ export class AirflowClient {
   }
 
   private async request(path: string, init: RequestInit = {}): Promise<unknown> {
+    const signal = init.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(20_000)]) : AbortSignal.timeout(20_000);
+    signal.throwIfAborted();
+    const authorization = await this.authorization(signal);
+    signal.throwIfAborted();
     const response = await fetch(`${this.baseUrl}/api/v2${path}`, {
       ...init,
       redirect: "error",
       cache: "no-store",
-      signal: AbortSignal.timeout(20_000),
-      headers: { accept: "application/json", authorization: await this.authorization(), ...(init.body ? { "content-type": "application/json" } : {}), ...init.headers },
+      signal,
+      headers: { accept: "application/json", authorization, ...(init.body ? { "content-type": "application/json" } : {}), ...init.headers },
     });
     if (!response.ok) throw new Error(`airflow_api_failed:${response.status}`);
     return response.json();
@@ -111,10 +127,26 @@ export class AirflowClient {
     });
   }
 
-  async getDagRun(dagId: string, dagRunId: string): Promise<AirflowDagRun> {
-    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(dagRunId)}`);
+  async getDagRun(dagId: string, dagRunId: string, signal?: AbortSignal): Promise<AirflowDagRun> {
+    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(dagRunId)}`, { signal });
     if (!isRunForDag(body, dagId) || body.dag_run_id !== dagRunId) throw new Error("airflow_run_response_invalid");
     return toDagRun(body);
+  }
+
+  /** Observation only: never returns XCom, rendered templates, logs or credentials. */
+  async listTaskInstances(dagId: string, dagRunId: string, offset = 0): Promise<AirflowTaskPage> {
+    if ([dagId, dagRunId].some((id) => !id.trim() || id === "~") || !Number.isSafeInteger(offset) || offset < 0) throw new Error("airflow_task_selection_invalid");
+    const body = await this.request(`/dags/${encodeURIComponent(dagId)}/dagRuns/${encodeURIComponent(dagRunId)}/taskInstances?limit=100&offset=${offset}`);
+    if (!isRecord(body) || !Array.isArray(body.task_instances) || body.task_instances.length > 100 || !Number.isSafeInteger(body.total_entries) || (body.total_entries as number) < 0 || (body.task_instances.length > 0 && (body.total_entries as number) < offset + body.task_instances.length)) throw new Error("airflow_task_response_invalid");
+    const identities = new Set<string>();
+    const tasks = body.task_instances.map((task: unknown): AirflowTaskInstance => {
+      if (!isRecord(task) || task.dag_id !== dagId || task.dag_run_id !== dagRunId || typeof task.task_id !== "string" || !task.task_id.trim() || !Number.isSafeInteger(task.map_index) || (task.map_index as number) < -1 || !Number.isSafeInteger(task.try_number) || (task.try_number as number) < 0 || (task.state !== null && typeof task.state !== "string")) throw new Error("airflow_task_response_invalid");
+      const identity = JSON.stringify([task.task_id, task.map_index]);
+      if (identities.has(identity)) throw new Error("airflow_task_response_invalid");
+      identities.add(identity);
+      return { taskId: task.task_id, mapIndex: task.map_index as number, tryNumber: task.try_number as number, state: task.state as string | null, startedAt: typeof task.start_date === "string" ? task.start_date : null, endedAt: typeof task.end_date === "string" ? task.end_date : null };
+    });
+    return { tasks, totalEntries: body.total_entries as number, offset };
   }
 
   async triggerDag(dagId: string, conf: Record<string, unknown> = {}, scheduledRunId?: string): Promise<AirflowDagRun> {

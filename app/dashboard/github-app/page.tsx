@@ -99,11 +99,11 @@ export default function GitHubAppPage() {
     setCreatingApp(true);
     setNetworkError(null);
     try {
-      const response = await fetch("/api/dashboard/github-app/manifest", { credentials: "include" });
+      const response = await fetch("/api/dashboard/github-app/manifest", { method: "POST", credentials: "include" });
       const body = await response.json() as { ok: boolean; error?: string; data?: { manifest: Record<string, unknown>; createUrl: string } };
       if (!body.ok || !body.data) {
-        const reason = body.error === "workspace_owner_required"
-          ? "Your account isn't recognized as this workspace's owner or admin, so GitHub App creation is blocked. If you believe this is wrong, try signing out and back in — this can happen if your workspace membership didn't finish setting up."
+        const reason = body.error === "platform_admin_required"
+          ? "Only a platform administrator can register Axiom’s service-wide GitHub App. Workspace owners can connect their own repositories after the service App is available."
           : body.error === "auth_required"
             ? "Your sign-in has expired. Sign in again and retry."
             : body.error === "trusted_origin_unavailable"
@@ -146,7 +146,7 @@ export default function GitHubAppPage() {
         title={<>Connect once. <span className="text-zinc-500">Review before each release.</span></>}
         description="Install the Axiom GitHub App on only the repositories you select. Axiom uses read-only evidence to assemble release context; it does not deploy, change code, or expose a GitHub token."
         helps="This connection is the trusted source for pull requests, checks, workflows, and repository protections used in release review."
-        connectFirst="You need admin rights on the GitHub org to authorize the install. If you don't, click the link anyway — GitHub will route a request to the org admins on your behalf. If no GitHub App is configured for this platform yet, a workspace admin or owner can create one here with one click (GitHub's App Manifest flow) — no manual App registration or redeploy required."
+        connectFirst="You need admin rights on the GitHub org to authorize the install. If you don't, click the link anyway — GitHub will route a request to the org admins on your behalf. If no GitHub App is configured for this platform yet, a platform administrator can create one here (GitHub's App Manifest flow) — no manual App registration or redeploy required."
         engineers={["DevOps", "Release Captain", "Security"]}
         requiresApproval="GitHub may require org-admin approval depending on your org's app-install policy."
         actions={[
@@ -178,7 +178,7 @@ export default function GitHubAppPage() {
             <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
             <p className="text-[13px] font-semibold text-emerald-200">GitHub App created</p>
           </div>
-          <p className="text-[12.5px] text-zinc-300">The platform's GitHub App is configured. You can now install it on your org below.</p>
+          <p className="text-[12.5px] text-zinc-300">The platform&apos;s GitHub App is configured. You can now install it on your org below.</p>
         </div>
       )}
 
@@ -250,7 +250,7 @@ export default function GitHubAppPage() {
             </div>
           ) : (
             <div className="mb-6 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 text-[12.5px] text-zinc-300">
-              <p className="font-semibold text-zinc-200 mb-1">GitHub connection isn't set up yet</p>
+              <p className="font-semibold text-zinc-200 mb-1">GitHub connection isn&apos;t set up yet</p>
               <p>
                 {data.isAdmin
                   ? "Create the Axiom GitHub App with one click — GitHub pre-fills every field from a manifest, so there's nothing to type. Once it's created, you (or any workspace admin) can connect your repositories here."

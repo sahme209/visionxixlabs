@@ -338,7 +338,7 @@ export function ViewShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex-1 overflow-y-auto bg-axiom-bg">
       <div className="aurora-bg">
-        <div className="relative z-10 max-w-6xl mx-auto px-8 py-10 space-y-8 animate-fade-in-up">
+        <div className="relative z-10 max-w-6xl mx-auto px-8 py-10 space-y-8">
           {children}
         </div>
       </div>

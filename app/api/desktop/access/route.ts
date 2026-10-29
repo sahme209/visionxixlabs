@@ -45,6 +45,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     identity: {
       kind: principal.credentialKind,
       organizationId: principal.organizationId,
+      ...(principal.credentialKind === "desktop_session" ? { userId: principal.userId } : {}),
       email: user?.email ?? undefined,
       displayName: user?.name ?? user?.email ?? undefined,
       role: principal.role ?? undefined,

@@ -1,3 +1,4 @@
+import { ProviderLogo } from "../components/CatalogIcon";
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
 
@@ -84,7 +85,7 @@ export function SlackNotificationsView() {
   return (
     <ViewShell>
       <div>
-        <h1 className="text-xl font-bold tracking-tight">Slack notifications</h1>
+        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight"><ProviderLogo provider="slack"/>Slack notifications</h1>
         <p className="text-sm text-zinc-500 mt-0.5">
           Critical AGI signals → your org's Slack incoming webhook. Best-effort send · every dispatch logged.
         </p>

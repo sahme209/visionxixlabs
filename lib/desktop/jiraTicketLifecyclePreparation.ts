@@ -1,0 +1,17 @@
+import 'server-only';
+import {z} from 'zod';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+import {parseJiraTicketActionCandidate} from '@/lib/releaseops/jiraTicketLifecycleContract';
+interface Release{id:string;organizationId:string;requesterUserId:string;version:number;status:string;intakeJson:unknown}
+interface Connection{id:string;organizationId:string;provider:string;status:string;revokedAt:Date|null;updatedAt:Date;externalAccountId:string|null;consentedByUserId:string|null}
+/** Submitted windows remain a hard bound. Completed releases permit only fresh ticket-closure approval. */
+export function jiraTicketApprovalExpiry(release:Pick<Release,'status'|'intakeJson'>,now=new Date(),purpose:'publish'|'close'='publish'):string{if(!Number.isFinite(now.getTime())||!(['draft','submitted'].includes(release.status)||purpose==='close'&&release.status==='closed'))throw Error('jira_ticket_source_changed');let deadline=now.getTime()+15*60*1000;const intake=release.intakeJson as Record<string,unknown>|null;if(release.status==='submitted'){if(!intake||typeof intake.windowEndUtc!=='string'||!Number.isFinite(Date.parse(intake.windowEndUtc))||Date.parse(intake.windowEndUtc)<=now.getTime())throw Error('jira_ticket_source_changed');deadline=Math.min(deadline,Date.parse(intake.windowEndUtc))}return new Date(deadline).toISOString()}
+/** Accepts only the output of the authorized fresh server preview handler. */
+export function buildJiraPublishCandidate(release:Release,connection:Connection,raw:unknown,actorUserId:string,now=new Date()){
+ const p=z.object({authority:z.literal('preview_only'),provider:z.literal('jira'),createAvailable:z.literal(false),connectionId:z.string(),connectionRevision:z.string(),projectId:z.string().regex(/^[0-9]{1,20}$/),issueTypeId:z.string().regex(/^[0-9]{1,20}$/),fields:z.array(z.unknown()).max(200),blockers:z.array(z.unknown()).length(0),providerPayload:z.unknown(),payloadHash:z.string().regex(/^[a-f0-9]{64}$/)}).strict().parse(raw);
+ if(!['draft','submitted'].includes(release.status)||connection.id!==p.connectionId||connection.organizationId!==release.organizationId||connection.provider!=='jira'||connection.status!=='active'||connection.revokedAt||connection.consentedByUserId!==actorUserId||connection.updatedAt.toISOString()!==p.connectionRevision||!connection.externalAccountId||!Number.isFinite(now.getTime()))throw Error('jira_ticket_source_changed');
+ const expiresAt=jiraTicketApprovalExpiry(release,now);
+ const reporterField=p.fields.find((f):f is {id:string;kind:string;state:string;value:string}=>!!f&&typeof f==='object'&&'id' in f&&f.id==='reporter'&&'kind' in f&&f.kind==='connected_reporter'&&'state' in f&&f.state==='included'&&'value' in f&&typeof f.value==='string');
+ const c=parseJiraTicketActionCandidate({organizationId:release.organizationId,releaseId:release.id,releaseVersion:release.version,connectionId:connection.id,connectionRevision:p.connectionRevision,siteId:connection.externalAccountId,kind:'publish',...(reporterField?{reporterLabel:reporterField.value}:{}),payload:p.providerPayload,payloadDigest:p.payloadHash,sourceDigest:sha256ContentHash({requestVersion:release.version,intake:release.intakeJson}),expiresAt});
+ if(c.kind!=='publish'||c.payload.fields.project.id!==p.projectId||c.payload.fields.issuetype.id!==p.issueTypeId||sha256ContentHash(c.payload)!==c.payloadDigest)throw Error('jira_ticket_source_changed');return c;
+}

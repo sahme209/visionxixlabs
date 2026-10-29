@@ -1,0 +1,28 @@
+import 'server-only';
+import {z} from 'zod';
+import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
+import {decryptScopedCredential} from '@/lib/security/credentialVault';
+import {connectionCredentialContext} from '@/lib/integrations/tenantAuthorization';
+import {serviceNowStoredConnectionSchema,serviceNowStoredConnectionEnvelopeSchema} from '@/lib/integrations/servicenow/serviceNowTenantConnection';
+import type {ServiceNowTicketScope} from '@/lib/releaseops/serviceNowTicketLifecycleStore';
+import type {ServiceNowCredentialBinding} from './serviceNowTicketCredential';
+const select={id:true,organizationId:true,provider:true,status:true,revokedAt:true,consentedByUserId:true,externalAccountId:true,updatedAt:true,lastValidatedAt:true,scopesJson:true,encryptedCredential:true} as const;
+export interface ServiceNowTicketConnectionRepository{tenantIntegrationConnection:{findUnique(args:{where:{organizationId_provider:{organizationId:string;provider:'servicenow'}};select:typeof select}):Promise<unknown>}}
+/** Called only between the desktop HTTP handler's current-session checks. No browser
+ * actor, ambient account, refresh, provider request or write-grant inference. */
+export function createServiceNowTicketConnectionReader(repo:ServiceNowTicketConnectionRepository,now:()=>number=Date.now,options:{allowTicketWrites?:(organizationId:string)=>boolean}={}){
+ const fail=():never=>{throw Error('servicenow_scoped_connection_unavailable')};
+ async function load(scope:Readonly<ServiceNowTicketScope>,signal:AbortSignal){signal.throwIfAborted();const raw=await withGithubAbort(repo.tenantIntegrationConnection.findUnique({where:{organizationId_provider:{organizationId:scope.organizationId,provider:'servicenow'}},select}),signal);if(raw===null)return null;
+  const row=serviceNowStoredConnectionSchema.extend({lastValidatedAt:z.date().nullable(),scopesJson:z.tuple([z.literal('axiom.change_management')])}).parse(raw);if(row.organizationId!==scope.organizationId)fail();if(row.status==='pending')return null;
+  const envelope=serviceNowStoredConnectionEnvelopeSchema.parse(JSON.parse(decryptScopedCredential(row.encryptedCredential,connectionCredentialContext({organizationId:scope.organizationId,provider:'servicenow',connectionId:row.id})))),time=now();
+  if(!Number.isSafeInteger(time)||time<0||!row.lastValidatedAt||row.lastValidatedAt.getTime()>time||time-row.lastValidatedAt.getTime()>86400000||envelope.registration.organizationId!==scope.organizationId||envelope.registration.instanceOrigin!==row.externalAccountId||!envelope.token||envelope.token.expiresAt<=time+15000||envelope.token.scopes.length!==1||envelope.token.scopes[0]!=='axiom.change_management')fail();
+  signal.throwIfAborted();return{row,envelope};
+ }
+ const projection=(value:NonNullable<Awaited<ReturnType<typeof load>>>)=>({organizationId:value.row.organizationId,connectionId:value.row.id,connectionRevision:value.row.updatedAt.toISOString(),instanceOrigin:value.row.externalAccountId,consentedByUserId:value.row.consentedByUserId});
+ return{
+ async readConnection(scope:Readonly<ServiceNowTicketScope>,signal:AbortSignal){const saved=await load(scope,signal);return saved?projection(saved):null},
+ async readWriteAuthority(scope:Readonly<ServiceNowTicketScope>,binding:Readonly<ServiceNowCredentialBinding>,signal:AbortSignal){const saved=await load(scope,signal);if(!saved)return false;const c=projection(saved);return c.organizationId===binding.organizationId&&c.connectionId===binding.connectionId&&c.connectionRevision===binding.connectionRevision&&c.instanceOrigin===binding.instanceOrigin&&options.allowTicketWrites?.(c.organizationId)===true},
+ async readCatalogCredential(scope:Readonly<ServiceNowTicketScope>,binding:Readonly<ServiceNowCredentialBinding>,signal:AbortSignal){const saved=await load(scope,signal);if(!saved)fail();const c=projection(saved!);if(c.organizationId!==binding.organizationId||c.connectionId!==binding.connectionId||c.connectionRevision!==binding.connectionRevision||c.instanceOrigin!==binding.instanceOrigin)fail();return{organizationId:c.organizationId,connectionId:c.connectionId,connectionRevision:c.connectionRevision,instanceOrigin:c.instanceOrigin,accessToken:saved!.envelope.token!.accessToken,expiresAt:saved!.envelope.token!.expiresAt,permissions:{read:true,write:false,journalRead:false}}},
+ async readCredential(scope:Readonly<ServiceNowTicketScope>,binding:Readonly<ServiceNowCredentialBinding>,signal:AbortSignal){const saved=await load(scope,signal);if(!saved)fail();const c=projection(saved!);if(c.organizationId!==binding.organizationId||c.connectionId!==binding.connectionId||c.connectionRevision!==binding.connectionRevision||c.instanceOrigin!==binding.instanceOrigin||c.consentedByUserId!==scope.actorUserId)fail();return{organizationId:c.organizationId,connectionId:c.connectionId,connectionRevision:c.connectionRevision,instanceOrigin:c.instanceOrigin,accessToken:saved!.envelope.token!.accessToken,expiresAt:saved!.envelope.token!.expiresAt,permissions:{read:true,write:options.allowTicketWrites?.(c.organizationId)===true,journalRead:false}}}
+ };
+}

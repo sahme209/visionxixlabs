@@ -4,6 +4,8 @@ use tauri_plugin_store::StoreExt;
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Preferences {
     pub theme: String,
+    #[serde(default)]
+    pub submit_with_command_enter: bool,
     pub notifications_enabled: bool,
     pub auto_scan_interval_minutes: u32,
     pub default_provider: String,
@@ -26,6 +28,7 @@ impl Default for Preferences {
     fn default() -> Self {
         Self {
             theme: "dark".into(),
+            submit_with_command_enter: false,
             notifications_enabled: true,
             auto_scan_interval_minutes: 60,
             default_provider: "aws".into(),
@@ -51,6 +54,7 @@ pub async fn get_preferences(app: tauri::AppHandle) -> Result<Preferences, Strin
     let store = app.store("config.json").map_err(|e| e.to_string())?;
 
     let prefs = Preferences {
+        submit_with_command_enter: store.get("submit_with_command_enter").and_then(|v| v.as_bool()).unwrap_or(false),
         theme: store
             .get("theme")
             .and_then(|v| v.as_str().map(String::from))
@@ -105,8 +109,8 @@ pub async fn get_preferences(app: tauri::AppHandle) -> Result<Preferences, Strin
 
 #[tauri::command]
 pub async fn set_preferences(app: tauri::AppHandle, prefs: Preferences) -> Result<(), String> {
-    if prefs.theme != "dark" {
-        return Err("Only the dark theme is supported in this release.".to_string());
+    if !["dark", "light", "system"].contains(&prefs.theme.as_str()) {
+        return Err("Theme must be dark, light, or system.".to_string());
     }
     if ![15, 30, 60, 360, 1440].contains(&prefs.auto_scan_interval_minutes) {
         return Err("Auto-scan interval must be one of the supported values.".to_string());
@@ -135,6 +139,7 @@ pub async fn set_preferences(app: tauri::AppHandle, prefs: Preferences) -> Resul
     let store = app.store("config.json").map_err(|e| e.to_string())?;
 
     store.set("theme", serde_json::json!(prefs.theme));
+    store.set("submit_with_command_enter", serde_json::json!(prefs.submit_with_command_enter));
     store.set(
         "notifications_enabled",
         serde_json::json!(prefs.notifications_enabled),
@@ -211,7 +216,17 @@ fn normalize_api_endpoint(input: &str) -> Result<String, String> {
 
 #[cfg(test)]
 mod tests {
-    use super::normalize_api_endpoint;
+    use super::{normalize_api_endpoint, Preferences};
+
+    #[test]
+    fn old_preferences_default_to_existing_enter_behavior() {
+        let mut payload = serde_json::to_value(Preferences::default()).unwrap();
+        payload.as_object_mut().unwrap().remove("submit_with_command_enter");
+        let restored: Preferences = serde_json::from_value(payload).unwrap();
+        assert!(!restored.submit_with_command_enter);
+        assert_eq!(restored.new_message_behavior, "queue");
+    }
+
 
     #[test]
     fn accepts_and_normalizes_https_origin() {

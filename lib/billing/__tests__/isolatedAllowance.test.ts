@@ -24,7 +24,7 @@ function fixture() {
     aIUsageReservation: { aggregate: vi.fn(async () => ({ _sum: { reservedCents: 250 } })), findUnique: vi.fn(async () => ({ reservedCents: 100, status: "reserved" })), updateMany: vi.fn(), create: vi.fn() },
   };
   const repo = { $transaction: <T>(fn: (transaction: typeof tx) => T) => fn(tx) };
-  return { allowanceRepo: repo as unknown as Pick<PrismaClient, "$transaction">, coverage, intent, setClock: (now: Date) => { clock = now; }, setStatus: (next: string) => { status = next; }, denyFence: () => { fence = false; }, tx, repo };
+  return { allowanceRepo: repo as unknown as Pick<PrismaClient, "$transaction">, coverage, intent, setClock: (now: Date) => { clock = now; }, setStatus: (next: string) => { status = next; }, denyFence: () => { fence = false; }, tx, repo: repo as unknown as Parameters<typeof reserveAICredits>[0] };
 }
 afterEach(() => vi.unstubAllEnvs());
 describe("existing allowance and reservation select verified isolated contract", () => {

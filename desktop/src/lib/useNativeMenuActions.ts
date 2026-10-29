@@ -12,6 +12,9 @@ import type { CustomerView } from "../App";
 
 type MenuAction =
   | "open_settings"
+  | "view:axiom-bot"
+  | "view:airflow-automation"
+  | "view:plugins-skills"
   | "view:agent"
   | "view:deployment-requests"
   | "view:repository-workspace"
@@ -19,6 +22,9 @@ type MenuAction =
 
 const VIEW_ROUTES: ReadonlyArray<{ action: MenuAction; view: CustomerView }> = [
   { action: "open_settings", view: "settings" },
+  { action: "view:axiom-bot", view: "axiom-bot" },
+  { action: "view:airflow-automation", view: "airflow-automation" },
+  { action: "view:plugins-skills", view: "plugins-skills" },
   { action: "view:agent", view: "agent" },
   { action: "view:deployment-requests", view: "deployment-requests" },
   { action: "view:repository-workspace", view: "repository-workspace" },

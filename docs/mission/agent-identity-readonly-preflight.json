@@ -1,0 +1,35 @@
+{
+  "observedAtUtc": "2026-10-23T02:23:35.072880+00:00",
+  "scope": {
+    "projectName": "visionxixlabs",
+    "branchName": "main",
+    "databaseName": "neondb",
+    "schemaName": "public"
+  },
+  "identityTablePresent": false,
+  "postgresVersion": "17.11",
+  "unresolvedIdentityMigrationAttempts": 1,
+  "identityMigrationChecksum": "761c693202763e71c7ee25f99e194fe010335cf902b5ed37124351a93d42e3f7",
+  "identityMigrationFinished": false,
+  "identityMigrationRolledBack": false,
+  "configuredHistoryRetentionSeconds": 21600,
+  "projectEnvironmentMetadataComplete": true,
+  "projectEnvironmentVariableCount": 122,
+  "databaseEnvironmentValuesDecrypted": false,
+  "databaseEnvironmentResourceConsistency": "all database-family variable metadata refers to one managed resource",
+  "resourceConnectedToAxiomProduction": true,
+  "resourceConnectedProjectCount": 2,
+  "servingDeploymentDatabaseVariableNamesPresent": true,
+  "servingDeploymentEffectiveBinding": "unverified; project metadata and deployment variable names are not effective-value attestation",
+  "usableRecoveryTimestamp": "unverified; configured retention alone does not prove restore availability",
+  "restoreRehearsal": "requires approval for temporary provider resources",
+  "productionWrites": 0,
+  "credentialsRetrievedOrPrinted": false,
+  "limitations": [
+    "no environment values decrypted",
+    "no customer rows queried",
+    "no database/schema/account/role changes",
+    "installation resource API integration-only request was rejected with 403; no retry using broader credentials",
+    "resource inspection succeeded by resource name after internal store ID lookup failed"
+  ]
+}

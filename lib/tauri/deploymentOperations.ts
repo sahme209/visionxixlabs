@@ -4,6 +4,7 @@
  * This module is deliberately integration-neutral. Production actions are represented
  * as human-confirmed playbook steps and must be executed through an authorized adapter.
  */
+import type { ReleaseAirflowDependency } from "@/lib/integrations/airflow/releaseDependencySchema";
 export const deploymentStatuses = [
   "draft", "submitted", "devops_review", "needs_information", "access_blocked",
   "approval_blocked", "ready", "scheduled", "waiting_for_window",
@@ -73,6 +74,9 @@ export interface DeploymentIntake {
   workflowName: string;
   targetEnvironment: string;
   workflowInputs: Record<string, string>;
+  airflowDependency?: ReleaseAirflowDependency;
+  /** Observed source only. Every provider action still needs fresh validation and approval. */
+  workflowSource?: { repositoryFullName: string; ref: string; path: string; blobSha: string };
   manualSteps: ChecklistItem[];
   lowerEnvironmentTested: string[];
   lowerEnvironmentValidation: "yes" | "no" | "not_applicable";
@@ -294,6 +298,8 @@ export interface DeploymentPlaybook {
   productionPrUrls: string[];
   window: { startUtc: string; endUtc: string; displayTimeZone: TimeZoneCode };
   workflowInputs: Record<string, string>;
+  airflowDependency?: ReleaseAirflowDependency;
+  workflowSource?: DeploymentIntake["workflowSource"];
   steps: PlaybookStep[];
   contacts: { deployment: string; application: string; escalation: string };
   sourceFactIds: string[];
@@ -346,6 +352,8 @@ export function generatePlaybook(intake: DeploymentIntake, generatedAtUtc: strin
     productionPrUrls: [...intake.productionPrUrls],
     window: { startUtc: intake.windowStartUtc, endUtc: intake.windowEndUtc, displayTimeZone: intake.displayTimeZone },
     workflowInputs: { ...intake.workflowInputs },
+    ...(intake.airflowDependency ? { airflowDependency: { ...intake.airflowDependency, runs: intake.airflowDependency.runs.map(run => ({ ...run })) } } : {}),
+    ...(intake.workflowSource ? { workflowSource: { ...intake.workflowSource } } : {}),
     steps: raw.map((item, index) => ({ ...item, id: `step-${index + 1}`, order: index + 1 })),
     contacts: { deployment: intake.deploymentContact, application: intake.applicationContact, escalation: intake.escalationContact },
     sourceFactIds: intake.facts.map((fact) => fact.id),

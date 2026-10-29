@@ -1,7 +1,7 @@
 /** POST /api/workforce/integrations/github — Phase 644 — save GitHub integration. */
 
-import { NextResponse } from "next/server";
-import { requireContext } from "@/lib/auth/currentContext";
+import { NextResponse, type NextRequest } from "next/server";
+import { integrationMutationContext } from "@/lib/auth/integrationMutationContext";
 import {
   isValidCredentialReference,
   isValidGithubRepo,
@@ -22,8 +22,10 @@ function sanitizeLabel(raw: string): string {
   return cleaned.length > 0 ? cleaned : "axiom-finding";
 }
 
-export async function POST(req: Request) {
-  const ctx = await requireContext();
+export async function POST(req: NextRequest) {
+  const authority = await integrationMutationContext(req);
+  if (authority.response) return authority.response;
+  const ctx = authority.context;
   const org = String(ctx.organizationId);
   const f = await req.formData();
   const correlationId = `integration_github_${Date.now().toString(36)}` as CorrelationId;

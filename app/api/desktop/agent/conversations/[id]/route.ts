@@ -47,7 +47,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       title: conversation.title,
       turns: turns.map((t) => ({ id: t.id, role: t.role, content: t.content, actionProposalId: t.actionProposalId, createdAt: t.createdAt.toISOString() })),
       actions: actions.map((a) => ({
-        id: a.id, toolName: a.toolName, argsJson: redactSensitiveRepositoryEvidence(a.argsJson), riskLevel: a.riskLevel, status: a.status,
+        id: a.id, requiresIndependentReviewer: a.proposedByUserId === String(session.userId), toolName: a.toolName, argsJson: redactSensitiveRepositoryEvidence(a.argsJson), riskLevel: a.riskLevel, status: a.status,
         resultJson: redactSensitiveRepositoryEvidence(a.resultJson), errorMessage: a.errorMessage, createdAt: a.createdAt.toISOString(),
       })),
     },

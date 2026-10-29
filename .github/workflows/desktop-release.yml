@@ -103,10 +103,17 @@ jobs:
           path: .
           format: cyclonedx-json
           output-file: axiom-agent.sbom.cdx.json
-          artifact-name: axiom-sbom
-          # The action defaults to release upload on tags; candidates must not.
+          # Upload the exact output ourselves: artifact-name also renames the
+          # action's payload, which would disagree with candidate provenance.
+          upload-artifact: false
           upload-release-assets: false
 
+      - name: Upload exact SBOM candidate bytes
+        uses: actions/upload-artifact@v4
+        with:
+          name: axiom-sbom
+          path: axiom-agent.sbom.cdx.json
+          if-no-files-found: error
 
       - name: Record SBOM candidate provenance
         env:
@@ -201,8 +208,36 @@ jobs:
           projectPath: desktop
           args: --target ${{ matrix.target }}
 
+      - name: Notarize and staple the distributable Mac disk image
+        if: startsWith(matrix.platform, 'macos-')
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        shell: bash
+        run: |
+          test -n "$APPLE_ID"
+          test -n "$APPLE_PASSWORD"
+          test -n "$APPLE_TEAM_ID"
+          dmg_path="$(find "desktop/src-tauri/target/${{ matrix.target }}/release/bundle/dmg" -maxdepth 1 -type f -name '*.dmg' -print)"
+          test -n "$dmg_path"
+          test "$(printf '%s\n' "$dmg_path" | wc -l | tr -d ' ')" = 1
+          notary_result="$(mktemp)"
+          trap 'rm -f "$notary_result"' EXIT
+          xcrun notarytool submit "$dmg_path" --apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait --timeout 20m --output-format json > "$notary_result"
+          node - "$notary_result" <<'NODE'
+          const fs = require('node:fs');
+          const result = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (result.status !== 'Accepted' || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(result.id)) throw Error('Disk image notarization was not accepted');
+          NODE
+          xcrun stapler staple "$dmg_path"
+          xcrun stapler validate "$dmg_path"
+
       - name: Verify Apple signature, Gatekeeper acceptance, and notarization ticket
         if: startsWith(matrix.platform, 'macos-')
+        env:
+          EXPECTED_APP_VERSION: ${{ needs.validate-release.outputs.version }}
+          EXPECTED_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         shell: bash
         run: |
           app_path=$(find "desktop/src-tauri/target/${{ matrix.target }}/release/bundle/macos" -maxdepth 1 -name '*.app' -print -quit)
@@ -213,6 +248,12 @@ jobs:
           xcrun stapler validate "$app_path"
           codesign --verify --verbose=4 "$dmg_path"
           hdiutil verify "$dmg_path"
+          case "${{ matrix.target }}" in
+            aarch64-apple-darwin) architecture=arm64 ;;
+            x86_64-apple-darwin) architecture=x86_64 ;;
+            *) echo "Unsupported macOS candidate architecture" >&2; exit 1 ;;
+          esac
+          node scripts/verify-packaged-macos.mjs "$dmg_path" "$EXPECTED_APP_VERSION" "$EXPECTED_APPLE_TEAM_ID" "$architecture" > "desktop/packaged-macos-${{ matrix.label }}.json"
 
       - name: Record platform release attestation
         shell: bash
@@ -221,8 +262,8 @@ jobs:
           notarized=false
           if [[ "${{ matrix.label }}" == macos-* ]]; then
             signed=false
-            # Build .app is checked above, but packaged .app identity/ticket
-            # is not yet independently verified; downloadable artifact stays false.
+            # Candidate packaging must pass the mounted-image verifier above.
+            # Public attestation stays withheld until candidate acceptance is complete.
             notarized=false
           fi
           {
@@ -254,7 +295,9 @@ jobs:
             return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
               const file = path.join(directory, entry.name);
               if (entry.isSymbolicLink()) throw Error('Symlink in candidate output');
-              return entry.isDirectory() ? (entry.name.endsWith('.app') ? [] : walk(file)) : [file];
+              // Ignore unpacked application staging trees; hash only distributable installers.
+              const staging = entry.name.endsWith('.app') || (PLATFORM === 'linux-x64' && entry.name.endsWith('.AppDir'));
+              return entry.isDirectory() ? (staging ? [] : walk(file)) : [file];
             });
           }
           const files = walk(`desktop/src-tauri/target/${TARGET}/release/bundle`).filter(file => /\.(dmg|msi|exe|AppImage|deb|rpm)$/.test(file));
@@ -279,6 +322,7 @@ jobs:
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.rpm
             desktop/release-attestation-${{ matrix.label }}.env
             desktop/candidate-${{ matrix.label }}.json
+            desktop/packaged-macos-${{ matrix.label }}.json
           if-no-files-found: error
 
   verify-candidate:
@@ -348,7 +392,7 @@ jobs:
               if (!lines.has(`platform=${manifest.platform}`) || !lines.has(`artifact_signed=${expected}`) || !lines.has('artifact_notarized=false')) throw Error('Signing attestation mismatch');
             }
             for (const asset of manifest.assets) {
-              if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/.test(asset.fileName) || path.basename(asset.fileName) !== asset.fileName || !extensions[manifest.platform].test(asset.fileName) || seenNames.has(asset.fileName) || !/^[a-f0-9]{64}$/.test(asset.sha256) || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0) throw Error('Unsafe or duplicate candidate asset');
+              if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || path.basename(asset.fileName) !== asset.fileName || !extensions[manifest.platform].test(asset.fileName) || seenNames.has(asset.fileName) || !/^[a-f0-9]{64}$/.test(asset.sha256) || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0) throw Error('Unsafe or duplicate candidate asset');
               const matches = files.filter(candidate => path.basename(candidate) === asset.fileName);
               if (matches.length !== 1) throw Error('Missing or colliding candidate asset');
               const bytes = fs.readFileSync(matches[0]);
@@ -425,7 +469,7 @@ jobs:
           if (manifest.schema !== 1 || manifest.sourceSha !== SOURCE_SHA || manifest.releaseTag !== RELEASE_TAG || manifest.version !== VERSION || manifest.runId !== CANDIDATE_RUN_ID || !Array.isArray(manifest.assets) || manifest.assets.length < 5) throw Error('Unapproved candidate identity');
           const names = new Set();
           for (const asset of manifest.assets) {
-            if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/.test(asset.fileName) || path.basename(asset.fileName) !== asset.fileName || names.has(asset.fileName)) throw Error('Invalid candidate file');
+            if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || path.basename(asset.fileName) !== asset.fileName || names.has(asset.fileName)) throw Error('Invalid candidate file');
             const file = path.join('flat', asset.fileName);
             if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw Error('Invalid candidate file');
             const bytes = fs.readFileSync(file);
@@ -484,7 +528,7 @@ jobs:
           cat > release-notes.md <<NOTES
           # Axiom Agent $RELEASE_TAG
 
-          macOS build app bundles passed signature, Gatekeeper and notarization checks in this build; packaged installer contents, clean-host installation and credential persistence require separate acceptance. Windows installers remain unsigned by Authenticode; Linux packages have detached GPG signatures. GPG signatures and a source-bound candidate hash manifest accompany every installer and SBOM. Automatic in-app updates are not configured; use reviewed manual installation.
+          macOS candidate builds require signature, Gatekeeper and notarization checks on the build app and the app inside the disk image. Public artifact signing attestations remain withheld pending candidate acceptance; clean-host installation and credential persistence require separate acceptance. Windows installers remain unsigned by Authenticode; Linux packages have detached GPG signatures. GPG signatures and a source-bound candidate hash manifest accompany every installer and SBOM. Automatic in-app updates are not configured; use reviewed manual installation.
 
           The public artifact-repository tag is not the private source commit. Source provenance:
           source-commit: $SOURCE_SHA

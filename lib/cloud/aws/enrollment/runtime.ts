@@ -16,10 +16,11 @@ export async function enrollmentPrincipal(request: NextRequest, mode: "read" | "
 }
 export const enrollmentUnauthorized = () => NextResponse.json({ ok: false, error: "desktop_session_required", message: "A currently authorized paired desktop session is required." }, { status: 401 });
 export function enrollmentFailure(error: unknown): Response {
-  const prismaCode = error && typeof error === "object" && "code" in error ? String(error.code) : "";
-  const code = error instanceof AwsEnrollmentError ? error.code : ["P2002", "P2034"].includes(prismaCode) ? "enrollment_conflict" : "enrollment_unavailable";
-  const statuses = { invalid_input: 400, enrollment_unavailable: 503, enrollment_not_found: 404, enrollment_expired: 410, enrollment_conflict: 409, connection_authority_required: 403, aws_identity_unverified: 400, aws_inventory_denied: 403, cloud_account_limit_reached: 403, connection_disconnected: 409 };
+  const prismaCode = error && typeof error === "object" && "code" in error && typeof error.code === "string" ? error.code : "";
+  const code = error instanceof AwsEnrollmentError ? error.code : ["P2002", "P2034"].includes(prismaCode) ? "enrollment_conflict" : ["P2021", "P2022"].includes(prismaCode) ? "enrollment_storage_schema_unavailable" : "enrollment_unavailable";
+  const statuses = { invalid_input: 400, enrollment_unavailable: 503, enrollment_storage_schema_unavailable: 503, enrollment_not_found: 404, enrollment_expired: 410, enrollment_conflict: 409, connection_authority_required: 403, aws_identity_unverified: 400, aws_inventory_denied: 403, cloud_account_limit_reached: 403, connection_disconnected: 409 };
   const messages = {
+    enrollment_storage_schema_unavailable: "AWS connection storage is not compatible with this service version. A service administrator needs to review deployed database migrations. Refresh connection state before retrying.",
     connection_disconnected: "Axiom access to this connection is disconnected. Re-enroll to validate new access.",
     cloud_account_limit_reached: "The workspace cloud account allowance is exhausted. Existing connections can still be revalidated.",
     invalid_input: "Check the AWS account, role, region and enrollment challenge.", enrollment_unavailable: "AWS enrollment or its required storage is unavailable. No connection was changed.",

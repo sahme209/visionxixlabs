@@ -18,8 +18,7 @@
  * applier, then diffs the test surface via the Phase 392 analyzer.
  *
  * Failure semantics (same shape as code_lint):
- *   - parse failed                  → stage SUCCEEDS with testSkipped=true
- *                                     (the lint + PR-open stages catch it)
+ *   - missing/invalid proposal or unreadable base → stage fails closed
  *   - any analyzer finding          → stage FAILS; pipeline stops; PR never opens
  *   - no test files in the patch    → stage succeeds (nothing to check)
  *
@@ -28,6 +27,8 @@
  */
 
 import "server-only";
+import { createHash } from "node:crypto";
+import { loadCodingReadSnapshot } from "./codingReadSnapshot";
 
 import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
@@ -37,7 +38,7 @@ import { parseRepoRef } from "./parseRepoRef";
 import { parseUnifiedDiff } from "./parseUnifiedDiff";
 import { applyDiff } from "./applyUnifiedDiff";
 import { analyzeTestChange, isTestFilePath, type TestFinding } from "./testAssertionAnalyzer";
-import { fetchFileContent } from "./githubWriteClient";
+import { readCodingGithubFile } from "./codingGithubCredential";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 interface MetaShape {
@@ -56,11 +57,13 @@ function readMetadata(raw: Record<string, unknown>): { repoRef: string; branchHi
 
 function skipResult(reason: string, ctx: { stageId: string }, extra?: Record<string, unknown>): StageExecutorResult {
   return {
-    ok: true,
-    summary: `[test skipped · ${reason}] no assertion-integrity issues to surface.`,
+    ...(reason === "no_test_files_in_patch"
+      ? { ok: true as const, summary: "No test files changed. Assertion integrity was not applicable; repository tests were not executed." }
+      : { ok: false as const, error: `Assertion integrity could not be checked (${reason}). Coding has stopped.` }),
     detail: {
       stageId: ctx.stageId,
       testSkipped: true,
+      testExecution: "not_run",
       skipReason: reason,
       ...extra,
     },
@@ -95,6 +98,10 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
   if (!parsed.ok) {
     return skipResult("diff_parse_failed", ctx, { parseReason: parsed.reason });
   }
+
+  const savedBase = await loadCodingReadSnapshot(ctx.organizationId, ctx.runId, coords);
+  if (!savedBase) return skipResult("saved_repository_base_unavailable", ctx);
+  const codingValidation = {schema:1,repositoryFullName:`${coords.owner}/${coords.repo}`,baseBranch:savedBase.branch,baseCommitSha:savedBase.headSha,patchSha256:createHash("sha256").update(proposedPatchText).digest("hex")};
 
   // 3. Identify modified test files only. Added test files don't have a
   //    base to compare against, so they're informational; deleted test
@@ -148,13 +155,13 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
       continue;
     }
 
-    const fc = await fetchFileContent(coords.owner, coords.repo, fileDiff.path, meta.branchHint ?? "HEAD");
+    const fc = await readCodingGithubFile(ctx.organizationId, coords, fileDiff.path, savedBase.headSha);
     if (!fc.ok || fc.content === null) {
       entries.push({
         path: fileDiff.path,
         changeKind: fileDiff.changeKind,
         analyzed: false,
-        ok: true,
+        ok: false,
         findings: [],
         skipReason: fc.ok ? "base_missing_in_repo" : "base_fetch_failed",
       });
@@ -167,7 +174,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
         path: fileDiff.path,
         changeKind: fileDiff.changeKind,
         analyzed: false,
-        ok: true,
+        ok: false,
         findings: [],
         skipReason: applied.ok ? "applied_to_null" : `apply_${applied.reason}`,
       });
@@ -191,7 +198,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
   }
 
   // No test files touched at all — nothing to do.
-  if (entries.length === 0) return skipResult("no_test_files_in_patch", ctx);
+  if (entries.length === 0) return skipResult("no_test_files_in_patch", ctx, {codingValidation});
 
   const failingEntries = entries.filter((e) => !e.ok);
   const analyzedCount = entries.filter((e) => e.analyzed).length;
@@ -217,10 +224,12 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
 
     return {
       ok: true,
-      summary: `Test integrity passed · analyzed ${analyzedCount}/${entries.length} test file(s), no cheating patterns detected.`,
+      summary: `Assertion integrity · analyzed ${analyzedCount}/${entries.length} test file(s), no flagged patterns. Repository tests were not executed.`,
       detail: {
         stageId: ctx.stageId,
-        testSkipped: false,
+        codingValidation,
+        testSkipped: analyzedCount === 0,
+        testExecution: "not_run",
         analyzedFiles: analyzedCount,
         totalTestFiles: entries.length,
         perFile: entries.map((e) => ({
@@ -236,7 +245,7 @@ export const codeTestRealExecutor: StageExecutorFn = async (ctx) => {
   }
 
   const firstFail = failingEntries[0];
-  const firstFinding = firstFail.findings[0]?.message ?? "test integrity issue";
+  const firstFinding = firstFail.findings[0]?.message ?? firstFail.skipReason ?? "assertion integrity check unavailable";
 
   try {
     await recordAudit({

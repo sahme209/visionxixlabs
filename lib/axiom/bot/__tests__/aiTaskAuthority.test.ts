@@ -1,0 +1,16 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+import {readAiTaskAuthority} from '../aiTaskAuthority';
+import {workspaceReadinessReaders} from '../workspaceReadinessReaders';
+import {readWorkspaceAgentIdentity} from '@/lib/axiom/agentRuntime/agentIdentityPolicy';
+import {loadWorkspaceAIProviderPolicyWithState} from '@/lib/ai/workspaceProviderPolicy';
+vi.mock('server-only',()=>({}));
+vi.mock('../workspaceReadinessReaders',()=>({workspaceReadinessReaders:vi.fn()}));
+vi.mock('@/lib/axiom/agentRuntime/agentIdentityPolicy',()=>({readWorkspaceAgentIdentity:vi.fn()}));
+vi.mock('@/lib/ai/workspaceProviderPolicy',()=>({loadWorkspaceAIProviderPolicyWithState:vi.fn(),gatewayPolicyModelIds:(p:any)=>p.gatewaySelection.approvedModelIds}));
+let access:any,identity:any,loaded:any;const scope={organizationId:'org',userId:'user'},model='anthropic/test';const signal=()=>new AbortController().signal;
+beforeEach(()=>{vi.resetAllMocks();access={accepted:true,canRead:true,role:'owner',commercialCode:'active'};identity={organizationId:'org',enabled:true,updatedAt:'2026-10-25T00:00:00Z'};loaded={storageState:'ready',policy:{enabled:true,allowedProviders:['vercel_gateway'],modelSelections:{vercel_gateway:model},fallbackOrder:['vercel_gateway'],gatewaySelection:{approvedModelIds:[model]}}};vi.mocked(workspaceReadinessReaders).mockReturnValue({readAccess:async()=>access} as any);vi.mocked(readWorkspaceAgentIdentity).mockImplementation(async()=>identity);vi.mocked(loadWorkspaceAIProviderPolicyWithState).mockImplementation(async()=>loaded)});
+it('binds current user, role, enabled identity revision and model policy without tools',async()=>{const first=await readAiTaskAuthority(scope,model,signal());expect(first).toMatch(/^[a-f0-9]{64}$/);access.role='read_only';expect(await readAiTaskAuthority(scope,model,signal())).not.toBe(first);access.role='owner';identity.updatedAt='2026-10-26T00:00:00Z';expect(await readAiTaskAuthority(scope,model,signal())).not.toBe(first)});
+it('fails closed on missing membership or commercial access',async()=>{for(const patch of [{accepted:false},{canRead:false},{commercialCode:'unavailable'}]){const old={...access};Object.assign(access,patch);expect(await readAiTaskAuthority(scope,model,signal())).toBeNull();access=old}});
+it('fails closed for disabled identity, wrong tenant and unapproved model',async()=>{identity.enabled=false;expect(await readAiTaskAuthority(scope,model,signal())).toBeNull();identity.enabled=true;identity.organizationId='other';expect(await readAiTaskAuthority(scope,model,signal())).toBeNull();identity.organizationId='org';expect(await readAiTaskAuthority(scope,'other/model',signal())).toBeNull()});
+it('fails closed on unavailable or disabled policy and storage errors',async()=>{loaded.storageState='unavailable';expect(await readAiTaskAuthority(scope,model,signal())).toBeNull();loaded.storageState='ready';loaded.policy.enabled=false;expect(await readAiTaskAuthority(scope,model,signal())).toBeNull();vi.mocked(readWorkspaceAgentIdentity).mockRejectedValue(new Error('unavailable'));expect(await readAiTaskAuthority(scope,model,signal())).toBeNull()});
+it('propagates cancellation without reading more policy',async()=>{const c=new AbortController();c.abort();await expect(readAiTaskAuthority(scope,model,c.signal)).rejects.toThrow();expect(readWorkspaceAgentIdentity).not.toHaveBeenCalled()});

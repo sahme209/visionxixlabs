@@ -1,0 +1,20 @@
+/** Mock-only local foundation. These types grant no OS, input or AI authority. */
+export const OBSERVATION_CAPTURE_MS=10_000,OBSERVATION_IDLE_MS=120_000,OBSERVATION_SESSION_MS=600_000,OBSERVATION_MAX_PNG_BYTES=4*1024*1024;
+export interface ObservationOwner {workspaceId:string;actorId:string;contextRevision:number;taskId:string|null;taskVersion:number|null}
+export interface MockWindowSelection {kind:'mock_window_selection_v1';synthetic:true;handle:string;appLabel:string;windowLabel:string;inputAvailable:false;aiSharingAvailable:false;backgroundCapture:false}
+export interface MockWindowCapture {kind:'mock_window_capture_v1';synthetic:true;handle:string;observedAt:string;width:number;height:number;png:Uint8Array}
+export interface MockWindowObserver {kind:'mock_window_observer_v1';select(signal:AbortSignal):Promise<unknown>;capture(input:{handle:string},signal:AbortSignal):Promise<unknown>;stop(input:{handle:string}):Promise<void>}
+export type ObservationStatus='idle'|'selecting'|'selected'|'capturing'|'observed'|'stopped'|'expired'|'error';
+export interface ObservationSnapshot {readonly status:ObservationStatus;readonly source:'synthetic_fixture';readonly inputAvailable:false;readonly aiSharingAvailable:false;readonly backgroundCapture:false;readonly session:null|Readonly<{id:string;revision:number;appLabel:string;windowLabel:string;expiresAt:string}>;readonly observation:null|Readonly<{observedAt:string;width:number;height:number;png:Uint8Array}>;readonly error?:'selection_unavailable'|'capture_unconfirmed'|'capture_invalid'|'owner_changed'|'invalid_request'}
+const record=(v:unknown):v is Record<string,unknown>=>Boolean(v&&typeof v==='object'&&!Array.isArray(v));
+const exact=(v:Record<string,unknown>,keys:string[])=>Object.keys(v).sort().join(',')===[...keys].sort().join(',');
+const label=(v:unknown):v is string=>typeof v==='string'&&v.trim().length>0&&new TextEncoder().encode(v).byteLength<=240&&!/[\x00-\x1f\x7f-\x9f]/.test(v);
+export const isObservationOwner=(v:unknown):v is ObservationOwner=>record(v)&&exact(v,['workspaceId','actorId','contextRevision','taskId','taskVersion'])&&label(v.workspaceId)&&label(v.actorId)&&Number.isSafeInteger(v.contextRevision)&&Number(v.contextRevision)>=0&&((v.taskId===null&&v.taskVersion===null)||(typeof v.taskId==='string'&&/^bot_[a-f0-9]{64}$/.test(v.taskId)&&Number.isSafeInteger(v.taskVersion)&&Number(v.taskVersion)>=0&&Number(v.taskVersion)<=2147483647));
+export const isMockWindowSelection=(v:unknown):v is MockWindowSelection=>record(v)&&exact(v,['kind','synthetic','handle','appLabel','windowLabel','inputAvailable','aiSharingAvailable','backgroundCapture'])&&v.kind==='mock_window_selection_v1'&&v.synthetic===true&&typeof v.handle==='string'&&/^mock_window_[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/.test(v.handle)&&label(v.appLabel)&&label(v.windowLabel)&&v.inputAvailable===false&&v.aiSharingAvailable===false&&v.backgroundCapture===false;
+export function isMockWindowCapture(v:unknown,handle:string,startedAt:number,now:number):v is MockWindowCapture {
+ if(!record(v)||!exact(v,['kind','synthetic','handle','observedAt','width','height','png'])||v.kind!=='mock_window_capture_v1'||v.synthetic!==true||v.handle!==handle||typeof v.observedAt!=='string'||!Number.isSafeInteger(v.width)||!Number.isSafeInteger(v.height)||Number(v.width)<1||Number(v.height)<1||Number(v.width)>1600||Number(v.height)>1600||Number(v.width)*Number(v.height)>4_000_000||!(v.png instanceof Uint8Array)||v.png.byteLength<33||v.png.byteLength>OBSERVATION_MAX_PNG_BYTES)return false;
+ try{if(new Date(v.observedAt).toISOString()!==v.observedAt||Date.parse(v.observedAt)<startedAt||Date.parse(v.observedAt)>now)return false}catch{return false}
+ const png=v.png;if(![137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82].every((byte,i)=>png[i]===byte))return false;
+ const header=new DataView(png.buffer,png.byteOffset,png.byteLength);return header.getUint32(16)===v.width&&header.getUint32(20)===v.height;
+}
+export function discardMockPixels(v:unknown){if(record(v)&&v.png instanceof Uint8Array)v.png.fill(0)}

@@ -1,0 +1,16 @@
+import {z} from 'zod';
+export const RELEASE_OPERATION_PLAN_KIND='release_operation_plan_v1' as const;
+const id=z.string().min(1).max(240).refine(v=>v===v.trim()&&!/[\x00-\x1f\x7f]/.test(v));
+const version=z.number().int().min(0).max(2147483647),digest=z.string().regex(/^[a-f0-9]{64}$/),instant=z.string().max(50).refine(v=>Number.isFinite(Date.parse(v))),sha=z.string().regex(/^[a-f0-9]{40}$/),repository=z.string().max(201).regex(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/);
+export const releaseOperationMergePlanSchema=z.object({kind:z.literal('merge_pull_request'),organizationId:id,requestId:id,requestVersion:version.min(1),intakeDigest:digest,connectionId:id,connectionRevision:instant,window:z.object({startUtc:instant,endUtc:instant}).strict(),method:z.enum(['merge','squash','rebase']),pullRequest:z.object({repositoryFullName:repository,number:version.min(1),url:z.string().max(500),headRef:id,headSha:sha,baseRef:id,baseSha:sha}).strict()}).strict().refine(v=>Date.parse(v.window.endUtc)>Date.parse(v.window.startUtc)&&v.pullRequest.url===`https://github.com/${v.pullRequest.repositoryFullName}/pull/${v.pullRequest.number}`);
+export const releaseOperationPlanSchema=releaseOperationMergePlanSchema;
+export type ReleaseOperationPlan=z.infer<typeof releaseOperationMergePlanSchema>;
+export const parseReleaseOperationPlan=(value:unknown)=>releaseOperationMergePlanSchema.parse(value);
+const inputSchema=z.object({format:z.literal(1),plan:releaseOperationMergePlanSchema,planDigest:digest,releaseRequesterUserId:id,createdAt:instant,deadlineAt:instant}).strict().refine(v=>new Date(v.plan.window.endUtc).getTime()===new Date(v.deadlineAt).getTime()&&Date.parse(v.createdAt)<Date.parse(v.deadlineAt));
+export type ReleaseOperationPlanInput=z.infer<typeof inputSchema>;
+export const parseReleaseOperationPlanInput=(value:unknown)=>inputSchema.parse(value);
+export const releaseOperationPlanHistorySchema=z.object({sequence:version,type:z.enum(['created','reviewed','rejected','stale','cancelled']),at:instant,actorKind:z.enum(['creator','independent_reviewer','system'])}).strict();
+export const releaseOperationPlanDtoSchema=z.object({id:z.string().regex(/^release_plan_[a-f0-9]{64}$/),version,requestId:id,requestVersion:version.min(1),planDigest:digest,plan:releaseOperationMergePlanSchema,status:z.enum(['pending_review','reviewed','rejected','stale','cancelled']),createdAt:instant,deadlineAt:instant,executionAvailable:z.literal(false),canReview:z.boolean(),canCancel:z.boolean(),history:z.array(releaseOperationPlanHistorySchema).max(20)}).strict().refine(v=>v.requestId===v.plan.requestId&&v.requestVersion===v.plan.requestVersion);
+export type ReleaseOperationPlanDto=z.infer<typeof releaseOperationPlanDtoSchema>;
+export const parseReleaseOperationPlanDto=(value:unknown)=>releaseOperationPlanDtoSchema.parse(value);
+export const parseReleaseOperationPlanList=(value:unknown)=>z.object({plans:z.array(releaseOperationPlanDtoSchema).max(5),truncated:z.boolean()}).strict().parse(value);

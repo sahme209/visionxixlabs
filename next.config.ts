@@ -41,6 +41,7 @@ const nextConfig: NextConfig = {
     "@azure/arm-storage",
     "@azure/arm-subscriptions",
     "@azure/identity",
+    "@azure/msal-node",
     "@google-cloud/compute",
     "@google-cloud/container",
     "@google-cloud/resource-manager",

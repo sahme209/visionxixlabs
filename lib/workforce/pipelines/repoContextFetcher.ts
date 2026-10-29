@@ -10,7 +10,7 @@
  *      tsconfig.json, top-level src/index.* — bounded content).
  *
  * Uses raw fetch + the GitHub REST API. No SDK to keep the surface
- * minimal. Authenticates with GITHUB_TOKEN when present — public
+ * minimal. Uses only an explicitly supplied scoped token — public
  * repos work without it (unauthenticated rate limit is 60 req/h
  * per IP, plenty for a single coding task).
  *
@@ -62,25 +62,27 @@ interface GhHeaders {
   "X-GitHub-Api-Version": string;
 }
 
-function buildHeaders(): GhHeaders {
+function buildHeaders(installationToken?: string): GhHeaders {
   const headers: GhHeaders = {
     Accept: "application/vnd.github+json",
     "User-Agent": "visionxixlabs-ai-coding-loop",
     "X-GitHub-Api-Version": "2022-11-28",
   };
-  if (process.env.GITHUB_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  if (installationToken) {
+    headers.Authorization = `Bearer ${installationToken}`;
   }
   return headers;
 }
 
-async function ghFetch(path: string): Promise<Response> {
+async function githubFetch(path: string, installationToken?: string): Promise<Response> {
   const controller = new AbortController();
   const t = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
     return await fetch(`${GH_API}${path}`, {
-      headers: buildHeaders() as unknown as Record<string, string>,
+      headers: buildHeaders(installationToken) as unknown as Record<string, string>,
       signal: controller.signal,
+      redirect: "error",
+      credentials: "omit",
     });
   } finally {
     clearTimeout(t);
@@ -90,7 +92,9 @@ async function ghFetch(path: string): Promise<Response> {
 export async function fetchRepoContext(
   repoRef: string,
   branchHint: string | null,
+  installationToken?: string,
 ): Promise<FetchRepoContextResult> {
+  const ghFetch = (path: string) => githubFetch(path, installationToken);
   const coords = parseRepoRef(repoRef);
   if (!coords) {
     return { ok: false, reason: "invalid_repo_ref", detail: `Could not parse repoRef "${repoRef}".` };
@@ -102,7 +106,7 @@ export async function fetchRepoContext(
   try {
     const r = await ghFetch(`/repos/${owner}/${repo}`);
     if (r.status === 404) return { ok: false, reason: "repo_not_found", detail: `${owner}/${repo} not found or private without token.` };
-    if (r.status === 403 || r.status === 401) return { ok: false, reason: "forbidden", detail: "Auth/rate-limit — set GITHUB_TOKEN or wait." };
+    if (r.status === 403 || r.status === 401) return { ok: false, reason: "forbidden", detail: "Repository access refused or rate-limited. Check the workspace GitHub connection." };
     if (!r.ok) return { ok: false, reason: "unexpected_response", detail: `repo GET ${r.status}` };
     const body = await r.json() as { default_branch?: string };
     defaultBranch = typeof body.default_branch === "string" ? body.default_branch : "main";
@@ -124,7 +128,7 @@ export async function fetchRepoContext(
     return { ok: false, reason: "network_error", detail: "Could not fetch branch HEAD." };
   }
 
-  if (!headSha) return { ok: false, reason: "unexpected_response", detail: "Branch HEAD had no sha." };
+  if (typeof headSha !== "string" || !/^[a-f0-9]{40}$/.test(headSha)) return { ok: false, reason: "unexpected_response", detail: "Branch HEAD had no verified commit sha." };
 
   // 3. Recursive tree.
   const tree: RepoTreeEntry[] = [];
@@ -152,7 +156,7 @@ export async function fetchRepoContext(
   // 4. Recent commits (parallel with tree would be nicer; serialize for now).
   const recentCommits: RepoCommit[] = [];
   try {
-    const r = await ghFetch(`/repos/${owner}/${repo}/commits?sha=${encodeURIComponent(branch)}&per_page=${MAX_RECENT_COMMITS}`);
+    const r = await ghFetch(`/repos/${owner}/${repo}/commits?sha=${encodeURIComponent(headSha)}&per_page=${MAX_RECENT_COMMITS}`);
     if (r.ok) {
       const body = await r.json() as ReadonlyArray<{
         sha?: string;
@@ -183,7 +187,7 @@ export async function fetchRepoContext(
     const inTree = tree.some((t) => t.path === filename && t.type === "blob");
     if (!inTree) continue;
     try {
-      const r = await ghFetch(`/repos/${owner}/${repo}/contents/${encodeURIComponent(filename)}?ref=${encodeURIComponent(branch)}`);
+      const r = await ghFetch(`/repos/${owner}/${repo}/contents/${encodeURIComponent(filename)}?ref=${encodeURIComponent(headSha)}`);
       if (!r.ok) continue;
       const body = await r.json() as { content?: string; encoding?: string; size?: number };
       if (body.encoding !== "base64" || typeof body.content !== "string") continue;

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { AuthCompanionHeader } from "@/components/auth/AuthCompanionHeader";
 import { AuthCompanionShell } from "@/components/auth/AuthCompanionShell";
 import { currentContext } from "@/lib/auth/currentContext";
 
@@ -19,10 +18,9 @@ export default async function AccountHelpPage() {
   return (
     <AuthCompanionShell>
       <div className="mx-auto max-w-[1400px]">
-        <AuthCompanionHeader email={context.email ?? null} />
-        <section className="py-14 sm:py-20">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-orange-300">Axiom web companion · help</p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-[-0.045em] sm:text-5xl">Guidance that stays with your account.</h1>
+        <section className="py-2">
+          <p className="text-[10px] uppercase tracking-[0.22em] text-orange-300">Axiom Control · help</p>
+          <h1 className="mt-4 text-2xl font-semibold tracking-[-0.045em] sm:text-3xl">Guidance that stays with your account.</h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">You remain signed in while reading product guidance. Axiom Agent is still the place for deployment operations and provider configuration.</p>
         </section>
         <section className="grid gap-3 md:grid-cols-2" aria-label="Help topics">

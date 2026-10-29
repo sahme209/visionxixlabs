@@ -1,0 +1,16 @@
+import {beforeEach,expect,it,vi} from "vitest";
+import {NextRequest} from "next/server";
+const m=vi.hoisted(()=>({context:vi.fn(),inspect:vi.fn(),limit:vi.fn()}));
+vi.mock("@/lib/auth/currentContext",()=>({currentContext:m.context}));
+vi.mock("@/lib/db",()=>({prisma:{}}));
+vi.mock("@/lib/operations/agentStorageRecovery",()=>({inspectAgentStorageRecovery:m.inspect}));
+vi.mock("@/lib/api/rateLimiter",()=>({consumeToken:m.limit}));
+const owner={isAuthenticated:true,userId:"owner",organizationId:"workspace",roles:["owner"]};
+const request=(query="")=>new NextRequest("https://visionxixlabs.com/api/control/ai-governance/recovery-status"+query);
+beforeEach(()=>{vi.resetAllMocks();m.context.mockResolvedValue(owner);m.limit.mockReturnValue({allowed:true});m.inspect.mockResolvedValue({state:"verified",repairAuthorized:false});});
+it("requires a complete current authenticated workspace",async()=>{m.context.mockResolvedValue({isAuthenticated:false,roles:[]});const {GET}=await import("../route");expect((await GET(request())).status).toBe(401);expect(m.inspect).not.toHaveBeenCalled();});
+it.each(["operator","read_only","finance_viewer","security_reviewer"])("does not expose operator recovery evidence to %s",async role=>{m.context.mockResolvedValue({...owner,roles:[role]});const {GET}=await import("../route");expect((await GET(request())).status).toBe(403);expect(m.inspect).not.toHaveBeenCalled();});
+it.each(["owner","admin"])("returns private read-only evidence for %s",async role=>{m.context.mockResolvedValue({...owner,roles:[role]});const {GET}=await import("../route");const response=await GET(request());expect(response.status).toBe(200);expect(response.headers.get("cache-control")).toBe("private, no-store");expect(await response.json()).toEqual({ok:true,data:{state:"verified",repairAuthorized:false}});});
+it("rejects request-selected targets",async()=>{const {GET}=await import("../route");expect((await GET(request("?database=foreign"))).status).toBe(400);expect(m.inspect).not.toHaveBeenCalled();});
+it("rate limits probes before database I/O",async()=>{m.limit.mockReturnValue({allowed:false});const {GET}=await import("../route");expect((await GET(request())).status).toBe(429);expect(m.inspect).not.toHaveBeenCalled();});
+it("does not expose auth or database exceptions",async()=>{m.context.mockRejectedValue(new Error("PRIVATE context"));const {GET}=await import("../route");const response=await GET(request());expect(response.status).toBe(503);expect(await response.text()).not.toContain("PRIVATE");});

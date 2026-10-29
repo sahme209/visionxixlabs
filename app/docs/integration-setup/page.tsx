@@ -13,7 +13,7 @@ export default function IntegrationSetupPage() {
     <article className="docs-prose">
       <DocHeader
         kicker="Connections"
-        title="Activate release integrations"
+        title="Operator integration configuration"
         summary="Axiom opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app."
       />
 
@@ -21,6 +21,9 @@ export default function IntegrationSetupPage() {
         The <strong>service operator</strong> registers the OAuth application, exact callback URL, and server-side secret once. A <strong>workspace owner or admin</strong> then clicks Connect, reviews the provider consent screen, selects the intended workspace, and returns to Axiom for live validation.
       </Callout>
 
+      <Callout>
+        These callback addresses are for the service operator to register with each provider, not links to start a connection. Opening a callback directly will be rejected because there is no active authorization state. Workspace users should start from Connect in Integrations and let the provider return them automatically. Never share a callback containing authorization codes or state.
+      </Callout>
       <DocSection id="shared" title="Before connecting a provider" kicker="Service operator checklist">
         <ol className="list-decimal list-inside space-y-2 text-sm text-zinc-300">
           <li>Set the production Axiom origin as <code>NEXTAUTH_URL</code>; callback construction fails closed when the origin is not trusted.</li>

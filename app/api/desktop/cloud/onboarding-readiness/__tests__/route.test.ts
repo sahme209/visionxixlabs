@@ -1,0 +1,12 @@
+import {beforeEach,expect,it,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const io=vi.hoisted(()=>({session:vi.fn(),read:vi.fn()}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:io.session}));
+vi.mock('@/lib/cloud/onboardingReadiness',()=>({readCloudOnboardingReadiness:io.read}));
+import {GET} from '../route';
+const actor={id:'paired',userId:'reader',organizationId:'tenant',credentialKind:'desktop_session',capabilities:['workspace:read']};
+beforeEach(()=>{vi.clearAllMocks();io.session.mockResolvedValue(actor);io.read.mockReturnValue({aws:{providerValidation:'not_checked'},azure:{providerValidation:'not_checked'}});});
+it('requires paired current read authority and returns no-store prerequisite evidence',async()=>{const r=await GET(new NextRequest('https://axiom.invalid/api/desktop/cloud/onboarding-readiness'));expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store');expect(await r.json()).toEqual({ok:true,data:io.read.mock.results[0].value});expect(io.session).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({allowApiKey:false,requiredScope:'pipeline:read',requiredCapability:'workspace:read'}));});
+it.each([null,{...actor,credentialKind:'api_key'},{...actor,capabilities:[]}])('refuses unauthorized principals',async value=>{io.session.mockResolvedValue(value);const r=await GET(new NextRequest('https://axiom.invalid/api/desktop/cloud/onboarding-readiness'));expect(r.status).toBe(401);expect(r.headers.get('cache-control')).toBe('no-store');expect(io.read).not.toHaveBeenCalled();});
+it('rejects target and all other query overrides',async()=>{const r=await GET(new NextRequest('https://axiom.invalid/api/desktop/cloud/onboarding-readiness?provider=aws'));expect(r.status).toBe(400);expect(io.read).not.toHaveBeenCalled();});
+it('does not expose failure diagnostics',async()=>{io.read.mockImplementation(()=>{throw Error('PRIVATE');});const r=await GET(new NextRequest('https://axiom.invalid/api/desktop/cloud/onboarding-readiness'));expect(r.status).toBe(503);expect(r.headers.get('cache-control')).toBe('no-store');expect(JSON.stringify(await r.json())).not.toContain('PRIVATE');});

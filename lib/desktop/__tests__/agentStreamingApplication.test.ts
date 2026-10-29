@@ -27,7 +27,8 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); desktopClient.setSession(undefined); for (const dispose of fixtureDisposals) dispose(); fixtureDisposals.clear(); delete (window as unknown as Record<string, unknown>).__TAURI_INTERNALS__; vi.unstubAllGlobals(); });
 
-function fixture(interrupted = false, transport: "http" | "native" = "http") {
+function fixture(interrupted = false, transport: "http" | "native" = "http", proposes = true) {
+  const outcome = proposes ? data : {...data, proposal: null};
   const completion = gate();
   fixtureDisposals.add(completion.release);
   let saved = false;
@@ -39,17 +40,19 @@ function fixture(interrupted = false, transport: "http" | "native" = "http") {
       signal = init?.signal ?? undefined;
       expect(new Headers(init?.headers).get("accept")).toBe("application/x-ndjson");
       return agentMessageHttpStream(signal!, async stream => {
+        stream.onActivity?.({step: 1, toolName: "read_github_file", state: "running"});
         stream.onDraft(""); stream.onDraft("Review draft before persistence");
         await completion.promise;
+        if (!stream.abortSignal.aborted) stream.onActivity?.({step: 1, toolName: "read_github_file", state: "completed"});
         // Represents completion of the existing persistence boundary, not SQL proof.
         saved = true;
         if (interrupted) throw new Error("synthetic stream interruption");
-        return ok(data);
-      });
+        return ok(outcome);
+      }, {toolActivity: JSON.parse(String(init?.body)).streamFeatures?.includes("tool_activity_v1") === true});
     }
     if (path === "/api/desktop/ai-providers") return ok({ providers: [{ provider: "vercel_gateway", models: [{ id: "fixture/model", label: "Fixture model", tier: "standard" }] }], policy: { enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "fixture/model" }, fallbackOrder: ["vercel_gateway"] } });
     if (path === "/api/desktop/agent/conversations") return ok({ conversations: [summary] });
-    if (path === "/api/desktop/agent/conversations/wire-conversation") return ok({ ...summary, turns: saved ? [{ id: "saved-turn", role: "assistant", content: data.reply, actionProposalId: proposal.id }] : [], actions: saved ? [proposal] : [] });
+    if (path === "/api/desktop/agent/conversations/wire-conversation") return ok({ ...summary, turns: saved ? [{ id: "saved-turn", role: "assistant", content: data.reply, actionProposalId: proposes ? proposal.id : null }] : [], actions: saved && proposes ? [proposal] : [] });
     if (path === "/api/desktop/agent/skills") return ok({ skills: [] });
     if (path === "/api/desktop/github/repositories") return ok({ repositories: [{ id: "repo", fullName: "fixture/repository", defaultBranch: "main", visibility: "private" }], totalCount: 1, truncated: false });
     if (path === "/api/desktop/github/branches") return ok({ branches: [{ name: "main", protected: true }], truncated: false });
@@ -98,10 +101,11 @@ async function compose(mode: "chat" | "code", agentProfile?: string) {
   await screen.findByRole("option", { name: "Fixture model" });
   await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe(summary.id));
   if (mode === "code") {
-    fireEvent.click(screen.getByRole("button", { name: "Edit repository file" }));
+    await openAgentConfiguration(); fireEvent.click(screen.getByRole("button", { name: "Edit repository file" }));
     await screen.findByRole("option", { name: "src/app.ts" });
     fireEvent.change(screen.getByRole("combobox", { name: "Repository file" }), { target: { value: "src/app.ts" } });
   }
+  await openAgentConfiguration();
   if (agentProfile) fireEvent.change(screen.getByRole("combobox", { name: "Specialized Agent" }), { target: { value: agentProfile } });
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "Review this change" } });
   await waitFor(() => expect((screen.getByRole("button", { name: "Send" }) as HTMLButtonElement).disabled).toBe(false));
@@ -112,12 +116,15 @@ async function compose(mode: "chat" | "code", agentProfile?: string) {
 it.each([ ["chat", "http"], ["code", "http"], ["chat", "native"], ["code", "native"] ] as const)("connects the actual %s composer over %s without granting draft authority", async (mode, transport) => {
   const wire = fixture(false, transport); await compose(mode);
   expect(screen.getByText(/verification pending/)).toBeTruthy();
+  expect(screen.getByRole("region", {name: "Agent task progress"}).textContent).toContain("Reading repository file · In progress");
+  expect(JSON.parse(String(wire.messages()[0][1]?.body)).streamFeatures).toEqual(["tool_activity_v1"]);
   expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
   expect(wire.messages()).toHaveLength(1);
   expect(JSON.parse(wire.messages()[0][1]!.body as string)).toMatchObject({ preferredProvider: "vercel_gateway", preferredModel: "fixture/model", workspaceContext: { mode, ...(mode === "code" ? { filePath: "src/app.ts" } : {}) } });
   await act(async () => { wire.completion.release(); });
   await screen.findByText(data.reply);
   expect(screen.queryByText("Review draft before persistence")).toBeNull();
+  expect(screen.queryByRole("region", {name: "Agent task progress"})).toBeNull();
   expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
   expect(wire.messages()).toHaveLength(1);
   expect(wire.fetcher.mock.calls.filter(([, init]) => init?.method === "POST")).toHaveLength(1);
@@ -141,6 +148,7 @@ it("stops a native composer response without accepting late proposal authority o
   fireEvent.click(screen.getByRole("button", { name: "Stop response" }));
   await screen.findByRole("button", { name: "Reload saved conversation" });
   expect(wire.signal()?.aborted).toBe(true);
+  expect(screen.queryByRole("region", {name: "Agent task progress"})).toBeNull();
   expect(native.invoke.mock.calls.some(([command]) => command === "desktop_http_stream_cancel")).toBe(true);
   await act(async () => { wire.completion.release(); });
   expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
@@ -148,9 +156,10 @@ it("stops a native composer response without accepting late proposal authority o
   expect(wire.messages()).toHaveLength(1);
 });
 
-it.each(["coding", "debugging", "code_review", "terraform", "cloud_deployment"])("sends selected %s profile through the rendered composer and streaming client", async agentProfile => {
+it.each(["coding", "debugging", "code_review", "terraform", "cloud_deployment", "automation"])("sends selected %s profile through the rendered composer and streaming client", async agentProfile => {
   const wire = fixture(); await compose("chat", agentProfile);
   expect(JSON.parse(wire.messages()[0][1]!.body as string)).toMatchObject({ workspaceContext: { agentProfile } });
+  await openAgentConfiguration();
   expect((screen.getByRole("combobox", { name: "Specialized Agent" }) as HTMLSelectElement).disabled).toBe(true);
   await act(async () => { wire.completion.release(); }); await screen.findByText(data.reply);
   expect(wire.messages()).toHaveLength(1);
@@ -175,3 +184,126 @@ it.each([{ isComposing: true }, { keyCode: 229 }])("retains an IME draft on Ente
   await act(async () => { wire.completion.release(); });
   await screen.findByText(data.reply);
 });
+
+it.each(["http", "native"] as const)("requires saved-state review before another request after %s stream uncertainty", async transport => {
+  const wire = fixture(true, transport, false); await compose("chat");
+  await act(async () => { wire.completion.release(); });
+  const reload = await screen.findByRole("button", {name: "Reload saved conversation"});
+  const composer = screen.getByRole("textbox");
+  fireEvent.change(composer, {target: {value: "Unsent follow-up"}});
+  expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.keyDown(composer, {key: "Enter"});
+  expect(wire.messages()).toHaveLength(1);
+  fireEvent.click(reload); await screen.findByText(data.reply);
+  await waitFor(() => expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(false));
+  expect((composer as HTMLTextAreaElement).value).toBe("Unsent follow-up");
+  expect(wire.messages()).toHaveLength(1);
+});
+it("retains recovery and an unsent draft when saved-state reload fails", async () => {
+  const wire = fixture(true, "http", false); await compose("chat");
+  await act(async () => { wire.completion.release(); });
+  const reload = await screen.findByRole("button", {name: "Reload saved conversation"});
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Keep my unsent draft"}});
+  const original = wire.fetcher.getMockImplementation()!;
+  wire.fetcher.mockImplementation(async (url, init) => new URL(String(url)).pathname === "/api/desktop/agent/conversations/wire-conversation"
+    ? Response.json({ok: false, error: "unavailable"}, {status: 503}) : original(url, init));
+  fireEvent.click(reload);
+  await screen.findByText("The selected conversation could not be verified.");
+  expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep my unsent draft");
+  fireEvent.keyDown(screen.getByRole("textbox"), {key: "Enter"});
+  expect(wire.messages()).toHaveLength(1);
+  wire.fetcher.mockImplementation(original);
+  fireEvent.click(screen.getByRole("button", {name: "Reload saved conversation"}));
+  await screen.findByText(data.reply);
+  await waitFor(() => expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(false));
+  expect(wire.messages()).toHaveLength(1);
+});
+
+it.each(["http", "native"] as const)("blocks another submission after explicit %s cancellation until review", async transport => {
+  const wire = fixture(false, transport, false); await compose("chat");
+  fireEvent.click(screen.getByRole("button", {name: "Stop response"}));
+  // The synthetic in-memory HTTP body is released explicitly; real fetch owns abort teardown.
+  await act(async () => { wire.completion.release(); });
+  await screen.findByRole("button", {name: "Reload saved conversation"});
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Do not retry automatically"}});
+  expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.keyDown(screen.getByRole("textbox"), {key: "Enter"});
+  expect(wire.messages()).toHaveLength(1);
+  await act(async () => { wire.completion.release(); });
+  expect(screen.queryByText(data.reply)).toBeNull();
+  expect(wire.messages()).toHaveLength(1);
+});
+it("does not clear recovery from a different conversation response", async () => {
+  const wire = fixture(true, "http", false); await compose("chat");
+  await act(async () => { wire.completion.release(); });
+  const reload = await screen.findByRole("button", {name: "Reload saved conversation"});
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Keep this conversation guarded"}});
+  const original = wire.fetcher.getMockImplementation()!;
+  wire.fetcher.mockImplementation(async (url, init) => new URL(String(url)).pathname === "/api/desktop/agent/conversations/wire-conversation"
+    ? ok({...summary, id: "different-conversation", turns: [], actions: []}) : original(url, init));
+  fireEvent.click(reload); await screen.findByText("The selected conversation could not be verified.");
+  expect((screen.getByRole("button", {name: "Send"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.keyDown(screen.getByRole("textbox"), {key: "Enter"});
+  expect(wire.messages()).toHaveLength(1);
+});
+
+it.each([
+  {kind: "code" as const, path: "src/local.ts", excerpt: "export const local = 1;"},
+  {kind: "verification" as const, checkId: "npm:test", exitCode: 1, stale: true, excerpt: "Expected 2, received 1"},
+])("hands reviewed $kind evidence to the real Agent composer only after explicit Send", async selection => {
+  const wire = fixture(false, "http", false);
+  const view = render(createElement(AgentChatView));
+  await screen.findByRole("option", {name: "Fixture model"});
+  await waitFor(() => expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Help me understand this"}});
+  const request = {...selection, context: desktopClient.config};
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: request}));
+  await waitFor(() => expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain(selection.excerpt));
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain("Help me understand this");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toContain("untrusted");
+  expect(wire.messages()).toHaveLength(0);
+  await openAgentConfiguration();
+  expect((screen.getByRole("combobox", {name: "Specialized Agent"}) as HTMLSelectElement).value).toBe("code_review");
+  fireEvent.click(screen.getByRole("button", {name: "Send"}));
+  await screen.findByText("Review draft before persistence");
+  const body = JSON.parse(String(wire.messages()[0][1]?.body));
+  expect(body).toMatchObject({workspaceContext: {mode: "chat", operationMode: "inspect", agentProfile: "code_review"}});
+  expect(body.message).toContain(selection.excerpt);
+  expect(body.workspaceContext.filePath).toBeUndefined();
+  expect(wire.messages()).toHaveLength(1);
+  await act(async () => { wire.completion.release(); });
+  await screen.findByText(data.reply);
+});
+
+it("rejects an editor handoff owned by a different sign-in without losing the draft", async () => {
+  const wire = fixture();
+  const view = render(createElement(AgentChatView));
+  await screen.findByRole("option", {name: "Fixture model"});
+  await waitFor(() => expect((screen.getByRole("combobox", {name: "Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));
+  fireEvent.change(screen.getByRole("textbox"), {target: {value: "Retain this draft"}});
+  view.rerender(createElement(AgentChatView, {requestedLocalCode: {path: "src/local.ts", excerpt: "unshared code", context: {}}}));
+  await screen.findByText("Local selection belongs to a different sign-in or workspace. Select it again in the editor.");
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Retain this draft");
+  expect(wire.messages()).toHaveLength(0);
+});
+
+it("prepares a target-bound repair in Code mode without dispatch until Send",async()=>{
+ const wire=fixture(false,"http",false);const view=render(createElement(AgentChatView));
+ await screen.findByRole("option",{name:"Fixture model"});await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));
+ const request={kind:"repair" as const,repositoryFullName:"fixture/repository",branch:"main",path:"src/app.ts",checkId:"npm:test",exitCode:1,stale:false as const,excerpt:"Expected 2, received 1",context:desktopClient.config};
+ view.rerender(createElement(AgentChatView,{requestedLocalCode:request}));
+ await waitFor(()=>expect((screen.getByPlaceholderText("Describe the change you want in this file…") as HTMLTextAreaElement).value).toContain("unexecuted repair proposal"));expect(wire.messages()).toHaveLength(0);
+  await openAgentConfiguration();
+ expect((screen.getByRole("combobox",{name:"Specialized Agent"}) as HTMLSelectElement).value).toBe("coding");
+ fireEvent.click(screen.getByRole("button",{name:"Send"}));await screen.findByText("Review draft before persistence");
+ const body=JSON.parse(String(wire.messages()[0][1]?.body));expect(body.workspaceContext).toMatchObject({mode:"code",operationMode:"engineer",agentProfile:"coding",repositoryFullName:"fixture/repository",branch:"main",filePath:"src/app.ts"});
+ await act(async()=>{wire.completion.release();});await screen.findByText(data.reply);
+});
+
+it("refuses a repair target outside the verified catalog without changing the draft or dispatching",async()=>{const wire=fixture(false,"http",false);const view=render(createElement(AgentChatView));await screen.findByRole("option",{name:"Fixture model"});await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));fireEvent.change(screen.getByRole("textbox"),{target:{value:"Keep this draft"}});view.rerender(createElement(AgentChatView,{requestedLocalCode:{kind:"repair",repositoryFullName:"foreign/repository",branch:"main",path:"src/app.ts",checkId:"npm:test",exitCode:1,stale:false,excerpt:"failure",context:desktopClient.config}}));await screen.findByText(/repair repository is not in the verified connected catalog/);expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this draft");expect(wire.messages()).toHaveLength(0);});
+
+async function openAgentConfiguration() {
+ const control = await screen.findByRole("button", { name: /Agent configuration ·/ });
+ if (control.getAttribute("aria-expanded") === "false") fireEvent.click(control);
+}

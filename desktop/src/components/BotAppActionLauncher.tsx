@@ -1,0 +1,12 @@
+import {ProviderLogo} from "./CatalogIcon";
+interface Props {saved:boolean;dirty:boolean;disabled:boolean;onOpen:(action:'evidence'|'report'|'jira'|'slack'|'teams'|'linear')=>void}
+/** Launches only existing fixed readers; connections never imply arbitrary app execution. */
+export function BotAppActionLauncher({saved,dirty,disabled,onOpen}:Props){
+ return <section aria-label="Bot app actions" className="rounded-xl border border-white/10 p-4">
+  <h2 className="text-sm font-medium text-zinc-200">App actions</h2>
+  <p className="mt-2 text-xs leading-5 text-zinc-400">Choose a workflow and review its scope before starting; saved report/evidence results and history appear in task details. Send remains a separate AI response.</p>
+  {!saved?<p className="mt-3 text-xs text-zinc-400">Save this task first for reports and evidence history. Jira form exploration can be used without saving.</p>:dirty?<p className="mt-3 text-xs text-zinc-400">Save your changes to run an action for this version. Existing results remain available.</p>:null}
+  <div className="mt-3 flex flex-wrap gap-2"><button type="button" className="btn-secondary" disabled={disabled} onClick={()=>onOpen('report')}>Open workspace report</button><button type="button" className="btn-secondary" disabled={disabled} onClick={()=>onOpen('evidence')}><span className="inline-flex items-center gap-2"><ProviderLogo provider="github"/>Open GitHub evidence</span></button><button type="button" className="btn-secondary" disabled={disabled} onClick={()=>onOpen('jira')}><span className="inline-flex items-center gap-2"><ProviderLogo provider="jira"/>Explore Jira form</span></button>{(['slack','teams','linear'] as const).map(provider=><button key={provider} type="button" className="btn-secondary" disabled={disabled||!saved||dirty} onClick={()=>onOpen(provider)}><span className="inline-flex items-center gap-2"><ProviderLogo provider={provider}/>{provider==='slack'?'Slack notification':provider==='teams'?'Teams message':'Linear issue'}</span></button>)}</div>
+  <p className="mt-3 text-xs leading-5 text-zinc-500">Workspace report uses recorded metadata. GitHub evidence requires a saved release target and current read access. Jira form exploration reads current supported fields; it does not run or save a task, or publish a ticket. Each workflow checks its own availability. Connected-app actions use the existing workspace connection and require an exact saved task version and independent approval.</p>
+ </section>;
+}

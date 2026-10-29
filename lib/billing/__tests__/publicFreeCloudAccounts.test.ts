@@ -1,0 +1,15 @@
+import {beforeEach,describe,expect,it,vi} from 'vitest';
+const m=vi.hoisted(()=>({window:vi.fn()}));
+vi.mock('../publicCreditAuthority',()=>({publicBillingWindow:m.window,publicDatabaseNow:async()=>new Date('2026-10-27T03:00:00Z')}));
+import {readPublicEntitlementSnapshot,publicPricingForStoredRow} from '../publicBillingEntitlements';
+import {planForStripeTier} from '../planRegistry';
+import {checkEntitlement} from '../checkEntitlement';
+const identity={accountId:'acct_synthetic',livemode:false};
+async function projected(){return (await readPublicEntitlementSnapshot({} as any,'org',identity,new Date()))!.pricingPlan}
+describe('public Free cloud-account product rule',()=>{
+ beforeEach(()=>{m.window.mockResolvedValue({available:true,enrollment:{},contract:null,window:{seats:2,includedCents:100,monthlyDeployments:0,start:new Date(),end:new Date()}})});
+ it('public Free allows the second and third saved cloud accounts, refuses a fourth',async()=>{const plan=await projected();expect(plan.displayName).toBe('Free');expect(plan.entitlements.maxCloudAccounts).toBe(3);for(const currentUsage of [0,1,2])expect(checkEntitlement({plan,dimension:'cloud_accounts',currentUsage,attemptedDelta:1}).kind).toBe('allow');expect(checkEntitlement({plan,dimension:'cloud_accounts',currentUsage:3,attemptedDelta:1})).toMatchObject({kind:'block',limit:3});expect(checkEntitlement({plan,dimension:'cloud_accounts',currentUsage:1,attemptedDelta:2}).kind).toBe('allow')});
+ it('general enrollment transactional pricing receives Free3 while legacy pricing remains absent',async()=>{vi.stubEnv('AXIOM_PUBLIC_BILLING_POLICY','axiom_public_anniversary_v1');vi.stubEnv('AXIOM_STRIPE_ACCOUNT_ID','acct_synthetic');vi.stubEnv('AXIOM_STRIPE_MODE','test');try{const plan=await publicPricingForStoredRow({} as any,'org',{tier:'public_free_v1'});expect(plan?.entitlements.maxCloudAccounts).toBe(3);expect(checkEntitlement({plan:plan!,dimension:'cloud_accounts',currentUsage:1,attemptedDelta:1}).kind).toBe('allow');expect(await publicPricingForStoredRow({} as any,'org',{tier:'starter'})).toBeUndefined()}finally{vi.unstubAllEnvs()}});
+ it('does not alter legacy Starter/trial or any other Free entitlement',async()=>{const base=planForStripeTier('trial'),plan=await projected();expect(planForStripeTier('starter').entitlements.maxCloudAccounts).toBe(1);expect(base.entitlements.maxCloudAccounts).toBe(1);const expected={...base.entitlements,maxCloudAccounts:3,maxUsers:2,includedAICreditsCents:100,overagePolicy:'hard_stop',overageInputCentsPerMillion:null,overageOutputCentsPerMillion:null};expect(plan.entitlements).toEqual(expected);expect(plan.monthlyPriceCents).toBe(0)});
+ it.each(['pro','enterprise'] as const)('preserves %s cloud-account cap and all existing inherited non-credit entitlements',async planId=>{m.window.mockResolvedValue({available:true,enrollment:{},contract:{binding:{planId}},window:{seats:5,includedCents:2000,monthlyDeployments:10,start:new Date(),end:new Date()}});const plan=await projected(),base=planForStripeTier(planId==='pro'?'growth':'enterprise');expect(plan.entitlements.maxCloudAccounts).toBe(base.entitlements.maxCloudAccounts)});
+});

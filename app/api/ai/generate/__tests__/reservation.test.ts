@@ -26,7 +26,7 @@ describe("POST /api/ai/generate reservation boundary", () => {
   beforeEach(() => {
     vi.resetAllMocks();
     mocks.currentContext.mockResolvedValue({ isAuthenticated: true, organizationId: "org-1", userId: "user-1" });
-    mocks.status.mockReturnValue([{ provider: "vercel_gateway", configured: true }]);
+    mocks.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "vendor/default" }]);
     mocks.loadPolicy.mockResolvedValue({ storageState: "ready", policy: {} });
     mocks.resolvePolicy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: {}, fallbackOrder: [] });
     mocks.checkCredits.mockResolvedValue({ kind: "allow" });
@@ -51,6 +51,24 @@ describe("POST /api/ai/generate reservation boundary", () => {
     }));
   });
 
+  it.each([undefined, "service-default", "spacexai/grok-4.20-multi-agent"])("refuses unsupported effective selection %s before hold", async selection => {
+    mocks.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "xai/grok-4.20-multi-agent" }]);
+    mocks.resolvePolicy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: selection }, fallbackOrder: [] });
+    const { POST } = await import("../route"); const res = await POST(request());
+    expect(res.status).toBe(422); expect((await res.json()).error.code).toBe("ai.output_bound_unverified");
+    expect(mocks.reserve).not.toHaveBeenCalled(); expect(mocks.generateAdmitted).not.toHaveBeenCalled();
+  });
+  it.each(["vendor/approved", "vmc/private"])("preserves concrete selection %s over an unsupported default", async model => {
+    mocks.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "xai/grok-4.20-multi-agent" }]);
+    mocks.resolvePolicy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: model }, fallbackOrder: [] });
+    const { POST } = await import("../route"); expect((await POST(request())).status).toBe(200);
+    expect(mocks.generateAdmitted.mock.calls[0][1].model).toBe(model);
+  });
+  it("pins the checked default across reservation instead of resolving a changed default", async () => {
+    mocks.reserve.mockImplementation(async () => { mocks.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "xai/grok-4.20-multi-agent" }]); return { ok: true, reused: false, reservation: { id: "hold-1" } }; });
+    const { POST } = await import("../route"); expect((await POST(request())).status).toBe(200);
+    expect(mocks.generateAdmitted.mock.calls[0][1].model).toBe("vendor/default");
+  });
   it("preserves the response, correlation, header key and trusted actor while reserving/claiming before generation", async () => {
     const { POST } = await import("../route");
     const response = await POST(request("request_abcdefghijkl", { prompt: "Summarize this", maxTokens: 20, organizationId: "foreign", userId: "forged" }));
@@ -88,6 +106,13 @@ describe("POST /api/ai/generate reservation boundary", () => {
     const { POST } = await import("../route"); const response = await POST(request());
     expect(response.status).toBe(422); expect((await response.json()).error.code).toBe("ai.credit_pool_exhausted");
     expect(mocks.generateAdmitted).not.toHaveBeenCalled(); expect(mocks.legacyClaim).not.toHaveBeenCalled();
+  });
+  it("rejects oversized Unicode input before reservation or model dispatch", async () => {
+    const { POST } = await import("../route");
+    const response = await POST(request("request_abcdefghijkl", { prompt: "🙂".repeat(32769) }));
+    expect(response.status).toBe(400);
+    expect(mocks.reserve).not.toHaveBeenCalled();
+    expect(mocks.generateAdmitted).not.toHaveBeenCalled();
   });
   it("retains the existing reused-key error with zero dispatch", async () => {
     mocks.reserve.mockResolvedValue({ ok: true, reused: true, reservation: { id: "hold-1", status: "dispatch_unknown" } });

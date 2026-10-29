@@ -94,6 +94,31 @@ it.each(["role", "disconnect", "version", "account"])("withholds stale inventory
         f.state.account!.externalAccountId = "other"; return { resourceGroups: [], complete: false, scope: "first_resource_groups_page", limit: 100, limitations: [] }; });
     await expect(s.inventory(principal, "azure-account")).rejects.toBeDefined();
 });
+it.each(["session", "membership"])("withholds inventory when %s is revoked during the final credential read", async (mode) => {
+    const f = fixture(), s = createAzureEnrollmentService(f.typedRepo, f.deps);
+    await s.enroll(principal, input);
+    let resume!: () => void;
+    let entered!: () => void;
+    const paused = new Promise<void>(resolve => { resume = resolve; });
+    const reading = new Promise<void>(resolve => { entered = resolve; });
+    f.repo.cloudAccountCredential.findUnique
+        .mockResolvedValueOnce(structuredClone(f.state.credential))
+        .mockImplementationOnce(async () => {
+            const credential = structuredClone(f.state.credential);
+            entered();
+            await paused;
+            return credential;
+        });
+    const inventory = s.inventory(principal, "azure-account");
+    await reading;
+    if (mode === "session")
+        f.state.device.revokedAt = f.deps.now();
+    else
+        f.state.membership.acceptedAt = null;
+    resume();
+    await expect(inventory).rejects.toMatchObject({ code: "connection_authority_required" });
+    expect(f.deps.read).toHaveBeenCalledTimes(1);
+});
 it("does not leak foreign existing accounts or provider work", async () => {
     const f = fixture(), s = createAzureEnrollmentService(f.typedRepo, f.deps);
     await s.enroll(principal, input);

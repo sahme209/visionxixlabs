@@ -2,10 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   getServerSession: vi.fn(),
+  cookie: vi.fn(),
   findMembership: vi.fn(),
   upsertMembership: vi.fn(),
 }));
 
+vi.mock("next/headers", () => ({ cookies: async () => ({ get: mocks.cookie }) }));
 vi.mock("next-auth", () => ({ getServerSession: mocks.getServerSession }));
 vi.mock("@/lib/auth", () => ({ authOptions: {} }));
 vi.mock("@/lib/db", () => ({
@@ -17,6 +19,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 describe("current workspace authority contract", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.cookie.mockReturnValue(undefined);
     mocks.getServerSession.mockResolvedValue({
       user: { id: "user-1", email: "operator@example.test", roles: ["owner"] },
     });
@@ -82,4 +85,23 @@ describe("current workspace authority contract", () => {
     await expect(currentContext()).resolves.toMatchObject({ isAuthenticated: true, roles: [] });
     expect(mocks.upsertMembership).toHaveBeenCalledTimes(1);
   });
+});
+
+it("uses the selected accepted shared membership instead of personal owner authority", async () => {
+  vi.clearAllMocks();
+  mocks.getServerSession.mockResolvedValue({ user: { id: "reviewer", email: "reviewer@example.test" } });
+  mocks.cookie.mockReturnValue({ value: JSON.stringify({ userId: "reviewer", organizationId: "shared-workspace" }) });
+  mocks.findMembership.mockResolvedValue({ role: "security_reviewer", acceptedAt: new Date() });
+  expect(await currentContext()).toMatchObject({ organizationId: "shared-workspace", roles: ["security_reviewer"] });
+  expect(mocks.findMembership).toHaveBeenCalledWith(expect.objectContaining({ where: { userId_organizationId: { userId: "reviewer", organizationId: "shared-workspace" } } }));
+});
+it("does not bootstrap ownership or recover role authority for a revoked selected workspace", async () => {
+  vi.clearAllMocks();
+  mocks.getServerSession.mockResolvedValue({ user: { id: "reviewer", email: "reviewer@example.test" } });
+  mocks.cookie.mockReturnValue({ value: JSON.stringify({ userId: "reviewer", organizationId: "shared-workspace" }) });
+  mocks.findMembership.mockResolvedValue(null);
+  const context = await currentContext();
+  expect(context).toMatchObject({ isAuthenticated: true, roles: [] });
+  expect(context.organizationId).toBeUndefined();
+  expect(mocks.upsertMembership).not.toHaveBeenCalled();
 });

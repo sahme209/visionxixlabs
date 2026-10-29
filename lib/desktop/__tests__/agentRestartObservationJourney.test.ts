@@ -2,7 +2,26 @@
 import { createElement } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
-const m = vi.hoisted(() => ({ client: { config: { sessionToken: "paired" }, listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), observeDeploymentExecution: vi.fn() } }));
+const m = vi.hoisted(() => {
+  let config = { sessionToken: "paired" };
+  let revision = 0;
+  const listeners = new Set<() => void>();
+  return { client: {
+    get config() { return config; },
+    set config(next) {
+      const changed = next.sessionToken !== config.sessionToken;
+      config = next;
+      if (changed) { revision += 1; for (const listener of listeners) listener(); }
+    },
+    // Stable external-store methods survive resetAllMocks, like the real client.
+    getContextRevision: () => revision,
+    subscribeContext: (listener: () => void) => {
+      listeners.add(listener);
+      return () => { listeners.delete(listener); };
+    },
+    listAgentConversations: vi.fn(), getAgentConversation: vi.fn(), aiProviderStatus: vi.fn(), listAgentSkills: vi.fn(), listGithubRepositories: vi.fn(), listEnvironments: vi.fn(), sendAgentMessage: vi.fn(), createAgentConversation: vi.fn(), approveAgentAction: vi.fn(), observeDeploymentExecution: vi.fn()
+  } };
+});
 vi.mock("../../../desktop/src/lib/desktopClient", () => ({ desktopClient: m.client }));
 import { AgentChatView } from "../../../desktop/src/views/AgentChatView";
 const execution = { id: "receipt-1", repositoryFullName: "owner/repo", environmentId: "env-1", source: "agent", status: "tracking_unavailable", conclusion: null, rollbackStatus: "not_started", workflowRunId: null };

@@ -13,14 +13,15 @@
  *      branch on GitHub).
  *   7. POST a pull request from the new branch to the base branch.
  *
- * Requires GITHUB_TOKEN with `contents: write` + `pull_requests: write`
+ * Requires an explicit tenant installation token with contents/PR write
  * scope on the target repo. Missing token → returns
- * `forbidden_no_token` so the executor falls back cleanly.
+ * `no_token` and makes no network request.
  *
  * Closed-union failure reasons. Never throws out of the module.
  */
 
 import "server-only";
+import { readBoundedGithubBody, withGithubAbort } from "@/lib/connectors/github/boundedGithubRead";
 
 const GH_API = "https://api.github.com";
 const FETCH_TIMEOUT_MS = 15_000;
@@ -33,27 +34,35 @@ interface GhHeaders {
   "Content-Type"?: string;
 }
 
-function buildHeaders(json = false): GhHeaders {
+function buildHeaders(installationToken: string, json = false): GhHeaders {
   const h: GhHeaders = {
     Accept: "application/vnd.github+json",
     "User-Agent": "visionxixlabs-ai-coding-loop",
     "X-GitHub-Api-Version": "2022-11-28",
   };
-  if (process.env.GITHUB_TOKEN) h.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  h.Authorization = `Bearer ${installationToken}`;
   if (json) h["Content-Type"] = "application/json";
   return h;
 }
 
-async function ghFetch(path: string, init?: { method?: string; body?: unknown }): Promise<Response> {
+async function githubFetch(installationToken: string, path: string, init?: { method?: string; body?: unknown }): Promise<Response> {
   const controller = new AbortController();
   const t = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    return await fetch(`${GH_API}${path}`, {
+    const response = await withGithubAbort(fetch(`${GH_API}${path}`, {
       method: init?.method ?? "GET",
-      headers: buildHeaders(init?.body !== undefined) as unknown as Record<string, string>,
+      headers: buildHeaders(installationToken, init?.body !== undefined) as unknown as Record<string, string>,
       body: init?.body === undefined ? undefined : JSON.stringify(init.body),
       signal: controller.signal,
-    });
+      redirect: "error",
+      credentials: "omit",
+    }), controller.signal);
+    if (!response.ok) {
+      void response.body?.cancel().catch(() => {});
+      return new Response(null, {status: response.status});
+    }
+    const bytes = await readBoundedGithubBody(response, controller.signal, 1048576);
+    return new Response(new Uint8Array(bytes).buffer, {status: response.status, headers: {"content-type":"application/json"}});
   } finally {
     clearTimeout(t);
   }
@@ -66,6 +75,10 @@ export interface FileChange {
 }
 
 export type OpenPRFailReason =
+  | "file_mode_unavailable"
+  | "authority_changed"
+  | "base_identity_required"
+  | "base_changed"
   | "no_token"
   | "branch_not_found"
   | "blob_fetch_failed"
@@ -77,9 +90,13 @@ export type OpenPRFailReason =
   | "network_error";
 
 export interface OpenPRInput {
+  /** Server-resolved workspace/repository-scoped installation authority. */
+  resolveToken: () => Promise<{ok:true;token:string}|{ok:false;error:string}>;
   owner: string;
   repo: string;
   baseBranch: string;
+  /** Immutable commit used for patch application; moving branches cannot substitute it. */
+  expectedBaseSha: string;
   newBranch: string;
   files: ReadonlyArray<FileChange>;
   commitMessage: string;
@@ -89,7 +106,7 @@ export interface OpenPRInput {
 
 export type OpenPRResult =
   | { ok: true; prUrl: string; prNumber: number; headSha: string }
-  | { ok: false; reason: OpenPRFailReason; detail: string };
+  | { ok: false; reason: OpenPRFailReason; detail: string; writeMayHaveOccurred: boolean };
 
 /**
  * Fetch the raw text content of a file at the given ref. Returns null
@@ -102,63 +119,121 @@ export async function fetchFileContent(
   repo: string,
   path: string,
   ref: string,
+  installationToken?: string,
 ): Promise<{ ok: true; content: string | null } | { ok: false; reason: "fetch_failed" | "binary"; detail: string }> {
+  if (!installationToken) return { ok: false, reason: "fetch_failed", detail: "Scoped GitHub connection required." };
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const r = await ghFetch(`/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(ref)}`);
-    if (r.status === 404) return { ok: true, content: null };
-    if (!r.ok) return { ok: false, reason: "fetch_failed", detail: `contents GET ${r.status}` };
-    const body = await r.json() as { content?: string; encoding?: string };
-    if (body.encoding !== "base64" || typeof body.content !== "string") {
-      return { ok: false, reason: "binary", detail: "non-base64 encoding" };
+    const r = await withGithubAbort(fetch(`${GH_API}/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}?ref=${encodeURIComponent(ref)}`, {
+      headers: buildHeaders(installationToken) as unknown as Record<string,string>, signal: controller.signal, redirect: "error", credentials: "omit",
+    }), controller.signal);
+    if (!r.ok || r.redirected) {
+      void r.body?.cancel().catch(() => {});
+      if(r.status===404 && !r.redirected)return {ok:true,content:null};
+      return {ok:false,reason:"fetch_failed",detail:"contents unavailable"};
     }
-    const decoded = Buffer.from(body.content.replace(/\n/g, ""), "base64").toString("utf-8");
-    return { ok: true, content: decoded };
+    const bytes=await readBoundedGithubBody(r,controller.signal,786432);
+    const body=JSON.parse(new TextDecoder("utf-8",{fatal:true}).decode(bytes)) as {content?:unknown;encoding?:unknown};
+    if(body.encoding!=="base64" || typeof body.content!=="string")return {ok:false,reason:"binary",detail:"non-base64 encoding"};
+    const encoded=body.content.replace(/[\r\n]/g,"");
+    if(!/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded))return {ok:false,reason:"binary",detail:"invalid base64"};
+    const decoded=Buffer.from(encoded,"base64");
+    if(decoded.length>524288 || decoded.toString("base64")!==encoded)return {ok:false,reason:"binary",detail:"file bytes unavailable"};
+    const content=new TextDecoder("utf-8",{fatal:true,ignoreBOM:true}).decode(decoded);
+    if(content.includes("\0"))return {ok:false,reason:"binary",detail:"binary file"};
+    return {ok:true,content};
   } catch {
-    return { ok: false, reason: "fetch_failed", detail: "network" };
-  }
+    return {ok:false,reason:"fetch_failed",detail:"file read unavailable"};
+  } finally { clearTimeout(timer); }
 }
 
 export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult> {
-  if (!process.env.GITHUB_TOKEN) {
-    return { ok: false, reason: "no_token", detail: "GITHUB_TOKEN not set." };
+  let writeMayHaveOccurred = false, authorityChanged = false;
+  const failed = (reason: OpenPRFailReason, detail: string): OpenPRResult => ({ok:false,reason:authorityChanged?"authority_changed":reason,detail:authorityChanged?"Captured GitHub connection is no longer available.":detail,writeMayHaveOccurred});
+  if (typeof input.resolveToken !== "function") {
+    return failed("no_token", "Scoped GitHub connection required.");
   }
+  if (!/^[a-f0-9]{40}$/.test(input.expectedBaseSha ?? "")) return failed("base_identity_required", "A verified base commit is required.");
+  const ghFetch = async (path: string, init?: Parameters<typeof githubFetch>[2]) => {
+    let authority: Awaited<ReturnType<OpenPRInput["resolveToken"]>>;
+    try { authority = await input.resolveToken(); } catch { authorityChanged = true; throw Error("authority_changed"); }
+    if (!authority || !authority.ok || !authority.token) { authorityChanged = true; throw Error("authority_changed"); }
+    if (init?.method && init.method !== "GET") writeMayHaveOccurred = true;
+    return githubFetch(authority.token, path, init);
+  };
 
   // 1. Resolve base branch HEAD.
   let baseSha: string;
   try {
     const r = await ghFetch(`/repos/${input.owner}/${input.repo}/git/ref/heads/${encodeURIComponent(input.baseBranch)}`);
-    if (r.status === 404) return { ok: false, reason: "branch_not_found", detail: `base branch ${input.baseBranch} not found` };
-    if (!r.ok) return { ok: false, reason: "branch_not_found", detail: `base ref GET ${r.status}` };
+    if (r.status === 404) return failed("branch_not_found", `base branch ${input.baseBranch} not found`);
+    if (!r.ok) return failed("branch_not_found", `base ref GET ${r.status}`);
     const body = await r.json() as { object?: { sha?: string } };
-    if (typeof body.object?.sha !== "string") return { ok: false, reason: "branch_not_found", detail: "no sha on base ref" };
-    baseSha = body.object.sha;
+    if (typeof body.object?.sha !== "string") return failed("branch_not_found", "no sha on base ref");
+    if (body.object.sha !== input.expectedBaseSha) return failed("base_changed", "The base branch moved after repository review. Re-read and review before retrying.");
+    baseSha = input.expectedBaseSha;
   } catch {
-    return { ok: false, reason: "network_error", detail: "could not resolve base branch" };
+    return failed("network_error", "could not resolve base branch");
   }
 
   // 2. Resolve base tree sha.
   let baseTreeSha: string;
   try {
     const r = await ghFetch(`/repos/${input.owner}/${input.repo}/git/commits/${baseSha}`);
-    if (!r.ok) return { ok: false, reason: "branch_not_found", detail: `base commit GET ${r.status}` };
+    if (!r.ok) return failed("branch_not_found", `base commit GET ${r.status}`);
     const body = await r.json() as { tree?: { sha?: string } };
-    if (typeof body.tree?.sha !== "string") return { ok: false, reason: "branch_not_found", detail: "no tree sha on base commit" };
+    if (typeof body.tree?.sha !== "string") return failed("branch_not_found", "no tree sha on base commit");
     baseTreeSha = body.tree.sha;
   } catch {
-    return { ok: false, reason: "network_error", detail: "could not resolve base tree" };
+    return failed("network_error", "could not resolve base tree");
   }
+
+  // The reviewed commit binds modes as well as bytes. Traverse only its
+  // immutable, non-recursive trees; never infer absence from truncated data.
+  type GitEntry = {path:string;mode:string;type:string;sha:string};
+  const trees = new Map<string, GitEntry[]>();
+  const modes = new Map<string, "100644" | "100755">();
+  try {
+    for (const file of input.files) {
+      const segments=file.path.split("/");
+      if(segments.length>32 || segments.some(segment=>!segment || segment==="." || segment===".." || /[\\\x00-\x1f\x7f]/.test(segment)) || modes.has(file.path))return failed("file_mode_unavailable","Unsafe or duplicate file path.");
+      let treeSha=baseTreeSha, existing:GitEntry|undefined;
+      for(let index=0;index<segments.length;index++){
+        let entries=trees.get(treeSha);
+        if(!entries){
+          const response=await ghFetch(`/repos/${input.owner}/${input.repo}/git/trees/${encodeURIComponent(treeSha)}`);
+          if(!response.ok)return failed("file_mode_unavailable","Reviewed file metadata is unavailable.");
+          const body=await response.json() as {truncated?:unknown;tree?:unknown};
+          if(body.truncated!==false || !Array.isArray(body.tree))return failed("file_mode_unavailable","Complete reviewed tree metadata required.");
+          entries=body.tree as GitEntry[];
+          if(entries.some(entry=>!entry || typeof entry.path!=="string" || typeof entry.mode!=="string" || typeof entry.type!=="string" || typeof entry.sha!=="string") || new Set(entries.map(entry=>entry.path)).size!==entries.length)return failed("file_mode_unavailable","Invalid reviewed tree metadata.");
+          trees.set(treeSha,entries);
+        }
+        existing=entries.find(entry=>entry.path===segments[index]);
+        if(!existing)break;
+        if(index<segments.length-1){
+          if(existing.type!=="tree" || existing.mode!=="040000")return failed("file_mode_unavailable","A parent path is not a regular directory.");
+          treeSha=existing.sha;
+        }
+      }
+      if(existing && (existing.type!=="blob" || !["100644","100755"].includes(existing.mode)))return failed("file_mode_unavailable","Symlinks, submodules and non-regular files require a separate reviewed workflow.");
+      if(!existing && file.content===null)return failed("file_mode_unavailable","A deleted file is absent from the reviewed tree.");
+      modes.set(file.path,existing?.mode==="100755"?"100755":"100644");
+    }
+  }catch{return failed("file_mode_unavailable","Could not verify reviewed file modes.");}
 
   // 3. Build tree entries — POST blobs for each non-null content; for
   //    deleted files use { sha: null } in the tree entry which tells
   //    GitHub to remove the path.
   type TreeEntry =
-    | { path: string; mode: "100644"; type: "blob"; sha: string }
-    | { path: string; mode: "100644"; type: "blob"; sha: null };
+    | { path: string; mode: "100644" | "100755"; type: "blob"; sha: string }
+    | { path: string; mode: "100644" | "100755"; type: "blob"; sha: null };
   const treeEntries: TreeEntry[] = [];
 
   for (const f of input.files) {
     if (f.content === null) {
-      treeEntries.push({ path: f.path, mode: "100644", type: "blob", sha: null });
+      treeEntries.push({ path: f.path, mode: modes.get(f.path)!, type: "blob", sha: null });
       continue;
     }
     try {
@@ -169,12 +244,12 @@ export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult>
           encoding: "base64",
         },
       });
-      if (!r.ok) return { ok: false, reason: "blob_write_failed", detail: `blob POST ${r.status} for ${f.path}` };
+      if (!r.ok) return failed("blob_write_failed", `blob POST ${r.status} for ${f.path}`);
       const body = await r.json() as { sha?: string };
-      if (typeof body.sha !== "string") return { ok: false, reason: "blob_write_failed", detail: `no sha on blob response for ${f.path}` };
-      treeEntries.push({ path: f.path, mode: "100644", type: "blob", sha: body.sha });
+      if (typeof body.sha !== "string") return failed("blob_write_failed", `no sha on blob response for ${f.path}`);
+      treeEntries.push({ path: f.path, mode: modes.get(f.path)!, type: "blob", sha: body.sha });
     } catch {
-      return { ok: false, reason: "network_error", detail: `blob POST network for ${f.path}` };
+      return failed("network_error", `blob POST network for ${f.path}`);
     }
   }
 
@@ -188,12 +263,12 @@ export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult>
         tree: treeEntries,
       },
     });
-    if (!r.ok) return { ok: false, reason: "tree_write_failed", detail: `tree POST ${r.status}` };
+    if (!r.ok) return failed("tree_write_failed", `tree POST ${r.status}`);
     const body = await r.json() as { sha?: string };
-    if (typeof body.sha !== "string") return { ok: false, reason: "tree_write_failed", detail: "no sha on tree response" };
+    if (typeof body.sha !== "string") return failed("tree_write_failed", "no sha on tree response");
     newTreeSha = body.sha;
   } catch {
-    return { ok: false, reason: "network_error", detail: "tree POST network" };
+    return failed("network_error", "tree POST network");
   }
 
   // 5. POST commit pointing at the new tree.
@@ -207,12 +282,12 @@ export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult>
         parents: [baseSha],
       },
     });
-    if (!r.ok) return { ok: false, reason: "commit_write_failed", detail: `commit POST ${r.status}` };
+    if (!r.ok) return failed("commit_write_failed", `commit POST ${r.status}`);
     const body = await r.json() as { sha?: string };
-    if (typeof body.sha !== "string") return { ok: false, reason: "commit_write_failed", detail: "no sha on commit response" };
+    if (typeof body.sha !== "string") return failed("commit_write_failed", "no sha on commit response");
     newCommitSha = body.sha;
   } catch {
-    return { ok: false, reason: "network_error", detail: "commit POST network" };
+    return failed("network_error", "commit POST network");
   }
 
   // 6. POST new branch ref pointing at the commit.
@@ -224,9 +299,9 @@ export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult>
         sha: newCommitSha,
       },
     });
-    if (!r.ok) return { ok: false, reason: "branch_create_failed", detail: `ref POST ${r.status}` };
+    if (!r.ok) return failed("branch_create_failed", `ref POST ${r.status}`);
   } catch {
-    return { ok: false, reason: "network_error", detail: "branch ref POST network" };
+    return failed("network_error", "branch ref POST network");
   }
 
   // 7. POST pull request.
@@ -240,13 +315,13 @@ export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult>
         base: input.baseBranch,
       },
     });
-    if (!r.ok) return { ok: false, reason: "pull_request_create_failed", detail: `pulls POST ${r.status}` };
+    if (!r.ok) return failed("pull_request_create_failed", `pulls POST ${r.status}`);
     const body = await r.json() as { html_url?: string; number?: number };
     if (typeof body.html_url !== "string" || typeof body.number !== "number") {
-      return { ok: false, reason: "pull_request_create_failed", detail: "no html_url or number on PR response" };
+      return failed("pull_request_create_failed", "no html_url or number on PR response");
     }
     return { ok: true, prUrl: body.html_url, prNumber: body.number, headSha: newCommitSha };
   } catch {
-    return { ok: false, reason: "network_error", detail: "pulls POST network" };
+    return failed("network_error", "pulls POST network");
   }
 }

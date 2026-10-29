@@ -1,0 +1,17 @@
+import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({context:vi.fn(),linear:vi.fn(),jira:vi.fn(),snow:vi.fn(),listLinear:vi.fn(),listJira:vi.fn(),listSnow:vi.fn(),upsert:vi.fn()}));
+vi.mock('@/lib/auth/currentContext',()=>({currentContext:m.context}));
+vi.mock('@/lib/db',()=>({prisma:{changeTicket:{upsert:m.upsert}}}));
+vi.mock('@/lib/releaseops/linearFetcher',()=>({createLinearFetcher:m.linear}));
+vi.mock('@/lib/releaseops/jiraFetcher',()=>({createJiraFetcher:m.jira}));
+vi.mock('@/lib/releaseops/serviceNowFetcher',()=>({createServiceNowFetcher:m.snow}));
+import {POST} from '../route';
+const request=(value:unknown)=>new NextRequest('https://owned.test/api/dashboard/change-ticket-sync',{method:'POST',body:JSON.stringify(value),headers:{'content-type':'application/json'}});
+beforeEach(()=>{vi.clearAllMocks();m.context.mockResolvedValue({isAuthenticated:true,organizationId:'unrelated-tenant',userId:'reader'});m.linear.mockReturnValue({listIssues:m.listLinear});m.jira.mockReturnValue({listIssues:m.listJira});m.snow.mockReturnValue({listChanges:m.listSnow});m.listLinear.mockResolvedValue([{id:'host-only-id',identifier:'HOST-1',title:'Synthetic host-only ticket',state:{name:'Done',type:'completed'},priority:3,labels:{nodes:[]}}]);m.listJira.mockResolvedValue([]);m.listSnow.mockResolvedValue([]);m.upsert.mockResolvedValue({id:'row',externalKey:'HOST-1'});for(const key of ['LINEAR_API_KEY','JIRA_BASE_URL','JIRA_EMAIL','JIRA_API_TOKEN','SERVICENOW_INSTANCE','SERVICENOW_USER','SERVICENOW_PASS'])vi.stubEnv(key,'host-private-configuration')});
+afterEach(()=>vi.unstubAllEnvs());
+it.each(['linear','jira','servicenow'])('refuses %s host credentials before provider dispatch or tenant persistence',async provider=>{const response=await POST(request({provider}));expect(m.upsert).not.toHaveBeenCalled();expect(m.listLinear).not.toHaveBeenCalled();expect(m.listJira).not.toHaveBeenCalled();expect(m.listSnow).not.toHaveBeenCalled();expect(m.linear).not.toHaveBeenCalled();expect(m.jira).not.toHaveBeenCalled();expect(m.snow).not.toHaveBeenCalled();expect(response.status).toBe(409);expect(await response.json()).toEqual({ok:false,error:'tenant_connection_required'});expect(response.headers.get('cache-control')).toContain('no-store')});
+it('does not advertise host environment setup when host configuration is absent',async()=>{vi.unstubAllEnvs();const r=await POST(request({provider:'linear'}));expect(r.status).toBe(409);expect(await r.json()).toEqual({ok:false,error:'tenant_connection_required'});expect(m.upsert).not.toHaveBeenCalled()});
+it('preserves unauthenticated refusal before provider setup',async()=>{m.context.mockResolvedValue({isAuthenticated:false});expect((await POST(request({provider:'linear'}))).status).toBe(401);expect(m.linear).not.toHaveBeenCalled()});
+it.each([{},null,{provider:2},{provider:'unknown'}])('preserves invalid payload refusal %j',async body=>{expect((await POST(request(body))).status).toBe(400);expect(m.upsert).not.toHaveBeenCalled()});
+it('preserves explicit unsupported other-provider refusal',async()=>{const r=await POST(request({provider:'other'}));expect(r.status).toBe(400);expect((await r.json()).error).toBe('unsupported_provider');expect(m.upsert).not.toHaveBeenCalled()});

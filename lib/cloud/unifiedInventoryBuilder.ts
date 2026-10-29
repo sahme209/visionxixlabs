@@ -1,7 +1,7 @@
 /**
  * Unified cross-cloud inventory builder.
  *
- * Calls every per-cloud extractor in parallel, then folds them into a
+ * Reads tenant-bound AWS inventory and explicitly blocks unwired clouds in a
  * single normalized resource catalog. Three resource families are
  * captured because they're the universal nouns every cloud team
  * thinks about:
@@ -27,9 +27,6 @@
 import "server-only";
 
 import { buildAwsServiceInventory } from "./aws/awsServiceInventoryExtractor";
-import { extractAzureLiveInventory } from "./azure/azureLiveInventory";
-import { extractAzureStorageAccounts } from "./azure/azureStorageExtractor";
-import { extractGcpLiveInventory } from "./gcp/gcpLiveInventory";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 
 export type CloudId = "aws" | "azure" | "gcp";
@@ -78,11 +75,8 @@ export interface BuildUnifiedInventoryInput {
 export async function buildUnifiedInventory(input: BuildUnifiedInventoryInput): Promise<UnifiedInventoryReport> {
   const start = Date.now();
 
-  const [awsR, azureR, azureStorageR, gcpR] = await Promise.allSettled([
+  const [awsR] = await Promise.allSettled([
     buildAwsServiceInventory({ tenantId: input.tenantId, actorUserId: input.actorUserId }),
-    extractAzureLiveInventory(),
-    extractAzureStorageAccounts(),
-    extractGcpLiveInventory(),
   ]);
 
   const sections: UnifiedCloudSection[] = [];
@@ -120,73 +114,12 @@ export async function buildUnifiedInventory(input: BuildUnifiedInventoryInput): 
     limitations.push(`AWS: ${errMessage(awsR.reason)}`);
   }
 
-  // Azure section — merge live inventory + storage deep posture.
-  const azureLiveOk = azureR.status === "fulfilled" ? azureR.value : null;
-  const azureStorageOk = azureStorageR.status === "fulfilled" ? azureStorageR.value : null;
-  if (azureLiveOk || azureStorageOk) {
-    const compute = azureLiveOk?.counts.vmCount ?? 0;
-    const storage = azureStorageOk?.total ?? azureLiveOk?.counts.storageAccountCount ?? 0;
-    const database = 0; // Azure SQL extractor not yet wired into this builder.
-    const publicExposure = (azureLiveOk?.publicIpExposedVmCount ?? 0)
-      + (azureStorageOk?.publicBlobAccessCount ?? 0)
-      + (azureStorageOk?.publicNetworkCount ?? 0);
-    const unencrypted = (azureLiveOk?.unencryptedStorageCount ?? 0)
-      + (azureStorageOk?.nonHttpsCount ?? 0);
-    const identityWeakness = azureStorageOk?.weakTlsCount ?? 0;
-    sections.push({
-      cloud: "azure",
-      mode: deriveAzureMode(azureLiveOk?.mode, azureStorageOk?.mode),
-      scopeId: azureLiveOk?.subscriptionId,
-      totals: { compute, storage, database },
-      publicExposureCount: publicExposure,
-      unencryptedCount: unencrypted,
-      identityWeaknessCount: identityWeakness,
-      headline: [
-        { label: "VMs", value: String(compute) },
-        { label: "Storage", value: String(storage) },
-        { label: "Public blob", value: String(azureStorageOk?.publicBlobAccessCount ?? 0) },
-        { label: "Weak TLS", value: String(azureStorageOk?.weakTlsCount ?? 0) },
-        { label: "VNets", value: String(azureLiveOk?.counts.vnetCount ?? 0) },
-        { label: "NSGs", value: String(azureLiveOk?.counts.nsgCount ?? 0) },
-      ],
-      limitations: [
-        ...(azureLiveOk?.limitations ?? []),
-        ...(azureStorageOk?.limitations ?? []),
-      ],
-    });
-  } else {
-    sections.push(emptySection("azure", `Azure extractors crashed: ${errMessage((azureR as PromiseRejectedResult).reason)}`));
-    limitations.push(`Azure: ${errMessage((azureR as PromiseRejectedResult).reason)}`);
-  }
+  // Legacy Azure extractors use deployment credentials, not tenant authority.
+  sections.push(emptySection("azure", "Tenant-scoped Azure inventory is not wired to this view. Use the verified desktop Azure connection."));
 
-  // GCP section
-  if (gcpR.status === "fulfilled") {
-    const r = gcpR.value;
-    sections.push({
-      cloud: "gcp",
-      mode: r.mode === "live" ? "live" : r.mode,
-      scopeId: r.projectId,
-      totals: {
-        compute: r.counts.instanceCount,
-        storage: r.counts.bucketCount,
-        database: 0,
-      },
-      publicExposureCount: r.publicBucketCount + r.allOpenFirewallCount,
-      unencryptedCount: 0,
-      identityWeaknessCount: 0,
-      headline: [
-        { label: "Instances", value: String(r.counts.instanceCount) },
-        { label: "Buckets", value: String(r.counts.bucketCount) },
-        { label: "Firewalls", value: String(r.counts.firewallRuleCount) },
-        { label: "Public buckets", value: String(r.publicBucketCount) },
-        { label: "0.0.0.0/0 FW", value: String(r.allOpenFirewallCount) },
-      ],
-      limitations: r.limitations,
-    });
-  } else {
-    sections.push(emptySection("gcp", `GCP extractor crashed: ${errMessage(gcpR.reason)}`));
-    limitations.push(`GCP: ${errMessage(gcpR.reason)}`);
-  }
+  // Host-scoped GCP credentials do not authorize this tenant's inventory.
+  // Keep the separately server-owned extractor outside this request path.
+  sections.push(emptySection("gcp", "gcp.tenant_connection_required: GCP inventory needs a verified workspace connection bound to the selected project. No inventory was read."));
 
   const totals = sections.reduce<UnifiedResourceTotals>(
     (acc, s) => ({
@@ -234,16 +167,6 @@ function deriveAwsMode(r: Awaited<ReturnType<typeof buildAwsServiceInventory>>):
   if (modes.some((m) => m === "live")) return "partial";
   if (modes.every((m) => m === "blocked")) return "blocked";
   if (modes.some((m) => m === "preview")) return "preview";
-  return "blocked";
-}
-
-function deriveAzureMode(a?: string, b?: string): UnifiedCloudSection["mode"] {
-  const xs = [a, b].filter(Boolean) as string[];
-  if (xs.length === 0) return "blocked";
-  if (xs.every((m) => m === "live")) return "live";
-  if (xs.some((m) => m === "live")) return "partial";
-  if (xs.every((m) => m === "blocked")) return "blocked";
-  if (xs.some((m) => m === "preview")) return "preview";
   return "blocked";
 }
 

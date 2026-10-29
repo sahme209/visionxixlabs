@@ -1,6 +1,17 @@
+import { intakeDateInputValue as dateInputValue } from "../lib/intakeDateInput";
+import {ReleaseTicketWorkspace} from '../components/ReleaseTicketWorkspace';
+import { ReleaseMergeReview } from "../components/ReleaseMergeReview";
+import { ReleaseBatchMonitor } from "../components/ReleaseBatchMonitor";
+import { ReleaseBatchReadiness } from "../components/ReleaseBatchReadiness";
+import { ResolutionDraftForm } from "../components/ResolutionDraftForm";
+import { ReleaseBatchSelection } from "../components/ReleaseBatchSelection";
+import { releaseAirflowDependencySchema } from "../../../lib/integrations/airflow/releaseDependencySchema";
+import { WorkflowCatalogue } from "../components/WorkflowCatalogue";
+import { WorkflowDefinitionInputs } from "../components/WorkflowDefinitionInputs";
+import { matchingWorkflowObservation, restoredWorkflowRef, singleGithubRepository, workflowFilePath, type WorkflowSourceObservation } from "../lib/workflowReadSource";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
 import { TerraformPlanReview } from "../components/TerraformPlanReview";
-import { useCallback, useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type FormEvent } from "react";
 import { ExternalLink, ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution } from "../lib/desktopClient";
 
@@ -27,6 +38,7 @@ interface RequestSummary {
     };
     recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
     observation: { status: "not_connected"; recordedMonitoringPlan: boolean };
+    batches?: { selectedRunCount: number };
   };
   latestPlaybook: {
     id: string;
@@ -168,10 +180,6 @@ function textValue(value: unknown): string {
   return typeof value === "string" ? value : "";
 }
 
-function dateInputValue(value: unknown): string {
-  const date = new Date(textValue(value));
-  return Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 16) : "";
-}
 
 function draftFromIntake(intake: Record<string, unknown>): IntakeDraft {
   const manual = objectValue(Array.isArray(intake.manualSteps) ? intake.manualSteps[0] : undefined);
@@ -250,6 +258,19 @@ export function DeploymentRequestsView() {
   const [loadError, setLoadError] = useState<string>();
   const [lastSuccessfulLoadAt, setLastSuccessfulLoadAt] = useState<Date>();
   const [showForm, setShowForm] = useState(false);
+  const [showResolutionDraft, setShowResolutionDraft] = useState(false);
+  const [resolutionDraftStarted, setResolutionDraftStarted] = useState(false);
+  const draftContext = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
+  const draftConfig = desktopClient.config;
+  const draftIdentity = useRef({ config: draftConfig, context: draftContext, key: 0 });
+  if (draftIdentity.current.config !== draftConfig || draftIdentity.current.context !== draftContext) {
+    draftIdentity.current = { config: draftConfig, context: draftContext, key: draftIdentity.current.key + 1 };
+  }
+  useEffect(() => { setShowResolutionDraft(false); setResolutionDraftStarted(false); }, [draftContext, draftConfig]);
+  const intakeEpoch = useRef(0);
+  const mounted = useRef(false);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; intakeEpoch.current++; }; }, []);
+  function invalidateRevisionRead() { intakeEpoch.current++; setLoadingRevisionId(undefined); }
   const [revision, setRevision] = useState<RevisionSeed>();
   const [loadingRevisionId, setLoadingRevisionId] = useState<string>();
   const [closingRequestId, setClosingRequestId] = useState<string>();
@@ -360,15 +381,18 @@ export function DeploymentRequestsView() {
   }
 
   async function startRevision(requestId: string) {
+    const epoch = ++intakeEpoch.current, config = desktopClient.config, context = desktopClient.getContextRevision();
+    const owns = () => mounted.current && epoch === intakeEpoch.current && config === desktopClient.config && context === desktopClient.getContextRevision();
     setLoadingRevisionId(requestId);
-    const result = await desktopClient.deploymentRequestForRevision(requestId);
-    setLoadingRevisionId(undefined);
-    if (!result.ok) {
-      setLoadError(`Could not load the request for revision: ${result.error}`);
-      return;
-    }
-    setRevision(result.data);
-    setShowForm(true);
+    try {
+      const result = await desktopClient.deploymentRequestForRevision(requestId);
+      if (!owns()) return;
+      if (!result.ok) { setLoadError(`Could not load the request for revision: ${result.error}`); return; }
+      setShowResolutionDraft(false);
+      setRevision(result.data);
+      setShowForm(true);
+    } catch { if (owns()) setLoadError("The request could not be loaded. Your current intake has been retained."); }
+    finally { if (owns()) setLoadingRevisionId(undefined); }
   }
 
   async function loadRevisionHistory(requestId: string) {
@@ -444,22 +468,25 @@ export function DeploymentRequestsView() {
 
   return (
     <ViewShell>
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">Release workspace</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Requests</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
-            One governed record for scope, readiness, approval evidence, recovery, and the next playbook.
+            Start with a ticket or prepare a complete release request.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <button type="button" onClick={() => void load()} className="btn-secondary">
             Refresh
           </button>
-          <button type="button" onClick={() => { setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
+          <button type="button" onClick={() => { invalidateRevisionRead(); setShowForm(false); setRevision(undefined); setResolutionDraftStarted(true); setShowResolutionDraft(value => !value); }} className="btn-secondary">{showResolutionDraft ? "Cancel draft" : "Start from ticket"}</button>
+          <button type="button" onClick={() => { invalidateRevisionRead(); setShowResolutionDraft(false); setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
             {showForm ? "Cancel intake" : "New request"}
           </button>
         </div>
       </div>
+
+      {resolutionDraftStarted && <div hidden={!showResolutionDraft}><ResolutionDraftForm key={draftIdentity.current.key} active={showResolutionDraft} onBack={() => setShowResolutionDraft(false)} onSaved={() => { setShowResolutionDraft(false); setResolutionDraftStarted(false); void load(); }} /></div>}
 
       {showForm && (
         <DeploymentIntakeForm
@@ -478,7 +505,7 @@ export function DeploymentRequestsView() {
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-semibold text-white">Workflow execution evidence</p>
-              <p className="mt-0.5 text-[11px] text-zinc-500">Recorded GitHub workflow runs and reported rollback steps. Artifact release, application health and recovery are not verified.</p>
+              <p className="mt-0.5 text-[11px] text-zinc-500">Recorded workflow observations. These runs are not verified as evidence for a particular release; artifact delivery, application health and recovery remain unverified.</p>
             </div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Latest {Math.min(executions.length, 5)}</span>
           </div>
@@ -500,7 +527,7 @@ export function DeploymentRequestsView() {
                 </div>
                 {execution.workflowUrl && (
                   <ExternalLink href={execution.workflowUrl} className="shrink-0 text-[11px] font-medium text-zinc-300 hover:text-white">
-                    Evidence ↗
+                    Open workflow run ↗
                   </ExternalLink>
                 )}
               </div>
@@ -548,6 +575,11 @@ export function DeploymentRequestsView() {
                   Request updated {new Date(request.updatedAt).toLocaleString()}.
                 </p>
                 <div className="flex flex-wrap gap-2">
+                  {request.status === "draft" ? <>
+                    <button type="button" className="btn-primary" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? "Opening…" : "Complete release details"}</button>
+                    <button type="button" className="btn-secondary" disabled={loadingHistoryId === request.id} onClick={() => void loadRevisionHistory(request.id)}>Review history</button>
+                  </> : <>
+
                   <button type="button" className="btn-secondary" onClick={() => setTerraformRequestId(current => current === request.id ? undefined : request.id)}>Review Terraform evidence</button>
                   <button
                     type="button"
@@ -589,9 +621,10 @@ export function DeploymentRequestsView() {
                   >
                     {collectingGitHubEvidenceId === request.id ? "Reading GitHub…" : "Collect GitHub evidence"}
                   </button>
+                  </>}
                 </div>
               </div>
-              <ReleaseContext request={request} />
+              {request.status === "draft" ? <p className="mt-3 text-xs text-amber-200">Draft only. Resolve repository, workflow, readiness and approval details before submitting the release.</p> : <ReleaseContext request={request} />}
               {terraformRequestId === request.id && <TerraformPlanReview key={`${request.id}:${request.version}`} requestId={request.id} requestVersion={request.version} />}
               {githubEvidenceErrors[request.id] && (
                 <p role="alert" className="mt-3 text-xs text-rose-300">
@@ -601,7 +634,10 @@ export function DeploymentRequestsView() {
               {githubEvidence[request.id] && (
                 <GitHubEvidenceCard evidence={githubEvidence[request.id]} />
               )}
-              {request.status === "closed" ? (
+              <ReleaseTicketWorkspace requestId={request.id} version={request.version} releaseStatus={request.status}/>
+              {request.status === "submitted" && !request.releaseContext.approval.noPrRequired && <ReleaseMergeReview requestId={request.id} version={request.version} />}
+              {request.status === "submitted" && (request.releaseContext.batches?.selectedRunCount ?? 0) > 0 && <><ReleaseBatchReadiness requestId={request.id} version={request.version} count={request.releaseContext.batches!.selectedRunCount} /><ReleaseBatchMonitor requestId={request.id} version={request.version} /></>}
+              {request.status === "draft" ? null : request.status === "closed" ? (
                 <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 px-3 py-2 text-xs text-emerald-100">
                   Closure recorded{request.closedAt ? ` ${new Date(request.closedAt).toLocaleString()}` : ""}. This record documents a reported external outcome; it did not dispatch a deployment.
                 </div>
@@ -871,10 +907,24 @@ function ContextSignal({ label, value, detail, tone = "neutral" }: {
 
 function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; revision?: RevisionSeed }) {
   const [draft, setDraft] = useState(() => revision ? draftFromIntake(revision.intake) : initialDraft);
+  const [workflowRef, setWorkflowRef] = useState(() => restoredWorkflowRef(revision?.intake.workflowSource, singleGithubRepository(draft.repositoryUrls), workflowFilePath(draft.workflowName)));
+  const effectiveWorkflowRef = workflowRef.trim() || draft.sourceBranch.trim();
+  const contextRevision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
+  const [sourceObservation, setSourceObservation] = useState(() => ({ value: revision?.intake.workflowSource as unknown, config: desktopClient.config, revision: contextRevision }));
+  const workflowSource = sourceObservation.config === desktopClient.config && sourceObservation.revision === contextRevision
+    ? matchingWorkflowObservation(sourceObservation.value, singleGithubRepository(draft.repositoryUrls), effectiveWorkflowRef, workflowFilePath(draft.workflowName)) : undefined;
+  const recordWorkflowSource = useCallback((value: WorkflowSourceObservation) => setSourceObservation({ value, config: desktopClient.config, revision: contextRevision }), [contextRevision]);
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string>();
   const [submissionId] = useState(() => crypto.randomUUID());
+  const [workflowInputIssue, setWorkflowInputIssue] = useState<string>();
+  const [batchDependency, setBatchDependency] = useState(() => {
+    const parsed = releaseAirflowDependencySchema.safeParse(revision?.intake.airflowDependency);
+    return parsed.success ? parsed.data : undefined;
+  });
+  const [batchIssue, setBatchIssue] = useState<string>();
+  const completingResolutionDraft = revision?.intake.kind === "resolution_draft";
   const isAdHoc = draft.requestClass === "ad_hoc" || draft.requestClass === "emergency";
 
   function update<K extends keyof typeof draft>(key: K, value: (typeof draft)[K]) {
@@ -884,6 +934,8 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
   async function submit(event: FormEvent) {
     event.preventDefault();
     setError(undefined);
+
+    if (workflowInputIssue || batchIssue) { setStep(2); setError(workflowInputIssue ?? batchIssue); return; }
 
     for (let candidate = 0; candidate < INTAKE_STEPS.length; candidate += 1) {
       const issue = validateStep(candidate, draft);
@@ -952,6 +1004,8 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
       workflowName: draft.workflowName,
       targetEnvironment: draft.targetEnvironment,
       workflowInputs,
+      ...(batchDependency ? { airflowDependency: batchDependency } : {}),
+      ...(workflowSource ? { workflowSource } : {}),
       manualSteps,
       lowerEnvironmentTested: splitLines(draft.lowerEnvironments),
       lowerEnvironmentValidation: "yes",
@@ -1021,17 +1075,18 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
 
   return (
     <form onSubmit={(event) => void submit(event)} className="glass-card p-5 space-y-5">
+      {revision?.intake.kind === "resolution_draft" && <aside className="rounded-lg border border-white/10 p-3 text-xs text-zinc-300"><p className="font-semibold">Original ticket request</p><p className="mt-1 whitespace-pre-wrap">{textValue(revision.intake.requestDetails)}</p>{textValue(revision.intake.ticketUrl) && <p className="mt-1 break-all">{textValue(revision.intake.ticketUrl)}</p>}<p className="mt-2 text-zinc-500">The original draft remains in the immutable record. Complete every required release control before submission.</p></aside>}
       <div>
         <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm font-semibold text-white">{revision ? `Revise governed request · v${revision.version} → v${revision.version + 1}` : "New governed deployment request"}</p>
+            <p className="text-sm font-semibold text-white">{completingResolutionDraft ? "Complete release details for submission" : revision ? `Revise release request · v${revision.version} → v${revision.version + 1}` : "New release request"}</p>
             <p className="mt-1 text-xs text-zinc-500">Step {step + 1} of {INTAKE_STEPS.length} · {INTAKE_STEPS[step]}</p>
           </div>
-          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Required controls stay visible in sequence</span>
+          <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Complete each step before submitting</span>
         </div>
         <div className="mt-4 grid grid-cols-5 gap-2" aria-label="Intake progress">
           {INTAKE_STEPS.map((label, index) => (
-            <button key={label} type="button" onClick={() => { if (index <= step) { setStep(index); setError(undefined); } }} className={`rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors ${index === step ? "border-violet-500/40 bg-violet-500/10 text-violet-200" : index < step ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-300" : "cursor-default border-white/5 text-zinc-600"}`}>
+            <button key={label} type="button" disabled={index > step || submitting} aria-current={index === step ? "step" : undefined} onClick={() => { if (index <= step) { setStep(index); setError(undefined); } }} className={`rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors ${index === step ? "border-violet-500/40 bg-violet-500/10 text-violet-200" : index < step ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-300" : "cursor-default border-white/5 text-zinc-600"}`}>
               {index + 1}. {label}
             </button>
           ))}
@@ -1077,11 +1132,15 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
         <Field label="Target branch" value={draft.targetBranch} onChange={(value) => update("targetBranch", value)} required />
       </Section>}
 
-      {step === 2 && <Section title="Production trigger and exact execution">
+      <div hidden={step !== 2}><Section title="Production trigger and exact execution">
         <Field label="Deployment method" value={draft.deploymentMethod} onChange={(value) => update("deploymentMethod", value)} required />
         <Field label="Workflow name / trigger" value={draft.workflowName} onChange={(value) => update("workflowName", value)} required />
         <Field label="Target environment" value={draft.targetEnvironment} onChange={(value) => update("targetEnvironment", value)} required />
-        <TextArea label="Immutable workflow inputs (JSON string values)" value={draft.workflowInputs} onChange={(value) => update("workflowInputs", value)} required />
+        <Field label="Workflow source ref (branch or tag)" value={workflowRef} onChange={setWorkflowRef} />
+        <p className="text-xs text-zinc-400">Leave blank to use the source branch. For a protected-tag deployment, enter the exact tag and read its workflow fields again. This does not change the PR source branch.</p>
+        <WorkflowCatalogue repositoryFullName={singleGithubRepository(draft.repositoryUrls)} refName={effectiveWorkflowRef} workflowPath={workflowFilePath(draft.workflowName)} onSelect={(path) => update("workflowName", path)} />
+        <WorkflowDefinitionInputs repositoryFullName={singleGithubRepository(draft.repositoryUrls)} refName={effectiveWorkflowRef} workflowPath={workflowFilePath(draft.workflowName)} value={draft.workflowInputs} onChange={(value) => update("workflowInputs", value)} onIssueChange={setWorkflowInputIssue} onSourceChange={recordWorkflowSource} />
+        <ReleaseBatchSelection value={batchDependency} onChange={setBatchDependency} onIssueChange={setBatchIssue} />
         <TextArea label="Optional manual instruction" value={draft.manualInstruction} onChange={(value) => update("manualInstruction", value)} />
         {draft.manualInstruction && (
           <>
@@ -1089,7 +1148,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
             <TextArea label="How to validate the manual step" value={draft.manualValidationInstruction} onChange={(value) => update("manualValidationInstruction", value)} required />
           </>
         )}
-      </Section>}
+      </Section></div>
 
       {step === 3 && <Section title="Readiness and production validation">
         <Field label="Tested lower environments" value={draft.lowerEnvironments} onChange={(value) => update("lowerEnvironments", value)} required />
@@ -1140,17 +1199,18 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
       {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
       <div className="flex items-center justify-between gap-3">
         <button type="button" disabled={step === 0 || submitting} onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(undefined); }} className="btn-secondary disabled:opacity-40">Back</button>
-        <p className="text-xs text-zinc-500">{revision ? "This appends an immutable revision and audit event. It does not deploy." : "This creates a tenant-scoped record and audit event. It does not deploy."}</p>
+        <p className="text-xs text-zinc-500">{completingResolutionDraft ? "This submits the completed release request and preserves the original draft. It does not deploy." : revision ? "Saves a new version and keeps the request history. It does not deploy." : "Saves this request to your workspace. It does not deploy."}</p>
         {step < INTAKE_STEPS.length - 1 ? (
-          <button type="button" className="btn-primary" onClick={() => {
-            const issue = validateStep(step, draft);
+          <button key="continue-step" type="button" className="btn-primary" onClick={(event) => {
+            event.preventDefault();
+            const issue = (step === 2 ? workflowInputIssue ?? batchIssue : undefined) ?? validateStep(step, draft);
             if (issue) { setError(issue); return; }
             setError(undefined);
             setStep((current) => Math.min(INTAKE_STEPS.length - 1, current + 1));
           }}>Continue</button>
         ) : (
-          <button type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
-            {submitting ? (revision ? "Saving revision…" : "Submitting…") : (revision ? "Save immutable revision" : "Submit governed request")}
+          <button key="submit-request" type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
+            {submitting ? (completingResolutionDraft ? "Submitting…" : revision ? "Saving revision…" : "Submitting…") : (completingResolutionDraft ? "Submit completed request" : revision ? "Save revision" : "Submit release request")}
           </button>
         )}
       </div>

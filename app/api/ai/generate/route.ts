@@ -1,3 +1,4 @@
+import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "@/lib/ai/effectiveGatewayModel";
 import { withIsolatedWorkspaceScope } from "@/lib/billing/isolatedApplication/scope";
 /**
  * POST /api/ai/generate
@@ -119,7 +120,12 @@ async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof curre
     if (body.model !== undefined && body.only && policy.modelSelections[body.only] !== body.model) {
       throw AxiomErrors.validation("ai.model_not_approved", "That model is not approved for this workspace provider.");
     }
-    const reservation = await admitAIText({ organizationId, userId: ctx.userId, idempotencyKey, correlationId });
+    const dispatchModel = effectiveGatewayModel({ model: body.model, modelSelection: policy.modelSelections.vercel_gateway,
+      defaultModel: mgr.status().find(row => row.provider === "vercel_gateway")?.defaultModel });
+    if (!gatewayModelOutputBoundVerified(dispatchModel)) {
+      throw AxiomErrors.policy("ai.output_bound_unverified", "This model has not demonstrated an enforceable output budget. Choose another enabled model. No generation was run.");
+    }
+    const reservation = await admitAIText({ organizationId, userId: ctx.userId, idempotencyKey, correlationId }, { prompt: body.prompt, system: body.system });
     if (!reservation.ok) {
       if (reservation.error === "request_already_reserved") {
         throw AxiomErrors.policy("ai.request_already_in_progress", "This request key is already reserved. Wait for the existing request to finish before retrying.");
@@ -136,7 +142,7 @@ async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof curre
       system: body.system,
       maxTokens: body.maxTokens ?? MAX_OUTPUT_TOKENS,
       temperature: typeof body.temperature === "number" ? body.temperature : undefined,
-      model: body.model,
+      model: dispatchModel,
       only: body.only,
       correlationId,
       organizationId,

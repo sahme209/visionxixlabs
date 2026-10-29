@@ -1,3 +1,5 @@
+import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "@/lib/ai/effectiveGatewayModel";
+import { boundedAIInput } from "@/lib/ai/inputByteBound";
 /**
  * Real Vercel AI Gateway-backed code_propose executor.
  *
@@ -7,11 +9,14 @@
  */
 
 import "server-only";
+import { createHash } from "node:crypto";
+import type { AITextResponse } from "@/lib/ai/AIProvider";
+import { admitAIText } from "@/lib/billing/governedExtractAdmission";
+import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 
 import { buildCodeProposeMessages } from "./buildCodeProposeMessages";
 import type { StageExecutorFn, StageExecutorResult } from "./stageExecutorRegistry";
 import { checkWorkspaceAICredits } from "@/lib/billing/checkWorkspaceAICredits";
-import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
@@ -22,7 +27,16 @@ import { planRefinementAction } from "./planRefinementAction";
 import { buildRefinementMessages } from "./buildRefinementMessages";
 
 /** Keep responses bounded even when the selected Gateway model supports more. */
-const CODE_PROPOSE_MAX_TOKENS = 32_000;
+const CODE_PROPOSE_MAX_TOKENS = AI_REQUEST_MAX_OUTPUT_TOKENS;
+
+class CodeProposalCallRefusal extends Error {
+  constructor(readonly code: "policy_unavailable" | "policy_changed" | "reservation_refused" | "billing_actor_unavailable" | "output_bound_unverified") {
+    super(code === "billing_actor_unavailable" ? "Coding generation requires a verified workspace billing actor. No automatic owner substitution is allowed."
+      : code === "reservation_refused" ? "AI credit reservation was refused. No further generation was run."
+      : "Workspace AI policy changed or could not be verified. No further generation was run.");
+    this.name = "CodeProposalCallRefusal";
+  }
+}
 
 interface CodeProposeRunMetadata {
   instruction?: unknown;
@@ -173,27 +187,47 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     };
   }
 
+  const gatewayResponses: AITextResponse[] = [];
   try {
     const manager = getAIProviderManager();
-    const selectedGatewayModel = workspacePolicy.modelSelections.vercel_gateway;
-    const response = await manager.generateText(built.messages.map((message) => message.content).join("\n\n"), {
-      organizationId: ctx.organizationId,
-      only: "vercel_gateway",
-      allowedProviders: workspacePolicy.allowedProviders,
-      modelSelections: workspacePolicy.modelSelections,
-      model: selectedGatewayModel === "service-default" ? undefined : selectedGatewayModel,
-      system: built.system.map((block) => block.text).join("\n"),
-      maxTokens: CODE_PROPOSE_MAX_TOKENS,
-      temperature: 0.2,
-      correlationId: ctx.correlationId,
-    });
+    const selectedGatewayModel = workspacePolicy.modelSelections.vercel_gateway ?? "service-default";
+    const generateAttempt = async (prompt: string, system: string, phase: "initial" | "refinement") => {
+      // Legacy machine/evaluation labels are not a verified billing member.
+      // Never silently charge an owner on their behalf.
+      if (ctx.triggeredBy.startsWith("api_key:") || ctx.triggeredBy.startsWith("system:")) throw new CodeProposalCallRefusal("billing_actor_unavailable");
+      const loaded = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId).catch(() => null);
+      if (!loaded || loaded.storageState !== "ready") throw new CodeProposalCallRefusal("policy_unavailable");
+      const current = resolveWorkspaceAIProviderPolicy({ stored: loaded.policy,
+        serviceEnabled: manager.status().filter(provider => provider.configured && provider.provider === "vercel_gateway" && manager.isServiceProviderAvailable(provider.provider)).map(provider => provider.provider) });
+      if (!current.enabled || !current.allowedProviders.includes("vercel_gateway")
+          || (current.modelSelections.vercel_gateway ?? "service-default") !== selectedGatewayModel) throw new CodeProposalCallRefusal("policy_changed");
+      const dispatchModel = effectiveGatewayModel({ modelSelection: current.modelSelections.vercel_gateway,
+        defaultModel: manager.status().find(row => row.provider === "vercel_gateway")?.defaultModel });
+      if (!gatewayModelOutputBoundVerified(dispatchModel)) throw new CodeProposalCallRefusal("output_bound_unverified");
+      const idempotencyKey = "coding_text_" + createHash("sha256").update(JSON.stringify([ctx.organizationId, ctx.stageRunId, phase])).digest("hex");
+      boundedAIInput(prompt, system);
+      const admitted = await admitAIText({ organizationId: ctx.organizationId, userId: ctx.triggeredBy,
+        correlationId: ctx.correlationId, idempotencyKey, source: "coding_proposal" }, { prompt, system });
+      if (!admitted.ok) throw new CodeProposalCallRefusal("reservation_refused");
+      // The admitted manager performs one SDK attempt and durably links its
+      // usage before returning. No ordinary retry/fallback or eager writer.
+      const response = await manager.generateTextWithAdmission(prompt, {
+        organizationId: ctx.organizationId, only: "vercel_gateway",
+        allowedProviders: current.allowedProviders, modelSelections: current.modelSelections,
+        fallbackOrder: current.fallbackOrder,
+        model: dispatchModel,
+        system, maxTokens: CODE_PROPOSE_MAX_TOKENS, temperature: 0.2, correlationId: ctx.correlationId,
+      }, admitted.admission);
+      gatewayResponses.push(response);
+      return response;
+    };
+    const response = await generateAttempt(built.messages.map(message => message.content).join("\n\n"), built.system.map(block => block.text).join("\n"), "initial");
     const text = response.text;
-    const gatewayResponses = [response];
 
     if (text.length === 0) {
       return {
         ok: false,
-        error: "Empty text response from Claude (only thinking blocks). Try increasing max_tokens or check stop_reason.",
+        error: "The selected AI model returned no usable patch text. No repository changes were made.",
         detail: {
           stageId: ctx.stageId,
           stopReason: response.finishReason,
@@ -238,18 +272,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           brokenPatchText: text,
           validation: initialValidation,
         });
-        const refFinal = await manager.generateText(refinementBuilt.messages.map((message) => message.content).join("\n\n"), {
-          organizationId: ctx.organizationId,
-          only: "vercel_gateway",
-          allowedProviders: workspacePolicy.allowedProviders,
-          modelSelections: workspacePolicy.modelSelections,
-          model: selectedGatewayModel === "service-default" ? undefined : selectedGatewayModel,
-          system: refinementBuilt.system.map((block) => block.text).join("\n"),
-          maxTokens: CODE_PROPOSE_MAX_TOKENS,
-          temperature: 0.2,
-          correlationId: ctx.correlationId,
-        });
-        gatewayResponses.push(refFinal);
+        const refFinal = await generateAttempt(refinementBuilt.messages.map(message => message.content).join("\n\n"), refinementBuilt.system.map(block => block.text).join("\n"), "refinement");
         const refText = refFinal.text;
 
         // Add the refinement usage on top so the cost is honest.
@@ -286,7 +309,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
           });
         } catch { /* best-effort */ }
       } catch (refErr) {
-        // Refinement call itself failed (rate limit, etc.). Ship the original.
+        // A failed second attempt cannot authorize shipping the invalid first patch.
         refinementDecision = "refinement_call_failed";
         try {
           await recordAudit({
@@ -303,39 +326,34 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
             },
           });
         } catch { /* best-effort */ }
+        throw refErr;
       }
+    }
+    if (!validateProposal({ proposedPatchText: finalText, sampledBases: [] }).parseOk) {
+      return { ok: false, error: "The AI response did not contain a valid patch. No repository changes were made.",
+        detail: { stageId: ctx.stageId, completedAccountedAttempts: gatewayResponses.length, pendingSettlement: true } };
     }
 
     const firstLine = finalText.split("\n").find((l) => l.trim().length > 0) ?? "Patch proposed.";
 
-    // 6. Cost attribution — Phase 382. Write a UsageEvent so the meter
-    //    dashboards reflect this invocation (now includes refinement
-    //    tokens when the second call fired).
+    // 6. Verify durable accounting for each completed generation.
     // Each Gateway generation is recorded separately because its authoritative
     // cost is reconciled by generation id. Combining refinement calls would
     // make provider spend impossible to settle idempotently.
-    const usageWrites = await Promise.all(gatewayResponses.map((generation, generationIndex) => recordAIUsageEvent({
-      organizationId: ctx.organizationId,
-      provider: "vercel_gateway",
-      model: generation.model,
-      inputTokens: generation.usage?.promptTokens ?? 0,
-      outputTokens: generation.usage?.completionTokens ?? 0,
-      externalUsageId: generation.gatewayGenerationId,
-      triggeredBy: ctx.triggeredBy,
-      correlationId: ctx.correlationId,
-      metadata: {
-        stage: "code_propose",
-        stageRunId: ctx.stageRunId,
-        runId: ctx.runId,
-        pipelineId: ctx.pipelineId,
-        generationIndex,
-        refinementAttempts,
-        refinementDecision,
-      },
-    })));
-    const usageRecorded = usageWrites.every((write) => write.recorded);
-    const usageEventIds = usageWrites.flatMap((write) => write.usageEventId ? [write.usageEventId] : []);
-    const usageReason = usageWrites.find((write) => !write.recorded)?.reason ?? null;
+    // Accounting already happened inside each admitted manager call. Read its
+    // durable evidence; never upsert the same generation a second time.
+    const usageWrites = await Promise.all(gatewayResponses.map(async generation => {
+      if (!generation.gatewayGenerationId) return { recorded: false, reason: "metering_identifier_missing" };
+      const saved = await prisma.usageEvent.findUnique({ where: { externalUsageId: generation.gatewayGenerationId },
+        select: { id: true, organizationId: true, provider: true, model: true, inputTokens: true, outputTokens: true } });
+      if (!saved || saved.organizationId !== ctx.organizationId || saved.provider !== "vercel_gateway"
+          || saved.model !== generation.model || saved.inputTokens !== generation.usage?.promptTokens
+          || saved.outputTokens !== generation.usage?.completionTokens) return { recorded: false, reason: "accounted_usage_unavailable" };
+      return { recorded: true, usageEventId: saved.id, pendingSettlement: true };
+    }));
+    const usageRecorded = usageWrites.every(write => write.recorded);
+    const usageEventIds = usageWrites.flatMap(write => write.usageEventId ? [write.usageEventId] : []);
+    const usageReason = usageWrites.find(write => !write.recorded)?.reason ?? null;
 
     if (!usageRecorded) {
       return {
@@ -397,7 +415,9 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
     return {
       ok: false,
       error: err instanceof Error ? err.message : "AI Gateway code proposal failed.",
-      detail: { stageId: ctx.stageId },
+      detail: { stageId: ctx.stageId, completedAccountedAttempts: gatewayResponses.length,
+        ...(gatewayResponses.length ? { pendingSettlement: true } : {}),
+        ...(err instanceof CodeProposalCallRefusal ? { callRefused: err.code } : {}) },
     };
   }
 };

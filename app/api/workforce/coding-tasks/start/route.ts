@@ -12,6 +12,9 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { currentContext } from "@/lib/auth/currentContext";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
+import { hasPermission } from "@/lib/axiom/agent/rbacEngine";
+import type { OrgRole } from "@/lib/axiom/enums";
 import { startPipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
 import { parseCodingTaskBody } from "@/lib/workforce/pipelines/parseCodingTaskBody";
 import { registerCodingDryRunExecutors } from "@/lib/workforce/pipelines/codingDryRunExecutors";
@@ -22,10 +25,13 @@ import { id as idFactory } from "@/lib/domain/ids";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  if (!isSameOriginRequest(req)) return NextResponse.json({ ok: false, reason: "invalid_request_origin" }, { status: 403 });
   const session = await currentContext();
-  if (!session.isAuthenticated || !session.organizationId) {
+  if (!session.isAuthenticated || !session.organizationId || !session.userId || !session.sessionUserId) {
     return NextResponse.json({ ok: false, reason: "auth_required" }, { status: 401 });
   }
+
+  if (!session.roles.some(role => hasPermission(role as OrgRole, "actions:apply"))) return NextResponse.json({ ok: false, reason: "forbidden_role" }, { status: 403 });
 
   let body: unknown = null;
   try { body = await req.json(); } catch { /* empty */ }
@@ -37,7 +43,7 @@ export async function POST(req: NextRequest) {
   registerCodingDryRunExecutors();
 
   const orgId = String(session.organizationId);
-  const triggeredBy = session.userId ?? session.email ?? "unknown";
+  const triggeredBy = session.sessionUserId;
 
   // Phase 384 — entitlement gate. Each coding task counts as an agent
   // run for plan limit purposes. Hard-block when the workspace has hit

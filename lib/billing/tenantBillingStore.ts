@@ -1,3 +1,8 @@
+import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "./publicBillingConfig";
+import { publicDatabaseNow } from "./publicCreditAuthority";
+import { readPublicEntitlementSnapshot } from "./publicBillingEntitlements";
+import { planForStripeTier, type PricingPlan } from "./planRegistry";
+import type { PublicPlanId } from "./publicPlanCatalog";
 /**
  * Tenant billing plan store.
  *
@@ -34,6 +39,11 @@ function isBillingStatus(v: string): v is BillingStatus {
 
 export interface BillingPlanRecord {
   organizationId: string;
+  publicPlanId?: PublicPlanId;
+  pricingPlan?: PricingPlan;
+  pricingPlanAvailable?: boolean;
+  creditPeriodStart?: string;
+  creditPeriodEnd?: string;
   tier: BillingTier;
   status: BillingStatus;
   trialEndsAt?: string;
@@ -55,12 +65,24 @@ export async function readBillingPlan(organizationId: string): Promise<BillingPl
 
 /** Read-only evidence for surfaces that must distinguish a real missing plan
  * from unavailable storage. No private error details leave this boundary. */
-export async function readBillingPlanWithAvailability(organizationId: string): Promise<{ plan: BillingPlanRecord; available: boolean }> {
+export async function readBillingPlanWithAvailability(organizationId: string, repository: Pick<typeof prisma,"$transaction"|"tenantBillingPlan"> = prisma): Promise<{ plan: BillingPlanRecord; available: boolean }> {
   let available = true;
+  let unresolvedPublicPlan: PublicPlanId | undefined;
   try {
-    const row = await prisma.tenantBillingPlan.findUnique({
+    if (publicBillingPolicyEnabled()) {
+      const publicPlan = await repository.$transaction(async tx => readPublicEntitlementSnapshot(tx,organizationId,configuredPublicBillingIdentity(),await publicDatabaseNow(tx)),{isolationLevel:"RepeatableRead"});
+      if (publicPlan) {
+        const plan=shape(organizationId,{tier:publicPlan.tier,status:publicPlan.status,trialEndsAt:null,currentPeriodEndsAt:publicPlan.currentPeriodEndsAt?new Date(publicPlan.currentPeriodEndsAt):null,stripeCustomerId:publicPlan.stripeCustomerId??null,stripeSubscriptionId:publicPlan.stripeSubscriptionId??null,seatQuantity:publicPlan.seatQuantity,cancelAtPeriodEnd:publicPlan.cancelAtPeriodEnd});
+        return {available:true,plan:{...plan,publicPlanId:publicPlan.planId,pricingPlan:publicPlan.pricingPlan,pricingPlanAvailable:publicPlan.usable,creditPeriodStart:publicPlan.creditPeriodStart,creditPeriodEnd:publicPlan.creditPeriodEnd,spec:{...plan.spec,label:publicPlan.pricingPlan.displayName,requiresStripe:publicPlan.planId!=="free"}}};
+      }
+    }
+    const row = await repository.tenantBillingPlan.findUnique({
       where: { organizationId },
     });
+    if (row?.tier.startsWith("public_")) {
+      unresolvedPublicPlan=row.tier==="public_pro_v1"?"pro":row.tier==="public_enterprise_v1"?"enterprise":"free";
+      throw new Error("public_plan_requires_contract");
+    }
     if (row && isBillingTier(row.tier) && isBillingStatus(row.status)) {
       // Trial product retired: coerce any legacy 'trial' tier or 'trialing'
       // status row to no_plan on read. We don't write the DB here — old rows
@@ -94,7 +116,7 @@ export async function readBillingPlanWithAvailability(organizationId: string): P
     available = false;
     // Keep the legacy fallback while exposing that its evidence was unavailable.
   }
-  return { available, plan: shape(organizationId, {
+  const unavailablePlan = shape(organizationId, {
     tier: "trial",
     status: "no_plan",
     trialEndsAt: null,
@@ -102,7 +124,13 @@ export async function readBillingPlanWithAvailability(organizationId: string): P
     stripeCustomerId: null,
     stripeSubscriptionId: null,
     cancelAtPeriodEnd: false,
-  }) };
+  });
+  return {available,plan:{...unavailablePlan,...(!available&&(publicBillingPolicyEnabled()||unresolvedPublicPlan)?{pricingPlanAvailable:false,publicPlanId:unresolvedPublicPlan}: {})}};
+}
+
+export function pricingPlanForBillingRecord(record: BillingPlanRecord): PricingPlan {
+  if (record.pricingPlanAvailable === false) throw new Error("billing_entitlement_unavailable");
+  return record.pricingPlan ?? planForStripeTier(record.tier);
 }
 
 /** Idempotently ensure a tenant has a trial row. Called on first sign-in. */

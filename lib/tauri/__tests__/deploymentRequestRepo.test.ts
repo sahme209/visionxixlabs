@@ -62,6 +62,7 @@ class FakeRepo implements DeploymentRequestRepo {
                 if (data.intakeJson !== undefined) row.intakeJson = data.intakeJson;
                 if (data.version) row.version += data.version.increment;
                 if (data.status !== undefined) row.status = data.status;
+                if ("submittedAt" in data) row.submittedAt = data.submittedAt as Date;
                 if (data.closedAt !== undefined) row.closedAt = data.closedAt;
                 row.updatedAt = new Date("2026-09-25T15:00:00.000Z");
                 return { count: 1 };
@@ -392,6 +393,19 @@ describe("deployment request persistence", () => {
 });
 
 describe("deployment intake wire schema", () => {
+    it("preserves a strict exact Airflow batch specification in complete intake", () => {
+        const airflowDependency = { connectionId: "connection", connectionUpdatedAt: "2026-10-24T00:00:00.000Z", runs: [{ dagId: "daily", dagRunId: "selected", logicalDate: "2026-10-24T00:00:00.000001Z" }] };
+        expect(parseDeploymentIntake({ ...intake(), airflowDependency })).toMatchObject({ ok: true, intake: { airflowDependency } });
+        expect(parseDeploymentIntake({ ...intake(), airflowDependency: { ...airflowDependency, approved: true } }).ok).toBe(false);
+    });
+
+    it("preserves a strictly shaped workflow observation without trusting authority fields", () => {
+        const workflowSource = { repositoryFullName: "team/service", ref: "main", path: ".github/workflows/release.yml", blobSha: "a".repeat(40) };
+        expect(parseDeploymentIntake({ ...intake(), workflowSource })).toMatchObject({ ok: true, intake: { workflowSource } });
+        expect(parseDeploymentIntake({ ...intake(), workflowSource: { ...workflowSource, approved: true } }).ok).toBe(false);
+        expect(parseDeploymentIntake({ ...intake(), workflowSource: { ...workflowSource, blobSha: "fake" } }).ok).toBe(false);
+    });
+
     it("accepts the complete typed intake contract", () => {
         expect(parseDeploymentIntake(intake())).toMatchObject({ ok: true });
     });
@@ -411,4 +425,23 @@ describe("deployment intake wire schema", () => {
             embeddedSecret: "must-not-be-stored",
         })).toMatchObject({ ok: false });
     });
+});
+
+it("submits a resolution draft only after complete intake validation, keeping the original snapshot", async () => {
+ const {createReleaseResolutionDraft}=await import('../releaseResolutionDraft');
+ const repo=new FakeRepo();
+ await createReleaseResolutionDraft(repo,{organizationId:'tenant-a',requesterUserId:'user-01',actorRole:'requester',correlationId:'ticket-start',draft:{kind:'resolution_draft',schemaVersion:1,id:'request-01',tenantId:'tenant-a',title:'Ticket first',applications:['Checkout'],requestDetails:'Please resolve repository ownership.'}});
+ const complete=intake();complete.id='request-01';
+ const result=await reviseDeploymentRequest(repo,{organizationId:'tenant-a',requesterUserId:'user-01',actorRole:'requester',correlationId:'complete-ticket',requestId:'request-01',expectedVersion:1,intake:complete});
+ expect(result).toMatchObject({ok:true,changed:true,request:{status:'submitted',version:2,submittedAt:expect.any(Date)}});
+ expect(repo.versions[0]).toMatchObject({intakeJson:{kind:'resolution_draft',requestDetails:'Please resolve repository ownership.'}});
+ expect(repo.versions[1]).toMatchObject({intakeJson:{repositoryUrls:complete.repositoryUrls}});
+ expect(repo.audits.at(-1)).toMatchObject({action:'deployment_request.submitted'});
+});
+it("keeps an unresolved draft unsubmitted when completion details are missing",async()=>{
+ const {createReleaseResolutionDraft}=await import('../releaseResolutionDraft');const repo=new FakeRepo();
+ await createReleaseResolutionDraft(repo,{organizationId:'tenant-a',requesterUserId:'user-01',actorRole:'requester',correlationId:'ticket-start',draft:{kind:'resolution_draft',schemaVersion:1,id:'request-01',tenantId:'tenant-a',title:'Ticket first',applications:['Checkout'],requestDetails:'Need owner'}});
+ const incomplete=intake();incomplete.repositoryUrls=[];
+ expect(await reviseDeploymentRequest(repo,{organizationId:'tenant-a',requesterUserId:'user-01',actorRole:'requester',correlationId:'complete-ticket',requestId:'request-01',expectedVersion:1,intake:incomplete})).toMatchObject({ok:false,reason:'validation_failed'});
+ expect(repo.requests[0]).toMatchObject({status:'draft',submittedAt:null,version:1});expect(repo.versions).toHaveLength(1);
 });

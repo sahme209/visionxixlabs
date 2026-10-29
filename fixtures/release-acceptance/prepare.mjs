@@ -1,0 +1,13 @@
+import {readFileSync,mkdirSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import assert from 'node:assert/strict';
+import {resolve} from 'node:path';
+const commit=process.env.GITHUB_SHA,marker=process.env.INPUT_MARKER;
+assert.match(commit??'',/^[a-f0-9]{40}$/);
+assert.ok(['synthetic-release-before','synthetic-release-after'].includes(marker));
+const html=readFileSync(new URL('./index.html',import.meta.url),'utf8');
+assert.ok(html.includes(`id="release-marker">${marker}</p>`));
+const directory=resolve(process.env.OUTPUT_DIR??'_site');mkdirSync(directory,{recursive:true});
+writeFileSync(resolve(directory,'index.html'),html);
+writeFileSync(resolve(directory,'health.json'),JSON.stringify({fixture:true,commit,marker,contentSha256:createHash('sha256').update(html).digest('hex')})+'\n');
+process.stdout.write('Synthetic content prepared. No provider request was made by this script.\n');

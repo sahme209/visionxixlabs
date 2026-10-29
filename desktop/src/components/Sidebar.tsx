@@ -6,18 +6,19 @@ import { DESKTOP_VERSION } from "../lib/desktopMetadata";
 interface NavItem {
   id: CustomerView;
   label: string;
+  title?: string;
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
 }
 
 interface NavGroup {
-  kind: "deployment" | "workspace";
+  kind: "deployment" | "workspace" | "utility";
   label: string;
   items: NavItem[];
   defaultCollapsed?: boolean;
 }
 
 const icon = (children: React.ReactNode) => {
-  function SidebarIcon(props: SVGProps<SVGSVGElement>) {
+  function SidebarIcon(props: Omit<SVGProps<SVGSVGElement>, "ref">) {
     return (
       <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" {...props}>
         {children}
@@ -44,14 +45,14 @@ const IconAirflow = icon(<><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r
  * direct/manual path alongside it, not replaced by it.
  */
 const customerIcons: Record<(typeof CUSTOMER_NAVIGATION)[number]["items"][number]["id"], ComponentType<SVGProps<SVGSVGElement>>> = {
-  agent: IconAgent, "deployment-requests": IconRequest, "airflow-automation": IconAirflow,
+  agent: IconAgent, "axiom-bot": IconAgent, "deployment-requests": IconRequest, "airflow-automation": IconAirflow,
   "repository-workspace": IconRepository, "plugins-skills": IconPlugins, docs: IconDocs, settings: IconSettings,
 };
 export const CUSTOMER_NAV_GROUPS: NavGroup[] = CUSTOMER_NAVIGATION.map(group => ({
   ...group, items: group.items.map(item => ({ ...item, Icon: customerIcons[item.id] })),
 }));
 
-export function Sidebar({ activeView, onNavigate }: { activeView: CustomerView; onNavigate: (view: CustomerView) => void }) {
+export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = false, compact = false }: { activeView: CustomerView; onNavigate: (view: CustomerView) => void; onOpenWelcome?: () => void; homeVisible?: boolean; compact?: boolean }) {
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(CUSTOMER_NAV_GROUPS.map((group) => [
       group.kind,
@@ -60,35 +61,35 @@ export function Sidebar({ activeView, onNavigate }: { activeView: CustomerView; 
   );
 
   return (
-    <aside className="w-[268px] flex flex-col bg-[#151719] border-r border-white/[0.07]" data-tauri-drag-region>
-      <div className="h-[68px] flex items-center px-5 border-b border-white/[0.06]" data-tauri-drag-region>
-        <div className="flex items-center gap-2.5">
+    <aside className={`${compact ? "w-16 shrink-0" : "w-[216px]"} flex flex-col bg-[#151719] border-r border-white/[0.07]`} data-tauri-drag-region>
+      <div className={`h-[68px] flex items-center ${compact ? "px-3" : "px-5"} border-b border-white/[0.06]`} data-tauri-drag-region>
+        <button type="button" aria-label="Axiom home" aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">
           <div className="relative w-8 h-8 rounded-lg border border-white/[0.10] bg-[#202225] flex items-center justify-center text-sm font-semibold text-white">A</div>
-          <div>
+          <div className={compact ? "sr-only" : undefined}>
             <div className="text-sm font-semibold tracking-tight text-white">Axiom Agent</div>
             <div className="text-[10px] text-zinc-500 tracking-tight">v{DESKTOP_VERSION} · Desktop</div>
           </div>
-        </div>
+        </button>
       </div>
 
-      <nav aria-label="Deployment workspace" className="flex-1 px-3 py-5 space-y-5 overflow-y-auto no-drag">
-        {CUSTOMER_NAV_GROUPS.map((group) => {
-          const isOpen = openGroups[group.kind] !== false;
+      <nav aria-label="Axiom workspace" className={`flex-1 ${compact ? "px-2" : "px-3"} py-5 space-y-5 overflow-y-auto no-drag`}>
+        {CUSTOMER_NAV_GROUPS.filter(group => group.kind !== "utility").map((group) => {
+          const isOpen = compact || openGroups[group.kind] !== false;
           const panelId = `sidebar-group-${group.kind}`;
           return (
             <div key={group.kind}>
-              <button type="button" aria-expanded={isOpen} aria-controls={panelId} onClick={() => setOpenGroups((current) => ({ ...current, [group.kind]: !isOpen }))} className="flex items-center justify-between gap-1.5 px-3 mb-1.5 w-full text-left group hover:text-zinc-300">
+              {!compact && <button type="button" aria-expanded={isOpen} aria-controls={panelId} onClick={() => setOpenGroups((current) => ({ ...current, [group.kind]: !isOpen }))} className="flex items-center justify-between gap-1.5 px-3 mb-1.5 w-full text-left group hover:text-zinc-300">
                 <span className="text-[11px] text-zinc-500 group-hover:text-zinc-300 transition-colors">{group.label}</span>
                 <span aria-hidden className={`text-[8px] text-zinc-700 transition-transform ${isOpen ? "rotate-0" : "-rotate-90"}`}>▼</span>
-              </button>
+              </button>}
               {isOpen && (
                 <div id={panelId} className="space-y-0.5">
                   {group.items.map((item) => {
-                    const isActive = activeView === item.id;
+                    const isActive = !homeVisible && activeView === item.id;
                     return (
-                      <button key={item.id} type="button" aria-current={isActive ? "page" : undefined} onClick={() => onNavigate(item.id)} className={`sidebar-item w-full ${isActive ? "sidebar-item-active" : ""}`}>
+                      <button title={item.title ?? item.label} key={item.id} type="button" aria-current={isActive ? "page" : undefined} onClick={() => onNavigate(item.id)} className={`sidebar-item w-full ${isActive ? "sidebar-item-active" : ""}`}>
                         <item.Icon aria-hidden className="h-[18px] w-[18px] shrink-0" />
-                        <span>{item.label}</span>
+                        <span className={compact ? "sr-only" : undefined}>{item.label}</span>
                       </button>
                     );
                   })}
@@ -99,10 +100,17 @@ export function Sidebar({ activeView, onNavigate }: { activeView: CustomerView; 
         })}
       </nav>
 
-      <div className="px-3 py-3 border-t border-white/[0.06]">
+      <nav aria-label="Workspace utilities" className={`${compact ? "px-2" : "px-3"} pb-3 space-y-0.5 no-drag`}>
+        {CUSTOMER_NAV_GROUPS.filter(group => group.kind === "utility").flatMap(group => group.items).map(item => (
+          <button key={item.id} title={item.title ?? item.label} type="button" aria-current={!homeVisible && activeView === item.id ? "page" : undefined} onClick={() => onNavigate(item.id)} className={`sidebar-item w-full ${!homeVisible && activeView === item.id ? "sidebar-item-active" : ""}`}>
+            <item.Icon aria-hidden className="h-[18px] w-[18px] shrink-0" /><span className={compact ? "sr-only" : undefined}>{item.label}</span>
+          </button>
+        ))}
+      </nav>
+      <div className={`${compact ? "px-0" : "px-3"} py-3 border-t border-white/[0.06]`}>
         <div role="status" className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/[0.025]">
           <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-          <span className="text-[11px] text-zinc-400">Workspace connected</span>
+          <span className={compact ? "sr-only" : "text-[11px] text-zinc-400"}>Workspace connected</span>
         </div>
       </div>
     </aside>

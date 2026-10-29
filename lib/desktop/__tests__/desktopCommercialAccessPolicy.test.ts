@@ -15,3 +15,16 @@ describe("desktop commercial access policy", () => {
     expect(decideDesktopCommercialAccess(plan)).toMatchObject({ allowed: true, code: "active" });
   });
 });
+
+// Public billing uses internal entitlement tiers; desktop account labels must
+// retain the same public plan identity displayed in the cockpit.
+describe("public desktop plan identity", () => {
+  it.each([
+    { tier: "starter", publicPlanId: "free" as const },
+    { tier: "growth", publicPlanId: "pro" as const },
+    { tier: "enterprise", publicPlanId: "enterprise" as const },
+  ])("returns the verified $publicPlanId identity", (plan) => {
+    expect(decideDesktopCommercialAccess({ ...plan, status: "active", pricingPlanAvailable: true }))
+      .toMatchObject({ planTier: plan.publicPlanId, allowed: true, billingStatus: "active" });
+  });
+});

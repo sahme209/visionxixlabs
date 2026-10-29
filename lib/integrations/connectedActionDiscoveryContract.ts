@@ -1,0 +1,5 @@
+import {z} from 'zod';
+const uuid=z.string().uuid(),label=z.string().min(1).max(240).refine(v=>!/[\x00-\x1f\x7f-\x9f]/.test(v));
+export const connectedActionTeamSchema=z.object({id:uuid,name:label,key:label.optional(),archived:z.boolean().optional()}).strict();
+export const connectedActionTargetsSchema=z.object({provider:z.enum(['teams','linear']),organizationId:z.string().min(1),connectionId:z.string().min(1),connectionRevision:z.string().datetime(),workspaceId:uuid,workspaceName:label,observedAt:z.string().datetime(),selectedTeamId:uuid.nullable(),teams:z.array(connectedActionTeamSchema).max(50),channels:z.array(z.object({id:z.string().regex(/^[A-Za-z0-9@._:-]{1,240}$/),name:label,membershipType:z.enum(['standard','private','shared'])}).strict()).max(100),states:z.array(z.object({id:uuid,name:label,type:label}).strict()).max(100),issues:z.array(z.object({id:uuid,identifier:label,title:label,updatedAt:z.string().datetime(),stateId:uuid}).strict()).max(20),hasMore:z.boolean(),canCreate:z.boolean(),canUpdate:z.boolean(),canMessage:z.boolean()}).strict();
+export type ConnectedActionTargets=z.infer<typeof connectedActionTargetsSchema>;

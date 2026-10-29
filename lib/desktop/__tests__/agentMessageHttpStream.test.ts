@@ -47,3 +47,25 @@ describe("real HTTP response stream and desktop decoder", () => {
     await expect(readAgentMessageStream(response, () => undefined, new AbortController().signal)).rejects.toThrow("agent_stream_interrupted");
   });
 });
+
+it.each([false, true])("emits tool activity only when the client explicitly opts in (%s)", async enabled => {
+  const response = agentMessageHttpStream(new AbortController().signal, async stream => {
+    stream.onActivity?.({step: 1, toolName: "read_github_file", state: "running"});
+    stream.onActivity?.({step: 1, toolName: "read_github_file", state: "completed"});
+    return reply();
+  }, {toolActivity: enabled});
+  const events = (await response.text()).trim().split("\n").map(line => JSON.parse(line));
+  expect(events.filter(event => event.type === "tool_activity")).toHaveLength(enabled ? 2 : 0);
+  expect(events.at(-1)).toEqual({type: "result", data: result});
+});
+
+it("rejects secret-bearing activity instead of serializing extra tool fields", async () => {
+  const response = agentMessageHttpStream(new AbortController().signal, async stream => {
+    stream.onActivity?.({step: 1, toolName: "read_github_file", state: "running", args: {token: "synthetic-private-token"}} as never);
+    return reply();
+  }, {toolActivity: true});
+  const text = await response.text();
+  expect(text).toContain("agent_stream_interrupted");
+  expect(text).not.toContain("synthetic-private-token");
+  expect(text).not.toContain('"result"');
+});

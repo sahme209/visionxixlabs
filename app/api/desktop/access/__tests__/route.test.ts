@@ -84,6 +84,7 @@ describe("GET /api/desktop/access", () => {
     expect(body.ok).toBe(true);
     expect(body.data.access.allowed).toBe(false);
     expect(body.data.identity.organizationId).toBe("org-1");
+    expect(body.data.identity.userId).toBe("user-1");
   });
 
   it("reports a restricted (unentitled) state for a valid, member-bound session with no commercial entitlement", async () => {
@@ -133,3 +134,5 @@ describe("GET /api/desktop/access", () => {
     expect(mocks.resolveActiveSession).not.toHaveBeenCalled();
   });
 });
+
+it('does not expose an API-key pseudo-user as a paired recovery identity',async()=>{mocks.bearerFromHeader.mockReturnValue('vxlk_test');mocks.authenticateApiKey.mockResolvedValue({ok:true,apiKeyId:'key-1',organizationId:'org-1'});mocks.readDesktopCommercialAccess.mockResolvedValue({allowed:true,code:'active'});const {GET}=await import('../route');const res=await GET(request('vxlk_test'));const body=await res.json();expect(res.status).toBe(200);expect(body.data.identity.kind).toBe('api_key');expect(body.data.identity).not.toHaveProperty('userId')});

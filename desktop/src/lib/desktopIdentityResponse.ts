@@ -17,6 +17,7 @@ function validIdentity(value: unknown): value is Identity {
   if (!record(value) || typeof value.kind !== "string" || !["api_key", "desktop_session"].includes(value.kind)) return false;
   if (typeof value.organizationId !== "string" || !value.organizationId.trim()) return false;
   if (!["email", "displayName"].every((key) => value[key] === undefined || typeof value[key] === "string")) return false;
+  if (value.userId !== undefined && (value.kind !== "desktop_session" || typeof value.userId !== "string" || !value.userId.length || value.userId.length > 240 || value.userId !== value.userId.trim() || /[\x00-\x1f\x7f-\x9f]/.test(value.userId))) return false;
   if (value.role !== undefined && (typeof value.role !== "string" || !["owner", "admin", "operator", "security_reviewer", "finance_viewer", "read_only"].includes(value.role))) return false;
   return value.capabilities === undefined || (Array.isArray(value.capabilities) && value.capabilities.every((item) => typeof item === "string"));
 }

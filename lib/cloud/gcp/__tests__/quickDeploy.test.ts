@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildGcpCloudShellUrl } from "../quickDeploy";
+import { GCP_SETUP_COMMAND, buildGcpCloudShellUrl } from "../quickDeploy";
 
 describe("buildGcpCloudShellUrl", () => {
   it("returns a plain Cloud Shell terminal URL when no tutorial is configured", () => {
@@ -25,5 +25,25 @@ describe("buildGcpCloudShellUrl", () => {
     // plain shell instead of producing a broken URL.
     const url = buildGcpCloudShellUrl({ tutorialRepoUrl: "https://github.com/example/repo" });
     expect(url).toBe("https://shell.cloud.google.com/?show=terminal");
+  });
+});
+
+// Pure serialization checks: never execute these IAM/key-creation commands.
+describe("GCP_SETUP_COMMAND", () => {
+  it("uses exactly one shell continuation before each newline", () => {
+    const lines = GCP_SETUP_COMMAND.split("\n");
+    expect(lines).toHaveLength(10);
+    for (const line of lines.slice(0, -1)) {
+      expect(line.endsWith(" " + String.fromCharCode(92))).toBe(true);
+      expect(line.endsWith(String.fromCharCode(92).repeat(2))).toBe(false);
+    }
+    expect(lines[9]).toBe("cat /tmp/axiom-key.json");
+  });
+
+  it("folds continuations into the intended command arguments", () => {
+    const folded = GCP_SETUP_COMMAND.split(String.fromCharCode(92) + "\n").join("");
+    expect(folded).not.toContain(String.fromCharCode(92));
+    expect(folded).toContain('create axiom-agent-reader   --description=');
+    expect(folded).toContain('--project="$PROJECT_ID" && cat /tmp/axiom-key.json');
   });
 });

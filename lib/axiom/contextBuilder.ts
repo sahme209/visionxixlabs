@@ -49,7 +49,7 @@ export async function buildAxiomEnvironmentContext(opts: {
   leadId: string;
   userId?: string | null;
 }): Promise<AxiomEnvironmentContext> {
-  const { leadId, userId } = opts;
+  const { leadId } = opts;
 
   const lead = await prisma.lead.findUnique({
     where: { id: leadId },
@@ -79,12 +79,10 @@ export async function buildAxiomEnvironmentContext(opts: {
     }
   }
 
-  const execWhere = lead.userId
-    ? { OR: [{ leadId }, { userId: lead.userId }] }
-    : { leadId };
-
   const logs = await prisma.executionLog.findMany({
-    where: execWhere,
+    // A lead-scoped session must not inherit another project’s runs merely
+    // because both projects belong to the same user.
+    where: { leadId },
     orderBy: { executedAt: "desc" },
     take: 5,
     select: {

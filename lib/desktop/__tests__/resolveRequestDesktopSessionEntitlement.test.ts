@@ -86,4 +86,23 @@ describe("resolveRequestDesktopSession entitlement default", () => {
     expect(principal).toMatchObject({ organizationId: "org-1" });
     expect(mocks.readDesktopCommercialAccess).not.toHaveBeenCalled();
   });
+  it("can recheck authority under caller locks without writing the heartbeat", async () => {
+    mocks.readDesktopCommercialAccess.mockResolvedValue({ allowed: true });
+    const { resolveRequestDesktopSession } = await import("../resolveRequestDesktopSession");
+    expect(await resolveRequestDesktopSession(request("token-1"), {requiredScope:"pipeline:trigger",requiredCapability:"deploy:execute",requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:"release locked recheck"})).toMatchObject({id:"sess-1",userId:"user-1"});
+    expect(mocks.touchDesktopSession).not.toHaveBeenCalled();
+    expect(mocks.readDesktopCommercialAccess).toHaveBeenCalled();
+    expect(mocks.findMembership).toHaveBeenCalled();
+  });
+  it("heartbeat-free rechecks still refuse withdrawn entitlement", async () => {
+    mocks.readDesktopCommercialAccess.mockResolvedValue({ allowed: false, code:"production_access_required" });
+    const { resolveRequestDesktopSession } = await import("../resolveRequestDesktopSession");
+    expect(await resolveRequestDesktopSession(request("token-1"), {requiredScope:"pipeline:trigger",recordHeartbeat:false,route:"release locked recheck"})).toBeUndefined();
+  });
+  it("heartbeat-free rechecks still refuse removed membership", async () => {
+    mocks.readDesktopCommercialAccess.mockResolvedValue({allowed:true});mocks.findMembership.mockResolvedValue(null);
+    const { resolveRequestDesktopSession } = await import("../resolveRequestDesktopSession");
+    expect(await resolveRequestDesktopSession(request("token-1"), {requiredScope:"pipeline:trigger",requireWorkspaceMembership:true,recordHeartbeat:false,route:"release locked recheck"})).toBeUndefined();
+  });
+
 });

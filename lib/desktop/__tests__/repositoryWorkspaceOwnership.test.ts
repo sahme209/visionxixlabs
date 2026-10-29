@@ -1,8 +1,8 @@
 /** @vitest-environment jsdom */
-import { createElement, Profiler } from "react";
+import { createElement, Profiler, useState } from "react";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
-const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
+const m = vi.hoisted(() => ({ invoke: vi.fn(), client: { config: {} as { sessionToken?: string; apiBase?: string }, listGithubRepositories: vi.fn(), mintGithubCloneToken: vi.fn(), openGithubPullRequest: vi.fn(), subscribeContext: (listener: () => void) => { void listener; return () => {}; }, getContextRevision: (): number => 0, setSession: (token: string | undefined) => { void token; } } }));
 vi.mock("@tauri-apps/api/core", () => ({ invoke: m.invoke }));
 vi.mock("../../../desktop/src/lib/desktopClient", async original => {
   const actual = await original<typeof import("../../../desktop/src/lib/desktopClient")>();
@@ -14,6 +14,8 @@ vi.mock("../../../desktop/src/lib/desktopClient", async original => {
   m.client.setSession = contextClient.setSession.bind(contextClient);
   return { desktopClient: m.client };
 });
+import { ProposalCard } from "../../../desktop/src/views/AgentChatView";
+import type { LocalEditRequest } from "../../../desktop/src/lib/localEditReview";
 import { RepositoryWorkspaceView } from "../../../desktop/src/views/RepositoryWorkspaceView";
 function deferred<T>() { let resolve!: (value: T) => void; let reject!: (reason: Error) => void; const promise = new Promise<T>((done, fail) => { resolve = done; reject = fail; }); return { promise, resolve, reject }; }
 const status = (path: string) => ({ rootPath: path, repositoryFullName: path === "/owned/A" ? "fixture/a" : "fixture/b", branch: "feature", ahead: 0, behind: 0, changedFiles: [] });
@@ -28,10 +30,12 @@ beforeEach(() => {
   m.client.listGithubRepositories.mockResolvedValue({ ok: true, data: { repositories: [], truncated: false } });
   localRepositories = ["/owned/A", "/owned/B"];
   m.client.mintGithubCloneToken.mockResolvedValue({ ok: true, data: { cloneUrl: "https://example.invalid/fixture/a.git" } });
+  m.client.openGithubPullRequest.mockResolvedValue({ok:true,data:{number:1,htmlUrl:"https://example.invalid/pr/1"}});
   reads = (path, file) => `${path}:${file}`; statuses = path => status(path); checks = () => []; writes = () => undefined; verification = () => ({ checkId: "a", success: true, exitCode: 0, output: "fixture output", durationMs: 1 });
   m.invoke.mockImplementation(async (command: string, args: Record<string, string> = {}) => {
     if (command === "default_repos_directory") return "/owned";
     if (command === "list_local_repositories") return [...localRepositories];
+    if (command === "push_repository" || command === "pull_repository") return "fixture synchronized";
     if (command === "clone_repository") { localRepositories.push(args.destinationPath); return args.destinationPath; }
     if (command === "repository_status") return statuses(args.repositoryPath);
     if (command === "list_repository_files") return ["same.ts", "other.ts"];
@@ -202,7 +206,7 @@ it.each(["success", "error", "rejection"])("ignores a superseded catalog %s afte
   await screen.findByRole("option", { name: "fixture/current · private" });
   await act(async () => { if (outcome === "rejection") old.reject(new Error("stale rejection")); else old.resolve(outcome === "success" ? catalog("stale") : { ok: false, error: "stale failure" }); });
   expect(screen.queryByRole("option", { name: "fixture/stale · private" })).toBeNull();
-  expect(screen.queryByText(/temporarily unavailable/)).toBeNull();
+  expect(screen.queryByText(/GitHub access is unavailable/)).toBeNull();
   expect(screen.getByRole("option", { name: "fixture/current · private" })).toBeTruthy();
 });
 it.each(["success", "error", "rejection"])("ignores a prior credential catalog %s", async outcome => {
@@ -213,7 +217,7 @@ it.each(["success", "error", "rejection"])("ignores a prior credential catalog %
   await screen.findByRole("option", { name: "fixture/replacement · private" });
   await act(async () => { if (outcome === "rejection") old.reject(new Error("old context rejection")); else old.resolve(outcome === "success" ? catalog("private-old") : { ok: false, error: "old credential failure" }); });
   expect(screen.queryByRole("option", { name: "fixture/private-old · private" })).toBeNull();
-  expect(screen.queryByText(/temporarily unavailable/)).toBeNull();
+  expect(screen.queryByText(/GitHub access is unavailable/)).toBeNull();
   expect(screen.getByRole("option", { name: "fixture/replacement · private" })).toBeTruthy();
 });
 it("keeps local Refresh independent of the connected GitHub catalog", async () => {
@@ -228,9 +232,9 @@ it("does not let a superseded success clear the latest catalog failure", async (
   m.client.listGithubRepositories.mockReturnValueOnce(old.promise).mockResolvedValue({ ok: false, error: "latest failure" });
   await start();
   fireEvent.click(screen.getByRole("button", { name: "Refresh connected repositories" }));
-  await screen.findByText(/temporarily unavailable/);
+  await screen.findByText(/GitHub access is unavailable/);
   await act(async () => { old.resolve(catalog("stale")); });
-  expect(screen.getByText(/temporarily unavailable/)).toBeTruthy();
+  expect(screen.getByText(/GitHub access is unavailable/)).toBeTruthy();
   expect(screen.queryByRole("option", { name: "fixture/stale · private" })).toBeNull();
 });
 it("reconciles a removed connected selection to the visible replacement before cloning", async () => {
@@ -456,6 +460,7 @@ it("marks a completed verification historical when edits occur during its run", 
   checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
   await start(); fireEvent.click(screen.getByRole("button", {name: "same.ts"})); await screen.findByRole("textbox", {name: "Editing same.ts"});
   fireEvent.click(screen.getByRole("button", {name: "A check"})); fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("run_repository_check", {repositoryPath: "/owned/A", checkId: "a", runId: "owned-run"}));
   fireEvent.change(screen.getByRole("textbox", {name: "Editing same.ts"}), {target: {value: "concurrent edit"}});
   await act(async () => {pending.resolve({checkId: "a", success: true, exitCode: 0, output: "prior run", durationMs: 1});});
   await screen.findByText("prior run");
@@ -653,6 +658,7 @@ it("retires a prepared run when the repository changes before preparation return
   await start();
   fireEvent.click(await screen.findByRole("button", {name: "A check"}));
   fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("prepare_repository_check", {repositoryPath:"/owned/A",checkId:"a"}));
   await switchToB();
   await act(async () => preparation.resolve("old-preparation"));
   expect(m.invoke).toHaveBeenCalledWith("cancel_repository_check", {repositoryPath: "/owned/A", runId: "old-preparation"});
@@ -688,4 +694,279 @@ it.each(["cancel", "wrong-branch", "occupied"])("keeps creation fail-closed for 
   if(outcome === "occupied") await screen.findByText(/Target already exists/);
   expect(m.invoke.mock.calls.filter(([name])=>name==="create_repository_file")).toHaveLength(outcome === "occupied" ? 1 : 0);
   expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file"||name==="run_repository_check")).toHaveLength(0);
+});
+
+it("retires a prepared check when source changes while native preparation is pending", async () => {
+  checks = () => [{ id: "a", label: "A check", command: "npm test", description: "fixture" }];
+  const prepared = deferred<string>();
+  const original = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation((command: string, args: Record<string, string> = {}) => command === "prepare_repository_check" ? prepared.promise : original(command, args));
+  await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  const editor = await screen.findByRole("textbox", { name: "Editing same.ts" });
+  fireEvent.click(screen.getByRole("button", { name: "A check" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Run check" }));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("prepare_repository_check", { repositoryPath: "/owned/A", checkId: "a" }));
+  fireEvent.change(editor, { target: { value: "changed after consent during preparation" } });
+  await act(async () => prepared.resolve("prepared-stale"));
+  await screen.findByText(/source changed while preparing/);
+  expect(m.invoke).toHaveBeenCalledWith("cancel_repository_check", { repositoryPath: "/owned/A", runId: "prepared-stale" });
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+});
+
+it("never executes a stale prepared check when retirement cannot be confirmed", async () => {
+  checks = () => [{ id: "a", label: "A check", command: "npm test", description: "fixture" }];
+  const prepared = deferred<string>(); const original = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation((command: string, args: Record<string, string> = {}) => {
+    if (command === "prepare_repository_check") return prepared.promise;
+    if (command === "cancel_repository_check") throw new Error("retirement unavailable");
+    return original(command, args);
+  });
+  await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
+  const editor = await screen.findByRole("textbox", { name: "Editing same.ts" });
+  fireEvent.click(screen.getByRole("button", { name: "A check" })); fireEvent.click(await screen.findByRole("button", { name: "Run check" }));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("prepare_repository_check", { repositoryPath: "/owned/A", checkId: "a" }));
+  fireEvent.change(editor, { target: { value: "new source" } }); await act(async () => prepared.resolve("prepared-stale"));
+  await screen.findByText("retirement unavailable");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+});
+
+it.each(["push", "pull"] as const)("binds %s to the reviewed repository and branch across a credential wait", async direction => {
+  const credential = deferred<unknown>(); m.client.mintGithubCloneToken.mockReturnValueOnce(credential.promise);
+  await start();
+  fireEvent.click(screen.getByRole("button", {name: direction === "push" ? "Push" : "Pull"}));
+  fireEvent.click(screen.getByRole("button", {name: direction === "push" ? "Push branch" : "Pull changes"}));
+  await waitFor(() => expect(m.client.mintGithubCloneToken).toHaveBeenCalled());
+  statuses = path => ({...status(path), branch:"main"});
+  await act(async () => {credential.resolve({ok:true,data:{cloneUrl:"https://example.invalid/fixture/a.git"}});});
+  expect(m.invoke).toHaveBeenCalledWith(`${direction}_repository`, {repositoryPath:"/owned/A",authenticatedUrl:"https://example.invalid/fixture/a.git",repositoryFullName:"fixture/a",branch:"feature"});
+});
+it("binds the publish-and-PR push to the reviewed repository and branch", async () => {
+  await start();
+  fireEvent.click(screen.getByRole("button", {name:"same.ts"}));
+  await screen.findByRole("textbox", {name:"Editing same.ts"});
+  fireEvent.change(screen.getByPlaceholderText("Pull request title"), {target:{value:"Reviewed update"}});
+  fireEvent.click(screen.getByRole("button", {name:"Publish & open PR"}));
+  fireEvent.click(screen.getByRole("button", {name:"Publish and open PR"}));
+  await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("push_repository", {repositoryPath:"/owned/A",authenticatedUrl:"https://example.invalid/fixture/a.git",repositoryFullName:"fixture/a",branch:"feature"}));
+});
+
+it("keeps authorized repository discovery usable when optional preference reads fail", async () => {
+  m.client.listGithubRepositories.mockResolvedValue(catalog("ready"));
+  const read = vi.spyOn(Storage.prototype, "getItem").mockImplementation(() => { throw new DOMException("Storage blocked", "SecurityError"); });
+  try {
+    await start();
+    await screen.findByRole("option", { name: "fixture/ready · private" });
+    await waitFor(() => expect((screen.getByRole("button", { name: "Clone" }) as HTMLButtonElement).disabled).toBe(false));
+    expect(screen.queryByText(/GitHub access is unavailable/)).toBeNull();
+    expect((screen.getByRole("combobox", { name: "Connected GitHub repository" }) as HTMLSelectElement).value).toBe("fixture/ready");
+    expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
+  } finally { read.mockRestore(); }
+});
+
+it("keeps an authorized repository selection when optional preference writes fail", async () => {
+  m.client.listGithubRepositories.mockResolvedValue({ok: true, data: {repositories: [
+    {id: "first", fullName: "fixture/first", defaultBranch: "main", visibility: "private"},
+    {id: "second", fullName: "fixture/second", defaultBranch: "main", visibility: "private"},
+  ], truncated: false}});
+  await start();
+  await screen.findByRole("option", {name: "fixture/second · private"});
+  const write = vi.spyOn(Storage.prototype, "setItem").mockImplementation(() => { throw new DOMException("Storage full", "QuotaExceededError"); });
+  const errors: string[] = [];
+  const onError = (event: ErrorEvent) => { errors.push(event.message); event.preventDefault(); };
+  window.addEventListener("error", onError);
+  try {
+    fireEvent.change(screen.getByRole("combobox", {name: "Connected GitHub repository"}), {target: {value: "fixture/second"}});
+    expect(errors).toEqual([]);
+    expect((screen.getByRole("combobox", {name: "Connected GitHub repository"}) as HTMLSelectElement).value).toBe("fixture/second");
+    expect((screen.getByRole("button", {name: "Clone"}) as HTMLButtonElement).disabled).toBe(false);
+    expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
+  } finally { window.removeEventListener("error", onError); write.mockRestore(); }
+});
+
+it("connects a mixed Agent proposal card to consented local save, creation and verification", async () => {
+  reads = () => "original";
+  checks = () => [{id: "a", label: "A check", command: "npm test", description: "fixture"}];
+  const original = m.invoke.getMockImplementation()!;
+  m.invoke.mockImplementation(async (command: string, args: Record<string,string>) => command === "create_repository_file" ? undefined : original(command,args));
+  const approve = vi.fn(), reject = vi.fn();
+  const proposal = {id: "combined", toolName: "commit_github_files", riskLevel: "medium", status: "proposed",
+    argsJson: {repositoryFullName: "fixture/a", branch: "feature",
+      files: [{path: "same.ts", content: "reviewed update"}, {path: "new.ts", content: "reviewed new file"}],
+      _review: {kind: "github_files", files: [{path: "same.ts", baseSha: "original-blob", baseContent: "original"}, {path: "new.ts", baseSha: null, baseContent: ""}]}}};
+  function Journey() {
+    const [request, setRequest] = useState<LocalEditRequest>();
+    return request
+      ? createElement(RepositoryWorkspaceView, {editRequest: request})
+      : createElement(ProposalCard, {proposal, deciding: false, onApprove: approve, onReject: reject,
+        onReviewLocally: (edit, edits) => setRequest({edit, edits, context: m.client.config})});
+  }
+  render(createElement(Journey));
+  fireEvent.click(screen.getByRole("button", {name: "Review in local editor"}));
+  const review = await screen.findByRole("region", {name: "Agent local draft review"});
+  expect(review.textContent).toContain("2 files");
+  const openReviewedFile = await screen.findByRole("button", {name: "Open same.ts for local review"});
+  await waitFor(() => expect((openReviewedFile as HTMLButtonElement).disabled).toBe(false));
+  fireEvent.click(openReviewedFile);
+  await screen.findByDisplayValue("original");
+  fireEvent.click(screen.getByRole("button", {name: "Load editor draft"}));
+  await screen.findByDisplayValue("reviewed update");
+  expect(m.invoke.mock.calls.filter(([name]) => ["write_repository_file", "create_repository_file", "run_repository_check"].includes(name))).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Save ⌘S"}));
+  await screen.findByText("Saved same.ts");
+  expect(m.invoke).toHaveBeenCalledWith("write_repository_file", {repositoryPath: "/owned/A", relativePath: "same.ts", content: "reviewed update", expectedContent: "original"});
+  fireEvent.click(screen.getByRole("button", {name: "Create new.ts locally"}));
+  expect(screen.getByLabelText("New file content to create").textContent).toBe("reviewed new file");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "create_repository_file")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Create local file"}));
+  await screen.findByText(/Created new.ts locally/);
+  expect(m.invoke).toHaveBeenCalledWith("create_repository_file", {repositoryPath: "/owned/A", relativePath: "new.ts", content: "reviewed new file", repositoryFullName: "fixture/a", branch: "feature"});
+  fireEvent.click(screen.getByRole("button", {name: "A check"}));
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(0);
+  fireEvent.click(screen.getByRole("button", {name: "Run check"}));
+  await screen.findByText("fixture output");
+  expect(m.invoke.mock.calls.filter(([name]) => name === "run_repository_check")).toHaveLength(1);
+  expect(approve).not.toHaveBeenCalled(); expect(reject).not.toHaveBeenCalled();
+});
+
+async function failedRepairFixture(onAskAgent=vi.fn()) {
+ checks=()=>[{id:"a",label:"A check",command:"npm test",description:"fixture"}];
+ verification=()=>({checkId:"a",success:false,exitCode:1,output:"Expected 2, received 1",durationMs:1});
+ render(createElement(RepositoryWorkspaceView,{onAskAgent}));fireEvent.click(await screen.findByRole("button",{name:"same.ts"}));await screen.findByRole("textbox",{name:"Editing same.ts"});
+ fireEvent.click(await screen.findByRole("button",{name:"A check"}));fireEvent.click(screen.getByRole("button",{name:"Run check"}));await screen.findByRole("button",{name:"Prepare repair with Agent"});return onAskAgent;
+}
+it("hands an explicitly consented failed check to a target-bound unsent repair",async()=>{const callback=await failedRepairFixture();fireEvent.click(screen.getByRole("button",{name:"Prepare repair with Agent"}));expect(callback).not.toHaveBeenCalled();fireEvent.click(screen.getByRole("button",{name:"Prepare repair draft"}));await waitFor(()=>expect(callback).toHaveBeenCalledWith({kind:"repair",repositoryFullName:"fixture/a",branch:"feature",path:"same.ts",checkId:"a",exitCode:1,stale:false,excerpt:"Expected 2, received 1"}));expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file")).toHaveLength(0);expect(m.invoke.mock.calls.filter(([name])=>name==="run_repository_check")).toHaveLength(1);});
+it.each(["branch","origin","disk"])("refuses repair after external %s drift",async kind=>{const callback=await failedRepairFixture();fireEvent.click(screen.getByRole("button",{name:"Prepare repair with Agent"}));if(kind==="disk")reads=()=>"changed externally";else statuses=path=>({...status(path),...(kind==="branch"?{branch:"other"}:{repositoryFullName:"other/repo"})});fireEvent.click(screen.getByRole("button",{name:"Prepare repair draft"}));await screen.findByText(/repair source, target or verification context changed/);expect(callback).not.toHaveBeenCalled();});
+it("disables repair after source edits while retaining read-only debug preparation",async()=>{await failedRepairFixture();fireEvent.change(screen.getByRole("textbox",{name:"Editing same.ts"}),{target:{value:"unsaved change"}});expect((screen.getByRole("button",{name:"Prepare repair with Agent"}) as HTMLButtonElement).disabled).toBe(true);expect((screen.getByRole("button",{name:"Prepare check output for Agent"}) as HTMLButtonElement).disabled).toBe(false);});
+
+it("preserves verification and repair for an aliased path with a stable canonical root",async()=>{statuses=path=>({...status(path),rootPath:"/canonical"+path});const callback=await failedRepairFixture();fireEvent.click(screen.getByRole("button",{name:"Prepare repair with Agent"}));fireEvent.click(screen.getByRole("button",{name:"Prepare repair draft"}));await waitFor(()=>expect(callback).toHaveBeenCalledOnce());expect(callback.mock.calls[0][0]).not.toHaveProperty("rootPath");});
+
+
+it("distinguishes the clone source from the active local editing target", async () => {
+  m.client.listGithubRepositories.mockResolvedValue({ok:true,data:{repositories:[{id:"remote",fullName:"fixture/clone-source",defaultBranch:"main",visibility:"private"}],truncated:false}});
+  await start();
+  const target=screen.getByLabelText("Active local editor repository");
+  expect(target.textContent).toContain("LocalA");
+  expect(screen.getByText("Clone source · GitHub")).toBeTruthy();
+  fireEvent.change(screen.getByLabelText("Connected GitHub repository"),{target:{value:"fixture/clone-source"}});
+  expect(target.textContent).toContain("LocalA");
+  expect(m.client.mintGithubCloneToken).not.toHaveBeenCalled();
+  expect(m.invoke.mock.calls.filter(([command])=>command==="clone_repository")).toHaveLength(0);
+});
+
+it("rejects an older proposal load when a replacement arrives during repository verification",async()=>{
+ reads=()=>"original";const pending=deferred<unknown>();
+ const a:LocalEditRequest={context:m.client.config,edit:{proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"same.ts",baseContent:"original",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));fireEvent.click(await screen.findByRole("button",{name:"same.ts"}));await screen.findByDisplayValue("original");
+ statuses=()=>pending.promise;fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));
+ view.rerender(createElement(RepositoryWorkspaceView,{editRequest:b}));await act(async()=>pending.resolve(status("/owned/A")));
+ expect((screen.getByRole("textbox",{name:"Editing same.ts"}) as HTMLTextAreaElement).value).toBe("original");
+ expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file")).toHaveLength(0);
+});
+it("rejects a replaced new-file proposal before dispatching creation",async()=>{
+ const a:LocalEditRequest={context:m.client.config,edit:{kind:"create",proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"new.ts",baseContent:"",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));await screen.findByRole("button",{name:"same.ts"});
+ fireEvent.click(screen.getByRole("button",{name:"Create new.ts locally"}));view.rerender(createElement(RepositoryWorkspaceView,{editRequest:b}));
+ fireEvent.click(screen.getByRole("button",{name:"Create local file"}));
+ await act(async()=>{});expect(m.invoke.mock.calls.filter(([name])=>name==="create_repository_file")).toHaveLength(0);
+});
+it("rejects replacement while new-file repository verification is pending",async()=>{
+ const pending=deferred<unknown>();
+ const a:LocalEditRequest={context:m.client.config,edit:{kind:"create",proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"new.ts",baseContent:"",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));await screen.findByRole("button",{name:"same.ts"});
+ fireEvent.click(screen.getByRole("button",{name:"Create new.ts locally"}));statuses=()=>pending.promise;fireEvent.click(screen.getByRole("button",{name:"Create local file"}));
+ view.rerender(createElement(RepositoryWorkspaceView,{editRequest:b}));await act(async()=>pending.resolve(status("/owned/A")));
+ expect(m.invoke.mock.calls.filter(([name])=>name==="create_repository_file")).toHaveLength(0);
+});
+it.each(["withdrawn","A-B-A"])("does not revive pending editor consent after proposal is %s",async variant=>{
+ reads=()=>"original";const pending=deferred<unknown>();
+ const a:LocalEditRequest={context:m.client.config,edit:{proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"same.ts",baseContent:"original",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));fireEvent.click(await screen.findByRole("button",{name:"same.ts"}));await screen.findByDisplayValue("original");
+ statuses=()=>pending.promise;fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));
+ view.rerender(createElement(RepositoryWorkspaceView,{editRequest:variant==="withdrawn"?undefined:b}));
+ if(variant==="A-B-A")view.rerender(createElement(RepositoryWorkspaceView,{editRequest:a}));
+ await act(async()=>pending.resolve(status("/owned/A")));
+ expect((screen.getByRole("textbox",{name:"Editing same.ts"}) as HTMLTextAreaElement).value).toBe("original");
+});
+it("requires fresh review after a pending old load is rejected",async()=>{
+ reads=()=>"original";const pending=deferred<unknown>();
+ const a:LocalEditRequest={context:m.client.config,edit:{proposalId:"A",repositoryFullName:"fixture/a",branch:"feature",path:"same.ts",baseContent:"original",content:"draft A"}};
+ const b:LocalEditRequest={...a,edit:{...a.edit,proposalId:"B",content:"draft B"}};
+ const view=render(createElement(RepositoryWorkspaceView,{editRequest:a}));fireEvent.click(await screen.findByRole("button",{name:"same.ts"}));await screen.findByDisplayValue("original");
+ statuses=()=>pending.promise;fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));view.rerender(createElement(RepositoryWorkspaceView,{editRequest:b}));await act(async()=>pending.resolve(status("/owned/A")));
+ statuses=path=>status(path);fireEvent.click(screen.getByRole("button",{name:"Load editor draft"}));await screen.findByDisplayValue("draft B");
+ expect(m.invoke.mock.calls.filter(([name])=>name==="write_repository_file"||name==="create_repository_file")).toHaveLength(0);
+});
+
+it("filters changed files and opens an available change without writing or publishing", async () => {
+  statuses = path => ({...status(path), changedFiles: [{path:"other.ts",status:"M"},{path:"deleted.ts",status:"D"}]});
+  await start();
+  fireEvent.click(screen.getByRole("button",{name:"Changes"}));
+  expect(screen.queryByRole("button",{name:"same.ts"})).toBeNull();
+  expect((screen.getByRole("button",{name:"D deleted.ts"}) as HTMLButtonElement).disabled).toBe(true);
+  fireEvent.click(screen.getByRole("button",{name:"M other.ts"}));
+  await screen.findByRole("textbox",{name:"Editing other.ts"});
+  expect(m.invoke.mock.calls.filter(([command])=>["write_repository_file","push_repository","commit_repository_file"].includes(command))).toEqual([]);
+});
+it("keeps draft protection when switching through changed files", async () => {
+  statuses = path => ({...status(path), changedFiles:[{path:"other.ts",status:"M"}]});
+  await start(); fireEvent.click(screen.getByRole("button",{name:"same.ts"}));
+  fireEvent.change(await screen.findByRole("textbox",{name:"Editing same.ts"}),{target:{value:"Unsent local edit"}});
+  fireEvent.click(screen.getByRole("button",{name:"Changes"}));
+  fireEvent.click(screen.getByRole("button",{name:"M other.ts"}));
+  expect(screen.getByRole("alertdialog")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button",{name:"Cancel"}));
+  expect(screen.getByDisplayValue("Unsent local edit")).toBeTruthy();
+});
+it("refreshes recorded changes without replacing the unsaved editor buffer", async () => {
+  await start(); fireEvent.click(screen.getByRole("button", {name:"same.ts"}));
+  fireEvent.change(await screen.findByRole("textbox", {name:"Editing same.ts"}), {target:{value:"Unsaved stays here"}});
+  statuses = path => ({...status(path), changedFiles:[{path:"other.ts",status:"M"}]});
+  fireEvent.click(screen.getByRole("button", {name:"Changes"}));
+  fireEvent.click(screen.getByRole("button", {name:"Refresh changes"}));
+  await screen.findByRole("button", {name:"M other.ts"});
+  expect(screen.getByDisplayValue("Unsaved stays here")).toBeTruthy();
+});
+it("restores the last verified repository for the same signed-in workspace instead of the first folder",async()=>{
+ const props={workspace:"org",selectionUser:"fixture-user"};
+ const first=render(createElement(RepositoryWorkspaceView,props));await screen.findByRole("button",{name:"same.ts"});
+ fireEvent.click(screen.getByRole("button",{name:"B"}));await waitFor(()=>expect(screen.getByLabelText("Active local editor repository").textContent).toContain("B"));first.unmount();
+ const second=render(createElement(RepositoryWorkspaceView,props));await screen.findByRole("button",{name:"same.ts"});
+ expect(screen.getByLabelText("Active local editor repository").textContent).toContain("B");second.unmount();
+ render(createElement(RepositoryWorkspaceView,{...props,selectionUser:"other-user"}));await screen.findByRole("button",{name:"same.ts"});
+ expect(screen.getByLabelText("Active local editor repository").textContent).toContain("A");
+});
+it("never opens an absent stored repository and ignores storage when user scope is unverified",async()=>{
+ const props={workspace:"org",selectionUser:"fixture-user"};const first=render(createElement(RepositoryWorkspaceView,props));await screen.findByRole("button",{name:"same.ts"});fireEvent.click(screen.getByRole("button",{name:"B"}));first.unmount();
+ localRepositories=["/owned/A"];render(createElement(RepositoryWorkspaceView,props));await screen.findByRole("button",{name:"same.ts"});
+ expect(screen.getByLabelText("Active local editor repository").textContent).toContain("A");expect(m.invoke).not.toHaveBeenCalledWith("repository_status",{repositoryPath:"/foreign/private"});
+});
+it("restores a managed worktree only after Git's fresh inventory confirms that exact path",async()=>{
+ const {localWorkspaceSelectionKey}=await import('../../../desktop/src/lib/localWorkspaceSelection');
+ const key=localWorkspaceSelectionKey(m.client.config.apiBase,"org","fixture-user")!;
+ const checkout='/owned/B.axiom-worktrees/axiom-native';window.localStorage.setItem(key,JSON.stringify({root:'/owned/B',checkout}));
+ const original=m.invoke.getMockImplementation()!;m.invoke.mockImplementation(async(command,args)=>command==='list_repository_worktrees'?[{path:checkout,branch:'axiom/native',bytes:0}]:original(command,args));
+ render(createElement(RepositoryWorkspaceView,{workspace:'org',selectionUser:'fixture-user'}));await screen.findByRole('button',{name:'same.ts'});
+ expect(screen.getByLabelText('Active local editor repository').textContent).toContain('axiom-native');
+ expect(m.invoke).toHaveBeenCalledWith('list_repository_worktrees',{repositoryPath:'/owned/B'});
+ expect(m.invoke).toHaveBeenCalledWith('repository_status',{repositoryPath:checkout});
+});
+it("refuses an unrecorded saved worktree and never probes a saved root outside the local catalog",async()=>{
+ const {localWorkspaceSelectionKey}=await import('../../../desktop/src/lib/localWorkspaceSelection');const key=localWorkspaceSelectionKey(m.client.config.apiBase,'org','fixture-user')!;
+ window.localStorage.setItem(key,JSON.stringify({root:'/foreign/private',checkout:'/foreign/private.axiom-worktrees/axiom-hidden'}));
+ render(createElement(RepositoryWorkspaceView,{workspace:'org',selectionUser:'fixture-user'}));await screen.findByRole('button',{name:'same.ts'});
+ expect(m.invoke.mock.calls.some(([,args])=>args?.repositoryPath?.startsWith('/foreign'))).toBe(false);
+ expect(screen.getByLabelText('Active local editor repository').textContent).toContain('A');
+});
+it('keeps Find open when it is clicked as the newly loaded editor commits',async()=>{
+  reads=()=> 'alpha beta alpha';let clicked=false;
+  render(createElement(Profiler,{id:'find-at-editor-commit',onRender:()=>{if(clicked)return;const find=screen.queryByRole('button',{name:'Find in file'});if(find){clicked=true;find.click()}}},createElement(RepositoryWorkspaceView)));
+  fireEvent.click(await screen.findByRole('button',{name:'same.ts'}));
+  const search=await screen.findByRole('searchbox',{name:'Find literal text'});
+  expect(clicked).toBe(true);fireEvent.change(search,{target:{value:'alpha'}});
+  expect(screen.getByRole('button',{name:'Next match'})).toHaveProperty('disabled',false);
+  expect(m.invoke.mock.calls.filter(([command])=>command==='write_repository_file'||command==='run_repository_check')).toHaveLength(0);
 });

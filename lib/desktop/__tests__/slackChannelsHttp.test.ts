@@ -1,0 +1,17 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({auth:vi.fn(),connection:vi.fn(),decrypt:vi.fn(),fetch:vi.fn()}));
+vi.mock('@/lib/db',()=>({prisma:{tenantIntegrationConnection:{findUnique:m.connection}}}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));
+vi.mock('@/lib/security/credentialVault',()=>({decryptScopedCredential:m.decrypt}));
+import {handleSlackChannels} from '../slackChannelsHttp';
+const actor={id:'session',organizationId:'org',userId:'owner',credentialKind:'desktop_session',role:'owner',capabilities:['connections:manage']};
+const row={id:'connection',organizationId:'org',provider:'slack',status:'active',encryptedCredential:'cipher',externalAccountId:'T12345678',scopesJson:['channels:read'],consentedByUserId:'owner',updatedAt:new Date('2026-10-26T00:00:00Z'),revokedAt:null};
+const req=(query='')=>new NextRequest('https://owned.test/api/desktop/integrations/slack/channels'+query);
+beforeEach(()=>{vi.clearAllMocks();m.auth.mockResolvedValue(actor);m.connection.mockResolvedValue(row);m.decrypt.mockReturnValue('synthetic-token');m.fetch.mockImplementation(async(url:string)=>new Response(JSON.stringify(url.includes('auth.test')?{ok:true,team_id:row.externalAccountId,team:'Owned'}:{ok:true,channels:[]})));vi.stubGlobal('fetch',m.fetch)});
+it('reads exact tenant connection and returns no-store public channels without mutation',async()=>{const r=await handleSlackChannels(req());expect(r.status).toBe(200);expect(await r.json()).toMatchObject({ok:true,data:{workspaceId:'T12345678',channels:[],connectionVersion:row.updatedAt.toISOString()}});expect(r.headers.get('cache-control')).toBe('private, no-store');expect(m.decrypt).toHaveBeenCalledWith('cipher','tenant-integration-credential-v1:org:slack:connection');expect(m.connection).toHaveBeenCalledWith(expect.objectContaining({where:{organizationId_provider:{organizationId:'org',provider:'slack'}}}));expect(m.fetch).toHaveBeenCalledTimes(2)});
+it.each(['?cursor=','?cursor=x&cursor=y','?workspaceId=other','?cursor=bad%0Avalue'])('rejects invalid cursor or client authority %s before auth/read',async query=>{expect((await handleSlackChannels(req(query))).status).toBe(400);expect(m.auth).not.toHaveBeenCalled();expect(m.connection).not.toHaveBeenCalled()});
+it.each([null,{...actor,credentialKind:'api_key'},{...actor,role:'read_only'},{...actor,capabilities:[]}])('refuses missing paired management authority without lookup/decrypt',async p=>{m.auth.mockResolvedValue(p);expect((await handleSlackChannels(req())).status).toBe(401);expect(m.connection).not.toHaveBeenCalled();expect(m.decrypt).not.toHaveBeenCalled()});
+it('refuses different consenting owner before token access',async()=>{m.connection.mockResolvedValue({...row,consentedByUserId:'other'});expect((await handleSlackChannels(req())).status).toBe(409);expect(m.decrypt).not.toHaveBeenCalled()});
+it('withholds result after final identity switch',async()=>{let calls=0;m.auth.mockImplementation(async()=>++calls>=12?{...actor,userId:'other'}:actor);const r=await handleSlackChannels(req());expect(r.status).not.toBe(200)});
+it('final connection revision replacement withholds result',async()=>{let reads=0;m.connection.mockImplementation(async()=>++reads>=7?{...row,updatedAt:new Date('2026-10-26T00:00:01Z')}:row);expect((await handleSlackChannels(req())).status).toBe(409)});

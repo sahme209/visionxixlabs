@@ -2,13 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 import type { Prisma } from "@prisma/client";
 import { attachAICreditReservationUsage, claimLegacyAICreditDispatch, releaseAICreditReservation, reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
 
-function reservationRepo(overrides: { used?: number; held?: number; existing?: any; tier?: string } = {}) {
-  const reservations: any[] = [];
+function reservationRepo(overrides: { used?: number; held?: number; existing?: unknown; tier?: string } = {}) {
   const aIUsageReservation = {
     findUnique: vi.fn(async () => overrides.existing ?? null),
     updateMany: vi.fn(async (args: unknown) => { void args; return { count: 0 }; }),
     aggregate: vi.fn(async () => ({ _sum: { reservedCents: overrides.held ?? 0 } })),
-    create: vi.fn(async ({ data }: any) => ({ id: "hold-1", ...data })),
+    create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => ({ id: "hold-1", ...data })),
   };
   const tx = {
     aIUsageReservation,
@@ -16,7 +15,7 @@ function reservationRepo(overrides: { used?: number; held?: number; existing?: a
     addOnPurchase: { findMany: vi.fn(async () => []) },
     usageEvent: { aggregate: vi.fn(async () => ({ _sum: { billedCents: overrides.used ?? 0 } })) },
   };
-  return { aIUsageReservation, repo: { $transaction: vi.fn(async (fn: any) => fn(tx)) } };
+  return { aIUsageReservation, repo: { $transaction: vi.fn(async (fn: (transaction: typeof tx) => unknown) => fn(tx)) } as unknown as Parameters<typeof reserveAICredits>[0] };
 }
 
 const input = { organizationId: "org-1", idempotencyKey: "request_abcdefghijkl", reservedCents: 100, correlationId: "corr-1" };
@@ -66,7 +65,7 @@ describe("AI credit reservations", () => {
     await expect(reserveAICredits(repo, input, now)).resolves.toEqual({ ok: false, error: "ai_credit_pool_exhausted" });
     const expiration = aIUsageReservation.updateMany.mock.calls[0]?.[0];
     expect(expiration).toMatchObject({ where: { status: "reserved", usageEventId: null, expiresAt: { lte: now } } });
-    const updateMany = vi.fn(async ({ where }: { where: { status: string } }) => ({ count: where.status === "dispatch_unknown" ? 1 : 0 }));
+    const updateMany = vi.fn(async ({ where }: Prisma.AIUsageReservationUpdateManyArgs) => ({ count: where?.status === "dispatch_unknown" ? 1 : 0 }));
     await expect(releaseAICreditReservation({ aIUsageReservation: { updateMany } }, "org-1", "claimed")).resolves.toBe(false);
     expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({ where: expect.objectContaining({ status: "reserved" }) }));
   });

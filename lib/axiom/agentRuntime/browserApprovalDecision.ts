@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { agentActionDigest } from "./proposalIntegrity";
-import { executeApprovedAction, type ActionExecutionRepo } from "./actionApprovalResponder";
+import { executeApprovedAction, type ActionExecutionRepo, type ActionExecutionResult } from "./actionApprovalResponder";
 import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
 
 export type BrowserApprovalResult =
@@ -25,7 +25,8 @@ export async function decideAgentAction(input: {
   const proposal = await prisma.agentActionProposal.findFirst({ where: { id: input.proposalId, organizationId: input.organizationId } });
   if (!proposal) return { ok: false, error: "not_found" };
   if (proposal.status !== "proposed") return { ok: false, error: "already_decided" };
-  if (proposal.proposedByUserId === input.actorUserId) return { ok: false, error: "self_approval_forbidden" };
+  // A proposer may stop a pending action; only execution approval needs a distinct reviewer.
+  if (input.decision === "approve" && proposal.proposedByUserId === input.actorUserId) return { ok: false, error: "self_approval_forbidden" };
 
   const expiresAt = proposal.approvalExpiresAt ?? new Date(proposal.createdAt.getTime() + 24 * 60 * 60 * 1000);
   if (expiresAt <= now) {
@@ -82,14 +83,21 @@ export async function decideAgentAction(input: {
   if (!claimed) return { ok: false, error: "already_decided" };
   if (input.decision === "reject") return { ok: true, status: "rejected" };
 
-  const execution = await executeApprovedAction(
-    prisma as unknown as ActionExecutionRepo,
-    input.organizationId,
-    proposal.toolName,
-    proposal.argsJson as Record<string, unknown>,
-    input.actorUserId,
-    `agent-action:${proposal.id}`,
-  );
+  let execution: ActionExecutionResult;
+  try {
+    execution = await executeApprovedAction(
+      prisma as unknown as ActionExecutionRepo,
+      input.organizationId,
+      proposal.toolName,
+      proposal.argsJson as Record<string, unknown>,
+      input.actorUserId,
+      `agent-action:${proposal.id}`,
+    );
+  } catch {
+    // The provider may have accepted a write before an unexpected failure.
+    // Keep the claimed decision consumed and never retry or expose raw errors.
+    execution = { ok: false, error: "action_outcome_unknown" };
+  }
   const status = execution.ok ? "executed" : "failed";
   await prisma.$transaction(async (tx) => {
     await tx.agentActionProposal.update({ where: { id: proposal.id }, data: {
@@ -103,7 +111,9 @@ export async function decideAgentAction(input: {
       role: "tool_result",
       actionProposalId: proposal.id,
       content: execution.ok ? `${proposal.toolName} approved and executed.`
-        : execution.error === "deployment_outcome_unknown"
+        : execution.error === "action_outcome_unknown"
+          ? `${proposal.toolName} approved; provider outcome unconfirmed. Review the external outcome before retrying; this approval cannot execute again.`
+          : execution.error === "deployment_outcome_unknown"
           ? `${proposal.toolName} approved; provider outcome unconfirmed. Its reservation is retained. Review the external outcome before retrying.`
           : `${proposal.toolName} approved but failed: ${execution.error}`,
     } });

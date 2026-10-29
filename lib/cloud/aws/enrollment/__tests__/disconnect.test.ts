@@ -88,3 +88,22 @@ it.each(["empty_active", "ciphertext_revoked"])("does not misrepresent corrupt %
   else f.state.credential!.revokedAt = f.dependencies.now();
   await expect(service.list(principal.organizationId)).rejects.toMatchObject({code: "enrollment_unavailable"});
 });
+
+it.each(["revoke", "downgrade"])("refuses disconnect when authority changes during credential read: %s", async mode => {
+  const {f,service,account}=await connected();
+  const before=structuredClone({account:f.state.account,credential:f.state.credential,attempt:f.state.attempt});
+  let resume!:()=>void;const gate=new Promise<void>(r=>{resume=r});let entered!:()=>void;const reading=new Promise<void>(r=>{entered=r});
+  f.repo.cloudAccountCredential.findUnique.mockImplementationOnce(async()=>{entered();await gate;return f.state.credential});
+  const pending=service.disconnect(principal,account.id,1);await reading;
+  if(mode==='revoke')f.state.device.revokedAt=f.dependencies.now();else f.state.membership.role='read_only';resume();
+  await expect(pending).rejects.toMatchObject({code:'connection_authority_required'});
+  expect({account:f.state.account,credential:f.state.credential,attempt:f.state.attempt}).toEqual(before);
+});
+it("rolls back all disconnect writes when session expires during pending-challenge expiry",async()=>{
+ const {f,service,account}=await connected();await service.start(principal,input);
+ const before=structuredClone({account:f.state.account,credential:f.state.credential,attempt:f.state.attempt});
+ const update=f.repo.cloudAccountEnrollmentAttempt.updateMany.getMockImplementation()!;
+ f.repo.cloudAccountEnrollmentAttempt.updateMany.mockImplementationOnce(async args=>{const result=await update(args);f.setNow(new Date('2026-10-18'));return result});
+ await expect(service.disconnect(principal,account.id,1)).rejects.toMatchObject({code:'connection_authority_required'});
+ expect({account:f.state.account,credential:f.state.credential,attempt:f.state.attempt}).toEqual(before);
+});

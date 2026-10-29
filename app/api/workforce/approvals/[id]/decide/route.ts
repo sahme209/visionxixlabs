@@ -11,19 +11,24 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
+import { canDecideApprovals } from "@/lib/auth/platformAdmin";
 import { currentContext } from "@/lib/auth/currentContext";
 import { decideApproval, getApproval } from "@/lib/approvals/approvalEngine";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
-import { planDecideApproval, type DecideRejectReason } from "@/lib/workforce/decideApprovalPlanner";
+import type { DecideRejectReason } from "@/lib/workforce/decideApprovalPlanner";
+import { persistApprovalVote, withBoundApprovalWrite } from "@/lib/workforce/persistApprovalVote";
 import { resumePipelineStageFromApproval, type ApprovalTerminalStatus } from "@/lib/workforce/pipelines/resumeFromApproval";
 import { advancePipelineRun } from "@/lib/workforce/pipelines/pipelineRunner";
 
 export const dynamic = "force-dynamic";
 
-const REJECT_STATUS_MAP: Record<DecideRejectReason, number> = {
+const REJECT_STATUS_MAP: Record<DecideRejectReason | "already_voted" | "approval_actor_provenance_required" | "coding_review_required", number> = {
+  already_voted: 409,
+  approval_actor_provenance_required: 409,
+  coding_review_required: 409,
   invalid_decision: 400,
   approval_not_found: 404,
   cross_tenant: 403,
@@ -32,114 +37,38 @@ const REJECT_STATUS_MAP: Record<DecideRejectReason, number> = {
 };
 
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
+  if (!isSameOriginRequest(req)) return NextResponse.json({ ok: false, reason: "invalid_request_origin" }, { status: 403 });
   const { id } = await ctx.params;
 
   const session = await currentContext();
-  if (!session.isAuthenticated || !session.organizationId) {
+  if (!session.isAuthenticated || !session.organizationId || !session.userId) {
     return NextResponse.json({ ok: false, reason: "auth_required" }, { status: 401 });
   }
 
-  let body: { decision?: unknown; reason?: unknown } = {};
+  if (!canDecideApprovals({ email: session.email, roles: session.roles })) return NextResponse.json({ ok: false, reason: "forbidden_role" }, { status: 403 });
+
+  let body: { reviewDigest?: unknown; decision?: unknown; reason?: unknown } = {};
   try { body = await req.json() as typeof body; } catch { /* empty body */ }
   const rawDecision = body.decision;
   const reason = typeof body.reason === "string" ? body.reason : undefined;
 
   const orgId = String(session.organizationId);
-  const approverUserId = session.userId ?? session.email ?? "unknown";
-
-  // Load durable snapshot, existing votes, and engine row (if any).
-  const snapshot = await prisma.engineerApprovalSnapshot.findUnique({
-    where: { approvalRequestId: id },
-    include: {
-      decisions: { select: { approverUserId: true, decision: true } },
-    },
-  }).catch(() => null);
+  const approverUserId = session.userId;
 
   const engineRow = getApproval(id);
-
-  // Pure planner — all guards + projected quorum in one call.
-  const plan = planDecideApproval({
-    rawDecision,
-    viewerOrganizationId: orgId,
-    snapshot: snapshot
-      ? {
-          organizationId: snapshot.organizationId,
-          status: snapshot.status,
-          requiredApprovers: snapshot.requiredApprovers,
-        }
-      : null,
-    engineSourceId: engineRow?.sourceId ?? null,
-    existingDecisions: snapshot
-      ? snapshot.decisions.map((d) => ({
-          approverUserId: d.approverUserId,
-          decision: d.decision as "approved" | "rejected",
-        }))
-      : [],
-    newApproverUserId: approverUserId,
-  });
-
-  if (plan.kind === "reject") {
-    return NextResponse.json(
-      { ok: false, reason: plan.reason, detail: plan.detail },
-      { status: REJECT_STATUS_MAP[plan.reason] },
-    );
-  }
-
-  // Planner says accept. Now do the durable side effects.
-  // Snapshot is guaranteed non-null here (planner would have rejected otherwise).
-  const snap = snapshot!;
-  const decision = plan.decision;
-  const quorum = plan.quorum;
-
-  // Insert the durable vote row. The DB unique constraint is the
-  // authoritative double-vote lock — surfaces as already_voted.
+  let persisted: Awaited<ReturnType<typeof persistApprovalVote>>;
   try {
-    await prisma.engineerApprovalDecision.create({
-      data: {
-        snapshotId: snap.id,
-        organizationId: orgId,
-        approverUserId,
-        decision,
-        reason,
-      },
-    });
-  } catch (err) {
-    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-      return NextResponse.json({
-        ok: false,
-        reason: "already_voted",
-        detail: "You have already voted on this approval.",
-      }, { status: 409 });
-    }
-    return NextResponse.json({
-      ok: false,
-      reason: "decision_persist_failed",
-      detail: "Vote was not recorded — please retry.",
-    }, { status: 500 });
+    persisted = await persistApprovalVote({ approvalRequestId: id, organizationId: orgId,
+      principal: { kind: "user", id: approverUserId }, rawDecision, reason, reviewDigest: body.reviewDigest,
+      engineSourceId: engineRow?.sourceId ?? null });
+  } catch {
+    return NextResponse.json({ ok: false, reason: "decision_persist_failed", detail: "Vote was not recorded — please retry." }, { status: 500 });
   }
-
-  // Terminal transition — only when quorum says so.
-  const decidedAt = new Date();
+  if (persisted.kind === "reject") return NextResponse.json({ ok: false, reason: persisted.reason,
+    detail: persisted.detail }, { status: REJECT_STATUS_MAP[persisted.reason] });
+  const { snapshot: snap, decision, quorum, decidedAt } = persisted;
   let engineAccepted = false;
   if (quorum.isTerminal) {
-    try {
-      await prisma.engineerApprovalSnapshot.update({
-        where: { id: snap.id },
-        data: {
-          status: quorum.status,
-          decidedAt,
-          decidedByUserId: approverUserId,
-          decisionReason: reason,
-        },
-      });
-    } catch {
-      return NextResponse.json({
-        ok: false,
-        reason: "snapshot_persist_failed",
-        detail: "Vote recorded but snapshot terminal update failed.",
-      }, { status: 500 });
-    }
-
     // Sync the engine when present. Best-effort — snapshot is authoritative.
     if (engineRow) {
       const outcome = decideApproval({
@@ -158,20 +87,21 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     // resume fails the snapshot is still terminal; operator can
     // re-trigger via the pipeline detail page.
     if (snap.sourceKind === "pipeline_stage" && snap.pipelineStageRunId) {
+      const stageRunId = snap.pipelineStageRunId;
       try {
         const plan = resumePipelineStageFromApproval(quorum.status as ApprovalTerminalStatus);
         if (plan.stageStatus !== "no_change") {
-          const stageUpdate = await prisma.pipelineStageRun.updateMany({
-            where: { id: snap.pipelineStageRunId, status: "awaiting_approval" },
+          const stageUpdate = await withBoundApprovalWrite(tx => tx.pipelineStageRun.updateMany({
+            where: { id: stageRunId, status: "awaiting_approval" },
             data: {
               status: plan.stageStatus,
               completedAt: new Date(),
               errorMessage: plan.errorMessage ?? null,
             },
-          });
+          }));
           if (plan.shouldAdvanceRun && stageUpdate.count > 0) {
             const stageRow = await prisma.pipelineStageRun.findUnique({
-              where: { id: snap.pipelineStageRunId },
+              where: { id: stageRunId },
               select: { runId: true },
             });
             if (stageRow) await advancePipelineRun(stageRow.runId);

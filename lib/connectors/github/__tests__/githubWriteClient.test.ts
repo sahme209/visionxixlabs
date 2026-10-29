@@ -128,6 +128,33 @@ describe("commitFile", () => {
 describe("commitFiles", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("checks reviewed files against the captured commit rather than a branch which moved during review", async () => {
+    fetchMock.mockReset();
+    const writes: string[] = [];
+    fetchMock.mockImplementation(async (raw: string, options: { method?: string }) => {
+      const url = new URL(raw);
+      if (options.method && options.method !== "GET") {
+        writes.push(options.method);
+        return jsonResponse(200, { sha: "synthetic-created", html_url: "https://github.test/commit" });
+      }
+      if (url.pathname.endsWith("/git/ref/heads/axiom%2Fchange")) return jsonResponse(200, { object: { type: "commit", sha: "captured-parent" } });
+      if (url.pathname.endsWith("/git/commits/captured-parent")) return jsonResponse(200, { tree: { sha: "captured-tree" } });
+      if (url.pathname.endsWith("/contents/src/a.ts")) {
+        // The floating branch has advanced to the reviewed blob, but the
+        // captured parent still contains a different file. Building on that
+        // parent must not be authorized by evidence from the newer branch.
+        return jsonResponse(200, { type: "file", path: "src/a.ts", sha: url.searchParams.get("ref") === "captured-parent" ? "older-blob" : "reviewed-blob", encoding: "base64", content: Buffer.from("fixture").toString("base64"), html_url: "https://github.test/a" });
+      }
+      if (url.pathname.endsWith("/contents/src/b.ts")) return jsonResponse(404, {});
+      throw Error("unexpected_fixture_request");
+    });
+    try {
+      const result = await commitFiles({ owner: "acme", repo: "widgets", branch: "axiom/change", message: "Reviewed change", installationToken: "synthetic-token", files: [{ path: "src/a.ts", content: "new a", expectedSha: "reviewed-blob" }, { path: "src/b.ts", content: "new b", expectedSha: null }] });
+      expect(result).toEqual({ ok: false, error: "github_file_changed_since_proposal" });
+      expect(writes).toEqual([]);
+    } finally { fetchMock.mockReset(); }
+  });
+
   it("creates blobs and advances the branch once for an atomic multi-file commit", async () => {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "parent" } }))
@@ -165,6 +192,26 @@ describe("commitFiles", () => {
     });
     expect(result).toEqual({ ok: false, error: "github_file_changed_since_proposal" });
     expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("returns a divergent branch-update rejection without forcing or rebuilding on a newer parent", async () => {
+    fetchMock
+      .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "captured-parent" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { tree: { sha: "captured-tree" } }))
+      .mockResolvedValueOnce(jsonResponse(200, { type: "file", path: "src/a.ts", sha: "a-old", encoding: "base64", content: Buffer.from("old").toString("base64"), html_url: "https://github.test/a" }))
+      .mockResolvedValueOnce(jsonResponse(404, {}))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "a-new" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "b-new" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "new-tree" }))
+      .mockResolvedValueOnce(jsonResponse(201, { sha: "new-commit" }))
+      .mockResolvedValueOnce(jsonResponse(422, { message: "Update is not a fast forward" }));
+    const result = await commitFiles({ owner: "acme", repo: "widgets", branch: "axiom/change", message: "Reviewed change", installationToken: "synthetic-token", files: [{ path: "src/a.ts", content: "new a", expectedSha: "a-old" }, { path: "src/b.ts", content: "new b", expectedSha: null }] });
+    expect(result).toMatchObject({ ok: false, error: expect.stringContaining("github_422:") });
+    expect(fetchMock).toHaveBeenCalledTimes(9);
+    expect(JSON.parse(fetchMock.mock.calls[8][1].body)).toEqual({ sha: "new-commit", force: false });
+    expect(String(fetchMock.mock.calls[2][0])).toContain("ref=captured-parent");
+    expect(String(fetchMock.mock.calls[3][0])).toContain("ref=captured-parent");
+    expect(JSON.parse(fetchMock.mock.calls[7][1].body).parents).toEqual(["captured-parent"]);
   });
 });
 
@@ -430,5 +477,70 @@ describe("getCommitCiStatus", () => {
     const result = await getCommitCiStatus({ owner: "acme", repo: "widgets", commitSha: "sha1", installationToken: "tok" });
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.error).toContain("commit_status_unavailable");
+  });
+});
+
+
+describe("uncertain GitHub writes", () => {
+  beforeEach(() => vi.clearAllMocks());
+  const input = { owner: "acme", repo: "widgets", baseBranch: "main", newBranchName: "feature-x", installationToken: "synthetic-token" };
+  it("does not disclose transport details or retry a branch write after connection loss", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
+      .mockRejectedValueOnce(new Error("connection lost with synthetic private detail"));
+    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it("treats a server error after a branch write as unconfirmed", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
+      .mockResolvedValueOnce(jsonResponse(502, { message: "synthetic upstream detail" }));
+    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it("preserves uncertainty for pull requests without a misleading failure prefix", async () => {
+    fetchMock.mockRejectedValueOnce(new Error("synthetic lost response"));
+    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+      .toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+  it("treats a timed-out write as unconfirmed", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
+      .mockResolvedValueOnce(jsonResponse(408, { message: "request timeout" }));
+    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+  it("does not claim a pull request exists when the successful response lacks its identity", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(201, {}));
+    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+      .toEqual({ ok: false, error: "action_outcome_unknown" });
+  });
+  it("retains a definite authorization rejection without retrying", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
+      .mockResolvedValueOnce(jsonResponse(403, { message: "Forbidden" }));
+    const result = await createBranch(input);
+    expect(result).toEqual({ ok: false, error: expect.stringMatching(/^github_403:/) });
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not treat an unreadable pull request response as confirmed success", async () => {
+    fetchMock.mockResolvedValueOnce({ ok: true, status: 201, json: async () => { throw new Error("synthetic broken body"); } });
+    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+      .toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+});
+
+describe("bounded workflow metadata file reads", () => {
+  beforeEach(() => vi.clearAllMocks());
+  it("uses GET-only redirect-refusing bounded transport", async () => {
+    fetchMock.mockResolvedValueOnce(new Response(JSON.stringify({type:'file',path:'.github/workflows/deploy.yml',sha:'a'.repeat(40),encoding:'base64',content:Buffer.from('on: workflow_dispatch').toString('base64'),html_url:'https://github.com/acme/widgets'}),{status:200}));
+    const result = await getFile({owner:'acme',repo:'widgets',branch:'main',path:'.github/workflows/deploy.yml',installationToken:'synthetic-token',read:{signal:new AbortController().signal,maxBytes:200000}});
+    expect(result.ok).toBe(true);
+    expect(fetchMock).toHaveBeenCalledWith(expect.stringContaining('/contents/.github/workflows/deploy.yml?ref=main'),expect.objectContaining({method:'GET',redirect:'error',cache:'no-store',credentials:'omit'}));
+  });
+  it("rejects oversized transport bodies before parsing metadata", async () => {
+    fetchMock.mockResolvedValueOnce(new Response('x'.repeat(101),{status:200,headers:{'content-length':'101'}}));
+    const result=await getFile({owner:'acme',repo:'widgets',branch:'main',path:'.github/workflows/deploy.yml',installationToken:'synthetic-token',read:{signal:new AbortController().signal,maxBytes:100}});
+    expect(result).toEqual({ok:false,error:'github_provenance_read_unavailable'});
   });
 });

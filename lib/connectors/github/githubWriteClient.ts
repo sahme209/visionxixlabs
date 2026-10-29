@@ -46,6 +46,31 @@ export async function getRepositoryDefaultBranch(input: {
     : { ok: false, error: "github_default_branch_unavailable" };
 }
 
+/** Bounded filenames at an explicit ref. Entries are not a claim of workflow_dispatch support. */
+export async function listWorkflowFiles(input: {
+  owner: string; repo: string; ref: string; installationToken: string; signal: AbortSignal;
+}): Promise<GithubWriteResult<Array<{ name: string; path: string; blobSha: string }>>> {
+  const unavailable = { ok: false as const, error: "github_workflow_catalogue_unavailable" };
+  const repositoryPart = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
+  if (!repositoryPart.test(input.owner) || !repositoryPart.test(input.repo) || !input.ref || input.ref.length > 240 || /[\0\r\n]/.test(input.ref)) return unavailable;
+  const result = await gh<unknown>(
+    `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/.github/workflows?ref=${encodeURIComponent(input.ref)}`,
+    input.installationToken, { bounded: { signal: input.signal, maxBytes: 256 * 1024 } },
+  );
+  if (!result.ok || !Array.isArray(result.data) || result.data.length > 200) return unavailable;
+  const files: Array<{ name: string; path: string; blobSha: string }> = [];
+  const seen = new Set<string>();
+  for (const raw of result.data) {
+    if (!raw || typeof raw !== "object" || typeof raw.name !== "string") return unavailable;
+    if (!/\.ya?ml$/.test(raw.name)) continue;
+    if (!/^[A-Za-z0-9_][A-Za-z0-9_. -]{0,150}\.ya?ml$/.test(raw.name) || raw.type !== "file" || raw.path !== `.github/workflows/${raw.name}` || typeof raw.sha !== "string" || !/^[a-f0-9]{40}$/.test(raw.sha) || seen.has(raw.name)) return unavailable;
+    seen.add(raw.name);
+    files.push({ name: raw.name, path: raw.path, blobSha: raw.sha });
+  }
+  files.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+  return { ok: true, data: files };
+}
+
 export function isSafeRepositoryPath(path: string): boolean {
   if (!path || path.length > 1024 || path.startsWith("/") || path.includes("\0")) return false;
   const segments = path.split("/");
@@ -57,6 +82,9 @@ async function gh<T>(
   token: string,
   init: { method?: string; body?: unknown; apiVersion?: string; bounded?: { signal: AbortSignal; maxBytes: number; budget?: GithubReadBudget } } = {},
 ): Promise<GithubWriteResult<T>> {
+  // A lost write response cannot establish whether GitHub applied the change.
+  // Keep the one-shot action consumed; callers must reconcile before a new proposal.
+  const isWrite = init.method !== undefined && !["GET", "HEAD"].includes(init.method.toUpperCase());
   try {
     if (init.bounded) {
       const bytes = await boundedRead(`${GITHUB_API}${path}`, {
@@ -76,6 +104,7 @@ async function gh<T>(
       body: init.body ? JSON.stringify(init.body) : undefined,
     });
     if (!response.ok) {
+      if (isWrite && (response.status === 408 || response.status >= 500)) return { ok: false, error: "action_outcome_unknown" };
       const text = await response.text().catch(() => "");
       return { ok: false, error: `github_${response.status}: ${text.slice(0, 300)}` };
     }
@@ -83,6 +112,7 @@ async function gh<T>(
     return { ok: true, data };
   } catch (error) {
     if (init.bounded) return { ok: false, error: "github_provenance_read_unavailable" };
+    if (isWrite) return { ok: false, error: "action_outcome_unknown" };
     return { ok: false, error: error instanceof Error ? error.message : "network_error" };
   }
 }
@@ -234,6 +264,8 @@ export interface GetFileInput {
   branch: string;
   path: string;
   installationToken: string;
+  /** Optional bounded read for metadata endpoints; legacy callers retain their existing transport. */
+  read?: { signal: AbortSignal; maxBytes: number };
 }
 
 /** Reads one UTF-8 text file through the same tenant-scoped installation token. */
@@ -243,6 +275,7 @@ export async function getFile(input: GetFileInput): Promise<GithubWriteResult<{ 
   const result = await gh<{ type: string; path: string; sha: string; content: string; encoding: string; html_url: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}?ref=${encodeURIComponent(input.branch)}`,
     input.installationToken,
+    input.read ? { bounded: input.read } : {},
   );
   if (!result.ok) return result;
   if (result.data.type !== "file" || result.data.encoding !== "base64") return { ok: false, error: "github_path_is_not_a_text_file" };
@@ -364,7 +397,9 @@ export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteR
   if (!parent.ok || typeof parent.data.tree?.sha !== "string") return { ok: false, error: parent.ok ? "github_tree_unavailable" : parent.error };
 
   for (const file of input.files) {
-    const current = await getFile({ owner: input.owner, repo: input.repo, branch: input.branch, path: file.path, installationToken: input.installationToken });
+    // Validate exactly the tree used below. A moving branch must not supply
+    // evidence for files in a different captured parent commit.
+    const current = await getFile({ owner: input.owner, repo: input.repo, branch: parentSha, path: file.path, installationToken: input.installationToken });
     if (file.expectedSha === null) {
       if (current.ok || !current.error.startsWith("github_404:")) return { ok: false, error: "github_file_changed_since_proposal" };
     } else if (!current.ok || current.data.sha !== file.expectedSha) {
@@ -424,7 +459,10 @@ export async function createPullRequest(
     input.installationToken,
     { method: "POST", body: { title: input.title, head: input.head, base: input.base, body: input.body ?? "" } },
   );
-  if (!result.ok) return { ok: false, error: `pull_request_create_failed: ${result.error}` };
+  if (!result.ok) return { ok: false, error: result.error === "action_outcome_unknown" ? result.error : `pull_request_create_failed: ${result.error}` };
+  if (!result.data || !Number.isSafeInteger(result.data.number) || result.data.number < 1 || typeof result.data.html_url !== "string" || !result.data.html_url) {
+    return { ok: false, error: "action_outcome_unknown" };
+  }
   return { ok: true, data: { number: result.data.number, htmlUrl: result.data.html_url } };
 }
 

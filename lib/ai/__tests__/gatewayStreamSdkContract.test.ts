@@ -31,6 +31,7 @@ it("consumes installed SDK6 events and terminal Gateway metadata", async () => {
     { done: true, text: "", response: expect.objectContaining({ gatewayGenerationId: "gen_sdk_contract", usage: { promptTokens: 4, completionTokens: 2, totalTokens: 6 } }) },
   ]);
   expect(model.doStreamCalls).toHaveLength(1);
+  expect(model.doStreamCalls[0].responseFormat?.type).not.toBe("json");
 });
 
 it("closes an installed-SDK stream after partial output and aborts its provider signal", async () => {
@@ -66,4 +67,27 @@ it("interrupts an in-flight next through the external abort signal", async () =>
   controller.abort();
   await expect(pending).rejects.toMatchObject({ kind: "timeout" });
   await stream.return(undefined);
+});
+
+it("does not let the installed SDK log raw upstream error details", async () => {
+  injected.model = new MockLanguageModelV3({doStream: async () => ({
+    stream: new ReadableStream({start(controller) {
+      controller.enqueue({type: "error", error: {statusCode: 403, message: "private upstream body"}});
+      controller.close();
+    }}),
+  })});
+  const logging = vi.spyOn(console, "error").mockImplementation(() => {});
+  try {
+    await expect(new VercelGatewayProvider("vendor/model").streamTextOnce("hello").next()).rejects.toMatchObject({kind: "model_unavailable"});
+    expect(logging).not.toHaveBeenCalled();
+  } finally { logging.mockRestore(); }
+});
+
+it.each(['{"message":"review draft"}', 'Untrusted prose before {"message":"not accepted"}'])("requests JSON output without losing terminal paid evidence for %s",async text=>{
+ const model=new MockLanguageModelV3({doStream:async()=>({stream:new ReadableStream({start(controller){
+ controller.enqueue({type:"text-start",id:"json"});controller.enqueue({type:"text-delta",id:"json",delta:text});controller.enqueue({type:"text-end",id:"json"});
+ controller.enqueue({type:"finish",finishReason:{unified:"stop",raw:undefined},usage:{inputTokens:{total:4,noCache:4,cacheRead:undefined,cacheWrite:undefined},outputTokens:{total:2,text:2,reasoning:undefined}},providerMetadata:{gateway:{generationId:"gen_json_contract"}}});controller.close();}})})});injected.model=model;
+ const chunks=[];for await(const chunk of new VercelGatewayProvider("vendor/model").streamTextOnce("Return JSON",undefined,"json"))chunks.push(chunk);
+ expect(model.doStreamCalls).toHaveLength(1);expect(model.doStreamCalls[0].responseFormat).toMatchObject({type:"json"});
+ expect(chunks.at(-1)).toMatchObject({done:true,response:{gatewayGenerationId:"gen_json_contract",usage:{totalTokens:6}}});
 });

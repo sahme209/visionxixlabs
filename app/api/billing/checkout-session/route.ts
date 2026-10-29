@@ -1,3 +1,5 @@
+import { publicBillingPolicyEnabled } from "@/lib/billing/publicBillingConfig";
+import { publicBillingRuntime } from "@/lib/billing/publicBillingRuntime";
 import { ownedCheckoutPost } from "@/lib/billing/ownedCheckoutBridge/http";
 /**
  * POST /api/billing/checkout-session
@@ -57,6 +59,23 @@ export async function POST(req: NextRequest) {
     if (typeof body.expectedOrganizationId !== "string" || body.expectedOrganizationId !== String(ctx.organizationId)) {
       throw new AxiomError({ code: "billing.workspace_changed", category: "authorization", userMessage: "Your workspace changed or could not be confirmed. Refresh the plans page and review your selection before trying again." });
     }
+
+    if (publicBillingPolicyEnabled()) {
+      if (!ctx.userId) throw new AxiomError({code:"auth.required",category:"authentication",userMessage:"Sign in required."});
+      const canonical = new URL(process.env.NEXTAUTH_URL?.trim() || req.nextUrl.origin);
+      if (canonical.protocol !== "https:" || canonical.origin !== req.nextUrl.origin || canonical.username || canonical.password) {
+        throw new AxiomError({code:"billing.origin.invalid",category:"authorization",userMessage:"Open billing on the application's secure canonical website."});
+      }
+      const runtime = await publicBillingRuntime();
+      const result = await runtime.service.checkout({organizationId:String(ctx.organizationId),userId:String(ctx.userId)}, {
+        planId:body.planId,interval:billingInterval,email:ctx.email,
+        successUrl:`${canonical.origin}/control/usage-billing?billing=success`,cancelUrl:`${canonical.origin}/plans?checkout=canceled`,
+      });
+      if(result.kind==="checkout_expired") return new Response(JSON.stringify({ok:false,error:{code:"billing.checkout.expired",userMessage:"Your previous unpaid checkout expired. Review your selection and click again to start a new checkout."},meta:{correlationId}}),{status:409,headers:{"content-type":"application/json"}});
+      if(result.kind!=="checkout_ready") return new Response(JSON.stringify({ok:false,error:{code:"billing.reconciliation_required",userMessage:"Your previous purchase is being verified. No new charge was started. Please check Usage & billing or contact support."},meta:{correlationId}}),{status:409,headers:{"content-type":"application/json"}});
+      return apiOk({ok:true,url:result.url},{correlationId,safetyContract:"billing_summary_read_only",sourceMode:asApiSourceMode("live")});
+    }
+    if (process.env.AXIOM_STRIPE_MODE === "live") throw new AxiomError({code:"billing.fulfillment.not_ready",category:"precondition",userMessage:"Verified subscription fulfillment is not active yet."});
 
     // The existing event consumer refuses replacement subscription identities.
     // Starting another paid subscription cannot implement an upgrade, renewal,

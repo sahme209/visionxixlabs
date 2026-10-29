@@ -127,8 +127,9 @@ describe("desktop first-run contract", () => {
     const settings = readFileSync(join(root, "desktop/src/views/SettingsView.tsx"), "utf8");
     expect(settings).toContain("Account & session");
     expect(settings).toContain("Access & usage");
-    expect(settings).toContain("Pilot access is no-charge");
-    expect(settings).toContain("Repositories & triggers");
+    expect(settings).toContain("Current plan and AI allowance come from the same billing service as the web cockpit");
+    expect(settings).not.toContain("Pilot access is no-charge");
+    expect(settings).toContain('Group label="Repositories"');
     expect(settings).toContain("A return from Checkout does not grant access by itself");
     expect(settings).not.toContain("Paste desktop pairing JSON");
     expect(settings).not.toContain("Save API key");

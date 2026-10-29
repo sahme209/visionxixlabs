@@ -1,10 +1,9 @@
 /**
  * Stage executor registry — Phase 377.
  *
- * Maps PipelineStageKind → StageExecutorFn. The default for every
- * stage kind is the dry-run executor that records what *would* have
- * happened — keeps the platform safe to ship before real apply paths
- * land per stage kind.
+ * Maps PipelineStageKind → StageExecutorFn. Missing implementations fail
+ * explicitly so an unperformed deployment, test or notification cannot
+ * make a real pipeline report success. Dry-run output is opt-in only.
  */
 
 import "server-only";
@@ -67,6 +66,13 @@ export const dryRunStageExecutor: StageExecutorFn = async (ctx) => {
   };
 };
 
+const unavailableStageExecutor: StageExecutorFn = async (ctx) => ({
+  ok: false,
+  error: `The ${ctx.stageKind} stage has no configured execution implementation. No external action was performed.`,
+  detail: { stageKind: ctx.stageKind, stageId: ctx.stageId, runId: ctx.runId,
+    executorUnavailable: true, externalActionPerformed: false },
+});
+
 const ALL_KINDS: readonly PipelineStageKind[] = [
   "build", "unit_test", "integration_test", "security_scan", "lint",
   "schema_plan", "schema_apply", "schema_verify",
@@ -77,7 +83,7 @@ const ALL_KINDS: readonly PipelineStageKind[] = [
 
 export function bootstrapStageExecutorRegistry(): void {
   for (const k of ALL_KINDS) {
-    if (!STAGE_EXECUTORS.has(k)) STAGE_EXECUTORS.set(k, dryRunStageExecutor);
+    if (!STAGE_EXECUTORS.has(k)) STAGE_EXECUTORS.set(k, unavailableStageExecutor);
   }
   bootstrapped = true;
 }

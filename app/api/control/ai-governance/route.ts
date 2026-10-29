@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
-import { record as recordAudit } from "@/lib/audit/secureAudit";
+import { recordRequiredAudit as recordAudit } from "@/lib/audit/requiredAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
@@ -29,6 +29,12 @@ export const runtime = "nodejs";
 
 const AUTONOMY_MODES = new Set<AutonomyMode>(["observer", "review", "assisted", "autonomous"]);
 
+function identityStorageState(error: unknown): "migration_pending" | "unavailable" {
+  const code = typeof error === "object" && error !== null && "code" in error ? error.code : undefined;
+  return code === "P2021" || code === "P2022" ? "migration_pending" : "unavailable";
+}
+
+
 async function context() {
   const value = await currentContext();
   if (!value.isAuthenticated || !value.organizationId || !value.userId) return null;
@@ -53,7 +59,9 @@ export async function GET() {
   const providers = serviceProviders();
   const [loadedPolicy, identity, autonomy, budget, gatewayModels] = await Promise.all([
     loadWorkspaceAIProviderPolicyWithState(ctx.organizationId),
-    readWorkspaceAgentIdentity(ctx.organizationId).catch(() => null),
+    readWorkspaceAgentIdentity(ctx.organizationId)
+      .then(value => ({ value, state: "ready" as const }))
+      .catch(error => ({ value: null, state: identityStorageState(error) })),
     readTenantCharter(ctx.organizationId),
     loadBudgetConfig(ctx.organizationId),
     providers.includes("vercel_gateway") ? loadGatewayModelCatalog().catch(() => null) : Promise.resolve([]),
@@ -70,7 +78,8 @@ export async function GET() {
       availableProviders: providers,
       gatewayModels,
       gatewayCatalogLive: providers.includes("vercel_gateway") && gatewayModels !== null,
-      agentIdentity: identity,
+      agentIdentity: identity.value,
+      agentIdentityState: identity.state,
       autonomy: autonomy ? {
         mode: autonomy.mode,
         perCycleActionLimit: autonomy.perCycleActionLimit ?? autonomy.resolved.perCycleActionLimit,
@@ -110,23 +119,37 @@ export async function PATCH(request: NextRequest) {
       }
     }
     await saveWorkspaceAIProviderPolicy({ organizationId: ctx.organizationId, policy, updatedBy: ctx.userId });
-    await recordAudit({
-      organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
-      action: "policy.update", outcome: "success", entityRef: "ai_provider_policy:workspace", correlationId, source: "live",
-      detail: { enabled: policy.enabled, providers: policy.allowedProviders.join(","), models: Object.values(policy.modelSelections).join(","), approvedGatewayModels: gatewayPolicyModelIds(policy).join(",") },
-    });
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
+        action: "policy.update", outcome: "success", entityRef: "ai_provider_policy:workspace", correlationId, source: "live",
+        detail: { enabled: policy.enabled, providers: policy.allowedProviders.join(","), models: Object.values(policy.modelSelections).join(","), approvedGatewayModels: gatewayPolicyModelIds(policy).join(",") },
+      });
+    } catch {
+      return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
+    }
     return NextResponse.json({ ok: true, data: { providerPolicy: policy } });
   }
 
   if (section === "agent_identity") {
     const normalized = normalizeAgentIdentityInput(body ?? {});
     if (!normalized) return NextResponse.json({ ok: false, error: "invalid_agent_identity_policy" }, { status: 422 });
-    const identity = await saveWorkspaceAgentIdentity({ organizationId: ctx.organizationId, ...normalized, updatedBy: ctx.userId });
-    await recordAudit({
-      organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
-      action: "policy.update", outcome: "success", entityRef: "agent_identity:workspace", correlationId, source: "live",
-      detail: { enabled: identity.enabled, displayName: identity.displayName, allowedTools: identity.allowedTools.join(",") },
-    });
+    let identity;
+    try {
+      identity = await saveWorkspaceAgentIdentity({ organizationId: ctx.organizationId, ...normalized, updatedBy: ctx.userId });
+    } catch (error) {
+      return NextResponse.json({ ok: false, error: identityStorageState(error) === "migration_pending" ? "agent_identity_migration_pending" : "agent_identity_unavailable", correlationId: String(correlationId) }, { status: 503 });
+    }
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
+        action: "policy.update", outcome: "success", entityRef: "agent_identity:workspace", correlationId, source: "live",
+        detail: { enabled: identity.enabled, displayName: identity.displayName, allowedTools: identity.allowedTools.join(",") },
+      });
+    } catch {
+      // The identity may already be saved. Do not replay or claim an audited success.
+      return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
+    }
     return NextResponse.json({ ok: true, data: { agentIdentity: identity } });
   }
 
@@ -138,11 +161,15 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ ok: false, error: "invalid_autonomy_policy" }, { status: 422 });
     }
     const autonomy = await upsertTenantCharter({ organizationId: ctx.organizationId, mode: mode as AutonomyMode, perCycleActionLimit: Number(perCycleActionLimit), rationale, updatedBy: ctx.userId });
-    await recordAudit({
-      organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
-      action: "autonomy.change", outcome: "success", entityRef: "autonomy_charter:workspace", correlationId, source: "live",
-      detail: { mode: autonomy.mode, perCycleActionLimit: autonomy.resolved.perCycleActionLimit, rationale },
-    });
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
+        action: "autonomy.change", outcome: "success", entityRef: "autonomy_charter:workspace", correlationId, source: "live",
+        detail: { mode: autonomy.mode, perCycleActionLimit: autonomy.resolved.perCycleActionLimit, rationale },
+      });
+    } catch {
+      return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
+    }
     return NextResponse.json({ ok: true, data: { autonomy: { mode: autonomy.mode, perCycleActionLimit: autonomy.resolved.perCycleActionLimit, rationale } } });
   }
 
@@ -156,6 +183,15 @@ export async function PATCH(request: NextRequest) {
     const existingBudget = await loadBudgetConfig(ctx.organizationId);
     const pipelineOverrides = existingBudget?.pipelineOverrides ?? [];
     await upsertBudgetConfig({ organizationId: ctx.organizationId, defaultMaxCostCents, pipelineOverrides, rationale, updatedBy: ctx.userId, correlationId: String(correlationId) });
+    try {
+      await recordAudit({
+        organizationId: idFactory.organization(ctx.organizationId), actorUserId: idFactory.user(ctx.userId), actorKind: "user",
+        action: "policy.update", outcome: "success", entityRef: "budget_config:workspace", correlationId, source: "live",
+        detail: { defaultMaxCostCents: defaultMaxCostCents ?? "unlimited", pipelineOverrideCount: pipelineOverrides.length, rationale },
+      });
+    } catch {
+      return NextResponse.json({ ok: false, error: "policy_audit_unconfirmed", correlationId: String(correlationId) }, { status: 503 });
+    }
     return NextResponse.json({ ok: true, data: { budget: { defaultMaxCostCents, pipelineOverrides } } });
   }
 

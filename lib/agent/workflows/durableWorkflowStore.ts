@@ -1,6 +1,19 @@
+import {SLACK_NOTIFICATION_KIND} from '@/lib/integrations/slack/slackNotificationContract';
+import {SLACK_NOTIFICATION_APPROVAL_KIND} from '@/lib/integrations/slack/slackNotificationApprovalKind';
+import {GITHUB_INSTALLATION_RECONNECT_KIND} from '@/lib/desktop/githubInstallationReconnectContract';
+import {RELEASE_DEPLOYMENT_EXECUTION_KIND} from '@/lib/tauri/releaseDeploymentExecutionContract';
+import {RELEASE_WORKFLOW_EVIDENCE_KIND} from '@/lib/tauri/releaseWorkflowEvidenceContract';
+import { RELEASE_PROVIDER_MERGE_APPROVAL_KIND } from '@/lib/tauri/releaseProviderMergeApprovalKind';
+import { RELEASE_PROVIDER_MERGE_KIND } from '@/lib/tauri/releaseProviderMergeKind';
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
+import { RELEASE_MERGE_EXECUTION_KIND } from "@/lib/tauri/releaseMergeExecutionKind";
+import { RELEASE_EXECUTION_APPROVAL_KIND } from "@/lib/tauri/releaseExecutionApprovalKind";
+import { JIRA_TICKET_ACTION_KIND } from "@/lib/releaseops/jiraTicketLifecycleContract";
+import { SERVICENOW_TICKET_ACTION_KIND } from "@/lib/releaseops/serviceNowTicketLifecycleContract";
+import {RELEASE_OPERATION_PLAN_KIND} from "@/lib/tauri/releaseOperationPlanContract";
+import { RELEASE_BATCH_OBSERVATION_KIND } from "./releaseBatchObservationKind";
 
 export const DURABLE_WORKFLOW_STATUSES = [
   "queued",
@@ -77,6 +90,7 @@ function cleanRequired(value: string, field: string): string {
 }
 
 export async function createDurableWorkflow(input: CreateWorkflowInput) {
+  if(cleanRequired(input.workflowKind,"workflowKind")===RELEASE_OPERATION_PLAN_KIND||cleanRequired(input.workflowKind,"workflowKind")===RELEASE_PROVIDER_MERGE_APPROVAL_KIND||cleanRequired(input.workflowKind,"workflowKind")===RELEASE_PROVIDER_MERGE_KIND||cleanRequired(input.workflowKind,"workflowKind")===RELEASE_MERGE_EXECUTION_KIND||cleanRequired(input.workflowKind,"workflowKind")===RELEASE_EXECUTION_APPROVAL_KIND||cleanRequired(input.workflowKind,"workflowKind")===JIRA_TICKET_ACTION_KIND||cleanRequired(input.workflowKind,"workflowKind")===SERVICENOW_TICKET_ACTION_KIND||cleanRequired(input.workflowKind,"workflowKind")===RELEASE_WORKFLOW_EVIDENCE_KIND||cleanRequired(input.workflowKind,"workflowKind")===RELEASE_DEPLOYMENT_EXECUTION_KIND||cleanRequired(input.workflowKind,"workflowKind")===GITHUB_INSTALLATION_RECONNECT_KIND||cleanRequired(input.workflowKind,"workflowKind")===SLACK_NOTIFICATION_KIND||cleanRequired(input.workflowKind,"workflowKind")===SLACK_NOTIFICATION_APPROVAL_KIND)throw new DurableWorkflowConflictError("Use the dedicated release plan store.");
   const maxAttempts = positiveInteger(input.maxAttempts, 3, 20);
   return prisma.$transaction(async (tx) => {
     const run = await tx.durableAgentWorkflow.create({
@@ -122,6 +136,7 @@ export async function claimDurableWorkflow(input: ClaimWorkflowInput) {
         id: input.workflowRunId,
         organizationId: input.organizationId,
         version: input.expectedVersion,
+        workflowKind: { notIn: [RELEASE_BATCH_OBSERVATION_KIND,RELEASE_OPERATION_PLAN_KIND,RELEASE_PROVIDER_MERGE_KIND,RELEASE_PROVIDER_MERGE_APPROVAL_KIND,RELEASE_MERGE_EXECUTION_KIND,RELEASE_EXECUTION_APPROVAL_KIND,JIRA_TICKET_ACTION_KIND,SERVICENOW_TICKET_ACTION_KIND,RELEASE_WORKFLOW_EVIDENCE_KIND,RELEASE_DEPLOYMENT_EXECUTION_KIND,GITHUB_INSTALLATION_RECONNECT_KIND,SLACK_NOTIFICATION_KIND,SLACK_NOTIFICATION_APPROVAL_KIND] },
       },
       select: { attemptCount: true, maxAttempts: true },
     });
@@ -132,6 +147,7 @@ export async function claimDurableWorkflow(input: ClaimWorkflowInput) {
         id: input.workflowRunId,
         organizationId: input.organizationId,
         version: input.expectedVersion,
+        workflowKind: { notIn: [RELEASE_BATCH_OBSERVATION_KIND,RELEASE_OPERATION_PLAN_KIND,RELEASE_PROVIDER_MERGE_KIND,RELEASE_PROVIDER_MERGE_APPROVAL_KIND,RELEASE_MERGE_EXECUTION_KIND,RELEASE_EXECUTION_APPROVAL_KIND,JIRA_TICKET_ACTION_KIND,SERVICENOW_TICKET_ACTION_KIND,RELEASE_WORKFLOW_EVIDENCE_KIND,RELEASE_DEPLOYMENT_EXECUTION_KIND,GITHUB_INSTALLATION_RECONNECT_KIND,SLACK_NOTIFICATION_KIND,SLACK_NOTIFICATION_APPROVAL_KIND] },
         status: { in: CLAIMABLE_STATUSES },
         attemptCount: candidate.attemptCount,
         cancelRequestedAt: null,
@@ -183,6 +199,7 @@ export async function checkpointDurableWorkflow(input: CheckpointInput) {
         organizationId: input.organizationId,
         status: "running",
         version: input.expectedVersion,
+        workflowKind: { notIn: [RELEASE_BATCH_OBSERVATION_KIND,RELEASE_OPERATION_PLAN_KIND,RELEASE_PROVIDER_MERGE_KIND,RELEASE_PROVIDER_MERGE_APPROVAL_KIND,RELEASE_MERGE_EXECUTION_KIND,RELEASE_EXECUTION_APPROVAL_KIND,JIRA_TICKET_ACTION_KIND,SERVICENOW_TICKET_ACTION_KIND,RELEASE_WORKFLOW_EVIDENCE_KIND,RELEASE_DEPLOYMENT_EXECUTION_KIND,GITHUB_INSTALLATION_RECONNECT_KIND,SLACK_NOTIFICATION_KIND,SLACK_NOTIFICATION_APPROVAL_KIND] },
         leaseOwner: input.workerId,
         leaseExpiresAt: { gt: now },
         cancelRequestedAt: null,
@@ -238,6 +255,7 @@ export async function requestDurableWorkflowCancellation(input: {
         id: input.workflowRunId,
         organizationId: input.organizationId,
         version: input.expectedVersion,
+        workflowKind: {notIn:[RELEASE_OPERATION_PLAN_KIND,RELEASE_PROVIDER_MERGE_KIND,RELEASE_PROVIDER_MERGE_APPROVAL_KIND,RELEASE_MERGE_EXECUTION_KIND,RELEASE_EXECUTION_APPROVAL_KIND,JIRA_TICKET_ACTION_KIND,SERVICENOW_TICKET_ACTION_KIND,RELEASE_WORKFLOW_EVIDENCE_KIND,RELEASE_DEPLOYMENT_EXECUTION_KIND,GITHUB_INSTALLATION_RECONNECT_KIND,SLACK_NOTIFICATION_KIND,SLACK_NOTIFICATION_APPROVAL_KIND]},
         status: { notIn: TERMINAL_STATUSES },
         cancelRequestedAt: null,
       },
@@ -274,6 +292,7 @@ export async function acknowledgeDurableWorkflowCancellation(input: {
         id: input.workflowRunId,
         organizationId: input.organizationId,
         version: input.expectedVersion,
+        workflowKind: {notIn:[RELEASE_OPERATION_PLAN_KIND,RELEASE_PROVIDER_MERGE_KIND,RELEASE_PROVIDER_MERGE_APPROVAL_KIND,RELEASE_MERGE_EXECUTION_KIND,RELEASE_EXECUTION_APPROVAL_KIND,JIRA_TICKET_ACTION_KIND,SERVICENOW_TICKET_ACTION_KIND,RELEASE_WORKFLOW_EVIDENCE_KIND,RELEASE_DEPLOYMENT_EXECUTION_KIND,GITHUB_INSTALLATION_RECONNECT_KIND,SLACK_NOTIFICATION_KIND,SLACK_NOTIFICATION_APPROVAL_KIND]},
         status: { notIn: TERMINAL_STATUSES },
         cancelRequestedAt: { not: null },
       },
@@ -333,6 +352,7 @@ export async function resumeDurableWorkflowFromApproval(input: {
         id: input.workflowRunId,
         organizationId: input.organizationId,
         version: input.expectedVersion,
+        workflowKind: {notIn:[RELEASE_OPERATION_PLAN_KIND,RELEASE_PROVIDER_MERGE_KIND,RELEASE_PROVIDER_MERGE_APPROVAL_KIND,RELEASE_MERGE_EXECUTION_KIND,RELEASE_EXECUTION_APPROVAL_KIND,JIRA_TICKET_ACTION_KIND,SERVICENOW_TICKET_ACTION_KIND,RELEASE_WORKFLOW_EVIDENCE_KIND,RELEASE_DEPLOYMENT_EXECUTION_KIND,GITHUB_INSTALLATION_RECONNECT_KIND,SLACK_NOTIFICATION_KIND,SLACK_NOTIFICATION_APPROVAL_KIND]},
         status: "paused_for_approval",
         approvalProposalId: approval.id,
         cancelRequestedAt: null,
@@ -366,14 +386,15 @@ export async function recoverExpiredDurableWorkflowLeases(options: { now?: Date;
   const now = options.now ?? new Date();
   const limit = positiveInteger(options.limit, 50, 200);
   const expired = await prisma.durableAgentWorkflow.findMany({
-    where: { status: "running", leaseExpiresAt: { lte: now } },
+    where: { status: "running", leaseExpiresAt: { lte: now }, workflowKind:{notIn:[RELEASE_OPERATION_PLAN_KIND,RELEASE_PROVIDER_MERGE_KIND,RELEASE_PROVIDER_MERGE_APPROVAL_KIND,RELEASE_MERGE_EXECUTION_KIND,RELEASE_EXECUTION_APPROVAL_KIND,JIRA_TICKET_ACTION_KIND,SERVICENOW_TICKET_ACTION_KIND,RELEASE_WORKFLOW_EVIDENCE_KIND,RELEASE_DEPLOYMENT_EXECUTION_KIND,GITHUB_INSTALLATION_RECONNECT_KIND,SLACK_NOTIFICATION_KIND,SLACK_NOTIFICATION_APPROVAL_KIND]} },
     orderBy: { leaseExpiresAt: "asc" },
     take: limit,
-    select: { id: true, organizationId: true, version: true, attemptCount: true, maxAttempts: true },
+    select: { id: true, organizationId: true, version: true, attemptCount: true, maxAttempts: true, cancelRequestedAt: true },
   });
 
   let recovered = 0;
   for (const candidate of expired) {
+    const cancelled = candidate.cancelRequestedAt !== null;
     const exhausted = candidate.attemptCount >= candidate.maxAttempts;
     const changed = await prisma.$transaction(async (tx) => {
       const update = await tx.durableAgentWorkflow.updateMany({
@@ -381,14 +402,16 @@ export async function recoverExpiredDurableWorkflowLeases(options: { now?: Date;
           id: candidate.id,
           organizationId: candidate.organizationId,
           version: candidate.version,
+          workflowKind:{notIn:[RELEASE_OPERATION_PLAN_KIND,RELEASE_PROVIDER_MERGE_KIND,RELEASE_PROVIDER_MERGE_APPROVAL_KIND,RELEASE_MERGE_EXECUTION_KIND,RELEASE_EXECUTION_APPROVAL_KIND,JIRA_TICKET_ACTION_KIND,SERVICENOW_TICKET_ACTION_KIND,RELEASE_WORKFLOW_EVIDENCE_KIND,RELEASE_DEPLOYMENT_EXECUTION_KIND,GITHUB_INSTALLATION_RECONNECT_KIND,SLACK_NOTIFICATION_KIND,SLACK_NOTIFICATION_APPROVAL_KIND]},
           status: "running",
           leaseExpiresAt: { lte: now },
         },
         data: {
-          status: exhausted ? "failed" : "retrying",
-          failureCode: exhausted ? "attempts_exhausted" : null,
-          nextAttemptAt: exhausted ? null : now,
-          completedAt: exhausted ? now : null,
+          status: cancelled ? "cancelled" : exhausted ? "failed" : "retrying",
+          failureCode: !cancelled && exhausted ? "attempts_exhausted" : null,
+          nextAttemptAt: cancelled || exhausted ? null : now,
+          completedAt: cancelled || exhausted ? now : null,
+          cancelledAt: cancelled ? now : null,
           leaseOwner: null,
           leaseExpiresAt: null,
           version: { increment: 1 },
@@ -400,7 +423,7 @@ export async function recoverExpiredDurableWorkflowLeases(options: { now?: Date;
           workflowRunId: candidate.id,
           organizationId: candidate.organizationId,
           sequence: candidate.version + 1,
-          eventType: exhausted ? "workflow.recovery_failed" : "workflow.recovery_scheduled",
+          eventType: cancelled ? "workflow.cancelled" : exhausted ? "workflow.recovery_failed" : "workflow.recovery_scheduled",
           actorKind: "system",
           detailJson: { reason: "lease_expired", attemptCount: candidate.attemptCount },
         },

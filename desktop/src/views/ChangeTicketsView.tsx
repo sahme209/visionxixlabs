@@ -1,297 +1,51 @@
-import { useEffect, useState } from "react";
-import { ViewShell } from "../components/Primitives";
+import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
+import {open} from '@tauri-apps/plugin-shell';
+import {ViewShell} from '../components/Primitives';
+import {desktopClient} from '../lib/desktopClient';
 
-/**
- * Phase 464 — desktop sibling for /dashboard/change-tickets.
- * Cross-provider Jira/Linear/ServiceNow ticket inbox.
- */
-
-type Status = "pending" | "in_progress" | "approved" | "implemented" | "rejected" | "cancelled" | "unknown";
-type Provider = "jira" | "linear" | "servicenow" | "other" | "unknown";
-
-interface Row {
-  id: string;
-  provider: Provider;
-  externalKey: string;
-  title: string;
-  ticketType: string;
-  status: Status;
-  priority: string;
-  assigneeUserId: string | null;
-  labels: string[];
-  webUrl: string | null;
-  linkedPrCount: number;
-  linkedReleaseCount: number;
-  openedAtIso: string | null;
-  closedAtIso: string | null;
-  lastSyncedAtIso: string;
+/** Existing dormant destination only: the browser inbox owns cookie-backed
+ * ticket reads/sync. Never execute its legacy global-credential routes natively. */
+export function ChangeTicketsView(){
+ const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);
+ const config=desktopClient.config,generation=useRef({config,value:0});
+ if(generation.current.config!==config)generation.current={config,value:generation.current.value+1};
+ return <TicketBrowserBoundary key={`${revision}:${generation.current.value}`} />;
 }
 
-interface DigestData {
-  generatedAt: string;
-  tickets: Row[];
-  summary: {
-    total: number;
-    byStatus: Record<Status, number>;
-    byProvider: Record<Provider, number>;
-  };
+function ticketInboxUrl(apiBase:string):string|null{
+ try{
+  const configured=new URL(apiBase),local=['127.0.0.1','localhost','[::1]'].includes(configured.hostname);
+  // Same origin criteria as the existing desktop browser pairing flow. This
+  // is fixed advisory navigation, not sign-in, provider access or a new grant.
+  if((configured.protocol!=='https:'&&!(configured.protocol==='http:'&&local))||configured.username||configured.password||configured.pathname!=='/'||configured.search||configured.hash)return null;
+  return `${configured.origin}/dashboard/change-tickets`;
+ }catch{return null}
 }
 
-type RespBody =
-  | { ok: true; data: DigestData }
-  | { ok: false; error: string; hint?: string };
-
-const STATUS_CLASS: Record<Status, string> = {
-  pending:     "bg-zinc-700/40 text-zinc-300 border-zinc-600/40",
-  in_progress: "bg-white/15 text-zinc-300 border-white/25",
-  approved:    "bg-violet-500/15 text-violet-300 border-violet-500/25",
-  implemented: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
-  rejected:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
-  cancelled:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
-  unknown:     "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
-};
-
-const PROVIDER_LABEL: Record<Provider, string> = {
-  jira: "Jira", linear: "Linear", servicenow: "ServiceNow", other: "Other", unknown: "?",
-};
-
-export function ChangeTicketsView() {
-  const [resp, setResp] = useState<RespBody | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [networkError, setNetworkError] = useState<string | null>(null);
-
-  function loadList() {
-    setLoading(true);
-    setNetworkError(null);
-    fetch("/api/dashboard/change-ticket-list", { credentials: "include" })
-      .then((r) => r.json())
-      .then((j: RespBody) => setResp(j))
-      .catch((e) => setNetworkError(e instanceof Error ? e.message : "Network error."))
-      .finally(() => setLoading(false));
-  }
-
-  useEffect(() => { loadList(); }, []);
-
-  const data = resp?.ok ? resp.data : null;
-  const errorBody = resp && !resp.ok ? resp : null;
-
-  return (
-    <ViewShell>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold tracking-tight">Change tickets</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">
-            Jira · Linear · ServiceNow normalized to one closed-union.
-          </p>
-        </div>
-      </div>
-
-      <div className="flex items-start gap-2 flex-wrap">
-        <ProviderSyncControls onSynced={loadList} />
-        <PrTicketEnrichButton onEnriched={loadList} />
-      </div>
-
-      {loading && <div className="glass-card p-4 text-sm text-zinc-400">Loading change tickets…</div>}
-
-      {!loading && networkError && (
-        <div className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">{networkError}</div>
-      )}
-
-      {!loading && errorBody?.error === "migration_pending" && (
-        <div className="glass-card p-4 border border-white/30">
-          <p className="text-sm font-semibold text-zinc-300 mb-1">Schema migration pending</p>
-          <p className="text-xs text-zinc-400">{errorBody.hint}</p>
-        </div>
-      )}
-
-      {!loading && errorBody?.error === "auth_required" && (
-        <div className="glass-card p-4 text-sm text-zinc-300 border border-white/20">Sign in required.</div>
-      )}
-
-      {data && (
-        <>
-          <div className="grid grid-cols-4 gap-3">
-            <Stat label="Pending"     value={String(data.summary.byStatus.pending)} />
-            <Stat label="In progress" value={String(data.summary.byStatus.in_progress)} tone={data.summary.byStatus.in_progress > 0 ? "amber" : "zinc"} />
-            <Stat label="Approved"    value={String(data.summary.byStatus.approved)}    tone={data.summary.byStatus.approved > 0 ? "violet" : "zinc"} />
-            <Stat label="Implemented" value={String(data.summary.byStatus.implemented)} tone={data.summary.byStatus.implemented > 0 ? "emerald" : "zinc"} />
-          </div>
-
-          {data.tickets.length === 0 ? (
-            <div className="glass-card p-8 text-center text-sm text-zinc-400">
-              No change tickets ingested yet.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {data.tickets.map((t) => (
-                <div key={t.id} className="glass-card p-3">
-                  <div className="flex items-center justify-between gap-2 flex-wrap">
-                    <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300 border border-zinc-600/40 shrink-0">
-                        {PROVIDER_LABEL[t.provider]}
-                      </span>
-                      <span className="text-[10px] font-mono text-zinc-400 shrink-0">{t.externalKey}</span>
-                      <p className="text-[13px] font-semibold text-white truncate">{t.title}</p>
-                    </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[t.status]}`}>
-                        {t.status.replace("_", " ")}
-                      </span>
-                      {t.linkedPrCount > 0 && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
-                          {t.linkedPrCount} PR
-                        </span>
-                      )}
-                      {t.linkedReleaseCount > 0 && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
-                          {t.linkedReleaseCount} rel
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </>
-      )}
-    </ViewShell>
-  );
-}
-
-type EnrichOutcome =
-  | { kind: "idle" }
-  | { kind: "running" }
-  | { kind: "ok"; prsScanned: number; ticketsUpdated: number; linksAdded: number; linksRemoved: number; unresolvedKeys: string[] }
-  | { kind: "error"; message: string };
-
-function PrTicketEnrichButton({ onEnriched }: { onEnriched: () => void }) {
-  const [outcome, setOutcome] = useState<EnrichOutcome>({ kind: "idle" });
-
-  async function trigger() {
-    setOutcome({ kind: "running" });
-    try {
-      const res = await fetch("/api/dashboard/pr-ticket-enrich", { method: "POST", credentials: "include" });
-      const json = await res.json();
-      if (json.ok) {
-        setOutcome({
-          kind: "ok",
-          prsScanned: json.data.prsScanned,
-          ticketsUpdated: json.data.ticketsUpdated,
-          linksAdded: json.data.linksAdded,
-          linksRemoved: json.data.linksRemoved,
-          unresolvedKeys: json.data.unresolvedKeys,
-        });
-        onEnriched();
-      } else {
-        setOutcome({ kind: "error", message: json.hint ?? json.error });
-      }
-    } catch (e) {
-      setOutcome({ kind: "error", message: e instanceof Error ? e.message : "network error" });
-    }
-  }
-
-  const busy = outcome.kind === "running";
-  return (
-    <div className="glass-card p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono">
-      <button
-        type="button"
-        disabled={busy}
-        onClick={trigger}
-        className="px-2 py-1 rounded border border-violet-500/30 bg-violet-500/[0.06] text-violet-200 hover:bg-violet-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors"
-      >
-        {busy ? "scanning…" : "Refresh PR ↔ ticket links"}
-      </button>
-      {outcome.kind === "ok" && (
-        <span className="text-emerald-300">
-          ✓ {outcome.prsScanned} PRs · {outcome.ticketsUpdated} updated
-          {outcome.linksAdded > 0 && ` · +${outcome.linksAdded}`}
-          {outcome.linksRemoved > 0 && ` · -${outcome.linksRemoved}`}
-          {outcome.unresolvedKeys.length > 0 && (
-            <span className="text-zinc-300 ml-1" title={outcome.unresolvedKeys.join(", ")}>
-              · {outcome.unresolvedKeys.length} unresolved
-            </span>
-          )}
-        </span>
-      )}
-      {outcome.kind === "error" && <span className="text-rose-300">✗ {outcome.message}</span>}
-    </div>
-  );
-}
-
-type SyncProvider = "linear" | "jira" | "servicenow";
-
-type SyncOutcome =
-  | { kind: "idle" }
-  | { kind: "running"; which: SyncProvider }
-  | { kind: "ok"; which: SyncProvider; fetched: number; upserted: number; skipped: number }
-  | { kind: "error"; which: SyncProvider; message: string };
-
-function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
-  const [outcome, setOutcome] = useState<SyncOutcome>({ kind: "idle" });
-
-  async function trigger(which: SyncProvider) {
-    setOutcome({ kind: "running", which });
-    try {
-      const res = await fetch("/api/dashboard/change-ticket-sync", {
-        method: "POST", credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider: which }),
-      });
-      const json = await res.json();
-      if (json.ok) {
-        setOutcome({ kind: "ok", which, fetched: json.data.fetched, upserted: json.data.upserted, skipped: json.data.skipped });
-        onSynced();
-      } else {
-        setOutcome({ kind: "error", which, message: json.hint ?? json.error });
-      }
-    } catch (e) {
-      setOutcome({ kind: "error", which, message: e instanceof Error ? e.message : "network error" });
-    }
-  }
-
-  const busy = outcome.kind === "running";
-  return (
-    <div className="glass-card p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono">
-      <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync</span>
-      {(["linear", "jira", "servicenow"] as const).map((p) => (
-        <button
-          key={p}
-          type="button"
-          disabled={busy}
-          onClick={() => trigger(p)}
-          className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300 hover:border-violet-500/40 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait transition-colors"
-        >
-          {outcome.kind === "running" && outcome.which === p
-            ? "…"
-            : p === "linear" ? "Linear" : p === "jira" ? "Jira" : "ServiceNow"}
-        </button>
-      ))}
-      {outcome.kind === "ok" && (
-        <span className="text-emerald-300">
-          ✓ {outcome.fetched} fetched · {outcome.upserted} upserted
-          {outcome.skipped > 0 && ` · ${outcome.skipped} skipped`}
-        </span>
-      )}
-      {outcome.kind === "error" && (
-        <span className="text-rose-300">✗ {outcome.which} · {outcome.message}</span>
-      )}
-    </div>
-  );
-}
-
-function Stat({ label, value, tone = "zinc" }: { label: string; value: string; tone?: "emerald" | "violet" | "amber" | "rose" | "zinc" }) {
-  const cls = {
-    emerald: "border-emerald-500/20 text-emerald-200",
-    violet:  "border-violet-500/20 text-violet-200",
-    amber:   "border-white/20 text-zinc-200",
-    rose:    "border-rose-500/20 text-rose-200",
-    zinc:    "border-zinc-700/40 text-zinc-200",
-  }[tone];
-  return (
-    <div className={`glass-card p-3 border ${cls}`}>
-      <p className="text-[9px] font-mono uppercase tracking-wider opacity-70">{label}</p>
-      <p className="text-lg font-bold mt-0.5">{value}</p>
-    </div>
-  );
+function TicketBrowserBoundary(){
+ const context=useRef(desktopClient.config).current,revision=useRef(desktopClient.getContextRevision()).current;
+ const mounted=useRef(true),opening=useRef(false),pendingOpen=useRef<{stop:()=>void}|null>(null);
+ const [busy,setBusy]=useState(false),[error,setError]=useState<string>();
+ useEffect(()=>{mounted.current=true;return()=>{mounted.current=false;pendingOpen.current?.stop()}},[]);
+ const destination=ticketInboxUrl(context.apiBase);
+ const owns=()=>mounted.current&&desktopClient.config===context&&desktopClient.getContextRevision()===revision;
+ async function openInbox(){
+  if(!destination||opening.current||!owns())return;
+  opening.current=true;setBusy(true);setError(undefined);
+  let rejectStop!:(error:Error)=>void;
+  const stopped=new Promise<never>((_,reject)=>{rejectStop=reject});
+  const operation={stop:()=>rejectStop(new Error('opening_unconfirmed'))};pendingOpen.current=operation;
+  const timer=setTimeout(operation.stop,15000);
+  // Shell opening cannot be cancelled. A late open may still succeed, so a
+  // deadline means unconfirmed outcome and never triggers an automatic retry.
+  try{await Promise.race([open(destination),stopped])}catch{if(owns())setError('Browser opening could not be confirmed. Check your browser before trying again.')}finally{clearTimeout(timer);if(pendingOpen.current===operation)pendingOpen.current=null;opening.current=false;if(owns())setBusy(false)}
+ }
+ return <ViewShell><section aria-label="Change ticket browser handoff" className="max-w-2xl space-y-5">
+  <div><h1 className="text-xl font-semibold tracking-tight text-zinc-100">Change tickets</h1><p className="mt-2 text-sm leading-6 text-zinc-400">Review the existing Jira, Linear and ServiceNow ticket inbox in your browser.</p></div>
+  <p className="text-sm leading-6 text-zinc-400">Native ticket creation, synchronization and closure are not available here. This screen does not read ticket data or run provider actions.</p>
+  <p className="text-xs leading-6 text-zinc-500">The browser uses its own authenticated session. Verify the selected workspace in the browser before using its ticket controls. No desktop credential is transferred.</p>
+  <button type="button" className="btn-secondary" disabled={!destination||busy} onClick={()=>void openInbox()}>{busy?'Opening browser…':'Open ticket inbox in browser'}</button>
+  {!destination&&<p role="alert" className="text-sm text-zinc-300">The configured service address is not a secure service origin. Review the service address in Settings before opening tickets.</p>}
+  {error&&<p role="alert" className="text-sm text-zinc-300">{error}</p>}
+ </section></ViewShell>;
 }

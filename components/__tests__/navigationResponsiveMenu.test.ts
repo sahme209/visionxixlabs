@@ -22,3 +22,19 @@ it("closes the mobile dialog and releases both scroll locks when desktop navigat
   expect(document.body.style.overflow).toBe("auto");
   expect(document.documentElement.style.overflow).toBe("scroll");
 });
+
+it("keeps the viewport menu outside the header blur containing block", () => {
+  vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => { callback(0); return 0; });
+  render(createElement(Navigation));
+  const navigation = screen.getByRole("navigation", { name: "Primary navigation" });
+  expect(navigation.className).not.toContain("backdrop-blur");
+  expect(navigation.firstElementChild?.className).toContain("backdrop-blur-xl");
+  fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
+  const dialog = screen.getByRole("dialog", { name: "Site navigation" });
+  expect(dialog.parentElement).toBe(navigation);
+  expect(dialog.className).toContain("overflow-y-auto");
+  expect(screen.getByRole("link", { name: "Contact" })).toBeDefined();
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(document.activeElement).toBe(screen.getByRole("button", { name: "Open navigation menu" }));
+});

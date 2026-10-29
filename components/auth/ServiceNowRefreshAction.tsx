@@ -1,0 +1,8 @@
+'use client';
+import {useEffect,useRef,useState} from 'react';
+export function ServiceNowRefreshAction({connectionId,revision}:{connectionId:string;revision:string}){
+ const flight=useRef<AbortController|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
+ useEffect(()=>()=>{flight.current?.abort()},[]);
+ async function refresh(){if(flight.current)return;const c=new AbortController();flight.current=c;setBusy(true);setMessage('');try{const response=await fetch('/api/account/integrations/servicenow/refresh',{method:'POST',credentials:'same-origin',headers:{'content-type':'application/json'},body:JSON.stringify({connectionId,revision}),signal:AbortSignal.any([c.signal,AbortSignal.timeout(40000)])}),body=await response.json();if(c.signal.aborted)return;if(response.ok&&body?.ok===true&&body.data?.status==='connected_read_only'&&body.data.connectionId===connectionId){window.location.reload();return}setMessage('The refresh was not confirmed. Reload the saved connection state before taking another action. No automatic retry was run.')}catch{if(!c.signal.aborted)setMessage('The refresh was not confirmed. Reload the saved connection state. Do not retry this request.')}finally{if(!c.signal.aborted)setBusy(false)}}
+ return <div className="mt-4"><button className="rounded-lg border border-current/20 px-4 py-2 text-sm disabled:opacity-50" type="button" disabled={busy||!!message} onClick={()=>void refresh()}>{busy?'Verifying ServiceNow…':'Refresh existing connection'}</button>{message&&<p role="status" className="mt-3 text-sm">{message} <a href="/account/integrations/servicenow" className="underline">Reload connection</a></p>}</div>;
+}

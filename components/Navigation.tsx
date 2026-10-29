@@ -91,14 +91,16 @@ export function Navigation() {
   return (
     <nav
       aria-label="Primary navigation"
-      className={`site-navigation fixed inset-x-0 top-0 z-50 backdrop-blur-xl transition-[background-color,border-color] duration-300 ${
+      className={`site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 ${
         scrolled
           ? "border-b border-white/[0.09] bg-[#090a08]/88"
           : "border-b border-transparent bg-[#090a08]/62"
       }`}
     >
+      {/* Blur only the bar: a backdrop filter on nav would constrain the fixed
+          mobile dialog to the bar height instead of the viewport. */}
       <div
-        className={`mx-auto flex max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 ${
+        className={`mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 ${
           scrolled ? "h-14 xl:h-16" : "h-16 xl:h-[72px]"
         }`}
       >

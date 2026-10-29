@@ -76,10 +76,17 @@ function testModeFailure(): string | null {
 }
 
 async function submitInvoiceItem(record: SettlementRecord, customerId: string, currency: string): Promise<{ ok: true; stripeInvoiceItemId: string } | { ok: false }> {
+  // Awaited storage/claim work is not lasting permission to use Stripe.
+  // Recheck the test-only gate at the SDK boundary and capture only a test
+  // credential before module loading can yield. Never reuse a later live key.
+  if (testModeFailure()) return { ok: false };
   const key = process.env.STRIPE_SECRET_KEY?.trim();
-  if (!key) return { ok: false };
+  if (!key?.startsWith("sk_test_")) return { ok: false };
   try {
     const Stripe = (await import("stripe")).default;
+    // Import can yield too. Refuse revocation or key rotation rather than
+    // crossing accounts/modes or replaying under changed provider authority.
+    if (testModeFailure() || process.env.STRIPE_SECRET_KEY?.trim() !== key) return { ok: false };
     const stripe = new Stripe(key, { apiVersion: "2026-01-28.clover" });
     const item = await stripe.invoiceItems.create({
       customer: customerId,

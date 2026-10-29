@@ -1,8 +1,11 @@
+import {sendSmallSonnet55Messages} from "./sonnet55Messages";
+import { boundedAIInput } from "../inputByteBound";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 import "server-only";
 
-import { generateText, streamText, type TextStreamPart, type ToolSet } from "ai";
-import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
+import { generateText, streamText, Output, type TextStreamPart, type ToolSet } from "ai";
+import { consumeSmallSonnetDispatch } from "@/lib/billing/smallSonnetRequest";
+import { boundedAIOutputTokens } from "@/lib/billing/requestReservationCents";
 import { redact } from "@/lib/security/redaction";
 import {
   AIProviderError,
@@ -41,6 +44,19 @@ export function parseGatewayStructuredResponse<T>(response: AITextResponse): AIS
   };
 }
 
+/** Inspect only bounded status/cause metadata; never expose upstream text or bodies. */
+function gatewayStreamFailure(error: unknown, latencyMs: number): AIProviderError {
+  let current = error;
+  for (let depth = 0; depth < 4 && current && typeof current === "object"; depth++) {
+    const value = current as {statusCode?: unknown; cause?: unknown};
+    if (value.statusCode === 401) return new AIProviderError({provider: "vercel_gateway", kind: "invalid_key", message: "AI Gateway authentication was rejected.", latencyMs});
+    if (value.statusCode === 403) return new AIProviderError({provider: "vercel_gateway", kind: "model_unavailable", message: "The configured AI Gateway account cannot access this model.", latencyMs});
+    if (value.statusCode === 404) return new AIProviderError({provider: "vercel_gateway", kind: "model_unavailable", message: "The configured AI Gateway model or provider route is unavailable.", latencyMs});
+    current = value.cause;
+  }
+  return new AIProviderError({provider: "vercel_gateway", kind: "network", message: "AI Gateway stream failed", latencyMs});
+}
+
 export class VercelGatewayProvider implements AIProvider {
   readonly name = "vercel_gateway" as const;
   readonly defaultModel: string;
@@ -63,7 +79,13 @@ export class VercelGatewayProvider implements AIProvider {
   }
 
   async generateText(prompt: string, options?: AIRequestOptions): Promise<AITextResponse> {
-    return this.generateTextWithRetries(prompt, options);
+    let maxTokens: number;
+    try {
+      maxTokens = boundedAIOutputTokens(options?.maxTokens);
+    } catch {
+      throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "governed output token bound is invalid" });
+    }
+    return this.generateTextWithRetries(prompt, { ...options, maxTokens });
   }
 
   private async generateTextWithRetries(prompt: string, options?: AIRequestOptions, maxRetries?: 0): Promise<AITextResponse> {
@@ -73,24 +95,30 @@ export class VercelGatewayProvider implements AIProvider {
     }
     const startedAt = Date.now();
     const model = this.model(options);
+    if(options?.smallAgent55Dispatch) return sendSmallSonnet55Messages(prompt,{...options,model});
     const correlationTag = options?.correlationId
       ? `correlation:${options.correlationId}`.slice(0, 64)
       : "request:unattributed";
     try {
+      const payload = boundedAIInput(prompt, options?.system);
+      const bounded = options?.smallAgentDispatch
+        ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
+        : undefined;
       const result = await generateText({
         model,
         // Scrub after composing schema/label instructions, including callers
         // that reach this provider without going through the manager.
-        prompt: redact(prompt),
-        system: options?.system === undefined ? undefined : redact(options.system),
+        ...payload,
         temperature: options?.temperature,
         maxOutputTokens: options?.maxTokens,
-        ...(maxRetries === 0 ? { maxRetries: 0 } : {}),
+        ...(maxRetries === 0 || bounded ? { maxRetries: 0 } : {}),
         abortSignal: options?.timeoutMs ? AbortSignal.timeout(options.timeoutMs) : undefined,
         providerOptions: {
+          ...(bounded ? { anthropic: bounded.anthropic } : {}),
           gateway: {
             user: options?.organizationId,
             tags: ["product:axiom-agent", correlationTag],
+            ...(bounded?.gateway ?? {}),
           },
         },
       });
@@ -142,22 +170,30 @@ export class VercelGatewayProvider implements AIProvider {
     yield { text: "", done: true, finishReason: result.finishReason };
   }
 
-  /** Single SDK attempt for the future admitted streaming lane. Keep the
-   * ordinary manager contract unchanged until its durable admission is wired.
+  /** Single SDK attempt for admitted streaming. JSON output is an internal
+   * formatting request, never permission or a substitute for final validation.
    * Never buffer text or turn an interrupted response into terminal success. */
   async *streamTextOnce(
     prompt: string,
     options?: AIRequestOptions & { abortSignal?: AbortSignal },
+    format?: "json",
   ): AsyncGenerator<GatewayAdmittedStreamChunk, void, unknown> {
     denyIsolatedExternalIO();
     if (!this.isConfigured()) {
       throw new AIProviderError({ provider: this.name, kind: "not_configured", message: "AI Gateway is not configured" });
     }
-    const maxTokens = options?.maxTokens ?? AI_REQUEST_MAX_OUTPUT_TOKENS;
-    if (!Number.isSafeInteger(maxTokens) || maxTokens < 1 || maxTokens > AI_REQUEST_MAX_OUTPUT_TOKENS) {
+    let maxTokens: number;
+    try {
+      maxTokens = boundedAIOutputTokens(options?.maxTokens);
+    } catch {
       throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "governed output token bound is invalid" });
     }
     const model = this.model(options);
+    if(options?.smallAgent55Dispatch){
+      const response=await sendSmallSonnet55Messages(prompt,{...options,model});
+      if(response.text)yield {text:response.text,done:false};
+      yield {text:"",done:true,response};return;
+    }
     const startedAt = Date.now();
     const controller = new AbortController();
     const signal = AbortSignal.any([
@@ -168,15 +204,23 @@ export class VercelGatewayProvider implements AIProvider {
     let upstream: AsyncIterator<TextStreamPart<ToolSet>> | undefined;
     try {
       signal.throwIfAborted();
+      const payload = boundedAIInput(prompt, options?.system);
+      const bounded = options?.smallAgentDispatch
+        ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
+        : undefined;
       const result = streamText({
+        ...(format === "json" && !bounded ? {output: Output.json()} : {}),
+        // fullStream below returns a fixed safe error. The SDK default handler
+        // logs raw upstream payloads, which may contain prompts or account data.
+        onError: () => {},
         model,
-        prompt: redact(prompt),
-        system: options?.system === undefined ? undefined : redact(options.system),
+        ...payload,
         temperature: options?.temperature,
         maxOutputTokens: maxTokens,
         maxRetries: 0,
         abortSignal: signal,
-        providerOptions: { gateway: {
+        providerOptions: { ...(bounded ? { anthropic: bounded.anthropic } : {}), gateway: {
+          ...(bounded?.gateway ?? {}),
           user: options?.organizationId,
           tags: ["product:axiom-agent", options?.correlationId ? `correlation:${options.correlationId}`.slice(0, 64) : "request:unattributed"],
         } },
@@ -188,9 +232,8 @@ export class VercelGatewayProvider implements AIProvider {
         if (next.done) break;
         const part = next.value;
         signal.throwIfAborted();
-        if (part.type === "error" || part.type === "abort") {
-          throw new AIProviderError({ provider: this.name, kind: part.type === "abort" ? "timeout" : "network", message: "AI Gateway stream interrupted" });
-        }
+        if (part.type === "error") throw gatewayStreamFailure(part.error, Date.now() - startedAt);
+        if (part.type === "abort") throw new AIProviderError({provider: this.name, kind: "timeout", message: "AI Gateway stream interrupted"});
         if (part.type === "text-delta" && part.text) yield { text: part.text, done: false };
         if (part.type === "finish") {
           if (!["stop", "length", "content-filter"].includes(part.finishReason)) {
@@ -214,7 +257,8 @@ export class VercelGatewayProvider implements AIProvider {
       } };
     } catch (error) {
       if (error instanceof AIProviderError) throw error;
-      throw new AIProviderError({ provider: this.name, kind: signal.aborted ? "timeout" : "network", message: "AI Gateway stream failed", latencyMs: Date.now() - startedAt });
+      if (!signal.aborted) throw gatewayStreamFailure(error, Date.now() - startedAt);
+      throw new AIProviderError({ provider: this.name, kind: "timeout", message: "AI Gateway stream failed", latencyMs: Date.now() - startedAt });
     } finally {
       // Includes return()/break from a consumer after any partial text.
       controller.abort();
@@ -250,8 +294,10 @@ export class VercelGatewayProvider implements AIProvider {
   /** Internal single-attempt lane: returns the paid envelope before parsing.
    * This is a retry restriction, never a public metering/authorization switch. */
   generateTextOnce(prompt: string, options?: AIRequestOptions): Promise<AITextResponse> {
-    const maxTokens = options?.maxTokens ?? AI_REQUEST_MAX_OUTPUT_TOKENS;
-    if (!Number.isSafeInteger(maxTokens) || maxTokens < 1 || maxTokens > AI_REQUEST_MAX_OUTPUT_TOKENS) {
+    let maxTokens: number;
+    try {
+      maxTokens = boundedAIOutputTokens(options?.maxTokens);
+    } catch {
       throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "governed output token bound is invalid" });
     }
     return this.generateTextWithRetries(prompt, {

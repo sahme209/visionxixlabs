@@ -8,8 +8,9 @@ export function parsePublicPlanSelection(query: { plan?: unknown; interval?: unk
     ? { planId: query.plan, billingInterval: query.interval } : null;
 }
 export function publicPlanSelectionPath(selection: PublicPlanSelection): string {
-  return `/plans?plan=${selection.planId}&interval=${selection.billingInterval}`;
+  return `/control/plans?plan=${selection.planId}&interval=${selection.billingInterval}`;
 }
-export function publicPlanSignInPath(selection: PublicPlanSelection): string {
-  return `/auth/signin?callbackUrl=${encodeURIComponent(publicPlanSelectionPath(selection))}`;
+export function publicPlanSignInPath(selection: PublicPlanSelection, ownedTestCheckout = false): string {
+  const target = ownedTestCheckout ? `/plans?plan=${selection.planId}&interval=${selection.billingInterval}` : publicPlanSelectionPath(selection);
+  return `/auth/signin?callbackUrl=${encodeURIComponent(target)}`;
 }

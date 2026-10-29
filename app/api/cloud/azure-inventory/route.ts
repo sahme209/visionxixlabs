@@ -7,7 +7,6 @@
 
 import type { NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
-import { extractAzureLiveInventory } from "@/lib/cloud/azure/azureLiveInventory";
 import { apiOk, apiErr, asApiSourceMode, resolveCorrelationId } from "@/lib/api";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
@@ -20,11 +19,13 @@ export async function GET(req: NextRequest) {
     if (!ctx.isAuthenticated) {
       throw AxiomErrors.validation("auth.required", "Sign in required.");
     }
-    const result = await extractAzureLiveInventory();
+    // Deployment-host credentials are not a tenant-owned connection.
+    // Keep internal extractors separate from this authenticated tenant view.
+    const result = { mode: "blocked" as const, counts: { vmCount: 0, storageAccountCount: 0, vnetCount: 0, nsgCount: 0 }, publicIpExposedVmCount: 0, unencryptedStorageCount: 0, durationMs: 0, limitations: ["tenant_connection_required: Tenant-scoped Azure inventory is not wired to this view. Use the verified desktop Azure connection."] };
     return apiOk(result, {
       correlationId,
       safetyContract: "axiom_os_state_read_only",
-      sourceMode: asApiSourceMode(result.mode === "live" ? "live" : "preview"),
+      sourceMode: asApiSourceMode("preview"),
     });
   } catch (err) {
     return apiErr(err, { correlationId, safetyContract: "axiom_os_state_read_only" });

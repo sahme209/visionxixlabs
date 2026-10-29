@@ -1,0 +1,7 @@
+# Bind multi-file validation to the captured Git parent
+
+The active GitHub client captured a branch head and its tree, then checked each reviewed file through the mutable branch name. If that branch moved, the checks could describe a different tree from the parent used to construct the commit. Multi-file validation now reads each file at the captured parent SHA. Proposal bytes, per-file reviewed blob checks, tenant-token resolution, permission and approval gates are unchanged.
+
+A regression reproduced the old client's apparent success when a floating branch contained the reviewed blob but the captured parent still contained an older blob. The fixed client refuses before any write request. This consistency regression uses a fixed synthetic GitHub transport; it is not evidence that GitHub would have accepted a divergent ref update in production. A second case verifies final HTTP 422 non-fast-forward rejection propagates without retry, force update or rebuilding on a newer parent. Existing `force: false` and the original parent remain intact. Seventy-two focused client/Agent approval/proposal tests passed; independent review found no blocker.
+
+This does not add an exact branch-head compare-and-swap, complete the legacy pipeline's artifact binding, authorize a live GitHub write, or establish real repository CI acceptance. No provider inference, customer credential, cloud write or production database change was used.

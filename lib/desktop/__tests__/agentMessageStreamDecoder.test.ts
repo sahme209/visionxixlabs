@@ -44,3 +44,77 @@ it("preserves a supplied cancellation reason instead of replacing it with the co
   controller.abort(reason);
   await expect(readAgentMessageStream(response([terminal]), vi.fn(), controller.signal)).rejects.toBe(reason);
 });
+
+it("stops a pending body read even when the transport does not relay cancellation", async () => {
+  const controller = new AbortController(), cancel = vi.fn();
+  const stalled = new Response(new ReadableStream({ cancel }), { headers: { "content-type": AGENT_STREAM_CONTENT_TYPE } });
+  const pending = readAgentMessageStream(stalled, vi.fn(), controller.signal);
+  const rejected = expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  controller.abort();
+  await rejected;
+  expect(cancel).toHaveBeenCalledOnce();
+}, 1000);
+
+it("discards buffered frames after cancellation from a draft callback", async () => {
+  const controller = new AbortController(), drafts: string[] = [], activity = vi.fn();
+  const pending = readAgentMessageStream(response([
+    { type: "draft_delta", text: "first" },
+    { type: "draft_delta", text: "late" },
+    { type: "tool_activity", activity: {step: 1, toolName: "read_github_file", state: "running"} },
+    terminal,
+  ]), text => { drafts.push(text); controller.abort(); }, controller.signal, activity);
+  await expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  expect(drafts).toEqual(["first"]);
+  expect(activity).not.toHaveBeenCalled();
+});
+
+it("does not wait for an uncooperative transport cleanup after Stop", async () => {
+  const controller = new AbortController();
+  const stalled = new Response(new ReadableStream({ cancel: () => new Promise<void>(() => {}) }), { headers: { "content-type": AGENT_STREAM_CONTENT_TYPE } });
+  const pending = readAgentMessageStream(stalled, vi.fn(), controller.signal);
+  const rejected = expect(pending).rejects.toMatchObject({ name: "AbortError" });
+  controller.abort();
+  await rejected;
+}, 1000);
+
+it("rejects an already stopped stream without waiting for its transport cleanup", async () => {
+  const controller = new AbortController(); controller.abort();
+  const stalled = new Response(new ReadableStream({ cancel: () => new Promise<void>(() => {}) }), { headers: { "content-type": AGENT_STREAM_CONTENT_TYPE } });
+  await expect(readAgentMessageStream(stalled, vi.fn(), controller.signal)).rejects.toMatchObject({ name: "AbortError" });
+}, 1000);
+
+it("reports ordered tool activity without treating progress as a result or approval", async () => {
+  const seen = vi.fn();
+  const result = await readAgentMessageStream(response([
+    {type: "tool_activity", activity: {step: 1, toolName: "read_github_file", state: "running"}},
+    {type: "tool_activity", activity: {step: 1, toolName: "read_github_file", state: "completed"}},
+    terminal,
+  ]), vi.fn(), new AbortController().signal, seen);
+  expect(seen.mock.calls.map(([event]) => event.state)).toEqual(["running", "completed"]);
+  expect(result).toEqual(terminal.data);
+});
+it.each([
+  [{step: 1, toolName: "read_github_file", state: "completed"}],
+  [{step: 2, toolName: "read_github_file", state: "running"}],
+  [{step: 1, toolName: "read_github_file", state: "running", args: {secret: "must not cross wire"}}],
+  [{step: 1, toolName: "read_github_file", state: "running"}, {step: 1, toolName: "other_tool", state: "completed"}],
+  [{step: 1, toolName: "read_github_file", state: "running"}, {step: 1, toolName: "read_github_file", state: "running"}],
+].map(events => ({events})))("rejects malformed or reordered activity %#", async ({events}) => {
+  await expect(readAgentMessageStream(response([...events.map(activity => ({type: "tool_activity", activity})), terminal]), vi.fn(), new AbortController().signal, vi.fn())).rejects.toThrow();
+});
+
+it("limits activity presentation to the registered read-only surface", async () => {
+  const {AGENT_TOOL_ACTIVITY_LABELS, isAgentToolActivity} = await import("../agentMessageStreamProtocol");
+  const {TOOL_REGISTRY} = await import("../../axiom/agentRuntime/tools");
+  expect(Object.keys(AGENT_TOOL_ACTIVITY_LABELS).sort()).toEqual(TOOL_REGISTRY.filter(tool => tool.riskLevel === "low").map(tool => tool.name).sort());
+  expect(isAgentToolActivity({step: 1, toolName: "trigger_aws_deploy", state: "running"})).toBe(false);
+  expect(isAgentToolActivity({step: 9, toolName: "read_github_file", state: "running"})).toBe(false);
+  expect(isAgentToolActivity({step: 1, toolName: "__proto__", state: "running"})).toBe(false);
+});
+it('preserves a typed policy issue without inventing a successful answer',async()=>{
+ const data={reply:'Policy unavailable',proposal:null,usage:null,issue:'workspace_agent_policy_unavailable'};
+ expect(await readAgentMessageStream(response([{type:'result',data}]),vi.fn(),new AbortController().signal)).toEqual(data);
+});
+it.each(['arbitrary_private_error', {secret:'hidden'}, 4])('rejects unsupported issue metadata %j',async issue=>{
+ await expect(readAgentMessageStream(response([{type:'result',data:{...terminal.data,issue}}]),vi.fn(),new AbortController().signal)).rejects.toThrow();
+});

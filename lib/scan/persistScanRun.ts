@@ -15,13 +15,14 @@
  *   3. AxiomFinding rows for every preview finding
  *   4. CloudAccount.lastScannedAt update
  *
- * Failures here are warn-only: the scan response is unchanged so the
- * caller still sees their findings, but the next read from the
- * canonical tables will be empty. This is the same degradation
+ * Core persistence failures are warn-only to the caller and roll back the
+ * account, completed run, findings and recommendations together. The caller
+ * still sees its scan response; no durable completion notification is sent. This is the same degradation
  * pattern used by other bridges in the codebase.
  */
 
 import { prisma } from "@/lib/db";
+import type { Prisma } from "@prisma/client";
 import type { PreviewFinding, PreviewRecommendation } from "@/lib/cloud/aws/awsPreviewScanner";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import { notifyScanComplete } from "@/lib/notifications/scanCompleteNotifier";
@@ -155,112 +156,114 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
   }
 
   try {
-    const cloudAccount = await prisma.cloudAccount.upsert({
-      where: {
-        organizationId_provider_externalAccountId: {
+    // A completed run and its core evidence commit together, or not at all.
+    const { cloudAccount, run, recommendationCount, approvalItems } = await prisma.$transaction(async tx => {
+      const approvalItems: Prisma.AxiomApprovalItemCreateArgs[] = [];
+      const cloudAccount = await tx.cloudAccount.upsert({
+        where: {
+          organizationId_provider_externalAccountId: {
+            organizationId: input.organizationId,
+            provider: input.provider,
+            externalAccountId: input.externalAccountId,
+          },
+        },
+        update: {
+          regions: { set: [input.region] },
+          lastScannedAt: new Date(),
+        },
+        create: {
           organizationId: input.organizationId,
           provider: input.provider,
           externalAccountId: input.externalAccountId,
+          regions: [input.region],
+          lastScannedAt: new Date(),
         },
-      },
-      update: {
-        regions: { set: [input.region] },
-        lastScannedAt: new Date(),
-      },
-      create: {
-        organizationId: input.organizationId,
-        provider: input.provider,
-        externalAccountId: input.externalAccountId,
-        regions: [input.region],
-        lastScannedAt: new Date(),
-      },
-    });
-
-    const now = new Date();
-    const run = await prisma.axiomAgentRun.create({
-      data: {
-        userId: input.userId,
-        organizationId: input.organizationId,
-        cloudAccountId: cloudAccount.id,
-        trigger: input.trigger ?? "manual",
-        status: "completed",
-        startedAt: now,
-        completedAt: now,
-        snapshotData: input.snapshot as object,
-        summary: input.summary ?? `${input.findings.length} finding${input.findings.length === 1 ? "" : "s"} from ${input.provider}/${input.externalAccountId}`,
-      },
-    });
-
-    // Per-row create so we can map PreviewFinding.id → AxiomFinding.id.
-    // Recommendations carry a PreviewFinding.id reference which must
-    // be translated to the just-created AxiomFinding row.
-    const previewIdToDbId = new Map<string, string>();
-    for (const f of input.findings) {
-      const created = await prisma.axiomFinding.create({
-        data: {
-          runId: run.id,
-          category: inferCategory(f.ruleCode),
-          severity: clampSeverity(f.risk),
-          title: f.title,
-          description: f.description,
-          affectedResources: f.resourceRef ? [f.resourceRef] : [],
-          region: input.region,
-          provider: input.provider,
-          confidence: "medium",
-          data: {
-            ruleCode: f.ruleCode,
-            snapshotId: f.snapshotId,
-            source: f.source,
-          },
-        },
-        select: { id: true },
       });
-      previewIdToDbId.set(f.id, created.id);
-    }
 
-    // Persist recommendations + auto-create approval items for those
-    // that need a human gate. Only proceed when the scanner returned
-    // recommendations (some paths run inventory-only).
-    let recommendationCount = 0;
-    if (input.recommendations && input.recommendations.length > 0) {
-      for (const r of input.recommendations) {
-        const findingDbId = previewIdToDbId.get(r.findingId);
-        if (!findingDbId) continue; // orphan rec — skip rather than fail the whole scan
-        const disposition = dispositionFor(r.actionClass);
-        const risk = riskFor(r.actionClass);
-        const matchedFinding = input.findings.find((f) => f.id === r.findingId);
-        const recommendedStateText = matchedFinding?.description ?? r.title;
-        const action = actionTypeFor(r.actionClass, recommendedStateText);
-        const rec = await prisma.axiomRecommendation.create({
+      const now = new Date();
+      const run = await tx.axiomAgentRun.create({
+        data: {
+          userId: input.userId,
+          organizationId: input.organizationId,
+          cloudAccountId: cloudAccount.id,
+          trigger: input.trigger ?? "manual",
+          status: "completed",
+          startedAt: now,
+          completedAt: now,
+          snapshotData: input.snapshot as object,
+          summary: input.summary ?? `${input.findings.length} finding${input.findings.length === 1 ? "" : "s"} from ${input.provider}/${input.externalAccountId}`,
+        },
+      });
+
+      // Per-row create so we can map PreviewFinding.id → AxiomFinding.id.
+      // Recommendations carry a PreviewFinding.id reference which must
+      // be translated to the just-created AxiomFinding row.
+      const previewIdToDbId = new Map<string, string>();
+      for (const f of input.findings) {
+        const created = await tx.axiomFinding.create({
           data: {
             runId: run.id,
-            findingId: findingDbId,
-            title: r.title,
-            rationale: r.description,
-            disposition,
-            dispositionReason: `Scanner classified as ${r.actionClass.replace(/_/g, " ")}.`,
-            actionType: action,
-            riskLevel: risk,
-            effort: "low",
-            actionable: disposition !== "report_only" && disposition !== "blocked",
-            monthlyLow: r.monthlySavingsUsd ?? 0,
-            monthlyHigh: r.monthlySavingsUsd ?? 0,
-            yearlyLow: (r.monthlySavingsUsd ?? 0) * 12,
-            yearlyHigh: (r.monthlySavingsUsd ?? 0) * 12,
+            category: inferCategory(f.ruleCode),
+            severity: clampSeverity(f.risk),
+            title: f.title,
+            description: f.description,
+            affectedResources: f.resourceRef ? [f.resourceRef] : [],
+            region: input.region,
+            provider: input.provider,
+            confidence: "medium",
+            data: {
+              ruleCode: f.ruleCode,
+              snapshotId: f.snapshotId,
+              source: f.source,
+            },
           },
           select: { id: true },
         });
-        recommendationCount++;
+        previewIdToDbId.set(f.id, created.id);
+      }
 
-        // Approval-required recommendations enter the approval queue.
-        // We don't have AxiomExecutionPlan rows yet (that machinery
-        // lives in the executor pipeline), so we wire the approval
-        // item to planItemId=rec.id as a stand-in until the planner
-        // runs. The approval center reads by organizationId + status,
-        // so the stand-in id never causes a join failure.
-        if (disposition === "approval_required") {
-          try {
-            await prisma.axiomApprovalItem.create({
+      // Persist recommendations + auto-create approval items for those
+      // that need a human gate. Only proceed when the scanner returned
+      // recommendations (some paths run inventory-only).
+      let recommendationCount = 0;
+      if (input.recommendations && input.recommendations.length > 0) {
+        for (const r of input.recommendations) {
+          const findingDbId = previewIdToDbId.get(r.findingId);
+          if (!findingDbId) continue; // orphan rec — skip rather than fail the whole scan
+          const disposition = dispositionFor(r.actionClass);
+          const risk = riskFor(r.actionClass);
+          const matchedFinding = input.findings.find((f) => f.id === r.findingId);
+          const recommendedStateText = matchedFinding?.description ?? r.title;
+          const action = actionTypeFor(r.actionClass, recommendedStateText);
+          const rec = await tx.axiomRecommendation.create({
+            data: {
+              runId: run.id,
+              findingId: findingDbId,
+              title: r.title,
+              rationale: r.description,
+              disposition,
+              dispositionReason: `Scanner classified as ${r.actionClass.replace(/_/g, " ")}.`,
+              actionType: action,
+              riskLevel: risk,
+              effort: "low",
+              actionable: disposition !== "report_only" && disposition !== "blocked",
+              monthlyLow: r.monthlySavingsUsd ?? 0,
+              monthlyHigh: r.monthlySavingsUsd ?? 0,
+              yearlyLow: (r.monthlySavingsUsd ?? 0) * 12,
+              yearlyHigh: (r.monthlySavingsUsd ?? 0) * 12,
+            },
+            select: { id: true },
+          });
+          recommendationCount++;
+
+          // Approval-required recommendations enter the approval queue.
+          // We don't have AxiomExecutionPlan rows yet (that machinery
+          // lives in the executor pipeline), so we wire the approval
+          // item to planItemId=rec.id as a stand-in until the planner
+          // runs. The approval center reads by organizationId + status,
+          // so the stand-in id never causes a join failure.
+          if (disposition === "approval_required") {
+            approvalItems.push({
               data: {
                 organizationId: input.organizationId,
                 runId: run.id,
@@ -284,20 +287,26 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
                 rollbackAvailable: false,
               },
             });
-          } catch (approvalErr) {
-            console.warn(
-              "[persistScanRun] approval item create failed:",
-              approvalErr instanceof Error ? approvalErr.message : approvalErr,
-            );
           }
         }
       }
+
+      return { cloudAccount, run, recommendationCount, approvalItems };
+    }, { maxWait: 5000, timeout: 30000 });
+
+    // Preserve the legacy approval bridge as a separate best-effort step.
+    // Its storage failure must not poison the committed scan transaction.
+    for (const item of approvalItems) {
+      try {
+        await prisma.axiomApprovalItem.create(item);
+      } catch (approvalErr) {
+        console.warn("[persistScanRun] approval item create failed:",
+          approvalErr instanceof Error ? approvalErr.message : approvalErr);
+      }
     }
 
-    // Auto-create a daily scheduled scan after the first manual scan.
-    // The cron worker at /api/cron/scheduled-scan-tick polls these
-    // every 15 minutes. Users don't have to opt in — they get
-    // automatic re-scans, and can disable via toggle later.
+    // Prepare a paused daily schedule after the first manual scan.
+    // A separate authorized activation is required for recurring provider work.
     if (input.trigger === "manual" || input.trigger === undefined) {
       try {
         const existing = await prisma.axiomScheduledRun.findFirst({
@@ -317,7 +326,8 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
               cronExpression: "0 9 * * *",
               timezone: "UTC",
               nextRunAt: tomorrow,
-              enabled: true,
+              enabled: false,
+              lastDiffSummary: "Paused: explicit schedule activation required.",
             },
           });
         }
@@ -347,6 +357,8 @@ export async function persistScanRun(input: PersistInput): Promise<PersistOutcom
         : 0,
       trigger: input.trigger ?? "manual",
       runId: run.id,
+    }).catch(() => {
+      console.warn("[persistScanRun] completion notification failed");
     });
 
     return {

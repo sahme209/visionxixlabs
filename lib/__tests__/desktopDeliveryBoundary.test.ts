@@ -10,7 +10,10 @@ function request(path: string, init?: NextRequestInit): NextRequest {
 }
 
 describe("desktop-only website boundary", () => {
-  it.each(["/dashboard", "/dashboard/command-center", "/operator", "/operator/onboarding"])(
+  it("migrates the legacy dashboard landing into the authenticated cockpit", () => {
+    expect(proxy(request("/dashboard")).headers.get("location")).toBe("https://example.test/control");
+  });
+  it.each(["/dashboard/command-center", "/operator", "/operator/onboarding"])(
     "redirects browser operations route %s to the download page",
     (path) => {
       const response = proxy(request(path));

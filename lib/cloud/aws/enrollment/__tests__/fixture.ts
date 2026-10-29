@@ -11,6 +11,7 @@ export function fixture() {
     membership: { acceptedAt: new Date("2026-10-01"), role: "admin" },
     lifecycle: null as Record<string, unknown> | null, transitions: [] as unknown[] };
   const repo = {
+    $queryRaw: vi.fn(async (query: TemplateStringsArray) => query.join('').includes('DesktopSessionRecord') ? [{id:principal.sessionId}] : [{userId:principal.userId}]),
     tenantBillingPlan: { findUnique: vi.fn(async () => state.billingPlan) },
     cloudAccount: {
       count: vi.fn(async () => (state.account ? 1 : 0) + state.additionalAccountCount),

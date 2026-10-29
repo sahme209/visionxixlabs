@@ -123,3 +123,10 @@ it("activates a verified credential without modern AbortSignal helpers and still
   await expect(verifyAndActivateApiKey(newKey, controller.signal)).rejects.toMatchObject({ name: "AbortError" });
   expect(mock.write).not.toHaveBeenCalled(); expect(mock.set).not.toHaveBeenCalled();
 });
+it("does not activate a late saved credential after startup recovery is canceled",async()=>{
+ let finish!:(value:unknown)=>void;mock.read.mockReturnValueOnce(new Promise(resolve=>{finish=resolve;}));const controller=new AbortController();const hydration=hydrateDesktopCredential(controller.signal);
+ controller.abort();finish({version:1,active:"api_key",apiKey:oldKey});await expect(hydration).rejects.toMatchObject({name:"AbortError"});expect(mock.set.mock.calls).toEqual([[undefined]]);expect(mock.write).not.toHaveBeenCalled();
+});
+it("does not reactivate a saved credential after a newer sign-out selection",async()=>{
+ let finish!:(value:unknown)=>void;mock.read.mockReturnValueOnce(new Promise(resolve=>{finish=resolve;}));const hydration=hydrateDesktopCredential();await signOutDesktopCredentials();finish({version:1,active:"api_key",apiKey:oldKey});await hydration;expect(mock.set).not.toHaveBeenCalledWith(oldKey);
+});

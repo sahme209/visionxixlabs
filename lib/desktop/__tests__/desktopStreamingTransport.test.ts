@@ -41,6 +41,19 @@ describe("native Agent byte-stream transport", () => {
       body: JSON.stringify(expected.body), headers: expect.objectContaining({ authorization: "Bearer synthetic-desktop-token" }) }) });
   });
   it.each([
+    "/api/desktop/deployments/release_1/jira-actions/jira_action_" + "a".repeat(64),
+    "/api/desktop/deployments/release_1/servicenow-actions/servicenow_action_" + "b".repeat(64),
+  ])("preserves an existing exact ticket amendment and version at the JS bridge: %s",async target=>{
+    native.invoke.mockResolvedValue({status:200,body:'{}',headers:{}});
+    await desktopFetch(target,{method:"PATCH",headers:{"x-correlation-id":"18841974-e2ab-4fed-9327-0a6a4fd089fa","x-axiom-expected-version":"0"},body:'{}'});
+    expect(native.invoke).toHaveBeenCalledWith("desktop_http_request",{request:expect.objectContaining({method:"PATCH",path:target,headers:expect.objectContaining({"x-axiom-expected-version":"0"})})});
+  });
+  it.each([
+    "/api/desktop/deployments/release_1/jira-actions/jira_action_" + "a".repeat(64) + "/approval",
+    "/api/desktop/deployments/release_1/jira-actions/jira_action_" + "a".repeat(64) + "?x=1",
+    "/api/desktop/deployments/release_1/jira-actions/servicenow_action_" + "a".repeat(64),
+    "/api/desktop/deployments/release_1/jira-actions/jira_action_" + "A".repeat(64),
+    "/api/desktop/deployments/a%2fb/servicenow-actions/servicenow_action_" + "b".repeat(64),
     "/api/desktop/workspace-members/", "/api/desktop/workspace-members?role=owner", "/api/desktop/workspace-members#fragment",
     "/api/desktop/workspace-members\n", "/api/desktop/airflow/automations/a\n",
     "/api/desktop/airflow/automations/", "/api/desktop/airflow/automations/" + "a".repeat(201),

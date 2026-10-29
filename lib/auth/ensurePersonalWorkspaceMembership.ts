@@ -1,3 +1,5 @@
+import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "@/lib/billing/publicBillingConfig";
+import { enrollNewPublicWorkspace } from "@/lib/billing/publicFreeEnrollment";
 import "server-only";
 
 import { prisma } from "@/lib/db";
@@ -13,6 +15,15 @@ export async function ensurePersonalWorkspaceMembership(input: {
   email: string;
 }): Promise<void> {
   const organizationId = String(deriveWorkspaceIdFromEmail(input.email));
+  if (publicBillingPolicyEnabled()) {
+    const identity=configuredPublicBillingIdentity();
+    await prisma.$transaction(async tx=>{
+      const existing=await tx.orgMembership.findUnique({where:{userId_organizationId:{userId:input.userId,organizationId}}});
+      await tx.orgMembership.upsert({where:{userId_organizationId:{userId:input.userId,organizationId}},create:{userId:input.userId,organizationId,role:"owner",acceptedAt:new Date()},update:{}});
+      if (!existing) await enrollNewPublicWorkspace(tx,organizationId,identity);
+    },{isolationLevel:"Serializable"});
+    return;
+  }
   await prisma.orgMembership.upsert({
     where: {
       userId_organizationId: {

@@ -1,0 +1,19 @@
+import {expect,it,vi} from 'vitest';
+import {readConnectedActionTargets,connectedTargetDigest} from '../connectedActionDiscovery';
+const now=Date.parse('2030-01-01T00:00:00Z'),id='11111111-1111-4111-8111-111111111111',viewer='22222222-2222-4222-8222-222222222222';
+const base={provider:'linear' as const,organizationId:'org',connectionId:'connection',connectionRevision:new Date(now-1000).toISOString(),externalAccountId:viewer,token:'synthetic-private',scopes:['read','issues:create'],expiresAt:now+60000,signal:new AbortController().signal,assertCurrent:vi.fn(async()=>{}),now:()=>now};
+it('reads only tenant-matching Linear identity and target metadata without exposing credentials',async()=>{const fetcher=vi.fn<typeof fetch>().mockResolvedValue(Response.json({data:{viewer:{id:viewer},organization:{id,name:'Axiom'},teams:{nodes:[{id,name:'Engineering',key:'AX'}],pageInfo:{hasNextPage:false}}}}));const r=await readConnectedActionTargets({...base,fetchImpl:fetcher});expect(r).toMatchObject({provider:'linear',workspaceId:id,teams:[{id,name:'Engineering',key:'AX'}],canCreate:true,canUpdate:false});expect(JSON.stringify(r)).not.toContain('synthetic-private');expect(JSON.parse(String(fetcher.mock.calls[0][1]?.body)).query).not.toMatch(/\bmutation\b/)});
+it('refuses a token identity different from the saved connection',async()=>{const fetcher=vi.fn<typeof fetch>().mockResolvedValue(Response.json({data:{viewer:{id},organization:{id,name:'Axiom'},teams:{nodes:[],pageInfo:{hasNextPage:false}}}}));await expect(readConnectedActionTargets({...base,fetchImpl:fetcher})).rejects.toThrow();expect(fetcher).toHaveBeenCalledTimes(1)});
+it('does not use Teams identity-only access for channel discovery',async()=>{const fetcher=vi.fn<typeof fetch>();await expect(readConnectedActionTargets({...base,provider:'teams',externalAccountId:id,scopes:['openid','User.Read'],fetchImpl:fetcher})).rejects.toThrow(/permission/);expect(fetcher).not.toHaveBeenCalled()});
+it('does not accept a selected Linear team outside the granted target list',async()=>{const fetcher=vi.fn<typeof fetch>().mockResolvedValue(Response.json({data:{viewer:{id:viewer},organization:{id,name:'Axiom'},teams:{nodes:[],pageInfo:{hasNextPage:false}}}}));await expect(readConnectedActionTargets({...base,teamId:id,fetchImpl:fetcher})).rejects.toThrow();expect(fetcher).toHaveBeenCalledTimes(1)});
+it('target digests exclude unrelated lists but include the exact selected issue revision',()=>{const target={provider:'linear' as const,workspaceId:id,team:{id,name:'Engineering',key:'AX'},issue:{id:viewer,updatedAt:new Date(now).toISOString(),stateId:id}};expect(connectedTargetDigest(target)).not.toBe(connectedTargetDigest({...target,issue:{...target.issue,updatedAt:new Date(now+1).toISOString()}}))});
+it('recognizes the observed Teams license denial without retrying or leaking vendor text',async()=>{
+ const fetcher=vi.fn<typeof fetch>().mockResolvedValue(Response.json({error:{code:'Forbidden',message:'Failed to get license information for the user. Ensure user has a valid Office365 license assigned to them.'}},{status:403}));
+ await expect(readConnectedActionTargets({...base,provider:'teams',externalAccountId:id,scopes:['Team.ReadBasic.All','Channel.ReadBasic.All','ChannelMessage.Send'],fetchImpl:fetcher})).rejects.toThrow('connected_action_teams_license_required');
+ expect(fetcher).toHaveBeenCalledTimes(1);
+});
+it('does not misclassify an unrelated Teams 403 as a license problem',async()=>{
+ const fetcher=vi.fn<typeof fetch>().mockResolvedValue(Response.json({error:{code:'Forbidden',message:'An unrelated private provider diagnostic'}},{status:403}));
+ await expect(readConnectedActionTargets({...base,provider:'teams',externalAccountId:id,scopes:['Team.ReadBasic.All','Channel.ReadBasic.All'],fetchImpl:fetcher})).rejects.toThrow('connected_action_read_unavailable');
+ expect(fetcher).toHaveBeenCalledTimes(1);
+});

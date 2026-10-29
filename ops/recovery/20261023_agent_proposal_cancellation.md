@@ -1,0 +1,9 @@
+# Own-proposal cancellation and reviewer guidance
+
+The Agent decision handler previously applied its self-approval prohibition to rejection too. An otherwise authorized proposer could become stuck behind their own pending proposal. It now applies that prohibition only to execution approval. Existing route role/capability checks, tenant ownership, integrity binding, expiry, single-claim transaction and current-tool approval checks remain. Rejecting a proposal never calls the executor or grants a tool.
+
+Fresh message responses and reopened conversation actions include a viewer-specific `requiresIndependentReviewer` hint without another actor's user ID. New desktop clients use it to disable self-approval, explain the distinct-reviewer requirement and offer Cancel proposal. The optional field preserves older wire compatibility; server checks remain authoritative. Cockpit governance applies the same approval-only restriction while retaining role, integrity and expiry restrictions for all decisions. It also preserves generic action-outcome uncertainty rather than calling it a confirmed provider failure.
+
+Regressions first failed for own rejection, viewer metadata, desktop cancellation controls and cockpit cancellation/uncertainty. The focused route, handler and desktop checks passed; a local composer test verifies cancellation removes the pending barrier and accepts an unsent next draft without an approval or model call. These are isolated tests, not real customer GitHub write acceptance. Full exact-source verification and any release are recorded separately.
+
+Real coding acceptance remains gated on a named non-production repository, a distinct existing authorized reviewer and a specific bounded inference/tool authorization. No additional model calls, tool grants, credentials, customer proposal decisions, repository writes or production SQL are included. The accepted cockpit layout is preserved.

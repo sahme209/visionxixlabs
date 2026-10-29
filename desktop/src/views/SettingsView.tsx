@@ -1,11 +1,20 @@
+import {ProviderLogo,ProviderLogoGroup,type CatalogProvider} from "../components/CatalogIcon";
+import { browserNavigationIntentPath, parseBrowserNavigationIntent } from "../../../lib/desktop/browserNavigationIntent";
+import { Disclosure } from "../components/Disclosure";
+import { isVerifiedIntegrationStatus } from "../lib/integrationStatusPresentation";
+import {parseDesktopUsageSummary,type DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
 import { AGENT_PROFILES } from "../../../lib/axiom/agentRuntime/agentProfiles";
 import { DeploymentWorkflowEvidence } from "../components/DeploymentWorkflowEvidence";
+import {AzureGuidedConnection} from "../components/AzureGuidedConnection";
+import {AwsGuidedConnection} from "../components/AwsGuidedConnection";
+import {GcpGuidedConnection} from "../components/GcpGuidedConnection";
 import { AwsReadOnlyEnrollment } from "../components/AwsReadOnlyEnrollment";
 import { AzureReadOnlyEnrollment } from "../components/AzureReadOnlyEnrollment";
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { open } from "@tauri-apps/plugin-shell";
 import { invoke } from "@tauri-apps/api/core";
 import {
+  ArrowLeft,
   Bot,
   Check,
   ChevronRight,
@@ -20,10 +29,10 @@ import {
   Palette,
   Server,
   Settings2,
+  Search,
   ShieldCheck,
   Trees,
 } from "lucide-react";
-import { ViewShell } from "../components/Primitives";
 import { desktopClient, type DeploymentExecution, type VerifiedDesktopIdentity, type WorkspaceMember } from "../lib/desktopClient";
 import { deploymentObservationState } from "../lib/deploymentObservationState";
 import { signOutDesktopCredentials } from "../lib/activeDesktopCredential";
@@ -46,10 +55,7 @@ const WEB_BASE = "https://visionxixlabs.com";
  * validation, and audit journey for the provider.
  */
 const INTEGRATION_CENTER_ITEMS = [
-  { group: "Source control", name: "GitLab & Azure DevOps", detail: "Adapters and release data foundations exist, but customer activation is not presented as complete until OAuth, permissions, and recovery are verified end to end.", state: "In review" },
-  { group: "Work management", name: "Jira & ServiceNow", detail: "Change-ticket context belongs on each release. Ticket creation or updates must be approval-gated and recorded in the release audit trail.", state: "In review" },
   { group: "Cloud & delivery", name: "AWS, Azure & Google Cloud", detail: "Cloud access is tenant-scoped and least-privilege. A provider is not marked connected until server-side validation succeeds.", state: "Admin setup" },
-  { group: "Observability", name: "Sentry, Datadog & Grafana", detail: "Release-health signals should be inbound and read-only first, with signed delivery and clear source provenance.", state: "Planned" },
 ] as const;
 
 type Section =
@@ -66,6 +72,21 @@ type Section =
   | "environments"
   | "identity";
 
+const sectionKeywords: Record<Section, string> = {
+  general: "startup notifications account",
+  profile: "name email session sign out logout",
+  appearance: "theme density motion contrast accessibility",
+  plan: "billing subscription tokens cost usage",
+  agents: "chat keyboard enter conversation queue interrupt approvals",
+  models: "AI providers gateway approved models",
+  permissions: "roles members organization access governance",
+  git: "source control branches attribution pull requests",
+  worktrees: "isolated workspace cleanup storage",
+  integrations: "connections connectors providers",
+  environments: "cloud deployment AWS Azure",
+  identity: "OIDC SAML SCIM enterprise authentication",
+};
+
 const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound }> = [
   { id: "general", label: "General", icon: Settings2 },
   { id: "profile", label: "Profile", icon: CircleUserRound },
@@ -81,29 +102,48 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "integrations", label: "Integrations", icon: Link2 },
 ];
 
-export function SettingsView({ identity, initialSection }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" }) {
+export function SettingsView({ identity, initialSection, onClose, onOpenRepository }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" | "plan" | "integrations"; onOpenRepository?: () => void; onClose?: () => void }) {
+  const [search, setSearch] = useState("");
   const [active, setActive] = useState<Section>(initialSection ?? "general");
   const [prefs, setPrefs] = useState<DesktopPreferences | null>(null);
   const [saved, setSaved] = useState(false);
+  const [savingPreferences, setSavingPreferences] = useState(false);
+  const preferenceWriteInFlight = useRef(false);
+  const [preferenceSaveUnconfirmed, setPreferenceSaveUnconfirmed] = useState(false);
+  const settingsMounted = useRef(true);
+  const savedNoticeTimer = useRef<number | undefined>(undefined);
+  useEffect(() => { settingsMounted.current = true; return () => { settingsMounted.current = false; window.clearTimeout(savedNoticeTimer.current); }; }, []);
   const [error, setError] = useState<string | null>(null);
   const [showSignOut, setShowSignOut] = useState(false);
 
   useEffect(() => {
-    readDesktopPreferences().then(setPrefs).catch((cause) => setError(String(cause)));
+    let current = true;
+    readDesktopPreferences().then(value => { if (current) setPrefs(value); })
+      .catch(() => { if (current) setError("Local preferences could not be loaded. Reopen Settings to try again."); });
+    return () => { current = false; };
   }, []);
 
   async function savePreferences(next: DesktopPreferences) {
+    if (preferenceWriteInFlight.current || preferenceSaveUnconfirmed || !prefs) return;
+    preferenceWriteInFlight.current = true;
     const previous = prefs;
-    setError(null);
-    setPrefs(next);
+    window.clearTimeout(savedNoticeTimer.current);
+    setSavingPreferences(true); setSaved(false); setError(null); setPrefs(next);
     try {
       await writeDesktopPreferences(next);
       markNotificationPrefDirty();
-      setSaved(true);
-      window.setTimeout(() => setSaved(false), 1800);
-    } catch (cause) {
-      if (previous) setPrefs(previous);
-      setError(cause instanceof Error ? cause.message : String(cause));
+      if (settingsMounted.current) {
+        setSaved(true);
+        savedNoticeTimer.current = window.setTimeout(() => setSaved(false), 1800);
+      }
+    } catch {
+      if (settingsMounted.current) {
+        setPrefs(previous); setPreferenceSaveUnconfirmed(true);
+        setError("This preference change could not be confirmed. Reopen Settings to check it before making another change.");
+      }
+    } finally {
+      preferenceWriteInFlight.current = false;
+      if (settingsMounted.current) setSavingPreferences(false);
     }
   }
 
@@ -117,22 +157,24 @@ export function SettingsView({ identity, initialSection }: { identity: VerifiedD
   }
 
   return (
-    <ViewShell>
-      <div>
-        <h1 className="text-2xl font-semibold tracking-[-0.035em]">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-500">Desktop preferences, verified identity, approved access, and governed connections.</p>
-      </div>
-
-      <div className="grid min-h-[620px] grid-cols-[220px_minmax(0,1fr)]">
-        <nav aria-label="Settings sections" className="border-r border-white/[0.06] pr-3">
-          {sections.map(({ id, label, icon: Icon }) => (
+    <div className="relative flex min-h-0 flex-1 bg-axiom-bg">
+      <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
+        <nav aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/[0.06] bg-[#18191b] px-3 pb-5 pt-8">
+          {onClose && <button type="button" onClick={onClose} className="mb-6 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/[0.04] hover:text-white"><ArrowLeft aria-hidden className="h-4 w-4" />Back to workspace</button>}
+          <h1 className="sr-only">Settings</h1>
+          <label className="mb-4 flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 py-2 text-zinc-500">
+            <Search aria-hidden className="h-3.5 w-3.5 shrink-0" />
+            <input type="search" aria-label="Search settings" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-none placeholder:text-zinc-600" />
+          </label>
+          {search.trim() && !sections.some(section => `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())) && <p role="status" className="px-3 py-2 text-xs text-zinc-500">No matching settings.</p>}
+          {sections.filter(section => !search.trim() || `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
-              onClick={() => setActive(id)}
+              onClick={() => { setActive(id); setSearch(""); }}
               aria-current={active === id ? "page" : undefined}
               className={`relative flex w-full items-center gap-3 rounded-md py-2 pl-3 pr-2 text-left text-[13px] transition-colors ${
-                active === id ? "text-white" : "text-zinc-500 hover:text-zinc-300"
+                active === id ? "bg-white/[0.06] text-white" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
               {active === id && <span aria-hidden className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-white" />}
@@ -147,9 +189,12 @@ export function SettingsView({ identity, initialSection }: { identity: VerifiedD
           </div>
         </nav>
 
-        <div className="min-w-0 pl-8">
+        <div className="min-h-0 min-w-0 overflow-y-auto px-5 py-10 lg:px-10"><div className="mx-auto w-full max-w-[760px]">
           {error && <div role="alert" className="mb-5 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div>}
+          {savingPreferences && <p role="status" className="mb-5 text-xs text-zinc-400">Saving on this computer…</p>}
           {saved && <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"><Check className="h-4 w-4" />Saved on this computer.</div>}
+          <fieldset disabled={savingPreferences || preferenceSaveUnconfirmed && ["general", "profile", "appearance", "agents"].includes(active)} className="m-0 min-w-0 border-0 p-0">
+          <legend className="sr-only">Settings controls</legend>
           {active === "general" && <GeneralSection prefs={prefs} onSave={savePreferences} />}
           {active === "profile" && <ProfileSection identity={identity} prefs={prefs} onSave={savePreferences} onRequestSignOut={() => setShowSignOut(true)} />}
           {active === "appearance" && <AppearanceSection prefs={prefs} onSave={savePreferences} />}
@@ -157,12 +202,13 @@ export function SettingsView({ identity, initialSection }: { identity: VerifiedD
           {active === "agents" && <AgentsSection prefs={prefs} onSave={savePreferences} />}
           {active === "models" && <ModelsSection />}
           {active === "permissions" && <PermissionsSection identity={identity} />}
-          {active === "git" && <GitSection prefs={prefs} onSave={savePreferences} />}
+            {active === "git" && <GitSection />}
           {active === "environments" && <EnvironmentsSection identity={identity} />}
           {active === "identity" && <IdentitySection />}
-          {active === "worktrees" && <WorktreesSection prefs={prefs} />}
+          {active === "worktrees" && <WorktreesSection onOpenRepository={onOpenRepository} />}
           {active === "integrations" && <IntegrationsSection identity={identity} />}
-        </div>
+          </fieldset>
+        </div></div>
       </div>
 
       {showSignOut && (
@@ -177,7 +223,7 @@ export function SettingsView({ identity, initialSection }: { identity: VerifiedD
           </div>
         </div>
       )}
-    </ViewShell>
+    </div>
   );
 }
 
@@ -187,7 +233,7 @@ function GeneralSection({ prefs, onSave }: PreferenceSectionProps) {
     <Group label="Account">
       <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
       <ActionRow title="Organization governance" detail="Manage roles, policies, approved integrations, AI authority, and billing in Axiom Control." action={<WebButton href="/control" label="Open control plane" />} />
-      <ActionRow title="Pilot access" detail="Pilot access is no-charge today. The service remains authoritative for approved workspace access." action={<span className="text-xs text-zinc-600">See Access & usage</span>} />
+      <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-600">Service verified</span>} />
     </Group>
     <Group label="Notifications">
       <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "Axiom Agent", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
@@ -219,7 +265,7 @@ function AppearanceSection({ prefs, onSave }: PreferenceSectionProps) {
   return <div>
     <SectionHeading title="Appearance" detail="These choices are stored locally and applied immediately across the installed app." />
     <Group label="Theme">
-      <SelectRow title="Theme" detail="Axiom currently ships its audited dark interface." value="dark" disabled options={[{ value: "dark", label: "Axiom Dark" }]} onChange={() => undefined} />
+      <SelectRow title="Theme" detail="Choose a light or dark workspace, or follow your Mac appearance." value={prefs?.theme ?? "dark"} disabled={!prefs} options={[{ value: "dark", label: "Dark" }, { value: "light", label: "Light" }, { value: "system", label: "System" }]} onChange={(value) => prefs && void onSave({ ...prefs, theme: value as DesktopPreferences["theme"] })} />
       <SelectRow title="Interface density" detail="Compact reduces global type and control spacing." value={prefs?.interface_density ?? "comfortable"} disabled={!prefs} options={[{ value: "comfortable", label: "Comfortable" }, { value: "compact", label: "Compact" }]} onChange={(value) => prefs && void onSave({ ...prefs, interface_density: value as DesktopPreferences["interface_density"] })} />
     </Group>
     <Group label="Accessibility">
@@ -230,6 +276,27 @@ function AppearanceSection({ prefs, onSave }: PreferenceSectionProps) {
 }
 
 function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const context=desktopClient.config;
+  const [attempt,setAttempt]=useState(0);
+  const [read,setRead]=useState<{context:typeof context;organizationId:string;data:DesktopUsageSummary|null;error:string|null}|null>(null);
+  const current=read&&read.context===context&&read.organizationId===identity.organizationId?read:null;
+  const usage=current?.data??null;
+  const snapshot=usage?.billingSnapshot;
+  const legacy=Boolean(usage&&!snapshot);
+  useEffect(()=>{
+    let alive=true;
+    const organizationId=identity.organizationId;
+    setRead({context,organizationId,data:null,error:null});
+    void desktopClient.usageSummary().then(result=>{
+      if(!alive||context!==desktopClient.config)return;
+      const data=result.ok?parseDesktopUsageSummary(result.data):null;
+      setRead({context,organizationId,data,error:data?null:"Plan and usage could not be verified. Refresh or review billing in the cockpit."});
+    }).catch(()=>{if(alive&&context===desktopClient.config)setRead({context,organizationId,data:null,error:"Plan and usage could not be verified. Refresh or review billing in the cockpit."});});
+    const refresh=()=>setAttempt(value=>value+1);
+    window.addEventListener("focus",refresh);
+    const unsubscribe=desktopClient.subscribeContext?.(refresh);
+    return()=>{alive=false;window.removeEventListener("focus",refresh);unsubscribe?.();};
+  },[context,identity.organizationId,attempt]);
   const [opening, setOpening] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const access = identity.access;
@@ -253,13 +320,34 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
     ? access.planTier === "trial" ? "No-charge trial" : "No-charge pilot"
     : access.planTier;
   return <div>
-    <SectionHeading title="Access & usage" detail="Identity and billing status are reported separately by the service." />
+    <SectionHeading title="Access & usage" detail="Current plan and AI allowance come from the same billing service as the web cockpit." />
+    <div className="mb-4 flex items-center justify-between gap-4 text-xs text-zinc-500"><span>Changes made in the cockpit refresh when this window regains focus.</span><button type="button" disabled={!current||(!usage&&!current.error)} onClick={()=>setAttempt(value=>value+1)} className="shrink-0 text-zinc-200 underline disabled:opacity-40">Refresh plan and usage</button></div>
     <div className="grid gap-4 sm:grid-cols-2">
-      <SummaryCard label="Access model" value={accessModel} detail={access.title} />
-      <SummaryCard label="Access state" value={isNoPlan ? "No plan" : isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoPlan ? "Sign-in status does not establish a trial or paid subscription" : isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      {snapshot ? <>
+        <SummaryCard label="Workspace plan" value={snapshot.plan.available?snapshot.plan.label:"Unavailable"} detail={snapshot.plan.available?snapshot.plan.status.replaceAll("_"," "):"Current subscription state could not be verified"}/>
+        <SummaryCard label="Desktop access" value={access.allowed?"Active":access.title} detail={access.message}/>
+      </> : legacy ? <>
+        <SummaryCard label="Access model" value={accessModel} detail={access.title} />
+        <SummaryCard label="Access state" value={isNoPlan ? "No plan" : isNoChargeAccess ? "Active" : access.billingStatus.replaceAll("_", " ")} detail={isNoPlan ? "Sign-in status does not establish a trial or paid subscription" : isNoChargeAccess ? "Provisioned for this workspace; no billing setup is required" : access.currentPeriodEndsAt ? `Period ends ${new Date(access.currentPeriodEndsAt).toLocaleDateString()}` : "Managed by your workspace agreement"} />
+      </> : <>
+        <SummaryCard label="Workspace plan" value={current?.error?"Unavailable":"Verifying…"} detail="A current subscription is shown only after the billing service responds"/>
+        <SummaryCard label="Desktop access" value={access.allowed?"Active":access.title} detail={access.message}/>
+      </>}
     </div>
     <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-5">
-      {isNoPlan ? (
+      {snapshot ? <>
+        <p className="text-sm text-zinc-200">{snapshot.plan.available?`${snapshot.plan.label} workspace plan`:"Billing verification unavailable"}</p>
+        <p className="mt-1 text-xs leading-5 text-zinc-500">Billing records and verified credits are shared with the cockpit. A balance is not permission to run an Agent or bypass approvals.</p>
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <button type="button" onClick={()=>void open(`${WEB_BASE}/control/usage-billing`).catch(()=>setError("The billing cockpit could not be opened."))} className="text-xs text-zinc-200 underline">View billing in cockpit</button>
+          {snapshot.plan.available&&snapshot.plan.hasCustomer&&snapshot.canManageBilling&&(identity.role==="owner"||identity.role==="admin")&&<button type="button" disabled={opening} onClick={()=>void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening?"Opening…":"Open billing"}</button>}
+        </div>
+        {error&&<p role="alert" className="mt-3 text-xs text-red-300">{error}</p>}
+      </> : !legacy ? <div>
+        <p className="text-sm text-zinc-200">{current?.error?"Billing verification unavailable":"Verifying current plan and usage…"}</p>
+        <button type="button" onClick={()=>void open(`${WEB_BASE}/control/usage-billing`).catch(()=>setError("The billing cockpit could not be opened."))} className="mt-3 text-xs text-zinc-200 underline">View billing in cockpit</button>
+        {error&&<p role="alert" className="mt-3 text-xs text-red-300">{error}</p>}
+      </div> : isNoPlan ? (
         <div>
           <p className="text-sm text-zinc-200">No subscription is attached to this workspace</p>
           <p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">{access.allowed ? "Identity sign-in is active." : "Check the service sign-in status."} This billing status does not establish approved trial, pilot, or paid access.</p>
@@ -271,32 +359,29 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
         </div>
       ) : (
         <>
-          <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button type="button" disabled={opening} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
+          <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button type="button" disabled={opening||(identity.role!=="owner"&&identity.role!=="admin")} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
           {error && <p role="alert" className="mt-4 text-xs text-red-300">{error}</p>}
           <p className="mt-4 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
         </>
       )}
     </div>
-    <UsageSummaryCard />
+    {usage&&!snapshot&&<p role="status" className="mt-4 text-xs leading-5 text-amber-200">This service version does not report the current plan or allowance. Review them in the cockpit; the access label above is not a current subscription receipt.</p>}
+    <UsageSummaryCard usage={usage} error={current?.error??null}/>
   </div>;
 }
 
-function UsageSummaryCard() {
-  const [usage, setUsage] = useState<{ periodMonth: string; aiInvocationCount: number; aiInputTokens: number; aiOutputTokens: number; aiCostCents: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    void desktopClient.usageSummary().then((result) => {
-      if (result.ok) setUsage(result.data);
-      else setError(result.error);
-    });
-  }, []);
-
+function UsageSummaryCard({usage,error}:{usage:DesktopUsageSummary|null;error:string|null}) {
+  const allowance=usage?.billingSnapshot?.allowance;
+  const money=(cents:number)=>new Intl.NumberFormat("en-US",{style:"currency",currency:"USD"}).format(cents/100);
   return (
     <div className="mt-6">
       <p className="mb-2 text-xs text-zinc-500">AI usage this month{usage ? ` (${usage.periodMonth})` : ""}</p>
       {error && <p role="alert" className="text-xs text-red-300">{error}</p>}
       {!usage && !error && <p className="text-xs text-zinc-600">Loading…</p>}
+      {allowance&&<div className="mb-4 grid gap-4 sm:grid-cols-2">
+        <SummaryCard label="AI allowance remaining" value={allowance.available?money(allowance.includedRemainingCents):"Unavailable"} detail={allowance.available?`${money(allowance.poolCents)} current account allowance · ${money(allowance.heldCents)} held for unresolved requests`:"No zero balance is inferred when the credit service is unavailable"}/>
+        <SummaryCard label="Applied paid top-ups" value={allowance.available?money(allowance.addOnCents):"Unavailable"} detail="Only verified paid records increase available credits"/>
+      </div>}
       {usage && (
         <div className="grid gap-4 sm:grid-cols-3">
           <SummaryCard label="AI invocations" value={usage.aiInvocationCount.toLocaleString()} detail="Agent + automation calls this billing period" />
@@ -312,10 +397,12 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
   return <div>
     <SectionHeading title="Agents" detail="Conversation behavior is local. Authorization and production safety remain service enforced." />
     <Group label="Conversation">
+      <ToggleRow title="Submit with ⌘ / Ctrl + Enter" detail="Use Command–Enter on Mac or Ctrl–Enter on Windows/Linux to send. Enter adds a new line; Shift–Enter always adds a new line." enabled={prefs?.submit_with_command_enter ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, submit_with_command_enter: !prefs.submit_with_command_enter })} />
       <SelectRow title="Messages sent while an agent is working" detail="Queue waits for the current operation; Interrupt asks the agent to stop at the next safe boundary." value={prefs?.new_message_behavior ?? "queue"} disabled={!prefs} options={[{ value: "queue", label: "Queue" }, { value: "interrupt", label: "Interrupt" }]} onChange={(value) => prefs && void onSave({ ...prefs, new_message_behavior: value as DesktopPreferences["new_message_behavior"] })} />
       <LockedRow title="Confirm consequential actions" detail="Merge, release, workflow dispatch, environment approval, rollback, and closure require policy checks." />
       <LockedRow title="External-file protection" detail="The customer workspace cannot write outside its approved application scope." />
     </Group>
+    <ActionRow title="Workspace Agent policy" detail="Review organization-controlled Agent enablement and allowed tools. Desktop settings do not grant execution authority." action={<WebButton href="/control/ai-agents" label="Open Agent governance" />} />
     <Group label="Specialized Agent profiles">
       {AGENT_PROFILES.map(profile => <div key={profile.id} className="border-b border-white/[0.05] px-4 py-3 last:border-0"><p className="text-xs text-zinc-200">{profile.label}</p><p className="mt-1 text-xs text-zinc-500">{profile.description}</p></div>)}
     </Group>
@@ -343,32 +430,90 @@ const ROLE_SUMMARIES: Record<WorkspaceMember["role"], string> = {
 };
 
 function PermissionsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
-  const [members, setMembers] = useState<WorkspaceMember[] | null>(null);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [savingUserId, setSavingUserId] = useState<string | null>(null);
-  const canManage = identity.capabilities?.includes("members:manage") ?? false;
+  const context = desktopClient.config;
+  const organizationId = identity.organizationId;
+  const identityScope = JSON.stringify([organizationId, identity.kind, identity.role, identity.capabilities]);
+  const scope = useMemo(() => ({ context, organizationId }), [context, identityScope]);
+  const activeScope = useRef<typeof scope | null>(scope);
+  activeScope.current = scope;
+  const [attempt, setAttempt] = useState(0);
+  type MembershipRead = { currentUserId: string; currentRole: string | null; capabilities: string[]; members: WorkspaceMember[] };
+  const [read, setRead] = useState<{ scope: typeof scope; data: MembershipRead | null; error: string | null } | null>(null);
+  const [saving, setSaving] = useState<{ scope: typeof scope; userId: string } | null>(null);
+  const current = read?.scope === scope ? read : null;
+  const members = current?.data?.members ?? null;
+  const currentUserId = current?.data?.currentUserId ?? null;
+  const error = current?.error ?? null;
+  const savingUserId = saving?.scope === scope ? saving.userId : null;
+  const [openingBrowser, setOpeningBrowser] = useState<typeof scope | null>(null);
+  const browserOpenInFlight = useRef<typeof scope | null>(null);
+  const ownMember = current?.data?.members.find(member => member.userId === current.data?.currentUserId);
+  const canManage = current?.data?.capabilities.includes("members:manage") ?? false;
+  const load = useCallback(() => setAttempt(value => value + 1), []);
 
-  const load = useCallback(() => {
-    void desktopClient.listWorkspaceMembers().then((result) => {
-      if (result.ok) { setMembers(result.data.members); setCurrentUserId(result.data.currentUserId); setError(null); }
-      else setError(result.error);
+  useEffect(() => {
+    let alive = true;
+    setRead({ scope, data: null, error: null });
+    void desktopClient.listWorkspaceMembers().then(result => {
+      if (!alive || activeScope.current !== scope || desktopClient.config !== context) return;
+      setRead({ scope, data: result.ok ? result.data : null, error: result.ok ? null : result.error });
+    }).catch(() => {
+      if (alive && activeScope.current === scope && desktopClient.config === context)
+        setRead({ scope, data: null, error: "Workspace permissions could not be verified. Refresh to try again." });
     });
-  }, []);
-  useEffect(() => { load(); }, [load]);
+    window.addEventListener("focus", load);
+    const unsubscribe = desktopClient.subscribeContext?.(load);
+    return () => { alive = false; window.removeEventListener("focus", load); unsubscribe?.(); };
+  }, [scope, context, attempt, load]);
+  useEffect(() => { activeScope.current = scope; return () => { if (activeScope.current === scope) activeScope.current = null; }; }, [scope]);
+
+  async function manageInCockpit() {
+    if (!canManage || !ownMember?.acceptedAt || !ownMember.updatedAt || browserOpenInFlight.current === scope || desktopClient.config !== context) return;
+    browserOpenInFlight.current = scope; setOpeningBrowser(scope);
+    try {
+      const fresh = await desktopClient.listWorkspaceMembers();
+      if (activeScope.current !== scope || desktopClient.config !== context) return;
+      const self = fresh.ok ? fresh.data.members.find(member => member.userId === fresh.data.currentUserId) : null;
+      const now = Date.now();
+      const hint = fresh.ok && fresh.data.currentUserId === current?.data?.currentUserId && fresh.data.capabilities.includes("members:manage") && self?.acceptedAt
+        ? parseBrowserNavigationIntent({ destination: "members", expectedUserId: fresh.data.currentUserId, organizationId,
+            membershipAcceptedAt: self.acceptedAt, membershipUpdatedAt: self.updatedAt,
+            issuedAt: new Date(now).toISOString(), expiresAt: new Date(now + 300_000).toISOString() }, now) : null;
+      if (!hint) { setRead({ scope, data: null, error: "Browser navigation could not be confirmed. Refresh Permissions before trying again." }); return; }
+      if (activeScope.current !== scope || desktopClient.config !== context) return;
+      // This opens an advisory destination only. Browser authentication and exact
+      // selected workspace/membership are independently checked on arrival.
+      await open(`${WEB_BASE}${browserNavigationIntentPath(hint)}`);
+    } catch {
+      if (activeScope.current === scope && desktopClient.config === context) setRead({ scope, data: null, error: "Browser navigation could not be confirmed. Refresh Permissions before trying again." });
+    } finally {
+      if (browserOpenInFlight.current === scope) browserOpenInFlight.current = null;
+      if (activeScope.current === scope && desktopClient.config === context) setOpeningBrowser(null);
+    }
+  }
 
   async function changeRole(userId: string, role: Exclude<WorkspaceMember["role"], "owner">) {
-    setSavingUserId(userId); setError(null);
-    const result = await desktopClient.updateWorkspaceMemberRole(userId, role);
-    setSavingUserId(null);
-    if (!result.ok) { setError(result.error); return; }
-    load();
+    if (!canManage || savingUserId || desktopClient.config !== context) return;
+    setSaving({ scope, userId });
+    try {
+      const result = await desktopClient.updateWorkspaceMemberRole(userId, role);
+      if (activeScope.current !== scope || desktopClient.config !== context) return;
+      setSaving(null);
+      if (!result.ok) { setRead({ scope, data: null, error: result.error }); return; }
+      load();
+    } catch {
+      if (activeScope.current === scope && desktopClient.config === context) {
+        setSaving(null); setRead({ scope, data: null, error: "Workspace role could not be updated. Refresh before trying again." });
+      }
+    }
   }
 
   return <div>
     <SectionHeading title="Permissions" detail="Give people only the authority they need. Every write, approval, deployment, and emergency bypass is checked by the service." />
-    <Notice title={`Your role: ${(identity.role ?? "unassigned").replaceAll("_", " ")}`} detail="Permissions are evaluated from current workspace membership on every request. Removing or changing a role takes effect immediately." />
+    <Notice title={`Your role: ${(current?.data?.currentRole ?? "unverified").replaceAll("_", " ")}`} detail="Permissions are evaluated from current workspace membership on every request. Removing or changing a role takes effect immediately." />
     {error && <p role="alert" className="mb-4 text-[12px] text-rose-300">{error}</p>}
+    <button type="button" onClick={load} disabled={Boolean(savingUserId)} className="mb-4 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 disabled:opacity-50">Refresh members</button>
+    {canManage && ownMember?.acceptedAt && ownMember.updatedAt && <button type="button" onClick={() => void manageInCockpit()} disabled={openingBrowser === scope || Boolean(savingUserId)} className="mb-4 ml-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 disabled:opacity-50">{openingBrowser === scope ? "Opening…" : "Manage in cockpit"}</button>}
     <Group label="Workspace members">
       {members === null && !error && <ActionRow title="Loading members…" detail="Reading current workspace authority." action={null} />}
       {(members ?? []).map((member) => {
@@ -419,6 +564,8 @@ function ModelsSection() {
   const [providers, setProviders] = useState<ProviderModels[] | null>(null);
   const [policy, setPolicy] = useState<ModelPolicy | null>(null);
   const [query, setQuery] = useState("");
+  const [approvedOnly, setApprovedOnly] = useState(false);
+  const [catalogPage, setCatalogPage] = useState(0);
   const [savingModel, setSavingModel] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [attempt, setAttempt] = useState(0);
@@ -469,10 +616,12 @@ function ModelsSection() {
     }
     return listed.filter(model => {
       const needle = query.trim().toLowerCase();
-      return !needle || model.label.toLowerCase().includes(needle) || (PROVIDER_LABELS[model.provider] ?? model.provider).toLowerCase().includes(needle);
+      return (!approvedOnly || Boolean(policy && isModelApproved(policy, model.provider, model.id))) && (!needle || `${model.label} ${model.id} ${PROVIDER_LABELS[model.provider] ?? model.provider}`.toLowerCase().includes(needle));
     });
-  }, [providers, query, policy]);
+  }, [providers, query, policy, approvedOnly]);
 
+  const safeCatalogPage = Math.min(catalogPage, Math.max(0, Math.ceil(rows.length / 50) - 1));
+  const catalogOffset = safeCatalogPage * 50;
   const gatewayCatalog = providers?.find(provider => provider.provider === "vercel_gateway")?.models.map(model => model.id) ?? [];
   const gatewayApprovals = policy?.gatewaySelection?.approvedModelIds ?? (policy?.enabled && policy.allowedProviders.includes("vercel_gateway") && policy.modelSelections.vercel_gateway ? [policy.modelSelections.vercel_gateway] : []);
   const unavailableApprovalCount = gatewayApprovals.filter(id => isConcreteGatewayModelId(id) && !gatewayCatalog.includes(id)).length;
@@ -528,14 +677,15 @@ function ModelsSection() {
     <div className="mt-6 overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.02]">
       <div className="border-b border-white/[0.06] p-4">
         <label htmlFor="model-search" className="sr-only">Search models</label>
-        <input id="model-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-white/25" />
-        <p className="mt-2 text-[11px] text-zinc-600">Gateway supports up to 32 approved models. Agent chat uses the workspace default. Other providers retain one active model.</p>
+        <input id="model-search" maxLength={200} value={query} onChange={(event) => { setQuery(event.target.value); setCatalogPage(0); }} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+        <div className="mt-3 flex gap-2" role="group" aria-label="Model catalog filters">{[false, true].map(approved => <button key={String(approved)} type="button" aria-pressed={approvedOnly === approved} onClick={() => { setApprovedOnly(approved); setCatalogPage(0); }} className={`rounded-md px-2.5 py-1.5 text-[11px] ${approvedOnly === approved ? "bg-white/10 text-zinc-200" : "text-zinc-500 hover:text-zinc-300"}`}>{approved ? "Approved models" : "All models"}</button>)}</div>
+        <p className="mt-2 text-[11px] text-zinc-600">Gateway supports up to 32 approved models. Agent chat starts with the workspace default; choose another approved model in the composer. Search a model name or catalog ID, including Grok. Other providers retain one active model.</p>
       </div>
       {providers !== null && loadError === null && unavailableApprovalCount > 0 && <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] p-4 text-xs text-zinc-400"><p>{unavailableApprovalCount} approved Gateway model{unavailableApprovalCount === 1 ? " is" : "s are"} unavailable in the current catalog.</p><button type="button" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className="shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45">Remove unavailable approvals</button></div>}
       {providers === null && loadError === null && <p className="p-4 text-sm text-zinc-500">Checking service-configured models…</p>}
       {loadError !== null && <div role="alert" className="flex items-center justify-between gap-4 p-4 text-sm text-rose-300"><p>{loadError}</p><button type="button" onClick={() => setAttempt((current) => current + 1)} className="shrink-0 text-xs text-zinc-300 underline underline-offset-2">Retry models</button></div>}
       {providers !== null && loadError === null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">{providers.every((provider) => provider.models.length === 0) ? "No service-configured models are available. Ask a workspace administrator to review service setup." : "No configured model matches this search."}</p>}
-      {rows.map((model) => {
+      {rows.slice(catalogOffset, catalogOffset + 50).map((model) => {
         const enabled = Boolean(policy && isModelApproved(policy, model.provider, model.id));
         const gatewayDefault = model.provider === "vercel_gateway" && policy?.enabled && policy.modelSelections.vercel_gateway === model.id;
         const key = `${model.provider}:${model.id}`;
@@ -549,21 +699,21 @@ function ModelsSection() {
           </div>
         </div>;
       })}
+      {rows.length > 50 && <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-3 text-xs text-zinc-400">
+        <p role="status">Showing {catalogOffset + 1}–{Math.min(catalogOffset + 50, rows.length)} of {rows.length} models. Search includes the full catalog.</p>
+        <div className="flex gap-3">
+          <button type="button" disabled={safeCatalogPage === 0} onClick={() => setCatalogPage(safeCatalogPage - 1)} className="rounded-md border border-white/10 px-3 py-1.5 hover:text-white disabled:opacity-40">Previous models</button>
+          <button type="button" disabled={catalogOffset + 50 >= rows.length} onClick={() => setCatalogPage(safeCatalogPage + 1)} className="rounded-md border border-white/10 px-3 py-1.5 hover:text-white disabled:opacity-40">Next models</button>
+        </div>
+      </div>}
     </div>
     <p className="mt-4 text-[11px] leading-5 text-zinc-600">Removing the Gateway default promotes the first remaining approval; removing its last approval disables Gateway. Credentials remain server-managed and never reach this device. Write actions remain approval-gated regardless of model choice.</p>
   </div>;
 }
 
-function GitSection({ prefs, onSave }: PreferenceSectionProps) {
+function GitSection() {
   return <div>
-    <SectionHeading title="Git & PRs" detail="Repositories & triggers remain separately permissioned; local link and attribution preferences do not grant repository access." />
-    <Group label="Pull requests">
-      <SelectRow title="Review provider" detail="Choose how repository review links are constructed." value={prefs?.review_provider ?? "github"} disabled={!prefs} options={[{ value: "github", label: "GitHub" }, { value: "origin", label: "Repository origin" }]} onChange={(value) => prefs && void onSave({ ...prefs, review_provider: value as DesktopPreferences["review_provider"] })} />
-      <SelectRow title="PR link destination" detail="Open supported PR links in the browser or in the application." value={prefs?.pr_link_destination ?? "browser"} disabled={!prefs} options={[{ value: "browser", label: "Default browser" }, { value: "inside_app", label: "Inside Axiom" }]} onChange={(value) => prefs && void onSave({ ...prefs, pr_link_destination: value as DesktopPreferences["pr_link_destination"] })} />
-      <ToggleRow title="Commit attribution" detail="Mark agent-authored commits as made with Axiom when commit creation is available and authorized." enabled={prefs?.commit_attribution ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, commit_attribution: !prefs.commit_attribution })} />
-      <ToggleRow title="PR attribution" detail="Mark agent-authored pull requests as made with Axiom." enabled={prefs?.pr_attribution ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, pr_attribution: !prefs.pr_attribution })} />
-      <TextRow title="Branch prefix" detail="Stored locally for authorized branch creation." value={prefs?.branch_prefix ?? ""} disabled={!prefs} onCommit={(value) => prefs && void onSave({ ...prefs, branch_prefix: value })} />
-    </Group>
+    <SectionHeading title="Git & PRs" detail="Clone connected repositories and prepare pull requests. Repository access and branch policies remain separately permissioned." />
     <CloneRepositoryPanel />
     <CreatePullRequestPanel />
     <RepositoriesPanel />
@@ -658,51 +808,66 @@ function CreatePullRequestPanel() {
   const canSubmit = [repositoryFullName, baseBranch, newBranchName, filePath, fileContent, commitMessage, prTitle]
     .every((value) => value.trim().length > 0) && repositoryFullName.includes("/");
 
+  const activeRequest = useRef(false);
+  const mounted = useRef(true);
+  useEffect(() => { mounted.current = true; return () => { mounted.current = false; }; }, []);
+
   async function submit() {
+    if (activeRequest.current || !canSubmit) return;
+    activeRequest.current = true;
+    const context = desktopClient.config;
+    const request = { repositoryFullName, baseBranch, newBranchName, filePath, fileContent, commitMessage, prTitle, prBody };
+    let phase: "branch" | "commit" | "pull_request" = "branch";
+    const stillCurrent = () => {
+      if (!mounted.current) return false;
+      if (desktopClient.config === context) return true;
+      setError("Your workspace changed. No further writes were sent. Review the branch, commit and PR state in the original workspace before starting again; the last request may already have completed.");
+      return false;
+    };
+    const failed = () => setError(phase === "branch"
+      ? "Branch creation was not confirmed. Inspect the original repository before retrying; the branch may already exist. No commit or PR request was sent."
+      : phase === "commit"
+        ? "The branch was created, but the commit was not confirmed. Inspect the original branch before retrying; the commit may already exist. No PR request was sent."
+        : "The branch and commit succeeded, but PR creation was not confirmed. Inspect the original repository before retrying; the PR may already exist.");
     setError(null);
     setPrUrl(null);
-
     setStep("branch");
-    const branchResult = await desktopClient.createGithubBranch({ repositoryFullName, baseBranch, newBranchName });
-    if (!branchResult.ok) {
-      setError(`Branch creation failed: ${branchResult.error}. Nothing else was changed.`);
-      setStep("idle");
-      return;
+    try {
+      const branchResult = await desktopClient.createGithubBranch({ repositoryFullName: request.repositoryFullName, baseBranch: request.baseBranch, newBranchName: request.newBranchName });
+      if (!stillCurrent()) return;
+      if (!branchResult.ok) { failed(); return; }
+      phase = "commit";
+      setStep(phase);
+      const commitResult = await desktopClient.commitGithubFile({ repositoryFullName: request.repositoryFullName, branch: request.newBranchName, path: request.filePath, content: request.fileContent, message: request.commitMessage });
+      if (!stillCurrent()) return;
+      if (!commitResult.ok) { failed(); return; }
+      phase = "pull_request";
+      setStep(phase);
+      const prResult = await desktopClient.openGithubPullRequest({ repositoryFullName: request.repositoryFullName, head: request.newBranchName, base: request.baseBranch, title: request.prTitle, body: request.prBody });
+      if (!stillCurrent()) return;
+      if (!prResult.ok) { failed(); return; }
+      setPrUrl(prResult.data.htmlUrl);
+    } catch {
+      if (stillCurrent()) failed();
+    } finally {
+      activeRequest.current = false;
+      if (mounted.current) setStep("idle");
     }
-
-    setStep("commit");
-    const commitResult = await desktopClient.commitGithubFile({ repositoryFullName, branch: newBranchName, path: filePath, content: fileContent, message: commitMessage });
-    if (!commitResult.ok) {
-      setError(`Branch "${newBranchName}" was created, but committing the file failed: ${commitResult.error}. The branch still exists on GitHub — you can finish the commit there, or delete the branch and retry.`);
-      setStep("idle");
-      return;
-    }
-
-    setStep("pull_request");
-    const prResult = await desktopClient.openGithubPullRequest({ repositoryFullName, head: newBranchName, base: baseBranch, title: prTitle, body: prBody });
-    if (!prResult.ok) {
-      setError(`Branch "${newBranchName}" and the commit both succeeded, but opening the pull request failed: ${prResult.error}. You can open the PR directly on GitHub from that branch.`);
-      setStep("idle");
-      return;
-    }
-
-    setPrUrl(prResult.data.htmlUrl);
-    setStep("done");
   }
 
   return (
     <Group label="Create a pull request">
       <div className="px-4 py-3.5 space-y-3">
-        <LabeledInput label="Repository" placeholder="owner/repo" value={repositoryFullName} onChange={setRepositoryFullName} />
+        <LabeledInput disabled={busy} label="Repository" placeholder="owner/repo" value={repositoryFullName} onChange={setRepositoryFullName} />
         <div className="grid grid-cols-2 gap-3">
-          <LabeledInput label="Base branch" placeholder="main" value={baseBranch} onChange={setBaseBranch} />
-          <LabeledInput label="New branch name" placeholder="axiom/my-change" value={newBranchName} onChange={setNewBranchName} />
+          <LabeledInput disabled={busy} label="Base branch" placeholder="main" value={baseBranch} onChange={setBaseBranch} />
+          <LabeledInput disabled={busy} label="New branch name" placeholder="axiom/my-change" value={newBranchName} onChange={setNewBranchName} />
         </div>
-        <LabeledInput label="File path" placeholder="path/to/file.ts" value={filePath} onChange={setFilePath} />
-        <LabeledTextArea label="File content" value={fileContent} onChange={setFileContent} />
-        <LabeledInput label="Commit message" placeholder="Describe the change" value={commitMessage} onChange={setCommitMessage} />
-        <LabeledInput label="Pull request title" placeholder="Short summary" value={prTitle} onChange={setPrTitle} />
-        <LabeledTextArea label="Pull request description" value={prBody} onChange={setPrBody} />
+        <LabeledInput disabled={busy} label="File path" placeholder="path/to/file.ts" value={filePath} onChange={setFilePath} />
+        <LabeledTextArea disabled={busy} label="File content" value={fileContent} onChange={setFileContent} />
+        <LabeledInput disabled={busy} label="Commit message" placeholder="Describe the change" value={commitMessage} onChange={setCommitMessage} />
+        <LabeledInput disabled={busy} label="Pull request title" placeholder="Short summary" value={prTitle} onChange={setPrTitle} />
+        <LabeledTextArea disabled={busy} label="Pull request description" value={prBody} onChange={setPrBody} />
         <div className="flex items-center gap-3">
           <button
             type="button"
@@ -1559,11 +1724,12 @@ function BranchPoliciesPanel() {
   );
 }
 
-function LabeledInput({ label, placeholder, value, onChange }: { label: string; placeholder?: string; value: string; onChange: (value: string) => void }) {
+function LabeledInput({ label, placeholder, value, onChange, disabled = false }: { label: string; placeholder?: string; value: string; onChange: (value: string) => void; disabled?: boolean }) {
   return (
     <label className="block">
       <span className="mb-1 block text-[11px] text-zinc-500">{label}</span>
       <input
+        disabled={disabled}
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
@@ -1573,11 +1739,12 @@ function LabeledInput({ label, placeholder, value, onChange }: { label: string; 
   );
 }
 
-function LabeledTextArea({ label, value, onChange }: { label: string; value: string; onChange: (value: string) => void }) {
+function LabeledTextArea({ label, value, onChange, disabled = false }: { label: string; value: string; onChange: (value: string) => void; disabled?: boolean }) {
   return (
     <label className="block">
       <span className="mb-1 block text-[11px] text-zinc-500">{label}</span>
       <textarea
+        disabled={disabled}
         value={value}
         rows={4}
         onChange={(event) => onChange(event.target.value)}
@@ -1587,18 +1754,17 @@ function LabeledTextArea({ label, value, onChange }: { label: string; value: str
   );
 }
 
-function WorktreesSection({ prefs }: { prefs: DesktopPreferences | null }) {
+function WorktreesSection({ onOpenRepository }: {onOpenRepository?: () => void}) {
   return <div>
-    <SectionHeading title="Worktrees" detail="Axiom does not currently create or clean up Git worktrees in the verified customer workflow." />
-    <Notice title="No Axiom-managed worktrees on this machine" detail="Cleanup controls remain unavailable until worktree lifecycle operations, disk accounting, and recovery behavior are implemented and tested end to end." />
-    <Group label="Reserved local limits">
-      <InfoRow label="Maximum worktrees" value={String(prefs?.max_worktrees ?? 25)} />
-      <InfoRow label="Maximum total size" value={`${prefs?.max_worktree_size_gb ?? 50} GB`} />
-    </Group>
+    <SectionHeading title="Worktrees" detail="Isolate tasks in separate local checkouts and branches without changing the original working tree." />
+    <Notice title="Managed in GitHub repositories" detail="Open a repository and expand Workspaces to create or switch checkouts. New checkouts start at the selected checkout’s committed HEAD; uncommitted edits stay in their original checkout. Removing a checkout preserves its branch and commits and refuses changed, untracked, ignored or locked state." />
+    <Group label="Local limits"><InfoRow label="Maximum checkouts per repository" value="25" /><InfoRow label="Combined file bytes per repository" value="50 GB" /></Group>
+    {onOpenRepository && <button type="button" onClick={onOpenRepository} className="btn-secondary">Open repository workspaces</button>}
   </div>;
 }
 
 function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const validationRecovery=useSyncExternalStore(desktopClient.subscribeIntegrationValidationRecovery??(()=>()=>{}),desktopClient.integrationValidationRecoverySnapshot??(()=>''),()=> '');
   const [integrationStatus, setIntegrationStatus] = useState<{
     configuration?: Record<"github" | "slack" | "teams" | "linear", boolean>;
     cloud: Array<{ provider: "aws" | "azure" | "gcp"; status: string; lastTransitionAt: string | null }>;
@@ -1622,22 +1788,52 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
   const [connectingProvider, setConnectingProvider] = useState<"github" | "slack" | "teams" | "linear" | null>(null);
   const [connectionNote, setConnectionNote] = useState<string | null>(null);
 
+  const [refreshNote, setRefreshNote] = useState<string | null>(null);
+  const integrationMounted = useRef(true);
+  const integrationGeneration = useRef(0);
+  const integrationActionEpoch = useRef(0);
+  const verifiedIntegrationContext = useRef<object | null>(null);
   const loadCloudConnections = useCallback(async () => {
+    const generation = ++integrationGeneration.current;
+    const context = desktopClient.config;
+    const owned = () => integrationMounted.current && generation === integrationGeneration.current && context === desktopClient.config;
     setRefreshing(true);
-    const [result, healthResult] = await Promise.all([
-      desktopClient.integrationStatus(),
-      desktopClient.integrationHealth(),
-    ]);
-    if (result.ok) setIntegrationStatus(result.data);
-    if (healthResult.ok) setHealth(healthResult.data);
-    setRefreshing(false);
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const deadline = new Promise<never>((_resolve, reject) => {timer = setTimeout(() => reject(new Error("connection_status_timeout")), 15000);});
+      const [result, healthResult] = await Promise.race([Promise.allSettled([
+        desktopClient.integrationStatus(), desktopClient.integrationHealth(),
+      ] as const), deadline]);
+      if (!owned()) return;
+      const statusAvailable = result.status === "fulfilled" && result.value.ok;
+      const healthAvailable = healthResult.status === "fulfilled" && healthResult.value.ok;
+      verifiedIntegrationContext.current = statusAvailable ? context : null;
+      setIntegrationStatus(result.status === "fulfilled" && result.value.ok ? result.value.data : null);
+      setHealth(healthResult.status === "fulfilled" && healthResult.value.ok ? healthResult.value.data : null);
+      setRefreshNote(!statusAvailable ? "Connection status could not be verified. Try refreshing."
+        : !healthAvailable ? "Connection diagnostics could not be verified. Try refreshing." : null);
+    } catch {
+      if (owned()) {verifiedIntegrationContext.current = null; setIntegrationStatus(null); setHealth(null); setRefreshNote("Connection status could not be verified. Try refreshing.");}
+    } finally {
+      clearTimeout(timer);
+      if (integrationMounted.current && generation === integrationGeneration.current) setRefreshing(false);
+    }
   }, []);
 
   useEffect(() => {
+    integrationMounted.current = true;
     const initialLoad = window.setTimeout(() => { void loadCloudConnections(); }, 0);
+    const unsubscribe = desktopClient.subscribeContext(() => {
+      integrationActionEpoch.current++; verifiedIntegrationContext.current = null;
+      setIntegrationStatus(null); setHealth(null); setRefreshNote(null); setConnectionNote(null);
+      setGithubValidationNote(null); setSlackValidationNote(null); setTeamsValidationNote(null); setLinearValidationNote(null);
+      setValidatingGitHub(false); setValidatingSlack(false); setValidatingTeams(false); setValidatingLinear(false); setConnectingProvider(null);
+      void loadCloudConnections();
+    });
     window.addEventListener("focus", loadCloudConnections);
     return () => {
-      window.clearTimeout(initialLoad);
+      integrationMounted.current = false; integrationGeneration.current++; integrationActionEpoch.current++; verifiedIntegrationContext.current = null;
+      window.clearTimeout(initialLoad); unsubscribe();
       window.removeEventListener("focus", loadCloudConnections);
     };
   }, [loadCloudConnections]);
@@ -1645,10 +1841,10 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
   const cloudConnections = integrationStatus?.cloud ?? null;
   const github = integrationStatus?.github ?? null;
   const collaboration = integrationStatus?.collaboration ?? null;
+  const connectedCloudCount = cloudConnections?.filter(connection => connection.status === "connected").length ?? 0;
+  const readOnlyCloudCount = cloudConnections?.filter(connection => connection.status === "read_only_connected").length ?? 0;
   const cloudState = cloudConnections
-    ? cloudConnections.some((connection) => connection.status === "connected")
-      ? `${cloudConnections.filter((connection) => connection.status === "connected").length} verified`
-      : "Not connected"
+    ? [connectedCloudCount ? `${connectedCloudCount} verified` : "", readOnlyCloudCount ? `${readOnlyCloudCount} read-only connected` : ""].filter(Boolean).join(" · ") || (cloudConnections.some(connection => connection.status === "unavailable") ? "Status unavailable" : "Not connected")
     : "Checking status";
   const cloudDetail = cloudConnections
     ? cloudConnections.map((connection) => `${connection.provider.toUpperCase()} ${connection.status.replaceAll("_", " ")}`).join(" · ")
@@ -1665,85 +1861,63 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
       ? `GitHub App access was validated previously, but that verification is more than 24 hours old. Run the harmless read-only validation again before relying on it for release evidence.`
       : "No active GitHub App installation is recorded for this workspace. Connect in the browser to choose repository scope."
     : "Loading the service-verified GitHub App state.";
-  async function validateGitHub() {
-    setValidatingGitHub(true);
-    setGithubValidationNote(null);
-    const result = await desktopClient.validateGitHubReadOnly();
-    if (result.ok) {
-      setGithubValidationNote("GitHub read-only access is verified for this workspace.");
-      await loadCloudConnections();
-    } else {
-      setGithubValidationNote("GitHub could not complete a read-only validation. Review the App installation and try again.");
-    }
-    setValidatingGitHub(false);
+  function connectionActionOwnership() {
+    const context = desktopClient.config, epoch = integrationActionEpoch.current;
+    return () => integrationMounted.current && epoch === integrationActionEpoch.current
+      && context === desktopClient.config;
   }
-
-  async function validateSlack() {
-    setValidatingSlack(true);
-    setSlackValidationNote(null);
-    const result = await desktopClient.validateSlackConnection();
-    if (result.ok) {
-      setSlackValidationNote("Slack access is verified for this workspace.");
-      await loadCloudConnections();
-    } else {
-      setSlackValidationNote("Slack could not complete a read-only validation. Review the consent record and try again.");
-    }
-    setValidatingSlack(false);
+  async function validateConnection(check: () => Promise<{ok: boolean;outcomeUnconfirmed?:boolean}>, setBusy: (value: boolean) => void,
+    setNote: (value: string | null) => void, success: string, failure: string, collaborationProvider?:"slack"|"teams") {
+    const owned = connectionActionOwnership(); if (!owned() || verifiedIntegrationContext.current !== desktopClient.config || collaborationProvider&&validationRecovery.split(',').includes(collaborationProvider)) return;
+    setBusy(true); setNote(null);
+    try {
+      const result = await check(); if (!owned()) return;
+      if(!result.ok&&result.outcomeUnconfirmed&&collaborationProvider){desktopClient.recordIntegrationValidationUnknown?.(collaborationProvider);setNote('Validation outcome is unconfirmed. Reload status and review consent before further validation.');return}
+      setNote(result.ok ? success : failure);
+      if (result.ok) await loadCloudConnections();
+    } catch {if (owned()) {if(collaborationProvider){desktopClient.recordIntegrationValidationUnknown?.(collaborationProvider);setNote('Validation outcome is unconfirmed. Reload status and review consent before further validation.')}else setNote(failure);}}
+    finally {if (integrationMounted.current && owned()) setBusy(false);}
   }
-
-  async function validateTeams() {
-    setValidatingTeams(true);
-    setTeamsValidationNote(null);
-    const result = await desktopClient.validateTeamsConnection();
-    if (result.ok) {
-      setTeamsValidationNote("Microsoft identity is verified for this workspace. Teams message permissions remain separately controlled.");
-      await loadCloudConnections();
-    } else {
-      setTeamsValidationNote("Microsoft could not complete an identity validation. Review the consent record and try again.");
-    }
-    setValidatingTeams(false);
-  }
-
-  async function validateLinear() {
-    setValidatingLinear(true);
-    setLinearValidationNote(null);
-    const result = await desktopClient.validateLinearConnection();
-    if (result.ok) {
-      setLinearValidationNote("Linear app identity is verified for this workspace.");
-      await loadCloudConnections();
-    } else {
-      setLinearValidationNote("Linear could not complete a read-only identity validation. Review consent and try again.");
-    }
-    setValidatingLinear(false);
-  }
+  const validateGitHub = () => validateConnection(() => desktopClient.validateGitHubReadOnly(), setValidatingGitHub, setGithubValidationNote,
+    "GitHub read-only access is verified for this workspace.", "GitHub could not complete a read-only validation. Review the App installation and try again.");
+  const validateSlack = () => validateConnection(() => desktopClient.validateSlackConnection(), setValidatingSlack, setSlackValidationNote,
+    "Slack access is verified for this workspace.", "Slack could not complete a read-only validation. Reload status and review the consent record.", "slack");
+  const validateTeams = () => validateConnection(() => desktopClient.validateTeamsConnection(), setValidatingTeams, setTeamsValidationNote,
+    "Microsoft identity is verified for this workspace. Teams message permissions remain separately controlled.", "Microsoft could not complete an identity validation. Reload status and review the consent record.", "teams");
+  const validateLinear = () => validateConnection(() => desktopClient.validateLinearConnection(), setValidatingLinear, setLinearValidationNote,
+    "Linear app identity is verified for this workspace.", "Linear could not complete a read-only identity validation. Review consent and try again.");
 
   const slackCanValidate = collaboration?.some((connection) => connection.provider === "slack" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
   const teamsCanValidate = collaboration?.some((connection) => connection.provider === "teams" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
   const linearCanValidate = collaboration?.some((connection) => connection.provider === "linear" && (connection.status === "awaiting_validation" || connection.status === "needs_attention")) ?? false;
 
   async function connectProvider(provider: "github" | "slack" | "teams" | "linear") {
+    const owned = connectionActionOwnership(); if (!owned() || verifiedIntegrationContext.current !== desktopClient.config) return;
     setConnectingProvider(provider);
     setConnectionNote(null);
     try {
       const result = await desktopClient.startIntegrationConnection(provider);
+      if (!owned()) return;
       if (!result.ok) throw new Error(result.error);
       const destination = new URL(result.data.consentUrl);
       const allowedHosts: Record<typeof provider, readonly string[]> = {
         github: ["github.com"], slack: ["slack.com"], teams: ["login.microsoftonline.com"], linear: ["linear.app"],
       };
-      if (destination.protocol !== "https:" || !allowedHosts[provider].includes(destination.hostname)) throw new Error("untrusted_consent_destination");
+      if (destination.protocol !== "https:" || destination.username || destination.password || (destination.port && destination.port !== "443") || !allowedHosts[provider].includes(destination.hostname)) throw new Error("untrusted_consent_destination");
       await open(destination.toString());
-      setConnectionNote("Secure consent opened in your browser. Return here after approval; status refreshes when this window regains focus.");
+      if (owned()) setConnectionNote("Secure consent opened in your browser. Return here after approval; status refreshes when this window regains focus.");
     } catch {
-      setConnectionNote("The secure connection could not be started. Confirm this provider is configured for the workspace and try again.");
+      if (owned()) setConnectionNote("The secure connection could not be started. Confirm this provider is configured for the workspace and try again.");
     } finally {
-      setConnectingProvider(null);
+      if (owned()) setConnectingProvider(null);
     }
   }
 
   const providerStatus = (provider: "slack" | "teams" | "linear") => collaboration?.find((item) => item.provider === provider)?.status ?? "not_connected";
   const providerAction = (provider: "github" | "slack" | "teams" | "linear", status: string, canValidate: boolean, validating: boolean, validate: () => Promise<void>) => {
-    if (integrationStatus?.configuration?.[provider] === false) return <button type="button" onClick={() => void open(`${WEB_BASE}/docs/integration-setup#${provider}`)} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]">Setup guide ↗</button>;
+    if (!integrationStatus) return <button type="button" disabled className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500">{refreshing ? "Checking…" : "Status unavailable"}</button>;
+    if (integrationStatus.configuration?.[provider] === false) return <div className="shrink-0 text-right"><button type="button" disabled aria-label={`Connect ${provider}`} title="The service connection is not configured." className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500">Connect</button><p className="mt-1 text-[10px] text-zinc-500">Service connection unavailable</p></div>;
+    if(validationRecovery.split(',').includes(provider))return <div className="flex flex-wrap gap-2"><button type="button" disabled={refreshing} className="btn-secondary" aria-label={`Reload ${provider==='teams'?'Teams':'Slack'} status`} onClick={()=>void loadCloudConnections()}>Reload status</button><WebButton href="/account/integrations" label="Review consent" /></div>;
     if (canValidate) return <button type="button" disabled={validating} onClick={() => void validate()} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{validating ? "Checking access…" : status === "validation_overdue" ? "Revalidate now" : "Finish connection"}</button>;
     if (status === "active" || status === "validated_read_only") return <WebButton href="/account/integrations" label="Manage" />;
     return <button type="button" disabled={connectingProvider !== null} onClick={() => void connectProvider(provider)} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50">{connectingProvider === provider ? "Opening…" : "Connect ↗"}</button>;
@@ -1751,7 +1925,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
 
   return <div>
     <SectionHeading title="Integration Center" detail="Connect the systems that already run your releases. Every connection is tenant-scoped, least-privilege, and shown as connected only after server-side validation." />
-    <Notice title="Provider-specific secure connections" detail="OAuth connections use browser consent. The Azure read-only candidate accepts an existing service-principal secret transiently and sends it to the backend encrypted vault; it clears after submission and is not persisted in desktop settings. Cloud changes remain unavailable." />
+    <p className="mb-4 text-xs leading-5 text-zinc-500">Review access in your browser, then return here for verified status. Cloud connections are read-only; deployment access stays separately governed.</p>
     <div className="space-y-3">
       <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} tone={github?.status === "validation_overdue" ? "attention" : undefined} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
       <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
@@ -1767,22 +1941,21 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
         />
       ))}
     </div>
-    <AwsReadOnlyEnrollment identity={identity} />
-    <AzureReadOnlyEnrollment identity={identity} />
+    <div className="mt-4 grid gap-3"><AwsGuidedConnection identity={identity} /><AzureGuidedConnection identity={identity} /><GcpGuidedConnection identity={identity} /></div>
+    <Disclosure className="mt-4 rounded-lg border border-white/10 bg-white/[0.015] p-4" buttonClassName="text-sm font-medium text-zinc-200" label={<>Advanced cloud account connections <span className="ml-2 text-xs font-normal text-zinc-500">AWS and Azure · read-only</span></>}>
+      <div className="mt-4"><AwsReadOnlyEnrollment identity={identity} /><AzureReadOnlyEnrollment identity={identity} /></div>
+    </Disclosure>
+    {refreshNote && <p role="status" className="mt-3 text-xs text-zinc-400">{refreshNote}</p>}
     {connectionNote && <p role="status" className="mt-3 text-xs text-zinc-400">{connectionNote}</p>}
-    <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
-      <p className="text-sm text-zinc-200">What happens when you connect</p>
-      <p className="mt-1 text-xs leading-5 text-zinc-500">You review the requested access in your browser, approve only the workspace you intend to connect, then return here to see the service-verified status and any required next action.</p>
-    </div>
-    <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
-      <p className="text-sm text-zinc-200">Connected-system health</p>
+    <p className="mt-4 text-xs leading-5 text-zinc-500">Approve only the workspace and access you intend to connect. Consent alone does not mark a connection verified.</p>
+    <Disclosure className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4" buttonClassName="text-sm text-zinc-200" label="Connection diagnostics">
       <p className="mt-1 text-xs leading-5 text-zinc-500">
         {health
           ? `${health.status.replaceAll("_", " ")} · ${health.summary.healthy} healthy · ${health.summary.degraded} needs attention · ${health.summary.preview} not yet live.`
           : "Checking the read-only health of connected-system foundations."}
       </p>
       <p className="mt-2 text-[11px] text-zinc-600">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
-    </div>
+    </Disclosure>
     <div className="mt-5 flex flex-wrap items-center gap-3">
       <WebButton href="/account/integrations" label="Manage connections" />
       <button type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
@@ -1805,16 +1978,17 @@ function InfoRow({ label, value, mono = false }: { label: string; value: string;
 function ActionRow({ title, detail, action }: { title: string; detail: string; action: ReactNode }) { return <div className="flex items-center gap-4 border-b border-white/[0.045] px-4 py-3.5 last:border-b-0"><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div>{action}</div>; }
 function ToggleRow({ title, detail, enabled, disabled, onToggle, action }: { title: string; detail: string; enabled: boolean; disabled: boolean; onToggle: () => void; action?: ReactNode }) { return <ActionRow title={title} detail={detail} action={<div className="flex items-center gap-3">{action}<button type="button" role="switch" aria-checked={enabled} aria-label={title} disabled={disabled} onClick={onToggle} className={`relative h-6 w-11 shrink-0 rounded-full transition ${enabled ? "bg-emerald-600" : "bg-zinc-700"} disabled:opacity-50`}><span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${enabled ? "translate-x-5" : "translate-x-0"}`} /></button></div>} />; }
 function SelectRow({ title, detail, value, disabled, options, onChange }: { title: string; detail: string; value: string; disabled: boolean; options: Option[]; onChange: (value: string) => void }) { return <ActionRow title={title} detail={detail} action={<select aria-label={title} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="rounded-lg border border-white/10 bg-[#17181a] px-3 py-2 text-xs text-zinc-200 outline-none disabled:opacity-50">{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>} />; }
-function TextRow({ title, detail, value, disabled, onCommit }: { title: string; detail: string; value: string; disabled: boolean; onCommit: (value: string) => void }) { return <ActionRow title={title} detail={detail} action={<input key={value} aria-label={title} defaultValue={value} disabled={disabled} onBlur={(event) => { const next = event.currentTarget.value.trim(); if (next !== value) onCommit(next); }} onKeyDown={(event) => { if (event.key === "Enter") event.currentTarget.blur(); }} className="w-40 rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50" />} />; }
 function LockedRow({ title, detail }: { title: string; detail: string }) { return <ActionRow title={title} detail={detail} action={<span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-300"><LockKeyhole className="h-3 w-3" />Always on</span>} />; }
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-lg border border-white/15 bg-white/[0.04] p-4"><p className="text-sm font-medium text-zinc-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
 function formatConnectorState(state: string) { return state.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
 function IntegrationRow({ name, group, detail, state, action, tone }: { name: string; group: string; detail: string; state: string; action?: ReactNode; tone?: "attention" }) {
-  const connected = /verified|connected/i.test(state) && !/not connected/i.test(state);
+  const connected = isVerifiedIntegrationStatus(state);
   const stateClass = tone === "attention"
     ? "border-amber-500/25 bg-amber-500/10 text-amber-200"
     : connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200";
-  return <div className="flex items-center gap-4 rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300"><Link2 className="h-4 w-4" /></span><div className="min-w-0 flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex shrink-0 items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
+  const provider = ({GitHub:"github",Slack:"slack","Microsoft Teams":"teams",Linear:"linear"} as Record<string,CatalogProvider>)[name];
+  const cloudGroup=name==="AWS, Azure & Google Cloud";
+  return <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/[0.05] bg-white/[0.015] px-4 py-3"><span className={`flex h-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300 ${cloudGroup?"px-2":"w-8"}`}>{cloudGroup?<ProviderLogoGroup providers={["aws","azure","gcp"]}/>:provider?<ProviderLogo provider={provider}/>:<Link2 className="h-4 w-4" />}</span><div className="min-w-[140px] flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
 }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }

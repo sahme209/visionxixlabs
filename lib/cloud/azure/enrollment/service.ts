@@ -1,3 +1,5 @@
+import { publicPricingForStoredRow } from "@/lib/billing/publicBillingEntitlements";
+import type { PublicSql } from "@/lib/billing/publicBillingStore";
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { encryptScopedCredential, decryptScopedCredential } from "@/lib/security/credentialVault";
@@ -135,7 +137,7 @@ export function createAzureEnrollmentService(repo: AzureEnrollmentRepo, supplied
             throw new AzureEnrollmentError("enrollment_unavailable");
         const valid = row && ["trialing", "active", "past_due", "canceled", "no_plan"].includes(row.status);
         const tier = row && isBillingTier(row.tier) && valid && row.tier !== "trial" && row.status !== "trialing" ? row.tier : "trial";
-        if (checkEntitlement({ plan: planForStripeTier(tier), dimension: "cloud_accounts", currentUsage: usage, attemptedDelta: 1 }).kind !== "allow")
+        if (checkEntitlement({ plan: await publicPricingForStoredRow(tx as unknown as PublicSql,organizationId,row) ?? planForStripeTier(tier), dimension: "cloud_accounts", currentUsage: usage, attemptedDelta: 1 }).kind !== "allow")
             throw new AzureEnrollmentError("cloud_account_limit_reached");
     }
     async function enroll(principal: AzurePrincipal, input: unknown) {

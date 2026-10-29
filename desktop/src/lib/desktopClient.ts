@@ -1,4 +1,35 @@
+import type {BotActionTaskReference} from '../../../lib/axiom/bot/actionTaskBindingContract';
+import {slackNotificationsRequest,type SlackNotificationsResult,type SlackNotificationRequest,type SlackNotificationLookup} from "./slackNotificationsTransport";
+import {connectedActionsRequest,type ConnectedActionLookup,type ConnectedActionsResult} from './connectedActionsTransport';
+import {connectedActionsRequestSchema,type ConnectedActionsRequest} from '../../../lib/desktop/connectedActionsContract';
+import {readSlackChannels,type SlackChannelsResult} from "./slackChannelsTransport";
+import {githubReconnectChallengeSchema,githubReconnectConfirmationSchema,type GithubReconnectChallenge,type GithubReconnectConfirmation} from "../../../lib/desktop/githubInstallationReconnectContract";
+import {deploymentPlanSchema,deploymentApprovalSchema,type DeploymentPlan,type DeploymentApproval,parseDeploymentExecutionState,type DeploymentExecutionState} from "../../../lib/tauri/releaseDeploymentExecutionContract";
+import {parseProviderMergeExecutionState,type ProviderMergeExecutionState} from "../../../lib/tauri/releaseProviderMergeExecutionContract";
+import {isReleaseWorkflowEvidenceResponse,type ReleaseWorkflowEvidenceResponse} from './releaseWorkflowEvidenceContract';
+import {parseReleaseProviderMergeOperationResponse,type ProviderMergeOperationResponse} from '../../../lib/tauri/releaseProviderMergeContract';
+import {isProviderMergeApprovalState,type ProviderMergeApprovalState} from './releaseProviderMergeApprovalContract';
+import {isServiceNowTicketLifecycleState,isServiceNowMetadata,isServiceNowCloseOptions,type ServiceNowTicketLifecycleState,type ServiceNowMetadata,type ServiceNowCloseOptions} from './serviceNowTicketLifecycle';
+import {isJiraTicketLifecycleState,isJiraCloseOptions,type JiraCloseOptions,type JiraTicketLifecycleState} from './jiraTicketLifecycle';
+import type {JiraCreatePreviewInput} from './jiraTicketDiscovery';
+import {isExecutionApprovalState,type ExecutionApprovalState} from './releaseExecutionApprovalContract';
+import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
+import {isOperationPlanList,isOperationPlanMutation,isOperationPlanPreview,type OperationPlanList,type OperationPlanMutation,type OperationPlanPreview} from './releaseOperationPlanContract';
+import {botPrEvidenceRequest} from './botPrEvidenceTransport';
+import {isBotPrCapabilities,isBotPrRunList,isBotPrRunResponse,isBotPrEvidenceResponse,isBotPrRunId,isBotPrReleaseId,isBotPrUuid,isBotPrStart,type BotPrCapabilitiesDto,type BotPrRunListDto,type BotPrRunResponseDto,type BotPrEvidenceResponseDto,type BotPrStartDto} from '../../../lib/axiom/bot/pullRequestEvidenceDto';
+import {botAiRequest} from './botAiTransport';
+import {isBotAiEvidenceContext,isBotAiCapabilities,isBotAiRunList,isBotAiRunResponse,isBotAiResultResponse,isBotAiRunId,isBotAiModelId,type BotAiCapabilitiesDto,type BotAiRunListDto,type BotAiRunResponseDto,type BotAiResultResponseDto,type BotAiStartDto} from '../../../lib/axiom/bot/aiTaskDto';
+import {readinessReportRequest} from './readinessReportTransport';
+import {isReadinessCapabilities,isReadinessRunList,isReadinessRunResponse,isReadinessReportResponse,isReadinessRunId,type ReadinessCapabilitiesDto,type ReadinessRunListDto,type ReadinessRunResponseDto,type ReadinessReportResponseDto,type ReadinessStartDto} from '../../../lib/axiom/bot/readinessRunDto';
+import {savedBotTaskRequest} from "./savedBotTaskTransport";
+import {isSavedBotTaskId,isSavedBotTaskDetail,isSavedBotTaskList,isSavedBotTaskHistory,type SavedBotTaskResult,type SavedBotTaskListDto,type SavedBotTaskDetailDto,type SavedBotTaskHistoryDto,type SavedBotTaskCreateDto,type SavedBotTaskUpdateDto} from "../../../lib/axiom/bot/savedTaskContract";
+import { isCloudOnboardingReadiness, type CloudOnboardingReadiness } from '../../../lib/cloud/onboardingReadinessContract';
+import {isReleaseMergeTargets,isReleaseMergePlanEvidence,type ReleaseMergeTargets,type ReleaseMergePlanEvidence,type ReleaseMergeMethod} from "./releaseMergeContract";
+import { isReleaseBatchWait, isReleaseBatchWaitState, type ReleaseBatchWait, type ReleaseBatchWaitState } from "./releaseBatchWaitContract";
+import type { WorkflowDispatchInput } from "../../../lib/connectors/github/workflowDispatchInputDto";
+import { AGENT_TOOL_ACTIVITY_FEATURE, type AgentToolActivity, type AgentMessageIssue } from "../../../lib/desktop/agentMessageStreamProtocol";
 import type { AgentProfileId } from "../../../lib/axiom/agentRuntime/agentProfiles";
+import type {DesktopUsageSummary} from "../../../lib/desktop/desktopBillingSummary";
 import { assertDesktopNotAborted } from "./abortSignal";
 import type { ModelPolicy } from "./aiProviderStatus";
 import { isAwsEnrollmentChallenge, isDesktopAwsAccount, isDesktopAwsInventory, type AwsEnrollmentInput, type AwsEnrollmentChallenge, type DesktopAwsAccount, type DesktopAwsInventory } from "./awsEnrollmentContract";
@@ -29,6 +60,7 @@ export interface DesktopClientConfig {
   sessionToken?: string;
 }
 
+export type CollaborationValidationResult={ok:true;data:{status:'active'}}|{ok:false;error:string;errorCode:string;outcomeUnconfirmed:boolean;retryAllowed:false};
 export type ApiResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
 export type CredentialFailureKind = "unavailable" | "rejected" | "invalid" | "canceled";
@@ -48,6 +80,8 @@ export interface DesktopCommercialAccess {
 }
 
 export interface VerifiedDesktopIdentity {
+  /** Authenticated paired user only; optional for older services. Not action authority. */
+  userId?: string;
   kind: "api_key" | "desktop_session";
   organizationId: string;
   email?: string;
@@ -79,6 +113,12 @@ export interface AgentSkillCatalogItem {
 
 export interface AirflowDag { dagId: string; displayName: string; description: string | null; paused: boolean; owners: string[]; tags: string[] }
 export interface AirflowDagRun { dagId: string; dagRunId: string; state: string; logicalDate: string | null; startedAt: string | null; endedAt: string | null }
+export interface AirflowTaskInstance {
+  taskId: string; mapIndex: number; tryNumber: number; state: string | null;
+  startedAt: string | null; endedAt: string | null;
+}
+export interface AirflowTaskPage { tasks: AirflowTaskInstance[]; totalEntries: number; offset: number }
+
 export interface AirflowAutomation {
   id: string; name: string; dagId: string; enabled: boolean; triggerMode: string; scheduleCron: string | null;
   requiredDagState: string; dependencyDagIds: string[]; actionType: string; repositoryFullName: string | null;
@@ -366,6 +406,47 @@ export class DesktopClient {
   config: DesktopClientConfig;
   private contextRevision = 0;
   private readonly contextListeners = new Set<() => void>();
+  private readonly validationHolds=new Map<'slack'|'teams',{base:string;token:string|undefined;revision:number;state:'pending'|'unknown';receipt?:string}>();
+  private readonly consentReceipts=new Map<'slack'|'teams',{config:DesktopClientConfig;base:string;token:string|undefined;revision:number;receipt:string}>();
+  private integrationStatusGeneration=0;
+  private readonly validationListeners=new Set<()=>void>();
+  integrationValidationRecoverySnapshot=()=>['slack','teams'].filter(p=>{const h=this.validationHolds.get(p as 'slack'|'teams');return h&&h.base===this.config.apiBase&&h.token===this.config.sessionToken&&h.revision===this.contextRevision}).join(',');
+  subscribeIntegrationValidationRecovery=(listener:()=>void)=>{this.validationListeners.add(listener);return()=>{this.validationListeners.delete(listener)}};
+  recordIntegrationValidationUnknown=(provider:'slack'|'teams')=>{this.validationHolds.set(provider,{base:this.config.apiBase,token:this.config.sessionToken,revision:this.contextRevision,state:'unknown',receipt:this.consentBaseline(provider)});this.integrationStatusGeneration++;for(const listener of this.validationListeners)listener()};
+  private consentBaseline(provider:'slack'|'teams'){const b=this.consentReceipts.get(provider);return b?.config===this.config&&b.base===this.config.apiBase&&b.token===this.config.sessionToken&&b.revision===this.contextRevision?b.receipt:undefined}
+  private async validateCollaboration(provider:'slack'|'teams'):Promise<CollaborationValidationResult>{
+    const config=this.config,base=config.apiBase,token=config.sessionToken,revision=this.contextRevision;
+    const unknown=():CollaborationValidationResult=>({ok:false,error:'Validation outcome is unconfirmed. Reload status and review consent before further validation.',errorCode:provider+'_validation_outcome_unknown',outcomeUnconfirmed:true,retryAllowed:false});
+    const refused=(code:string):CollaborationValidationResult=>({ok:false,error:'Validation could not be completed. Reload status and review the provider consent.',errorCode:code,outcomeUnconfirmed:false,retryAllowed:false});
+    if(this.integrationValidationRecoverySnapshot().split(',').includes(provider))return unknown();
+    let origin:URL;try{origin=new URL(base)}catch{return refused('invalid_validation_context')}
+    if(!token?.startsWith('axm.desk.')||/[\x00-\x20\x7f]/.test(token)||origin.username||origin.password||origin.search||origin.hash||origin.pathname!=='/'||!(origin.protocol==='https:'||origin.protocol==='http:'&&['localhost','127.0.0.1','[::1]'].includes(origin.hostname)))return refused('desktop_session_required');
+    const hold={base,token,revision,state:'pending' as 'pending'|'unknown',receipt:this.consentBaseline(provider)};this.integrationStatusGeneration++;this.validationHolds.set(provider,hold);for(const listener of this.validationListeners)listener();
+    const controller=new AbortController();let reader:ReadableStreamDefaultReader<Uint8Array>|undefined;let response:Response|undefined;
+    const notify=()=>{for(const listener of this.validationListeners)listener()};
+    const owns=()=>this.config===config&&this.config.apiBase===base&&this.config.sessionToken===token&&this.contextRevision===revision;
+    let stop!:(error:Error)=>void;const stopped=new Promise<never>((_,reject)=>{stop=reject});
+    const abort=()=>{controller.abort();try{void reader?.cancel().catch(()=>{})}catch{}stop(new Error('validation_stopped'))};
+    const unsubscribe=this.subscribeContext(abort),timer=setTimeout(abort,25000);
+    try{
+      const work=(async()=>{
+        const request=fetch(origin.origin+'/api/desktop/integrations/'+provider+'/validate',{method:'POST',credentials:'omit',redirect:'error',cache:'no-store',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:'{}',signal:controller.signal});
+        void request.then(r=>{if(controller.signal.aborted)void r.body?.cancel().catch(()=>{})},()=>{});response=await request;
+        if(!owns()||controller.signal.aborted||response.redirected||!response.body)throw new Error();
+        const length=response.headers.get('content-length');if(length!==null&&(!/^\d+$/.test(length)||Number(length)>32768))throw new Error();
+        reader=response.body.getReader();const chunks:Uint8Array[]=[];let size=0;while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>32768)throw new Error();chunks.push(part.value)}
+        const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength}
+        const value:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));if(!owns()||controller.signal.aborted)throw new Error();
+        const object=(v:unknown):v is Record<string,unknown>=>Boolean(v&&typeof v==='object'&&!Array.isArray(v));
+        if(response.ok&&object(value)&&Object.keys(value).sort().join(',')==='data,ok'&&value.ok===true&&object(value.data)&&Object.keys(value.data).join(',')==='status'&&value.data.status==='active')return {ok:true as const,data:{status:'active' as const}};
+        if(response.status>=400&&response.status<500&&object(value)&&Object.keys(value).sort().join(',')==='error,ok'&&value.ok===false&&typeof value.error==='string'&&['desktop_session_required',provider+'_authority_changed',provider+'_connection_changed',provider+'_not_connected'].includes(value.error))return refused(value.error);
+        throw new Error();
+      })();
+      const result=await Promise.race([work,stopped]);if(this.validationHolds.get(provider)===hold)this.validationHolds.delete(provider);notify();return result;
+    }catch{hold.state='unknown';notify();return unknown()}
+    finally{clearTimeout(timer);unsubscribe();controller.abort();try{void reader?.cancel().catch(()=>{})}catch{}if(!reader)try{void response?.body?.cancel().catch(()=>{})}catch{}}
+  }
+
 
   /** Local view invalidation only; carries no token and grants no authority. */
   getContextRevision = (): number => this.contextRevision;
@@ -399,6 +480,103 @@ export class DesktopClient {
     const changed = this.config.apiBase !== base;
     this.config = { ...this.config, apiBase: base };
     if (changed) this.invalidateContext();
+  }
+
+  private savedTaskContext() { return {getConfig:()=>this.config,getRevision:this.getContextRevision,subscribe:this.subscribeContext}; }
+  botPrCapabilities(signal?:AbortSignal):Promise<SavedBotTaskResult<BotPrCapabilitiesDto>> {
+    return botPrEvidenceRequest(this.savedTaskContext(),"GET","/api/desktop/bot/pr-evidence",undefined,isBotPrCapabilities,signal);
+  }
+  botPrRunsForTask(taskId:string,signal?:AbortSignal):Promise<SavedBotTaskResult<BotPrRunListDto>> {
+    if(!isSavedBotTaskId(taskId))return Promise.resolve({ok:false,error:"Select a saved task first.",errorCode:"bot_pr_input_invalid",outcomeUnconfirmed:false});
+    return botPrEvidenceRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/pr-evidence?taskId=${taskId}`,undefined,(v):v is BotPrRunListDto=>isBotPrRunList(v)&&v.runs.every(r=>r.taskId===taskId),signal);
+  }
+  createBotPrEvidence(input:BotPrStartDto,signal?:AbortSignal):Promise<SavedBotTaskResult<BotPrRunResponseDto>> {
+    if(!isBotPrStart(input))return Promise.resolve({ok:false,error:"Save the task and select an exact release target first.",errorCode:"bot_pr_input_invalid",outcomeUnconfirmed:false});
+    return botPrEvidenceRequest(this.savedTaskContext(),"POST","/api/desktop/bot/pr-evidence",input,(v):v is BotPrRunResponseDto=>isBotPrRunResponse(v)&&v.run.taskId===input.taskId&&v.run.taskVersion===input.expectedVersion&&v.run.releaseId===input.releaseId&&v.run.releaseVersion===input.expectedReleaseVersion,signal);
+  }
+  getBotPrEvidence(id:string,signal?:AbortSignal):Promise<SavedBotTaskResult<BotPrEvidenceResponseDto>> {
+    if(!isBotPrRunId(id))return Promise.resolve({ok:false,error:"Invalid evidence identifier.",errorCode:"bot_pr_input_invalid",outcomeUnconfirmed:false});
+    return botPrEvidenceRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/pr-evidence/${id}`,undefined,(v):v is BotPrEvidenceResponseDto=>isBotPrEvidenceResponse(v)&&v.run.id===id,signal);
+  }
+  findBotPrEvidence(clientRequestId:string,signal?:AbortSignal):Promise<SavedBotTaskResult<BotPrRunResponseDto>> {
+    if(!isBotPrUuid(clientRequestId))return Promise.resolve({ok:false,error:"Invalid evidence request.",errorCode:"bot_pr_input_invalid",outcomeUnconfirmed:false});
+    return botPrEvidenceRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/pr-evidence?clientRequestId=${clientRequestId}`,undefined,isBotPrRunResponse,signal);
+  }
+  cancelBotPrEvidence(id:string,expectedRevision:number,signal?:AbortSignal):Promise<SavedBotTaskResult<BotPrRunResponseDto>> {
+    if(!isBotPrRunId(id)||!Number.isSafeInteger(expectedRevision)||expectedRevision<0)return Promise.resolve({ok:false,error:"Check this evidence read before canceling.",errorCode:"bot_pr_input_invalid",outcomeUnconfirmed:false});
+    return botPrEvidenceRequest(this.savedTaskContext(),"DELETE",`/api/desktop/bot/pr-evidence/${id}`,{expectedRevision},(v):v is BotPrRunResponseDto=>isBotPrRunResponse(v)&&v.run.id===id,signal);
+  }
+  botPrReleases(signal?:AbortSignal):Promise<SavedBotTaskResult<Array<{id:string;title:string;version:number;status:string}>>> {
+    const validate=(v:unknown):v is Array<{id:string;title:string;version:number;status:string}>=>Array.isArray(v)&&v.length<=100&&v.every(r=>r&&typeof r==='object'&&isBotPrReleaseId(r.id)&&typeof r.title==='string'&&r.title.length<=500&&Number.isSafeInteger(r.version)&&r.version>=0&&typeof r.status==='string'&&r.status.length<=80)&&new Set(v.map(r=>r.id)).size===v.length;
+    return botPrEvidenceRequest(this.savedTaskContext(),"GET","/api/desktop/deployments",undefined,validate,signal);
+  }
+  botPrTargets(releaseId:string,version:number,signal?:AbortSignal):Promise<SavedBotTaskResult<ReleaseMergeTargets>> {
+    if(!isBotPrReleaseId(releaseId)||!Number.isSafeInteger(version)||version<0||version>2147483647)return Promise.resolve({ok:false,error:"Select a current release first.",errorCode:"bot_pr_input_invalid",outcomeUnconfirmed:false});
+    return botPrEvidenceRequest(this.savedTaskContext(),"GET",`/api/desktop/deployments/${releaseId}/merge-targets?expectedVersion=${version}`,undefined,(v):v is ReleaseMergeTargets=>isReleaseMergeTargets(v,releaseId,version),signal);
+  }
+  botAiRunsForTask(taskId:string,signal?:AbortSignal):Promise<SavedBotTaskResult<BotAiRunListDto>> {
+    if(!isSavedBotTaskId(taskId))return Promise.resolve({ok:false,error:"Select a saved task first.",errorCode:"bot_ai_input_invalid",outcomeUnconfirmed:false});
+    return botAiRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/ai-tasks?taskId=${taskId}`,undefined,(v):v is BotAiRunListDto=>isBotAiRunList(v)&&v.runs.every(run=>run.taskId===taskId),signal);
+  }
+  botAiCapabilities(signal?:AbortSignal):Promise<SavedBotTaskResult<BotAiCapabilitiesDto>> {
+    return botAiRequest(this.savedTaskContext(),"GET","/api/desktop/bot/ai-tasks",undefined,isBotAiCapabilities,signal);
+  }
+  sendBotAiTask(input:BotAiStartDto,signal?:AbortSignal):Promise<SavedBotTaskResult<BotAiRunResponseDto>> {
+    if(('evidenceContext' in input&&!isBotAiEvidenceContext(input.evidenceContext))||!isSavedBotTaskId(input.taskId)||!Number.isInteger(input.expectedVersion)||input.expectedVersion<0||input.expectedVersion>2147483647||input.kind!=="ai_task_response_v1"||!isBotAiModelId(input.modelId)||input.confirmSend!==true||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(input.clientRequestId))return Promise.resolve({ok:false,error:"Save the task and confirm the AI task scope first.",errorCode:"bot_ai_input_invalid",outcomeUnconfirmed:false});
+    return botAiRequest(this.savedTaskContext(),"POST","/api/desktop/bot/ai-tasks",input,(v):v is BotAiRunResponseDto=>isBotAiRunResponse(v)&&v.run.taskId===input.taskId&&v.run.taskVersion===input.expectedVersion&&v.run.modelId===input.modelId,signal);
+  }
+  getBotAiRun(id:string,signal?:AbortSignal):Promise<SavedBotTaskResult<BotAiResultResponseDto>> {
+    if(!isBotAiRunId(id))return Promise.resolve({ok:false,error:"Invalid AI task identifier.",errorCode:"bot_ai_input_invalid",outcomeUnconfirmed:false});
+    return botAiRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/ai-tasks/${id}`,undefined,(v):v is BotAiResultResponseDto=>isBotAiResultResponse(v)&&v.run.id===id,signal);
+  }
+  findBotAiRun(clientRequestId:string,signal?:AbortSignal):Promise<SavedBotTaskResult<BotAiRunResponseDto>> {
+    if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(clientRequestId))return Promise.resolve({ok:false,error:"Invalid AI task request.",errorCode:"bot_ai_input_invalid",outcomeUnconfirmed:false});
+    return botAiRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/ai-tasks?clientRequestId=${encodeURIComponent(clientRequestId)}`,undefined,isBotAiRunResponse,signal);
+  }
+  cancelBotAiRun(id:string,expectedRevision:number,signal?:AbortSignal):Promise<SavedBotTaskResult<BotAiRunResponseDto>> {
+    if(!isBotAiRunId(id)||!Number.isInteger(expectedRevision)||expectedRevision<0||expectedRevision>19)return Promise.resolve({ok:false,error:"Check the current AI task before canceling.",errorCode:"bot_ai_input_invalid",outcomeUnconfirmed:false});
+    return botAiRequest(this.savedTaskContext(),"DELETE",`/api/desktop/bot/ai-tasks/${id}`,{expectedRevision},(v):v is BotAiRunResponseDto=>isBotAiRunResponse(v)&&v.run.id===id,signal);
+  }
+  readinessReportsForTask(taskId:string,signal?:AbortSignal):Promise<SavedBotTaskResult<ReadinessRunListDto>> {
+    if(!isSavedBotTaskId(taskId))return Promise.resolve({ok:false,error:"Select a saved task first.",errorCode:"readiness_input_invalid",outcomeUnconfirmed:false});
+    return readinessReportRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/readiness-runs?taskId=${taskId}`,undefined,(v):v is ReadinessRunListDto=>isReadinessRunList(v)&&v.runs.every(run=>run.taskId===taskId),signal);
+  }
+  readinessCapabilities(signal?:AbortSignal):Promise<SavedBotTaskResult<ReadinessCapabilitiesDto>> {
+    return readinessReportRequest(this.savedTaskContext(),"GET","/api/desktop/bot/readiness-runs",undefined,isReadinessCapabilities,signal);
+  }
+  createReadinessReport(input:ReadinessStartDto,signal?:AbortSignal):Promise<SavedBotTaskResult<ReadinessRunResponseDto>> {
+    if(!isSavedBotTaskId(input.taskId)||!Number.isInteger(input.expectedVersion)||input.expectedVersion<0||input.expectedVersion>2147483647||input.adapter!=="workspace_readiness_v1"||input.confirmRecordedMetadata!==true||!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(input.clientRequestId))return Promise.resolve({ok:false,error:"Save the task and confirm the report scope first.",errorCode:"readiness_input_invalid",outcomeUnconfirmed:false});
+    return readinessReportRequest(this.savedTaskContext(),"POST","/api/desktop/bot/readiness-runs",input,(v):v is ReadinessRunResponseDto=>isReadinessRunResponse(v)&&v.run.taskId===input.taskId&&v.run.taskVersion===input.expectedVersion,signal);
+  }
+  getReadinessReport(id:string,signal?:AbortSignal):Promise<SavedBotTaskResult<ReadinessReportResponseDto>> {
+    if(!isReadinessRunId(id))return Promise.resolve({ok:false,error:"Invalid report identifier.",errorCode:"readiness_input_invalid",outcomeUnconfirmed:false});
+    return readinessReportRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/readiness-runs/${id}`,undefined,(v):v is ReadinessReportResponseDto=>isReadinessReportResponse(v)&&v.run.id===id,signal);
+  }
+  findReadinessReport(clientRequestId:string,signal?:AbortSignal):Promise<SavedBotTaskResult<ReadinessRunResponseDto>> {
+    if(!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(clientRequestId))return Promise.resolve({ok:false,error:"Invalid report request.",errorCode:"readiness_input_invalid",outcomeUnconfirmed:false});
+    return readinessReportRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/readiness-runs?clientRequestId=${encodeURIComponent(clientRequestId)}`,undefined,isReadinessRunResponse,signal);
+  }
+  cancelReadinessReport(id:string,expectedRevision:number,signal?:AbortSignal):Promise<SavedBotTaskResult<ReadinessRunResponseDto>> {
+    if(!isReadinessRunId(id)||!Number.isInteger(expectedRevision)||expectedRevision<0||expectedRevision>20)return Promise.resolve({ok:false,error:"Check the current report before canceling.",errorCode:"readiness_input_invalid",outcomeUnconfirmed:false});
+    return readinessReportRequest(this.savedTaskContext(),"DELETE",`/api/desktop/bot/readiness-runs/${id}`,{expectedRevision},(v):v is ReadinessRunResponseDto=>isReadinessRunResponse(v)&&v.run.id===id,signal);
+  }
+  listSavedBotTasks(cursor?:string,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskListDto>> {
+    return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks${cursor?`?cursor=${encodeURIComponent(cursor)}`:""}`,undefined,isSavedBotTaskList,signal);
+  }
+  getSavedBotTask(id:string,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskDetailDto>> {
+    if(!isSavedBotTaskId(id))return Promise.resolve({ok:false,error:"Invalid saved task.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});
+    return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks/${id}`,undefined,(value):value is SavedBotTaskDetailDto=>isSavedBotTaskDetail(value)&&value.task.id===id,signal);
+  }
+  createSavedBotTask(input:SavedBotTaskCreateDto,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskDetailDto>> {
+    return savedBotTaskRequest(this.savedTaskContext(),"POST","/api/desktop/bot/tasks",input,isSavedBotTaskDetail,signal);
+  }
+  updateSavedBotTask(id:string,input:SavedBotTaskUpdateDto,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskDetailDto>> {
+    if(!isSavedBotTaskId(id))return Promise.resolve({ok:false,error:"Invalid saved task.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});
+    return savedBotTaskRequest(this.savedTaskContext(),"PUT",`/api/desktop/bot/tasks/${id}`,input,(value):value is SavedBotTaskDetailDto=>isSavedBotTaskDetail(value)&&value.task.id===id,signal);
+  }
+  savedBotTaskHistory(id:string,beforeVersion?:number,signal?:AbortSignal):Promise<SavedBotTaskResult<SavedBotTaskHistoryDto>> {
+    if(!isSavedBotTaskId(id)||beforeVersion!==undefined&&(!Number.isInteger(beforeVersion)||beforeVersion<0||beforeVersion>2147483647))return Promise.resolve({ok:false,error:"Invalid saved-task history.",errorCode:"saved_task_input_invalid",outcomeUnconfirmed:false});
+    return savedBotTaskRequest(this.savedTaskContext(),"GET",`/api/desktop/bot/tasks/${id}/history${beforeVersion===undefined?"":`?beforeVersion=${beforeVersion}`}`,undefined,(value):value is SavedBotTaskHistoryDto=>isSavedBotTaskHistory(value)&&value.taskId===id,signal);
   }
 
   listDeploymentTerraformPlans(id: string): Promise<ApiResult<TerraformPlanReadData>> {
@@ -459,20 +637,33 @@ export class DesktopClient {
         : "The saved sign-in could not be verified. Sign in again." });
     if (signal?.aborted) return failure("canceled");
     if (!token || (!token.startsWith("vxlk_") && !token.startsWith("axm.desk."))) return failure("invalid");
+    const controller = new AbortController();
+    let settleBoundary: (result: CredentialVerificationResult) => void = () => {};
+    const boundary = new Promise<CredentialVerificationResult>(resolve => {settleBoundary = resolve;});
+    const onAbort = () => {controller.abort(); settleBoundary(failure("canceled"));};
+    signal?.addEventListener("abort", onAbort, {once: true});
+    const timer = setTimeout(() => {controller.abort(); settleBoundary(failure(signal?.aborted ? "canceled" : "unavailable"));}, 15000);
     try {
-      const response = await fetch(`${this.config.apiBase}/api/desktop/access`, {
-        headers: { ...this.headers(), Authorization: `Bearer ${token}` }, credentials: "include", signal,
-      });
-      if (signal?.aborted) return failure("canceled");
-      if (!response.ok) return failure(response.status === 401 || response.status === 403 ? "rejected"
-        : response.status >= 500 || response.status === 408 || response.status === 429 ? "unavailable" : "invalid");
-      const body = await response.json().catch(() => null);
-      if (signal?.aborted) return failure("canceled");
-      const identity = body?.ok ? parseDesktopIdentityResponse(body.data) : null;
-      const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
-      return identity && identity.kind === expectedKind ? { ok: true, data: identity } : failure("invalid");
-    } catch {
-      return failure(signal?.aborted ? "canceled" : "unavailable");
+      const operation = async (): Promise<CredentialVerificationResult> => {
+        try {
+          const response = await fetch(`${this.config.apiBase}/api/desktop/access`, {
+            headers: { ...this.headers(), Authorization: `Bearer ${token}` }, credentials: "include", signal: controller.signal,
+          });
+          if (controller.signal.aborted) return failure(signal?.aborted ? "canceled" : "unavailable");
+          if (!response.ok) return failure(response.status === 401 || response.status === 403 ? "rejected"
+            : response.status >= 500 || response.status === 408 || response.status === 429 ? "unavailable" : "invalid");
+          const body = await response.json().catch(() => null);
+          if (controller.signal.aborted) return failure(signal?.aborted ? "canceled" : "unavailable");
+          const identity = body?.ok ? parseDesktopIdentityResponse(body.data) : null;
+          const expectedKind = token.startsWith("vxlk_") ? "api_key" : "desktop_session";
+          return identity && identity.kind === expectedKind ? { ok: true, data: identity } : failure("invalid");
+        } catch {return failure(signal?.aborted ? "canceled" : "unavailable");}
+      };
+      return await Promise.race([operation(), boundary]);
+    } finally {
+      clearTimeout(timer);
+      signal?.removeEventListener("abort", onAbort);
+      controller.abort();
     }
   }
 
@@ -480,7 +671,7 @@ export class DesktopClient {
     return this.post("/api/desktop/billing/portal", {});
   }
 
-  usageSummary(): Promise<ApiResult<{ periodMonth: string; aiInvocationCount: number; aiInputTokens: number; aiOutputTokens: number; aiCostCents: number }>> {
+  usageSummary(): Promise<ApiResult<DesktopUsageSummary>> {
     return this.get("/api/desktop/usage-summary");
   }
 
@@ -667,8 +858,8 @@ export class DesktopClient {
    *
    * Pipeline gates default to requiredApprovers=2: a single call from
    * the desktop records ONE vote and returns `isTerminal: false` until
-   * a second distinct actor votes. The two-person platform guarantee
-   * holds — the desktop alone never tips a gate.
+   * a second authenticated machine principal votes. A key is not proof
+   * of a human; caller labels cannot create additional voter identities.
    */
   async v1DecideApproval(args: {
     runId: string;
@@ -761,6 +952,12 @@ export class DesktopClient {
     return isDesktopAwsAccount(result.data?.account) ? { ok: true, data: { account: result.data.account } } : { ok: false, error: "The service returned an invalid AWS account verification result." };
   }
 
+  async cloudOnboardingReadiness(): Promise<ApiResult<CloudOnboardingReadiness>> {
+    const result = await this.cloudEnrollmentRequest<unknown>("GET", "/api/desktop/cloud/onboarding-readiness");
+    if (!result.ok) return result;
+    return isCloudOnboardingReadiness(result.data) ? { ok: true, data: result.data } : { ok: false, error: "Cloud setup status is unavailable." };
+  }
+
   async desktopCloudAccounts(): Promise<ApiResult<{ accounts: DesktopAwsAccount[] }>> {
     const result = await this.cloudEnrollmentRequest<{ accounts?: unknown }>("GET", "/api/desktop/cloud/accounts");
     if (!result.ok) return result;
@@ -789,16 +986,46 @@ export class DesktopClient {
   private async cloudEnrollmentRequest<T>(method: "GET" | "POST", path: string, body?: unknown): Promise<ApiResult<T>> {
     // This enrollment requires a paired desktop bearer, never browser-cookie fallback.
     if (!this.config.sessionToken?.startsWith("axm.desk.")) return { ok: false, error: "A browser-paired desktop session is required for cloud enrollment." };
+    const controller = new AbortController();
+    let response: Response | undefined;
+    let timedOut = false;
+    const cancelBody = (value: Response) => {
+      try { void value.body?.cancel().catch(() => {}); } catch { /* Already consumed or locked. */ }
+    };
+    let deadline: ReturnType<typeof setTimeout> | undefined;
+    const timeout = new Promise<never>((_resolve, reject) => {
+      deadline = setTimeout(() => {
+        timedOut = true;
+        reject(new Error("aws_enrollment_timeout"));
+        controller.abort();
+      }, 25000);
+    });
     try {
-      const response = await fetch(`${this.config.apiBase}${path}`, {
-        method, headers: { ...this.headers(), ...(method === "POST" ? { "Content-Type": "application/json" } : {}) },
-        credentials: "omit", ...(method === "POST" ? { body: JSON.stringify(body) } : {}),
-      });
-      const payload = await response.json().catch(() => null) as { ok?: boolean; data?: T; message?: unknown } | null;
-      if (response.ok && payload?.ok === true && payload.data !== undefined) return { ok: true, data: payload.data };
-      return { ok: false, error: typeof payload?.message === "string" ? payload.message : `Cloud enrollment is unavailable (HTTP ${response.status}).` };
+      // Race the complete read as well as aborting fetch: headers alone do not
+      // complete a request, and a stalled body must not keep the UI busy.
+      const operation = (async () => {
+        const received = await fetch(`${this.config.apiBase}${path}`, {
+          method, headers: { ...this.headers(), ...(method === "POST" ? { "Content-Type": "application/json" } : {}) },
+          credentials: "omit", ...(method === "POST" ? { body: JSON.stringify(body) } : {}), signal: controller.signal,
+        });
+        response = received;
+        if (controller.signal.aborted) {
+          cancelBody(received);
+          throw new Error("aws_enrollment_timeout");
+        }
+        const payload = await received.json().catch(() => null) as { ok?: boolean; data?: T; message?: unknown } | null;
+        if (received.ok && payload?.ok === true && payload.data !== undefined) return { ok: true as const, data: payload.data };
+        return { ok: false as const, error: typeof payload?.message === "string" ? payload.message : `Cloud enrollment is unavailable (HTTP ${received.status}).` };
+      })();
+      return await Promise.race([operation, timeout]);
     } catch {
-      return { ok: false, error: "The cloud enrollment service could not be reached. Existing connections are unchanged." };
+      return { ok: false, error: timedOut
+        ? "The AWS connection request timed out. Its outcome is unconfirmed; refresh connection state before trying again."
+        : "The cloud enrollment service could not be reached. Its outcome is unconfirmed; refresh connection state before trying again." };
+    } finally {
+      clearTimeout(deadline);
+      controller.abort();
+      if (response) cancelBody(response);
     }
   }
 
@@ -852,7 +1079,64 @@ export class DesktopClient {
   }
 
   // ── Deployment operations ─────────────────────────────────────────
-  integrationStatus(): Promise<ApiResult<{
+  private connectedActionRecovery=new Map<'teams'|'linear',{config:DesktopClientConfig;revision:number;input:ConnectedActionsRequest}>();
+  connectedActionPending(provider:'teams'|'linear'){const p=this.connectedActionRecovery.get(provider);return p?.config===this.config&&p.revision===this.contextRevision?p.input:undefined}
+  async listConnectedActions(provider:'teams'|'linear',lookup?:ConnectedActionLookup,signal?:AbortSignal):Promise<ConnectedActionsResult>{
+    const config=this.config,revision=this.contextRevision,pending=this.connectedActionPending(provider);
+    if(pending&&lookup&&'targets'in lookup)return{ok:false,error:'Recover the saved action before loading a different target.',errorCode:'connected_action_recovery_required',outcomeUnconfirmed:true};
+    const recovery=pending?pending.action==='request'?{intentId:pending.intentId}:{id:pending.id}:lookup;
+    const r=await connectedActionsRequest(this.savedTaskContext(),provider,undefined,recovery,signal);
+    if(r.ok&&this.config===config&&this.contextRevision===revision&&pending){
+      if(pending.action==='request'){const intent=r.data.actions[0]?.intent;if(!intent||(intent.sourceTask?.taskId!==pending.sourceTask?.taskId||intent.sourceTask?.taskVersion!==pending.sourceTask?.expectedVersion)||intent.intentId!==pending.intentId||intent.kind!==pending.kind||intent.teamId!==pending.teamId||['title','description','text','channelId','issueId','stateId'].some(k=>k in pending&&(pending as unknown as Record<string,unknown>)[k]!==undefined&&(pending as unknown as Record<string,unknown>)[k]!==((intent as unknown as Record<string,unknown>)[k])))return{ok:false,error:'The saved draft does not match this request. Keep it for recovery.',errorCode:'connected_action_recovery_required',outcomeUnconfirmed:true}}
+      this.connectedActionRecovery.delete(provider);
+    }return r;
+  }
+  async mutateConnectedAction(provider:'teams'|'linear',input:ConnectedActionsRequest,signal?:AbortSignal):Promise<ConnectedActionsResult>{
+    if(this.connectedActionPending(provider))return{ok:false,error:'Recover the saved action before another change.',errorCode:'connected_action_recovery_required',outcomeUnconfirmed:true};
+    const parsed=connectedActionsRequestSchema.safeParse(input);if(!parsed.success)return{ok:false,error:'Review the exact action details.',errorCode:'invalid_connected_action',outcomeUnconfirmed:false};
+    const config=this.config,revision=this.contextRevision;this.connectedActionRecovery.set(provider,{config,revision,input:structuredClone(parsed.data)});
+    const r=await connectedActionsRequest(this.savedTaskContext(),provider,parsed.data,undefined,signal);
+    if((r.ok||input.action==='request'&&!r.ok&&r.errorCode==='bot_action_task_changed'&&!r.outcomeUnconfirmed)&&this.config===config&&this.contextRevision===revision)this.connectedActionRecovery.delete(provider);return r;
+  }
+  async retrySavingConnectedActionDraft(provider:'teams'|'linear',signal?:AbortSignal):Promise<ConnectedActionsResult>{
+    const pending=this.connectedActionPending(provider);if(!pending||pending.action!=='request')return{ok:false,error:'Only saving the same unconfirmed draft can be retried. Execution is never retried.',errorCode:'connected_action_recovery_required',outcomeUnconfirmed:true};
+    this.connectedActionRecovery.delete(provider);return this.mutateConnectedAction(provider,pending,signal);
+  }
+  private slackNotificationRecovery:{config:DesktopClient['config'];revision:number;requestId?:string;requestKey?:string;hold:boolean}|undefined;
+  slackNotificationNeedsReload=()=>this.slackNotificationRecovery?.config===this.config&&this.slackNotificationRecovery?.revision===this.contextRevision&&this.slackNotificationRecovery.hold===true;
+  slackNotificationRequestId(channelId:string,text:string,sourceTask?:BotActionTaskReference){const previous=this.slackNotificationRecovery,key=JSON.stringify(sourceTask?[channelId,text,sourceTask.taskId,sourceTask.expectedVersion]:[channelId,text]);if(previous?.config===this.config&&previous.revision===this.contextRevision&&previous.requestId){if(previous.requestKey!==key)return null;return previous.requestId}return crypto.randomUUID()}
+  slackNotificationPendingDraft(channelId:string,sourceTask?:BotActionTaskReference){const p=this.slackNotificationRecovery;if(p?.config!==this.config||p.revision!==this.contextRevision||!p.requestKey)return '';try{const [channel,text,taskId,version]=JSON.parse(p.requestKey);return taskId===sourceTask?.taskId&&version===sourceTask?.expectedVersion&&channel===channelId&&typeof text==='string'?text:''}catch{return ''}}
+  async listSlackNotifications(lookup?:SlackNotificationLookup,signal?:AbortSignal):Promise<SlackNotificationsResult>{
+    const config=this.config,revision=this.contextRevision,pending=this.slackNotificationRecovery,owned=pending?.config===config&&pending.revision===revision;
+    const r=await slackNotificationsRequest(this.savedTaskContext(),undefined,owned&&pending.requestId?{clientRequestId:pending.requestId}:lookup,signal);
+    if(r.ok&&this.config===config&&this.contextRevision===revision&&owned){
+      if(pending.requestId&&!r.data.approvals.some(a=>a.clientRequestId===pending.requestId&&JSON.stringify(a.intent.sourceTask?[a.intent.channelId,a.intent.text,a.intent.sourceTask.taskId,a.intent.sourceTask.taskVersion]:[a.intent.channelId,a.intent.text])===pending.requestKey))return{ok:false,error:'The earlier notification draft could not be found. Keep its original request and reload history before another action.'};
+      this.slackNotificationRecovery=undefined;
+    }
+    return r;
+  }
+  async mutateSlackNotification(input:SlackNotificationRequest,signal?:AbortSignal):Promise<SlackNotificationsResult>{
+    if(this.slackNotificationNeedsReload())return{ok:false,error:'Reload notification history before another action.'};
+    const config=this.config,revision=this.contextRevision,previous=this.slackNotificationRecovery;
+    if(input.action==='request'&&previous?.config===config&&previous.revision===revision&&previous.requestId&&(input.clientRequestId!==previous.requestId||JSON.stringify(input.sourceTask?[input.channelId,input.text,input.sourceTask.taskId,input.sourceTask.expectedVersion]:[input.channelId,input.text])!==previous.requestKey))return{ok:false,error:'The earlier draft outcome is unresolved. Reload its saved history before starting a different draft.'};
+    this.slackNotificationRecovery={config,revision,hold:true,...(input.action==='request'?{requestId:input.clientRequestId,requestKey:JSON.stringify(input.sourceTask?[input.channelId,input.text,input.sourceTask.taskId,input.sourceTask.expectedVersion]:[input.channelId,input.text])}:previous?.config===config&&previous.revision===revision?{requestId:previous.requestId,requestKey:previous.requestKey}:{})};
+    const r=await slackNotificationsRequest(this.savedTaskContext(),input,undefined,signal);if(!r.ok&&input.action==='request'&&r.errorCode==='bot_action_task_changed'&&this.config===config&&this.contextRevision===revision)this.slackNotificationRecovery=undefined;if(r.ok&&this.config===config&&this.contextRevision===revision)this.slackNotificationRecovery=input.action!=='request'&&previous?.config===config&&previous.revision===revision&&previous.requestId?{...previous,hold:false}:undefined;return r;
+  }
+  listSlackChannels(cursor?:string,signal?:AbortSignal):Promise<SlackChannelsResult>{return readSlackChannels(this.savedTaskContext(),cursor,signal)}
+  private githubReconnectHold:{config:DesktopClient['config'];revision:number}|undefined;
+  githubReconnectNeedsReload=()=>this.githubReconnectHold?.config===this.config&&this.githubReconnectHold?.revision===this.contextRevision;
+  async reloadGitHubReconnectStatus(){const config=this.config,revision=this.contextRevision;const r=await this.integrationStatus();if(r.ok&&this.config===config&&this.contextRevision===revision)this.githubReconnectHold=undefined;return r}
+  verifyExistingGitHubConnection(signal?:AbortSignal):Promise<ReleasePlanResult<GithubReconnectChallenge>> {
+    if(this.githubReconnectNeedsReload())return Promise.resolve({ok:false,error:'Reload GitHub status before verifying again.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/integrations/github/reconnect',{action:'verify'},(v):v is GithubReconnectChallenge=>githubReconnectChallengeSchema.safeParse(v).success,signal);
+  }
+  async confirmExistingGitHubConnection(challengeId:string,signal?:AbortSignal):Promise<ReleasePlanResult<GithubReconnectConfirmation>> {
+    if(this.githubReconnectNeedsReload()||!/^github_reconnect_[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(challengeId))return{ok:false,error:'Reload GitHub status before reconnecting.',outcomeUnconfirmed:false};
+    const config=this.config,revision=this.contextRevision;this.githubReconnectHold={config,revision};
+    const r=await releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/integrations/github/reconnect',{action:'confirm',challengeId,expectedVersion:0},(v):v is GithubReconnectConfirmation=>githubReconnectConfirmationSchema.safeParse(v).success,signal);
+    if(r.ok&&this.config===config&&this.contextRevision===revision)this.githubReconnectHold=undefined;return r;
+  }
+  async integrationStatus(): Promise<ApiResult<{
     configuration?: Record<"github" | "slack" | "teams" | "linear", boolean>;
     cloud: Array<{
       provider: "aws" | "azure" | "gcp";
@@ -864,9 +1148,21 @@ export class DesktopClient {
       provider: "slack" | "teams" | "linear";
       status: string;
       lastValidatedAt: string | null;
+      recoveryReceipt?: string;
     }>;
   }>> {
-    return this.get("/api/desktop/integrations");
+    const config=this.config,base=config.apiBase,token=config.sessionToken,revision=this.contextRevision,generation=++this.integrationStatusGeneration;
+    const result=await this.get<{configuration?:Record<"github"|"slack"|"teams"|"linear",boolean>;cloud:Array<{provider:"aws"|"azure"|"gcp";status:string;lastTransitionAt:string|null}>;github:{status:string;repositorySelection:string};collaboration:Array<{provider:"slack"|"teams"|"linear";status:string;lastValidatedAt:string|null;recoveryReceipt?:string}>}>("/api/desktop/integrations");
+    if(result.ok&&this.config===config&&this.config.apiBase===base&&this.config.sessionToken===token&&this.contextRevision===revision&&generation===this.integrationStatusGeneration&&Array.isArray(result.data.collaboration)){
+      let changed=false;
+      for(const provider of ['slack','teams'] as const){const rows=result.data.collaboration.filter(r=>r&&r.provider===provider);if(rows.length!==1)continue;const row=rows[0];if(typeof row.recoveryReceipt!=='string'||!/^[a-f0-9]{64}$/.test(row.recoveryReceipt))continue;
+        const hold=this.validationHolds.get(provider);
+        if(hold){if(hold.base!==config.apiBase||hold.token!==config.sessionToken||hold.revision!==revision||hold.state!=='unknown'||!hold.receipt||hold.receipt===row.recoveryReceipt||row.status!=='pending')continue;this.validationHolds.delete(provider);changed=true}
+        this.consentReceipts.set(provider,{config,base,token,revision,receipt:row.recoveryReceipt});
+      }
+      if(changed)for(const listener of this.validationListeners)listener();
+    }
+    return result;
   }
 
   startIntegrationConnection(provider: "github" | "slack" | "teams" | "linear"): Promise<ApiResult<{ consentUrl: string }>> {
@@ -877,6 +1173,10 @@ export class DesktopClient {
     return this.get("/api/desktop/agent/skills");
   }
 
+  microsoftLearn(input: {action: "check"} | {action: "search"; query: string}): Promise<ApiResult<{searchAvailable: true} | {results: Array<{title: string; excerpt: string; url: string}>}>> {
+    return this.post("/api/desktop/mcp/microsoft-learn", input);
+  }
+
   updateAgentSkill(skillId: string, action: "install" | "enable" | "disable" | "remove"): Promise<ApiResult<{ skillId: string; status: string }>> {
     return this.post("/api/desktop/agent/skills", { skillId, action });
   }
@@ -885,19 +1185,19 @@ export class DesktopClient {
     return this.post("/api/desktop/integrations/github/validate", {});
   }
 
-  validateSlackConnection(): Promise<ApiResult<{ status: "active" }>> {
-    return this.post("/api/desktop/integrations/slack/validate", {});
+  validateSlackConnection(): Promise<CollaborationValidationResult> {
+    return this.validateCollaboration("slack");
   }
 
-  validateTeamsConnection(): Promise<ApiResult<{ status: "active" }>> {
-    return this.post("/api/desktop/integrations/teams/validate", {});
+  validateTeamsConnection(): Promise<CollaborationValidationResult> {
+    return this.validateCollaboration("teams");
   }
 
   validateLinearConnection(): Promise<ApiResult<{ status: "active" }>> {
     return this.post("/api/desktop/integrations/linear/validate", {});
   }
 
-  airflowConnection(): Promise<ApiResult<{ connected: boolean; status: string; baseUrl?: string; version?: string | null; dagCount?: number | null; authMode?: string; lastValidatedAt?: string }>> {
+  airflowConnection(): Promise<ApiResult<{ connected: boolean; status: string; connectionId?: string; connectionUpdatedAt?: string; baseUrl?: string; version?: string | null; dagCount?: number | null; authMode?: string; lastValidatedAt?: string }>> {
     return this.get("/api/desktop/airflow/connection");
   }
 
@@ -907,6 +1207,10 @@ export class DesktopClient {
 
   disconnectAirflow(): Promise<ApiResult<{ disconnected: boolean }>> { return this.delete("/api/desktop/airflow/connection"); }
   listAirflowDags(): Promise<ApiResult<{ dags: AirflowDag[] }>> { return this.get("/api/desktop/airflow/dags"); }
+  listAirflowTaskInstances(dagId: string, dagRunId: string, offset = 0): Promise<ApiResult<AirflowTaskPage>> {
+    return this.get(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs/${encodeURIComponent(dagRunId)}/tasks?offset=${offset}`);
+  }
+
   listAirflowDagRuns(dagId: string): Promise<ApiResult<{ runs: AirflowDagRun[] }>> { return this.get(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs`); }
   triggerAirflowDag(dagId: string): Promise<ApiResult<{ run: AirflowDagRun }>> { return this.post(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs`, {}); }
   listAirflowAutomations(): Promise<ApiResult<{ automations: AirflowAutomation[]; executions: AirflowAutomationExecution[] }>> { return this.get("/api/desktop/airflow/automations"); }
@@ -961,6 +1265,20 @@ export class DesktopClient {
     return this.get(`/api/desktop/github/files?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(branch)}`);
   }
 
+  listGithubWorkflows(repositoryFullName: string, ref: string): Promise<ApiResult<{
+    repositoryFullName: string; ref: string;
+    files: Array<{ name: string; path: string; blobSha: string }>;
+  }>> {
+    return this.get(`/api/desktop/github/workflows?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(ref)}`);
+  }
+
+  getGithubWorkflowInputs(repositoryFullName: string, ref: string, path: string): Promise<ApiResult<{
+    source: { repositoryFullName: string; ref: string; path: string; blobSha: string };
+    inputs: WorkflowDispatchInput[];
+  }>> {
+    return this.get(`/api/desktop/github/workflow-inputs?repositoryFullName=${encodeURIComponent(repositoryFullName)}&branch=${encodeURIComponent(ref)}&path=${encodeURIComponent(path)}`);
+  }
+
   listEnvironments(): Promise<ApiResult<{
     environments: Array<{ id: string; slug: string; name: string; tier: string; displayOrder: number; hasApprovalPolicy: boolean; createdAtIso: string }>;
   }>> {
@@ -1003,16 +1321,25 @@ export class DesktopClient {
     return this.post("/api/desktop/agent/conversations", {});
   }
 
-  listAgentConversations(): Promise<ApiResult<{
+  listAgentConversations(options?: { query?: string; cursor?: string }): Promise<ApiResult<{
     conversations: Array<{ id: string; title: string | null; turnCount: number; createdAt: string; updatedAt: string }>;
+    nextCursor?: string | null;
+    historyQueryVersion?: number;
   }>> {
-    return this.get("/api/desktop/agent/conversations");
+    const query = new URLSearchParams();
+    if (options?.query) query.set("q", options.query);
+    if (options?.cursor) query.set("cursor", options.cursor);
+    return this.get(`/api/desktop/agent/conversations${query.size ? `?${query}` : ""}`);
+  }
+
+  renameAgentConversation(conversationId: string, title: string, expectedTitle: string | null): Promise<ApiResult<{id: string; title: string}>> {
+    return this.post(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/rename`, {title, expectedTitle});
   }
 
   getAgentConversation(conversationId: string): Promise<ApiResult<{
     id: string; title: string | null;
     turns: Array<{ id: string; role: string; content: string; actionProposalId: string | null; createdAt: string }>;
-    actions: Array<{ id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string; resultJson: unknown; errorMessage: string | null; createdAt: string }>;
+    actions: Array<{ id: string; requiresIndependentReviewer?: boolean; toolName: string; argsJson: unknown; riskLevel: string; status: string; resultJson: unknown; errorMessage: string | null; createdAt: string }>;
   }>> {
     return this.get(`/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}`);
   }
@@ -1024,20 +1351,22 @@ export class DesktopClient {
     filePath?: string;
     mode?: "chat" | "code";
     operationMode?: "inspect" | "engineer" | "deepops";
+    maxDecisionSteps?: number;
     agentProfile?: AgentProfileId;
-  }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void }): Promise<ApiResult<{
+  }, preferredModel?: string, streaming?: { signal: AbortSignal; onDraft: (text: string) => void; onActivity?: (activity: AgentToolActivity) => void }): Promise<ApiResult<{
     reply: string;
-    proposal: { id: string; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
+    issue?: AgentMessageIssue;
+    proposal: { id: string; requiresIndependentReviewer?: boolean; toolName: string; argsJson: unknown; riskLevel: string; status: string } | null;
     /** Provider-reported token evidence, not a settled customer credit charge. */
     usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } | null;
   }>> {
     const path = `/api/desktop/agent/conversations/${encodeURIComponent(conversationId)}/messages`;
-    const body = { message, preferredProvider, workspaceContext, ...(preferredModel ? { preferredModel } : {}) };
+    const body = { message, preferredProvider, workspaceContext, ...(preferredModel ? { preferredModel } : {}), ...(streaming?.onActivity ? {streamFeatures: [AGENT_TOOL_ACTIVITY_FEATURE]} : {}) };
     if (!streaming) return this.post(path, body);
     return this.sendStreamingAgentMessage(path, body, streaming);
   }
 
-  private async sendStreamingAgentMessage(path: string, body: unknown, streaming: { signal: AbortSignal; onDraft: (text: string) => void }) {
+  private async sendStreamingAgentMessage(path: string, body: unknown, streaming: { signal: AbortSignal; onDraft: (text: string) => void; onActivity?: (activity: AgentToolActivity) => void }) {
     const context = this.config;
     const controller = new AbortController();
     // Relay cancellation without depending on newer WKWebView AbortSignal.any.
@@ -1065,7 +1394,7 @@ export class DesktopClient {
       // Already-serving older releases may return their ordinary JSON response
       // to Accept. Consume that SAME response; never dispatch a fallback call.
       const data = response.headers.get("content-type")?.split(";")[0] === AGENT_STREAM_CONTENT_TYPE
-        ? await readAgentMessageStream(response, text => { assertOwned(); streaming.onDraft(text); }, signal)
+        ? await readAgentMessageStream(response, text => { assertOwned(); streaming.onDraft(text); }, signal, activity => { assertOwned(); streaming.onActivity?.(activity); })
         : await response.json().then(value => {
           if (value?.ok !== true || !isAgentMessageReply(value.data)) throw new Error("invalid_agent_reply");
           return value.data;
@@ -1177,6 +1506,7 @@ export class DesktopClient {
       };
       recovery: { rollbackAvailability: string; backupRequired: boolean; evidenceCount: number };
       observation: { status: "not_connected"; recordedMonitoringPlan: boolean };
+      batches?: { selectedRunCount: number };
     };
     latestPlaybook: {
       id: string;
@@ -1187,6 +1517,12 @@ export class DesktopClient {
     } | null;
   }>>> {
     return this.get("/api/desktop/deployments");
+  }
+
+  createReleaseResolutionDraft(draft: Record<string, unknown>, idempotencyId: string): Promise<ApiResult<{
+    id: string; title: string; status: string; version: number; correlationId: string; submittedAt: null; replayed: boolean;
+  }>> {
+    return this.post("/api/desktop/deployments/drafts", draft, { "x-correlation-id": idempotencyId });
   }
 
   createDeploymentRequest(
@@ -1206,6 +1542,213 @@ export class DesktopClient {
       intake,
       { "x-correlation-id": idempotencyId },
     );
+  }
+
+  serviceNowTicketRecovery(requestId:string,actionId:string,input:{expectedVersion:number;clientRequestId:string;issue?:{sysId:string;number:string}},mode:'propose'|'approve'|'verify'|'cancel',signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowTicketLifecycleState>>{
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/servicenow-actions/${actionId}/recovery${mode==='propose'?'':mode==='approve'?'/approval':'/'+mode}`,input,(v):v is ServiceNowTicketLifecycleState=>isServiceNowTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].id===actionId&&v.actions[0].status==='unknown'&&v.actions[0].version>input.expectedVersion&&v.actions[0].recovery?.status===(mode==='propose'?'requested':mode==='approve'?'approved':mode==='verify'?'verified':'cancelled'),signal);
+  }
+  serviceNowTicketActions(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowTicketLifecycleState>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/servicenow-actions`,undefined,(v):v is ServiceNowTicketLifecycleState=>isServiceNowTicketLifecycleState(v,requestId),signal);
+  }
+  serviceNowTicketMetadata(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowMetadata>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/servicenow-actions/metadata`,undefined,(v):v is ServiceNowMetadata=>isServiceNowMetadata(v,requestId),signal);
+  }
+  saveServiceNowTicketAction(requestId:string,input:{processId:string;values:{shortDescription:string;description?:string};clientRequestId:string},signal?:AbortSignal,amendment?:{actionId:string;expectedVersion:number}):Promise<ReleasePlanResult<ServiceNowTicketLifecycleState>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),amendment?'PATCH':'POST',`/api/desktop/deployments/${requestId}/servicenow-actions${amendment?'/'+amendment.actionId:''}`,{...input,...(amendment?{expectedVersion:amendment.expectedVersion}:{})},(v):v is ServiceNowTicketLifecycleState=>isServiceNowTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].kind==='publish'&&v.actions[0].status==='awaiting_approval'&&(!amendment||v.actions[0].id===amendment.actionId&&v.actions[0].version>amendment.expectedVersion),signal);
+  }
+  mutateServiceNowTicketAction(requestId:string,actionId:string,input:{expectedVersion:number;clientRequestId:string},mode:'approve'|'cancel'|'dispatch'|'recover',signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowTicketLifecycleState>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),mode==='cancel'?'DELETE':'POST',`/api/desktop/deployments/${requestId}/servicenow-actions/${actionId}${mode==='cancel'?'':mode==='approve'?'/approval':'/'+mode}`,input,(v):v is ServiceNowTicketLifecycleState=>isServiceNowTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].id===actionId&&(mode==='approve'?v.actions[0].status==='approved':mode==='cancel'?v.actions[0].status==='cancelled':['confirmed','refused','unknown','dispatching'].includes(v.actions[0].status))&&(mode==='recover'?v.actions[0].version>=input.expectedVersion:v.actions[0].version>input.expectedVersion),signal);
+  }
+  serviceNowTicketCloseOptions(requestId:string,publishActionId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowCloseOptions>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/servicenow-actions/${publishActionId}/close-options`,undefined,(v):v is ServiceNowCloseOptions=>isServiceNowCloseOptions(v,requestId,publishActionId),signal);
+  }
+  refreshServiceNowTicketCloseOptions(requestId:string,actionId:string,expectedVersion:number,signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowCloseOptions>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/servicenow-actions/${actionId}/close-options`,undefined,(v):v is ServiceNowCloseOptions=>isServiceNowCloseOptions(v,requestId,actionId,expectedVersion),signal);
+  }
+  prepareServiceNowTicketClose(requestId:string,publishActionId:string,input:{transitionId:string;closeCode?:string;closeNotes?:string;clientRequestId:string;expectedVersion?:number},signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowTicketLifecycleState>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/servicenow-actions/${publishActionId}/close-options`,input,(v):v is ServiceNowTicketLifecycleState=>isServiceNowTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].kind==='close'&&v.actions[0].status==='awaiting_approval'&&(input.expectedVersion===undefined||v.actions[0].id===publishActionId&&v.actions[0].version>input.expectedVersion),signal);
+  }
+  jiraTicketCloseOptions(requestId:string,publishActionId:string,signal?:AbortSignal):Promise<ReleasePlanResult<JiraCloseOptions>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^jira_action_[a-f0-9]{64}$/.test(publishActionId))return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/jira-actions/${publishActionId}/close-options`,undefined,(v):v is JiraCloseOptions=>isJiraCloseOptions(v,requestId,publishActionId),signal);
+  }
+  refreshJiraTicketCloseOptions(requestId:string,actionId:string,expectedVersion:number,signal?:AbortSignal):Promise<ReleasePlanResult<JiraCloseOptions>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^jira_action_[a-f0-9]{64}$/.test(actionId)||!Number.isInteger(expectedVersion)||expectedVersion<0)return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/jira-actions/${actionId}/close-options`,undefined,(v):v is JiraCloseOptions=>isJiraCloseOptions(v,requestId,actionId,expectedVersion),signal);
+  }
+  prepareJiraTicketClose(requestId:string,publishActionId:string,input:{transitionId:string;clientRequestId:string;expectedVersion?:number},signal?:AbortSignal):Promise<ReleasePlanResult<JiraTicketLifecycleState>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^jira_action_[a-f0-9]{64}$/.test(publishActionId)||!/^[0-9]{1,20}$/.test(input.transitionId)||!validOperationUuid(input.clientRequestId)||(input.expectedVersion!==undefined&&(!Number.isInteger(input.expectedVersion)||input.expectedVersion<0))||Object.keys(input).some(k=>!['transitionId','clientRequestId','expectedVersion'].includes(k)))return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/jira-actions/${publishActionId}/close-options`,input,(v):v is JiraTicketLifecycleState=>isJiraTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].kind==='close'&&v.actions[0].status==='awaiting_approval'&&(input.expectedVersion===undefined||v.actions[0].id===publishActionId&&v.actions[0].version>input.expectedVersion),signal);
+  }
+  jiraTicketActions(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<JiraTicketLifecycleState>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId))return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/jira-actions`,undefined,(v):v is JiraTicketLifecycleState=>isJiraTicketLifecycleState(v,requestId),signal);
+  }
+  saveJiraTicketAction(requestId:string,input:JiraCreatePreviewInput,payloadDigest:string,clientRequestId:string,signal?:AbortSignal,amendment?:{actionId:string;expectedVersion:number}):Promise<ReleasePlanResult<JiraTicketLifecycleState>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^[a-f0-9]{64}$/.test(payloadDigest)||!validOperationUuid(clientRequestId)||amendment&&(!/^jira_action_[a-f0-9]{64}$/.test(amendment.actionId)||!validOperationVersion(amendment.expectedVersion)))return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),amendment?'PATCH':'POST',`/api/desktop/deployments/${requestId}/jira-actions${amendment?'/'+amendment.actionId:''}`,input,(v):v is JiraTicketLifecycleState=>isJiraTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].kind==='publish'&&v.actions[0].payloadDigest===payloadDigest&&(!amendment||v.actions[0].id===amendment.actionId&&v.actions[0].version>amendment.expectedVersion),signal,clientRequestId,amendment?.expectedVersion);
+  }
+  mutateJiraTicketAction(requestId:string,actionId:string,input:{expectedVersion:number;clientRequestId:string},approve:boolean|'dispatch'|'recover',signal?:AbortSignal):Promise<ReleasePlanResult<JiraTicketLifecycleState>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^jira_action_[a-f0-9]{64}$/.test(actionId)||!validOperationVersion(input.expectedVersion)||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['expectedVersion','clientRequestId'].includes(k)))return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),approve?'POST':'DELETE',`/api/desktop/deployments/${requestId}/jira-actions/${actionId}${approve==='dispatch'?'/dispatch':approve==='recover'?'/recover':approve?'/approval':''}`,input,(v):v is JiraTicketLifecycleState=>isJiraTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].id===actionId&&(approve==='dispatch'||approve==='recover'?['confirmed','refused','unknown','dispatching'].includes(v.actions[0].status):v.actions[0].status===(approve?'approved':'cancelled'))&&(approve==='recover'?v.actions[0].version>=input.expectedVersion:v.actions[0].version>input.expectedVersion),signal);
+  }
+  releaseWorkflowEvidence(requestId:string,planId:string,digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<ReleaseWorkflowEvidenceResponse>> {
+    return this.releaseWorkflowEvidenceRequest(requestId,planId,digest,undefined,signal);
+  }
+  collectReleaseWorkflowEvidence(requestId:string,planId:string,digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<ReleaseWorkflowEvidenceResponse>> {
+    return this.releaseWorkflowEvidenceRequest(requestId,planId,digest,{action:'collect'},signal);
+  }
+  mutateReleaseWorkflowEvidence(requestId:string,planId:string,digest:string,input:{action:'cancel'|'reconcile';id:string;expectedVersion:number},signal?:AbortSignal):Promise<ReleasePlanResult<ReleaseWorkflowEvidenceResponse>> {
+    if(!['cancel','reconcile'].includes(input.action)||!/^release_workflow_evidence_[a-f0-9]{64}$/.test(input.id)||!Number.isInteger(input.expectedVersion)||input.expectedVersion<0||input.expectedVersion>7||Object.keys(input).some(k=>!['action','id','expectedVersion'].includes(k)))return Promise.resolve({ok:false,error:'Reload release workflow evidence.',outcomeUnconfirmed:false});
+    return this.releaseWorkflowEvidenceRequest(requestId,planId,digest,input,signal);
+  }
+  private releaseWorkflowEvidenceRequest(requestId:string,planId:string,digest:string,body:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<ReleaseWorkflowEvidenceResponse>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||!/^[a-f0-9]{64}$/.test(digest))return Promise.resolve({ok:false,error:'Reload release workflow evidence.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),body?'POST':'GET',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/workflow-evidence`,body,(v):v is ReleaseWorkflowEvidenceResponse=>isReleaseWorkflowEvidenceResponse(v,requestId,planId,digest)&&(!body||v.evidence.length===1&&((body as {action:string}).action==='collect'?v.evidence[0].state!=='cancelled':v.evidence[0].id===(body as {id:string}).id&&((body as {action:string}).action==='cancel'?v.evidence[0].state==='cancelled':['observed','unknown'].includes(v.evidence[0].state))&&v.evidence[0].version>(body as {expectedVersion:number}).expectedVersion)),signal);
+  }
+  deploymentApprovalPreview(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<{plan:DeploymentPlan;planDigest:string;canApprove:boolean;executionAvailable:false}>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId))return Promise.resolve({ok:false,error:'Reload the release before reviewing deployment.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/deployment-approval`,undefined,(value):value is {plan:DeploymentPlan;planDigest:string;canApprove:boolean;executionAvailable:false}=>{
+      if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['plan','planDigest','canApprove','executionAvailable'].includes(k)))return false;
+      const v=value as {plan?:unknown;planDigest?:unknown;canApprove?:unknown;executionAvailable?:unknown},p=deploymentPlanSchema.safeParse(v.plan);
+      return p.success&&p.data.releaseId===requestId&&p.data.planId===planId&&typeof v.planDigest==='string'&&/^[a-f0-9]{64}$/.test(v.planDigest)&&typeof v.canApprove==='boolean'&&v.executionAvailable===false;
+    },signal);
+  }
+  async approveDeploymentAction(requestId:string,planId:string,plan:DeploymentPlan,clientRequestId:string,reviewedExactAction:true,signal?:AbortSignal):Promise<ReleasePlanResult<{approval:DeploymentApproval;executionAvailable:false}>> {
+    const revision=this.getContextRevision(),parsed=deploymentPlanSchema.safeParse(plan);
+    const fail={ok:false as const,error:'Review the exact deployment action again.',outcomeUnconfirmed:false};
+    if(!parsed.success||reviewedExactAction!==true||!validOperationUuid(clientRequestId)||!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||parsed.data.releaseId!==requestId||parsed.data.planId!==planId||signal?.aborted)return fail;
+    const normalize=(v:unknown):unknown=>Array.isArray(v)?v.map(normalize):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b)).map(([k,value])=>[k,normalize(value)])):v;
+    let digest:string;try{digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(normalize(parsed.data))))),b=>b.toString(16).padStart(2,'0')).join('')}catch{return fail}
+    if(this.getContextRevision()!==revision||signal?.aborted)return fail;
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/deployment-approval`,{plan:parsed.data,clientRequestId,reviewedExactAction},(value):value is {approval:DeploymentApproval;executionAvailable:false}=>{
+      if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['approval','executionAvailable'].includes(k)))return false;
+      const data=value as {approval?:unknown;executionAvailable?:unknown},a=deploymentApprovalSchema.safeParse(data.approval);
+      return data.executionAvailable===false&&a.success&&a.data.planDigest===digest&&a.data.organizationId===parsed.data.organizationId&&a.data.executorUserId===parsed.data.executorUserId&&a.data.sourcePolicy===parsed.data.sourcePolicy&&![parsed.data.creatorUserId,parsed.data.requesterUserId,parsed.data.executorUserId].includes(a.data.approverUserId)&&Date.parse(a.data.expiresAt)<=Date.parse(parsed.data.expiresAt);
+    },signal);
+  }
+  deploymentExecution(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<DeploymentExecutionState>> {return this.deploymentExecutionRequest(requestId,planId,undefined,signal)}
+  mutateDeploymentExecution(requestId:string,planId:string,input:{action:'prepare'|'execute'|'cancel'|'recover';expectedVersion:0|1|2;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<DeploymentExecutionState>> {
+    if(!['prepare','execute','cancel','recover'].includes(input.action)||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['action','expectedVersion','clientRequestId'].includes(k))||(input.action==='recover'?![1,2].includes(input.expectedVersion):input.expectedVersion!==0))return Promise.resolve({ok:false,error:'Load deployment execution before another action.',outcomeUnconfirmed:false});
+    return this.deploymentExecutionRequest(requestId,planId,input,signal);
+  }
+  private deploymentExecutionRequest(requestId:string,planId:string,body:{action:'prepare'|'execute'|'cancel'|'recover';expectedVersion:number;clientRequestId:string}|undefined,signal?:AbortSignal):Promise<ReleasePlanResult<DeploymentExecutionState>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId))return Promise.resolve({ok:false,error:'Load deployment execution.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),body?'POST':'GET',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/deployment-execution`,body,(v):v is DeploymentExecutionState=>{try{const d=parseDeploymentExecutionState(v);return !body||!!d.operation&&(body.action==='prepare'?d.operation.state==='prepared'&&d.operation.version===0:body.action==='cancel'?d.operation.state==='cancelled'&&d.operation.version===1:body.action==='recover'?['dispatching','unknown','accepted','refused'].includes(d.operation.state):['dispatching','unknown','accepted','refused'].includes(d.operation.state))}catch{return false}},signal);
+  }
+  providerMergeExecution(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeExecutionState>> {
+    return this.providerMergeExecutionRequest(requestId,planId,undefined,signal);
+  }
+  mutateProviderMergeExecution(requestId:string,planId:string,input:{action:'prepare'|'execute'|'cancel';expectedVersion:0|1|2;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeExecutionState>> {
+    if(!['prepare','execute','cancel'].includes(input.action)||input.expectedVersion!==0||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['action','expectedVersion','clientRequestId'].includes(k)))return Promise.resolve({ok:false,error:'Load merge execution before another action.',outcomeUnconfirmed:false});
+    return this.providerMergeExecutionRequest(requestId,planId,input,signal);
+  }
+  private providerMergeExecutionRequest(requestId:string,planId:string,body:{action:'prepare'|'execute'|'cancel';expectedVersion:number;clientRequestId:string}|undefined,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeExecutionState>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId))return Promise.resolve({ok:false,error:'Load merge execution.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),body?'POST':'GET',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/provider-execution`,body,(v):v is ProviderMergeExecutionState=>{try{const parsed=parseProviderMergeExecutionState(v);return !body||!!parsed.operation&&(body.action==='prepare'?parsed.operation.state==='prepared'&&parsed.operation.version===0:body.action==='cancel'?parsed.operation.state==='cancelled'&&parsed.operation.version===1:['dispatching','unknown','confirmed','refused'].includes(parsed.operation.state))}catch{return false}},signal);
+  }
+  providerMergeOperation(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeOperationResponse>> {
+    return this.providerMergeOperationRequest(requestId,planId,undefined,signal);
+  }
+  recoverProviderMergeOperation(requestId:string,planId:string,expectedVersion:number,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeOperationResponse>> {
+    if(!Number.isInteger(expectedVersion)||expectedVersion<0||expectedVersion>2)return Promise.resolve({ok:false,error:'Reload merge outcome.',outcomeUnconfirmed:false});
+    return this.providerMergeOperationRequest(requestId,planId,{action:'recover',expectedVersion},signal);
+  }
+  private providerMergeOperationRequest(requestId:string,planId:string,body:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeOperationResponse>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId))return Promise.resolve({ok:false,error:'Reload merge outcome.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),body?'POST':'GET',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/provider-operation`,body,(v):v is ProviderMergeOperationResponse=>{try{parseReleaseProviderMergeOperationResponse(v);return true}catch{return false}},signal);
+  }
+  providerMergeApproval(requestId:string,planId:string,digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
+    return this.providerMergeApprovalRequest('GET',requestId,planId,digest,undefined,signal);
+  }
+  approveProviderMerge(requestId:string,planId:string,digest:string,input:{expectedPlanVersion:1;clientRequestId:string;sourcePolicy:'expected_head_observed_base'},signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
+    if(input.expectedPlanVersion!==1||input.sourcePolicy!=='expected_head_observed_base'||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['expectedPlanVersion','clientRequestId','sourcePolicy'].includes(k)))return Promise.resolve({ok:false,error:'Reload provider merge approval.',outcomeUnconfirmed:false});
+    return this.providerMergeApprovalRequest('POST',requestId,planId,digest,input,signal);
+  }
+  revokeProviderMergeApproval(requestId:string,planId:string,digest:string,input:{id:string;expectedVersion:0;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
+    if(!/^release_provider_approval_[a-f0-9]{64}$/.test(input.id)||input.expectedVersion!==0||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['id','expectedVersion','clientRequestId'].includes(k)))return Promise.resolve({ok:false,error:'Reload provider merge approval.',outcomeUnconfirmed:false});
+    return this.providerMergeApprovalRequest('DELETE',requestId,planId,digest,input,signal);
+  }
+  private providerMergeApprovalRequest(method:'GET'|'POST'|'DELETE',requestId:string,planId:string,digest:string,body:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||!/^[a-f0-9]{64}$/.test(digest))return Promise.resolve({ok:false,error:'Reload provider merge approval.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),method,`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${planId}/provider-approval`,body,(v):v is ProviderMergeApprovalState=>isProviderMergeApprovalState(v,planId,digest)&&(method==='GET'||method==='POST'&&v.approval?.status==='approved'&&v.approval.version===0||method==='DELETE'&&v.approval?.status==='revoked'&&v.approval.id===(body as {id:string}).id&&v.approval.version===1),signal);
+  }
+  releaseExecutionApproval(requestId:string,planId:string,digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<ExecutionApprovalState>> {
+    return this.executionApprovalRequest('GET',requestId,planId,digest,undefined,signal);
+  }
+  approveReleaseExecution(requestId:string,planId:string,digest:string,input:{expectedPlanVersion:1;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<ExecutionApprovalState>> {
+    if(input.expectedPlanVersion!==1||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['expectedPlanVersion','clientRequestId'].includes(k)))return Promise.resolve({ok:false,error:'Reload execution approval.',outcomeUnconfirmed:false});
+    return this.executionApprovalRequest('POST',requestId,planId,digest,input,signal);
+  }
+  revokeReleaseExecutionApproval(requestId:string,planId:string,digest:string,input:{id:string;expectedVersion:0;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<ExecutionApprovalState>> {
+    if(!/^release_approval_[a-f0-9]{64}$/.test(input.id)||input.expectedVersion!==0||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['id','expectedVersion','clientRequestId'].includes(k)))return Promise.resolve({ok:false,error:'Reload execution approval.',outcomeUnconfirmed:false});
+    return this.executionApprovalRequest('DELETE',requestId,planId,digest,input,signal);
+  }
+  private executionApprovalRequest(method:'GET'|'POST'|'DELETE',requestId:string,planId:string,digest:string,body:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<ExecutionApprovalState>> {
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||!/^[a-f0-9]{64}$/.test(digest))return Promise.resolve({ok:false,error:'Reload execution approval.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),method,`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${planId}/execution-approval`,body,(v):v is ExecutionApprovalState=>isExecutionApprovalState(v,planId,digest)&&(method==='GET'||method==='POST'&&v.approval?.status==='approved'&&v.approval.version===0||method==='DELETE'&&v.approval?.status==='revoked'&&v.approval.id===(body as {id:string}).id&&v.approval.version===1),signal);
+  }
+  releaseOperationPlans(requestId:string,version:number,signal?:AbortSignal):Promise<ReleasePlanResult<OperationPlanList>> {
+    if(!validOperationRelease(requestId,version))return Promise.resolve({ok:false,error:"Reload saved plans and read a fresh preview.",outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans?expectedVersion=${version}`,undefined,(v):v is OperationPlanList=>isOperationPlanList(v,requestId,version),signal);
+  }
+  releaseOperationTargets(requestId:string,version:number,signal?:AbortSignal):Promise<ReleasePlanResult<ReleaseMergeTargets>> {
+    if(!validOperationRelease(requestId,version))return Promise.resolve({ok:false,error:"Reload saved plans and read a fresh preview.",outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${encodeURIComponent(requestId)}/merge-targets?expectedVersion=${version}`,undefined,(v):v is ReleaseMergeTargets=>isReleaseMergeTargets(v,requestId,version),signal);
+  }
+  previewReleaseOperationPlan(requestId:string,version:number,number:number,method:ReleaseMergeMethod,signal?:AbortSignal):Promise<ReleasePlanResult<OperationPlanPreview>> {
+    if(!validOperationRelease(requestId,version)||!Number.isSafeInteger(number)||number<1||number>2147483647||!['merge','squash','rebase'].includes(method))return Promise.resolve({ok:false,error:"Reload saved plans and read a fresh preview.",outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/preview?expectedVersion=${version}&pullRequestNumber=${number}&method=${method}`,undefined,(v):v is OperationPlanPreview=>isOperationPlanPreview(v,requestId,version,number,method),signal);
+  }
+  saveReleaseOperationPlan(requestId:string,input:{expectedVersion:number;previewToken:string},signal?:AbortSignal):Promise<ReleasePlanResult<OperationPlanMutation>> {
+    if(!validOperationRelease(requestId,input.expectedVersion)||!validOperationToken(input.previewToken)||Object.keys(input).some(k=>!['expectedVersion','previewToken'].includes(k)))return Promise.resolve({ok:false,error:"Reload saved plans and read a fresh preview.",outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans`,input,(v):v is OperationPlanMutation=>isOperationPlanMutation(v,requestId,input.expectedVersion),signal);
+  }
+  reviewReleaseOperationPlan(requestId:string,releaseVersion:number,planId:string,input:{expectedPlanVersion:number;previewToken:string;decision:'reviewed'|'rejected';clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<OperationPlanMutation>> {
+    if(!validOperationRelease(requestId,releaseVersion)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||!validOperationVersion(input.expectedPlanVersion)||!validOperationToken(input.previewToken)||!validOperationUuid(input.clientRequestId)||!['reviewed','rejected'].includes(input.decision)||Object.keys(input).some(k=>!['expectedPlanVersion','previewToken','decision','clientRequestId'].includes(k)))return Promise.resolve({ok:false,error:"Reload saved plans and read a fresh preview.",outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${encodeURIComponent(planId)}/review`,input,(v):v is OperationPlanMutation=>isOperationPlanMutation(v,requestId,releaseVersion,planId)&&v.plan.version>input.expectedPlanVersion,signal);
+  }
+  cancelReleaseOperationPlan(requestId:string,releaseVersion:number,planId:string,input:{expectedPlanVersion:number;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<OperationPlanMutation>> {
+    if(!validOperationRelease(requestId,releaseVersion)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||!validOperationVersion(input.expectedPlanVersion)||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['expectedPlanVersion','clientRequestId'].includes(k)))return Promise.resolve({ok:false,error:"Reload saved plans and read a fresh preview.",outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'DELETE',`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${encodeURIComponent(planId)}`,input,(v):v is OperationPlanMutation=>isOperationPlanMutation(v,requestId,releaseVersion,planId,true)&&v.plan.version>input.expectedPlanVersion,signal);
+  }
+  releaseMergeTargets(requestId: string, version: number): Promise<ApiResult<ReleaseMergeTargets>> {
+    return this.pairedValidatedRequest("GET", `/api/desktop/deployments/${encodeURIComponent(requestId)}/merge-targets?expectedVersion=${version}`, undefined,
+      (value): value is ReleaseMergeTargets => isReleaseMergeTargets(value, requestId, version), "Merge review");
+  }
+  releaseMergePlan(requestId: string, version: number, number: number, method: ReleaseMergeMethod, repository: string): Promise<ApiResult<ReleaseMergePlanEvidence>> {
+    return this.pairedValidatedRequest("GET", `/api/desktop/deployments/${encodeURIComponent(requestId)}/merge-plan?expectedVersion=${version}&pullRequestNumber=${number}&method=${encodeURIComponent(method)}`, undefined,
+      (value): value is ReleaseMergePlanEvidence => isReleaseMergePlanEvidence(value, requestId, version, number, method, repository), "Merge review");
+  }
+  releaseBatchWait(requestId: string, version: number): Promise<ApiResult<ReleaseBatchWaitState>> {
+    return this.pairedValidatedRequest("GET", `/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-wait?expectedVersion=${version}`, undefined,
+      (value): value is ReleaseBatchWaitState => isReleaseBatchWaitState(value, version));
+  }
+  startReleaseBatchWait(requestId: string, version: number, deadlineAt: number): Promise<ApiResult<ReleaseBatchWait>> {
+    return this.pairedValidatedRequest("POST", `/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-wait`, { expectedVersion: version, deadlineAt }, isReleaseBatchWait);
+  }
+  cancelReleaseBatchWait(requestId: string, waitId: string, waitVersion: number): Promise<ApiResult<ReleaseBatchWait>> {
+    return this.pairedValidatedRequest("DELETE", `/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-wait`, { waitId, expectedWaitVersion: waitVersion }, isReleaseBatchWait);
+  }
+  private async pairedValidatedRequest<T>(method: "GET" | "POST" | "DELETE", path: string, body: unknown, validate: (value: unknown) => value is T, label = "Batch monitoring"): Promise<ApiResult<T>> {
+    if (!this.config.sessionToken?.startsWith("axm.desk.")) return { ok: false, error: "A paired desktop session is required." };
+    const controller = new AbortController(); let timer: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const operation = (async (): Promise<ApiResult<T>> => {
+        const response = await fetch(`${this.config.apiBase}${path}`, { method, credentials: "omit", cache: "no-store", signal: controller.signal,
+          headers: { ...this.headers(), ...(body !== undefined ? { "Content-Type": "application/json" } : {}) },
+          ...(body !== undefined ? { body: JSON.stringify(body) } : {}) });
+        const payload = await response.json().catch(() => null) as { ok?: boolean; data?: unknown } | null;
+        if (!controller.signal.aborted && response.ok && payload?.ok === true && validate(payload.data)) return { ok: true, data: payload.data };
+        return { ok: false, error: `${label} could not be confirmed. Refresh its status.` };
+      })();
+      return await Promise.race([operation, new Promise<ApiResult<T>>(resolve => { timer = setTimeout(() => { controller.abort(); resolve({ ok: false, error: `${label} timed out. Refresh its status before trying again.` }); }, 25_000); })]);
+    } catch { return { ok: false, error: `${label} could not be confirmed. Refresh its status.` }; }
+    finally { if (timer !== undefined) clearTimeout(timer); controller.abort(); }
+  }
+
+  releaseBatchReadiness(requestId: string, version: number): Promise<ApiResult<{ ready: true; requestVersion: number } | { ready: false; reason: "unavailable" | "changed" | "waiting" }>> {
+    return this.get(`/api/desktop/deployments/${encodeURIComponent(requestId)}/batch-readiness?expectedVersion=${version}`);
   }
 
   deploymentRequestForRevision(requestId: string): Promise<ApiResult<{
@@ -1515,3 +2058,8 @@ export class DesktopClient {
 
 /** Module-level singleton (most desktop code wants one client). */
 export const desktopClient = new DesktopClient();
+
+function validOperationVersion(value:number){return Number.isSafeInteger(value)&&value>=0&&value<=2147483647}
+function validOperationRelease(id:string,version:number){return typeof id==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(id)&&validOperationVersion(version)&&version>0}
+function validOperationToken(value:string){return typeof value==='string'&&/^\S{1,256}$/.test(value)}
+function validOperationUuid(value:string){return typeof value==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value)}

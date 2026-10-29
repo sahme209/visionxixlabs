@@ -94,7 +94,7 @@ export default function ReleaseApprovalDetailPage() {
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-[28px] font-bold text-white">
-                    {approval.granted}
+                    {approval.status === "unavailable" ? "—" : approval.granted}
                     <span className="text-[14px] font-normal text-zinc-400 ml-2">
                       / {notYetEvaluated ? "—" : required}
                     </span>
@@ -138,7 +138,7 @@ export default function ReleaseApprovalDetailPage() {
             {notYetEvaluated ? (
               <div className="rounded-xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] px-4 py-3 inline-block">
                 <span className="text-[13px] font-semibold text-zinc-300 uppercase tracking-wider">
-                  Not Yet Evaluated
+                  {approval.status === "unavailable" ? "Approval storage unavailable" : "Not Yet Evaluated"}
                 </span>
               </div>
             ) : isApproved ? (
@@ -178,7 +178,7 @@ export default function ReleaseApprovalDetailPage() {
           <section className="rounded-2xl border border-cyan-500/[0.15] bg-cyan-500/[0.04] p-4">
             <p className="text-[12px] text-cyan-200">
               {notYetEvaluated ? (
-                "💡 No approval chain has been created for this release yet. Run readiness or policy evaluation to determine how many approvals are required."
+                approval.status === "unavailable" ? "Approval records cannot be read. No approval authority can be established." : "💡 No approval chain has been created for this release yet. Run readiness or policy evaluation to determine how many approvals are required."
               ) : (
                 <>
                   💡 This release requires {required} approval{required !== 1 ? "s" : ""}.

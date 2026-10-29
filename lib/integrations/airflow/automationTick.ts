@@ -15,6 +15,7 @@ import { buildRestartReview } from "./restartReview";
 import { insertRestartReview, restartReviewReadiness } from "./restartReviewStore";
 
 const TERMINAL_STATES = new Set(["success", "failed"]);
+const validDate = (value: unknown): value is Date => value instanceof Date && Number.isFinite(value.getTime());
 
 export async function runAirflowAutomationTick(now = new Date()): Promise<{ organizations: number; rules: number; proposals: number; actions: number; errors: number }> {
   const organizations = await prisma.airflowAutomation.groupBy({ by: ["organizationId"], where: { enabled: true } });
@@ -30,15 +31,48 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
       totals.rules += rules.length;
       for (const rule of rules) {
         try {
+          // A saved rule is scoped to its enrolled connection, not whichever
+          // connection is currently active for the organization. Check before
+          // scheduling, which precedes the executor's independent authority gate.
+          if (rule.connectionId !== connectionId) { totals.errors += 1; continue; }
           if (rule.triggerMode === "schedule" && rule.scheduleCron && (!rule.nextScheduledAt || rule.nextScheduledAt <= now)) {
+            if (!validDate(rule.updatedAt) || !validDate(connectionUpdatedAt) || (rule.nextScheduledAt !== null && !validDate(rule.nextScheduledAt))) {
+              totals.errors += 1; continue;
+            }
+            // Loading credentials and listing rules are separate reads. Refuse
+            // a rule paused/edited or a credential revoked/reconnected while
+            // those reads were in flight, before sending a scheduled write.
+            const ruleBinding = {
+              id: rule.id, organizationId: group.organizationId, enabled: true,
+              connectionId, updatedAt: rule.updatedAt, nextScheduledAt: rule.nextScheduledAt,
+            };
+            const currentRule = await prisma.airflowAutomation.findFirst({ where: ruleBinding, select: { id: true } });
+            if (!currentRule) { totals.errors += 1; continue; }
+            const currentConnection = await prisma.tenantIntegrationConnection.findFirst({ where: {
+              id: connectionId, organizationId: group.organizationId, provider: "airflow",
+              status: "active", updatedAt: connectionUpdatedAt,
+            }, select: { id: true } });
+            if (!currentConnection) { totals.errors += 1; continue; }
             const runId = scheduledDagRunId({ organizationId: group.organizationId, automationId: rule.id, dagId: rule.dagId, scheduledAt: rule.nextScheduledAt ?? rule.createdAt });
             const triggered = await client.triggerDag(rule.dagId, { axiom_automation_id: rule.id }, runId);
             await persistRun(group.organizationId, connectionId, triggered);
-            await prisma.airflowAutomation.update({ where: { id: rule.id }, data: { nextScheduledAt: nextCronOccurrence(rule.scheduleCron, now), lastEvaluatedAt: now } });
+            const advanced = await prisma.airflowAutomation.updateMany({ where: ruleBinding, data: { nextScheduledAt: nextCronOccurrence(rule.scheduleCron, now), lastEvaluatedAt: now } });
+            // The provider may already have accepted this deterministic run.
+            // Preserve its receipt, but never overwrite a concurrent edit.
+            if (advanced.count !== 1) { totals.errors += 1; continue; }
           }
           const runs = await client.listDagRuns(rule.dagId, 50);
           for (const run of runs) await persistRun(group.organizationId, connectionId, run);
-          const candidates = runs.filter((run) => TERMINAL_STATES.has(run.state) && (!run.logicalDate || new Date(run.logicalDate) >= rule.createdAt) && (rule.requiredDagState === "any" || rule.requiredDagState === run.state));
+          const candidates = runs.filter((run) => {
+            // Airflow 3 manual runs commonly have no logical date. Their
+            // observed start time must still prove they belong to this rule's
+            // lifetime; missing dates cannot authorize historical actions.
+            const sourceTime = run.logicalDate ?? run.startedAt;
+            const started = sourceTime ? Date.parse(sourceTime) : NaN;
+            return TERMINAL_STATES.has(run.state) && Number.isFinite(started)
+              && started >= rule.createdAt.getTime()
+              && (rule.requiredDagState === "any" || rule.requiredDagState === run.state);
+          });
           for (const run of candidates) {
             const dependenciesReady = await latestDependenciesReady(client, rule.dependencyDagIds, run.logicalDate);
             if (!dependenciesReady) continue;

@@ -1,5 +1,5 @@
 import "server-only";
-import { AGENT_STREAM_CONTENT_TYPE, MAX_AGENT_STREAM_FRAME_BYTES, isAgentMessageReply, type AgentMessageStreamEvent } from "./agentMessageStreamProtocol";
+import { AGENT_STREAM_CONTENT_TYPE, MAX_AGENT_STREAM_FRAME_BYTES, isAgentMessageReply, isAgentToolActivity, type AgentMessageExecutionStream, type AgentMessageStreamEvent } from "./agentMessageStreamProtocol";
 
 /** Authentication/tenant/body validation occurs before this is constructed.
  * A slow/disconnected reader aborts inference; uncertainty never releases holds.
@@ -7,7 +7,8 @@ import { AGENT_STREAM_CONTENT_TYPE, MAX_AGENT_STREAM_FRAME_BYTES, isAgentMessage
  * as a draft. Final proposals retain the existing persisted approval boundary. */
 export function agentMessageHttpStream(
   requestSignal: AbortSignal,
-  execute: (streaming: { abortSignal: AbortSignal; onDraft: (text: string) => void }) => Promise<Response>,
+  execute: (streaming: AgentMessageExecutionStream) => Promise<Response>,
+  options: { toolActivity?: boolean } = {},
 ): Response {
   const controller = new AbortController();
   const signal = AbortSignal.any([controller.signal, requestSignal]);
@@ -24,7 +25,10 @@ export function agentMessageHttpStream(
         output.enqueue(bytes);
       };
       let draft = "";
-      void execute({ abortSignal: signal, onDraft(text) {
+      void execute({ abortSignal: signal, ...(options.toolActivity ? {onActivity(activity) {
+        if (!isAgentToolActivity(activity)) throw new Error("agent_stream_invalid_activity");
+        send({type: "tool_activity", activity: {step: activity.step, toolName: activity.toolName, state: activity.state}});
+      }} satisfies Pick<AgentMessageExecutionStream, "onActivity"> : {}), onDraft(text) {
         signal.throwIfAborted();
         if (text === "") { draft = ""; send({ type: "draft_reset" }); }
         else if (text.startsWith(draft)) {

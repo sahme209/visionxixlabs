@@ -1,0 +1,49 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+import {claimAiTaskRun,claimAiTaskDispatch,cancelAiTaskRun,recoverAiTaskRun,completeAiTaskRun,failAiTaskRun} from '../aiTaskLifecycle';
+import {aiTaskSnapshot,aiTaskSnapshotDigest,aiTaskRunId,aiTaskCorrelationId} from '../aiTaskContract';
+import {savedBotTaskContentHash} from '../savedTaskSchema';
+import type {AiTaskRepo,AiTaskRow} from '../aiTaskRepo';
+const scope={organizationId:'org-a',userId:'user-a'},authority='c'.repeat(64),now=new Date('2026-10-26T02:00:00Z');
+const input={taskId:'bot_'+'a'.repeat(64),expectedVersion:2,kind:'ai_task_response_v1',modelId:'anthropic/claude-sonnet-4.5',clientRequestId:'00000000-0000-4000-8000-000000000001',confirmSend:true} as const;
+const content={title:'Plan',instruction:'Plan only.',context:''};const snapshot=aiTaskSnapshot(scope,input,content,authority),id=aiTaskRunId(scope,input.clientRequestId);
+let row:AiTaskRow;
+const run={findFirst:vi.fn(),create:vi.fn(),updateMany:vi.fn()},event={create:vi.fn()},artifact={create:vi.fn()},query=vi.fn();
+const tx={botAiTaskRun:run,botAiTaskEvent:event,botAiTaskArtifact:artifact,$queryRaw:query};
+const repo={...tx,$transaction:async(fn:any)=>fn(tx)} as unknown as AiTaskRepo;
+const binding=()=>({runId:id,expectedRevision:row.revision,snapshotDigest:row.snapshotDigest,workerId:'worker_'+'b'.repeat(32)});
+beforeEach(()=>{vi.resetAllMocks();row={id,organizationId:scope.organizationId,createdByUserId:scope.userId,taskId:input.taskId,taskVersion:2,clientRequestId:input.clientRequestId,kind:input.kind,modelId:input.modelId,correlationId:aiTaskCorrelationId(id),intentHash:'d'.repeat(64),snapshotJson:snapshot,snapshotDigest:aiTaskSnapshotDigest(snapshot),status:'queued',revision:0,attemptCount:0,eventCount:1,storedBytes:1000,cancelRequested:false,leaseOwner:null,leaseExpiresAt:null,dispatchClaimedAt:null,usageReceiptId:null,createdAt:now,updatedAt:now,deadlineAt:new Date(now.getTime()+60000)};run.findFirst.mockImplementation(async()=>row);run.updateMany.mockImplementation(async({data})=>{row={...row,...data};return{count:1}});event.create.mockResolvedValue({});artifact.create.mockResolvedValue({});query.mockImplementation(async(sql:TemplateStringsArray)=>sql.join('').includes('clock_timestamp')?[{live:true}]:[{...content,id:input.taskId,organizationId:scope.organizationId,createdByUserId:scope.userId,version:2,status:'draft',contentHash:savedBotTaskContentHash(content)}])});
+it('claims preparation without consuming the dispatch attempt and records an event',async()=>{const result=await claimAiTaskRun(repo,scope,binding(),now);expect(result).toMatchObject({status:'preparing',attemptCount:0,revision:1});expect(event.create).toHaveBeenCalledTimes(1);expect(run.updateMany.mock.calls[0][0].where).toMatchObject({revision:0,status:'queued',attemptCount:0})});
+it('dispatch claim locks exact saved content and consumes only one attempt',async()=>{await claimAiTaskRun(repo,scope,binding(),now);const result=await claimAiTaskDispatch(repo,scope,binding(),authority,now);expect(result).toMatchObject({status:'dispatching',attemptCount:1,dispatchClaimedAt:now});expect(query.mock.calls.filter(call=>(call[0] as TemplateStringsArray).join('').includes('FOR SHARE'))).toHaveLength(1);await expect(claimAiTaskDispatch(repo,scope,binding(),authority,now)).rejects.toThrow()});
+it('refuses changed source or authority before dispatch',async()=>{await claimAiTaskRun(repo,scope,binding(),now);await expect(claimAiTaskDispatch(repo,scope,binding(),'e'.repeat(64),now)).rejects.toThrow();query.mockResolvedValue([{...content,version:3,status:'draft',contentHash:savedBotTaskContentHash(content)}]);await expect(claimAiTaskDispatch(repo,scope,binding(),authority,now)).rejects.toThrow();expect(row.attemptCount).toBe(0)});
+it('cancels before dispatch and preserves uncertainty after dispatch',async()=>{expect((await cancelAiTaskRun(repo,scope,id,0,now)).status).toBe('canceled');expect(row.attemptCount).toBe(0);row.status='dispatching';row.attemptCount=1;row.leaseExpiresAt=new Date(now.getTime()+90000);expect((await cancelAiTaskRun(repo,scope,id,row.revision,now)).status).toBe('cancel_requested');expect((await recoverAiTaskRun(repo,scope,id,new Date(now.getTime()+90001))).status).toBe('outcome_unknown')});
+it('requires current authority, source, live lease and verified accounting evidence to publish',async()=>{await claimAiTaskRun(repo,scope,binding(),now);await claimAiTaskDispatch(repo,scope,binding(),authority,now);const b=binding();await expect(completeAiTaskRun(repo,scope,b,authority,{kind:'answer',message:'A plan.'},null,now)).rejects.toThrow();expect(artifact.create).not.toHaveBeenCalled();const result=await completeAiTaskRun(repo,scope,b,authority,{kind:'answer',message:'A plan.'},{usageReceiptId:'usage-owned',correlationId:row.correlationId,organizationId:scope.organizationId,userId:scope.userId,modelId:row.modelId},now);expect(result).toMatchObject({status:'completed',usageReceiptId:'usage-owned',leaseOwner:null});expect(artifact.create).toHaveBeenCalledTimes(1)});
+it('late, canceled, wrong worker and stale revisions cannot checkpoint',async()=>{await claimAiTaskRun(repo,scope,binding(),now);const b=binding();await expect(claimAiTaskDispatch(repo,scope,{...b,workerId:'worker_'+'f'.repeat(32)},authority,now)).rejects.toThrow();await expect(claimAiTaskDispatch(repo,scope,{...b,expectedRevision:0},authority,now)).rejects.toThrow();await expect(claimAiTaskDispatch(repo,scope,b,authority,new Date(now.getTime()+60000))).rejects.toThrow();await cancelAiTaskRun(repo,scope,id,row.revision,now);await expect(claimAiTaskDispatch(repo,scope,b,authority,now)).rejects.toThrow()});
+it('CAS loss cannot append evidence',async()=>{run.updateMany.mockResolvedValue({count:0});await expect(claimAiTaskRun(repo,scope,binding(),now)).rejects.toThrow();expect(event.create).not.toHaveBeenCalled()});
+it('expired queued work fails without dispatch and terminal recovery is read-only',async()=>{expect((await recoverAiTaskRun(repo,scope,id,new Date(now.getTime()+60000))).status).toBe('failed');event.create.mockClear();await recoverAiTaskRun(repo,scope,id,new Date(now.getTime()+90000));expect(event.create).not.toHaveBeenCalled()});
+
+it('fails preparation without consuming dispatch, but preserves postdispatch uncertainty',async()=>{await claimAiTaskRun(repo,scope,binding(),now);expect((await failAiTaskRun(repo,scope,binding(),'current_access_changed',now)).status).toBe('failed');row.status='dispatching';row.attemptCount=1;row.dispatchClaimedAt=now;row.leaseOwner='worker_'+'b'.repeat(32);row.leaseExpiresAt=new Date(now.getTime()+90000);expect((await failAiTaskRun(repo,scope,binding(),'model_unavailable',now)).status).toBe('outcome_unknown');expect(row.attemptCount).toBe(1)});
+it('refuses wrong-tenant receipt and source edits at completion',async()=>{await claimAiTaskRun(repo,scope,binding(),now);await claimAiTaskDispatch(repo,scope,binding(),authority,now);const evidence={usageReceiptId:'usage',correlationId:row.correlationId,organizationId:'other',userId:scope.userId,modelId:row.modelId};await expect(completeAiTaskRun(repo,scope,binding(),authority,{kind:'answer',message:'ok'},evidence,now)).rejects.toThrow();query.mockResolvedValue([]);await expect(completeAiTaskRun(repo,scope,binding(),authority,{kind:'answer',message:'ok'},{...evidence,organizationId:scope.organizationId},now)).rejects.toThrow();expect(artifact.create).not.toHaveBeenCalled()});
+
+it.each(['dispatch','complete'] as const)('refuses %s if the source lock resolves after deadline',async action=>{
+ vi.useFakeTimers();vi.setSystemTime(now);
+ try{
+  await claimAiTaskRun(repo,scope,binding(),now);if(action==='complete')await claimAiTaskDispatch(repo,scope,binding(),authority,now);
+  const lockedTask={...content,id:input.taskId,organizationId:scope.organizationId,createdByUserId:scope.userId,version:2,status:'draft',contentHash:savedBotTaskContentHash(content)};
+  query.mockImplementationOnce(async()=>{vi.advanceTimersByTime(60001);return[lockedTask]});
+  const evidence={usageReceiptId:'usage-owned',correlationId:row.correlationId,organizationId:scope.organizationId,userId:scope.userId,modelId:row.modelId};
+  const operation=action==='dispatch'?claimAiTaskDispatch(repo,scope,binding(),authority):completeAiTaskRun(repo,scope,binding(),authority,{kind:'answer',message:'Late result'},evidence);
+  await expect(operation).rejects.toThrow();expect(artifact.create).not.toHaveBeenCalled();expect(row.status).toBe(action==='dispatch'?'preparing':'dispatching');
+ }finally{vi.useRealTimers()}
+});
+it.each(['dispatch','complete'] as const)('rolls back %s publication if final CAS blocks beyond deadline',async action=>{
+ vi.useFakeTimers();vi.setSystemTime(now);
+ try{
+  await claimAiTaskRun(repo,scope,binding(),now);if(action==='complete')await claimAiTaskDispatch(repo,scope,binding(),authority,now);
+  const originalUpdate=run.updateMany.getMockImplementation()!;
+  run.updateMany.mockImplementationOnce(async args=>{vi.advanceTimersByTime(60001);return originalUpdate(args)});
+  query.mockImplementation(async(sql:TemplateStringsArray)=>sql.join('').includes('clock_timestamp')?[{live:Date.now()<row.deadlineAt.getTime()&&Date.now()<(row.leaseExpiresAt?.getTime()??Infinity)}]:[{...content,id:input.taskId,organizationId:scope.organizationId,createdByUserId:scope.userId,version:2,status:'draft',contentHash:savedBotTaskContentHash(content)}]);
+  const evidence={usageReceiptId:'usage-owned',correlationId:row.correlationId,organizationId:scope.organizationId,userId:scope.userId,modelId:row.modelId};
+  const operation=action==='dispatch'?claimAiTaskDispatch(repo,scope,binding(),authority):completeAiTaskRun(repo,scope,binding(),authority,{kind:'answer',message:'Late result'},evidence);
+  await expect(operation).rejects.toThrow();expect(artifact.create).not.toHaveBeenCalled();
+ }finally{vi.useRealTimers()}
+});

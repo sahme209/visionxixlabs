@@ -1,3 +1,5 @@
+import { publicPricingForStoredRow } from "@/lib/billing/publicBillingEntitlements";
+import type { PublicSql } from "@/lib/billing/publicBillingStore";
 import "server-only";
 import { randomBytes, randomUUID } from "node:crypto";
 import { encryptScopedCredential } from "@/lib/security/credentialVault";
@@ -18,6 +20,7 @@ export interface CloudAccountRow { id: string; organizationId: string; provider:
 export interface CloudCredentialRow { id: string; organizationId: string; encryptedConfiguration: string; version: number; validatedAt: Date; revokedAt: Date | null }
 export interface EnrollmentAttemptRow extends AwsEnrollmentInput { id: string; organizationId: string; userId: string; externalIdDigest: string; expiresAt: Date; consumedAt: Date | null; expectedCredentialVersion: number | null; expectedAccountUpdatedAt: Date | null; cloudAccountId: string | null }
 export interface EnrollmentRepo {
+  $queryRaw?<T>(query: TemplateStringsArray, ...values: unknown[]): Promise<T>;
   cloudAccount: Delegate<CloudAccountRow> & { count(args: { where: { organizationId: string } }): Promise<number> };
   tenantBillingPlan: { findUnique(args: { where: { organizationId: string } }): Promise<{ organizationId: string; tier: string; status: string } | null> };
   cloudAccountCredential: Delegate<CloudCredentialRow>;
@@ -65,7 +68,7 @@ export function createAwsEnrollmentService(repo: EnrollmentRepo, supplied: Parti
     // read-error sentinel: absent/invalid/trial rows use canonical Starter.
     const validStatus = row && ["trialing", "active", "past_due", "canceled", "no_plan"].includes(row.status);
     const tier = row && isBillingTier(row.tier) && validStatus && row.tier !== "trial" && row.status !== "trialing" ? row.tier : "trial";
-    const decision = checkEntitlement({ plan: planForStripeTier(tier), dimension: "cloud_accounts", currentUsage, attemptedDelta: 1 });
+    const decision = checkEntitlement({ plan: await publicPricingForStoredRow(tx as unknown as PublicSql,organizationId,row) ?? planForStripeTier(tier), dimension: "cloud_accounts", currentUsage, attemptedDelta: 1 });
     if (decision.kind !== "allow") throw new AwsEnrollmentError("cloud_account_limit_reached");
   }
   const accountKey = (organizationId: string, accountId: string) => ({ organizationId_provider_externalAccountId: { organizationId, provider: "aws", externalAccountId: accountId } });
@@ -152,6 +155,14 @@ export function createAwsEnrollmentService(repo: EnrollmentRepo, supplied: Parti
       if (account.enabled) throw new AwsEnrollmentError("enrollment_conflict");
       const credential = await tx.cloudAccountCredential.findUnique({ where: { id: account.id } });
       if (!credential || credential.organizationId !== principal.organizationId || !Number.isSafeInteger(credential.version) || credential.version < 1) throw new AwsEnrollmentError("enrollment_unavailable");
+      // Lock current authority rows after the awaited credential lookup. In a
+      // Serializable transaction a concurrent revocation/downgrade must abort,
+      // rather than authorizing this write from an earlier snapshot.
+      if (!tx.$queryRaw) throw new AwsEnrollmentError("connection_authority_required");
+      const sessions = await tx.$queryRaw<Array<{ id: string }>>`SELECT "id" FROM "DesktopSessionRecord" WHERE "id"=${principal.sessionId} AND "organizationId"=${principal.organizationId} AND "userId"=${principal.userId} FOR SHARE`;
+      const members = await tx.$queryRaw<Array<{ userId: string }>>`SELECT "userId" FROM "OrgMembership" WHERE "organizationId"=${principal.organizationId} AND "userId"=${principal.userId} FOR SHARE`;
+      if (sessions.length !== 1 || members.length !== 1) throw new AwsEnrollmentError("connection_authority_required");
+      await requireAuthority(tx, principal);
       if (credential.revokedAt) {
         if (credential.encryptedConfiguration !== "") throw new AwsEnrollmentError("enrollment_unavailable");
         if (credential.version !== expectedVersion && credential.version !== (expectedVersion as number) + 1) throw new AwsEnrollmentError("enrollment_conflict");
@@ -164,6 +175,7 @@ export function createAwsEnrollmentService(repo: EnrollmentRepo, supplied: Parti
       const updated = await tx.cloudAccount.updateMany({ where: { id: account.id, organizationId: principal.organizationId, updatedAt: account.updatedAt, credentialRef: account.credentialRef, enabled: false }, data: { enabled: false, updatedAt: now } });
       if (updated.count !== 1) throw new AwsEnrollmentError("enrollment_conflict");
       await tx.cloudAccountEnrollmentAttempt.updateMany({ where: { organizationId: principal.organizationId, consumedAt: null, expiresAt: { gt: now }, OR: [{ cloudAccountId: account.id }, { expectedAccountId: account.externalAccountId }] }, data: { expiresAt: now } });
+      await requireAuthority(tx, principal);
       const revoked = { ...credential, encryptedConfiguration: "", version: credential.version + 1, revokedAt: now };
       return { account: accountSummary(account, revoked), changed: true };
     }, { isolationLevel: "Serializable" });

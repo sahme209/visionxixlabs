@@ -184,3 +184,26 @@ describe("GET /api/dashboard/release-playbook/[id] — lifecycle truthfulness", 
     expect(res.status).not.toBe(200);
   });
 });
+
+describe("missing legacy approval storage", () => {
+  it.each(["public.AxiomApprovalChain", "public.AxiomApprovalVote"])("keeps release history readable without inventing approval when %s is missing", async table => {
+    mocks.currentContext.mockResolvedValue({ isAuthenticated: true, organizationId: "org_1" });
+    mocks.findRelease.mockResolvedValue(baseRelease());
+    mocks.findReadiness.mockResolvedValue(null); mocks.findEvidence.mockResolvedValue(null);
+    mocks.findAuditEvents.mockResolvedValue([]); mocks.countPolicyViolations.mockResolvedValue(0); mocks.countCherryPicks.mockResolvedValue(0);
+    mocks.findApprovalChain.mockRejectedValue({ code: "P2021", meta: { table } });
+    const { GET } = await import("../route"); const res = await GET(request(), params()); const body = await res.json();
+    expect(res.status).toBe(200); expect(body.ok).toBe(true);
+    expect(body.data.approval.status).toBe("unavailable");
+    expect(body.data.approval.required).toEqual({ available: false, reason: "Approval storage is unavailable. No approval authority can be established." });
+    expect(body.data.lifecycle.approvalGrantedAt).toBeNull();
+    expect(body.data.execution.status).toBe("not_started");
+  });
+  it("does not hide approval lookup permission or transport failures", async () => {
+    mocks.currentContext.mockResolvedValue({ isAuthenticated: true, organizationId: "org_1" });
+    mocks.findRelease.mockResolvedValue(baseRelease());
+    mocks.findApprovalChain.mockRejectedValue(new Error("approval lookup failed"));
+    const { GET } = await import("../route"); const res = await GET(request(), params());
+    expect(res.status).toBeGreaterThanOrEqual(500); expect((await res.json()).ok).toBe(false);
+  });
+});

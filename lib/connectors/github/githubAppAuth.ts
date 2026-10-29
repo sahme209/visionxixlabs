@@ -146,8 +146,10 @@ function normalizeRepositoryScope(repositories: readonly string[] | undefined): 
  * those repositories. Unscoped calls remain for legacy read paths and are
  * deliberately cached separately from every narrowed token.
  */
+export type GithubReadPermissionProfile = "provenance_read" | "contents_read" | "pull_requests_read";
+
 export async function resolveGithubInstallationToken(
-  input: { installationId?: number; repositories?: readonly string[]; signal?: AbortSignal; permissionProfile?: "provenance_read" } = {},
+  input: { installationId?: number; repositories?: readonly string[]; signal?: AbortSignal; permissionProfile?: GithubReadPermissionProfile } = {},
 ): Promise<InstallationTokenOutcome> {
   const cancelled = (): InstallationTokenError => ({ ok: false, errorCode: "github.app_token_cancelled", message: "Installation token deadline expired." });
   if (input.signal?.aborted) return cancelled();
@@ -164,9 +166,9 @@ export async function resolveGithubInstallationToken(
   if (!repositories) {
     return { ok: false, errorCode: "github.app_invalid_repository_scope", message: "Repository-scoped installation tokens require 1–500 valid repository names." };
   }
-  if (input.permissionProfile !== undefined && (input.permissionProfile !== "provenance_read" || input.installationId === undefined || repositories.length !== 1))
+  if (input.permissionProfile !== undefined && (!["provenance_read", "contents_read", "pull_requests_read"].includes(input.permissionProfile) || input.installationId === undefined || repositories.length !== 1))
     return { ok: false, errorCode: "github.app_invalid_read_profile", message: "The reader requires an explicit installation and one repository." };
-  const scopeKey = `${installationId}:${repositories.length ? repositories.join("\u0000") : "*"}${input.permissionProfile ? ":provenance_read" : ""}`;
+  const scopeKey = `${installationId}:${repositories.length ? repositories.join("\u0000") : "*"}${input.permissionProfile ? `:${input.permissionProfile}` : ""}`;
 
   const cached = cachedByScope.get(scopeKey);
   if (cached && tokenIsFresh(cached)) {
@@ -202,7 +204,7 @@ export async function resolveGithubInstallationToken(
         "X-GitHub-Api-Version": "2022-11-28",
         "User-Agent": "axiom-agent/1.0",
       },
-      body: repositories.length ? JSON.stringify({ repositories, ...(input.permissionProfile ? { permissions: { contents: "read", actions: "read", attestations: "read" } } : {}) }) : undefined,
+      body: repositories.length ? JSON.stringify({ repositories, ...(input.permissionProfile ? { permissions: input.permissionProfile === "contents_read" ? {contents:"read"} : input.permissionProfile === "pull_requests_read" ? {pull_requests:"read"} : { contents: "read", actions: "read", attestations: "read" } } : {}) }) : undefined,
       ...(signal ? { signal, redirect: "error" as const, credentials: "omit" as const, cache: "no-store" as const } : {}),
     });
     const res = signal ? await withGithubAbort(request, signal) : await request;
@@ -224,10 +226,11 @@ export async function resolveGithubInstallationToken(
     }
     if (input.permissionProfile) {
       const grants = body.permissions;
+      const requiredPermissions = input.permissionProfile === "contents_read" ? ["contents"] : input.permissionProfile === "pull_requests_read" ? ["pull_requests"] : ["contents", "actions", "attestations"];
       const names = Array.isArray(body.repositories) ? body.repositories.map(value => value && typeof value === "object" && "name" in value && typeof value.name === "string" ? value.name.toLowerCase() : null) : [];
       if (!grants || typeof grants !== "object" || Array.isArray(grants)
-        || !["contents", "actions", "attestations"].every(key => (grants as Record<string, unknown>)[key] === "read")
-        || Object.entries(grants).some(([key, value]) => !["contents", "actions", "attestations", "metadata"].includes(key) || value !== "read")
+        || !requiredPermissions.every(key => (grants as Record<string, unknown>)[key] === "read")
+        || Object.entries(grants).some(([key, value]) => ![...requiredPermissions, "metadata"].includes(key) || value !== "read")
         || body.repository_selection !== "selected" || names.length !== 1 || names[0] !== repositories[0])
         return { ok: false, errorCode: "github.app_read_scope_unverified", message: "GitHub did not grant the exact repository read profile." };
     }
@@ -274,4 +277,78 @@ export function purgeInstallationTokenCache(installationId: number): void {
 function redact(err: unknown): string {
   const msg = err instanceof Error ? err.message : String(err);
   return msg.replace(/-----BEGIN [A-Z ]+-----[\s\S]+?-----END [A-Z ]+-----/g, "-----PRIVATE KEY REDACTED-----");
+}
+
+export interface GithubAppInstallationMetadata {
+  installationId:string;appId:number;accountId:string;accountLogin:string;
+  accountType:'User'|'Organization';repositorySelection:'all'|'selected';suspended:false;observedAt:string;
+}
+/** Read one existing App installation. No installation token is minted or returned. */
+export async function readGithubAppInstallation(installationId:string,callerSignal:AbortSignal):Promise<GithubAppInstallationMetadata>{
+  const unavailable=()=>new Error('github_installation_verification_unavailable');
+  const signal=AbortSignal.any([callerSignal,AbortSignal.timeout(8000)]),deadline=Date.now()+8000;
+  const guard=()=>{signal.throwIfAborted();if(Date.now()>=deadline)throw unavailable()};
+  if(!/^[1-9][0-9]{0,15}$/.test(installationId)||!Number.isSafeInteger(Number(installationId)))throw unavailable();
+  let received:Response|undefined;
+  try{
+    guard();
+    const cfg=await withGithubAbort(getGithubConfig(),signal);
+    guard();if(!cfg.appConfigured||!cfg.appId||!Number.isSafeInteger(cfg.appId)||cfg.appId<1)throw unavailable();
+    const key=await withGithubAbort(resolveGithubAppPrivateKey(),signal);guard();if(!key)throw unavailable();
+    const jwt=signJwt(cfg.appId,key);guard();
+    const pending=fetch(`${GITHUB_API}/app/installations/${installationId}`,{method:'GET',redirect:'error',credentials:'omit',cache:'no-store',signal,headers:{Authorization:`Bearer ${jwt}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28','User-Agent':'axiom-agent/1.0'}});
+    void pending.then(response=>{if(signal.aborted||Date.now()>=deadline)void response.body?.cancel().catch(()=>{})},()=>{});
+    const response=await withGithubAbort(pending,signal);received=response;
+    guard();if(!response.ok){void response.body?.cancel().catch(()=>{});throw unavailable()}
+    const bytes=await readBoundedGithubBody(response,signal,65536);
+    const data:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));guard();
+    if(!data||typeof data!=='object'||Array.isArray(data))throw unavailable();const v=data as Record<string,unknown>,account=v.account;
+    if(String(v.id)!==installationId||v.app_id!==cfg.appId||v.suspended_at!==null||!['all','selected'].includes(v.repository_selection as string)||!account||typeof account!=='object'||Array.isArray(account))throw unavailable();
+    const a=account as Record<string,unknown>;
+    if(!Number.isSafeInteger(a.id)||Number(a.id)<1||typeof a.login!=='string'||!/^[A-Za-z0-9][A-Za-z0-9-]{0,99}$/.test(a.login)||!['User','Organization'].includes(a.type as string))throw unavailable();
+    return {installationId,appId:cfg.appId,accountId:String(a.id),accountLogin:a.login,accountType:a.type as 'User'|'Organization',repositorySelection:v.repository_selection as 'all'|'selected',suspended:false,observedAt:new Date().toISOString()};
+  }catch{throw unavailable()}finally{void received?.body?.cancel().catch(()=>{})}
+}
+
+export type ReleaseTokenPurpose = 'merge' | 'dispatch' | 'workflow_read' | 'source_policy_read' | 'merge_policy_read';
+const releasePermissions = {
+  merge: { contents:'write', pull_requests:'read', metadata:'read' },
+  dispatch: { actions:'write', contents:'read', metadata:'read' },
+  workflow_read: { actions:'read', contents:'read', metadata:'read' },
+  source_policy_read: { administration:'read', contents:'read', metadata:'read' },
+  merge_policy_read: { administration:'read', contents:'read', pull_requests:'read', metadata:'read' },
+} as const;
+/** Explicit, uncached, one-repository release token. No JWT/key is exposed, no
+ * default installation or inherited permission set is accepted. Calling this
+ * requires a separately installed current-actor verifier and activation gate. */
+export async function resolveReleaseInstallationToken(input:{
+ installationId:string;repositoryFullName:string;purpose:ReleaseTokenPurpose;
+ isEnabled?:()=>boolean;assertCurrent?:()=>Promise<void>;fetch?:typeof fetch;
+},callerSignal:AbortSignal):Promise<{token:string;expiresAt:number;permissions:Record<string,string>}|null>{
+ if(!input.isEnabled?.()||!input.assertCurrent||!input.fetch||callerSignal.aborted)return null;
+ const permissions=releasePermissions[input.purpose];
+ if(!permissions||!Object.hasOwn(releasePermissions,input.purpose)||!/^[1-9]\d{0,14}$/.test(input.installationId)||!Number.isSafeInteger(Number(input.installationId))||Number(input.installationId)<1||!/^([A-Za-z0-9][A-Za-z0-9_.-]{0,99})\/([A-Za-z0-9][A-Za-z0-9_.-]{0,99})$/.test(input.repositoryFullName))return null;
+ const deadline=Date.now()+8000,signal=AbortSignal.any([callerSignal,AbortSignal.timeout(8000)]);
+ const guard=()=>{signal.throwIfAborted();if(!input.isEnabled?.()||Date.now()>=deadline)throw Error('release_token_unavailable')};
+ const current=async()=>{guard();await withGithubAbort(input.assertCurrent!(),signal);guard()};
+ let received:Response|undefined;
+ try{
+  await current();const cfg=await withGithubAbort(getGithubConfig(),signal);guard();
+  if(!cfg.appConfigured||!cfg.appId||!Number.isSafeInteger(cfg.appId)||cfg.appId<1)return null;
+  const key=await withGithubAbort(resolveGithubAppPrivateKey(),signal);guard();if(!key)return null;
+  const jwt=signJwt(cfg.appId,key);await current();
+  const url=`${GITHUB_API}/app/installations/${input.installationId}/access_tokens`;
+  const pending=Promise.resolve().then(()=>{guard();return input.fetch!(url,{method:'POST',redirect:'error',credentials:'omit',cache:'no-store',signal,headers:{Authorization:`Bearer ${jwt}`,Accept:'application/vnd.github+json','Content-Type':'application/json','X-GitHub-Api-Version':'2022-11-28'},body:JSON.stringify({repositories:[input.repositoryFullName.split('/')[1]],permissions})})});
+  void pending.then(r=>{if(signal.aborted||Date.now()>=deadline)void r.body?.cancel().catch(()=>{})},()=>{});
+  const response=await withGithubAbort(pending,signal);received=response;guard();
+  if(response.status!==201||response.redirected||response.url&&response.url!==url)return null;
+  const bytes=await readBoundedGithubBody(response,signal,65536);guard();
+  const value:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
+  if(!value||typeof value!=='object'||Array.isArray(value))return null;
+  const v=value as Record<string,unknown>,returned=v.permissions;
+  if(typeof v.token!=='string'||!v.token||v.token.length>4096||/[\s\x00-\x1f\x7f]/.test(v.token)||typeof v.expires_at!=='string'||!returned||typeof returned!=='object'||Array.isArray(returned)||Object.keys(returned).sort().join()!==Object.keys(permissions).sort().join()||Object.entries(permissions).some(([k,p])=>(returned as Record<string,unknown>)[k]!==p)||v.repository_selection!=='selected'||!Array.isArray(v.repositories)||v.repositories.length!==1)return null;
+  const repo=v.repositories[0];if(!repo||typeof repo!=='object'||repo.full_name!==input.repositoryFullName||repo.name!==input.repositoryFullName.split('/')[1]||repo.owner?.login!==input.repositoryFullName.split('/')[0])return null;
+  const expiresAt=Date.parse(v.expires_at);if(!Number.isFinite(expiresAt)||expiresAt<=Date.now()+20000||expiresAt>Date.now()+65*60000)return null;
+  await current();guard();return{token:v.token,expiresAt,permissions:{...permissions}};
+ }catch{return null}finally{void received?.body?.cancel().catch(()=>{})}
 }

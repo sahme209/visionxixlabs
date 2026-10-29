@@ -24,6 +24,7 @@ const structured = { provider: response.provider, model: response.model, gateway
 describe("actual manager admitted extraction boundary", () => {
   beforeEach(() => {
     vi.resetAllMocks();
+    vi.stubEnv("AXIOM_GATEWAY_STRUCTURED_JSON_MODELS", "");
     m.reserve.mockResolvedValue({ ok: true, reused: false, reservation: { id: "hold" } });
     m.claim.mockResolvedValue(true);
     m.transaction.mockImplementation(async fn => fn({
@@ -42,7 +43,7 @@ describe("actual manager admitted extraction boundary", () => {
     await expect(mgr.extractStructuredDataWithAdmission("prompt", "schema", scope, capability)).resolves.toEqual(structured);
     expect(m.extract).toHaveBeenCalledTimes(1); expect(m.write).toHaveBeenCalledTimes(1);
     expect(m.claim.mock.invocationCallOrder[0]).toBeLessThan(m.extract.mock.invocationCallOrder[0]);
-    expect(m.extract.mock.calls[0][2]).toEqual({ ...scope, model: undefined });
+    expect(m.extract.mock.calls[0][2]).toEqual({ ...scope, model: "vendor/model" });
     expect(m.write.mock.calls[0]).toHaveLength(2); // existing producer with the transactional create-only writer
     await expect(mgr.extractStructuredDataWithAdmission("prompt", "schema", scope, capability)).rejects.toThrow();
     expect(m.extract).toHaveBeenCalledTimes(1);
@@ -81,7 +82,7 @@ describe("actual manager admitted extraction boundary", () => {
     if (kind === "usage") m.extract.mockResolvedValue({ ...response, usage: undefined });
     if (kind === "writer") m.write.mockResolvedValue({ recorded: false });
     const capability = await admitGovernedExtract(scope);
-    await expect(mgr.extractStructuredDataWithAdmission("prompt", "schema", scope, capability)).rejects.toThrow();
+    await expect(mgr.extractStructuredDataWithAdmission("prompt", "schema", scope, capability)).rejects.toMatchObject({name: "AgentStreamInterrupted"});
     await expect(mgr.extractStructuredDataWithAdmission("prompt", "schema", scope, capability)).rejects.toThrow();
     expect(m.extract).toHaveBeenCalledTimes(1);
   });
@@ -168,6 +169,44 @@ describe("actual manager admitted extraction boundary", () => {
     expect(result.data).toMatchObject({ action: "call_tool", toolName: "commit_github_file" });
     expect(m.write).toHaveBeenCalledOnce();
     expect(m.stream.mock.calls[0][1]).toMatchObject({ system: "Return valid JSON only. The required shape is: schema" });
+    expect(m.stream.mock.calls[0][2]).toBeUndefined();
+  });
+  it.each([
+    ["vendor/model", "json"],
+    [" other/model, vendor/model ", "json"],
+    ["other/model", undefined],
+    ["*", undefined],
+    ["vendor/model-extra", undefined],
+    ["x".repeat(4097) + ",vendor/model", undefined],
+  ])("uses JSON mode only for an exact bounded server opt-in: %s", async (configured, expected) => {
+    vi.stubEnv("AXIOM_GATEWAY_STRUCTURED_JSON_MODELS", configured);
+    m.stream.mockImplementation(async function* () {
+      yield { done: false, text: response.text };
+      yield { done: true, text: "", response: { ...response, finishReason: "stop" } };
+    });
+    await new AIProviderManager().extractStructuredDataStreamingWithAdmission("prompt", "schema", scope, await admitGovernedExtract(scope), () => {});
+    expect(m.stream.mock.calls[0][2]).toBe(expected);
+    expect(m.stream).toHaveBeenCalledOnce();
+    expect(m.write).toHaveBeenCalledOnce();
+  });
+  it.each([["vendor/model", "json"], ["service-default", undefined], ["other/model", undefined]])("resolves service-default before JSON opt-in: %s", async (configured, expected) => {
+    vi.stubEnv("AXIOM_GATEWAY_STRUCTURED_JSON_MODELS", configured);
+    const selected = { ...scope, modelSelections: { vercel_gateway: "service-default" } };
+    m.stream.mockImplementation(async function* () {
+      yield { done: false, text: response.text };
+      yield { done: true, text: "", response: { ...response, finishReason: "stop" } };
+    });
+    await new AIProviderManager().extractStructuredDataStreamingWithAdmission("prompt", "schema", selected, await admitGovernedExtract(selected), () => {});
+    expect(m.stream.mock.calls[0][2]).toBe(expected);
+  });
+  it("does not retry or fall back when an opted-in model rejects JSON mode", async () => {
+    vi.stubEnv("AXIOM_GATEWAY_STRUCTURED_JSON_MODELS", "vendor/model");
+    m.stream.mockImplementation(async function* () { throw new Error("unsupported response format"); });
+    await expect(new AIProviderManager().extractStructuredDataStreamingWithAdmission("prompt", "schema", scope, await admitGovernedExtract(scope), () => {})).rejects.toThrow();
+    expect(m.stream).toHaveBeenCalledOnce();
+    expect(m.write).not.toHaveBeenCalled();
+    expect(m.extract).not.toHaveBeenCalled();
+    expect(m.ordinaryExtract).not.toHaveBeenCalled();
   });
   it.each(["stream", "writer"])("streamed extraction %s uncertainty cannot authorize a repair", async failure => {
     const capability = await admitGovernedExtract(scope);
@@ -200,4 +239,20 @@ describe("actual manager admitted extraction boundary", () => {
     expect(m.stream).not.toHaveBeenCalled(); expect(m.write).not.toHaveBeenCalled();
   });
 
+});
+
+describe("input rejection before reservation", () => {
+  beforeEach(() => vi.clearAllMocks());
+  it.each(["prompt", "schema"])("rejects oversized extraction %s without reserving or dispatching", async field => {
+    const oversized = "🙂".repeat(32769);
+    await expect(admitGovernedExtract(scope, { model: "vendor/model", text: field === "prompt" ? oversized : "ok", schemaHint: field === "schema" ? oversized : "{}" })).rejects.toThrow();
+    expect(m.reserve).not.toHaveBeenCalled();
+    expect(m.claim).not.toHaveBeenCalled();
+    expect(m.extract).not.toHaveBeenCalled();
+  });
+  it("rejects oversized aggregate text before reservation", () => {
+    expect(() => admitAIText({ ...scope, idempotencyKey: "input-bound-key" }, { prompt: "a".repeat(131072), system: "x" })).toThrow();
+    expect(m.reserve).not.toHaveBeenCalled();
+    expect(m.claim).not.toHaveBeenCalled();
+  });
 });

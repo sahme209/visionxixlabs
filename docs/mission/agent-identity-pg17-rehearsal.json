@@ -1,0 +1,29 @@
+{
+  "status": "passed",
+  "scope": "disposable local synthetic fixtures only",
+  "postgres": "PostgreSQL 17.11 on aarch64-apple-darwin25.6.0, compiled by Apple clang version 21.0.0 (clang-2100.3.34.2), 64-bit",
+  "checks": [
+    "valid schema-only repair creates an empty table without modifying fixture users or migration ledger",
+    "new identity defaults to disabled with no allowed tools",
+    "existing schema is refused without overwriting identity state",
+    "changed checksum refuses repair",
+    "ambiguous unfinished migration refuses repair",
+    "finished migration refuses repair",
+    "missing expected baseline refuses repair",
+    "injected pre-commit failure rolls back table creation"
+  ],
+  "productionChanged": false,
+  "remaining": [
+    "serving database binding verification",
+    "usable recovery point verification",
+    "exact-target owner approval",
+    "migration-ledger resolution design"
+  ],
+  "sourceSha256": "c8eda796cabeefd2c3e697ed89c5e1f5a1fd13d3db5c4042d1c11ec48f048fdf",
+  "observedAt": "2026-10-23T01:18:51.670832+00:00",
+  "limitations": [
+    "Synthetic baseline and migration-ledger fixtures only, not a restored production clone",
+    "No production credentials, rows, schema, migration ledger or permissions read or changed",
+    "Recovery script not executed on any remote database"
+  ]
+}

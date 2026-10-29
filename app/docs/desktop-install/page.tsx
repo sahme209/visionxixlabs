@@ -27,7 +27,7 @@ export default function DesktopInstallPage() {
           <li><strong>Repository workspace</strong> — select, clone, inspect, edit, branch, commit, push, and open pull requests with repository-scoped access</li>
           <li><strong>Native shell</strong> — tray and notification integrations are available for supported application events</li>
           <li><strong>Explicit connection state</strong> — unavailable APIs, missing credentials, and connector failures remain visible</li>
-          <li><strong>Persisted app state</strong> — the current build uses Tauri&apos;s file-backed app store; OS-keychain-backed secret persistence is not yet shipped</li>
+          <li><strong>Persisted app state</strong> — nonsecret preferences use the file-backed app store; session credentials use the configured native vault. Persistence, upgrade migration, and vault-denial recovery require acceptance on each supported operating system.</li>
         </ul>
       </DocSection>
 
@@ -46,7 +46,7 @@ export default function DesktopInstallPage() {
           <p>Visit <Link href="/download">/download</Link>. Choose Apple Silicon or Intel. The enabled button points directly to the matching asset from the current <code>desktop-v*</code> release.</p>
         </Step>
         <Step number={2} title="Verify the release if required">
-          <p>Each current release asset has a detached <code>.asc</code> signature. Import the public key linked in the release notes, then run <code>gpg --verify installer.dmg.asc installer.dmg</code>. Compare the SHA-256 digest with the value published by GitHub.</p>
+          <p>Check the download page for the selected installer&apos;s verification details. If a matching detached <code>.asc</code> signature and a release public key are published, download both and run <code>gpg --verify installer.dmg.asc installer.dmg</code> using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it.</p>
         </Step>
         <Step number={3} title="Open the DMG and install">
           <p>Mount the disk image, drag <strong>Axiom Agent</strong> to <code>/Applications</code>, and eject the image.</p>
@@ -64,7 +64,7 @@ export default function DesktopInstallPage() {
           <p>The generic Windows download prefers the MSI when it is present in the live manifest. The release page also exposes the NSIS <code>.exe</code>.</p>
         </Step>
         <Step number={2} title="Verify before running">
-          <p>Download the matching <code>.asc</code> signature and verify it with the release public key. Treat the installer as unsigned unless the download page reports a machine-attested Windows signature.</p>
+          <p>If the selected installer has a matching <code>.asc</code> signature and release public key, verify that signature before running it. Compare the published SHA-256 digest when available. A detached signature does not establish Windows Authenticode signing: use the download page&apos;s attestation state and your organization&apos;s installation policy.</p>
         </Step>
         <Step number={3} title="Review SmartScreen">
           <p>Unsigned builds can trigger SmartScreen. Review the publisher state and your organization&apos;s policy before choosing <strong>More info</strong> → <strong>Run anyway</strong>.</p>
@@ -78,8 +78,8 @@ export default function DesktopInstallPage() {
         <Step number={1} title="Choose a package">
           <p>The generic Linux button prefers AppImage. The release page also provides <code>.deb</code> and <code>.rpm</code> assets when available.</p>
         </Step>
-        <Step number={2} title="Verify the detached signature">
-          <p>Import the release public key and verify the asset&apos;s <code>.asc</code> file before installation.</p>
+        <Step number={2} title="Review available verification details">
+          <p>When a matching detached <code>.asc</code> signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release.</p>
         </Step>
         <Step number={3} title="Install or run">
           <pre className="rounded-lg bg-black/40 border border-white/[0.06] p-3 text-[12px] font-mono text-zinc-300 overflow-x-auto">{`chmod +x ./Axiom.Agent_*_amd64.AppImage
@@ -103,9 +103,9 @@ sudo rpm -i Axiom.Agent-*-1.x86_64.rpm`}</pre>
             { question: "Is this a browser product?", answer: "No. The website provides product information, documentation, verified downloads, and an isolated sample-data sandbox. Operational workflows are delivered by the installed app." },
             { question: "Are current builds signed and notarized?", answer: "Only when the live release manifest has explicit signing attestations. Detached GPG signatures verify release origin but do not replace Apple notarization or Windows Authenticode." },
             { question: "Where is the desktop session stored?", answer: "The source configures native credential storage: macOS Keychain, Windows Credential Manager, or Linux Secret Service. Native storage errors block credential writes; legacy file-backed values are removed only after a successful native write. Actual persistence, upgrade migration, and denied-vault recovery still require acceptance on each platform; compilation alone does not verify them." },
-            { question: "Can the desktop app deploy?", answer: "The released path can dispatch the tenant-owned AWS ECS workflow after administrator approval and configured repository, environment, and deployment target checks." },
+            { question: "Can the desktop app deploy?", answer: "Execution availability depends on the installed release, a configured and verified connection, current permissions, a separately approved operation, and the required release attestations and deployment checks. A saved plan, ticket preview, or advisory review does not authorize execution. An unavailable or disabled operation remains blocked until its requirements are met." },
             { question: "Does it update automatically?", answer: "Not currently. Install newer verified releases manually." },
-            { question: "What was verified here?", answer: "Release presence, asset names, GitHub SHA-256 digest, detached GPG signature, desktop TypeScript, sandbox tests, and the broader automated suite. Platform installation still requires testing on each target OS." },
+            { question: "Which verification details should I check?", answer: "Check the selected release and installer, its published SHA-256 digest when available, any matching detached signature and release public key, and the platform signing or notarization attestations. Missing evidence is not a passed check. Automated source tests do not establish clean installation or signature verification on your target OS." },
           ]}
         />
       </DocSection>

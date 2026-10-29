@@ -17,3 +17,15 @@ it("labels only requested bundled restart when the server provides that protocol
   expect(screen.getByText(/Requested operation: ECS service restart/)).not.toBeNull();
   expect(screen.getByText(/installed workflow behavior unverified/)).not.toBeNull();
 });
+
+it("shows the exact run and last observation without claiming current deployment health", () => {
+ render(createElement(DeploymentWorkflowEvidence,{execution:{status:"completed",conclusion:"success",rollbackStatus:"not_started",workflowRunId:"123456",lastObservedAt:"2026-10-26T12:00:00.000Z"}}));
+ expect(screen.getByText("Workflow run: 123456")).not.toBeNull();
+ expect(screen.getByText(/Last observed:.*saved observation, not a live check/)).not.toBeNull();
+ expect(screen.getByText(/application health and image rollback remain unverified/)).not.toBeNull();
+});
+it("keeps absent or malformed observation time honest",()=>{
+ render(createElement(DeploymentWorkflowEvidence,{execution:{status:"queued",conclusion:null,rollbackStatus:"not_started",lastObservedAt:"invalid"}}));
+ expect(screen.getByText("Workflow run: Not yet identified")).not.toBeNull();
+ expect(screen.getByText(/Last observed: Not yet recorded/)).not.toBeNull();
+});

@@ -42,7 +42,7 @@ async function exercise(mode: "all" | "none" | "next-url-only") {
  return { requests, redirects, decoded, result, bareAndHashedReplay };
 }
 it('actual fully stripped routing headers produce a bare-hash redirect and one replay, preserved headers none', async () => {
- expect(require('next/package.json').version).toBe('16.3.8'); expect(defaults.experimental.validateRSCRequestHeaders).toBe(true);
+ expect(require('next/package.json').version).toBe('16.4.2'); expect(defaults.experimental.validateRSCRequestHeaders).toBe(true);
  expect(readFileSync(require.resolve('next/dist/build/define-env'), 'utf8')).toContain("'process.env.__NEXT_CLIENT_VALIDATE_RSC_REQUEST_HEADERS': Boolean(config.experimental.validateRSCRequestHeaders)");
  const stripped = await exercise('none'); expect(stripped.requests).toBe(2); expect(stripped.redirects).toBe(1); expect(stripped.bareAndHashedReplay).toBe(true); expect(stripped.decoded).toBe(0);
  const preserved = await exercise('all'); expect(preserved.requests).toBe(1); expect(preserved.redirects).toBe(0); expect(preserved.decoded).toBe(0);

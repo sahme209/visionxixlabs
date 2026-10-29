@@ -1,9 +1,12 @@
 import type { LocalEditRequest } from "./lib/localEditReview";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { WorkspaceCommands } from "./components/WorkspaceCommands";
 import { Sidebar } from "./components/Sidebar";
 import { TopBar } from "./components/TopBar";
 import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
-import { AgentChatView, type AgentSettingsDestination, type AgentSkillRequest, type AgentLocalCodeRequest } from "./views/AgentChatView";
+import { AgentChatView, type AgentSettingsDestination, type AgentSkillRequest, type AgentLocalCodeRequest, type AgentAirflowRequest } from "./views/AgentChatView";
+import { WelcomeView } from "./views/WelcomeView";
+import { AxiomBotView } from "./views/AxiomBotView";
 import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
 import { DocsView } from "./views/DocsView";
 import { SettingsView } from "./views/SettingsView";
@@ -18,7 +21,7 @@ import { readDesktopPreferences } from "./lib/preferences";
 import { useNativeMenuActions } from "./lib/useNativeMenuActions";
 
 /** Only verified, customer-reachable desktop destinations belong here. */
-export type CustomerView = "agent" | "deployment-requests" | "airflow-automation" | "repository-workspace" | "plugins-skills" | "docs" | "settings";
+export type CustomerView = "agent" | "axiom-bot" | "deployment-requests" | "airflow-automation" | "repository-workspace" | "plugins-skills" | "docs" | "settings";
 
 /**
  * Dormant source modules remain type-checked for requirements recovery, but
@@ -63,7 +66,7 @@ export default function App() {
         desktopClient.setSession(undefined);
         setIdentity(null);
         setCanRetrySavedSignIn(failureKind === "unavailable");
-        setAuthError(`Your saved sign-in could not be verified. ${error}`);
+        setAuthError(error);
         setAuthState("unauthenticated");
       },
       onMissing: () => { setIdentity(null); setAuthState("unauthenticated"); },
@@ -120,46 +123,71 @@ export default function App() {
 }
 
 function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
+  const contextRevision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);
+  const identityKey=JSON.stringify(identity);
+  const [botAppsReturn,setBotAppsReturn]=useState<{context:typeof desktopClient.config;revision:number;identityKey:string}|null>(null);
   const [activeView, setActiveView] = useState<CustomerView>("agent");
+  const [welcomeVisible, setWelcomeVisible] = useState(true);
+  const [splitWorkspace, setSplitWorkspace] = useState(false);
+  const [commandsOpen, setCommandsOpen] = useState(false);
   const [booted, setBooted] = useState(false);
+  const settingsReturnView = useRef<CustomerView>("agent");
+  const [botVisited, setBotVisited] = useState(false);
   const [repositoryVisited, setRepositoryVisited] = useState(false);
+  const [agentVisited, setAgentVisited] = useState(false);
   const [requestedSkill, setRequestedSkill] = useState<AgentSkillRequest>();
+  const [requestedAirflow, setRequestedAirflow] = useState<AgentAirflowRequest>();
   const [requestedLocalCode, setRequestedLocalCode] = useState<AgentLocalCodeRequest>();
   const [editRequest, setEditRequest] = useState<LocalEditRequest>();
   const [settingsDestination, setSettingsDestination] = useState<AgentSettingsDestination | undefined>();
-  const navigate = useCallback((view: CustomerView) => { if (view === "repository-workspace") setRepositoryVisited(true); setSettingsDestination(undefined); setActiveView(view); }, []);
+  const navigate = useCallback((view: CustomerView) => { setBotAppsReturn(null); setWelcomeVisible(false); if (view === "agent" || view === "repository-workspace") setSplitWorkspace(false); if (view === "agent" || view === "repository-workspace") { setAgentVisited(true); setRepositoryVisited(true); } if (view === "axiom-bot") setBotVisited(true); if (view === "repository-workspace") setRepositoryVisited(true); setSettingsDestination(undefined); setActiveView(current => { if (view === "settings" && current !== "settings") settingsReturnView.current = current; return view; }); }, []);
   useNativeMenuActions(navigate);
+  const botAppsOwned=activeView==='plugins-skills'&&!welcomeVisible&&botAppsReturn?.context===desktopClient.config&&botAppsReturn.revision===contextRevision&&botAppsReturn.identityKey===identityKey;
+  useEffect(()=>{setBotAppsReturn(current=>current&&(current.context!==desktopClient.config||current.revision!==contextRevision||current.identityKey!==identityKey)?null:current)},[contextRevision,identityKey]);
+  const openBotApps=()=>{if(activeView!=='axiom-bot'||welcomeVisible)return;navigate('plugins-skills');setBotAppsReturn({context:desktopClient.config,revision:contextRevision,identityKey})};
 
   useEffect(() => {
     const timer = setTimeout(() => setBooted(true), 250);
     return () => clearTimeout(timer);
   }, []);
 
-  if (!booted) return <BootScreen status="Loading deployment workspace" />;
+  const workspaceVisible = !welcomeVisible && (activeView === "agent" || activeView === "repository-workspace");
+  const splitVisible = splitWorkspace && workspaceVisible;
+
+  if (!booted) return <BootScreen status="Loading engineering workspace" />;
 
   return (
     <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">
-      <Sidebar activeView={activeView} onNavigate={navigate} />
+      {activeView !== "settings" && <Sidebar compact={false} activeView={activeView} onNavigate={navigate} homeVisible={welcomeVisible} onOpenWelcome={() => {setBotAppsReturn(null);setWelcomeVisible(true)}} />}
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
-        <TopBar activeView={activeView} identity={identity} />
-        <div hidden={activeView !== "agent"} style={{ display: activeView === "agent" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">
-          <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
-            <AgentChatView onReviewLocalEdit={(edit, edits) => { setEditRequest({edit, edits, context: desktopClient.config, workspace: identity.organizationId}); setRepositoryVisited(true); setActiveView("repository-workspace"); }} requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={activeView === "agent"} identity={identity} onOpenSettings={(destination) => { setSettingsDestination(destination); setActiveView("settings"); }} />
-          </WorkspaceViewBoundary>
+        {activeView !== "settings" && <TopBar welcome={welcomeVisible} splitActive={splitVisible} onToggleSplit={workspaceVisible ? () => {setRepositoryVisited(true); setSplitWorkspace(value => !value);} : undefined} activeView={activeView} identity={identity} onOpenCommands={() => setCommandsOpen(true)} />}
+        {welcomeVisible && <WelcomeView onBuild={() => navigate("agent")} onAutomate={() => navigate("airflow-automation")} onDeploy={() => navigate("deployment-requests")} />}
+        <div hidden={!workspaceVisible} style={{display: workspaceVisible ? "flex" : "none"}} className={`engineering-panes min-h-0 flex-1 ${splitVisible ? "engineering-panes-split" : "flex-col"}`}>
+        <div hidden={!splitVisible && activeView !== "agent"} style={{ display: splitVisible || activeView === "agent" ? "flex" : "none" }} className={`min-h-0 min-w-0 flex-1 flex-col ${splitVisible ? "engineering-agent-pane" : ""}`}>
+          {agentVisited && <WorkspaceViewBoundary onReturnToAgent={() => navigate("agent")}>
+            <AgentChatView compact={splitVisible} requestedAirflow={requestedAirflow} onReviewLocalEdit={(edit, edits) => { setEditRequest({edit, edits, context: desktopClient.config, workspace: identity.organizationId}); setRepositoryVisited(true); navigate("repository-workspace"); }} requestedLocalCode={requestedLocalCode} requestedSkill={requestedSkill} active={!welcomeVisible && (splitVisible || activeView === "agent")} identity={identity} onOpenSettings={(destination) => { settingsReturnView.current = "agent"; setSettingsDestination(destination); setActiveView("settings"); }} />
+          </WorkspaceViewBoundary>}
         </div>
-        {repositoryVisited && <div hidden={activeView !== "repository-workspace"} style={{ display: activeView === "repository-workspace" ? "flex" : "none" }} className="min-h-0 flex-1 flex-col">
-          <WorkspaceViewBoundary onReturnToAgent={() => setActiveView("agent")}>
-            <RepositoryWorkspaceView editRequest={editRequest} workspace={identity.organizationId} active={activeView === "repository-workspace"} onAskAgent={selection => { setRequestedLocalCode({ ...selection, context: desktopClient.config, workspace: identity.organizationId }); setActiveView("agent"); }} />
+        {repositoryVisited && <div hidden={!splitVisible && activeView !== "repository-workspace"} style={{ display: splitVisible || activeView === "repository-workspace" ? "flex" : "none" }} className={`min-h-0 min-w-0 flex-1 flex-col ${splitVisible ? "engineering-editor-pane" : ""}`}>
+          <WorkspaceViewBoundary onReturnToAgent={() => navigate("agent")}>
+            <RepositoryWorkspaceView selectionUser={identity.kind === "desktop_session" ? identity.email : undefined} compact={splitVisible} editRequest={editRequest} workspace={identity.organizationId} active={!welcomeVisible && (splitVisible || activeView === "repository-workspace")} onAskAgent={selection => { setRequestedLocalCode({ ...selection, context: desktopClient.config, workspace: identity.organizationId }); navigate("agent"); }} />
           </WorkspaceViewBoundary>
         </div>}
-        {activeView !== "agent" && activeView !== "repository-workspace" && <WorkspaceViewBoundary key={activeView} onReturnToAgent={() => setActiveView("agent")}>
+        </div>
+        {botVisited && <div hidden={welcomeVisible || activeView !== "axiom-bot"} style={{display: !welcomeVisible && activeView === "axiom-bot" ? "flex" : "none"}} className="min-h-0 flex-1 flex-col">
+          <WorkspaceViewBoundary onReturnToAgent={() => navigate("agent")}>
+            <AxiomBotView onConnectApps={openBotApps} identity={identity} active={!welcomeVisible && activeView === "axiom-bot"} />
+          </WorkspaceViewBoundary>
+        </div>}
+        {activeView !== "agent" && activeView !== "repository-workspace" && activeView !== "axiom-bot" && <div hidden={welcomeVisible} style={{display: welcomeVisible ? "none" : "flex"}} className="flex min-h-0 flex-1 flex-col"><WorkspaceViewBoundary key={activeView} onReturnToAgent={() => navigate("agent")}>
           {activeView === "deployment-requests" && <DeploymentRequestsView />}
-          {activeView === "airflow-automation" && <AirflowAutomationView />}
-          {activeView === "plugins-skills" && <PluginsSkillsView onUseSkill={skillId => { setRequestedSkill({ skillId, context: desktopClient.config, workspace: identity.organizationId }); setActiveView("agent"); }} canManage={identity.role === "owner" || identity.role === "admin"} onOpenSettings={() => setActiveView("settings")} onOpenAirflow={() => setActiveView("airflow-automation")} />}
-          {activeView === "docs" && <DocsView />}
-          {activeView === "settings" && <SettingsView identity={identity} initialSection={settingsDestination} />}
-        </WorkspaceViewBoundary>}
+          {activeView === "airflow-automation" && <AirflowAutomationView onInspect={(dagId, runId) => { setRequestedAirflow({dagId, runId, context: desktopClient.config, workspace: identity.organizationId}); navigate("agent"); }} />}
+          {activeView === "plugins-skills" && <PluginsSkillsView key={botAppsOwned?"bot-apps":"catalogue"} initialFilter={botAppsOwned?"plugins":"all"} onReturnToBot={botAppsOwned?()=>{if(botAppsReturn?.context===desktopClient.config&&botAppsReturn.revision===desktopClient.getContextRevision()&&botAppsReturn.identityKey===JSON.stringify(identity))navigate("axiom-bot")}:undefined} onUseSkill={skillId => { setRequestedSkill({ skillId, context: desktopClient.config, workspace: identity.organizationId }); navigate("agent"); }} canManage={identity.role === "owner" || identity.role === "admin"} onOpenSettings={() => { const origin=botAppsOwned?botAppsReturn:null; navigate("settings"); if(origin)setBotAppsReturn(origin); setSettingsDestination("integrations"); }} onOpenAirflow={() => navigate("airflow-automation")} />}
+          {activeView === "docs" && <DocsView onNavigate={navigate} />}
+          {activeView === "settings" && <SettingsView onOpenRepository={() => navigate("repository-workspace")} identity={identity} initialSection={settingsDestination} onClose={() => setActiveView(settingsReturnView.current)} />}
+        </WorkspaceViewBoundary></div>}
       </main>
+      <WorkspaceCommands open={commandsOpen} onOpenChange={setCommandsOpen} onNavigate={navigate} />
     </div>
   );
 }

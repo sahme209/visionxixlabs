@@ -29,5 +29,6 @@ export async function readScopedAzureInventory(repo: AzureEnrollmentRepo, princi
     const current = await repo.cloudAccountCredential.findUnique({ where: { id: accountId } });
     if (JSON.stringify(currentRows[0]) !== JSON.stringify(account) || JSON.stringify(current) !== JSON.stringify(credential))
         throw new AzureEnrollmentError("enrollment_conflict");
+    await requireAzureAuthority(repo, principal, deps.now);
     return { ...page, accountId, subscriptionId: account!.externalAccountId, connectionVersion: credential!.version, observedAt: deps.now().toISOString() };
 }

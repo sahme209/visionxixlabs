@@ -38,6 +38,77 @@ describe("approved model dispatch (actual policy/resolver/loop, inert IO ports)"
     expect(m.catalog).toHaveBeenCalledWith({ freshness: "current" });
     expect(m.catalog).toHaveBeenCalledTimes(2); expect(m.load).toHaveBeenCalledTimes(2); expect(m.status).toHaveBeenCalledTimes(2);
   });
+  it.each(["spacexai/grok-4.20-multi-agent", "xai/grok-4.20-multi-agent"])("refuses the live-unverified multi-agent output budget before reserving or dispatching %s",async model=>{
+    const value=policy();value.modelSelections.vercel_gateway=model;value.gatewaySelection={version:1,defaultModelId:model,approvedModelIds:[model]};m.load.mockResolvedValue(ready(value));m.catalog.mockResolvedValue([{id:model}]);
+    expect(await resolveGovernedAiCall("tenant","vercel_gateway","actor",model)).toEqual({ok:false,error:"workspace_ai_output_bound_unverified"});
+    expect(await resolveGovernedAiCall("tenant",undefined,"actor")).toEqual({ok:false,error:"workspace_ai_output_bound_unverified"});
+    expect(m.admission).not.toHaveBeenCalled();expect(m.extract).not.toHaveBeenCalled();
+  });
+  it.each(["service-default", undefined])("refuses unsupported effective managed default (%s) before holds", async selection => {
+    const legacy = policy(); delete legacy.gatewaySelection;
+    if (selection === undefined) delete legacy.modelSelections.vercel_gateway;
+    else legacy.modelSelections.vercel_gateway = selection;
+    m.load.mockResolvedValue(ready(legacy));
+    m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "spacexai/grok-4.20-multi-agent" }]);
+    expect(await resolveGovernedAiCall("tenant", undefined, "actor")).toEqual({ ok: false, error: "workspace_ai_output_bound_unverified" });
+    expect(m.admission).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled();
+  });
+  it.each([undefined, "", "service-default"])("refuses unverifiable actual default %s before admission", async defaultModel => {
+    const legacy = policy(); delete legacy.gatewaySelection; legacy.modelSelections.vercel_gateway = "service-default";
+    m.load.mockResolvedValue(ready(legacy)); m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel }]);
+    expect(await resolveGovernedAiCall("tenant", undefined, "actor")).toEqual({ ok: false, error: "workspace_ai_output_bound_unverified" });
+    expect(m.admission).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled();
+  });
+  it.each([undefined, "", "service-default"])("rechecks unverifiable actual default %s before extract admission", async defaultModel => {
+    const legacy = policy(); delete legacy.gatewaySelection; legacy.modelSelections.vercel_gateway = "service-default";
+    m.load.mockResolvedValue(ready(legacy)); m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "vendor/safe" }]);
+    const governed = await resolveGovernedAiCall("tenant", undefined, "actor"); if (!governed.ok) throw Error("expected safe default");
+    m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel }]);
+    await expect(governed.extract("prompt", "schema", "request:missing")).rejects.toMatchObject({ code: "workspace_ai_output_bound_unverified" });
+    expect(m.admission).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled();
+  });
+  it("pins the verified managed default across admission", async () => {
+    const legacy = policy(); delete legacy.gatewaySelection; legacy.modelSelections.vercel_gateway = "service-default";
+    m.load.mockResolvedValue(ready(legacy)); m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "vendor/safe" }]);
+    const governed = await resolveGovernedAiCall("tenant", undefined, "actor"); if (!governed.ok) throw Error("expected safe default");
+    m.admission.mockImplementation(async () => { m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "xai/grok-4.20-multi-agent" }]); return Object.freeze({}); });
+    await governed.extract("prompt", "schema", "request:pin"); expect(m.extract.mock.calls[0][2].model).toBe("vendor/safe");
+  });
+  it("honors an approved concrete selection over an unsupported configured default", async () => {
+    m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "spacexai/grok-4.20-multi-agent" }]);
+    const governed = await resolved();
+    await governed.extract("prompt", "schema", "request:concrete");
+    expect(m.extract.mock.calls[0][2]).toMatchObject({ model: "vendor/alternative" });
+  });
+  it("rechecks an unsupported effective server default before each managed extract", async () => {
+    const legacy = policy(); delete legacy.gatewaySelection; legacy.modelSelections.vercel_gateway = "service-default";
+    m.load.mockResolvedValue(ready(legacy));
+    m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "vendor/default" }]);
+    const governed = await resolveGovernedAiCall("tenant", undefined, "actor");
+    if (!governed.ok) throw Error("expected managed default");
+    m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "xai/grok-4.20-multi-agent" }]);
+    await expect(governed.extract("prompt", "schema", "refused:managed")).rejects.toMatchObject({ code: "workspace_ai_output_bound_unverified" });
+    expect(m.admission).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled();
+  });
+  it("rechecks a changed default before the first hold or model request",async()=>{
+    const governed=await resolveGovernedAiCall("tenant",undefined,"actor");if(!governed.ok)throw Error("fixture unavailable");const model="spacexai/grok-4.20-multi-agent";const next=policy();next.modelSelections.vercel_gateway=model;next.gatewaySelection={version:1,defaultModelId:model,approvedModelIds:[model]};m.load.mockResolvedValue(ready(next));
+    await expect(governed.extract("prompt","schema","refused:0")).rejects.toMatchObject({name:"GovernedAiCallRefusal",code:"workspace_ai_output_bound_unverified"});expect(m.admission).not.toHaveBeenCalled();expect(m.extract).not.toHaveBeenCalled();
+  });
+  it("preserves the current Grok catalog ID through policy admission and revocation", async () => {
+    const model = "spacexai/grok-4.1-fast-non-reasoning";
+    const value = policy();
+    value.gatewaySelection = { ...value.gatewaySelection!, approvedModelIds: [...value.gatewaySelection!.approvedModelIds, model] };
+    m.load.mockResolvedValue(ready(value));
+    m.catalog.mockResolvedValue([{ id: "vendor/default" }, { id: model }]);
+    const governed = await resolved(model);
+    await governed.extract("prompt", "schema", "request:grok");
+    expect(m.extract.mock.calls[0][2]).toMatchObject({ only: "vercel_gateway", model });
+    expect(m.admission).toHaveBeenCalledWith({ organizationId: "tenant", userId: "trusted-actor", correlationId: "request:grok" });
+    m.load.mockResolvedValue(ready(policy()));
+    await expect(governed.extract("next", "schema", "request:grok:next")).rejects.toBeInstanceOf(GovernedAiCallRefusal);
+    expect(m.admission).toHaveBeenCalledOnce();
+    expect(m.extract).toHaveBeenCalledOnce();
+  });
   it.each([undefined, "openai"])("requires explicit Gateway provider for a chosen model (%s)", async provider => {
     await expect(resolveGovernedAiCall("tenant", provider, "actor", "vendor/alternative")).resolves.toMatchObject({ ok: false, error: "workspace_ai_model_not_allowed" });
     expect(m.admission).not.toHaveBeenCalled(); expect(m.extract).not.toHaveBeenCalled();
@@ -61,10 +132,11 @@ describe("approved model dispatch (actual policy/resolver/loop, inert IO ports)"
   });
   it.each(["service-default", "vmc/private"])("preserves managed %s semantics when no explicit model is requested", async managed => {
     const legacy = policy(); delete legacy.gatewaySelection; legacy.modelSelections.vercel_gateway = managed; m.load.mockResolvedValue(ready(legacy));
+    m.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "vendor/default" }]);
     const governed = await resolveGovernedAiCall("tenant", undefined, "actor");
     if (!governed.ok) throw new Error("expected managed default");
     await governed.extract("prompt", "schema", "request:0");
-    expect(m.extract.mock.calls[0][2]).toMatchObject({ modelSelections: { vercel_gateway: managed }, model: undefined });
+    expect(m.extract.mock.calls[0][2]).toMatchObject({ modelSelections: { vercel_gateway: managed }, model: managed === "service-default" ? "vendor/default" : managed });
     expect(m.catalog).not.toHaveBeenCalled();
   });
   it("configured direct-provider status cannot admit an unsupported production lane", async () => {

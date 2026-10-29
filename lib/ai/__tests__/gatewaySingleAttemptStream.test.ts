@@ -87,4 +87,41 @@ describe("single-attempt Gateway stream boundary", () => {
     await expect(new VercelGatewayProvider("vendor/model").streamTextOnce("hello", { maxTokens }).next()).rejects.toMatchObject({ kind: "bad_response" });
     expect(sdk.streamText).not.toHaveBeenCalled();
   });
+  it.each([
+    [401, "invalid_key"],
+    [403, "model_unavailable"],
+    [404, "model_unavailable"],
+  ])("classifies HTTP %s stream failures without leaking upstream details", async (statusCode, kind) => {
+    sdk.streamText.mockReturnValue(result([{type: "error", error: {statusCode, message: "private upstream text", responseBody: "private upstream text"}}]));
+    const stream = new VercelGatewayProvider("vendor/model").streamTextOnce("hello");
+    let caught: unknown;
+    try { await stream.next(); } catch(error) { caught = error; }
+    expect(caught).toMatchObject({kind, retryable: false});
+    expect(String(caught)).not.toContain("private upstream text");
+    expect(sdk.streamText).toHaveBeenCalledOnce();
+  });
+  it("recognizes a wrapped model-access restriction without echoing the error payload", async () => {
+    sdk.streamText.mockReturnValue(result([{type: "error", error: {statusCode: 500, cause: {statusCode: 403, message: "private credential detail"}}}]));
+    let caught: unknown;
+    try { await new VercelGatewayProvider("vendor/model").streamTextOnce("hello").next(); } catch(error) { caught = error; }
+    expect(caught).toMatchObject({kind: "model_unavailable", retryable: false});
+    expect(String(caught)).not.toContain("private credential detail");
+    expect(String(caught)).toContain("access");
+  });
+
+  it("classifies a directly thrown SDK access failure without retry or raw text", async () => {
+    sdk.streamText.mockImplementation(() => { throw {statusCode: 403, message: "private synchronous error"}; });
+    let caught: unknown;
+    try { await new VercelGatewayProvider("vendor/model").streamTextOnce("hello").next(); } catch(error) { caught = error; }
+    expect(caught).toMatchObject({kind: "model_unavailable", retryable: false});
+    expect(String(caught)).not.toContain("private synchronous error");
+    expect(sdk.streamText).toHaveBeenCalledOnce();
+  });
+  it("bounds cyclic cause inspection and ignores untyped status text", async () => {
+    const cycle: {statusCode: string; cause?: unknown} = {statusCode: "403"};
+    cycle.cause = cycle;
+    sdk.streamText.mockReturnValue(result([{type: "error", error: cycle}]));
+    await expect(new VercelGatewayProvider("vendor/model").streamTextOnce("hello").next()).rejects.toMatchObject({kind: "network", retryable: false});
+  });
+
 });

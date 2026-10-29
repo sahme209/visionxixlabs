@@ -1,29 +1,14 @@
 /**
- * GCP connection validator.
- *
- * Format validation always runs (cheap, deterministic). Live mode attempts
- * a `@google-cloud/resource-manager` ProjectsClient call to confirm the
- * service account can read the project metadata. The SDK accepts a
- * `service_account` JSON key directly so we never persist a separate auth
- * library.
- *
- * Honest fallback: when the SDK isn't reachable (dynamic import fails, or
- * credentials are missing on the host) we return a typed `live_disabled`
- * outcome with `missingRequirements` rather than fabricating success.
- *
- * Server-only.
+ * Format validation for caller-selected GCP projects. Live validation remains
+ * unavailable until a tenant-owned, project-bound authorization path exists.
+ * Host credentials are never substituted for a caller's submitted identity.
  */
 
 import "server-only";
 import { requireGcpProjectId } from "@/lib/security/validation";
 import { isAxiomError } from "@/lib/errors/axiomErrors";
 import type { GcpConnectionInput, GcpConnectionStatus } from "./gcpConnection";
-import {
-  getGcpConfig,
-  resolveGcpClientEmail,
-  resolveGcpPrivateKey,
-  resolveGcpServiceAccountJson,
-} from "./gcpConfig";
+import { getGcpConfig } from "./gcpConfig";
 
 export type GcpValidationOutcome =
   | "valid_live"
@@ -59,8 +44,6 @@ export interface GcpValidateInput {
   input: GcpConnectionInput;
   requestLive: boolean;
 }
-
-const LIVE_CALL_TIMEOUT_MS = 8_000;
 
 export async function validateGcpConnection(opts: GcpValidateInput): Promise<GcpValidationResult> {
   // 1) Project id format
@@ -99,22 +82,20 @@ export async function validateGcpConnection(opts: GcpValidateInput): Promise<Gcp
     };
   }
 
-  // 4) Live requested but credentials missing.
-  if (opts.requestLive && cfg.mode !== "live") {
+  // Deployment credentials and submitted JSON shape are not tenant authority.
+  // Fail closed rather than reading an arbitrary project with the host identity.
+  if (opts.requestLive) {
     return {
-      ok: true,
+      ok: false,
       outcome: "live_disabled",
-      status: "validating",
-      message: "GCP input is well-formed. Live validation requires host-side service account credentials.",
-      mode: cfg.mode,
-      missingRequirements: listMissingGcpEnv(),
+      status: "not_configured",
+      message: "GCP input is well-formed. Live validation needs a verified workspace connection for this project.",
+      errorCode: "gcp.tenant_connection_required",
+      mode: "expanding",
+      missingRequirements: ["A verified tenant-owned GCP connection bound to the selected project."],
+      limitations: ["Format validation does not verify project access. Host credentials are not used for customer-selected projects."],
       safeNextAction: { label: "Open GCP setup", href: "/docs/gcp-setup" },
     };
-  }
-
-  // 5) Live call.
-  if (opts.requestLive) {
-    return await runLiveValidation(opts);
   }
 
   // 6) Format-only path.
@@ -123,137 +104,9 @@ export async function validateGcpConnection(opts: GcpValidateInput): Promise<Gcp
     outcome: "valid_format_only",
     status: "validating",
     validatedProjectId: opts.input.projectId,
-    message: "GCP input format validated. Live validation runs when the scan is started.",
+    message: "GCP input format validated. No live connection or project access has been verified.",
     mode: cfg.mode,
   };
-}
-
-// ---------------------------------------------------------------------------
-// Live SDK call
-// ---------------------------------------------------------------------------
-
-async function runLiveValidation(opts: GcpValidateInput): Promise<GcpValidationResult> {
-  const credentials = resolveCredentialBlob();
-  if (!credentials) {
-    return {
-      ok: false,
-      outcome: "auth_failure",
-      status: "validation_failed",
-      message: "GCP live validation requires GCP_SERVICE_ACCOUNT_JSON or (GCP_CLIENT_EMAIL + GCP_PRIVATE_KEY) on the host.",
-      errorCode: "gcp.no_credentials",
-      mode: "expanding",
-      missingRequirements: listMissingGcpEnv(),
-    };
-  }
-
-  try {
-    const mod: unknown = await import("@google-cloud/resource-manager").catch(() => undefined);
-    if (!mod || typeof mod !== "object" || !("ProjectsClient" in mod)) {
-      return {
-        ok: false,
-        outcome: "live_disabled",
-        status: "validating",
-        message: "@google-cloud/resource-manager not installed on the deployment — falling back to format validation.",
-        errorCode: "gcp.sdk_missing",
-        mode: "expanding",
-        limitations: ["@google-cloud/resource-manager unavailable at runtime."],
-        safeNextAction: { label: "Open GCP setup", href: "/docs/gcp-setup" },
-      };
-    }
-    const { ProjectsClient } = mod as { ProjectsClient: new (opts: unknown) => { getProject: (req: { name: string }) => Promise<unknown[]> } };
-
-    const client = new ProjectsClient({
-      credentials,
-      projectId: opts.input.projectId,
-    });
-
-    const response = await withTimeout(
-      client.getProject({ name: `projects/${opts.input.projectId}` }),
-      LIVE_CALL_TIMEOUT_MS,
-      "projects.get",
-    );
-
-    const project = Array.isArray(response) ? (response[0] as { displayName?: string; projectId?: string } | undefined) : undefined;
-
-    return {
-      ok: true,
-      outcome: "valid_live",
-      status: "connected",
-      validatedProjectId: project?.projectId ?? opts.input.projectId,
-      projectDisplayName: project?.displayName,
-      serviceAccountEmail: credentials.client_email,
-      message: `Validated GCP project ${project?.displayName ?? project?.projectId ?? opts.input.projectId}.`,
-      mode: "live",
-    };
-  } catch (err) {
-    return classifyGcpError(err, opts);
-  }
-}
-
-function classifyGcpError(err: unknown, opts: GcpValidateInput): GcpValidationResult {
-  const code = errCode(err);
-  const message = errMessage(err);
-
-  // gRPC permission denied is code 7, NOT_FOUND is 5, UNAUTHENTICATED is 16
-  if (code === "7" || /PERMISSION_DENIED/i.test(message)) {
-    return failure(opts, "permission_denied", "Service account lacks read permission on the project.", "gcp.access_denied");
-  }
-  if (code === "16" || /UNAUTHENTICATED|invalid_grant/i.test(message)) {
-    return failure(opts, "auth_failure", "GCP rejected the service account credentials.", "gcp.bad_credentials");
-  }
-  if (code === "5" || /NOT_FOUND/i.test(message)) {
-    return failure(opts, "not_found", `Project ${opts.input.projectId} was not found.`, "gcp.project_not_found");
-  }
-  if (/ENOTFOUND|ECONNREFUSED|timeout|UNAVAILABLE/i.test(message)) {
-    return failure(opts, "network", "Network error reaching Google Cloud Resource Manager.", "gcp.network");
-  }
-  return failure(opts, "auth_failure", `GCP validation failed: ${redact(message)}`, "gcp.live_failed");
-}
-
-function failure(opts: GcpValidateInput, outcome: GcpValidationOutcome, message: string, errorCode: string): GcpValidationResult {
-  return {
-    ok: false,
-    outcome,
-    status: outcome === "permission_denied" ? "permission_denied" : "validation_failed",
-    message,
-    errorCode,
-    mode: "live",
-    validatedProjectId: opts.input.projectId,
-  };
-}
-
-// ---------------------------------------------------------------------------
-// Credential resolution
-// ---------------------------------------------------------------------------
-
-interface GcpCredentialBlob {
-  client_email: string;
-  private_key: string;
-}
-
-function resolveCredentialBlob(): GcpCredentialBlob | undefined {
-  // JSON blob takes precedence (matches how cloud functions typically inject).
-  const json = resolveGcpServiceAccountJson();
-  if (json) {
-    try {
-      const parsed = JSON.parse(json) as Record<string, unknown>;
-      if (typeof parsed.client_email === "string" && typeof parsed.private_key === "string") {
-        return { client_email: parsed.client_email, private_key: parsed.private_key };
-      }
-    } catch {
-      return undefined;
-    }
-  }
-  const email = resolveGcpClientEmail();
-  const key   = resolveGcpPrivateKey();
-  if (email && key) {
-    return {
-      client_email: email,
-      // Common deployment gotcha: `\n` literal in env values needs unescaping.
-      private_key: key.replace(/\\n/g, "\n"),
-    };
-  }
-  return undefined;
 }
 
 function validateServiceAccountJson(rawJson: string, expectedProjectId: string): GcpValidationResult {
@@ -292,46 +145,4 @@ function validateServiceAccountJson(rawJson: string, expectedProjectId: string):
       mode: "expanding",
     };
   }
-}
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-function listMissingGcpEnv(): string[] {
-  const e = process.env;
-  const missing: string[] = [];
-  if (!e.GCP_PROJECT_ID) missing.push("GCP_PROJECT_ID");
-  const hasSplit = e.GCP_CLIENT_EMAIL && e.GCP_PRIVATE_KEY;
-  const hasJson  = e.GCP_SERVICE_ACCOUNT_JSON;
-  if (!hasSplit && !hasJson) {
-    missing.push("GCP_SERVICE_ACCOUNT_JSON  *or*  (GCP_CLIENT_EMAIL + GCP_PRIVATE_KEY)");
-  }
-  return missing;
-}
-
-function errCode(err: unknown): string | undefined {
-  if (err && typeof err === "object") {
-    if ("code" in err) return String((err as { code?: unknown }).code);
-    if ("name" in err) return String((err as { name?: string }).name);
-  }
-  return undefined;
-}
-
-function errMessage(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  return String(err);
-}
-
-function redact(s: string): string {
-  return s
-    .replace(/-----BEGIN [A-Z ]+-----[\s\S]+?-----END [A-Z ]+-----/g, "-----PRIVATE KEY REDACTED-----")
-    .replace(/[a-z0-9-]+@[a-z0-9-]+\.iam\.gserviceaccount\.com/gi, "***@***.iam.gserviceaccount.com");
-}
-
-function withTimeout<T>(p: Promise<T>, ms: number, op: string): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const t = setTimeout(() => reject(new Error(`${op} timed out after ${ms}ms`)), ms);
-    p.then((v) => { clearTimeout(t); resolve(v); }, (e) => { clearTimeout(t); reject(e); });
-  });
 }

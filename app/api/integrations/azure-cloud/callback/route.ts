@@ -1,0 +1,8 @@
+import {type NextRequest,NextResponse} from 'next/server';
+import {currentContext} from '@/lib/auth/currentContext';
+import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
+import {azureGuided} from '@/lib/cloud/azure/guided/runtime';
+import {AZURE_GUIDED_CALLBACK} from '@/lib/cloud/azure/guided/contract';
+export const dynamic='force-dynamic';export const runtime='nodejs';
+/** Callback queries/secrets never appear in logs, responses or retry URLs. */
+export async function GET(request:NextRequest){const signal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);try{const q=request.nextUrl.searchParams;if(request.nextUrl.origin+request.nextUrl.pathname!==AZURE_GUIDED_CALLBACK||q.getAll('state').length!==1||q.getAll('code').length!==1||q.has('error'))throw Error('invalid_callback');const first=await withGithubAbort(currentContext(),signal);const valid=(x:typeof first)=>x.isAuthenticated&&x.sessionUserId&&x.userId===x.sessionUserId&&x.organizationId&&x.roles.some(r=>r==='owner'||r==='admin');if(!valid(first))throw Error('authority_required');await azureGuided.callback({state:q.get('state')!,code:q.get('code')!,browser:{organizationId:String(first.organizationId),userId:String(first.sessionUserId)},signal,assertBrowser:async()=>{const now=await withGithubAbort(currentContext(),signal);if(!valid(now)||now.organizationId!==first.organizationId||now.sessionUserId!==first.sessionUserId)throw Error('authority_changed')}})}catch{/* Durable status explains saved progress; no code replay. */}return NextResponse.redirect('https://visionxixlabs.com/desktop/cloud/return',{status:303,headers:{'Cache-Control':'private, no-store','Referrer-Policy':'no-referrer'}})}

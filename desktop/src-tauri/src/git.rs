@@ -35,11 +35,20 @@ pub struct RepositoryStatus {
 
 fn redact_credential(text: &str, clone_url: &str) -> String {
     let mut redacted = text.to_string();
-    if let Some(at_pos) = clone_url.find('@') {
-        if let Some(scheme_end) = clone_url.find("://") {
-            let credential_part = &clone_url[scheme_end + 3..at_pos];
+    if let (Some(at_pos), Some(scheme_end)) = (clone_url.rfind('@'), clone_url.find("://")) {
+        if let Some(credential_part) = clone_url.get(scheme_end + 3..at_pos) {
             if !credential_part.is_empty() {
                 redacted = redacted.replace(credential_part, "***");
+            }
+            // Git or a remote helper may report only the password, not the
+            // complete URL/userinfo. Never return that scoped token to the UI.
+            if let Some((_, password)) = credential_part.split_once(':') {
+                if !password.is_empty() {
+                    redacted = redacted.replace(password, "***");
+                    if let Ok(decoded) = percent_encoding::percent_decode_str(password).decode_utf8() {
+                        if !decoded.is_empty() { redacted = redacted.replace(decoded.as_ref(), "***"); }
+                    }
+                }
             }
         }
     }
@@ -69,9 +78,96 @@ where
     command.args(args).output().map_err(|error| format!("Could not run git: {error}. Is git installed and on PATH?"))
 }
 
+struct ScopedGitCommand {
+    command: Command,
+    authorization: Option<String>,
+}
+
+fn scoped_git_command(root: Option<&Path>, args: &[&str], authenticated_url: &str) -> Result<ScopedGitCommand, String> {
+    let clean = safe_remote_url(authenticated_url)?;
+    // Building a request performs no network operation. Reuse reqwest's URL
+    // userinfo decoding and Basic encoding rather than implementing auth codecs.
+    let request = reqwest::Client::builder().build()
+        .and_then(|client| client.get(authenticated_url).build())
+        .map_err(|_| "Scoped Git authentication could not be prepared.".to_string())?;
+    if request.url().as_str() != clean || request.url().query().is_some() || request.url().fragment().is_some() {
+        return Err("Repository URL must be canonical and contain no query or fragment.".into());
+    }
+    let authorization = request.headers().get(reqwest::header::AUTHORIZATION)
+        .map(|value| value.to_str().map(ToOwned::to_owned))
+        .transpose().map_err(|_| "Scoped Git authentication is invalid.".to_string())?;
+    let mut command = Command::new("git");
+    if let Some(root) = root { command.arg("-C").arg(root); }
+    for arg in args {
+        command.arg(if *arg == authenticated_url { clean.as_str() } else { arg });
+    }
+    // All configuration is child-process-only: no -c secret, credential helper
+    // cache, .git/config write or global user setting mutation.
+    command.env("GIT_TERMINAL_PROMPT", "0").env_remove("GIT_CONFIG_PARAMETERS")
+        .env_remove("GIT_ASKPASS").env_remove("SSH_ASKPASS");
+    let header_key = format!("http.{clean}.extraHeader");
+    let mut config = vec![
+        ("credential.helper".to_string(), String::new()),
+        (header_key.clone(), String::new()),
+        (format!("http.{clean}.followRedirects"), "false".to_string()),
+    ];
+    if let Some(value) = &authorization {
+        config.push((header_key, format!("Authorization: {value}")));
+    }
+    // Disable config-selected trace sinks as well as inherited trace variables.
+    // Otherwise trace2 can record our child-only GIT_CONFIG_VALUE_* secret.
+    config.extend([
+        ("core.askPass".to_string(), String::new()),
+        ("trace2.normalTarget".to_string(), "0".to_string()),
+        ("trace2.eventTarget".to_string(), "0".to_string()),
+        ("trace2.perfTarget".to_string(), "0".to_string()),
+        ("trace2.envVars".to_string(), String::new()),
+        ("trace2.configParams".to_string(), String::new()),
+    ]);
+    command.env("GIT_CONFIG_COUNT", config.len().to_string());
+    for (index, (key, value)) in config.into_iter().enumerate() {
+        command.env(format!("GIT_CONFIG_KEY_{index}"), key)
+            .env(format!("GIT_CONFIG_VALUE_{index}"), value);
+    }
+    for key in ["GIT_TRACE", "GIT_TRACE_CURL", "GIT_CURL_VERBOSE", "GIT_TRACE2",
+        "GIT_TRACE2_EVENT", "GIT_TRACE2_PERF", "GIT_TRACE_PACK_ACCESS",
+        "GIT_TRACE_PACKET", "GIT_TRACE_PERFORMANCE", "GIT_TRACE_SETUP", "GIT_TRACE_SHALLOW"] {
+        command.env_remove(key);
+    }
+    // Trace2 initializes before command-scope Git config. Explicit false
+    // environment targets must override preexisting global trace destinations.
+    command.env("GIT_TRACE2", "0").env("GIT_TRACE2_EVENT", "0")
+        .env("GIT_TRACE2_PERF", "0").env("GIT_TRACE_REDACT", "1");
+    Ok(ScopedGitCommand { command, authorization })
+}
+
+fn redact_scoped_output(mut output: Output, authorization: Option<&str>) -> Output {
+    if let Some(value) = authorization {
+        for bytes in [&mut output.stdout, &mut output.stderr] {
+            let mut text = String::from_utf8_lossy(bytes).replace(value, "***");
+            if let Some(payload) = value.strip_prefix("Basic ") {
+                if !payload.is_empty() { text = text.replace(payload, "***"); }
+            }
+            *bytes = text.into_bytes();
+        }
+    }
+    output
+}
+
+fn run_scoped_git(root: Option<&Path>, args: &[&str], authenticated_url: &str) -> Result<Output, String> {
+    let mut scoped = scoped_git_command(root, args, authenticated_url)?;
+    let output = scoped.command.output()
+        .map_err(|error| format!("Could not run git: {error}. Is git installed and on PATH?"))?;
+    Ok(redact_scoped_output(output, scoped.authorization.as_deref()))
+}
+
 fn output_text(output: Output, credential: Option<&str>) -> Result<String, String> {
     if output.status.success() {
-        return Ok(String::from_utf8_lossy(&output.stdout).trim().to_string());
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        return Ok(match credential {
+            Some(url) => redact_credential(stdout.trim(), url),
+            None => stdout.trim().to_string(),
+        });
     }
     let stderr = String::from_utf8_lossy(&output.stderr);
     Err(match credential {
@@ -136,7 +232,7 @@ pub async fn clone_repository(clone_url: String, destination_path: String) -> Re
         fs::create_dir_all(parent).map_err(|error| format!("Could not create {}: {error}", parent.display()))?;
     }
     let clone_result = output_text(
-        git(None, ["clone", "--", clone_url.as_str(), destination_path.as_str()])?,
+        run_scoped_git(None, &["clone", "--", clone_url.as_str(), destination_path.as_str()], &clone_url)?,
         Some(&clone_url),
     );
     if let Err(error) = clone_result {
@@ -147,12 +243,12 @@ pub async fn clone_repository(clone_url: String, destination_path: String) -> Re
         }
         return Err(error);
     }
-    // git clone records its source as origin. Replace the credential-bearing
-    // URL before returning success, including on a best-effort cleanup path.
+    // Clone receives a credential-free URL from the start. Retain explicit
+    // origin canonicalization and fail closed if it cannot be maintained.
     let sanitized = output_text(git(Some(&destination), ["remote", "set-url", "origin", &safe_origin])?, Some(&clone_url));
     if let Err(error) = sanitized {
         let _ = fs::remove_dir_all(&destination);
-        return Err(format!("Clone was removed because its credential could not be scrubbed: {error}"));
+        return Err(format!("Clone was removed because its origin could not be maintained: {error}"));
     }
     Ok(destination_path)
 }
@@ -179,15 +275,34 @@ pub async fn list_local_repositories(parent_path: String) -> Result<Vec<String>,
     Ok(repositories)
 }
 
+// Porcelain columns and path bytes are protocol data: never trim or split on
+// lines. In -z format a rename/copy records destination first, then source.
+fn parse_porcelain_status(bytes: &[u8]) -> Result<Vec<RepositoryFileStatus>, String> {
+    let invalid = || "Repository status could not be decoded; refresh before relying on it.".to_string();
+    if bytes.is_empty() { return Ok(Vec::new()); }
+    if bytes.last() != Some(&0) { return Err(invalid()); }
+    let text = std::str::from_utf8(bytes).map_err(|_| invalid())?;
+    let mut records = text.split_terminator('\0');
+    let mut files = Vec::new();
+    while let Some(record) = records.next() {
+        let raw = record.as_bytes();
+        if raw.len() < 4 || raw[2] != b' '
+            || !raw[..2].iter().all(|value| b" MADRCUT?!".contains(value))
+            || &raw[..2] == b"  " { return Err(invalid()); }
+        if raw[..2].iter().any(|value| *value == b'R' || *value == b'C')
+            && records.next().filter(|source| !source.is_empty()).is_none() { return Err(invalid()); }
+        files.push(RepositoryFileStatus { status: record[..2].trim().to_string(), path: record[3..].to_string() });
+    }
+    Ok(files)
+}
+
 #[tauri::command]
 pub async fn repository_status(repository_path: String) -> Result<RepositoryStatus, String> {
     let root = repository_root(&repository_path)?;
     let branch = current_branch(&root)?;
-    let porcelain = output_text(git(Some(&root), ["status", "--porcelain", "--untracked-files=all"] )?, None)?;
-    let changed_files = porcelain.lines().filter_map(|line| {
-        if line.len() < 4 { return None; }
-        Some(RepositoryFileStatus { status: line[..2].trim().to_string(), path: line[3..].to_string() })
-    }).collect();
+    let porcelain = git(Some(&root), ["status", "--porcelain=v1", "--untracked-files=all", "-z"])?;
+    if !porcelain.status.success() { return output_text(porcelain, None).and_then(|_| Err("Repository status is unavailable.".into())); }
+    let changed_files = parse_porcelain_status(&porcelain.stdout)?;
     let counts = output_text(git(Some(&root), ["rev-list", "--left-right", "--count", "HEAD...@{upstream}"] )?, None)
         .unwrap_or_else(|_| "0\t0".to_string());
     let mut parts = counts.split_whitespace().filter_map(|value| value.parse::<u32>().ok());
@@ -288,23 +403,48 @@ pub async fn create_repository_branch(repository_path: String, branch_name: Stri
     Ok(candidate.to_string())
 }
 
+// Shared pre-network validation for a reviewed repository/branch selection.
+fn reviewed_sync_root(repository_path: &str, authenticated_url: &str, repository_full_name: &str, branch: &str) -> Result<PathBuf, String> {
+    let safe_url = safe_remote_url(authenticated_url)?;
+    let parts: Vec<_> = repository_full_name.split('/').collect();
+    if parts.len() != 2 || parts.iter().any(|part| part.is_empty() || *part == "." || *part == ".." || !part.bytes().all(|b| b.is_ascii_alphanumeric() || b"._-".contains(&b))) {
+        return Err("Review a valid GitHub repository before synchronizing.".into());
+    }
+    let root = repository_root(repository_path)?;
+    let expected = repository_full_name.to_lowercase();
+    let authorized = safe_url.strip_prefix("https://github.com/").unwrap_or("").trim_end_matches(".git").to_lowercase();
+    if authorized != expected || github_repository_name(&root).as_deref().map(str::to_lowercase) != Some(expected) {
+        return Err("Repository origin or credential target changed; review synchronization again.".into());
+    }
+    if branch.is_empty() || branch.len() > 240 || branch.starts_with('-') || !git(Some(&root), ["check-ref-format", "--branch", branch])?.status.success() || current_branch(&root)? != branch {
+        return Err("Repository branch changed; review synchronization again.".into());
+    }
+    Ok(root)
+}
+
+fn reviewed_push_refspec(branch: &str) -> String {
+    // Never resolve HEAD after validation: an external checkout must not select
+    // another source or destination branch for an already reviewed push.
+    format!("refs/heads/{branch}:refs/heads/{branch}")
+}
+
 #[tauri::command]
-pub async fn pull_repository(repository_path: String, authenticated_url: String) -> Result<String, String> {
-    safe_remote_url(&authenticated_url)?;
-    let root = repository_root(&repository_path)?;
+pub async fn pull_repository(repository_path: String, authenticated_url: String, repository_full_name: String, branch: String) -> Result<String, String> {
+    let root = reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
     if !working_tree_is_clean(&root)? { return Err("Commit or discard local changes before pulling.".to_string()); }
-    let branch = current_branch(&root)?;
     let refspec = format!("+refs/heads/{branch}:refs/remotes/origin/{branch}");
-    output_text(git(Some(&root), ["fetch", "--prune", &authenticated_url, &refspec])?, Some(&authenticated_url))?;
+    output_text(run_scoped_git(Some(&root), &["fetch", "--prune", &authenticated_url, &refspec], &authenticated_url)?, Some(&authenticated_url))?;
+    // Fetch can outlive an external checkout or origin change. Recheck before
+    // touching the working tree. This is not a lock against unrelated Git writers.
+    reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
+    if !working_tree_is_clean(&root)? { return Err("Working tree changed while fetching; review synchronization again.".into()); }
     output_text(git(Some(&root), ["merge", "--ff-only", &format!("refs/remotes/origin/{branch}")])?, None)
 }
 
 #[tauri::command]
-pub async fn push_repository(repository_path: String, authenticated_url: String) -> Result<String, String> {
-    safe_remote_url(&authenticated_url)?;
-    let root = repository_root(&repository_path)?;
-    let branch = current_branch(&root)?;
-    output_text(git(Some(&root), ["push", &authenticated_url, &format!("HEAD:refs/heads/{branch}")])?, Some(&authenticated_url))
+pub async fn push_repository(repository_path: String, authenticated_url: String, repository_full_name: String, branch: String) -> Result<String, String> {
+    let root = reviewed_sync_root(&repository_path, &authenticated_url, &repository_full_name, &branch)?;
+    output_text(run_scoped_git(Some(&root), &["push", &authenticated_url, &reviewed_push_refspec(&branch)], &authenticated_url)?, Some(&authenticated_url))
 }
 
 fn dirs_home() -> Result<PathBuf, String> {
@@ -328,6 +468,132 @@ mod tests {
     }
     impl Drop for OwnedDirectory {
         fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); }
+    }
+
+    #[test]
+    fn status_parser_refuses_malformed_records_instead_of_reporting_clean() {
+        for bytes in [b" M a".as_slice(), b" M \0", b"  a\0", b"XX a\0", b"R  new\0", b"R  new\0\0", b"?? \xff\0"] {
+            assert!(super::parse_porcelain_status(bytes).is_err());
+        }
+        assert!(super::parse_porcelain_status(b"").unwrap().is_empty());
+        let copied = super::parse_porcelain_status(b"C  new\0old\0 M a\0").unwrap();
+        assert_eq!(copied.len(), 2);
+        assert_eq!(copied[0].path, "new");
+        assert_eq!(copied[1].path, "a");
+    }
+
+    fn status_fixture() -> OwnedDirectory {
+        let directory = sync_fixture();
+        for name in ["a", "old.ts"] { std::fs::write(directory.0.join(name), "baseline").unwrap(); }
+        assert!(super::git(Some(&directory.0), ["add", "--", "a", "old.ts"]).unwrap().status.success());
+        assert!(super::git(Some(&directory.0), ["-c", "user.name=Axiom Fixture", "-c", "user.email=fixture@example.invalid", "-c", "commit.gpgsign=false", "-c", "core.hooksPath=/dev/null", "commit", "-m", "owned status fixture"]).unwrap().status.success());
+        directory
+    }
+
+    #[tokio::test]
+    async fn status_retains_a_modified_single_character_path() {
+        let directory = status_fixture();
+        std::fs::write(directory.0.join("a"), "modified").unwrap();
+        let status = super::repository_status(directory.0.to_string_lossy().into_owned()).await.unwrap();
+        assert_eq!(status.changed_files.len(), 1);
+        assert_eq!(status.changed_files[0].path, "a");
+        assert_eq!(status.changed_files[0].status, "M");
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn status_preserves_renamed_and_unquoted_unicode_paths() {
+        let directory = status_fixture();
+        assert!(super::git(Some(&directory.0), ["mv", "--", "old.ts", "renamed space.ts"]).unwrap().status.success());
+        for name in ["café.ts", "tab\tfile.ts", "quote\"file.ts", "line\nbreak.ts"] {
+            std::fs::write(directory.0.join(name), "untracked").unwrap();
+        }
+        let status = super::repository_status(directory.0.to_string_lossy().into_owned()).await.unwrap();
+        assert_eq!(status.changed_files.len(), 5);
+        assert!(status.changed_files.iter().any(|file| file.path == "renamed space.ts" && file.status == "R"));
+        for name in ["café.ts", "tab\tfile.ts", "quote\"file.ts", "line\nbreak.ts"] {
+            assert!(status.changed_files.iter().any(|file| file.path == name && file.status == "??"), "Missing exact filename: {name:?}");
+        }
+    }
+
+    fn sync_fixture() -> OwnedDirectory {
+        let directory = OwnedDirectory::new();
+        assert!(super::git(Some(&directory.0), ["init", "--initial-branch=feature"]).unwrap().status.success());
+        assert!(super::git(Some(&directory.0), ["remote", "add", "origin", "https://github.com/owner/repository.git"]).unwrap().status.success());
+        directory
+    }
+
+    #[test]
+    fn sync_requires_the_credential_repository_to_match_the_reviewed_local_origin() {
+        let directory = sync_fixture();
+        let root = directory.0.to_str().unwrap();
+        assert!(super::reviewed_sync_root(root, "https://x-access-token:synthetic@github.com/owner/repository.git", "Owner/Repository", "feature").is_ok());
+        assert!(super::reviewed_sync_root(root, "https://x-access-token:synthetic@github.com/other/repository.git", "owner/repository", "feature").is_err());
+        assert!(super::reviewed_sync_root(root, "https://github.com/owner/repository.git", "owner/another", "feature").is_err());
+        assert!(super::git(Some(&directory.0), ["remote", "set-url", "origin", "https://github.com/other/repository.git"]).unwrap().status.success());
+        assert!(super::reviewed_sync_root(root, "https://github.com/owner/repository.git", "owner/repository", "feature").is_err());
+    }
+
+    #[test]
+    fn sync_rejects_an_external_branch_switch_after_review() {
+        let directory = sync_fixture();
+        assert!(super::git(Some(&directory.0), ["symbolic-ref", "HEAD", "refs/heads/main"]).unwrap().status.success());
+        assert!(super::reviewed_sync_root(directory.0.to_str().unwrap(), "https://github.com/owner/repository.git", "owner/repository", "feature").is_err());
+    }
+
+    #[test]
+    fn push_refspec_pins_the_reviewed_branch_without_head_or_force() {
+        assert_eq!(super::reviewed_push_refspec("feature/reviewed"), "refs/heads/feature/reviewed:refs/heads/feature/reviewed");
+    }
+
+    #[tokio::test]
+    async fn reviewed_refspec_round_trip_preserves_branch_selection_on_an_owned_local_remote() {
+        // Git alone rewrites this synthetic GitHub URL to an owned local bare
+        // repository. No credentials or external network access are involved.
+        let directory = sync_fixture();
+        let remote = OwnedDirectory::new();
+        let peer = OwnedDirectory::new();
+        let run = |root: &std::path::Path, args: &[&str]| {
+            super::output_text(super::git(Some(root), args.iter().copied()).unwrap(), None).unwrap()
+        };
+        run(&remote.0, &["init", "--bare"]);
+        // Even a future guard regression must never reach the network in this fixture.
+        run(&directory.0, &["config", "protocol.https.allow", "never"]);
+        run(&directory.0, &["config", "user.name", "Axiom Local Acceptance"]);
+        run(&directory.0, &["config", "user.email", "acceptance@example.invalid"]);
+        std::fs::write(directory.0.join("workflow.txt"), "initial").unwrap();
+        run(&directory.0, &["add", "workflow.txt"]);
+        run(&directory.0, &["commit", "-m", "initial fixture"]);
+        let local_remote = format!("file://{}", remote.0.display());
+        let rewrite = format!("url.{}.insteadOf", local_remote);
+        let synthetic_url = "https://github.com/owner/repository.git";
+        run(&directory.0, &["config", &rewrite, synthetic_url]);
+        // URL rewriting changes get-url's effective origin; the native command
+        // correctly refuses this substituted target rather than treating it as GitHub.
+        assert!(super::push_repository(directory.0.to_string_lossy().into_owned(), synthetic_url.into(), "owner/repository".into(), "feature".into()).await.unwrap_err().contains("origin or credential target changed"));
+        run(&directory.0, &["push", &local_remote, &super::reviewed_push_refspec("feature")]);
+        let first_head = run(&directory.0, &["rev-parse", "HEAD"]);
+        assert_eq!(run(&remote.0, &["rev-parse", "refs/heads/feature"]), first_head);
+        assert!(super::git(Some(&remote.0), ["show-ref", "--verify", "refs/heads/main"]).unwrap().status.code() != Some(0));
+
+        run(&peer.0, &["clone", "--branch", "feature", &local_remote, "."]);
+        run(&peer.0, &["config", "user.name", "Axiom Local Acceptance"]);
+        run(&peer.0, &["config", "user.email", "acceptance@example.invalid"]);
+        std::fs::write(peer.0.join("workflow.txt"), "remote update").unwrap();
+        run(&peer.0, &["add", "workflow.txt"]);
+        run(&peer.0, &["commit", "-m", "remote fixture update"]);
+        run(&peer.0, &["push", "origin", "feature"]);
+        // Exercise the real local Git fetch/fast-forward mechanism separately;
+        // this does not claim native GitHub network acceptance.
+        run(&directory.0, &["fetch", &local_remote, "+refs/heads/feature:refs/remotes/origin/feature"]);
+        run(&directory.0, &["merge", "--ff-only", "refs/remotes/origin/feature"]);
+        assert_eq!(std::fs::read_to_string(directory.0.join("workflow.txt")).unwrap(), "remote update");
+        assert_eq!(run(&directory.0, &["rev-parse", "HEAD"]), run(&peer.0, &["rev-parse", "HEAD"]));
+
+        run(&directory.0, &["config", "--unset", &rewrite]);
+        run(&directory.0, &["switch", "-c", "unreviewed"]);
+        assert!(super::push_repository(directory.0.to_string_lossy().into_owned(), synthetic_url.into(), "owner/repository".into(), "feature".into()).await.unwrap_err().contains("branch changed"));
+        assert!(super::git(Some(&remote.0), ["show-ref", "--verify", "refs/heads/unreviewed"]).unwrap().status.code() != Some(0));
     }
 
     #[test]
@@ -378,6 +644,166 @@ mod tests {
         assert!(super::write_existing_repository_file(&directory.0, "link.txt", "draft", "outside").is_err());
         assert!(super::write_existing_repository_file(&directory.0, "escape/file.txt", "draft", "outside").is_err());
         assert_eq!(std::fs::read_to_string(outside.0.join("file.txt")).unwrap(), "outside");
+    }
+
+    #[test]
+    fn scoped_git_credentials_never_appear_in_command_arguments() {
+        let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        let scoped = super::scoped_git_command(None, &["clone", "--", url, "owned-destination"], url).unwrap();
+        let arguments = scoped.command.get_args().map(|value| value.to_string_lossy()).collect::<Vec<_>>().join(" ");
+        assert!(!arguments.contains("ghs_SYNTHETIC_ONLY"));
+        assert!(!arguments.contains("x-access-token:"));
+        assert!(arguments.contains("https://github.com/owner/repository.git"));
+    }
+
+    #[test]
+    fn scoped_git_uses_ephemeral_url_scoped_authentication_without_writing_config() {
+        let directory = OwnedDirectory::new();
+        let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        let clean = "https://github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0), &["config", "--get-urlmatch", "http.extraHeader", clean], url).unwrap();
+        // This fixture must not inspect the operator's global Git configuration.
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", if cfg!(windows) { "NUL" } else { "/dev/null" });
+        let output = scoped.command.output().unwrap();
+        assert!(output.status.success());
+        let header = scoped.authorization.as_ref().expect("Missing scoped authorization");
+        assert!(String::from_utf8_lossy(&output.stdout).contains(header));
+        assert!(!directory.0.join(".gitconfig").exists());
+    }
+
+    #[test]
+    fn scoped_git_scoped_redirect_policy_defeats_an_existing_specific_override() {
+        let directory = OwnedDirectory::new();
+        let global = directory.0.join("owned-config");
+        std::fs::write(&global, "[http \"https://github.com/owner/repository.git\"]\n followRedirects = true\n").unwrap();
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0),
+            &["config", "--get-urlmatch", "http.followRedirects", "https://github.com/owner/repository.git"], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
+        let output = scoped.command.output().unwrap();
+        assert!(output.status.success());
+        assert_eq!(String::from_utf8_lossy(&output.stdout).trim(), "false");
+    }
+
+    #[test]
+    fn scoped_git_explicitly_removes_inherited_askpass_programs() {
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let scoped = super::scoped_git_command(None, &["fetch", url], url).unwrap();
+        for key in ["GIT_ASKPASS", "SSH_ASKPASS"] {
+            let setting = scoped.command.get_envs().find(|(name, _)| *name == std::ffi::OsStr::new(key));
+            assert!(matches!(setting, Some((_, None))), "An inherited askpass program was not disabled");
+        }
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn scoped_git_does_not_execute_a_configured_askpass_program() {
+        use std::os::unix::fs::PermissionsExt;
+        use std::io::Write;
+        let directory = OwnedDirectory::new();
+        let askpass = directory.0.join("owned-askpass");
+        let marker = directory.0.join("asked");
+        let global = directory.0.join("owned-config");
+        std::fs::write(&askpass, format!("#!/bin/sh\nprintf invoked > '{}'\nprintf synthetic\n", marker.display())).unwrap();
+        std::fs::set_permissions(&askpass, std::fs::Permissions::from_mode(0o700)).unwrap();
+        std::fs::write(&global, format!("[core]\n askPass = {}\n", askpass.display())).unwrap();
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0), &["credential", "fill"], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global)
+            .stdin(std::process::Stdio::piped()).stdout(std::process::Stdio::piped()).stderr(std::process::Stdio::piped());
+        let mut child = scoped.command.spawn().unwrap();
+        child.stdin.take().unwrap().write_all(b"protocol=https\nhost=github.com\npath=owner/repository.git\n\n").unwrap();
+        let output = child.wait_with_output().unwrap();
+        assert!(!output.status.success());
+        assert!(!marker.exists(), "Configured askpass executed during scoped authentication");
+    }
+
+    #[test]
+    fn scoped_git_clone_records_only_the_credential_free_origin() {
+        let remote = OwnedDirectory::new();
+        let parent = OwnedDirectory::new();
+        assert!(super::git(Some(&remote.0), ["init", "--bare"]).unwrap().status.success());
+        let destination = parent.0.join("clone");
+        let global = parent.0.join("owned-config");
+        std::fs::write(&global, format!("[url \"file://{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", remote.0.display())).unwrap();
+        let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(None,
+            &["clone", "--", url, destination.to_str().unwrap()], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
+        assert!(scoped.command.output().unwrap().status.success());
+        let stored = std::fs::read_to_string(destination.join(".git/config")).unwrap();
+        assert!(!stored.contains("ghs_SYNTHETIC_ONLY"));
+        assert!(!stored.contains("x-access-token:"));
+        assert!(stored.contains("https://github.com/owner/repository.git"));
+    }
+
+    #[test]
+    fn strips_url_decoded_password_diagnostics() {
+        let redacted = redact_credential("remote: synthetic-secret rejected",
+            "https://x-access-token:synthetic%2Dsecret@github.com/owner/repository.git");
+        assert!(!redacted.contains("synthetic-secret"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn scoped_git_filters_encoded_authorization_from_both_output_streams() {
+        use std::os::unix::process::ExitStatusExt;
+        let header = "Basic eDpzeW50aGV0aWM=";
+        let output = std::process::Output {
+            status: std::process::ExitStatus::from_raw(0),
+            stdout: format!("Authorization: {header}").into_bytes(),
+            stderr: b"encoded credential eDpzeW50aGV0aWM=".to_vec(),
+        };
+        let output = super::redact_scoped_output(output, Some(header));
+        assert!(!String::from_utf8_lossy(&output.stdout).contains("eDpzeW50aGV0aWM="));
+        assert!(!String::from_utf8_lossy(&output.stderr).contains("eDpzeW50aGV0aWM="));
+    }
+
+    #[test]
+    fn scoped_git_disables_configured_trace_destinations_for_secret_environment() {
+        let directory = OwnedDirectory::new();
+        let trace = directory.0.join("owned-trace.json");
+        let global = directory.0.join("owned-config");
+        std::fs::write(&global, format!("[trace2]\n eventTarget = {}\n envVars = GIT_CONFIG_VALUE_3\n", trace.display())).unwrap();
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0),
+            &["config", "--get-urlmatch", "http.extraHeader", "https://github.com/owner/repository.git"], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
+        assert!(scoped.command.output().unwrap().status.success());
+        assert!(!trace.exists(), "Credential-bearing invocation enabled a configured trace sink");
+    }
+
+    #[test]
+    fn scoped_git_header_does_not_match_another_repository() {
+        let directory = OwnedDirectory::new();
+        let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
+        let mut scoped = super::scoped_git_command(Some(&directory.0),
+            &["config", "--get-urlmatch", "http.extraHeader", "https://github.com/other/repository.git"], url).unwrap();
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", if cfg!(windows) { "NUL" } else { "/dev/null" });
+        let output = scoped.command.output().unwrap();
+        assert!(!output.status.success());
+        assert!(output.stdout.is_empty());
+    }
+
+    #[test]
+    fn strips_a_password_reported_without_the_username_or_url() {
+        let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        let redacted = redact_credential("remote: credential ghs_SYNTHETIC_ONLY was rejected", url);
+        assert!(!redacted.contains("ghs_SYNTHETIC_ONLY"));
+        assert!(redacted.contains("***"));
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn successful_git_output_cannot_return_the_scoped_token() {
+        use std::os::unix::process::ExitStatusExt;
+        let output = std::process::Output {
+            status: std::process::ExitStatus::from_raw(0),
+            stdout: b"remote response: ghs_SYNTHETIC_ONLY".to_vec(),
+            stderr: vec![],
+        };
+        let text = super::output_text(output, Some("https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git")).unwrap();
+        assert!(!text.contains("ghs_SYNTHETIC_ONLY"));
     }
 
     #[test]

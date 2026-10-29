@@ -213,6 +213,21 @@ export async function advancePipelineRun(runId: string): Promise<void> {
         return;
       }
 
+      if (run.pipelineId === "ai_coding" && stage.stageId === "code_gate") {
+        // Capture and store the exact artifact plus approval in one transaction.
+        // Never strand an awaiting_approval row before its bound snapshot exists.
+        if (stage.status !== "queued") return;
+        try {
+          await mintPipelineStageApproval({organizationId:run.organizationId,pipelineId:run.pipelineId,runId:run.id,stageRunId:stage.id,stageId:stage.stageId,stageName:"PR approval",requestedBy:run.triggeredBy,correlationId:run.correlationId});
+          return;
+        } catch {
+          const refused = await prisma.pipelineStageRun.updateMany({where:{id:stage.id,runId:run.id,status:"queued",approvalRequestId:null},data:{status:"failed",completedAt:new Date(),errorMessage:"The exact coding artifact and its validation could not be verified. No repository write was authorized."}});
+          if (refused.count !== 1) return;
+          await emitStageAudit(run,stage,"pipeline.stage_failed","failure",{error:"coding_artifact_approval_unavailable"});
+          continue;
+        }
+      }
+
       // Atomic CAS into awaiting_approval so concurrent advances don't
       // double-mint snapshots.
       const claim = await prisma.pipelineStageRun.updateMany({
@@ -282,26 +297,37 @@ export async function advancePipelineRun(runId: string): Promise<void> {
       continue;
     }
 
-    // Phase 400 + 401: cumulative cost budget gate. Halt the run if
-    // prior stages have already burned the configured budget, before we
-    // let the next (potentially-expensive) stage fire.
-    //
-    // Cap resolution (Phase 401): metadata > per-pipeline org override >
-    // org default > platform default. Workspace-level config loads
-    // fail-soft so a billing-DB blip falls through to the platform
-    // default rather than halting valid runs.
-    const spentBefore = await prisma.pipelineStageRun.aggregate({
-      where: { runId: run.id },
-      _sum: { costCents: true },
-    }).catch(() => ({ _sum: { costCents: 0 } }));
-    const orgConfig = await loadBudgetConfig(run.organizationId);
+    // Missing cost evidence or an unreadable workspace cap cannot authorize
+    // another stage. A verified absent override still uses the platform default.
+    let spentCents: number;
+    let orgConfig: Awaited<ReturnType<typeof loadBudgetConfig>>;
+    try {
+      const spentBefore = await prisma.pipelineStageRun.aggregate({
+        where: { runId: run.id },
+        _sum: { costCents: true },
+      });
+      spentCents = spentBefore._sum.costCents ?? 0;
+      if (!Number.isSafeInteger(spentCents) || spentCents < 0) throw new Error("invalid_run_cost");
+      orgConfig = await loadBudgetConfig(run.organizationId, { failClosedOnReadError: true });
+    } catch {
+      const message = "Run cost budget could not be verified. No stage execution was started.";
+      await prisma.pipelineStageRun.update({
+        where: { id: stage.id },
+        data: { status: "failed", completedAt: new Date(), errorMessage: message,
+          outputDetail: { budgetUnavailable: true } },
+      });
+      await emitStageAudit(run, stage, "pipeline.stage_failed", "failure", {
+        error: message, budgetUnavailable: true,
+      });
+      continue;
+    }
     const capResolution = resolveRunBudgetCap({
       pipelineId: run.pipelineId,
       runMetadata: (run.metadata && typeof run.metadata === "object" ? run.metadata as Record<string, unknown> : {}),
       orgConfig,
     });
     const budget = assertRunCostBudget({
-      spentCents: spentBefore._sum.costCents ?? 0,
+      spentCents,
       maxCents: capResolution.maxCents,
     });
     if (!budget.allowed) {

@@ -1,0 +1,8 @@
+import {describe,it,expect} from 'vitest';
+import {execFileSync} from 'node:child_process';
+import path from 'node:path';
+describe('AWS local Lambda callback protocol',()=>{it('one callback and one CFN ACK; deletion never replays connection',()=>{
+ const source=path.resolve('lib/cloud/aws/guided/callbackLambda.py');
+ const script=`import sys,types,os,runpy,json\nos.environ['AWS_REGION']='us-east-2'\nsys.modules['botocore.config']=types.SimpleNamespace(Config=lambda **k:k)\nsys.modules['boto3']=types.SimpleNamespace(client=lambda *a,**k:types.SimpleNamespace(generate_presigned_url=lambda *a,**k:'https://sts.us-east-2.amazonaws.com/?synthetic=1'))\nm=runpy.run_path(sys.argv[1]);calls=[]\nclass R:\n status=200\n def __enter__(self):return self\n def __exit__(self,*a):pass\n def read(self,n):return b'{}'\nclass O:\n def open(self,req,timeout):calls.append((req.full_url,req.method,json.loads(req.data)));return R()\nm['urllib'].request.build_opener=lambda *a:O()\ne={'RequestType':'Create','ResourceProperties':{'FlowId':'aws_flow_'+'a'*64},'StackId':'stack','RequestId':'request','LogicalResourceId':'logical','ResponseURL':'https://cloudformation-custom-resource-response-useast2.s3.us-east-2.amazonaws.com/path?signed=synthetic'}\nm['handler'](e,None)\nassert len(calls)==2 and calls[0][1]=='POST' and calls[1][1]=='PUT' and calls[1][2]['Status']=='SUCCESS'\nassert set(calls[0][2])=={'flowId','proof'} and 'signedIdentityRequest' in calls[0][2]['proof']\ncalls.clear();e['RequestType']='Delete';m['handler'](e,None)\nassert len(calls)==1 and calls[0][1]=='PUT'\nprint('local callback protocol PASS')`;
+ expect(execFileSync('python3',['-c',script,source],{encoding:'utf8'})).toContain('PASS');
+});});

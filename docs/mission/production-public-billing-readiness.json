@@ -1,0 +1,237 @@
+{
+  "date": "2026-10-22",
+  "account": "acct_1SpEdeFet66ERY29",
+  "livemode": true,
+  "state": "fulfillment_implemented_validated_pending_release",
+  "free": {
+    "priceCents": 0,
+    "stripeSubscriptionRequired": false,
+    "seats": 2,
+    "monthlyDeployments": 10,
+    "monthlyAICreditsCents": 200
+  },
+  "paid": {
+    "pro": {
+      "product": "axiom_pro_v1",
+      "monthlyPrice": "price_1UTBpKFet66ERY29V4FIAMwo",
+      "monthlyUnitAmountCents": 2900,
+      "annualPrice": "price_1UTBq1Fet66ERY29FCpChCbk",
+      "annualUnitAmountCents": 27840,
+      "monthlyDeployments": 100,
+      "monthlyAICreditsCentsPerSeat": 1000
+    },
+    "enterprise": {
+      "product": "axiom_enterprise_v1",
+      "monthlyPrice": "price_1UTBpPFet66ERY29wy58WfoC",
+      "monthlyUnitAmountCents": 7900,
+      "annualPrice": "price_1UTBq4Fet66ERY29ihnYo6OY",
+      "annualUnitAmountCents": 75840,
+      "monthlyDeployments": 500,
+      "monthlyAICreditsCentsPerSeat": 3000
+    }
+  },
+  "controls": {
+    "bothProductsActive": false,
+    "annualPricesActive": false,
+    "monthlyPricesActive": true,
+    "productionEnvChanged": true,
+    "checkoutEnabledByThisTask": false,
+    "customerOrSubscriptionChanged": false,
+    "chargedCustomers": false,
+    "supportWebhookChanged": false
+  },
+  "validation": {
+    "targetedTestsPassed": 77,
+    "realPaidCheckoutAcceptance": false,
+    "independentReview": "billing_bridge_financial_review confirmed production entitlement mismatch"
+  },
+  "nextSequence": [
+    "Implement versioned opt-in public-plan production contract; preserve legacy existing customers and support.",
+    "Integrate paid coverage, seat-scaled anniversary allowance and Free-to-paid bucket separation with production reservation/admission paths; test subscription update/cancel/refund/replay/concurrency.",
+    "Verify production schema without running blanket migrations; rehearse exact schema changes if needed.",
+    "Configure dedicated subscription webhook + securely bind separate signing secret and four existing price IDs; keep secrets out of chat/source.",
+    "Run isolated end-to-end acceptance, independently review, deploy verified bridge, activate prepared catalog and enable checkout only when fulfillment is verified."
+  ],
+  "desktopVersion": {
+    "liveManifestTag": "desktop-v0.1.20",
+    "source": "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.20",
+    "explanation": "Website deployment does not publish a new signed desktop installer. Keep actual published version until validated release assets exist."
+  },
+  "localFollowup": {
+    "checkoutPriceVerification": "Retrieve exact configured Stripe price+expanded product; require published USD amount, interval, per-unit licensed seats, mode, active price and product before session creation. No sales flag enabled.",
+    "downloadHistory": "Latest desktop installer label plus up to 10 older public stable releases with installers, newest publication first, canonical release links; no unpublished version label.",
+    "tests": {
+      "checkoutAndPriceTestsPassed": 52,
+      "releaseManifestAndFirstRunTestsPassed": 23,
+      "typescript": "pass with standard project 6GiB heap; default 4GiB process exhausted heap",
+      "eslint": "pass",
+      "independentSourceReview": "pass; agent_readiness_review",
+      "nativeReleaseGuardSuite": "blocked before all 34 tests: synthetic gpg key generation exited 2; not waived or claimed passed"
+    },
+    "queuedAfterBilling": "Unify personal settings/profile/paired-device management into first screenshot Axiom Control shell; preserve auth, authorization, API routes and deep links."
+  },
+  "productionConfiguration": {
+    "accountId": "acct_1SpEdeFet66ERY29",
+    "id": "we_1UTCaWFet66ERY29kxhKcAg4",
+    "url": "https://visionxixlabs.com/api/billing/stripe-webhook",
+    "apiVersion": "2024-06-20",
+    "events": [
+      "checkout.session.completed",
+      "checkout.session.async_payment_succeeded",
+      "customer.subscription.created",
+      "customer.subscription.updated",
+      "customer.subscription.deleted",
+      "invoice.paid",
+      "invoice.payment_failed",
+      "charge.refunded"
+    ],
+    "status": "disabled",
+    "secretBound": true,
+    "configKeysBound": [
+      "STRIPE_WEBHOOK_SECRET",
+      "STRIPE_PRICE_PRO_MONTHLY",
+      "STRIPE_PRICE_PRO_ANNUAL",
+      "STRIPE_PRICE_ENTERPRISE_MONTHLY",
+      "STRIPE_PRICE_ENTERPRISE_ANNUAL",
+      "AXIOM_STRIPE_MODE",
+      "AXIOM_LIVE_BILLING_APPROVED",
+      "AXIOM_SELF_SERVICE_BILLING_ENABLED"
+    ],
+    "salesEnabled": false,
+    "metadataVerified": [
+      {
+        "name": "AXIOM_SELF_SERVICE_BILLING_ENABLED",
+        "targets": [
+          "production"
+        ],
+        "type": "encrypted"
+      },
+      {
+        "name": "AXIOM_LIVE_BILLING_APPROVED",
+        "targets": [
+          "production"
+        ],
+        "type": "encrypted"
+      },
+      {
+        "name": "AXIOM_STRIPE_MODE",
+        "targets": [
+          "production"
+        ],
+        "type": "encrypted"
+      },
+      {
+        "name": "STRIPE_PRICE_ENTERPRISE_ANNUAL",
+        "targets": [
+          "production"
+        ],
+        "type": "encrypted"
+      },
+      {
+        "name": "STRIPE_PRICE_ENTERPRISE_MONTHLY",
+        "targets": [
+          "production"
+        ],
+        "type": "encrypted"
+      },
+      {
+        "name": "STRIPE_PRICE_PRO_ANNUAL",
+        "targets": [
+          "production"
+        ],
+        "type": "encrypted"
+      },
+      {
+        "name": "STRIPE_PRICE_PRO_MONTHLY",
+        "targets": [
+          "production"
+        ],
+        "type": "encrypted"
+      },
+      {
+        "name": "STRIPE_WEBHOOK_SECRET",
+        "targets": [
+          "production"
+        ],
+        "type": "sensitive"
+      }
+    ],
+    "state": "configured_but_disabled_pending_production_fulfillment"
+  },
+  "productionAllowanceFoundation": {
+    "commit": "c3263faa76747263e1af3a2850cd223e26a73769",
+    "mounted": true,
+    "authoritative": true,
+    "focusedTestsPassed": 84,
+    "lint": "pass",
+    "typescript": "whole-project passed before constant-only review fix",
+    "independentReview": "PASS; catalog drift finding corrected; no activation readiness claim",
+    "note": "Authoritative only in the explicitly enabled versioned public runtime after deployment; legacy customers preserved."
+  },
+  "authorization": "Owner authorization is established for necessary billing work, final push and deployment. No further routine approval requested. Remaining blocker is incomplete application implementation, not a missing owner authorization.",
+  "historicalImplementationBlockers": [
+    "Dedicated subscription webhook and secure Production-only secret binding now exist; endpoint and self-service flag deliberately remain disabled until production entitlement/paid-coverage bridge is implemented and validated.",
+    "Production planForStripeTier grants legacy flat AI pools: default 2500c, Growth 20000c, Enterprise 500000c; public promised pools are 200c, 1000c times seats, 3000c times seats.",
+    "Production paid seatQuantity does not determine AI allowance. Anniversary policy/full first paid allowance and original Free bucket separation remain TEST-isolated.",
+    "Must prove purchase -> signed subscription/invoice reconciliation -> paid coverage -> correct seat/AI/deployment enforcement before enabling sales.",
+    "Do not migrate or reprice existing subscriptions or repurpose unrelated VisaNova products/support webhook."
+  ],
+  "blockers": [
+    "Production source release, catalog/webhook activation and live smoke verification remain pending. No real live customer payment-to-access test has been performed."
+  ],
+  "remainingImplementationHistorical": [
+    "Production enrollment/intent/contract/immutable invoice and current coverage storage with durable constraints; existing TEST sidecars must stay isolated",
+    "Atomic original Checkout attempt/receipt and organization purchase fence; unknown outcomes cannot create duplicate subscriptions",
+    "Versioned live webhook dispatch with original intent/create proof and current collected invoice/payment/service-period evidence; account/API-version boundaries verified",
+    "Mount locked credit reservation/dispatch/settlement and immutable included/purchased attribution; Free-to-paid buckets remain separate",
+    "Seat/deployment/readback readers use the same public contract; preserve legacy customers",
+    "Validate rollback/concurrency/lost response/refund/cancel/replay plus complete hosted payment-to-access before sales"
+  ],
+  "remainingImplementation": [],
+  "fulfillmentValidation": {
+    "base": "ebb4803140f6a4c07ad14f4f96dc578191e9ee55",
+    "testsPassed": 9415,
+    "testsFailed": 0,
+    "testsSkipped": 35,
+    "connectedHttpPostgresCases": 3,
+    "isolatedSqlCases": 15,
+    "rootTypes": "passed",
+    "desktopTypes": "passed",
+    "changedSourceLint": "passed",
+    "hostedStripeTest": {
+      "passed": true,
+      "twoSeatsPriceCents": 5800,
+      "grantedAiCents": 2000,
+      "duplicateEventIgnored": true,
+      "refundRevokedAccess": true,
+      "boundaries": "Actual hosted Chrome/Stripe TEST objects; fixture authentication/account identity/webhook transport; isolated PostgreSQL/WASM."
+    },
+    "productionSchema": {
+      "applied": true,
+      "sqlSha256": "66871aee46f95aeed574415ce9c951ee18b86a5e24a2e03f39360b53e536365d",
+      "newTableCount": 6,
+      "guardCount": 5,
+      "enrollmentCount": 0,
+      "legacyBillingRowsPreserved": 2,
+      "existingAddOnRows": 0,
+      "unresolvedPrismaMigrationRows": 1,
+      "snapshotPreserved": "snap-falling-wildflower-aif6heir",
+      "neonRestoreRehearsal": false
+    },
+    "portalConfiguration": "bpc_1UTN9wFet66ERY29IlY5XbRH",
+    "liveCustomerPurchaseTested": false,
+    "independentAgentReview": "not claimed; source/security review performed in this session"
+  },
+  "releaseValidation": {
+    "passedTests": 9415,
+    "skippedTests": 35,
+    "failedTests": 0,
+    "rootTypeScript": "passed",
+    "desktopTypeScript": "passed",
+    "changedSourceLint": "passed",
+    "productionBuild": "passed",
+    "hostedStripeTestCheckout": "passed with isolated auth/database/event transport",
+    "livePaidCustomerAcceptance": false,
+    "installedNewDesktopAcceptance": false
+  }
+}

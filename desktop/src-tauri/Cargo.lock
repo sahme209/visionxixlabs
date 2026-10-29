@@ -226,11 +226,12 @@ checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
 name = "axiom-desktop"
-version = "0.1.20"
+version = "0.1.21"
 dependencies = [
  "chrono",
  "keyring",
  "libc",
+ "percent-encoding",
  "reqwest 0.12.28",
  "serde",
  "serde_json",

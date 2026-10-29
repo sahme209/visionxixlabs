@@ -15,6 +15,9 @@ export function isTenantIntegrationProvider(value: string): value is TenantInteg
   return (TENANT_INTEGRATION_PROVIDERS as readonly string[]).includes(value);
 }
 
+/** Staged OAuth providers are not advertised as usable connections. */
+export type TenantIntegrationAuthorizationProvider = TenantIntegrationProvider | "jira" | "servicenow";
+
 export interface AuthorizationState {
   state: string;
   stateDigest: string;
@@ -49,16 +52,20 @@ export function digestAuthorizationState(state: string): string {
 /** Binds an authorization-flow secret to the exact org and integration. */
 export function authorizationCredentialContext(input: {
   organizationId: string;
-  provider: TenantIntegrationProvider;
+  provider: TenantIntegrationAuthorizationProvider;
   stateDigest: string;
 }): string {
   return `tenant-integration-auth-v1:${input.organizationId}:${input.provider}:${input.stateDigest}`;
 }
 
+/** Stored ticket credentials can use the vault before OAuth setup is registered.
+ * This type does not advertise an integration or grant any provider scope. */
+export type TenantCredentialProvider = TenantIntegrationProvider | "jira" | "servicenow";
+
 /** Binds a persisted credential to its immutable connection record. */
 export function connectionCredentialContext(input: {
   organizationId: string;
-  provider: TenantIntegrationProvider;
+  provider: TenantCredentialProvider;
   connectionId: string;
 }): string {
   return `tenant-integration-credential-v1:${input.organizationId}:${input.provider}:${input.connectionId}`;

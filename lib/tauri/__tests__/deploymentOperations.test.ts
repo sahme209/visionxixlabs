@@ -192,6 +192,27 @@ describe("deployment state machine", () => {
 });
 
 describe("generatePlaybook", () => {
+  it("copies exact batch selection into the governed playbook without mutable run aliases", () => {
+    const intake = validIntake();
+    intake.airflowDependency = { connectionId: "connection", connectionUpdatedAt: "2026-10-24T00:00:00.000Z", runs: [{ dagId: "daily", dagRunId: "selected", logicalDate: "2026-10-24T00:00:00Z" }] };
+    const playbook = generatePlaybook(intake, "2026-10-24T00:00:00Z");
+    expect(playbook.airflowDependency).toEqual(intake.airflowDependency);
+    intake.airflowDependency.runs[0].dagRunId = "changed";
+    expect(playbook.airflowDependency?.runs[0].dagRunId).toBe("selected");
+  });
+
+  it("copies the observed workflow identity into the playbook without granting execution", () => {
+    const intake = validIntake();
+    intake.workflowSource = { repositoryFullName: "team/service", ref: "main", path: ".github/workflows/release.yml", blobSha: "a".repeat(40) };
+    const playbook = generatePlaybook(intake, "2026-10-24T00:00:00Z");
+    expect(playbook.workflowSource).toEqual(intake.workflowSource);
+    expect(playbook.workflowSource).not.toBe(intake.workflowSource);
+    expect(playbook.steps.every(step => step.requiresHumanConfirmation)).toBe(true);
+    intake.workflowSource.blobSha = "b".repeat(40);
+    expect(playbook.workflowSource?.blobSha).toBe("a".repeat(40));
+    expect(generatePlaybook(validIntake(), "2026-10-24T00:00:00Z")).not.toHaveProperty("workflowSource");
+  });
+
   it("preserves separate technical and functional validation ownership", () => {
     const intake = validIntake();
     intake.validationSteps = [

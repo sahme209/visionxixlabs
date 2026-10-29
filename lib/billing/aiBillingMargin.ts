@@ -26,5 +26,9 @@ export function applyMargin(providerCostCents: number): number {
   if (!Number.isSafeInteger(providerCostCents) || providerCostCents < 0) {
     throw new Error("provider_cost_cents_invalid");
   }
-  return Math.round(providerCostCents * AI_CUSTOMER_USAGE_MARGIN_MULT);
+  const customerCents = Math.round(providerCostCents * AI_CUSTOMER_USAGE_MARGIN_MULT);
+  if (!Number.isSafeInteger(customerCents)) {
+    throw new Error("customer_billed_cents_invalid");
+  }
+  return customerCents;
 }

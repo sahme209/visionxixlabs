@@ -53,6 +53,10 @@ interface ResolveOptions {
      * immediately. Scoped API-key automation remains a separate authority.
      */
     requireWorkspaceMembership?: boolean;
+    /** Read-only authority rechecks may run while the caller holds session locks.
+     * Authentication, membership and entitlement checks still run; only the
+     * incidental lastSeenAt write is omitted. Server option, never request input. */
+    recordHeartbeat?: boolean;
 }
 
 async function readActiveWorkspaceRole(userId: string, organizationId: string): Promise<DesktopWorkspaceRole | null> {
@@ -204,7 +208,7 @@ export async function resolveRequestDesktopSession(
             });
             return undefined;
         }
-        await touchDesktopSession(session.id);
+        if (options.recordHeartbeat !== false) await touchDesktopSession(session.id);
         const principal: DesktopRequestPrincipal = {
             id: session.id,
             userId: session.userId,

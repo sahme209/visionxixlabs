@@ -15,10 +15,10 @@ export function TeamInviteButton() {
   return (
     <button
       type="submit"
-      className="text-[11px] font-mono uppercase tracking-wider px-4 py-2 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors inline-flex items-center gap-1.5"
+      className="inline-flex h-8 items-center gap-2 rounded-lg bg-zinc-100 px-3 text-xs font-medium text-zinc-900 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400"
     >
       <UserPlusIcon className="h-3.5 w-3.5" />
-      mint invite →
+      Create invitation link
     </button>
   );
 }

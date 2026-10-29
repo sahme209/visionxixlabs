@@ -10,13 +10,15 @@
  * this returns, for a complete audit trail even for read-only actions.
  */
 
+import { randomUUID } from "node:crypto";
+import {CONVERSATION_PROMPT_LIMITS} from "@/lib/axiom/agentRuntime/conversationPromptBudget";
 import { resolveAgentProfile } from "@/lib/axiom/agentRuntime/agentProfiles";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { NextResponse, type NextRequest } from "next/server";
 import type { Prisma } from "@prisma/client";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { agentMessageHttpStream } from "@/lib/desktop/agentMessageHttpStream";
-import { AGENT_STREAM_CONTENT_TYPE } from "@/lib/desktop/agentMessageStreamProtocol";
+import { isAgentMessageIssue, AGENT_STREAM_CONTENT_TYPE, AGENT_TOOL_ACTIVITY_FEATURE, type AgentMessageExecutionStream } from "@/lib/desktop/agentMessageStreamProtocol";
 import { isConcreteGatewayModelId } from "@/lib/ai/gatewayModelCatalog";
 import { prisma } from "@/lib/db";
 import { agentActionDigest, approvalExpiry } from "@/lib/axiom/agentRuntime/proposalIntegrity";
@@ -38,14 +40,16 @@ export const runtime = "nodejs";
 const AI_ERROR_MESSAGES: Record<string, string> = {
   workspace_ai_disabled: "AI isn't enabled for this workspace yet. A workspace admin can turn it on under AI provider settings.",
   workspace_ai_provider_unavailable: "No AI provider is approved for this workspace. A workspace admin needs to approve one first.",
+  workspace_ai_output_bound_unverified: "This multi-agent model has not demonstrated an enforceable output budget. Choose another enabled model. No model request was sent.",
   workspace_ai_model_not_allowed: "That model is not enabled for this workspace. Choose an enabled model or ask a workspace admin to update Models.",
   workspace_ai_policy_unavailable: "Couldn't load this workspace's AI provider policy right now. Try again shortly.",
   workspace_ai_credit_meter_unavailable: "Couldn't verify remaining AI usage for this workspace right now. Try again shortly.",
-  workspace_ai_credit_pool_exhausted: "This workspace has used its available AI credits for this period.",
+  workspace_ai_credit_pool_exhausted: "I couldn't reserve enough available AI credits for this request. No model request was sent for this step. Review Plan & usage; the required request hold may exceed the remaining balance.",
   workspace_agent_disabled: "The workspace Agent is disabled by organization policy. An owner can enable it in Axiom Control.",
   workspace_agent_policy_unavailable: "I couldn't verify this workspace's Agent permissions, so no AI or tool action was attempted.",
   agent_tool_not_allowed: "Organization policy does not allow this Agent to use the requested tool.",
   decision_malformed: "I couldn't form a safe action from the model response after retrying. No change was made. Try once more or choose a different enabled model.",
+  invalid_decision_limit: "Choose a model-call limit between 1 and 6.",
   max_iterations_exceeded: "This request needed too many steps to resolve — try breaking it into a smaller request.",
 };
 
@@ -65,7 +69,14 @@ function initialRepositoryGrounding(input: {
     };
   }
 
-  const broadRepositoryIntent = /\b(review|analy[sz]e|audit|inspect|improve|issues?|problems?|changes?|help)\b|what should i|what can i/i.test(input.message);
+  // A selected repository is context, not permission to inspect it for an
+  // unrelated request. Negative instructions such as "do not propose changes"
+  // must not become an affirmative repository-review shortcut.
+  const broadRepositoryIntent = input.message.split(/[.!?;\n]+/).some(clause =>
+    !/\b(?:do not|don['’]t|never|no)\b/i.test(clause)
+    && /\b(?:repo(?:sitory)?|codebase|source code)\b/i.test(clause)
+    && /\b(?:review|analy[sz]e|audit|inspect|improve|issues?|problems?|changes?|help)\b|what should i|what can i/i.test(clause),
+  );
   if (!broadRepositoryIntent) return undefined;
   return {
     toolName: "inspect_github_repository",
@@ -98,6 +109,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const body = (await request.json().catch(() => null)) as {
     message?: unknown;
+    streamFeatures?: unknown;
     preferredProvider?: unknown;
     preferredModel?: unknown;
     workspaceContext?: {
@@ -107,6 +119,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       filePath?: unknown;
       mode?: unknown;
       operationMode?: unknown;
+      maxDecisionSteps?: unknown;
       agentProfile?: unknown;
     };
   } | null;
@@ -119,12 +132,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (preferredModel !== undefined && (!isConcreteGatewayModelId(preferredModel) || preferredProvider !== "vercel_gateway")) {
     return NextResponse.json({ ok: false, error: "invalid_preferred_model" }, { status: 400 });
   }
-  if (!message) {
+  if (!message || Buffer.byteLength(message, "utf8") > CONVERSATION_PROMPT_LIMITS.currentRequestBytes) {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
 
   const selectedModel = typeof preferredModel === "string" ? preferredModel : undefined;
   const rawContext = body?.workspaceContext;
+  const maxDecisionSteps = rawContext?.maxDecisionSteps;
+  if (maxDecisionSteps !== undefined && (typeof maxDecisionSteps !== "number" || !Number.isInteger(maxDecisionSteps) || maxDecisionSteps < 1 || maxDecisionSteps > 6)) {
+    return NextResponse.json({ ok: false, error: "invalid_decision_limit" }, { status: 400 });
+  }
   const repositoryFullName = typeof rawContext?.repositoryFullName === "string" ? rawContext.repositoryFullName.trim() : "";
   const branch = typeof rawContext?.branch === "string" ? rawContext.branch.trim() : "";
   const environmentId = typeof rawContext?.environmentId === "string" ? rawContext.environmentId.trim() : "";
@@ -150,10 +167,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     return NextResponse.json({ ok: false, error: "invalid_workspace_context" }, { status: 400 });
   }
 
-  async function execute(streaming?: { abortSignal: AbortSignal; onDraft: (text: string) => void }): Promise<Response> {
+  async function execute(streaming?: AgentMessageExecutionStream): Promise<Response> {
     streaming?.abortSignal.throwIfAborted();
-    const correlationId = idFactory.correlation(`agent_msg_${Date.now().toString(36)}`);
-    await prisma.$transaction([
+    const correlationId = idFactory.correlation(`agent_msg_${randomUUID()}`);
+    const [currentUserTurn] = await prisma.$transaction([
       prisma.agentConversationTurn.create({ data: { conversationId, role: "user", content: message } }),
       prisma.agentConversation.update({
         where: { id: conversationId },
@@ -169,7 +186,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       organizationId, actorUserId: String(actor.userId), correlationId: String(correlationId),
       kind: "agent.profile_selected", subjectKind: "agent_conversation", subjectId: conversationId,
       summary: `Selected ${profile.label}`,
-      detailJson: { agentProfile: profile.id, operationMode },
+      detailJson: { agentProfile: profile.id, operationMode, ...(maxDecisionSteps !== undefined ? { maxDecisionSteps } : {}) },
     });
     streaming?.abortSignal.throwIfAborted();
     const invokedSkillId = parseSkillInvocation(message);
@@ -195,8 +212,22 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       skillContext = "Skills are temporarily unavailable; continue using the fixed governed tool registry only.";
     }
 
-    const priorTurns = await prisma.agentConversationTurn.findMany({ where: { conversationId }, orderBy: { createdAt: "asc" } });
-    const transcript: ConversationTurnInput[] = priorTurns.map((t) => ({ role: t.role as ConversationTurnInput["role"], content: t.content }));
+    const priorTurns = await prisma.agentConversationTurn.findMany({
+      where: { conversationId }, orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+      take: CONVERSATION_PROMPT_LIMITS.historyTurns + 1,
+      select: { id: true, role: true, content: true },
+    });
+    // The extra row is a sentinel: short retained turns must still disclose
+    // that the persisted conversation contains earlier, unseen context.
+    const earlierHistoryOmitted = priorTurns.length > CONVERSATION_PROMPT_LIMITS.historyTurns
+      || priorTurns.filter(turn => turn.id !== currentUserTurn.id).length > CONVERSATION_PROMPT_LIMITS.historyTurns - 1;
+    // Explicitly pin this request even when equal timestamps sort it outside the
+    // newest tail. Never re-send the same persisted turn twice.
+    const transcript: ConversationTurnInput[] = priorTurns.reverse()
+      .filter(turn => turn.id !== currentUserTurn.id)
+      .slice(-(CONVERSATION_PROMPT_LIMITS.historyTurns - 1))
+      .map(turn => ({ role: turn.role as ConversationTurnInput["role"], content: turn.content }));
+    transcript.push({ role: "user", content: message });
     const selectedContext = [
       repositoryFullName ? `Repository: ${repositoryFullName}` : null,
       branch ? `Branch: ${branch}` : null,
@@ -208,7 +239,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     let currentRequestContext: string | undefined;
     if (selectedContext.length > 0 && transcript.length > 0) {
       const instruction = mode === "code"
-        ? "The user selected Edit repository file mode. Read the selected file first. If a change is needed, propose commit_github_file with the complete updated content and a clear commit message. Never claim the write completed before approval."
+        ? "The user selected Edit repository file mode. Read the selected file first. Read every affected existing file before proposing changes. If a change is needed, use commit_github_file for one file or commit_github_files for one coherent multi-file change, with complete updated contents and a clear commit message. Preserve the selected repository and branch. Proposals still require trustworthy review snapshots and separate approval; never claim a write completed before approval. The current operation mode and Agent profile remain permission ceilings."
         : "Use these selections for this request. Do not ask the user to repeat identifiers already selected.";
       currentRequestContext = `${selectedContext.join("\n")}\n${instruction}`;
     }
@@ -216,20 +247,24 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
     const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
+    const repositoryGrounding = initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath });
+    const initialToolCall = repositoryGrounding && (profile.allowedTools === null || profile.allowedTools.includes(repositoryGrounding.toolName)) ? repositoryGrounding : undefined;
     const outcome = await runDecisionLoop({
       organizationId,
       streaming,
       userId: String(actor.userId),
       correlationId: String(correlationId),
       transcript,
+      earlierHistoryOmitted,
       workspaceContext,
       currentRequestContext,
       skillContext,
       preferredProvider,
       preferredModel: selectedModel,
       operationMode,
+      maxDecisionSteps: typeof maxDecisionSteps === "number" ? maxDecisionSteps : undefined,
       agentProfile: profile.id,
-      initialToolCall: initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath }),
+      initialToolCall,
       executeReadOnlyTool: async (toolName, args) => {
         const result = await executeReadOnlyTool(prisma as unknown as ToolExecutionRepo, organizationId, toolName, args, {
           principal: { organizationId, userId: String(actor.userId), sessionId: actor.id },
@@ -267,12 +302,24 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     if (outcome.kind === "proposal") {
+      // An AI-proposed target is not a replacement for the operator's current
+      // code selection. Refuse drift rather than rewriting content to a target
+      // the model did not inspect; ordinary approval remains a separate gate.
+      const editsCode = outcome.toolName === "commit_github_file" || outcome.toolName === "commit_github_files";
+      if (mode === "code" && editsCode && (
+        repositoryFullName && outcome.args.repositoryFullName !== repositoryFullName ||
+        branch && outcome.args.branch !== branch
+      )) {
+        const reply = "The code proposal did not match your selected repository and branch, so no action was proposed. Keep the intended target selected and request the change again.";
+        await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
+        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null, issue: "request_failed" } });
+      }
       const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma);
       if (!reviewed.ok) {
         streaming?.abortSignal.throwIfAborted();
         const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;
         await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+        return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null, issue: "request_failed" } });
       }
       streaming?.abortSignal.throwIfAborted();
       await rememberToolContext(memoryRepo, organizationId, reviewed.args).catch(() => undefined);
@@ -291,7 +338,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         ok: true,
         data: {
           reply: outcome.message,
-          proposal: { id: proposal.id, toolName: proposal.toolName, argsJson: proposal.argsJson, riskLevel: proposal.riskLevel, status: proposal.status },
+          proposal: { id: proposal.id, requiresIndependentReviewer: true, toolName: proposal.toolName, argsJson: proposal.argsJson, riskLevel: proposal.riskLevel, status: proposal.status },
           usage: outcome.usage ?? null,
         },
       });
@@ -299,9 +346,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
     const reply = AI_ERROR_MESSAGES[outcome.error] ?? "Something went wrong processing that request.";
     await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
-    return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null } });
+    return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null, issue: isAgentMessageIssue(outcome.error) ? outcome.error : "request_failed" } });
   }
   return request.headers.get("accept")?.split(",").some(type => type.trim() === AGENT_STREAM_CONTENT_TYPE)
-    ? agentMessageHttpStream(request.signal, stream => execute(stream))
+    ? agentMessageHttpStream(request.signal, stream => execute(stream), {toolActivity: Array.isArray(body?.streamFeatures) && body.streamFeatures.includes(AGENT_TOOL_ACTIVITY_FEATURE)})
     : execute();
 }

@@ -1,0 +1,25 @@
+import 'server-only';
+import {z} from 'zod';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+import {readBoundedGithubBody,withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
+import {slackNotificationIntentSchema,slackNotificationReceiptSchema,type SlackNotificationIntent,type SlackNotificationResult} from './slackNotificationContract';
+import type {SlackNotificationTransport} from './slackNotificationExecutor';
+export const slackNotificationCredentialSchema=z.object({organizationId:z.string().min(1),connectionId:z.string().min(1),connectionRevision:z.string().datetime(),workspaceId:slackNotificationIntentSchema.shape.workspaceId,token:z.string().min(1).max(4096).refine(v=>!/[\x00-\x20\x7f-\x9f]/.test(v)),scopes:z.array(z.string()).max(30),expiresAt:z.number().finite()}).strict();
+export interface SlackNotificationTransportDependencies{isEnabled?:()=>boolean;readCredential?:(intent:Readonly<SlackNotificationIntent>,signal:AbortSignal)=>Promise<unknown>;fetch?:typeof fetch;now?:()=>number}
+/** Fixed chat.postMessage only; no joins, invitations, scopes, refresh, retry or fallback.
+ * Trusted executor current callback verifies public channel membership and distinct approval. */
+export function createSlackNotificationTransport(deps:SlackNotificationTransportDependencies={}):SlackNotificationTransport{return{kind:'slack_notification_transport_v1',async execute(input):Promise<SlackNotificationResult>{
+ if(!deps.isEnabled?.()||!deps.readCredential||!deps.fetch||input.signal.aborted||typeof input.assertCurrent!=='function')return{state:'refused'};
+ const now=deps.now??Date.now,controller=new AbortController(),signal=AbortSignal.any([input.signal,controller.signal]),deadline=now()+15000,timer=setTimeout(()=>controller.abort(),15000);let dispatched=false;
+ const guard=()=>{signal.throwIfAborted();if(!deps.isEnabled?.()||!Number.isFinite(now())||now()>=deadline)throw Error('slack_notification_unavailable')};
+ const bounded=async<T>(fn:()=>Promise<T>)=>{guard();const result=await withGithubAbort(Promise.resolve().then(()=>{guard();return fn()}),signal);guard();return result};
+ try{const intent=slackNotificationIntentSchema.parse(input.intent);if(input.operationId!=='slack_notification_'+sha256ContentHash({organizationId:intent.organizationId,intentId:intent.intentId}))return{state:'refused'};
+ const current=async()=>{await bounded(input.assertCurrent);if(now()>=Date.parse(intent.expiresAt))throw Error('expired')};await current();
+ const credential=slackNotificationCredentialSchema.parse(await bounded(()=>deps.readCredential!(structuredClone(intent),signal)));const ready=()=>credential.organizationId===intent.organizationId&&credential.connectionId===intent.connectionId&&credential.connectionRevision===intent.connectionRevision&&credential.workspaceId===intent.workspaceId&&credential.scopes.includes('channels:read')&&credential.scopes.includes('chat:write')&&credential.expiresAt>now()+15000;if(!ready())return{state:'refused'};
+ await current();const url='https://slack.com/api/chat.postMessage';const pending=Promise.resolve().then(()=>{guard();if(!ready()||now()>=Date.parse(intent.expiresAt))throw Error('expired');dispatched=true;return deps.fetch!(url,{method:'POST',headers:{Authorization:`Bearer ${credential.token}`,'Content-Type':'application/json; charset=utf-8'},body:JSON.stringify({channel:intent.channelId,text:intent.text,mrkdwn:false,parse:'none',unfurl_links:false,unfurl_media:false}),credentials:'omit',redirect:'error',cache:'no-store',signal})});void pending.then(r=>{if(signal.aborted||now()>=deadline)void r.body?.cancel().catch(()=>{})},()=>{});
+ const response=await bounded(()=>pending);if(response.status!==200||response.redirected||response.url&&response.url!==url){void response.body?.cancel().catch(()=>{});return{state:'unknown'}};
+ const bytes=await bounded(()=>readBoundedGithubBody(response,signal,32768)),value:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));if(!value||typeof value!=='object'||Array.isArray(value))return{state:'unknown'};const v=value as Record<string,unknown>;
+ if(v.ok===false&&typeof v.error==='string'&&['not_authed','invalid_auth','account_inactive','token_revoked','missing_scope','channel_not_found','not_in_channel','is_archived','no_permission','msg_too_long','no_text'].includes(v.error)){await current();return{state:'refused'}};
+ if(v.ok!==true||v.channel!==intent.channelId)return{state:'unknown'};const receipt=slackNotificationReceiptSchema.parse({channelId:v.channel,messageTs:v.ts});await current();guard();if(!ready())return{state:'unknown'};return{state:'sent',receipt};
+ }catch{return{state:dispatched?'unknown':'refused'}}finally{clearTimeout(timer);controller.abort()}
+}}}

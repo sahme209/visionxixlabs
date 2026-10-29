@@ -1,8 +1,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod cloud;
+mod computer_observation;
+mod computer_input;
 mod config;
 mod git;
+mod worktrees;
 mod repository_create;
 mod http;
 mod menu;
@@ -47,6 +50,16 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             get_system_info,
+            computer_input::computer_input_status,
+            computer_input::computer_input_prepare,
+            computer_input::computer_input_confirm,
+            computer_input::computer_input_stop,
+            computer_input::computer_input_recover,
+            computer_observation::computer_observation_status,
+            computer_observation::computer_observation_current,
+            computer_observation::computer_observation_select,
+            computer_observation::computer_observation_capture,
+            computer_observation::computer_observation_stop,
             get_health,
             http::desktop_http_request,
             http::desktop_http_stream,
@@ -60,6 +73,9 @@ fn main() {
             cloud::validate_gcp_credentials,
             cloud::get_connector_status,
             cloud::run_cloud_scan,
+            worktrees::list_repository_worktrees,
+            worktrees::create_repository_worktree,
+            worktrees::remove_repository_worktree,
             git::clone_repository,
             git::default_repos_directory,
             git::list_local_repositories,
@@ -84,10 +100,8 @@ fn main() {
             tray::set_tray_pending_list,
         ])
         .setup(|app| {
-            #[cfg(debug_assertions)]
-            if let Some(window) = app.get_webview_window("main") {
-                window.open_devtools();
-            }
+            // Keep the normal app viewport intact in local test builds too.
+            // Developers can open the inspector explicitly when needed.
 
             // Tray icon — best-effort. A failed tray build (e.g. on a
             // headless CI machine) should not block the app from starting.
@@ -125,6 +139,7 @@ fn main() {
             if let Some(main_window) = app.get_webview_window("main") {
                 let handle_for_close = main_window.clone();
                 main_window.on_window_event(move |event| {
+                    if matches!(event,WindowEvent::CloseRequested { .. }|WindowEvent::Destroyed) {computer_observation::revoke_all();computer_input::revoke_all();}
                     if let WindowEvent::CloseRequested { api, .. } = event {
                         api.prevent_close();
                         let _ = handle_for_close.hide();
@@ -142,6 +157,7 @@ fn main() {
     // visible again; otherwise the application can look as though it did not
     // launch even though its background process is still running.
     app.run(|_app_handle, _event| {
+        if matches!(_event,tauri::RunEvent::Exit|tauri::RunEvent::ExitRequested{..}){computer_observation::revoke_all();computer_input::revoke_all();}
         #[cfg(target_os = "macos")]
         if let tauri::RunEvent::Reopen {
             has_visible_windows: false,

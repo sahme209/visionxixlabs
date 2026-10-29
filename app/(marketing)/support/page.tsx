@@ -91,6 +91,22 @@ export default function SupportPage() {
         </div>
       </section>
 
+      <section aria-labelledby="founder-inspiration" className="mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-12 lg:pb-20">
+        <div className="grid gap-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-9 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
+          <div>
+            <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">A founder’s inspiration</p>
+            <h2 id="founder-inspiration" className="mt-4 text-2xl font-medium leading-tight tracking-[-0.035em] text-zinc-100 sm:text-3xl">Turn inspiration into something useful.</h2>
+            <p className="mt-4 text-sm leading-7 text-zinc-400">Our founder was inspired by Jensen Huang’s public encouragement to learn and use AI. Axiom is our response: build useful engineering tools while keeping people in control.</p>
+          </div>
+          <figure className="border-l-2 border-orange-400/60 pl-6 sm:pl-8">
+            <span aria-hidden="true" className="block h-9 text-6xl leading-none text-orange-300/70">“</span>
+            <blockquote className="mt-3 text-xl font-medium leading-relaxed tracking-[-0.02em] text-zinc-200 sm:text-2xl">You’re not going to lose your job to an AI, but you’re going to lose your job to someone who uses AI.</blockquote>
+            <figcaption className="mt-5 text-xs leading-6 text-zinc-500">Jensen Huang, NVIDIA founder and CEO · Milken Institute Global Conference, 2025.<br /><a href="https://www.cnbc.com/2025/05/28/nvidia-ceo-jensen-huang-youll-lose-your-job-to-somebody-who-uses-ai.html" target="_blank" rel="noopener noreferrer" className="text-zinc-400 underline decoration-white/20 underline-offset-4 hover:text-zinc-200">As reported by CNBC, May 28, 2025 <span className="sr-only">(opens in a new tab)</span></a></figcaption>
+            <p className="mt-3 text-[11px] leading-5 text-zinc-500">Personal inspiration. Axiom is an independent project with no affiliation or endorsement from NVIDIA or Jensen Huang.</p>
+          </figure>
+        </div>
+      </section>
+
       <div className="border-y border-white/[0.07] bg-white/[0.015]">
         <CinematicAxiomDemo />
       </div>

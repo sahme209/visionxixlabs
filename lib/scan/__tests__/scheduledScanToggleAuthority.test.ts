@@ -1,0 +1,19 @@
+import {beforeEach,describe,expect,it,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const f=vi.hoisted(()=>({context:vi.fn(),membership:vi.fn(),schedule:vi.fn(),account:vi.fn(),update:vi.fn(),tx:vi.fn()}));
+vi.mock('@/lib/auth/currentContext',()=>({requireContext:f.context}));
+vi.mock('@/lib/db',()=>({prisma:{$transaction:f.tx,axiomScheduledRun:{findUnique:f.schedule,update:f.update}}}));
+import {POST} from '@/app/api/scheduled-scans/toggle/route';
+const sched={id:'schedule-fixture',organizationId:'org-fixture',cloudAccountId:'account-fixture',updatedAt:new Date('2026-10-23T00:00:00Z')};
+function request(enabled='true',origin='https://axiom.invalid'){return new NextRequest('https://axiom.invalid/api/scheduled-scans/toggle',{method:'POST',headers:{origin,referer:'https://foreign.invalid/redirect','content-type':'application/x-www-form-urlencoded'},body:new URLSearchParams({scheduleId:sched.id,enabled})});}
+beforeEach(()=>{vi.clearAllMocks();f.context.mockResolvedValue({isAuthenticated:true,sessionUserId:'user-fixture',userId:'user-fixture',organizationId:'org-fixture',roles:['owner']});f.membership.mockResolvedValue({role:'owner',acceptedAt:new Date()});f.schedule.mockResolvedValue(sched);f.account.mockResolvedValue({id:'account-fixture',organizationId:'org-fixture',provider:'aws',enabled:true,credentialRef:null});f.update.mockResolvedValue({count:1});f.tx.mockImplementation((callback:Function)=>callback({orgMembership:{findUnique:f.membership},axiomScheduledRun:{findFirst:f.schedule,updateMany:f.update},cloudAccount:{findFirst:f.account}}));});
+describe('explicit legacy schedule activation',()=>{
+ it('refuses cross-origin forms before mutation',async()=>{expect((await POST(request('true','https://foreign.invalid'))).status).toBe(403);expect(f.update).not.toHaveBeenCalled();});
+ it.each([null,{role:'owner',acceptedAt:null},{role:'read_only',acceptedAt:new Date()},{role:'operator',acceptedAt:new Date()}])('requires current accepted administrator membership (%j)',async membership=>{f.membership.mockResolvedValue(membership);expect((await POST(request())).status).toBe(403);expect(f.update).not.toHaveBeenCalled();});
+ it('does not accept an email-only legacy identity as administrator authority',async()=>{f.context.mockResolvedValue({isAuthenticated:true,userId:'fixture@example.invalid',organizationId:'org-fixture',roles:['owner']});expect((await POST(request())).status).toBe(401);expect(f.update).not.toHaveBeenCalled();});
+ it('refuses an absent schedule',async()=>{f.schedule.mockResolvedValue(null);expect((await POST(request())).status).toBe(404);expect(f.update).not.toHaveBeenCalled();});
+ it.each([null,{id:'account-fixture',organizationId:'org-fixture',provider:'aws',enabled:false,credentialRef:null},{id:'account-fixture',organizationId:'org-fixture',provider:'aws',enabled:true,credentialRef:'cloud-v2:account-fixture'}])('refuses activation without an enabled legacy account (%j)',async account=>{f.account.mockResolvedValue(account);expect((await POST(request())).status).toBe(409);expect(f.update).not.toHaveBeenCalled();});
+ it('allows an administrator to pause even when the account cannot be activated',async()=>{f.account.mockResolvedValue(null);expect((await POST(request('false'))).status).toBe(303);expect(f.update).toHaveBeenCalledWith(expect.objectContaining({data:expect.objectContaining({enabled:false})}));});
+ it('uses a version-scoped write and a local redirect',async()=>{const response=await POST(request());expect(response.status).toBe(303);expect(response.headers.get('location')).toBe('https://axiom.invalid/dashboard/scheduled-scans');expect(f.update).toHaveBeenCalledWith(expect.objectContaining({where:expect.objectContaining({id:sched.id,organizationId:'org-fixture',updatedAt:sched.updatedAt})}));});
+ it('refuses a changed schedule rather than assuming activation',async()=>{f.update.mockResolvedValue({count:0});expect((await POST(request())).status).toBe(409);});
+});

@@ -1,0 +1,23 @@
+import {z} from 'zod';
+export const RELEASE_DEPLOYMENT_EXECUTION_KIND='release_deployment_execution_v1';
+const id=z.string().min(1).max(240).refine(v=>v===v.trim()&&!/[\x00-\x1f\x7f-\x9f]/.test(v));
+const digest=z.string().regex(/^[a-f0-9]{64}$/),sha=z.string().regex(/^[a-f0-9]{40}$/);
+export const deploymentScopeSchema=z.object({organizationId:id,actorUserId:id,sessionId:id}).strict();
+export type DeploymentScope=z.infer<typeof deploymentScopeSchema>;
+export const deploymentPlanSchema=z.object({purpose:z.literal('release_deployment'),organizationId:id,releaseId:id,releaseVersion:z.number().int().positive().max(2147483647),intakeDigest:digest,planId:id,creatorUserId:id,requesterUserId:id,executorUserId:id,repositoryFullName:z.string().regex(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/),connectionId:id,connectionRevision:z.string().datetime(),installationId:z.string().regex(/^[1-9][0-9]{0,19}$/),workflowPath:z.string().regex(/^\.github\/workflows\/[A-Za-z0-9_][A-Za-z0-9_.-]{0,150}\.ya?ml$/),workflowBlobSha:sha,sourceCommitSha:sha,refKind:z.enum(['branch','tag']),ref:id,inputs:z.record(z.string().regex(/^[A-Za-z_][A-Za-z0-9_-]{0,99}$/),z.string().max(4096)).refine(v=>Object.keys(v).length<=25&&new TextEncoder().encode(JSON.stringify(v)).byteLength<=16384),sourcePolicy:id,windowStart:z.string().datetime(),expiresAt:z.string().datetime()}).strict().refine(v=>Date.parse(v.windowStart)<Date.parse(v.expiresAt));
+export type DeploymentPlan=z.infer<typeof deploymentPlanSchema>;
+export const deploymentApprovalSchema=z.object({kind:z.literal('verified_release_deployment_approval_v1'),purpose:z.literal('release_deployment'),id,organizationId:id,planDigest:digest,executorUserId:id,approverUserId:id,approverSessionId:id,sourcePolicy:id,expiresAt:z.string().datetime()}).strict();
+export type DeploymentApproval=z.infer<typeof deploymentApprovalSchema>;
+export const deploymentReceiptSchema=z.object({repositoryFullName:z.string().regex(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/),workflowPath:z.string(),headSha:sha,ref:id,runId:z.string().regex(/^[1-9][0-9]{0,19}$/),runAttempt:z.number().int().positive().max(2147483647)}).strict();
+export type DeploymentReceipt=z.infer<typeof deploymentReceiptSchema>;
+export const deploymentResultSchema=z.discriminatedUnion('state',[z.object({state:z.literal('accepted'),receipt:deploymentReceiptSchema}).strict(),z.object({state:z.literal('unknown')}).strict(),z.object({state:z.literal('refused')}).strict()]);
+export type DeploymentResult=z.infer<typeof deploymentResultSchema>;
+export type DeploymentState='prepared'|'dispatching'|'accepted'|'unknown'|'refused'|'cancelled';
+export const deploymentActionSchema=z.object({repositoryFullName:deploymentPlanSchema.shape.repositoryFullName,workflowPath:deploymentPlanSchema.shape.workflowPath,workflowBlobSha:deploymentPlanSchema.shape.workflowBlobSha,sourceCommitSha:deploymentPlanSchema.shape.sourceCommitSha,refKind:deploymentPlanSchema.shape.refKind,ref:deploymentPlanSchema.shape.ref,inputs:deploymentPlanSchema.shape.inputs,sourcePolicy:deploymentPlanSchema.shape.sourcePolicy,windowStart:deploymentPlanSchema.shape.windowStart,expiresAt:deploymentPlanSchema.shape.expiresAt,planDigest:digest}).strict();
+export type DeploymentAction=z.infer<typeof deploymentActionSchema>;
+export interface DeploymentDto{action:DeploymentAction;id:string;state:DeploymentState;version:number;attemptCount:number;receipt?:DeploymentReceipt;deploymentSucceeded:false;artifactVerified:false;applicationHealthVerified:false;executionAvailable:false}
+export const deploymentDtoSchema=z.object({action:deploymentActionSchema,id:z.string().regex(/^release_deployment_[a-f0-9]{64}$/),state:z.enum(['prepared','dispatching','accepted','unknown','refused','cancelled']),version:z.number().int().min(0).max(2),attemptCount:z.number().int().min(0).max(1),receipt:deploymentReceiptSchema.optional(),deploymentSucceeded:z.literal(false),artifactVerified:z.literal(false),applicationHealthVerified:z.literal(false),executionAvailable:z.literal(false)}).strict().refine(v=>v.version===(v.state==='prepared'?0:['dispatching','cancelled'].includes(v.state)?1:2)&&v.attemptCount===(['prepared','cancelled'].includes(v.state)?0:1)&&(v.receipt!==undefined)===(v.state==='accepted'));
+export const parseDeploymentDto=(value:unknown):DeploymentDto=>deploymentDtoSchema.parse(value);
+export const deploymentExecutionStateSchema=z.object({available:z.boolean(),operation:deploymentDtoSchema.nullable()}).strict();
+export type DeploymentExecutionState=z.infer<typeof deploymentExecutionStateSchema>;
+export const parseDeploymentExecutionState=(value:unknown)=>deploymentExecutionStateSchema.parse(value);

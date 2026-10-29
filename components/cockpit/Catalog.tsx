@@ -1,0 +1,44 @@
+'use client';
+import { useRef,useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Search,Puzzle,ShieldCheck,Fingerprint,Layers } from 'lucide-react';
+import { ConfirmDialog } from './ConfirmDialog';
+import {CatalogDetailDialog} from './CatalogDetailDialog';
+import {ProviderLogo,type ProviderMark} from './ProviderLogo';
+export interface CatalogEntry {id:string;name:string;description:string;kind:'Plugins'|'Skills'|'MCP';status:string;permissions:string[];category?:string}
+type SkillAction='install'|'enable'|'disable'|'remove';
+export function Catalog({entries,unavailable,canManage=false,initialKind='Plugins'}:{entries:CatalogEntry[];unavailable:boolean;canManage?:boolean;initialKind?:CatalogEntry['kind']}){
+ const router=useRouter();const [kind,setKind]=useState<CatalogEntry['kind']>(initialKind);const [query,setQuery]=useState('');
+ const [pending,setPending]=useState<{item:CatalogEntry;action:SkillAction}|null>(null);const [busy,setBusy]=useState(false);const [uncertain,setUncertain]=useState(false);const [notice,setNotice]=useState<string|null>(null);
+ const [detail,setDetail]=useState<CatalogEntry|null>(null);
+ const trigger=useRef<HTMLElement|null>(null);const search=useRef<HTMLInputElement|null>(null);const lock=useRef(false);
+ const visible=entries.filter(item=>item.kind===kind && `${item.name} ${item.description} ${item.permissions.join(' ')}`.toLowerCase().includes(query.toLowerCase()));
+ const categories=Array.from(new Set(visible.map(item=>item.category ?? (kind==='Skills'?'Workspace skills':'Axiom workflows'))));
+ async function updateSkill(){
+  if(!pending || !canManage || unavailable || uncertain || lock.current)return;
+  lock.current=true;setBusy(true);setNotice(null);
+  try{
+   const response=await fetch('/api/control/skills',{method:'POST',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({skillId:pending.item.id,action:pending.action})});
+   const body=await response.json().catch(()=>null);const expected=pending.action==='remove'?'not_installed':pending.action==='disable'?'disabled':'enabled';
+   if(!response.ok || body?.ok!==true || body.data?.skillId!==pending.item.id || body.data?.status!==expected)throw Error('unconfirmed');
+   if(pending.action==='remove')trigger.current=search.current;
+   setNotice(`${pending.item.name} update confirmed. Refreshing workspace state; Agent guidance updates on the next message.`);router.refresh();
+  }catch{setUncertain(true);setNotice('Skill update was not confirmed. Refresh the catalog before retrying; the request may have completed.');}
+  finally{lock.current=false;setBusy(false);setPending(null);}
+ }
+ return <><div className="mt-6 flex flex-wrap items-center justify-between gap-4"><div aria-label="Catalog category" className="flex gap-1">{(['Plugins','Skills','MCP'] as const).map(value=><button key={value} aria-pressed={kind===value} disabled={busy} onClick={()=>setKind(value)} className={`min-h-8 rounded-full px-4 py-1.5 text-[13px] ${kind===value?'bg-white/15 text-white':'text-zinc-400 hover:text-white'}`}>{value}</button>)}</div><label className="flex min-h-8 items-center gap-2 rounded-lg border border-white/10 px-3 text-zinc-400"><Search size={14} aria-hidden/><input ref={search} aria-label="Search catalog" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search catalog…" className="w-40 bg-transparent py-1.5 text-[13px] text-white outline-none sm:w-48"/></label></div>
+ {kind==='Plugins' && <p className="mt-4 text-xs leading-5 text-zinc-400">These are built-in Axiom workflows, so there is no separate installation to remove. Manage their provider connection and use them through supported, governed workflows. Optional skills below can be installed, disabled, or removed.</p>}
+ {unavailable && <p role="alert" className="mt-5 rounded-lg border border-amber-400/20 p-3 text-xs text-amber-200">Skill installation storage is unavailable. Installation state is unknown.</p>}
+ {notice && <p role={uncertain?'alert':'status'} className="mt-4 rounded-xl border border-white/10 p-3 text-xs text-zinc-300">{notice}{uncertain && <button onClick={()=>window.location.reload()} className="ml-3 underline">Refresh catalog</button>}</p>}
+ <div className="mt-6 space-y-7">{categories.map(category=><section key={category} aria-label={category}><h2 className="mb-3 text-[13px] font-medium text-zinc-200">{category}</h2><div className="grid gap-x-6 gap-y-1 md:grid-cols-2 2xl:grid-cols-3">{visible.filter(item=>(item.category ?? (kind==='Skills'?'Workspace skills':'Axiom workflows'))===category).map(item=>{
+  const action:SkillAction=item.status==='enabled'?'disable':item.status==='disabled'?'enable':'install';const actionLabel=action==='disable'?'Disable':action==='enable'?'Enable':'Install';
+  const manageable=(item.kind==='Skills'||item.kind==='MCP') && canManage && !unavailable && ['enabled','disabled','not_installed'].includes(item.status);
+  return <article key={`${item.kind}:${item.id}`} className="grid min-w-0 grid-cols-[32px_minmax(0,1fr)_auto] items-start gap-3 rounded-xl px-2 py-3 hover:bg-white/[0.025]"><span aria-hidden className="grid h-8 w-8 place-items-center rounded-lg bg-white/5 text-zinc-300">{(['aws','azure','github','gcp'] as string[]).includes(item.id.split(':')[0])?<ProviderLogo provider={item.id.split(':')[0] as ProviderMark}/>:item.kind==='MCP'?<ProviderLogo provider="azure"/>:item.category==='GitHub'?<ProviderLogo provider="github"/>:item.id==='aws-ecs-release'?<ProviderLogo provider="aws"/>:item.category==='Governance'?<ShieldCheck size={18}/>:item.category==='Identity'?<Fingerprint size={18}/>:item.category==='Deployments'?<Layers size={18}/>:<Puzzle size={16}/>}</span><div className="min-w-0"><h2 className="text-[13px] font-medium"><button type="button" aria-label={`View ${item.name}`} disabled={busy} onClick={()=>setDetail(item)} className="text-left hover:underline underline-offset-4">{item.name}</button></h2>{(item.kind==='Skills'||item.kind==='MCP') && <p className="mt-1 text-[11px] text-zinc-500">{item.status.replaceAll('_',' ')}</p>}<p className="mt-1 line-clamp-2 text-xs leading-5 text-zinc-400">{item.description}</p></div>{manageable && <div className="flex flex-wrap justify-end gap-1"><button disabled={busy||uncertain} aria-label={`${actionLabel} ${item.name}`} onClick={event=>{trigger.current=event.currentTarget;setPending({item,action});}} className="inline-flex min-h-8 items-center rounded-full bg-white/5 px-3.5 text-xs text-zinc-200 hover:bg-white/10 disabled:opacity-40">{actionLabel}</button>{item.status!=='not_installed' && <button disabled={busy||uncertain} aria-label={`Remove ${item.name}`} onClick={event=>{trigger.current=event.currentTarget;setPending({item,action:'remove'});}} className="min-h-8 rounded-full px-2 text-[11px] text-zinc-400 hover:bg-white/5 hover:text-white disabled:opacity-40">Remove</button>}</div>}{item.kind==='MCP' && <Link href="/control/mcp" className="col-start-2 text-xs text-orange-300 hover:underline">Open tools →</Link>}{item.kind==='Plugins' && <Link href="/control/integrations" className="inline-flex min-h-8 items-center rounded-full bg-white/5 px-3 text-xs text-zinc-300 hover:bg-white/10">Manage access</Link>}</article>;
+ })}</div></section>)}</div>
+ {visible.length===0 && <div role="status" className="mt-6 rounded-xl border border-white/10 p-6 text-sm leading-6 text-zinc-400">{kind==='MCP'?'No browser-managed MCP servers match this search. Only reviewed servers are available; arbitrary server URLs are not accepted.':'No catalog entries match your search.'}</div>}
+ <p className="mt-6 text-xs leading-5 text-zinc-400">Workspace skills share their recorded installation state with Axiom Agent. Guidance updates on the next Agent message; installation grants no tool permissions. Review provider authorization in <Link className="text-orange-300 underline" href="/control/integrations">Integrations</Link> and tool authority in <Link className="text-orange-300 underline" href="/control/ai-agents">AI &amp; Agents</Link>.</p>
+ {detail && <CatalogDetailDialog item={detail} onClose={()=>setDetail(null)}/>}
+ {pending && <ConfirmDialog title={`${pending.action==='remove'?'Remove':pending.action==='disable'?'Disable':pending.action==='enable'?'Enable':'Install'} ${pending.item.name}?`} confirmLabel={pending.action==='remove'?'Remove skill':pending.action==='disable'?'Disable skill':pending.action==='enable'?'Enable skill':'Install skill'} onCancel={()=>setPending(null)} onConfirm={()=>void updateSkill()} returnFocusRef={trigger} busy={busy}>This changes workflow guidance for your workspace, including the desktop Agent. Provider credentials, tool permissions, approval requirements, and existing conversations remain governed separately.</ConfirmDialog>}
+ </>;
+}

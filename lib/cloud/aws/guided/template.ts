@@ -1,0 +1,19 @@
+import 'server-only';
+import {createHash} from 'node:crypto';
+import {z} from 'zod';
+const policy=z.object({Id:z.string().min(1).max(128).optional(),Version:z.literal('2012-10-17'),Statement:z.array(z.unknown()).min(1).max(20)}).strict();
+/** Server-reviewed deterministic generator output, never an HTTP request body.
+ * This function constructs JSON locally; it does not host/apply a template.
+ * No default policies are supplied, and absent generated proofs refuse. */
+interface AwsGuidedTemplateInput {readerPolicy:unknown;callbackPolicy:unknown;readerDigest:string;callbackDigest:string;generatorReceipt:{tool:'iam-policy-autopilot';sourceDigest:string;reviewed:boolean};lambdaSource:string}
+function buildTemplate(input:AwsGuidedTemplateInput,requireReviewed:boolean){
+ const read=policy.parse(input.readerPolicy),callback=input.callbackPolicy===null?null:policy.parse(input.callbackPolicy);const digest=(x:unknown)=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
+ if(!/^[a-f0-9]{64}$/.test(input.generatorReceipt.sourceDigest)||input.generatorReceipt.tool!=='iam-policy-autopilot'||requireReviewed&&input.generatorReceipt.reviewed!==true||digest(read)!==input.readerDigest||digest(callback)!==input.callbackDigest||Buffer.byteLength(input.lambdaSource)>30000||!input.lambdaSource.includes('def handler(')||createHash('sha256').update(input.lambdaSource).digest('hex')!==input.generatorReceipt.sourceDigest)throw Error('aws_guided_generated_policy_required');
+ // Trust documents express named principals, not inferred source permissions.
+ const trust=(principal:unknown,condition?:unknown)=>({Version:'2012-10-17',Statement:[{Effect:'Allow',Principal:principal,Action:'sts:AssumeRole',...(condition?{Condition:condition}:{})}]});
+ return{AWSTemplateFormatVersion:'2010-09-09',Description:'Axiom reviewed read role and one-flow callback; creates IAM roles, Lambda and log group. Not deployment authority.',Parameters:{ExternalId:{Type:'String',AllowedPattern:'^axiom-[a-f0-9]{32}$'},BrokerPrincipalArn:{Type:'String',AllowedPattern:'^arn:aws:iam::[0-9]{12}:(role|user)/[A-Za-z0-9_+=,.@/-]+$'},RoleName:{Type:'String',AllowedPattern:'^[A-Za-z0-9_+=,.@-]{1,64}$'},FlowId:{Type:'String',AllowedPattern:'^aws_flow_[a-f0-9]{64}$'},CallbackRoleName:{Type:'String',AllowedPattern:'^AxiomCallback-[a-f0-9]{24}$'}},Resources:{ReaderRole:{Type:'AWS::IAM::Role',Properties:{RoleName:{Ref:'RoleName'},AssumeRolePolicyDocument:trust({AWS:{Ref:'BrokerPrincipalArn'}},{StringEquals:{'sts:ExternalId':{Ref:'ExternalId'}}}),Policies:[{PolicyName:'ReviewedReadOnly',PolicyDocument:read}]}},CallbackRole:{Type:'AWS::IAM::Role',Properties:{RoleName:{Ref:'CallbackRoleName'},AssumeRolePolicyDocument:trust({Service:'lambda.amazonaws.com'}),...(callback?{Policies:[{PolicyName:'ReviewedCallbackOnly',PolicyDocument:callback}]}:{})}},CallbackFunction:{Type:'AWS::Lambda::Function',Properties:{Runtime:'python3.13',Handler:'index.handler',Timeout:20,MemorySize:128,Role:{'Fn::GetAtt':['CallbackRole','Arn']},Code:{ZipFile:input.lambdaSource}}},CallbackLogs:{Type:'AWS::Logs::LogGroup',Properties:{LogGroupName:{'Fn::Sub':'/aws/lambda/${CallbackFunction}'},RetentionInDays:7}},ConnectionCallback:{Type:'Custom::AxiomReadOnlyConnection',DependsOn:['ReaderRole','CallbackLogs'],Properties:{ServiceToken:{'Fn::GetAtt':['CallbackFunction','Arn']},FlowId:{Ref:'FlowId'}}}},Outputs:{RoleArn:{Value:{'Fn::GetAtt':['ReaderRole','Arn']}}}};
+}
+
+export function constructAwsGuidedTemplate(input:AwsGuidedTemplateInput){return buildTemplate(input,true)}
+/** Review artifact only. Never install/host this result as an approved registry. */
+export function renderAwsGuidedTemplateProposal(input:AwsGuidedTemplateInput){return{reviewStatus:'pending' as const,activationAvailable:false as const,template:buildTemplate(input,false)}}

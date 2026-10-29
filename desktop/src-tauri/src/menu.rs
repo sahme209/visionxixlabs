@@ -82,20 +82,23 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
             true,
             Some("CmdOrCtrl+1"),
         )?)
+        .item(&MenuItem::with_id(app, "menu_view_bot", "Axiom Bot", true, Some("CmdOrCtrl+5"))?)
         .item(&MenuItem::with_id(
             app,
             "menu_view_deployment_requests",
-            "Release workspace",
+            "Releases",
             true,
             Some("CmdOrCtrl+2"),
         )?)
         .item(&MenuItem::with_id(
             app,
             "menu_view_repositories",
-            "GitHub repositories",
+            "Repositories",
             true,
             Some("CmdOrCtrl+3"),
         )?)
+        .item(&MenuItem::with_id(app, "menu_view_batches", "Batches", true, Some("CmdOrCtrl+6"))?)
+        .item(&MenuItem::with_id(app, "menu_view_plugins", "Plugins & Skills", true, Some("CmdOrCtrl+7"))?)
         .item(&MenuItem::with_id(app, "menu_view_docs", "Documentation", true, Some("CmdOrCtrl+4"))?)
         .separator()
         .item(&PredefinedMenuItem::fullscreen(app, None)?)
@@ -140,6 +143,9 @@ const MENU_EVENT: &str = "menu://action";
 pub fn handle_menu_event<R: Runtime>(app: &AppHandle<R>, id: &str) {
     match id {
         "menu_open_settings" => emit(app, "open_settings"),
+        "menu_view_bot" => emit(app, "view:axiom-bot"),
+        "menu_view_batches" => emit(app, "view:airflow-automation"),
+        "menu_view_plugins" => emit(app, "view:plugins-skills"),
         "menu_view_agent" => emit(app, "view:agent"),
         "menu_view_deployment_requests" => emit(app, "view:deployment-requests"),
         "menu_view_repositories" => emit(app, "view:repository-workspace"),

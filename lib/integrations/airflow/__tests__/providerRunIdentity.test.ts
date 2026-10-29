@@ -3,7 +3,8 @@ const io = vi.hoisted(() => ({ load: vi.fn(), audit: vi.fn(), execute: vi.fn(), 
 vi.mock("../connection", () => ({ loadAirflowClient: io.load }));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: async () => ({ organizationId: "tenant", userId: "owner" }) }));
 vi.mock("@/lib/db", () => ({ prisma: {
-  airflowAutomation: { groupBy: async () => [{ organizationId: "tenant" }], findMany: io.rules, update: io.update },
+  airflowAutomation: { groupBy: async () => [{ organizationId: "tenant" }], findMany: io.rules, findFirst: async () => ({ id: "rule" }), update: io.update, updateMany: async (args: unknown) => { await io.update(args); return { count: 1 }; } },
+  tenantIntegrationConnection: { findFirst: async () => ({ id: "fixture" }) },
   airflowDagRunSnapshot: { upsert: vi.fn() },
   airflowAutomationExecution: { create: io.propose, findUnique: async () => null, findMany: async () => [] },
 } }));
@@ -17,14 +18,14 @@ import { NextRequest } from "next/server";
 const params = { params: Promise.resolve({ dagId: "daily" }) };
 const client = () => new AirflowClient("https://airflow.example.test", { authMode: "token", token: "synthetic-token" });
 const run = (dag_id = "daily", dag_run_id = "source") => ({ dag_id, dag_run_id, state: "success", logical_date: "2026-10-15T10:00:00Z" });
-beforeEach(() => { vi.resetAllMocks(); vi.unstubAllGlobals(); io.load.mockResolvedValue({ client: client(), connectionId: "fixture" }); });
+beforeEach(() => { vi.resetAllMocks(); vi.unstubAllGlobals(); io.load.mockResolvedValue({ client: client(), connectionId: "fixture", connectionUpdatedAt: new Date(0) }); });
 describe("provider run identity at real client/consumer boundaries", () => {
   it("does not return another DAG's runs through the desktop route", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ dag_runs: [run("other")] })));
     expect((await GET(new NextRequest("https://app.example.test/api/desktop/airflow/dags/daily/runs"), params)).status).toBe(502);
   });
   it("never proposes from a foreign-DAG dependency success", async () => {
-    io.rules.mockResolvedValue([{ id: "rule", dagId: "daily", dependencyDagIds: ["dependency"], triggerMode: "completion", requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
+    io.rules.mockResolvedValue([{ id: "rule", connectionId: "fixture", dagId: "daily", dependencyDagIds: ["dependency"], triggerMode: "completion", requiredDagState: "success", createdAt: new Date(0), actionType: "open_pull_request", approvalRequired: false }]);
     vi.stubGlobal("fetch", vi.fn().mockResolvedValueOnce(Response.json({ dag_runs: [run()] })).mockResolvedValueOnce(Response.json({ dag_runs: [run("unrelated")] })));
     expect(await runAirflowAutomationTick()).toMatchObject({ proposals: 0, actions: 0, errors: 1 });
     expect(io.propose).not.toHaveBeenCalled(); expect(io.execute).not.toHaveBeenCalled();
@@ -48,7 +49,7 @@ describe("provider run identity at real client/consumer boundaries", () => {
 });
 
 it("retains an unknown scheduled occurrence identity until exact conflict reconciliation confirms it", async () => {
-  io.rules.mockResolvedValue([{ id: "rule", name: "Fixture", dagId: "daily", dependencyDagIds: [], triggerMode: "schedule", scheduleCron: "0 * * * *", nextScheduledAt: new Date("2026-10-15T10:00:00Z"), createdAt: new Date(0), requiredDagState: "success" }]);
+  io.rules.mockResolvedValue([{ id: "rule", connectionId: "fixture", name: "Fixture", dagId: "daily", dependencyDagIds: [], triggerMode: "schedule", scheduleCron: "0 * * * *", nextScheduledAt: new Date("2026-10-15T10:00:00Z"), createdAt: new Date(0), updatedAt: new Date(0), requiredDagState: "success" }]);
   const submitted: string[] = [];
   const accepted = new Set<string>();
   vi.stubGlobal("fetch", vi.fn().mockImplementation(async (url: string, init: RequestInit) => {

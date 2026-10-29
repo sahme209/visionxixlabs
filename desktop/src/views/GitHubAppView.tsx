@@ -1,3 +1,4 @@
+import { ProviderLogo } from "../components/CatalogIcon";
 import { useEffect, useState } from "react";
 import { ViewShell } from "../components/Primitives";
 
@@ -53,7 +54,7 @@ export function GitHubAppView() {
   return (
     <ViewShell>
       <div>
-        <h1 className="text-xl font-bold tracking-tight">GitHub App</h1>
+        <h1 className="flex items-center gap-2 text-xl font-bold tracking-tight"><ProviderLogo provider="github"/>GitHub App</h1>
         <p className="text-sm text-zinc-500 mt-0.5">
           One-click install. After install, the platform auto-onboards repos + branch protection + webhooks.
         </p>

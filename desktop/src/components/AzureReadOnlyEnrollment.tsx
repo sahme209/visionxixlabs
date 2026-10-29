@@ -1,3 +1,4 @@
+import { CloudOnboardingStatus } from "./CloudOnboardingStatus";
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import { desktopClient, type DesktopClientConfig, type VerifiedDesktopIdentity } from "../lib/desktopClient";
 import { azureEnrollmentClient } from "../lib/azureEnrollmentClient";
@@ -10,7 +11,9 @@ interface AzureRequestOwner {
     pending: Map<string, number>;
     inventoryRequests: Map<string, number>;
 }
+type AzureCatalogStatus = "idle" | "loading" | "ready" | "error";
 interface AzureCatalogUpdates {
+    setCatalogStatus: Dispatch<SetStateAction<AzureCatalogStatus>>;
     setAccounts: Dispatch<SetStateAction<DesktopAzureAccount[]>>;
     setSuspended: Dispatch<SetStateAction<string[]>>;
     setInventories: Dispatch<SetStateAction<Record<string, DesktopAzureInventory>>>;
@@ -19,11 +22,13 @@ interface AzureCatalogUpdates {
 function requestAzureCatalog(context: DesktopClientConfig, owner: AzureRequestOwner, updates: AzureCatalogUpdates): Promise<void> {
     const request = ++owner.catalog;
     const pendingAtStart = new Set(owner.pending.keys());
+    updates.setCatalogStatus("loading");
     return azureEnrollmentClient.list().then(result => {
         if (!owner.mounted || desktopClient.config !== context || owner.catalog !== request)
             return;
         if (!result.ok) {
             updates.setError(result.error);
+            updates.setCatalogStatus("error");
             return;
         }
         const before = owner.authoritative;
@@ -41,6 +46,11 @@ function requestAzureCatalog(context: DesktopClientConfig, owner: AzureRequestOw
         updates.setSuspended(previous => previous.filter(id => blocked.has(id)));
         updates.setInventories(previous => Object.fromEntries(Object.entries(previous).filter(([id, page]) => merged.some(account => account.id === id && account.connected && account.connectionVersion === page.connectionVersion && !blocked.has(id)))));
         updates.setError(null);
+        updates.setCatalogStatus("ready");
+    }).catch(() => {
+        if (!owner.mounted || desktopClient.config !== context || owner.catalog !== request) return;
+        updates.setError("Azure connections could not be refreshed. Try again to check the current service state.");
+        updates.setCatalogStatus("error");
     });
 }
 /** Credentials exist transiently in this form/request; only the backend vault persists them. */
@@ -65,6 +75,7 @@ function AzureEnrollmentWorkspace({ identity }: {
     const [subscriptionId, setSubscriptionId] = useState("");
     const [clientId, setClientId] = useState("");
     const [secret, setSecret] = useState("");
+    const [catalogStatus, setCatalogStatus] = useState<AzureCatalogStatus>(canRead ? "loading" : "idle");
     const [accounts, setAccounts] = useState<DesktopAzureAccount[]>([]);
     const [inventories, setInventories] = useState<Record<string, DesktopAzureInventory>>({});
     const [reading, setReading] = useState<string[]>([]);
@@ -79,13 +90,13 @@ function AzureEnrollmentWorkspace({ identity }: {
     const current = () => owner.current.mounted && desktopClient.config === context;
     function refresh() {
         if (canRead)
-            return requestAzureCatalog(context, owner.current, { setAccounts, setSuspended, setInventories, setError });
+            return requestAzureCatalog(context, owner.current, { setAccounts, setSuspended, setInventories, setError, setCatalogStatus });
     }
     useEffect(() => {
         const requests = owner.current;
         requests.mounted = true;
         if (canRead)
-            void requestAzureCatalog(context, requests, { setAccounts, setSuspended, setInventories, setError });
+            void requestAzureCatalog(context, requests, { setAccounts, setSuspended, setInventories, setError, setCatalogStatus });
         return () => {
             requests.mounted = false;
             requests.catalog++;
@@ -94,6 +105,12 @@ function AzureEnrollmentWorkspace({ identity }: {
             requests.inventoryRequests.clear();
         };
     }, [canRead, context]);
+    function invalidateCatalog() {
+        owner.current.catalog++;
+        // A mutation can supersede a pending list request. Its ignored
+        // completion must not leave the refresh control permanently busy.
+        setCatalogStatus(previous => previous === "loading" ? "idle" : previous);
+    }
     async function enroll() {
         if (!canManage || busy)
             return;
@@ -119,7 +136,7 @@ function AzureEnrollmentWorkspace({ identity }: {
             setError("Connection state changed while validating. Refresh before retrying.");
             return;
         }
-        owner.current.catalog++;
+        invalidateCatalog();
         const next = [...owner.current.authoritative.filter(row => row.id !== account.id), account];
         owner.current.authoritative = next;
         setAccounts(next);
@@ -158,7 +175,7 @@ function AzureEnrollmentWorkspace({ identity }: {
         if (!latest?.connected || latest.connectionVersion !== account.connectionVersion)
             return;
         owner.current.pending.set(account.id, account.connectionVersion);
-        owner.current.catalog++;
+        invalidateCatalog();
         owner.current.inventoryRequests.set(account.id, (owner.current.inventoryRequests.get(account.id) ?? 0) + 1);
         setSuspended(previous => [...previous.filter(id => id !== account.id), account.id]);
         setReading(previous => previous.filter(id => id !== account.id));
@@ -182,7 +199,7 @@ function AzureEnrollmentWorkspace({ identity }: {
             setError("Connection changed while disconnecting. Refresh its current state.");
             return;
         }
-        owner.current.catalog++;
+        invalidateCatalog();
         const next = owner.current.authoritative.map(row => row.id === account.id ? returned : row);
         owner.current.authoritative = next;
         setAccounts(next);
@@ -190,8 +207,9 @@ function AzureEnrollmentWorkspace({ identity }: {
     }
     const inputClass = "mt-1 w-full rounded-lg border border-white/15 bg-black/20 px-3 py-2 text-sm text-zinc-200";
     return <section className="mt-6 rounded-xl border border-white/10 p-5" aria-label="Azure read-only connection">
-    <h3 className="text-base font-semibold text-zinc-200">Azure read-only connection candidate</h3>
-    <p className="mt-2 text-xs leading-5 text-zinc-400">Connect an existing service principal to verify one subscription and explicitly read a bounded first page of resource groups. This candidate does not establish real Azure acceptance or native release availability. No cloud changes are enabled.</p>
+    <h3 className="text-base font-semibold text-zinc-200">Azure read-only connection</h3>
+    <p className="mt-2 text-xs leading-5 text-zinc-400">Verify an existing service principal for one Azure subscription. After verification, you can explicitly read a limited first page of resource groups. Cloud changes and deployments remain disabled.</p>
+    <CloudOnboardingStatus provider="azure" identity={identity} />
     {!canRead && <p className="mt-3 text-sm text-zinc-400">Pair this desktop with an accepted workspace membership to view Azure connections.</p>}
     {canManage && <form className="mt-4 grid gap-3 sm:grid-cols-2" onSubmit={event => { event.preventDefault(); void enroll(); }} autoComplete="off">
       <label className="text-xs text-zinc-400">Azure tenant ID<input className={inputClass} value={tenantId} onChange={event => setTenantId(event.target.value)}/></label>
@@ -201,7 +219,8 @@ function AzureEnrollmentWorkspace({ identity }: {
       <p className="text-xs text-zinc-500 sm:col-span-2">The secret is sent only to Axiom&apos;s backend encrypted vault. It clears after submission and is not saved in desktop settings. Subscription read validation does not verify a Reader-only role assignment.</p>
       <button disabled={busy} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{busy ? "Working…" : "Validate & connect Azure"}</button>
     </form>}
-    {canRead && <button type="button" disabled={busy} onClick={() => void refresh()} className="mt-3 rounded-lg border border-white/15 px-3 py-2 text-xs text-zinc-300 disabled:opacity-50">Refresh Azure connections</button>}
+    {canRead && <div className="mt-4 text-xs text-zinc-400" aria-live="polite">{catalogStatus === "loading" ? "Checking Azure connections…" : catalogStatus === "ready" && accounts.length === 0 ? "No service-recorded Azure connections were returned." : catalogStatus === "error" && accounts.length > 0 ? "Previously recorded connections are shown. Refresh to verify their current state." : null}</div>}
+    {canRead && <button type="button" aria-label="Refresh Azure connections" disabled={busy || catalogStatus === "loading"} onClick={() => void refresh()} className="mt-3 rounded-lg border border-white/15 px-3 py-2 text-xs text-zinc-300 disabled:opacity-50">Refresh Azure connections</button>}
     {error && <p role="alert" className="mt-3 text-sm text-rose-300">{error}</p>}
     {notice && <p role="status" className="mt-3 text-xs text-zinc-300">{notice}</p>}
     <div className="mt-4 space-y-3">{accounts.map(account => <article key={`${account.id}:${account.connectionVersion}`} className="rounded-lg border border-white/10 p-3">

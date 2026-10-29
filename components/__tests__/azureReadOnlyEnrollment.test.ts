@@ -57,3 +57,18 @@ it("ignores the first effect's catalog completion after StrictMode cleanup and r
     expect(screen.getByText(/Connection version 3/)).toBeDefined();
     expect(screen.queryByText(/Connection version 1/)).toBeNull();
 });
+it('shows a pending Azure catalog and a verified empty result instead of silence',async()=>{
+ let finish:(value:unknown)=>void=()=>{};mocks.client.list.mockReturnValueOnce(new Promise(resolve=>{finish=resolve;}));render(createElement(AzureReadOnlyEnrollment,{identity}));
+ expect(screen.getByText('Checking Azure connections…')).toBeTruthy();expect((screen.getByRole('button',{name:'Refresh Azure connections'})as HTMLButtonElement).disabled).toBe(true);
+ expect(screen.queryByText('No service-recorded Azure connections were returned.')).toBeNull();
+ await act(async()=>{finish({ok:true,data:{accounts:[]}});});expect(await screen.findByText('No service-recorded Azure connections were returned.')).toBeTruthy();expect((screen.getByRole('button',{name:'Refresh Azure connections'})as HTMLButtonElement).disabled).toBe(false);
+});
+it('does not present an unavailable Azure catalog as a verified empty list and allows retry',async()=>{
+ mocks.client.list.mockResolvedValueOnce({ok:false,error:'Owned service unavailable'});render(createElement(AzureReadOnlyEnrollment,{identity}));await screen.findByRole('alert');expect(screen.queryByText('No service-recorded Azure connections were returned.')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Refresh Azure connections'}));await screen.findByText('No service-recorded Azure connections were returned.');expect(screen.queryByRole('alert')).toBeNull();
+});
+it('handles an unexpected catalog rejection without exposing its underlying exception',async()=>{
+ mocks.client.list.mockRejectedValueOnce(Error('PRIVATE_EXCEPTION_SENTINEL'));render(createElement(AzureReadOnlyEnrollment,{identity}));expect((await screen.findByRole('alert')).textContent).toMatch(/could not be refreshed/i);expect(screen.queryByText(/PRIVATE_EXCEPTION_SENTINEL/)).toBeNull();expect((screen.getByRole('button',{name:'Refresh Azure connections'})as HTMLButtonElement).disabled).toBe(false);
+});
+it('does not leave catalog refresh disabled when enrollment supersedes a pending initial read',async()=>{
+ mocks.client.list.mockReturnValueOnce(new Promise(()=>{}));render(createElement(AzureReadOnlyEnrollment,{identity}));await fill();fireEvent.click(screen.getByRole('button',{name:'Validate & connect Azure'}));await screen.findByRole('button',{name:'Read first resource-group page'});expect((screen.getByRole('button',{name:'Refresh Azure connections'})as HTMLButtonElement).disabled).toBe(false);expect(screen.queryByText('Checking Azure connections…')).toBeNull();
+});

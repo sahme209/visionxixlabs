@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { createRequire } from "node:module";
 import vm from "node:vm";
@@ -15,7 +15,7 @@ const helper = join(root, "scripts/fixtures/ownedWebsiteConfig.cjs");
 afterEach(() => { vi.unstubAllEnvs(); for (const directory of directories.splice(0)) rmSync(directory, { recursive: true }); });
 
 function fixture() {
-  const directory = mkdtempSync("/tmp/axiom-website-");
+  const directory = realpathSync(mkdtempSync("/tmp/axiom-website-"));
   if (!existsSync(join(root, ".next"))) mkdirSync(join(root, ".next"), { mode: 0o700 });
   const dist = mkdtempSync(join(root, ".next/visual-"));
   directories.push(dist, directory);
@@ -115,7 +115,7 @@ it("loads owned output paths through the real config-file path without customCon
     const path = require('node:path');
     const crypto = require('node:crypto');
     const root = process.cwd();
-    const directory = fs.mkdtempSync('/tmp/axiom-website-');
+    const directory = fs.realpathSync(fs.mkdtempSync('/tmp/axiom-website-'));
     if(!fs.existsSync(path.join(root,'.next'))) fs.mkdirSync(path.join(root,'.next'),{mode:0o700});
     const dist = fs.mkdtempSync(path.join(root, '.next/visual-'));
     const configPath = path.join(directory, 'config.json');

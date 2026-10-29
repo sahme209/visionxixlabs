@@ -1,0 +1,39 @@
+import {RELEASE_VERIFICATION_RECOVERY} from './releaseVerificationRecovery';
+interface Context {getConfig:()=>{apiBase:string;sessionToken?:string};getRevision:()=>number;subscribe:(fn:()=>void)=>()=>void}
+export type ReleasePlanResult<T>={ok:true;data:T}|{ok:false;error:string;outcomeUnconfirmed:boolean};
+/** Paired, bounded transport for fixed stored release-plan routes only. */
+export async function releaseOperationPlanRequest<T>(context:Context,method:'GET'|'POST'|'DELETE'|'PATCH',path:string,body:unknown,validate:(v:unknown)=>v is T,signal?:AbortSignal,correlationId?:string,expectedVersion?:number):Promise<ReleasePlanResult<T>>{
+ const config=context.getConfig(),revision=context.getRevision(),token=config.sessionToken;
+ const fail=(uncertain=false,code?:unknown):ReleasePlanResult<T>=>({ok:false,outcomeUnconfirmed:uncertain,error:typeof code==='string'&&Object.prototype.hasOwnProperty.call(RELEASE_VERIFICATION_RECOVERY,code)?RELEASE_VERIFICATION_RECOVERY[code]:code==='release_plan_window_expired'?'Update the release window before reading a new plan.':'Saved release plans could not be confirmed. Reload saved plans and read a fresh preview.'});
+ if(expectedVersion!==undefined&&(!Number.isSafeInteger(expectedVersion)||expectedVersion<0||expectedVersion>2147483647))return fail();
+ if(!token?.startsWith('axm.desk.')||signal?.aborted||correlationId!==undefined&&!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(correlationId))return fail();
+ const root='/api/desktop/deployments/[A-Za-z0-9_-]{1,200}';
+ const valid=method==='PATCH'?false:method==='GET'?new RegExp(`^${root}/(?:operation-plans\\?expectedVersion=\\d{1,10}|operation-plans/preview\\?expectedVersion=\\d{1,10}&pullRequestNumber=\\d{1,10}&method=(?:merge|squash|rebase)|merge-targets\\?expectedVersion=\\d{1,10})$`).test(path):method==='POST'?new RegExp(`^${root}/operation-plans(?:/[A-Za-z0-9_-]{1,200}/review)?$`).test(path):new RegExp(`^${root}/operation-plans/[A-Za-z0-9_-]{1,200}$`).test(path);
+ const approvalPath=new RegExp(`^${root}/operation-plans/release_plan_[a-f0-9]{64}/execution-approval$`).test(path);
+ const providerApprovalPath=method!=='PATCH'&&new RegExp(`^${root}/operation-plans/release_plan_[a-f0-9]{64}/provider-approval$`).test(path);
+ const providerOperationPath=(method==='GET'||method==='POST')&&new RegExp(`^${root}/operation-plans/release_plan_[a-f0-9]{64}/provider-operation$`).test(path);
+ const deploymentApprovalPath=(method==='GET'||method==='POST')&&new RegExp(`^${root}/operation-plans/release_plan_[a-f0-9]{64}/deployment-approval$`).test(path);
+ const deploymentExecutionPath=(method==='GET'||method==='POST')&&new RegExp(`^${root}/operation-plans/release_plan_[a-f0-9]{64}/deployment-execution$`).test(path);
+ const githubReconnectPath=method==='POST'&&path==='/api/desktop/integrations/github/reconnect';
+ const providerExecutionPath=(method==='GET'||method==='POST')&&new RegExp(`^${root}/operation-plans/release_plan_[a-f0-9]{64}/provider-execution$`).test(path);
+ const workflowEvidencePath=(method==='GET'||method==='POST')&&new RegExp(`^${root}/operation-plans/release_plan_[a-f0-9]{64}/workflow-evidence$`).test(path);
+ const closePath=method!=='PATCH'&&method!=='DELETE'&&new RegExp(`^${root}/jira-actions/jira_action_[a-f0-9]{64}/close-options$`).test(path);
+ const jiraPath=method==='GET'||method==='POST'?new RegExp(`^${root}/jira-actions${method==='POST'?'(?:/jira_action_[a-f0-9]{64}/(?:approval|dispatch|recover))?':''}$`).test(path):new RegExp(`^${root}/jira-actions/jira_action_[a-f0-9]{64}$`).test(path);
+ const snBase=`${root}/servicenow-actions`;
+ const snPath=method==='GET'?new RegExp(`^${snBase}(?:/metadata|/servicenow_action_[a-f0-9]{64}/close-options)?$`).test(path):method==='POST'?new RegExp(`^${snBase}(?:/servicenow_action_[a-f0-9]{64}/(?:approval|dispatch|recover|close-options))?$`).test(path):new RegExp(`^${snBase}/servicenow_action_[a-f0-9]{64}$`).test(path);
+ const snRecoveryPath=method==='POST'&&new RegExp('^/api/desktop/deployments/[A-Za-z0-9_-]{1,160}/servicenow-actions/servicenow_action_[a-f0-9]{64}/recovery(?:/(?:approval|verify|cancel))?$').exec(path)?.[0]===path;
+ if(!valid&&!(method!=='PATCH'&&approvalPath)&&!jiraPath&&!closePath&&!snPath&&!snRecoveryPath&&!providerApprovalPath&&!providerOperationPath&&!workflowEvidencePath&&!providerExecutionPath&&!deploymentExecutionPath&&!deploymentApprovalPath&&!githubReconnectPath)return fail();
+ const controller=new AbortController();let dispatched=false,status:number|undefined,reader:ReadableStreamDefaultReader<Uint8Array>|undefined,response:Response|undefined,rejectStop!:(e:Error)=>void;
+ const stopped=new Promise<never>((_,reject)=>{rejectStop=reject});
+ const stop=()=>{controller.abort();rejectStop(new Error('stopped'));try{void reader?.cancel().catch(()=>{});if(!reader)void response?.body?.cancel().catch(()=>{})}catch{/* already consumed */}};
+ const unsubscribe=context.subscribe(stop);signal?.addEventListener('abort',stop,{once:true});const timer=setTimeout(stop,25000);
+ const owns=()=>!controller.signal.aborted&&!signal?.aborted&&context.getConfig()===config&&context.getRevision()===revision;
+ try{return await Promise.race([(async()=>{
+  dispatched=true;response=await fetch(`${config.apiBase}${path}`,{method,credentials:'omit',redirect:'error',cache:'no-store',headers:{...(expectedVersion!==undefined?{'x-axiom-expected-version':String(expectedVersion)}:{}),Authorization:`Bearer ${token}`,...(correlationId?{'x-correlation-id':correlationId}:{}),...(method!=='GET'?{'Content-Type':'application/json'}:{})},...(method!=='GET'?{body:JSON.stringify(body)}:{}),signal:controller.signal});status=response.status;if(!owns())return fail(method!=='GET');
+  const length=response.headers.get('content-length');if(length!==null&&(!/^\d+$/.test(length)||Number(length)>262144))return fail(method!=='GET');if(!response.body)return fail(method!=='GET');
+  reader=response.body.getReader();const chunks:Uint8Array[]=[];let size=0;while(true){const part=await reader.read();if(part.done)break;size+=part.value.byteLength;if(size>262144)return fail(method!=='GET');chunks.push(part.value)}
+  const bytes=new Uint8Array(size);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.byteLength}const payload:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
+  if(!owns())return fail(method!=='GET');if(!payload||typeof payload!=='object'||Array.isArray(payload))return fail(method!=='GET');const envelope=payload as {ok?:unknown;data?:unknown;error?:unknown};return response.ok&&envelope.ok===true&&validate(envelope.data)?{ok:true as const,data:envelope.data}:fail(method!=='GET'&&(response.ok||response.status>=500),envelope.error);
+ })(),stopped])}catch{return fail(method!=='GET'&&dispatched&&(status===undefined||status<400||status>=500))}
+ finally{clearTimeout(timer);unsubscribe();signal?.removeEventListener('abort',stop);controller.abort();try{void reader?.cancel().catch(()=>{});if(!reader)void response?.body?.cancel().catch(()=>{})}catch{/* already consumed */}}
+}

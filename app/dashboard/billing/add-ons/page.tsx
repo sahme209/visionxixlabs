@@ -59,7 +59,7 @@ export default async function AddOnsPage() {
   const period = periodKey(new Date());
 
   const billing = await readBillingPlan(orgId).catch(() => null);
-  const plan = planForStripeTier(billing?.tier);
+  const plan = billing?.pricingPlan ?? planForStripeTier(billing?.tier);
   const catalog = findAddOnsForPlan(plan);
   const eff = await effectiveEntitlements(orgId, plan);
 

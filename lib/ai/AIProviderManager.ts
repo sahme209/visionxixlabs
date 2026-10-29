@@ -23,6 +23,8 @@ import { redact } from "@/lib/security/redaction";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
 import { consumeGovernedExtractAdmission, consumeGovernedTextAdmission, type GovernedAIAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
 import { parseGatewayStructuredResponse, VercelGatewayProvider } from "./providers/VercelGatewayProvider";
+import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "./effectiveGatewayModel";
+import { AccountedDecisionMalformed } from "./accountedDecisionMalformed";
 import { AgentStreamInterrupted, streamedDecisionMessage } from "./streamedDecisionMessage";
 
 let SINGLETON: AIProviderManager | null = null;
@@ -52,6 +54,11 @@ export interface ProviderStatusRow {
   priority: number;
 }
 
+function parseAccountedDecision<T>(response: AITextResponse): AIStructuredResponse<T> {
+  try { return parseGatewayStructuredResponse<T>(response); }
+  catch { throw new AccountedDecisionMalformed(response.usage); }
+}
+
 export class AIProviderManager {
   private readonly providers: Map<AIProviderName, AIProvider>;
 
@@ -73,11 +80,17 @@ export class AIProviderManager {
   }
 
   private optionsForProvider(provider: AIProvider, options?: AIRequestOptions & { only?: AIProviderName }): AIRequestOptions | undefined {
-    if (!options) return undefined;
-    // A direct request model is already checked by the route. Fallbacks use
-    // their own approved selection so a model identifier never crosses into a
-    // different provider family.
-    return { ...options, model: options.model ?? options.modelSelections?.[provider.name] };
+    const model = effectiveGatewayModel({
+      model: options?.model,
+      modelSelection: options?.modelSelections?.[provider.name],
+      defaultModel: provider.defaultModel,
+    });
+    if (!gatewayModelOutputBoundVerified(model)) {
+      throw new AIProviderError({ provider: "vercel_gateway", kind: "bad_response", message: "Gateway aggregate output bound is unverified", retryable: false });
+    }
+    // Pin the checked effective model, including managed defaults, so the
+    // provider cannot resolve a different default after this boundary.
+    return { ...options, model };
   }
 
   status(): ProviderStatusRow[] {
@@ -200,11 +213,12 @@ export class AIProviderManager {
     options: AIRequestOptions & { only?: AIProviderName },
     admission: GovernedAIAdmission,
   ): Promise<AITextResponse> {
-    const authority = consumeGovernedTextAdmission(admission, options);
     const gateway = this.admittedGateway(options);
+    const gatewayOptions = this.optionsForProvider(gateway, options);
+    const authority = consumeGovernedTextAdmission(admission, options);
     const out = await runWithFallback<AITextResponse>(
       [gateway],
-      () => gateway.generateTextOnce(redact(prompt), this.optionsForProvider(gateway, options)),
+      () => gateway.generateTextOnce(redact(prompt), gatewayOptions),
       { task: "generate_text", correlationId: options.correlationId, organizationId: options.organizationId },
     );
     await authority.record(out.result);
@@ -222,10 +236,11 @@ export class AIProviderManager {
     options: AIRequestOptions & { only?: AIProviderName; abortSignal?: AbortSignal },
     admission: GovernedAIAdmission,
   ): AsyncGenerator<AIStreamChunk, void, unknown> {
-    const authority = consumeGovernedTextAdmission(admission, options);
     const gateway = this.admittedGateway(options);
+    const gatewayOptions = this.optionsForProvider(gateway, options);
+    const authority = consumeGovernedTextAdmission(admission, options);
     for await (const chunk of gateway.streamTextOnce(redact(prompt), {
-      ...this.optionsForProvider(gateway, options), abortSignal: options.abortSignal,
+      ...gatewayOptions, abortSignal: options.abortSignal,
     })) {
       if (!chunk.done) {
         yield chunk;
@@ -246,15 +261,26 @@ export class AIProviderManager {
     options: AIRequestOptions & { only?: AIProviderName },
     admission: GovernedExtractAdmission,
   ): Promise<AIStructuredResponse<T>> {
-    const authority = consumeGovernedExtractAdmission(admission, options);
-    const gateway = this.admittedGateway(options);
-    const out = await runWithFallback<AITextResponse>(
-      [gateway],
-      () => gateway.generateStructuredTextOnce(redact(text), schemaHint, this.optionsForProvider(gateway, options)),
-      { task: "extract_structured_data", correlationId: options.correlationId, organizationId: options.organizationId },
-    );
-    await authority.record(out.result);
-    return parseGatewayStructuredResponse<T>(out.result);
+    let response: AITextResponse;
+    try {
+      const gateway = this.admittedGateway(options);
+      const gatewayOptions = this.optionsForProvider(gateway, options);
+      const authority = consumeGovernedExtractAdmission(admission, { ...options, model: gatewayOptions?.model ?? gateway.defaultModel }, { text, schemaHint });
+      const out = await runWithFallback<AITextResponse>(
+        [gateway],
+        () => gateway.generateStructuredTextOnce(redact(text), schemaHint, { ...gatewayOptions, ...(authority.smallAgentDispatch ? { smallAgentDispatch: authority.smallAgentDispatch } : {}), ...(authority.smallAgent55Dispatch ? {smallAgent55Dispatch:authority.smallAgent55Dispatch}: {}) }),
+        { task: "extract_structured_data", correlationId: options.correlationId, organizationId: options.organizationId },
+      );
+      await authority.record(out.result);
+      response = out.result;
+    } catch {
+      // Legacy JSON clients have the same one-attempt budget boundary as
+      // streams. An unknown dispatch/accounting outcome is never a repair grant.
+      throw new AgentStreamInterrupted();
+    }
+    // A fully accounted malformed envelope may receive a separately admitted
+    // repair; keep parsing outside the uncertainty boundary above.
+    return parseAccountedDecision<T>(response);
   }
 
   /** Streaming Agent decisions stay display-only until the complete envelope
@@ -267,13 +293,21 @@ export class AIProviderManager {
   ): Promise<AIStructuredResponse<T>> {
     let raw = "", draft = "", response: AITextResponse | undefined;
     try {
-      const authority = consumeGovernedExtractAdmission(admission, options);
       const gateway = this.admittedGateway(options);
       onDraft("");
+      const gatewayOptions = this.optionsForProvider(gateway, options);
+      const selectedModel = gatewayOptions?.model;
+      const model = selectedModel && selectedModel !== "service-default" ? selectedModel : gateway.defaultModel;
+      const authority = consumeGovernedExtractAdmission(admission, { ...options, model }, { text, schemaHint });
+      // Formatting compatibility only: never grants dispatch authority or relaxes parsing.
+      // Exact, bounded server-side opt-in preserves unverified model routes by default.
+      const jsonModels = process.env.AXIOM_GATEWAY_STRUCTURED_JSON_MODELS ?? "";
+      const jsonMode = jsonModels.length <= 4096 && jsonModels.split(",").some(id => id.trim() === model);
       for await (const chunk of gateway.streamTextOnce(redact(text), {
-        ...this.optionsForProvider(gateway, options), abortSignal: options.abortSignal,
+        ...gatewayOptions, abortSignal: options.abortSignal,
+        ...(authority.smallAgentDispatch ? { smallAgentDispatch: authority.smallAgentDispatch } : {}), ...(authority.smallAgent55Dispatch ? {smallAgent55Dispatch:authority.smallAgent55Dispatch}: {}),
         system: `Return valid JSON only. The required shape is: ${schemaHint}`,
-      })) {
+      }, jsonMode && !authority.smallAgentDispatch && !authority.smallAgent55Dispatch ? "json" : undefined)) {
         if (chunk.done) {
           await authority.record(chunk.response);
           response = { ...chunk.response, text: raw };
@@ -289,7 +323,7 @@ export class AIProviderManager {
     } catch { throw new AgentStreamInterrupted(); }
     // Only a fully accounted malformed JSON envelope can receive the existing
     // separately admitted repair. Stream/write uncertainty above never can.
-    return parseGatewayStructuredResponse<T>(response);
+    return parseAccountedDecision<T>(response);
   }
 
   async *streamText(prompt: string, options?: AIRequestOptions & { only?: AIProviderName }): AsyncIterable<AIStreamChunk> {
@@ -332,7 +366,7 @@ export class AIProviderManager {
       if (allowed && !allowed.has(name)) continue;
       const p = this.providers.get(name)!;
       try {
-        rows.push(await p.healthCheck({ timeoutMs: 8_000 }));
+        rows.push(await p.healthCheck(this.optionsForProvider(p, { timeoutMs: 8_000 })));
       } catch (err) {
         const e = err as AIProviderError;
         rows.push({ ok: false, provider: p.name, model: p.defaultModel, latencyMs: e?.latencyMs ?? 0, reason: e?.kind ?? "unknown" });

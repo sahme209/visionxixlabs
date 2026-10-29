@@ -105,6 +105,8 @@ describe("desktop release manifest", () => {
 
     expect(manifest.tag).toBe("desktop-v0.1.11");
     expect(manifest.assets["macos-arm"]?.fileName).toBe("Axiom.Agent_0.1.11_aarch64.dmg");
+    expect(manifest.previousReleases?.map(release => release.tag)).toEqual(["desktop-v0.1.10", "desktop-v0.1.9"]);
+    expect(manifest.previousReleases?.[0].htmlUrl).toBe("https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.10");
   });
 });
 

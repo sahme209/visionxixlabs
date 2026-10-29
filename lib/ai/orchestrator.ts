@@ -6,6 +6,7 @@
 
 import { logAIInvocation } from "@/lib/ai/instrumentation";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+import { boundedAIOutputTokens } from "@/lib/billing/requestReservationCents";
 import { redact } from "@/lib/security/redaction";
 
 export type TaskType =
@@ -98,6 +99,7 @@ export interface GenerateResponse {
  * Generate via orchestrator — routes to best model, fallback chain, timeout, retry, logging.
  */
 export async function generate(opts: GenerateOptions): Promise<GenerateResponse> {
+  const maxTokens = boundedAIOutputTokens(opts.maxTokens);
   const task = (LEGACY_TO_NEW[opts.taskType as LegacyTaskType] ?? opts.taskType) as TaskType;
   const { provider, model, fallbackOrder } = routeModel({
     taskType: task,
@@ -123,7 +125,7 @@ export async function generate(opts: GenerateOptions): Promise<GenerateResponse>
       getAIProviderManager().generateText(combinedPrompt, {
         only: "vercel_gateway",
         system,
-        maxTokens: opts.maxTokens,
+        maxTokens,
         temperature: opts.temperature,
         correlationId: requestId,
       }),

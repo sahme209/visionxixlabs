@@ -312,6 +312,7 @@ export function findPlan(tier: PlanTier): PricingPlan {
  * Existing TenantBillingPlan rows continue to work unchanged.
  */
 export function planForStripeTier(stripeTier: string | null | undefined): PricingPlan {
+  if (stripeTier?.startsWith("public_")) throw new Error("public_plan_requires_contract");
   switch (stripeTier) {
     case "starter":    return STARTER;
     case "growth":     return GROWTH;

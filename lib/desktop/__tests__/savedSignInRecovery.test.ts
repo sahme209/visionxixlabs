@@ -47,6 +47,8 @@ it("recovers a transient saved sign-in failure through the mounted App without w
   expect(fetchMock).toHaveBeenCalledTimes(1);
   fireEvent.click(screen.getByRole("button", { name: "Retry saved sign-in" }));
   expect(screen.queryByText(/private transport payload/)).toBeNull();
+  await screen.findByRole("heading", {name: "What would you like to accomplish today?"});
+  fireEvent.click(screen.getByRole("button", {name: /Build with AI/}));
   await screen.findByText("Verified operational workspace");
   expect(desktopClient.config.sessionToken).toBe(key);
   expect(fetchMock).toHaveBeenCalledTimes(2);
@@ -156,5 +158,17 @@ it.each([
   await waitFor(() => expect(screen.queryByRole("button", { name: "Retry saved sign-in" })).toBeNull());
   expect(fetchMock).toHaveBeenCalledTimes(1);
   expect(desktopClient.hasAuth()).toBe(false);
+  expect(m.write).not.toHaveBeenCalled(); expect(m.clear).not.toHaveBeenCalled();
+});
+
+it.each([401, 403, 200, 503])("shows one actionable recovery message without redundant saved-sign-in warnings (HTTP %s)", async status => {
+  fetchMock.mockReset().mockResolvedValue(new Response(JSON.stringify({ ok: false, error: "private failure payload" }), { status }));
+  await locked();
+  const alerts = screen.getAllByRole("alert");
+  expect(alerts).toHaveLength(1);
+  expect(alerts[0].textContent).not.toMatch(/could not be verified.*could not be verified/);
+  expect(alerts[0].textContent).not.toMatch(/Your saved sign-in could not be verified/);
+  expect(screen.queryByRole("button", { name: "Retry saved sign-in" }) !== null).toBe(status === 503);
+  expect(screen.queryByText(/private failure payload/)).toBeNull();
   expect(m.write).not.toHaveBeenCalled(); expect(m.clear).not.toHaveBeenCalled();
 });

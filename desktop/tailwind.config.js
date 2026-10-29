@@ -5,13 +5,16 @@ export default {
   theme: {
     extend: {
       colors: {
+        white: "rgb(var(--neutral-white) / <alpha-value>)",
+        black: "rgb(var(--neutral-black) / <alpha-value>)",
+        zinc: Object.fromEntries([50,100,200,300,400,500,600,700,800,900,950].map(shade => [shade, `rgb(var(--neutral-zinc-${shade}) / <alpha-value>)`])),
         axiom: {
-          bg:           "#09090b",
-          "bg-elev":    "#0c0c10",
-          surface:      "#0f0f14",
-          "surface-2":  "#13131a",
-          border:       "#1f1f27",
-          "border-soft":"#1a1a22",
+          bg:           "rgb(var(--axiom-bg) / <alpha-value>)",
+          "bg-elev":    "rgb(var(--axiom-bg-elev) / <alpha-value>)",
+          surface:      "rgb(var(--axiom-surface) / <alpha-value>)",
+          "surface-2":  "rgb(var(--axiom-surface-2) / <alpha-value>)",
+          border:       "rgb(var(--axiom-border) / <alpha-value>)",
+          "border-soft":"rgb(var(--axiom-border-soft) / <alpha-value>)",
           accent:       "#8b5cf6",
           "accent-dim": "#6d28d9",
           "accent-glow":"#a78bfa",

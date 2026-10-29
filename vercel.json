@@ -1,6 +1,6 @@
 {
   "installCommand": "npm install --legacy-peer-deps=false",
-  "buildCommand": "NODE_OPTIONS=--max-old-space-size=6144 npm run build",
+  "buildCommand": "NODE_OPTIONS=--max-old-space-size=16384 npm run build",
   "git": {
     "deploymentEnabled": false
   },

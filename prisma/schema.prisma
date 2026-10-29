@@ -588,7 +588,7 @@ model AxiomAgentRun {
   userId         String
   organizationId String
   cloudAccountId String
-  cloudAccount   CloudAccount   @relation(fields: [cloudAccountId], references: [id])
+  cloudAccount   CloudAccount   @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
   trigger        AgentTrigger
   status         AgentRunStatus @default(pending)
   snapshotData   Json?
@@ -838,7 +838,7 @@ model AxiomScheduledRun {
   id                  String            @id @default(cuid())
   organizationId      String
   cloudAccountId      String
-  cloudAccount        CloudAccount      @relation(fields: [cloudAccountId], references: [id])
+  cloudAccount        CloudAccount      @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
   trigger             AgentTrigger      @default(scheduled)
   frequency           ScheduleFrequency @default(daily)
   cronExpression      String // e.g. "0 9 * * 1" (Monday 9am UTC)
@@ -1470,7 +1470,7 @@ model WorkspaceUsageSummary {
 model AxiomAutopilotEvent {
   id             String             @id @default(cuid())
   cloudAccountId String
-  cloudAccount   CloudAccount       @relation(fields: [cloudAccountId], references: [id])
+  cloudAccount   CloudAccount       @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
   organizationId String
   userId         String
   eventType      String // "mode_change" | "auto_applied" | "auto_blocked"
@@ -2326,7 +2326,7 @@ model IdempotencyRecord {
 /// `{ pipelineId, maxCostCents }` records — null cents within a
 /// pipeline override also means unlimited for that one pipeline.
 /// Resolution priority (high → low):
-///   run metadata > pipelineOverrides > defaultMaxCostCents > platform default
+///   pipelineOverrides > defaultMaxCostCents > platform default; run metadata may only lower the result
 model OrganizationBudgetConfig {
   organizationId       String   @id
   /// null = unlimited at the workspace level.
@@ -4759,4 +4759,283 @@ model EcsReleaseReviewCheckpoint {
 
   @@unique([packetId, decisionSetDigest])
   @@index([organizationId, packetId])
+}
+
+// Saved Bot drafts have no worker, lease, scheduling or execution authority.
+model BotTaskDraft {
+  id                 String @id
+  organizationId     String
+  createdByUserId    String
+  clientRequestId    String
+  title              String @db.VarChar(200)
+  instruction        String @db.Text
+  context            String @db.Text
+  initialContentHash String
+  contentHash        String
+  status             String @default("draft")
+  version            Int @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  events             BotTaskDraftEvent[]
+
+  @@unique([organizationId, id])
+  @@unique([organizationId, createdByUserId, clientRequestId])
+  @@index([organizationId, createdByUserId, createdAt, id])
+}
+
+model BotTaskDraftEvent {
+  id             String @id @default(cuid())
+  organizationId String
+  taskId         String
+  actorUserId    String
+  version        Int
+  eventType      String
+  contentJson    Json
+  contentHash    String
+  occurredAt     DateTime @default(now())
+  task           BotTaskDraft @relation(fields: [organizationId, taskId], references: [organizationId, id], onDelete: Restrict)
+
+  @@unique([taskId, version])
+  @@index([organizationId, taskId, version])
+}
+
+// Local-only readiness-report runtime. No provider/model dispatch authority.
+model BotTaskRun {
+  id String @id
+  organizationId String
+  createdByUserId String
+  taskId String
+  taskVersion Int
+  clientRequestId String
+  adapter String
+  intentHash String
+  snapshotJson Json
+  snapshotDigest String
+  status String @default("queued")
+  revision Int @default(0)
+  attemptCount Int @default(0)
+  eventCount Int
+  storedBytes Int
+  cancelRequested Boolean @default(false)
+  leaseOwner String?
+  leaseExpiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  deadlineAt DateTime
+  events BotTaskRunEvent[]
+  artifacts BotTaskArtifact[]
+  @@unique([organizationId, createdByUserId, id])
+  @@unique([organizationId, createdByUserId, clientRequestId])
+  @@index([organizationId, createdByUserId, createdAt, id])
+}
+model BotTaskRunEvent {
+  id String @id @default(cuid())
+  organizationId String
+  createdByUserId String
+  runId String
+  sequence Int
+  eventType String
+  payloadJson Json
+  occurredAt DateTime
+  run BotTaskRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@unique([runId, sequence])
+  @@index([organizationId, createdByUserId, runId, sequence])
+}
+model BotTaskArtifact {
+  id String @id
+  organizationId String
+  createdByUserId String
+  runId String @unique
+  kind String
+  content String @db.Text
+  contentHash String
+  snapshotDigest String
+  observedAt DateTime
+  createdAt DateTime
+  run BotTaskRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@index([organizationId, createdByUserId, runId])
+}
+
+// Local AI task runtime; separate authority and one-dispatch ledger. Not deployed.
+model BotAiTaskRun {
+  id String @id
+  organizationId String
+  createdByUserId String
+  taskId String
+  taskVersion Int
+  clientRequestId String
+  kind String
+  modelId String
+  correlationId String
+  dispatchClaimedAt DateTime?
+  usageReceiptId String?
+  intentHash String
+  snapshotJson Json
+  snapshotDigest String
+  status String @default("queued")
+  revision Int @default(0)
+  attemptCount Int @default(0)
+  eventCount Int
+  storedBytes Int
+  cancelRequested Boolean @default(false)
+  leaseOwner String?
+  leaseExpiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  deadlineAt DateTime
+  events BotAiTaskEvent[]
+  artifacts BotAiTaskArtifact[]
+  @@unique([organizationId, createdByUserId, id])
+  @@unique([organizationId, createdByUserId, clientRequestId])
+  @@index([organizationId, createdByUserId, createdAt, id])
+}
+model BotAiTaskEvent {
+  id String @id @default(cuid())
+  organizationId String
+  createdByUserId String
+  runId String
+  sequence Int
+  eventType String
+  payloadJson Json
+  occurredAt DateTime
+  run BotAiTaskRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@unique([runId, sequence])
+  @@index([organizationId, createdByUserId, runId, sequence])
+}
+model BotAiTaskArtifact {
+  id String @id
+  organizationId String
+  createdByUserId String
+  runId String @unique
+  kind String
+  content String @db.Text
+  contentHash String
+  snapshotDigest String
+  usageReceiptId String
+  createdAt DateTime
+  run BotAiTaskRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@index([organizationId, createdByUserId, runId])
+}
+
+// Local-only fixed read operation. No provider writes or AI dispatch.
+model BotPullRequestEvidenceRun {
+  id String @id
+  organizationId String
+  createdByUserId String
+  taskId String
+  taskVersion Int
+  clientRequestId String
+  kind String
+  intentHash String
+  snapshotJson Json
+  snapshotDigest String
+  status String @default("queued")
+  revision Int @default(0)
+  attemptCount Int @default(0)
+  eventCount Int
+  storedBytes Int
+  cancelRequested Boolean @default(false)
+  leaseOwner String?
+  leaseExpiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  deadlineAt DateTime
+  events BotPullRequestEvidenceEvent[]
+  artifacts BotPullRequestEvidenceArtifact[]
+  @@unique([organizationId, createdByUserId, id])
+  @@unique([organizationId, createdByUserId, clientRequestId])
+  @@index([organizationId, createdByUserId, createdAt, id])
+}
+model BotPullRequestEvidenceEvent {
+  id String @id @default(cuid())
+  organizationId String
+  createdByUserId String
+  runId String
+  sequence Int
+  eventType String
+  payloadJson Json
+  occurredAt DateTime
+  run BotPullRequestEvidenceRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@unique([runId, sequence])
+  @@index([organizationId, createdByUserId, runId, sequence])
+}
+model BotPullRequestEvidenceArtifact {
+  id String @id
+  organizationId String
+  createdByUserId String
+  runId String @unique
+  kind String
+  content String @db.Text
+  contentHash String
+  snapshotDigest String
+  observedAt DateTime
+  createdAt DateTime
+  run BotPullRequestEvidenceRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@index([organizationId, createdByUserId, runId])
+}
+
+// Dedicated one-use guided GCP consent; never claimed by generic Agent workers.
+model GcpGuidedAuthorization {
+  id String @id
+  organizationId String
+  userId String
+  sessionId String
+  stateDigest String @unique
+  status String
+  version Int @default(0)
+  encryptedVerifier String @db.Text
+  encryptedTokens String? @db.Text
+  resourcesJson Json?
+  connectionId String?
+  connectionVersion Int?
+  operationExpiresAt DateTime?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organizationId, userId, sessionId, expiresAt])
+}
+
+/// Local-only guided AWS role bootstrap. No provider authority from callback input.
+model AwsGuidedConnectionFlow {
+  id String @id
+  organizationId String
+  userId String
+  sessionId String
+  version Int @default(0)
+  state String @default("review")
+  attemptCount Int @default(0)
+  connectionJson Json?
+  inputJson Json
+  sealedChallenge String
+  callbackDigest String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organizationId,userId,createdAt])
+}
+
+// Delegated Azure sign-in/cache ledger. No provider-enforced Reader claim.
+model AzureGuidedAuthorization {
+  id                   String   @id
+  organizationId       String
+  userId               String
+  sessionId            String
+  kind                 String   @default("authorization")
+  stateDigest          String   @unique
+  nonceDigest          String
+  configurationDigest  String
+  encryptedVerifier    String   @db.Text
+  encryptedTokens      String?  @db.Text
+  resourcesJson        Json?
+  status               String
+  version              Int      @default(0)
+  operationExpiresAt   DateTime?
+  expiresAt            DateTime
+  connectionId         String?
+  connectionVersion    Int?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([organizationId, userId, sessionId, createdAt])
+  @@index([connectionId, connectionVersion])
 }

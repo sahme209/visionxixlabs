@@ -1,3 +1,7 @@
+import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "./publicBillingConfig";
+import { publicDatabaseNow } from "./publicCreditAuthority";
+import { readPublicEntitlementSnapshot } from "./publicBillingEntitlements";
+import type { PublicSqlRepository } from "./publicBillingStore";
 import {
   PUBLIC_PLAN_CATALOG,
   type PublicPlanId,
@@ -55,6 +59,17 @@ export async function checkDeploymentQuota(
   now = new Date(),
 ): Promise<DeploymentQuotaDecision> {
   try {
+    if (publicBillingPolicyEnabled()) {
+      const publicPlan = await (repo as unknown as PublicSqlRepository).$transaction(async tx=>readPublicEntitlementSnapshot(tx,organizationId,configuredPublicBillingIdentity(),await publicDatabaseNow(tx)),{isolationLevel:"RepeatableRead"});
+      if(publicPlan){
+        if(!publicPlan.usable)return {allowed:false,reason:"deployment_quota_unavailable",planId:publicPlan.planId,used:null,limit:null,remaining:0};
+        const used=await repo.deploymentExecution.count({where:{organizationId,createdAt:currentMonthUtc(now)}});
+        if(!Number.isSafeInteger(used)||used<0)throw Error("deployment_count_unavailable");
+        const limit=publicPlan.monthlyDeployments;
+        if(used>=limit)return {allowed:false,reason:"deployment_quota_exhausted",planId:publicPlan.planId,used,limit,remaining:0};
+        return {allowed:true,planId:publicPlan.planId,used,limit,remaining:limit-used};
+      }
+    }
     const billing = await repo.tenantBillingPlan.findUnique({ where: { organizationId } });
     const planId = billingTierToPublicPlan(billing?.tier, billing?.status);
     const plan = PUBLIC_PLAN_CATALOG.find((candidate) => candidate.id === planId);

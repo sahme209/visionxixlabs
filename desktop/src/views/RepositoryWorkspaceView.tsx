@@ -1,10 +1,12 @@
+import {localWorkspaceSelectionKey,readLocalWorkspaceSelection,resolveLocalWorkspaceSelection,writeLocalWorkspaceSelection} from "../lib/localWorkspaceSelection";
 import { verificationReceipt, type VerificationReceipt } from "../lib/verificationReceipt";
 import { localEditBlocker, type LocalEditRequest, type LocalCreationProposal } from "../lib/localEditReview";
-import { localCodeContextPrompt, type LocalCodeSelection } from "../lib/localCodeContext";
+import { localCodeContextPrompt, type LocalCodeSelection, type LocalRepairSelection } from "../lib/localCodeContext";
+import { RepositoryWorktrees } from "../components/RepositoryWorktrees";
 import { FileDiff } from "../components/FileDiff";
 import { editorMatches, replaceEditorMatch, editorLineRange } from "../lib/editorSearch";
 import { newEditorHistory, editHistory, moveHistory } from "../lib/editorHistory";
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { ExternalLink } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
@@ -59,18 +61,24 @@ function isProjectMetadata(path: string): boolean {
   return path.endsWith(".pbxproj") || path.includes(".xcodeproj/") || path.includes(".xcworkspace/");
 }
 
-export function RepositoryWorkspaceView({ active = true, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
+export function RepositoryWorkspaceView({ compact = false, active = true, onAskAgent, editRequest, workspace, selectionUser }: { editRequest?: LocalEditRequest; workspace?: string; selectionUser?: string; compact?: boolean; active?: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
-  return <RepositoryWorkspaceSession key={revision} revision={revision} active={active} onAskAgent={onAskAgent} editRequest={editRequest} workspace={workspace} />;
+  return <RepositoryWorkspaceSession compact={compact} key={`${revision}:${selectionUser ?? ""}:${workspace ?? ""}`} selectionUser={selectionUser} revision={revision} active={active} onAskAgent={onAskAgent} editRequest={editRequest} workspace={workspace} />;
 }
 
-function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest, workspace }: { editRequest?: LocalEditRequest; workspace?: string; revision: number; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
+function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, editRequest, workspace, selectionUser }: { editRequest?: LocalEditRequest; workspace?: string; selectionUser?: string; revision: number; compact: boolean; active: boolean; onAskAgent?: (selection: LocalCodeSelection) => void }) {
   const [parentPath, setParentPath] = useState("");
+  const selectionKey = localWorkspaceSelectionKey(desktopClient.config.apiBase, workspace, selectionUser);
+  const knownRoots = useRef<string[]>([]);
+  const selectionRoot = useRef<string | null>(null);
+  const [sourceExpanded, setSourceExpanded] = useState(false);
+  const [publishExpanded, setPublishExpanded] = useState(false);
   const [repositories, setRepositories] = useState<string[]>([]);
   const [selectedRepository, setSelectedRepositoryState] = useState<string | null>(null);
   const [status, setStatus] = useState<RepositoryStatus | null>(null);
   const [files, setFiles] = useState<string[]>([]);
   const [filter, setFilter] = useState("");
+  const [fileNavigation, setFileNavigation] = useState<"files" | "changes">("files");
   const [showAllFiles, setShowAllFiles] = useState(false);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [content, setContent] = useState("");
@@ -86,7 +94,9 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const [lineTarget, setLineTarget] = useState("");
   const matches = useMemo(() => editorMatches(content, searchQuery), [content, searchQuery]);
   useEffect(() => { setMatchIndex(-1); }, [content, searchQuery]);
-  useEffect(() => { setSearchQuery(""); setReplacement(""); setLineTarget(""); setSearchOpen(false); setReviewOpen(false); setSelectionLength(0); }, [selectedFile]);
+  // Reset per-file controls before the new editor becomes interactive. A passive
+  // reset can otherwise close a Find action clicked just after the file commits.
+  useLayoutEffect(() => { setSearchQuery(""); setReplacement(""); setLineTarget(""); setSearchOpen(false); setReviewOpen(false); setSelectionLength(0); }, [selectedFile]);
   const [savedContent, setSavedContent] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -106,6 +116,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const [verificationResult, setVerificationResult] = useState<RepositoryCheckResult | null>(null);
   const [showVerification, setShowVerification] = useState(false);
   const [verificationStale, setVerificationStale] = useState(false);
+  const [verificationTarget, setVerificationTarget] = useState<{rootPath: string; repositoryFullName: string; branch: string} | null>(null);
   const [cancelAvailable, setCancelAvailable] = useState(false);
   const verificationRun = useRef<{ id: string; repositoryPath: string; canceled: boolean } | null>(null);
   const sourceEpoch = useRef(0);
@@ -123,6 +134,13 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const activeBusy = useRef<string | null>(null);
   const appliedEdit = useRef<{request: LocalEditRequest; paths: Set<string>} | undefined>(undefined);
   const loadedFile = useRef<{ repository: string; path: string; content: string; saved: string } | null>(null);
+  // Only committed request changes retire consent. A -> B -> A must not revive
+  // a pending operation or confirmation captured for the first A generation.
+  const editSelection = useRef({ request: editRequest });
+  useLayoutEffect(() => {
+    if (editSelection.current.request !== editRequest) editSelection.current = { request: editRequest };
+  }, [editRequest]);
+
   const owns = useCallback((captured: typeof owner.current) => mounted.current && desktopClient.config === context && desktopClient.getContextRevision() === revision
     && captured.generation === owner.current.generation && captured.repository === owner.current.repository, [context, revision]);
 
@@ -135,13 +153,17 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   const setSelectedRepository = useCallback((next: string | null | ((current: string | null) => string | null)) => {
     const repository = typeof next === "function" ? next(owner.current.repository) : next;
     if (repository === owner.current.repository) return;
+    if (repository) {
+      const root = knownRoots.current.includes(repository) ? repository : selectionRoot.current;
+      if (root && knownRoots.current.includes(root)) { selectionRoot.current = root; writeLocalWorkspaceSelection(selectionKey, {root, checkout:repository}); }
+    } else selectionRoot.current = null;
     owner.current = { repository, generation: owner.current.generation + 1 };
     fileRequest.current++; operationRequest.current++; activeBusy.current = null; loadedFile.current = null; history.current = newEditorHistory("");
     setSelectedRepositoryState(repository); setStatus(null); setFiles([]); setChecks([]);
     setSelectedFile(null); setContent(""); setSavedContent(""); setBusy(null);
     setCancelAvailable(false);
-    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setVerificationStale(false); sourceEpoch.current++; setConfirmationState(null);
-  }, []);
+    setError(null); setNotice(null); setPrUrl(null); setVerificationResult(null); setVerificationTarget(null); setVerificationStale(false); sourceEpoch.current++; setConfirmationState(null);
+  }, [selectionKey]);
 
   function setConfirmation(next: Confirmation | null) {
     const captured = owner.current;
@@ -182,9 +204,20 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     const request = ++listRequest.current;
     const next = await invoke<string[]>("list_local_repositories", { parentPath: directory });
     if (!mounted.current || desktopClient.config !== context || desktopClient.getContextRevision() !== revision || request !== listRequest.current) return;
+    knownRoots.current = next;
     setRepositories(next);
-    if (selectRepository) setSelectedRepository(current => current && next.includes(current) ? current : (next[0] ?? null));
-  }, [context, revision, setSelectedRepository]);
+    if (selectRepository) {
+      const captured = owner.current;
+      const current = captured.repository;
+      const preferred = current && selectionRoot.current ? {root:selectionRoot.current, checkout:current} : readLocalWorkspaceSelection(selectionKey);
+      const restored = current && next.includes(current) ? current : await resolveLocalWorkspaceSelection(preferred, next, root => invoke<Array<{path:string}>>("list_repository_worktrees", {repositoryPath:root}));
+      if (!mounted.current || desktopClient.config !== context || desktopClient.getContextRevision() !== revision || request !== listRequest.current || captured !== owner.current) return;
+      // Only a freshly recorded native worktree can restore a non-primary path.
+      selectionRoot.current = preferred && next.includes(preferred.root) ? preferred.root : null;
+      setSelectedRepository(restored ?? next[0] ?? null);
+      if (preferred && restored !== preferred.checkout) setNotice("The saved checkout is unavailable. Opened an available repository; review its name before editing.");
+    }
+  }, [context, revision, selectionKey, setSelectedRepository]);
 
   useEffect(() => {
     let cancelled = false;
@@ -205,7 +238,9 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       if (!current()) return;
       if (!result.ok) { setRepositoryCatalogError(result.error); return; }
       setRemoteRepositories(result.data.repositories);
-      const preferred = window.localStorage.getItem("axiom.workspace.repository.v1");
+      // Repository preference is optional, never an availability or authorization gate.
+      let preferred: string | null = null;
+      try { preferred = window.localStorage.getItem("axiom.workspace.repository.v1"); } catch { /* Session-only selection remains available. */ }
       const selected = result.data.repositories.find(repository => repository.fullName === preferred) ?? result.data.repositories[0];
       if (!manualClone.current) setCloneRepository(value =>
         result.data.repositories.some(repository => repository.fullName === value) ? value : selected?.fullName || "");
@@ -236,6 +271,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     const relevantFiles = showAllFiles ? files : files.filter((file) => !isWorkspaceNoise(file));
     return query ? relevantFiles.filter((file) => file.toLowerCase().includes(query)) : relevantFiles;
   }, [files, filter, showAllFiles]);
+  const visibleChanges = (status?.changedFiles ?? []).filter(change => change.path.toLowerCase().includes(filter.trim().toLowerCase()));
   const connectedRepository = status?.repositoryFullName
     ? remoteRepositories.find((repository) => repository.fullName.toLowerCase() === status.repositoryFullName?.toLowerCase())
     : undefined;
@@ -351,7 +387,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: direction, ...(direction === "push" ? { branch: status.branch } : {}) });
       if (!current()) return;
       if (!credential.ok) throw new Error(credential.error);
-      await invoke(`${direction}_repository`, { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
+      await invoke(`${direction}_repository`, { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl, repositoryFullName, branch: status.branch });
       if (!current()) return;
       await refreshRepository(selectedRepository);
       if (!current()) return;
@@ -411,7 +447,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       const credential = await desktopClient.mintGithubCloneToken({ repositoryFullName, purpose: "push", branch: status.branch });
       if (!current()) return;
       if (!credential.ok) throw new Error(credential.error);
-      await invoke("push_repository", { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl });
+      await invoke("push_repository", { repositoryPath: selectedRepository, authenticatedUrl: credential.data.cloneUrl, repositoryFullName, branch: status.branch });
       if (!current()) return;
       const result = await desktopClient.openGithubPullRequest({
         repositoryFullName, head: status.branch, base: prBase.trim(), title: prTitle.trim(),
@@ -465,6 +501,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       setError("Save or discard unsaved editor changes before verification; checks run against files on disk."); return;
     }
     const consentEpoch = sourceEpoch.current;
+    const consentRoot = status?.rootPath;
     setConfirmation({
       title: `Run ${check.label}?`,
       description: `${check.command} will run inside this repository with a minimal process environment. Scripts are not sandboxed: they can access files and network resources available to your user, including stored credentials. Native timeout/output limits do not establish process-tree isolation. Run only repositories you trust. Stop check requests a bounded direct-child stop only; descendants may continue and their status is unverified. Closing or switching views does not cancel a running check.`,
@@ -477,11 +514,25 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           }
           if (consentEpoch !== sourceEpoch.current) { setError("The source changed after check consent was requested. Review and request the check again."); return; }
           const checkedEpoch = sourceEpoch.current;
+          const checkedStatus = await invoke<RepositoryStatus>("repository_status", {repositoryPath: selectedRepository});
+          if (!current()) return;
+          if (typeof checkedStatus.rootPath !== "string" || !checkedStatus.rootPath
+            || (consentRoot && checkedStatus.rootPath !== consentRoot) || consentEpoch !== sourceEpoch.current) {
+            setError("The repository or source changed before verification. Review and request the check again."); return;
+          }
           verificationGeneration.current++;
+          setVerificationTarget(null);
           setVerificationStale(true);
           const id = await invoke<string>("prepare_repository_check", { repositoryPath: selectedRepository, checkId: check.id });
           if (!current()) {
             await invoke("cancel_repository_check", { repositoryPath: selectedRepository, runId: id });
+            return;
+          }
+          // Native preparation is asynchronous. Consent must still describe
+          // the source at the boundary where a process can actually start.
+          if (consentEpoch !== sourceEpoch.current) {
+            await invoke("cancel_repository_check", { repositoryPath: selectedRepository, runId: id });
+            if (current()) setError("The source changed while preparing the check. Save or discard edits, then review and request the check again.");
             return;
           }
           const attempt = { id, repositoryPath: selectedRepository, canceled: false };
@@ -500,6 +551,8 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           const result = verificationReceipt(raw, check.id);
           const stale = checkedEpoch !== sourceEpoch.current;
           setVerificationResult(result); setVerificationStale(stale);
+          setVerificationTarget(!stale && checkedStatus.repositoryFullName && checkedStatus.branch
+            ? {rootPath: checkedStatus.rootPath, repositoryFullName: checkedStatus.repositoryFullName, branch: checkedStatus.branch} : null);
           setShowVerification(true);
           await refreshRepository(selectedRepository);
           if (!current()) return;
@@ -510,7 +563,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   }
 
   async function loadAgentDraft() {
-    const file = loadedFile.current, request = editRequest;
+    const file = loadedFile.current, request = editRequest, selection = editSelection.current;
     if (!active || activeBusy.current || !request || !file || !owns(owner.current)) return;
     const edit = request.edits?.find(candidate => candidate.path === file.path) ?? request.edit;
     if (request.context !== desktopClient.config || request.workspace !== workspace) { setError("Agent draft belongs to a different sign-in or workspace."); return; }
@@ -519,6 +572,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     await run("load-agent-draft", async current => {
       const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: file.repository});
       if (!current() || loadedFile.current !== file || file.content !== snapshot) return;
+      if (selection !== editSelection.current || selection.request !== request) { setError("The Agent proposal changed. Review the current proposal before loading it."); return; }
       if (live.rootPath !== file.repository) { setError("The local repository identity could not be verified."); return; }
       const blocker = localEditBlocker(edit, {repositoryFullName: live.repositoryFullName, branch: live.branch, path: file.path, saved: file.saved, content: file.content});
       if (blocker) { setError(blocker); return; }
@@ -530,16 +584,18 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
   }
 
   function createAgentFile(edit: LocalCreationProposal) {
-    const request = editRequest, repository = owner.current.repository;
+    const request = editRequest, repository = owner.current.repository, selection = editSelection.current;
     if (!active || activeBusy.current || !request || !repository || request.context !== desktopClient.config || request.workspace !== workspace) return;
     if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Save or discard existing edits before creating a proposed file."); return; }
     setConfirmation({title: `Create ${edit.path}?`, description: "Create only this new local file. Existing files and symlinks must be refused. Parent folders must already exist. This does not approve GitHub or run checks. If writing fails, inspect the potentially partial new file before retrying. Other files are separate operations.", confirmLabel: "Create local file", preview: edit.content, previewLabel: "New file content to create",
       onConfirm: async () => {
         if (activeBusy.current || request.context !== desktopClient.config || request.workspace !== workspace) return;
+        if (selection !== editSelection.current || selection.request !== request) { setError("The Agent proposal changed. Review and confirm the current new-file proposal."); return; }
         if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Save or discard existing edits before creating a proposed file."); return; }
         await run("create", async current => {
           const live = await invoke<RepositoryStatus>("repository_status", {repositoryPath: repository});
           if (!current()) return;
+          if (selection !== editSelection.current || selection.request !== request) { setError("The Agent proposal changed. Review and confirm the current new-file proposal."); return; }
           if (live.rootPath !== repository || live.repositoryFullName?.toLowerCase() !== edit.repositoryFullName.toLowerCase() || live.branch !== edit.branch) { setError("Open the proposal's repository and branch before creating this file."); return; }
           if (loadedFile.current && loadedFile.current.content !== loadedFile.current.saved) { setError("Existing edits changed during creation review. Review them before creating the file."); return; }
           await invoke("create_repository_file", {repositoryPath: repository, relativePath: edit.path, content: edit.content, repositoryFullName: edit.repositoryFullName, branch: edit.branch});
@@ -567,6 +623,38 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
         if (prepared) return;
         prepared = true;
         onAskAgent(selection);
+      },
+    });
+  }
+
+  function prepareRepair() {
+    const file = loadedFile.current, receipt = verificationResult, target = verificationTarget;
+    if (!active || !onAskAgent || activeBusy.current || !owns(owner.current) || !file || !receipt || !target
+      || verificationStale || receipt.success || receipt.exitCode === null || file.content !== file.saved) return;
+    const selection: LocalRepairSelection = {kind: "repair", repositoryFullName: target.repositoryFullName, branch: target.branch, path: file.path,
+      checkId: receipt.checkId, exitCode: receipt.exitCode, stale: false, excerpt: receipt.output.slice(0, 8000)};
+    if (!localCodeContextPrompt(selection)) return;
+    const epoch = sourceEpoch.current, generation = verificationGeneration.current, snapshot = file.saved;
+    setConfirmation({
+      title: "Prepare a coding repair draft?",
+      description: `Prepare an unsent repair request for ${target.repositoryFullName} · ${target.branch} · ${file.path}. Review the check excerpt for credentials or private data. The receipt is historical evidence, not an exact source snapshot. This does not contact a model, save files, run checks or approve changes.`,
+      confirmLabel: "Prepare repair draft", preview: selection.excerpt,
+      onConfirm: async () => {
+        if (activeBusy.current) return;
+        await run("prepare-agent-repair", async current => {
+          const [live, disk] = await Promise.all([
+            invoke<RepositoryStatus>("repository_status", {repositoryPath: file.repository}),
+            invoke<string>("read_repository_file", {repositoryPath: file.repository, relativePath: file.path}),
+          ]);
+          if (!current()) return;
+          if (sourceEpoch.current !== epoch || verificationGeneration.current !== generation
+            || loadedFile.current !== file || file.content !== snapshot || disk !== snapshot
+            || live.rootPath !== target.rootPath || live.repositoryFullName?.toLowerCase() !== target.repositoryFullName.toLowerCase()
+            || live.branch !== target.branch) {
+            setError("The repair source, target or verification context changed. Refresh and review it again."); return;
+          }
+          onAskAgent(selection);
+        });
       },
     });
   }
@@ -644,10 +732,19 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
     }
   }
 
-  return <div className="flex min-h-0 flex-1 flex-col bg-[#0b0c0e]">
-    <div className="flex items-center gap-2 border-b border-white/[0.07] px-4 py-3">
-      <div className="w-72">
-        <select value={manualCloneRepository ? "__manual__" : cloneRepository} onChange={(event) => {
+  return <div className="local-editor-workspace flex min-h-0 flex-1 flex-col bg-[#111214]">
+    <div aria-label="Active local editor repository" className="local-scope-strip">
+      <span className="local-scope-label">Local</span>
+      <span className="min-w-0 flex-1 truncate" title={selectedRepository ?? undefined}>{selectedRepository ? selectedRepository.split("/").pop() : "Choose a local repository"}</span>
+      {status && <span className="shrink-0 text-zinc-400">{status.branch}</span>}
+      {status && <button type="button" onClick={() => setFileNavigation("changes")} className="shrink-0 text-xs text-zinc-400 hover:text-zinc-200" aria-label={`View ${status.changedFiles.length} changed files`}>{status.changedFiles.length} changed</button>}
+    </div>
+    <details open={!compact || sourceExpanded} onToggle={event => { if (compact) setSourceExpanded(event.currentTarget.open); }} className="shrink-0 border-b border-white/[0.07]">
+      <summary className={compact ? "cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300" : "hidden"}>Clone or refresh repositories</summary>
+    <div className="flex flex-wrap items-center gap-2 px-4 py-3">
+      <div className="w-72 min-w-0">
+        <label htmlFor="clone-source" className="mb-1 block text-[11px] text-zinc-400">Clone source · GitHub</label>
+        <select id="clone-source" value={manualCloneRepository ? "__manual__" : cloneRepository} onChange={(event) => {
           if (event.target.value === "__manual__") {
             manualClone.current = true;
             setManualCloneRepository(true);
@@ -656,7 +753,7 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
             manualClone.current = false;
             setManualCloneRepository(false);
             setCloneRepository(event.target.value);
-            window.localStorage.setItem("axiom.workspace.repository.v1", event.target.value);
+            try { window.localStorage.setItem("axiom.workspace.repository.v1", event.target.value); } catch { /* Keep the selected repository in memory. */ }
           }
         }} aria-label="Connected GitHub repository" className="w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-violet-400/50">
           {remoteRepositories.length === 0 && <option value="">No connected repositories</option>}
@@ -670,7 +767,8 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/") || (!manualCloneRepository && !remoteRepositories.some(repository => repository.fullName === cloneRepository))} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
       <button type="button" disabled={Boolean(busy) || !parentPath} onClick={() => void refreshList(parentPath)} className="btn-secondary disabled:opacity-40">Refresh</button>
     </div>
-    {repositoryCatalogError && <div role="status" className="border-b border-white/[0.08] bg-white/[0.03] px-4 py-2 text-xs text-zinc-300">Connected repositories are temporarily unavailable. Validate GitHub under Settings → Integrations, then retry. Manual entry remains available for an authorized repository.</div>}
+    </details>
+    {repositoryCatalogError && !compact && <div role="status" className="border-b border-white/[0.08] px-4 py-2 text-xs text-zinc-300">GitHub access is unavailable. Existing local files remain usable. Review Settings → Integrations before cloning or syncing.</div>}
     {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/[0.06] bg-white/[0.02] px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
     {editRequest && editRequest.context === desktopClient.config && editRequest.workspace === workspace && (!(appliedEdit.current?.request === editRequest && appliedEdit.current.paths.has(editRequest.edit.path)) || Boolean(editRequest.edits?.length)) && <section aria-label="Agent local draft review" className="max-h-96 shrink-0 overflow-auto border-b border-violet-300/20 p-4 text-xs text-zinc-300">
       <p>Proposal {editRequest.edit.proposalId}: {editRequest.edit.repositoryFullName} · {editRequest.edit.branch} · {editRequest.edits?.length ? `${editRequest.edits.length} files` : editRequest.edit.path}</p>
@@ -698,47 +796,64 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
       <p className="mb-2 text-xs text-zinc-500">Recorded process result only. It does not certify the current working tree or changes made outside Axiom.</p>
       <div className="mb-2 flex items-center justify-between text-[10px] text-zinc-500"><span>{verificationResult.checkId}</span><span>{(verificationResult.durationMs / 1000).toFixed(1)}s · exit {verificationResult.exitCode ?? "none"}</span></div>
       <pre tabIndex={0} className="whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-zinc-300">{verificationResult.output || "The check completed without output."}</pre>
-      {onAskAgent && <button type="button" disabled={Boolean(busy) || !verificationResult.output} onClick={askAboutVerification} className="btn-secondary mt-2 disabled:opacity-40">Prepare check output for Agent</button>}
+      {onAskAgent && <div className="mt-2 flex flex-wrap gap-2">
+        <button type="button" disabled={Boolean(busy) || !verificationResult.output} onClick={askAboutVerification} className="btn-secondary disabled:opacity-40">Prepare check output for Agent</button>
+        <button type="button" disabled={Boolean(busy) || verificationStale || verificationResult.success || !verificationTarget || !selectedFile || content !== savedContent || !localCodeContextPrompt({kind: "repair", ...verificationTarget, path: selectedFile, checkId: verificationResult.checkId, exitCode: verificationResult.exitCode ?? 0, stale: false, excerpt: verificationResult.output.slice(0, 8000)})} onClick={prepareRepair} className="btn-secondary disabled:opacity-40">Prepare repair with Agent</button>
+      </div>}
     </div>}
-    <div className="flex min-h-0 flex-1">
-      <aside className="flex w-64 shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]">
+    <div className="repository-files-layout flex min-h-0 flex-1">
+      <aside className={`flex ${compact ? "w-44" : "w-56"} shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]`}>
         <div className="border-b border-white/[0.06] px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">Local repositories</div>
         <div className="max-h-40 overflow-y-auto border-b border-white/[0.06] p-2">
           {repositories.length === 0 && <p className="px-2 py-3 text-xs text-zinc-600">Clone a connected GitHub repository to begin.</p>}
           {repositories.map((repository) => <button key={repository} type="button" onClick={() => chooseRepository(repository)} className={`mb-1 w-full truncate rounded px-2 py-2 text-left text-xs ${selectedRepository === repository ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/[0.05]"}`} title={repository}>{repository.split("/").pop()}</button>)}
         </div>
+        {selectedRepository && <RepositoryWorktrees key={selectedRepository} repositoryPath={selectedRepository} disabled={Boolean(busy) || !active} onOpen={chooseRepository} />}
         <div className="border-b border-white/[0.06] p-2">
+          <div className="mb-2 flex gap-1" aria-label="Repository file navigation">
+            <button type="button" aria-pressed={fileNavigation === "files"} onClick={() => setFileNavigation("files")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "files" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Files</button>
+            <button type="button" aria-pressed={fileNavigation === "changes"} onClick={() => setFileNavigation("changes")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "changes" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Changes</button>
+          </div>
           <input value={filter} onChange={(event) => setFilter(event.target.value)} placeholder="Filter files" className="w-full rounded-md border border-white/10 bg-black/20 px-2.5 py-2 text-xs outline-none focus:border-violet-400/50" />
           <div className="mt-2 flex items-center justify-between px-1 text-[10px] text-zinc-600">
-            <span>{visibleFiles.length} files</span>
-            <button type="button" onClick={() => setShowAllFiles((current) => !current)} className="rounded px-1.5 py-1 text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200">{showAllFiles ? "Source files" : "All files"}</button>
+            <span>{fileNavigation === "changes" ? `${visibleChanges.length} recorded changes` : `${visibleFiles.length} files`}</span>
+            <button type="button" disabled={fileNavigation === "changes"} onClick={() => setShowAllFiles((current) => !current)} className="rounded px-1.5 py-1 text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200">{showAllFiles ? "Source files" : "All files"}</button>
           </div>
         </div>
         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
-          {visibleFiles.map((file) => <button key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"}`} title={file}>{file}</button>)}
+          {fileNavigation === "changes" && <>
+            <button type="button" disabled={Boolean(busy) || !selectedRepository} onClick={() => {if (selectedRepository) void run("refresh-changes", () => refreshRepository(selectedRepository));}} className="mx-2 my-1 rounded border border-white/10 px-2 py-1 text-[10px] text-zinc-400 disabled:opacity-40">Refresh changes</button>
+            <p className="px-2 py-2 text-[10px] leading-4 text-zinc-500">Recorded Git status. Open an available file to inspect its current contents. Deleted or unavailable files cannot be opened.</p>
+            {!status && <p role="status" className="px-2 py-2 text-xs text-zinc-500">Repository status is not verified.</p>}
+            {status && visibleChanges.length === 0 && <p role="status" className="px-2 py-2 text-xs text-zinc-500">{filter.trim() ? "No matching changed files." : "No recorded Git changes."}</p>}
+            {visibleChanges.map(change => <button key={change.path} type="button" aria-label={`${change.status} ${change.path}`} disabled={Boolean(busy) || !files.includes(change.path)} onClick={() => selectFile(change.path)} title={`${change.status} ${change.path}${!files.includes(change.path) ? " · unavailable in the current file list" : ""}`} className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left font-mono text-[11px] disabled:opacity-40 ${selectedFile === change.path ? "bg-violet-500/15 text-violet-100" : "text-zinc-400 hover:bg-white/[0.04]"}`}><span className="w-5 shrink-0 text-amber-300">{change.status}</span><span className="truncate">{change.path}</span></button>)}
+          </>}
+          {fileNavigation === "files" && visibleFiles.map((file) => <button key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"}`} title={file}>{file}</button>)}
         </div>
       </aside>
       <section className="flex min-w-0 flex-1 flex-col">
-        <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] px-3 py-2">
-          <span className="mr-auto truncate text-xs text-zinc-300">{status ? `${status.repositoryFullName ?? "Local repository"} · ${status.branch}` : "Choose a repository"}</span>
-          {status && <span className="text-[10px] text-zinc-600">↑{status.ahead} ↓{status.behind} · {status.changedFiles.length} changed</span>}
+        <details className="editor-git-controls" open={!compact}>
+          <summary className={compact ? "cursor-pointer px-3 py-2 text-xs text-zinc-400" : "hidden"}>Branch & sync</summary>
+          <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.07] px-3 py-2">
           <input value={branchName} onChange={(event) => setBranchName(event.target.value)} placeholder="new branch" className="w-36 rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs outline-none" />
           <button type="button" disabled={Boolean(busy) || !selectedRepository || !branchName.trim()} onClick={() => void createBranch()} className="btn-secondary disabled:opacity-40">Branch</button>
           <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync("pull")} className="btn-secondary disabled:opacity-40">{busy === "pull" ? "Pulling…" : "Pull"}</button>
           <button type="button" disabled={Boolean(busy) || !status?.repositoryFullName || onDefaultBranch} title={onDefaultBranch ? "Create a branch; direct pushes to the default branch are blocked." : undefined} onClick={() => sync("push")} className="btn-secondary disabled:opacity-40">{busy === "push" ? "Pushing…" : "Push"}</button>
         </div>
+        </details>
         {selectedFile ? <>
           <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-3 py-2">
             <span className="mr-auto truncate font-mono text-[11px] text-zinc-400">{selectedFile}{content !== savedContent ? " · unsaved" : ""}</span>
             {onAskAgent && <button type="button" aria-label="Ask Agent about selection" disabled={Boolean(busy) || selectionLength === 0 || selectionLength > 8000 || !localCodeContextPrompt({path: selectedFile, excerpt: "selection"})} onClick={askAboutSelection} className="btn-secondary disabled:opacity-40">Ask Agent</button>}
             <button type="button" aria-label="Review local changes" aria-expanded={reviewOpen} onClick={() => setReviewOpen(value => !value)} className="btn-secondary">Review changes</button>
-            <input aria-label="Line number" inputMode="numeric" maxLength={7} placeholder="Line" value={lineTarget} onChange={event => setLineTarget(event.target.value)} onKeyDown={event => {
+            <details className="editor-tools" open={!compact}><summary className={compact ? "cursor-pointer rounded-md px-2 py-1.5 text-xs text-zinc-300" : "hidden"}>Editing tools</summary><div className={compact ? "editor-tools-menu" : "flex flex-wrap items-center gap-2"}>            <input aria-label="Line number" inputMode="numeric" maxLength={7} placeholder="Line" value={lineTarget} onChange={event => setLineTarget(event.target.value)} onKeyDown={event => {
               if (event.key === "Enter" && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); goToLine(); }
             }} className="w-16 rounded border border-white/10 bg-black/20 px-2 py-1 text-xs" />
             <button type="button" disabled={Boolean(busy) || !lineTarget} onClick={goToLine} className="btn-secondary disabled:opacity-40">Go to line</button>
             <button type="button" aria-label="Find in file" onClick={openSearch} className="btn-secondary">Find</button>
             <button type="button" aria-label="Undo edit" disabled={Boolean(busy) || !history.current.past.length} onClick={() => travelHistory("undo")} className="btn-secondary disabled:opacity-40">Undo</button>
             <button type="button" aria-label="Redo edit" disabled={Boolean(busy) || !history.current.future.length} onClick={() => travelHistory("redo")} className="btn-secondary disabled:opacity-40">Redo</button>
+</div></details>
             <button type="button" disabled={Boolean(busy) || content === savedContent} onClick={() => void saveFile()} className="btn-secondary disabled:opacity-40">Save ⌘S</button>
           </div>
           {reviewOpen && <section aria-label="Review unsaved file changes" className="max-h-96 shrink-0 overflow-auto border-b border-white/10 p-3">
@@ -760,13 +875,16 @@ function RepositoryWorkspaceSession({ revision, active, onAskAgent, editRequest,
           </div>}
           {isProjectMetadata(selectedFile) && <div role="status" className="border-b border-white/[0.08] bg-white/[0.025] px-4 py-2 text-xs text-zinc-400">This is generated project metadata. Edit it only when you understand the project format; source files are safer for normal changes.</div>}
           <textarea ref={editorRef} value={content} onSelect={event => setSelectionLength(event.currentTarget.selectionEnd - event.currentTarget.selectionStart)} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
-          <div className="grid grid-cols-[minmax(220px,1fr)_auto_minmax(180px,0.7fr)_120px_auto] items-center gap-2 border-t border-white/[0.07] bg-[#111315] p-3">
-            <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} placeholder="Commit message for this file" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
+          <details open={!compact || publishExpanded} onToggle={event => { if (compact) setPublishExpanded(event.currentTarget.open); }} className="shrink-0 border-t border-white/[0.07] bg-[#111315]">
+            <summary className={compact ? "cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300" : "hidden"}>Commit & publish{prUrl ? " · PR available" : ""}</summary>
+          <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-3">
+            <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} aria-label="Commit message for this file" placeholder="Commit message for this file" className="min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             <button type="button" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? "Create a branch before committing." : undefined} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>
-            <input value={prTitle} onChange={(event) => setPrTitle(event.target.value)} placeholder="Pull request title" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
-            <input value={prBase} onChange={(event) => setPrBase(event.target.value)} placeholder="base" className="rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
+            <input value={prTitle} onChange={(event) => setPrTitle(event.target.value)} aria-label="Pull request title" placeholder="Pull request title" className="min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
+            <input value={prBase} onChange={(event) => setPrBase(event.target.value)} aria-label="Pull request base branch" placeholder="base" className="min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none" />
             {prUrl ? <ExternalLink href={prUrl} className="text-xs text-emerald-300 hover:text-white">Open PR ↗</ExternalLink> : <button type="button" disabled={Boolean(busy) || !prTitle.trim() || !prBase.trim() || !status || status.branch === prBase.trim() || status.changedFiles.length > 0 || content !== savedContent} onClick={reviewPullRequest} className="btn-secondary disabled:opacity-40" title={status && status.changedFiles.length > 0 ? "Commit all working-tree changes before publishing a pull request." : undefined}>{busy === "pr" ? "Publishing…" : "Publish & open PR"}</button>}
           </div>
+          </details>
         </> : <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Choose a UTF-8 text file to edit.</div>}
       </section>
     </div>

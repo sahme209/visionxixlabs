@@ -36,7 +36,7 @@ type NativeStreamEvent =
   | { kind: "error" };
 const MAX_STREAM_CHUNK_BYTES = 16 * 1024;
 const MESSAGE_STREAM_PATH = /^\/api\/desktop\/agent\/conversations\/[A-Za-z0-9_-]{1,200}\/messages$/;
-const PATCH_PATH = /^(?:\/api\/desktop\/workspace-members|\/api\/desktop\/airflow\/automations\/[A-Za-z0-9_-]{1,200})$/;
+const PATCH_PATH = /^(?:\/api\/desktop\/workspace-members|\/api\/desktop\/airflow\/automations\/[A-Za-z0-9_-]{1,200}|\/api\/desktop\/deployments\/[A-Za-z0-9_-]{1,160}\/(?:jira-actions\/jira_action_[a-f0-9]{64}|servicenow-actions\/servicenow_action_[a-f0-9]{64}))$/;
 
 /** IPC provides one acknowledged chunk at a time. An acknowledgement is sent
  * only when the ReadableStream has capacity, so an unread response cannot grow

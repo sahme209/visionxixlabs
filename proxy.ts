@@ -30,7 +30,10 @@ export function proxy(request: NextRequest) {
   const governanceRouteMigrations: Record<string, string> = {
     "/dashboard/approvals": "/control/governance",
     "/dashboard/governance": "/control/governance",
-    "/dashboard/settings": "/account",
+    "/dashboard/settings": "/control/settings",
+    "/dashboard/team": "/control/members",
+    "/dashboard/github-app": "/admin/github-app",
+    "/dashboard": "/control",
   };
 
   if (request.method === "OPTIONS" && pathname.startsWith("/api/")) {
@@ -49,7 +52,7 @@ export function proxy(request: NextRequest) {
   if (migratedGovernanceRoute) {
     const destination = request.nextUrl.clone();
     destination.pathname = migratedGovernanceRoute;
-    destination.search = "";
+    if (pathname !== "/dashboard/team" && pathname !== "/dashboard/github-app") destination.search = "";
     return applySecurityHeaders(NextResponse.redirect(destination, 307));
   }
 
@@ -102,7 +105,10 @@ export function proxy(request: NextRequest) {
     return applySecurityHeaders(NextResponse.redirect(destination, 307));
   }
 
-  const response = NextResponse.next();
+  const requestHeaders = new Headers(request.headers);
+  // Derived here, never trusted from a caller. Used only for sign-in navigation.
+  requestHeaders.set("x-axiom-cockpit-path", `${pathname}${request.nextUrl.search}`);
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
 
   if (desktopOrigin && pathname.startsWith("/api/")) {
     response.headers.set("Access-Control-Allow-Origin", desktopOrigin);

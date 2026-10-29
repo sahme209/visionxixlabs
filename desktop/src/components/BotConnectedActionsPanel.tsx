@@ -1,0 +1,15 @@
+import {useEffect,useRef,useState} from 'react';
+import type {BotActionTaskReference} from '../../../lib/axiom/bot/actionTaskBindingContract';
+import type {SlackChannelsData} from '../../../lib/desktop/slackChannelsContract';
+import {desktopClient} from '../lib/desktopClient';
+import {ConnectedActionsPanel} from './ConnectedActionsPanel';
+import {SlackNotificationPanel} from './SlackNotificationPanel';
+export function BotConnectedActionsPanel({provider,sourceTask,canManage,onClose}:{provider:'slack'|'teams'|'linear';sourceTask:BotActionTaskReference;canManage:boolean;onClose:()=>void}){
+ const [channels,setChannels]=useState<SlackChannelsData>(),[selected,setSelected]=useState(''),[busy,setBusy]=useState(false),[error,setError]=useState('');
+ const flight=useRef<AbortController|null>(null),alive=useRef(true);
+ useEffect(()=>{alive.current=true;return()=>{alive.current=false;flight.current?.abort()}},[]);
+ async function load(cursor?:string){if(flight.current)return;const c=new AbortController();flight.current=c;setBusy(true);setError('');try{const result=await desktopClient.listSlackChannels(cursor,c.signal);if(!alive.current||c.signal.aborted)return;if(result.ok){setChannels(result.data);setSelected('')}else setError(result.error)}finally{if(flight.current===c){flight.current=null;if(alive.current)setBusy(false)}}}
+ if(provider!=='slack')return <ConnectedActionsPanel provider={provider} sourceTask={sourceTask} canManage={canManage} onClose={onClose}/>;
+ const channel=channels?.channels.find(c=>c.id===selected);
+ return <section aria-label="Bot Slack workflow" className="space-y-4 rounded-xl border border-white/10 p-4"><div className="flex justify-between gap-3"><h2 className="text-sm font-medium">Slack · task version {sourceTask.expectedVersion}</h2><button type="button" className="btn-secondary" onClick={onClose}>Close</button></div><p className="text-xs text-zinc-400">Choose the exact channel and message. A different authorized person must approve before sending.</p>{canManage&&<button type="button" className="btn-secondary" disabled={busy} onClick={()=>void load()}>Load Slack channels</button>}{busy&&<p role="status">Loading authorized channels…</p>}{error&&<p role="alert">{error}</p>}{channels&&<><label className="block text-xs">Slack channel<select aria-label="Bot Slack channel" className="input mt-1 w-full" value={selected} onChange={e=>setSelected(e.target.value)}><option value="">Choose a channel</option>{channels.channels.map(c=><option key={c.id} value={c.id} disabled={!c.isMember}>#{c.name}{c.isMember?'':' · invite Axiom first'}</option>)}</select></label>{channels.nextCursor&&<button type="button" className="btn-secondary" disabled={busy} onClick={()=>void load(channels.nextCursor)}>More channels</button>}</>}{channel&&channels?<SlackNotificationPanel key={channel.id} sourceTask={sourceTask} workspaceId={channels.workspaceId} connectionVersion={channels.connectionVersion} channel={channel}/>:<SlackNotificationPanel sourceTask={sourceTask} reviewOnly/>}</section>;
+}

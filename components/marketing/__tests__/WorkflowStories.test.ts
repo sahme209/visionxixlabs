@@ -139,10 +139,10 @@ it("grounds the scripted frame in customer navigation without exposing operation
   const navigation = screen.getByRole("complementary", { name: "Navigation illustrated from the desktop application" });
   expect(navigation.textContent).toContain("No connected account.");
   expect(navigation.querySelectorAll("button, a, input")).toHaveLength(0);
-  expect(screen.getByText("Axiom Agent · GitHub repositories")).toBeDefined();
+  expect(screen.getByText("Axiom Agent · Repositories")).toBeDefined();
   fireEvent.click(screen.getByRole("button", { name: "Agent & approval" }));
   expect(screen.getByText("Axiom Agent · Agent")).toBeDefined();
   fireEvent.click(screen.getByRole("button", { name: "Terraform & cloud" }));
-  expect(screen.getByText("Axiom Agent · Release workspace")).toBeDefined();
+  expect(screen.getByText("Axiom Agent · Releases")).toBeDefined();
   expect(screen.getByText("Scripted preview")).toBeDefined();
 });

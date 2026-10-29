@@ -1,52 +1,24 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { NextRequest } from "next/server";
+import {beforeEach,afterEach,expect,it,vi} from 'vitest';import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({auth:vi.fn(),find:vi.fn(),cas:vi.fn(),legacyUpdate:vi.fn(),decrypt:vi.fn(),encrypt:vi.fn(),audit:vi.fn()}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));vi.mock('@/lib/db',()=>({prisma:{tenantIntegrationConnection:{findUnique:m.find,updateMany:m.cas,update:m.legacyUpdate},$transaction:async(fn:any)=>fn({tenantIntegrationConnection:{updateMany:m.cas}})}}));vi.mock('@/lib/security/credentialVault',()=>({decryptScopedCredential:m.decrypt,encryptScopedCredential:m.encrypt}));vi.mock('@/lib/audit/secureAudit',()=>({record:m.audit}));
+import {POST} from '../route';
+const session={id:'sess',userId:'user',organizationId:'org',credentialKind:'desktop_session'},row={id:'connection',organizationId:'org',provider:'linear',status:'pending',encryptedCredential:'cipher',updatedAt:new Date('2030-01-01T00:00:00Z'),revokedAt:null};const request=(signal?:AbortSignal)=>new NextRequest('https://visionxixlabs.com/api/desktop/integrations/linear/validate',{method:'POST',signal});
+beforeEach(()=>{vi.resetAllMocks();m.auth.mockResolvedValue(session);m.find.mockResolvedValue({...row});m.cas.mockResolvedValue({count:1});m.legacyUpdate.mockResolvedValue({});m.decrypt.mockReturnValue(JSON.stringify({accessToken:'access-secret',refreshToken:'refresh-secret',expiresAt:Date.now()+3600000}));m.encrypt.mockReturnValue('rotated');m.audit.mockResolvedValue(undefined);vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({data:{viewer:{id:'viewer'}}}))));});afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs();vi.useRealTimers()});
+it('requires desktop admin authority',async()=>{m.auth.mockResolvedValue(null);expect((await POST(request())).status).toBe(401);expect(fetch).not.toHaveBeenCalled()});
+it('pins tenant/connection/revision and never returns provider identity or secrets',async()=>{const r=await POST(request());expect(await r.json()).toEqual({ok:true,data:{status:'active'}});expect(m.cas).toHaveBeenCalledWith({where:row,data:expect.objectContaining({status:'active',encryptedCredential:'rotated'})});});
+it('does not reactivate a replaced or revoked connection after deferred identity',async()=>{m.cas.mockResolvedValue({count:0});const r=await POST(request());expect(r.status).toBe(409);expect(await r.json()).toMatchObject({error:'linear_connection_changed'});expect(m.audit).not.toHaveBeenCalled()});
+it('refuses changed authority after provider await without writing',async()=>{vi.stubGlobal('fetch',vi.fn(async()=>{m.auth.mockResolvedValue(null);return new Response(JSON.stringify({data:{viewer:{id:'viewer'}}}))}));expect((await POST(request())).status).toBe(409);expect(m.cas).not.toHaveBeenCalled();expect(m.legacyUpdate).not.toHaveBeenCalled()});
+it('a401 identity response never automatically refreshes or retries',async()=>{vi.stubGlobal('fetch',vi.fn(async()=>new Response('{}',{status:401})));expect((await POST(request())).status).toBe(503);expect(fetch).toHaveBeenCalledTimes(1)});
+it('reserves rotating refresh before dispatch and keeps uncertain result suspended without retry',async()=>{vi.stubEnv('LINEAR_CLIENT_ID','client');vi.stubEnv('LINEAR_CLIENT_SECRET','secret');m.decrypt.mockReturnValue(JSON.stringify({accessToken:'old',refreshToken:'refresh',expiresAt:1}));m.find.mockImplementation(async()=>({...row,status:'suspended',updatedAt:new Date(row.updatedAt.getTime()+1)}));m.find.mockResolvedValueOnce({...row});vi.stubGlobal('fetch',vi.fn(async()=>{throw Error('private')}));const r=await POST(request());expect(await r.json()).toEqual({ok:false,error:'linear_refresh_outcome_unknown',retryAllowed:false});expect(fetch).toHaveBeenCalledTimes(1);expect(m.cas).toHaveBeenCalledTimes(1);expect(m.cas.mock.calls[0][0].data.status).toBe('suspended')});
+it('a pending identity is bounded by the total15s budget',async()=>{vi.useFakeTimers();vi.stubGlobal('fetch',vi.fn(()=>new Promise(()=>{})));const pending=POST(request());await vi.advanceTimersByTimeAsync(15001);expect((await pending).status).toBe(503);expect(fetch).toHaveBeenCalledTimes(1)});
+it('blocks a suspended refresh claim before any provider request',async()=>{m.find.mockResolvedValue({...row,status:'suspended'});expect((await POST(request())).status).toBe(409);expect(fetch).not.toHaveBeenCalled();expect(m.cas).not.toHaveBeenCalled()});
+it('rejects GraphQL errors or missing identity instead of activating',async()=>{for(const body of [{data:{viewer:{id:'viewer'}},errors:[{message:'PRIVATE'}]},{data:{viewer:{}}}]){vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify(body))));const r=await POST(request());expect(r.status).toBe(503);expect(m.cas.mock.calls.at(-1)![0].data.status).toBe('needs_attention');expect(JSON.stringify(await r.json())).not.toContain('PRIVATE')}});
+it('refresh success followed by identity failure remains suspended and unknown',async()=>{vi.stubEnv('LINEAR_CLIENT_ID','client');vi.stubEnv('LINEAR_CLIENT_SECRET','secret');m.decrypt.mockReturnValue(JSON.stringify({accessToken:'old',refreshToken:'refresh',expiresAt:1}));m.find.mockResolvedValueOnce({...row}).mockResolvedValue({...row,status:'suspended',updatedAt:new Date(row.updatedAt.getTime()+1)});const f=vi.fn().mockResolvedValueOnce(new Response(JSON.stringify({access_token:'new',refresh_token:'newrefresh',expires_in:3600}))).mockResolvedValueOnce(new Response('{}',{status:401}));vi.stubGlobal('fetch',f);const r=await POST(request());expect(await r.json()).toMatchObject({error:'linear_refresh_outcome_unknown',retryAllowed:false});expect(f).toHaveBeenCalledTimes(2);expect(m.cas).toHaveBeenCalledTimes(1);expect(m.encrypt).not.toHaveBeenCalled()});
+it('CAS refusal of refresh claim prevents remote token consumption',async()=>{vi.stubEnv('LINEAR_CLIENT_ID','client');vi.stubEnv('LINEAR_CLIENT_SECRET','secret');m.decrypt.mockReturnValue(JSON.stringify({accessToken:'old',refreshToken:'refresh',expiresAt:1}));m.cas.mockResolvedValue({count:0});const r=await POST(request());expect(await r.json()).toMatchObject({error:'linear_refresh_outcome_unknown',retryAllowed:false});expect(fetch).not.toHaveBeenCalled()});
+it('lost local write acknowledgement never triggers a second write',async()=>{m.cas.mockRejectedValue(Error('PRIVATE'));const r=await POST(request());expect(await r.json()).toEqual({ok:false,error:'linear_validation_outcome_unknown',retryAllowed:false});expect(m.cas).toHaveBeenCalledTimes(1)});
+it.each(['authority','cas'])('keeps rotating refresh outcome unknown after successful provider refresh then %s loss',async mode=>{vi.stubEnv('LINEAR_CLIENT_ID','client');vi.stubEnv('LINEAR_CLIENT_SECRET','secret');m.decrypt.mockReturnValue(JSON.stringify({accessToken:'old',refreshToken:'refresh',expiresAt:1}));m.find.mockResolvedValueOnce({...row}).mockResolvedValue({...row,status:'suspended',updatedAt:new Date(row.updatedAt.getTime()+1)});if(mode==='cas')m.cas.mockResolvedValueOnce({count:1}).mockResolvedValue({count:0});const f=vi.fn().mockImplementationOnce(async()=>{if(mode==='authority')m.auth.mockResolvedValue(null);return new Response(JSON.stringify({access_token:'new',refresh_token:'newrefresh',expires_in:3600}))}).mockResolvedValueOnce(new Response(JSON.stringify({data:{viewer:{id:'viewer'}}})));vi.stubGlobal('fetch',f);const r=await POST(request());expect(await r.json()).toMatchObject({error:'linear_refresh_outcome_unknown',retryAllowed:false});expect(f).toHaveBeenCalledTimes(mode==='authority'?1:2);expect(m.cas.mock.calls[0][0].data.status).toBe('suspended');expect(m.cas).toHaveBeenCalledTimes(mode==='authority'?1:2);expect(m.legacyUpdate).not.toHaveBeenCalled()});
 
-const mocks = vi.hoisted(() => ({
-  resolveRequestDesktopSession: vi.fn(),
-  findUnique: vi.fn(),
-  update: vi.fn(),
-  decryptScopedCredential: vi.fn(),
-  encryptScopedCredential: vi.fn(),
-  recordAudit: vi.fn(),
-}));
-
-vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
-vi.mock("@/lib/db", () => ({ prisma: { tenantIntegrationConnection: { findUnique: mocks.findUnique, update: mocks.update } } }));
-vi.mock("@/lib/security/credentialVault", () => ({ decryptScopedCredential: mocks.decryptScopedCredential, encryptScopedCredential: mocks.encryptScopedCredential }));
-vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
-
-const session = { id: "sess-1", userId: "user-1", organizationId: "org-1", credentialKind: "desktop_session" as const };
-
-describe("POST /api/desktop/integrations/linear/validate", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mocks.resolveRequestDesktopSession.mockResolvedValue(session);
-    mocks.findUnique.mockResolvedValue({ id: "connection-1", status: "pending", encryptedCredential: "ciphertext" });
-    mocks.decryptScopedCredential.mockReturnValue(JSON.stringify({ accessToken: "access-secret", refreshToken: "refresh-secret", expiresAt: Date.now() + 3_600_000 }));
-    mocks.encryptScopedCredential.mockReturnValue("rotated-ciphertext");
-    mocks.update.mockResolvedValue({});
-    mocks.recordAudit.mockResolvedValue(undefined);
-    vi.stubGlobal("fetch", vi.fn(async () => new Response(JSON.stringify({ data: { viewer: { id: "linear-app-user" } } }), { status: 200 })));
-  });
-
-  it("requires a desktop admin session", async () => {
-    mocks.resolveRequestDesktopSession.mockResolvedValue(undefined);
-    const { POST } = await import("../route");
-    const response = await POST(new NextRequest("https://visionxixlabs.com/api/desktop/integrations/linear/validate", { method: "POST" }));
-    expect(response.status).toBe(401);
-  });
-
-  it("marks Linear active only after a live identity read and returns no credential", async () => {
-    const { POST } = await import("../route");
-    const response = await POST(new NextRequest("https://visionxixlabs.com/api/desktop/integrations/linear/validate", { method: "POST" }));
-    const body = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(body).toEqual({ ok: true, data: { status: "active" } });
-    expect(JSON.stringify(body)).not.toContain("access-secret");
-    expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({
-      where: { id: "connection-1" },
-      data: expect.objectContaining({ status: "active", externalAccountId: "linear-app-user", encryptedCredential: "rotated-ciphertext" }),
-    }));
-  });
+it.each([true,false])('preserves action grant evidence during refresh; complete grant=%s',async complete=>{
+ m.decrypt.mockReturnValueOnce(JSON.stringify({accessToken:'expired',refreshToken:'refresh',expiresAt:1,purpose:'connected_app_actions_v1',actionScopes:['read','write']}));vi.stubEnv('LINEAR_CLIENT_ID','synthetic');vi.stubEnv('LINEAR_CLIENT_SECRET','synthetic');m.find.mockResolvedValueOnce({...row}).mockResolvedValue({...row,status:'suspended',updatedAt:new Date(row.updatedAt.getTime()+1)});
+ const f=vi.fn().mockResolvedValueOnce(Response.json({access_token:'fresh',refresh_token:'rotated',expires_in:3600,...(complete?{scope:'read write'}:{})})).mockResolvedValueOnce(Response.json({data:{viewer:{id:'provider-user'}}}));vi.stubGlobal('fetch',f);const response=await POST(request());if(complete){expect(response.ok).toBe(true);const saved=JSON.parse(m.encrypt.mock.calls.at(-1)![0]);expect(saved.purpose).toBe('connected_app_actions_v1');expect(saved.actionScopes).toEqual(['read','write'])}else{expect(await response.json()).toMatchObject({error:'linear_refresh_outcome_unknown',retryAllowed:false});expect(f).toHaveBeenCalledTimes(1);expect(m.cas).toHaveBeenCalledTimes(1);expect(m.cas.mock.calls[0][0].data.status).toBe('suspended')}
 });

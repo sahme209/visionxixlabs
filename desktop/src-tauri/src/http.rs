@@ -31,8 +31,18 @@ fn validated_url(path: &str) -> Result<String, String> {
     Ok(format!("{API_ORIGIN}{path}"))
 }
 
+fn ticket_amendment_path(path: &str) -> bool {
+    let Some(tail) = path.strip_prefix("/api/desktop/deployments/") else { return false; };
+    let parts: Vec<_> = tail.split('/').collect();
+    if parts.len() != 3 || parts[0].is_empty() || parts[0].len() > 160
+        || !parts[0].bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_') { return false; }
+    let prefix = match parts[1] { "jira-actions" => "jira_action_", "servicenow-actions" => "servicenow_action_", _ => return false };
+    let Some(hash) = parts[2].strip_prefix(prefix) else { return false; };
+    hash.len() == 64 && hash.bytes().all(|b| b.is_ascii_digit() || matches!(b, b'a'..=b'f'))
+}
+
 fn patch_path(path: &str) -> bool {
-    if path == "/api/desktop/workspace-members" { return true; }
+    if path == "/api/desktop/workspace-members" || ticket_amendment_path(path) { return true; }
     let Some(id) = path.strip_prefix("/api/desktop/airflow/automations/") else { return false; };
     !id.is_empty() && id.len() <= 200 && id.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-' || b == b'_')
 }
@@ -45,6 +55,22 @@ fn allowed_method(method: &reqwest::Method, path: &str) -> bool {
         // Existing paired-session operations only. Validate the raw path before
         // reqwest normalizes the URL; this is not server mutation authority.
         || method == reqwest::Method::PATCH && patch_path(path)
+}
+
+fn buffered_request_header(name: &str, value: &str) -> bool {
+    if matches!(name, "accept" | "authorization" | "content-type" | "idempotency-key") { return true; }
+    if name == "x-axiom-expected-version" {
+        return !value.is_empty() && value.len() <= 10 && value.bytes().all(|b| b.is_ascii_digit())
+            && (value == "0" || !value.starts_with('0'))
+            && value.parse::<u32>().is_ok_and(|v| v <= 2_147_483_647);
+    }
+    // Preserve the reviewed action's UUID across the native bridge. This is
+    // request identity, never approval or execution authority; other headers stay denied.
+    let bytes = value.as_bytes();
+    name == "x-correlation-id" && bytes.len() == 36
+        && bytes.iter().enumerate().all(|(i, b)| if matches!(i, 8 | 13 | 18 | 23) { *b == b'-' } else { b.is_ascii_hexdigit() })
+        && matches!(bytes[14], b'1'..=b'5')
+        && matches!(bytes[19], b'8' | b'9' | b'a' | b'b' | b'A' | b'B')
 }
 
 #[tauri::command]
@@ -66,7 +92,7 @@ pub async fn desktop_http_request(request: DesktopHttpRequest) -> Result<Desktop
     let mut builder = client.request(method, url);
     for (name, value) in request.headers {
         let normalized = name.to_ascii_lowercase();
-        if matches!(normalized.as_str(), "accept" | "authorization" | "content-type" | "idempotency-key") {
+        if buffered_request_header(normalized.as_str(), &value) {
             builder = builder.header(name, value);
         }
     }
@@ -256,8 +282,19 @@ async fn pump_stream_at(request: DesktopHttpRequest, channel: &Channel<DesktopSt
 
 #[cfg(test)]
 mod tests {
-    use super::{allowed_method, validated_url, valid_stream_id, stream_path, validate_stream_request, DesktopHttpRequest};
+    use super::{buffered_request_header, allowed_method, validated_url, valid_stream_id, stream_path, validate_stream_request, DesktopHttpRequest};
     use std::collections::HashMap;
+
+    #[test]
+    fn forwards_bounded_correlation_without_expanding_sensitive_headers() {
+        assert!(buffered_request_header("x-correlation-id", "18841974-e2ab-4fed-9327-0a6a4fd089fa"));
+        for value in ["", "not-a-uuid", "18841974-e2ab-4fed-9327-0a6a4fd089fa\r\nx: y"] {
+            assert!(!buffered_request_header("x-correlation-id", value));
+        }
+        for name in ["cookie", "host", "origin", "x-forwarded-for", "x-axiom-approval"] {
+            assert!(!buffered_request_header(name, "18841974-e2ab-4fed-9327-0a6a4fd089fa"));
+        }
+    }
 
     #[test]
     fn restricts_requests_to_api_paths() {
@@ -265,6 +302,21 @@ mod tests {
         assert!(validated_url("https://attacker.example/api/v1/whoami").is_err());
         assert!(validated_url("/marketing").is_err());
         assert!(validated_url("/api/test\nInjected: true").is_err());
+    }
+
+    #[test]
+    fn existing_ticket_amendments_keep_exact_path_and_version_boundaries() {
+        let jira = format!("/api/desktop/deployments/release_1/jira-actions/jira_action_{}", "a".repeat(64));
+        let sn = format!("/api/desktop/deployments/release_1/servicenow-actions/servicenow_action_{}", "b".repeat(64));
+        for path in [&jira, &sn] { assert!(allowed_method(&reqwest::Method::PATCH, path)); }
+        for path in [format!("{jira}/approval"), format!("{jira}?x=1"), jira.replace("release_1", ".."), jira.replace("jira_action_", "other_"), format!("{sn}/dispatch")] {
+            assert!(!allowed_method(&reqwest::Method::PATCH, &path));
+        }
+        assert!(buffered_request_header("x-axiom-expected-version", "0"));
+        assert!(buffered_request_header("x-axiom-expected-version", "2147483647"));
+        for value in ["-1", "01", "2147483648", "1\r\nx: y", "", " 1"] {
+            assert!(!buffered_request_header("x-axiom-expected-version", value));
+        }
     }
 
     #[test]

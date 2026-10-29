@@ -49,15 +49,15 @@ export async function loadPreferences(organizationId: string): Promise<OrgPrefer
   });
 
   if (!row) {
-    return { organizationId, ...DEFAULTS };
+    return { organizationId, ...DEFAULTS, preferredProviders: [], ignoredFindingTitles: new Set(), priorityCategories: [] };
   }
 
   return {
     organizationId,
     preferredProviders: (row.preferredProviders ?? []) as CloudProvider[],
-    riskTolerance: (row.riskTolerance ?? "conservative") as RiskTolerance,
-    approvalPolicy: (row.approvalPolicy ?? "require_all") as ApprovalPolicy,
-    autoApplyEnabled: row.autoApplyEnabled ?? false,
+    riskTolerance: Object.values(RiskTolerance).includes(row.riskTolerance as RiskTolerance) ? row.riskTolerance as RiskTolerance : RiskTolerance.Conservative,
+    approvalPolicy: Object.values(ApprovalPolicy).includes(row.approvalPolicy as ApprovalPolicy) ? row.approvalPolicy as ApprovalPolicy : ApprovalPolicy.RequireAll,
+    autoApplyEnabled: row.autoApplyEnabled === true,
     outputFormat: (row.outputFormat ?? "terraform") as OutputFormat,
     businessContext: (row.businessContext ?? "other") as BusinessContext,
     ignoredFindingTitles: new Set(row.ignoredFindingTitles ?? []),
@@ -131,7 +131,8 @@ export function applyDispositionPolicy(
     return baseDisposition;
   }
 
-  return baseDisposition;
+  // Unknown recovered policy cannot grant automatic execution eligibility.
+  return baseDisposition === "auto_fix_candidate" ? "approval_required" : baseDisposition;
 }
 
 // ---------------------------------------------------------------------------
@@ -147,7 +148,7 @@ export function applyRiskTolerance(
   riskLevel: RiskLevel,
   tolerance: RiskTolerance,
 ): ActionDisposition {
-  if (tolerance === "conservative") {
+  if (tolerance === "conservative" || !Object.values(RiskTolerance).includes(tolerance)) {
     if (riskLevel === "high") return "report_only";
     if (riskLevel === "medium" && baseDisposition === "auto_fix_candidate") {
       return "approval_required";

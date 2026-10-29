@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "Axiom pricing",
   alternates: { canonical: "/plans" },
   description:
-    "Transparent Free, Pro, and Enterprise plans for governed deployments, with activation protected until billing authority and quota enforcement are validated.",
+    "Free, Pro, and Enterprise plans with transparent per-seat pricing, governed AI allowances, and secure Stripe checkout.",
 };
 
 export default async function PlansPage({ searchParams }: { searchParams?: Promise<{ plan?: string | string[]; interval?: string | string[]; checkout?: string | string[] }> }) {
@@ -43,7 +43,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
             Start useful.<br /><span className="text-zinc-400">Grow deliberately.</span>
           </h1>
           <p className="max-w-xl text-base leading-7 text-zinc-400">
-            Security, approval gates, and audit protection stay in every plan. Choose monthly or annual billing; activation remains locked until organization billing and quotas complete review.
+            Security, approval gates, and audit protection stay in every plan. Choose monthly or annual billing. Paid access activates only after Stripe verifies payment.
           </p>
         </div>
         <div className="mt-8 inline-flex items-start gap-2 border-l-2 border-orange-400/70 pl-3 text-xs leading-5 text-zinc-400">

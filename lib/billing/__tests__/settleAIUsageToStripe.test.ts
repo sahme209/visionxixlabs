@@ -43,6 +43,23 @@ describe("AI usage Stripe settlement retry safety", () => {
   });
   afterEach(() => { vi.useRealTimers(); vi.unstubAllEnvs(); });
 
+  it.each([
+    ["STRIPE_SECRET_KEY", "sk_live_fixture_not_a_credential"],
+    ["AXIOM_STRIPE_MODE", "live"],
+    ["AXIOM_AI_USAGE_BILLING_TEST_ENABLED", "false"],
+  ])("refuses a test-only submission when %s changes during its durable claim", async (name, value) => {
+    const repo = repository();
+    repo.aIUsageBillingSettlement.updateMany.mockImplementationOnce(async () => {
+      vi.stubEnv(name, value);
+      return { count: 1 };
+    });
+    expect(await settleAIUsageToStripe(repo)).toEqual({ inspected: 1, reserved: 1, submitted: 0, blocked: 0, deferred: 1 });
+    expect(mocks.invoiceItem).not.toHaveBeenCalled();
+    // A durable claim is retained; refusing a later SDK call cannot establish
+    // the state of any earlier provider attempt using this same reservation.
+    expect(repo.aIUsageBillingSettlement.updateMany).toHaveBeenCalledTimes(1);
+  });
+
   it("allows only one worker to claim the same observed attempt", async () => {
     vi.useRealTimers();
     await import("stripe");

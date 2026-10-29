@@ -3,24 +3,14 @@
  *
  * Body: { provider: "linear" | "jira" | "servicenow" }
  *
- * Linear is wired in Phase 470. Jira and ServiceNow fetchers slot in
- * via the same responder in follow-on phases — they 501 today.
+ * Legacy host credentials cannot authorize a tenant sync. Dedicated
+ * tenant-owned integrations must be used until this route has a scoped adapter.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
-import { prisma } from "@/lib/db";
-import {
-  buildChangeTicketSyncResponse,
-  type ChangeTicketSyncRepo,
-  type ChangeTicketFetcherSet,
-} from "@/lib/releaseops/changeTicketSyncResponder";
-import { createLinearFetcher } from "@/lib/releaseops/linearFetcher";
-import { createJiraFetcher } from "@/lib/releaseops/jiraFetcher";
-import { createServiceNowFetcher } from "@/lib/releaseops/serviceNowFetcher";
 import {
   ALL_CHANGE_TICKET_PROVIDERS,
-  type ChangeTicketProvider,
 } from "@/lib/releaseops/providers/changeTicketProjectors";
 
 export const dynamic = "force-dynamic";
@@ -31,10 +21,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
 
-  let body: { provider?: unknown } = {};
+  let body: unknown = {};
   try { body = await req.json(); } catch { /* fall through */ }
 
-  const providerRaw = typeof body.provider === "string" ? body.provider : null;
+  const providerRaw = body && typeof body === "object" && "provider" in body && typeof body.provider === "string" ? body.provider : null;
   if (!providerRaw || !(ALL_CHANGE_TICKET_PROVIDERS as readonly string[]).includes(providerRaw)) {
     return NextResponse.json(
       {
@@ -45,26 +35,10 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     );
   }
-  const provider = providerRaw as ChangeTicketProvider;
-
-  const fetchers: ChangeTicketFetcherSet = {};
-  if (provider === "linear" && process.env.LINEAR_API_KEY) {
-    fetchers.linear = createLinearFetcher();
-  } else if (provider === "jira" && process.env.JIRA_BASE_URL && process.env.JIRA_EMAIL && process.env.JIRA_API_TOKEN) {
-    fetchers.jira = createJiraFetcher();
-  } else if (provider === "servicenow" && process.env.SERVICENOW_INSTANCE && process.env.SERVICENOW_USER && process.env.SERVICENOW_PASS) {
-    fetchers.servicenow = createServiceNowFetcher();
+  if (providerRaw === "other") {
+    return NextResponse.json({ok:false,error:"unsupported_provider",hint:"'other' provider has no sync implementation."},{status:400,headers:{"Cache-Control":"private, no-store"}});
   }
-
-  const r = await buildChangeTicketSyncResponse(
-    prisma as unknown as ChangeTicketSyncRepo,
-    fetchers,
-    {
-      organizationId: ctx.organizationId,
-      provider,
-      ...(process.env.JIRA_BASE_URL ? { jiraBrowseBaseUrl: process.env.JIRA_BASE_URL } : {}),
-      ...(process.env.SERVICENOW_INSTANCE ? { serviceNowInstanceUrl: process.env.SERVICENOW_INSTANCE } : {}),
-    },
-  );
-  return NextResponse.json(r.body, { status: r.status });
+  // Host-wide environment credentials are not evidence of this tenant's consent.
+  // Keep internal fetchers intact, but never dispatch or persist through them here.
+  return NextResponse.json({ok:false,error:"tenant_connection_required"},{status:409,headers:{"Cache-Control":"private, no-store"}});
 }

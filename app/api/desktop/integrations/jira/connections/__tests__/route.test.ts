@@ -1,0 +1,16 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({session:vi.fn(),row:vi.fn()}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.session}));
+vi.mock('@/lib/db',()=>({prisma:{tenantIntegrationConnection:{findUnique:m.row}}}));
+import {GET} from '../route';
+const principal={id:'session',userId:'consenter',organizationId:'tenant',credentialKind:'desktop_session',role:'owner',capabilities:['connections:manage']};
+const row={id:'connection',organizationId:'tenant',provider:'jira',status:'active',revokedAt:null,consentedByUserId:'consenter',updatedAt:new Date('2026-10-24T18:20:00.000Z'),lastValidatedAt:new Date('2026-10-24T18:00:00.000Z')};
+const request=(suffix='')=>new NextRequest('https://axiom.test/api/desktop/integrations/jira/connections'+suffix);
+beforeEach(()=>{vi.resetAllMocks();m.session.mockResolvedValue({...principal});m.row.mockResolvedValue({...row});});
+it('returns only consenting user recorded read validation with no current health or writes claim',async()=>{const r=await GET(request());expect(r.status).toBe(200);expect(r.headers.get('cache-control')).toBe('no-store');expect(await r.json()).toEqual({ok:true,data:{connections:[{connectionId:'connection',revision:row.updatedAt.toISOString(),label:'Jira connection',recordedState:'read_validation_recorded',lastValidatedAt:row.lastValidatedAt.toISOString()}],hasMore:false,currentHealth:'not_checked',capability:'jira_ticket_discovery_v1',issueWritePermissionVerified:false}});expect(m.row).toHaveBeenCalledWith(expect.objectContaining({where:{organizationId_provider:{organizationId:'tenant',provider:'jira'}},select:expect.not.objectContaining({encryptedCredential:true,scopesJson:true})}));expect(m.session).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({allowApiKey:false,requiredCapability:'connections:manage',requireWorkspaceAdmin:true}));});
+it.each([undefined,{...principal,credentialKind:'api_key'},{...principal,role:'operator'},{...principal,capabilities:['workspace:read']}])('denies inadequate paired authority',async p=>{m.session.mockResolvedValue(p);expect((await GET(request())).status).toBe(401);expect(m.row).not.toHaveBeenCalled();});
+it.each([null,{...row,status:'pending'},{...row,status:'needs_attention'},{...row,revokedAt:new Date()},{...row,consentedByUserId:'other'},{...row,organizationId:'foreign'},{...row,lastValidatedAt:null}])('does not expose ineligible/nonconsenting record %j',async r=>{m.row.mockResolvedValue(r);expect((await (await GET(request())).json()).data.connections).toEqual([]);});
+it('fences actor/session/tenant revocation after row read',async()=>{m.session.mockResolvedValueOnce(principal).mockResolvedValue({...principal,id:'replacement'});expect((await GET(request())).status).toBe(403);});
+it('rejects all caller query without DB',async()=>{expect((await GET(request('?organizationId=foreign'))).status).toBe(400);expect(m.row).not.toHaveBeenCalled();});
+it('sanitizes malformed metadata without leaking raw DB errors',async()=>{m.row.mockResolvedValue({...row,id:'bad\nvalue'});const r=await GET(request());expect(r.status).toBe(503);expect(await r.text()).not.toContain('bad');});

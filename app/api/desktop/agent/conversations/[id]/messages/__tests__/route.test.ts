@@ -55,11 +55,51 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     mocks.prepareProposalArgsForReview.mockImplementation(async (_organizationId: string, _toolName: string, args: Record<string, unknown>) => ({ ok: true, args }));
   });
 
+  it("loads a bounded stable tail and pins the current persisted request exactly once",async()=>{
+    mocks.runDecisionLoop.mockResolvedValue({kind:"final",message:"Reviewed"});
+    mocks.transaction.mockImplementationOnce(async operations=>{await Promise.all(operations);return [{id:"current-user-turn"},{}]});
+    mocks.findManyTurns.mockResolvedValueOnce([
+      {id:"newer-assistant",role:"assistant",content:"Newest prior reply"},
+      {id:"current-user-turn",role:"user",content:"Current request"},
+      {id:"older-user",role:"user",content:"Older request"},
+    ] as any);
+    const {POST}=await import("../route");expect((await POST(request({message:"Current request"}),params)).status).toBe(200);
+    expect(mocks.findManyTurns).toHaveBeenCalledWith({where:{conversationId:"conv_1"},orderBy:[{createdAt:"desc"},{id:"desc"}],take:33,select:{id:true,role:true,content:true}});
+    expect(mocks.runDecisionLoop.mock.calls[0][0].transcript).toEqual([{role:"user",content:"Older request"},{role:"assistant",content:"Newest prior reply"},{role:"user",content:"Current request"}]);
+  });
+  it("reads an extra sentinel and reports omitted earlier short persisted turns",async()=>{
+    mocks.runDecisionLoop.mockResolvedValue({kind:"final",message:"Reviewed"});mocks.transaction.mockImplementationOnce(async operations=>{await Promise.all(operations);return [{id:"current-user-turn"},{}]});
+    mocks.findManyTurns.mockResolvedValueOnce([{id:"current-user-turn",role:"user",content:"Current short request"},...Array.from({length:32},(_,i)=>({id:`old-${31-i}`,role:"assistant",content:`short-${31-i}`}))] as any);
+    const {POST}=await import("../route");expect((await POST(request({message:"Current short request"}),params)).status).toBe(200);
+    expect(mocks.findManyTurns).toHaveBeenCalledWith(expect.objectContaining({take:33}));
+    const dispatched=mocks.runDecisionLoop.mock.calls[0][0];expect(dispatched.earlierHistoryOmitted).toBe(true);expect(dispatched.transcript).toHaveLength(32);expect(dispatched.transcript[0].content).toBe('short-1');expect(dispatched.transcript.at(-1)).toEqual({role:'user',content:'Current short request'});
+  });
+  it("rejects abnormal oversized current input before persistence and provider admission",async()=>{
+    const {POST}=await import("../route");const response=await POST(request({message:"界".repeat(11000)}),params);expect(response.status).toBe(400);expect(mocks.createTurn).not.toHaveBeenCalled();expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+  it("explains an unverified model budget using the existing client-compatible failure issue",async()=>{
+    mocks.runDecisionLoop.mockResolvedValue({kind:"error",error:"workspace_ai_output_bound_unverified"});
+    const {POST}=await import("../route");const response=await POST(request({message:"List environments"}),params);const body=await response.json();
+    expect(body).toMatchObject({ok:true,data:{proposal:null,issue:"request_failed",reply:expect.stringContaining("enforceable output budget")}});expect(body.data.reply).toContain("No model request was sent");expect(mocks.executeReadOnlyTool).not.toHaveBeenCalled();
+  });
   it.each(["__proto__", "arbitrary-agent", null, 123, { id: "coding" }])("rejects invalid Agent profile %j before any turn or inference", async agentProfile => {
     const { POST } = await import("../route");
     const response = await POST(request({ message: "hi", workspaceContext: { agentProfile } }), params);
     expect(response.status).toBe(400); expect(await response.json()).toMatchObject({ error: "invalid_agent_profile" });
     expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+  it.each([0, -1, 1.5, 7, "1", null])("refuses invalid model-call limits before creating a turn: %s", async maxDecisionSteps => {
+    const { POST } = await import("../route");
+    const response = await POST(request({ message: "hi", workspaceContext: { maxDecisionSteps } }), params);
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: "invalid_decision_limit" });
+    expect(mocks.createTurn).not.toHaveBeenCalled(); expect(mocks.runDecisionLoop).not.toHaveBeenCalled();
+  });
+  it("passes the requested one-call bound to the governed runtime", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Observed" });
+    const { POST } = await import("../route");
+    expect((await POST(request({ message: "hi", workspaceContext: { maxDecisionSteps: 1 } }), params)).status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ maxDecisionSteps: 1 }));
   });
   it("passes a validated profile into the real dispatch boundary and audits only non-sensitive selection fields", async () => {
     mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Reviewed" });
@@ -71,6 +111,13 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(JSON.stringify(mocks.createAudit.mock.calls)).not.toContain("private request text");
   });
 
+  it("does not seed a repository tool outside the selected automation profile", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({kind:"final",message:"Observed"});
+    const {POST}=await import("../route");
+    const response=await POST(request({message:"Inspect Airflow tasks",workspaceContext:{agentProfile:"automation",operationMode:"inspect",repositoryFullName:"fixture/repo",branch:"main"}}),params);
+    expect(response.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({agentProfile:"automation",initialToolCall:undefined}));
+  });
   it("requires a desktop session", async () => {
     mocks.resolveRequestDesktopSession.mockResolvedValue(undefined);
     const { POST } = await import("../route");
@@ -243,6 +290,19 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     }));
   });
 
+  it.each([
+    "Use only list_environments to list configured environment names. Do not read repository files, propose changes, or execute anything.",
+    "Review Airflow task states without changes.",
+    "Review this project’s configured environments.",
+    "What should I improve in my cloud account?",
+  ])("does not seed repository inspection for an unrelated request: %s", async message => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Only requested workspace evidence was inspected." });
+    const { POST } = await import("../route");
+    const response = await POST(request({ message, workspaceContext: { repositoryFullName: "acme/widgets", branch: "main", mode: "chat" } }), params);
+    expect(response.status).toBe(200);
+    expect(mocks.runDecisionLoop).toHaveBeenCalledWith(expect.objectContaining({ initialToolCall: undefined }));
+  });
+
   it("does not inspect a repository for unrelated small talk", async () => {
     mocks.findManyTurns.mockResolvedValue([{ role: "user", content: "hello" }]);
     mocks.runDecisionLoop.mockResolvedValue({ kind: "final", message: "Hello." });
@@ -303,6 +363,7 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     const body = await res.json();
     expect(res.status).toBe(200);
     expect(body.data.proposal.status).toBe("proposed");
+    expect(body.data.proposal.requiresIndependentReviewer).toBe(true);
     expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({
       data: expect.objectContaining({ status: "proposed", riskLevel: "medium" }),
     }));
@@ -320,6 +381,18 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(res.status).toBe(200);
     expect(body.data.proposal).toBeNull();
     expect(body.data.reply).toMatch(/trustworthy approval preview/i);
+    expect(mocks.createProposal).not.toHaveBeenCalled();
+  });
+
+  it("explains a denied credit hold without claiming the balance is exhausted or inference occurred", async () => {
+    mocks.runDecisionLoop.mockResolvedValue({ kind: "error", error: "workspace_ai_credit_pool_exhausted" });
+    const { POST } = await import("../route");
+    const response = await POST(request({ message: "list environments" }), params);
+    const body = await response.json();
+    expect(body.data).toMatchObject({ proposal: null, issue: "workspace_ai_credit_pool_exhausted" });
+    expect(body.data.reply).toMatch(/reserve.*available AI credits/i);
+    expect(body.data.reply).toMatch(/No model request was sent/i);
+    expect(body.data.reply).not.toMatch(/used its available|model response|after retrying/i);
     expect(mocks.createProposal).not.toHaveBeenCalled();
   });
 
@@ -350,12 +423,83 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     expect(JSON.parse(toolTurn!.data.content)).toMatchObject({ kind: "aws_bounded_observation", connection: { version: 2 } });
   });
 
+  it("connects code mode to existing coordinated multi-file proposals without granting execution", async () => {
+    mocks.findManyTurns.mockResolvedValue([{role: "user", content: "Update this file and its tests"}]);
+    mocks.runDecisionLoop.mockResolvedValue({kind: "final", message: "Fixture response"});
+    const {POST} = await import("../route");
+    expect((await POST(request({message: "Update this file and its tests", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode: "code", operationMode: "engineer", agentProfile: "coding"}}), params)).status).toBe(200);
+    const call = mocks.runDecisionLoop.mock.calls[0][0];
+    expect(call.currentRequestContext).toContain("commit_github_files");
+    expect(call.currentRequestContext).toContain("Read every affected existing file");
+    expect(call.currentRequestContext).toContain("approval");
+    expect(call.initialToolCall.args.path).toBe("src/app.ts");
+    expect(call.agentProfile).toBe("coding");
+    expect(call.operationMode).toBe("engineer");
+  });
+  it.each([
+    ["commit_github_file", "acme/other", "feature"],
+    ["commit_github_files", "acme/other", "feature"],
+    ["commit_github_file", "acme/widgets", "unselected"],
+    ["commit_github_files", "acme/widgets", "unselected"],
+    ["commit_github_file", "acme/widgets", undefined],
+    ["commit_github_files", undefined, "feature"],
+  ].flatMap(([toolName, repositoryFullName, branch]) => [false, true].map(streamed => ({toolName, repositoryFullName, branch, streamed}))))("refuses $toolName target drift before review IO (stream=$streamed)", async ({toolName, repositoryFullName, branch, streamed}) => {
+    const args = {repositoryFullName, branch, path: "src/app.ts", content: "updated", files: [{path: "src/app.ts", content: "updated"}], message: "Change"};
+    mocks.runDecisionLoop.mockResolvedValue({kind: "proposal", toolName, message: "Proposed change", args, riskLevel: "medium"});
+    const {POST} = await import("../route");
+    const req = request({message: "Update selected code", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode: "code"}});
+    if (streamed) req.headers.set("accept", "application/x-ndjson");
+    const response = await POST(req, params);
+    let body;
+    if (streamed) {
+      const events = (await response.text()).trim().split("\n").map(line => JSON.parse(line));
+      expect(events.some(event => event.type === "error")).toBe(false);
+      expect(events.at(-1)?.type).toBe("result");
+      body = {data: events.at(-1)?.data};
+    } else body = await response.json();
+    expect(response.status).toBe(200);expect(body.data.proposal).toBeNull();
+    expect(body.data.reply).toContain("selected repository and branch");
+    expect(mocks.prepareProposalArgsForReview).not.toHaveBeenCalled();
+    expect(mocks.createProposal).not.toHaveBeenCalled();
+    expect(mocks.rememberToolContext).not.toHaveBeenCalled();
+  });
+  it.each([
+    ["chat", "commit_github_files", "acme/other", "other"],
+    ["code", "create_github_branch", "acme/widgets", "new-branch"],
+  ])("preserves separately reviewed %s / %s workflows", async (mode, toolName, repositoryFullName, branch) => {
+    const args = {repositoryFullName, branch, fromBranch: "feature", files: [{path: "src/app.ts", content: "updated"}], message: "Change"};
+    mocks.runDecisionLoop.mockResolvedValue({kind: "proposal", toolName, args, message: "Proposed change", riskLevel: "medium"});
+    mocks.prepareProposalArgsForReview.mockResolvedValue({ok: true, args});
+    const {POST} = await import("../route");
+    const response = await POST(request({message: "Prepare requested change", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode}}), params);
+    expect((await response.json()).data.proposal).not.toBeNull();
+    expect(mocks.prepareProposalArgsForReview).toHaveBeenCalledWith("org-1", toolName, args, expect.anything());
+    expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({data: expect.objectContaining({status: "proposed", toolName})}));
+  });
+  it.each([true, false])("keeps coordinated file snapshots and proposal approval mandatory (snapshot=%s)", async snapshotReady => {
+    const args = {repositoryFullName: "acme/widgets", branch: "feature", files: [{path: "src/app.ts", content: "updated"}, {path: "test/app.test.ts", content: "new test"}], message: "Update source and tests"};
+    mocks.runDecisionLoop.mockResolvedValue({kind: "proposal", toolName: "commit_github_files", message: "Proposed source and test change", args, riskLevel: "medium"});
+    mocks.prepareProposalArgsForReview.mockResolvedValue(snapshotReady ? {ok: true, args} : {ok: false, error: "file_review_unavailable"});
+    mocks.createProposal.mockResolvedValue({id: "mixed", toolName: "commit_github_files", argsJson: args, riskLevel: "medium", status: "proposed"});
+    const {POST} = await import("../route");
+    const response = await POST(request({message: "Update source and tests", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode: "code"}}), params);
+    const body = await response.json();
+    expect(mocks.prepareProposalArgsForReview).toHaveBeenCalledWith("org-1", "commit_github_files", args, expect.anything());
+    if(snapshotReady) {
+      expect(body.data.proposal.status).toBe("proposed");
+      expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({data: expect.objectContaining({toolName: "commit_github_files", status: "proposed"})}));
+    } else {
+      expect(body.data.proposal).toBeNull();
+      expect(mocks.createProposal).not.toHaveBeenCalled();
+    }
+  });
+
 });
 
 
 describe("authenticated Agent NDJSON endpoint", () => {
-  function streamingRequest() {
-    return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ message: "Inspect the file" }) });
+  function streamingRequest(streamFeatures?: unknown) {
+    return new NextRequest("https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/messages", { method: "POST", headers: { "content-type": "application/json", accept: "application/x-ndjson" }, body: JSON.stringify({ message: "Inspect the file", streamFeatures }) });
   }
   beforeEach(() => {
     vi.clearAllMocks();
@@ -370,6 +514,19 @@ describe("authenticated Agent NDJSON endpoint", () => {
     mocks.findFirstConversation.mockResolvedValue(null);
     expect((await POST(streamingRequest(), params)).status).toBe(404);
     expect(mocks.runDecisionLoop).not.toHaveBeenCalled(); expect(mocks.createTurn).not.toHaveBeenCalled();
+  });
+  it.each([undefined, [], ["unknown"], ["tool_activity_v1"]].map(streamFeatures => ({streamFeatures})))("negotiates activity explicitly without changing final persistence (%j)", async ({streamFeatures}) => {
+    mocks.runDecisionLoop.mockImplementation(async input => {
+      input.streaming.onActivity?.({step: 1, toolName: "read_github_file", state: "running"});
+      input.streaming.onActivity?.({step: 1, toolName: "read_github_file", state: "completed"});
+      return {kind: "final", message: "Verified explanation"};
+    });
+    const {POST} = await import("../route");
+    const response = await POST(streamingRequest(streamFeatures), params);
+    const events = (await response.text()).trim().split("\n").map(line => JSON.parse(line));
+    expect(events.filter(event => event.type === "tool_activity")).toHaveLength(streamFeatures?.includes("tool_activity_v1") ? 2 : 0);
+    expect(events.at(-1)).toMatchObject({type: "result", data: {proposal: null}});
+    expect(mocks.createProposal).not.toHaveBeenCalled();
   });
   it("streams a draft and returns only a persisted, final response", async () => {
     let finish!: () => void;
@@ -430,4 +587,11 @@ it("does not start inference after cancellation during profile audit persistence
   finally { finish(); }
   expect(await response.text()).not.toContain('"result"');
   expect(mocks.runDecisionLoop).not.toHaveBeenCalled(); expect(mocks.createProposal).not.toHaveBeenCalled();
+
+});
+it("returns a typed Agent policy block without presenting it as an executable proposal", async () => {
+ mocks.resolveRequestDesktopSession.mockResolvedValue(session);mocks.findFirstConversation.mockResolvedValue({id:"conv_1",organizationId:"org-1",userId:"user-1",title:null});
+ mocks.runDecisionLoop.mockResolvedValue({kind:"error",error:"workspace_agent_policy_unavailable"});
+ const {POST}=await import("../route");const result=await POST(request({message:"inspect safely"}),params);
+ expect(await result.json()).toMatchObject({ok:true,data:{proposal:null,issue:"workspace_agent_policy_unavailable"}});
 });

@@ -8,6 +8,7 @@
  */
 
 import { Card, ExternalLink, ViewShell } from "../components/Primitives";
+import { GOVERNED_JOURNEY, GOVERNED_JOURNEY_AVAILABILITY, type GovernedJourneyDestination } from "../../../lib/desktop/governedJourney";
 
 interface DocLink {
   title: string;
@@ -40,7 +41,7 @@ const DOCS: ReadonlyArray<{ section: string; links: DocLink[] }> = [
   },
 ];
 
-export function DocsView() {
+export function DocsView({ onNavigate }: { onNavigate: (view: GovernedJourneyDestination) => void }) {
   return (
     <ViewShell>
       <div>
@@ -52,6 +53,22 @@ export function DocsView() {
           opens the authoritative version in your browser.
         </p>
       </div>
+
+      <section aria-labelledby="governed-journey-title">
+        <h2 id="governed-journey-title" className="text-lg font-semibold text-white">From code to governed deployment</h2>
+        <p className="mt-2 text-sm leading-relaxed text-zinc-400">{GOVERNED_JOURNEY_AVAILABILITY}</p>
+        <ol className="mt-4 grid gap-3 md:grid-cols-2">
+          {GOVERNED_JOURNEY.map(stage => (
+            <li key={stage.id}>
+              <Card className="h-full p-4">
+                <h3 className="text-sm font-semibold text-white">{stage.title}</h3>
+                <p className="mt-2 text-xs leading-6 text-zinc-400">{stage.detail}</p>
+                <button type="button" onClick={() => onNavigate(stage.destination)} className="mt-3 rounded-md border border-white/15 px-3 py-2 text-xs text-orange-200 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">{stage.cta}</button>
+              </Card>
+            </li>
+          ))}
+        </ol>
+      </section>
 
       <div className="space-y-5">
         {DOCS.map((sec) => (

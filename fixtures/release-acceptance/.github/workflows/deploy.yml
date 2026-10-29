@@ -1,0 +1,47 @@
+name: Axiom synthetic release acceptance
+on:
+  workflow_dispatch:
+    inputs:
+      marker:
+        description: Exact synthetic marker expected in the reviewed source
+        required: true
+        type: choice
+        options:
+          - synthetic-release-before
+          - synthetic-release-after
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: axiom-synthetic-pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out the exact protected source commit
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify and prepare synthetic content
+        env:
+          INPUT_MARKER: ${{ inputs.marker }}
+          OUTPUT_DIR: _site
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node verify.mjs
+          node prepare.mjs
+      - name: Upload only synthetic static content
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        with:
+          path: _site
+          retention-days: 1
+      - name: Deploy the reviewed synthetic site
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e

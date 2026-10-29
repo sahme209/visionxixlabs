@@ -1,0 +1,17 @@
+import {beforeEach,expect,it,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const io=vi.hoisted(()=>({context:vi.fn(),billing:vi.fn(),runtime:vi.fn(),invoices:vi.fn()}));
+vi.mock('@/lib/auth/currentContext',()=>({currentContext:io.context}));
+vi.mock('@/lib/billing/tenantBillingStore',()=>({readBillingPlanWithAvailability:io.billing}));
+vi.mock('@/lib/billing/publicBillingRuntime',()=>({publicBillingRuntime:io.runtime}));
+import {GET} from '../route';
+const req=(q='')=>new NextRequest('https://fixture.test/api/control/invoices'+q);
+beforeEach(()=>{vi.resetAllMocks();io.context.mockResolvedValue({isAuthenticated:true,userId:'user-A',organizationId:'org-A',roles:['owner']});io.billing.mockResolvedValue({available:true,plan:{publicPlanId:'pro',stripeCustomerId:'cus_current',status:'past_due'}});io.runtime.mockResolvedValue({invoices:io.invoices});io.invoices.mockResolvedValue({invoices:[],hasMore:false,nextCursor:null})});
+it('requires identity before reading financial records',async()=>{io.context.mockResolvedValue({isAuthenticated:false,roles:[]});expect((await GET(req())).status).toBe(401);expect(io.runtime).not.toHaveBeenCalled()});
+it.each(['read_only','operator','finance_viewer','platform_admin'])('does not broaden current invoice access to %s',async role=>{io.context.mockResolvedValue({isAuthenticated:true,userId:'user-A',organizationId:'org-A',roles:[role]});expect((await GET(req())).status).toBe(403);expect(io.billing).not.toHaveBeenCalled()});
+it('uses only the verified workspace customer, including past-due accounts',async()=>{expect((await GET(req('?customer=cus_other&organizationId=org-other&status=paid&after=in_previous'))).status).toBe(200);expect(io.billing).toHaveBeenCalledWith('org-A');expect(io.invoices).toHaveBeenCalledWith('cus_current',{status:'paid',after:'in_previous'})});
+it('does not infer an empty invoice list from unavailable billing',async()=>{io.billing.mockResolvedValue({available:false,plan:{}});expect((await GET(req())).status).toBe(503);expect(io.runtime).not.toHaveBeenCalled()});
+it('does not contact Stripe when no customer is linked',async()=>{io.billing.mockResolvedValue({available:true,plan:{publicPlanId:'free'}});const r=await GET(req());expect(r.status).toBe(200);expect((await r.json()).data.state).toBe('no_customer');expect(io.runtime).not.toHaveBeenCalled()});
+it('retains portal fallback for legacy accounts without public billing identity',async()=>{io.billing.mockResolvedValue({available:true,plan:{stripeCustomerId:'cus_legacy'}});expect((await GET(req())).status).toBe(503);expect(io.runtime).not.toHaveBeenCalled()});
+it.each(['?status=failed','?after=https://outside.test','?after=in_'])('rejects invalid filters and cursors %s',async q=>{expect((await GET(req(q))).status).toBe(400);expect(io.runtime).not.toHaveBeenCalled()});
+it('sanitizes provider failures and disables caching',async()=>{io.invoices.mockRejectedValue(Error('private-provider-token'));const r=await GET(req());expect(r.status).toBe(503);expect(await r.text()).not.toContain('private-provider');expect(r.headers.get('cache-control')).toContain('no-store')});

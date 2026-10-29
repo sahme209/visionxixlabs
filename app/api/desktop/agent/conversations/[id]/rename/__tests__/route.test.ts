@@ -1,0 +1,14 @@
+import {NextRequest} from 'next/server';
+import {beforeEach,expect,it,vi} from 'vitest';
+const m=vi.hoisted(()=>({session:vi.fn(),update:vi.fn(),limit:vi.fn()}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.session}));
+vi.mock('@/lib/db',()=>({prisma:{agentConversation:{updateMany:m.update}}}));
+vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:m.limit}));
+beforeEach(()=>{vi.resetAllMocks();m.session.mockResolvedValue({userId:'user',organizationId:'org'});m.update.mockResolvedValue({count:1});m.limit.mockReturnValue({allowed:true});});
+const params={params:Promise.resolve({id:'conv_1'})};
+const request=(body:unknown)=>new NextRequest('https://visionxixlabs.com/api/desktop/agent/conversations/conv_1/rename',{method:'POST',body:JSON.stringify(body)});
+it('requires a current paired session before changing metadata',async()=>{m.session.mockResolvedValue(undefined);const {POST}=await import('../route');expect((await POST(request({title:'New',expectedTitle:null}),params)).status).toBe(401);expect(m.update).not.toHaveBeenCalled();});
+it('uses an atomic title comparison scoped to both current user and organization',async()=>{const {POST}=await import('../route');const response=await POST(request({title:'Release review',expectedTitle:'Old'}),params);expect(response.status).toBe(200);expect(m.update).toHaveBeenCalledWith({where:{id:'conv_1',userId:'user',organizationId:'org',title:'Old'},data:{title:'Release review'}});});
+it.each([{title:'',expectedTitle:null},{title:'x'.repeat(201),expectedTitle:null},{title:'a\nb',expectedTitle:null},{title:'new'},{title:'new',expectedTitle:null,userId:'other'}])('refuses invalid rename input',async body=>{const {POST}=await import('../route');expect((await POST(request(body),params)).status).toBe(400);expect(m.update).not.toHaveBeenCalled();});
+it('does not overwrite a title after an ownership or version mismatch',async()=>{m.update.mockResolvedValue({count:0});const {POST}=await import('../route');expect((await POST(request({title:'New',expectedTitle:null}),params)).status).toBe(409);});
+it('bounds an uncertain write failure without returning private diagnostics',async()=>{m.update.mockRejectedValue(new Error('PRIVATE_DIAGNOSTIC'));const {POST}=await import('../route');const response=await POST(request({title:'New',expectedTitle:null}),params);expect(response.status).toBe(503);expect(await response.json()).toEqual({ok:false,error:'conversation_rename_unconfirmed'});});

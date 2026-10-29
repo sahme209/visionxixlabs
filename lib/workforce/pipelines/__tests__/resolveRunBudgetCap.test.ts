@@ -17,7 +17,7 @@ const ORG_WITH_AI_CODING_OVERRIDE: OrganizationBudgetConfigShape = {
   ],
 };
 
-describe("resolveRunBudgetCap — metadata wins", () => {
+describe("resolveRunBudgetCap — metadata can only restrict", () => {
   it("metadata.maxCostCents beats every lower priority", () => {
     const r = resolveRunBudgetCap({
       pipelineId: "ai_coding",
@@ -28,14 +28,14 @@ describe("resolveRunBudgetCap — metadata wins", () => {
     expect(r.source).toBe("metadata_explicit_cap");
   });
 
-  it("metadata.unlimitedBudget=true → null cap", () => {
+  it("metadata cannot waive the configured workspace cap", () => {
     const r = resolveRunBudgetCap({
       pipelineId: "ai_coding",
       runMetadata: { unlimitedBudget: true },
       orgConfig: ORG_5K,
     });
-    expect(r.maxCents).toBeNull();
-    expect(r.source).toBe("metadata_unlimited");
+    expect(r.maxCents).toBe(5_000);
+    expect(r.source).toBe("org_default");
   });
 
   it("ignores metadata.maxCostCents <= 0", () => {
@@ -152,4 +152,29 @@ describe("resolveRunBudgetCap — defense in depth", () => {
     expect(r.maxCents).not.toBeNull();
     expect(r.maxCents).toBeGreaterThan(0);
   });
+});
+
+
+describe("request metadata cannot expand budget authority", () => {
+  it("cannot raise an administrator pipeline cap", () => {
+    expect(resolveRunBudgetCap({ pipelineId: "ai_coding", orgConfig: ORG_WITH_AI_CODING_OVERRIDE,
+      runMetadata: { maxCostCents: 99_999 } })).toEqual({ maxCents: 10_000, source: "org_pipeline_override" });
+  });
+  it("cannot raise the platform default when no workspace policy exists", () => {
+    expect(resolveRunBudgetCap({ pipelineId: "ai_coding", runMetadata: { maxCostCents: 99_999, unlimitedBudget: true } }))
+      .toEqual({ maxCents: DEFAULT_RUN_MAX_CENTS, source: "platform_default" });
+  });
+  it("applies a lower request limit even when request also asks for unlimited", () => {
+    expect(resolveRunBudgetCap({ pipelineId: "ai_coding", orgConfig: ORG_5K,
+      runMetadata: { maxCostCents: 20, unlimitedBudget: true } })).toEqual({ maxCents: 20, source: "metadata_explicit_cap" });
+  });
+  it("allows a request to restrict an administrator-approved unlimited allowance", () => {
+    expect(resolveRunBudgetCap({ pipelineId: "ai_coding", orgConfig: { defaultMaxCostCents: null, pipelineOverrides: [] },
+      runMetadata: { maxCostCents: 40 } })).toEqual({ maxCents: 40, source: "metadata_explicit_cap" });
+  });
+});
+
+it("equal request and workspace limits preserve the administrator policy source", () => {
+  expect(resolveRunBudgetCap({ pipelineId: "ai_coding", orgConfig: ORG_5K, runMetadata: { maxCostCents: 5_000 } }))
+    .toEqual({ maxCents: 5_000, source: "org_default" });
 });

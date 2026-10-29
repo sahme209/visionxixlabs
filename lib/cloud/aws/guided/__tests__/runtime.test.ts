@@ -1,0 +1,8 @@
+import {it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({ports:null as any,start:vi.fn()}));
+vi.mock('@/lib/db',()=>({prisma:{}}));
+vi.mock('../service',()=>({createAwsGuidedService:(_repo:unknown,ports:unknown)=>{m.ports=ports;return{}}}));
+vi.mock('../../enrollment/service',()=>({createAwsEnrollmentService:()=>({start:m.start})}));
+import {createAwsGuidedRuntime} from '../runtime';
+import {buildAwsGuidedLaunch} from '../launch';
+it('projects real enrollment response extras into the exact launch challenge rather than passing strict-schema-invalid shape',async()=>{const expiresAt=new Date(Date.now()+300000).toISOString();m.start.mockResolvedValue({attemptId:'attempt',externalId:'axiom-'+'a'.repeat(32),expiresAt,expectedAccountId:'123456789012',roleArn:'arn:aws:iam::123456789012:role/Reader',region:'us-east-2'});createAwsGuidedRuntime();const challenge=await m.ports.startEnrollment({}, {organizationId:'org',userId:'user',sessionId:'session'},{expectedAccountId:'123456789012',roleArn:'arn:aws:iam::123456789012:role/Reader',region:'us-east-2'});expect(challenge).toEqual({attemptId:'attempt',externalId:'axiom-'+'a'.repeat(32),expiresAt});expect(()=>buildAwsGuidedLaunch({selection:{choiceId:'choice',accountId:'123456789012',region:'us-east-2',roleName:'Reader'},template:{templateUrl:'https://owned.s3.us-east-2.amazonaws.com/templates/'+'b'.repeat(64)+'.yaml',templateDigest:'b'.repeat(64),policyDigest:'c'.repeat(64),brokerPrincipalArn:'arn:aws:iam::123456789012:role/Broker',roleName:'Reader',capability:'ec2_describe_instances_v1',reviewed:true},challenge})).not.toThrow();expect(m.start).toHaveBeenCalledOnce()});

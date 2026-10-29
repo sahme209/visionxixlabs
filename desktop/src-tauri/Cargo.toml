@@ -1,11 +1,12 @@
 [package]
 name = "axiom-desktop"
-version = "0.1.20"
+version = "0.1.21"
 description = "Axiom Agent — Local AI Cloud Operations Command Center"
 authors = ["Vision XIX Labs"]
 edition = "2021"
 
 [build-dependencies]
+serde_json = "1"
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
@@ -19,6 +20,7 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tokio = { version = "1", features = ["full"] }
 reqwest = { version = "0.12", features = ["json"] }
+percent-encoding = "=2.3.2"
 chrono = { version = "0.4", features = ["serde"] }
 # keyring 3 has no default native backend: a bare dependency uses its mock store.
 [target.'cfg(target_os = "macos")'.dependencies]

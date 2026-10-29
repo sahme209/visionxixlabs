@@ -1,0 +1,45 @@
+import 'server-only';
+import {z} from 'zod';
+import {prisma} from '@/lib/db';
+import {currentContext} from '@/lib/auth/currentContext';
+import {encryptScopedCredential,decryptScopedCredential} from '@/lib/security/credentialVault';
+import {connectionCredentialContext} from './tenantAuthorization';
+import type {TenantConnectionRepo} from './tenantConnectionRepo';
+import {createConnectedActionConsent,actionConsentBindingSchema,actionConsentTokenSchema,type ActionConsentBinding,type ActionConsentToken} from './connectedActionConsent';
+import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
+import {createValidationProviderIo} from './validationProviderIo';
+import {splitGrantedScopes} from './grantedScopes';
+import {record} from '@/lib/audit/secureAudit';
+import {id as ids} from '@/lib/domain/ids';
+const providerSchema=z.enum(['teams','linear']);
+const selected={id:true,organizationId:true,provider:true,status:true,revokedAt:true,consentedByUserId:true,externalAccountId:true,updatedAt:true,encryptedCredential:true} as const;
+export const connectedActionConsentEnabled=()=>process.env.AXIOM_CONNECTED_ACTION_CONSENT_ENABLED==='true';
+export async function readConnectedActionAdministrator(){const c=await currentContext();if(!c.isAuthenticated||!c.organizationId||!c.userId||c.userId!==c.sessionUserId)return null;const m=await prisma.orgMembership.findFirst({where:{organizationId:c.organizationId,userId:c.userId,acceptedAt:{not:null},role:{in:['owner','admin']}},select:{organizationId:true,userId:true}});return m}
+function registration(provider:'teams'|'linear'){const clientId=process.env[provider==='teams'?'MICROSOFT_CLIENT_ID':'LINEAR_CLIENT_ID']?.trim(),secret=process.env[provider==='teams'?'MICROSOFT_CLIENT_SECRET':'LINEAR_CLIENT_SECRET']?.trim(),tenantId=provider==='teams'?process.env.MICROSOFT_TENANT_ID?.trim():null;if(!clientId||!secret||provider==='teams'&&!tenantId)throw Error('connected_action_consent_unavailable');return{clientId,secret,tenantId}}
+export async function readConnectedActionConsentBinding(provider:'teams'|'linear'){
+ providerSchema.parse(provider);const actor=await readConnectedActionAdministrator();if(!actor)throw Error('connected_action_administrator_required');const row=await prisma.tenantIntegrationConnection.findUnique({where:{organizationId_provider:{organizationId:actor.organizationId,provider}},select:selected});if(!row||row.provider!==provider||row.status!=='active'||row.revokedAt||row.consentedByUserId!==actor.userId||!row.externalAccountId)throw Error('connected_action_connection_unavailable');const config=registration(provider);return actionConsentBindingSchema.parse({provider,...actor,connectionId:row.id,connectionRevision:row.updatedAt.toISOString(),credentialDigest:hash(row.encryptedCredential),externalAccountId:row.externalAccountId,clientId:config.clientId,tenantId:config.tenantId,redirectUri:`https://visionxixlabs.com/api/integrations/${provider}/callback`});
+}
+export function connectedActionConsentFlow(provider:'teams'|'linear'){
+ const readBinding=async(signal:AbortSignal)=>{signal.throwIfAborted();if(!connectedActionConsentEnabled())throw Error('connected_action_consent_disabled');return readConnectedActionConsentBinding(provider)};
+ return createConnectedActionConsent(prisma as unknown as TenantConnectionRepo,{
+ readBinding,encrypt:encryptScopedCredential,decrypt:decryptScopedCredential,
+ exchange:async(b,input)=>exchangeConnectedActionToken(b,input.code,input.verifier,input.signal),
+ verifyIdentity:verifyConnectedActionIdentity,
+ persist:async(b,rawToken,signal)=>{
+  const token=actionConsentTokenSchema.parse(rawToken);let newRevision='';await prisma.$transaction(async tx=>{
+   signal.throwIfAborted();const actor=await readConnectedActionAdministrator();if(!actor||actor.organizationId!==b.organizationId||actor.userId!==b.userId||!connectedActionConsentEnabled())throw Error('connected_action_administrator_required');
+   const rows=await tx.$queryRaw<Array<{organizationId:string;userId:string;acceptedAt:Date|null;role:string}>>`SELECT "organizationId","userId","acceptedAt","role" FROM "OrgMembership" WHERE "organizationId"=${b.organizationId} AND "userId"=${b.userId} FOR SHARE`;if(rows.length!==1||!rows[0].acceptedAt||!['owner','admin'].includes(rows[0].role))throw Error('connected_action_administrator_required');
+   const current=await tx.tenantIntegrationConnection.findUnique({where:{organizationId_provider:{organizationId:b.organizationId,provider}},select:selected});if(!current||current.id!==b.connectionId||current.status!=='active'||current.revokedAt||current.consentedByUserId!==b.userId||current.externalAccountId!==b.externalAccountId||current.updatedAt.toISOString()!==b.connectionRevision||hash(current.encryptedCredential)!==b.credentialDigest||hash(await readBinding(signal))!==hash(b)||token.expiresAt<=Date.now()+15000)throw Error('connected_action_connection_changed');
+   const now=new Date(),updatedAt=new Date(Math.max(now.getTime(),current.updatedAt.getTime()+1)),encryptedCredential=encryptScopedCredential(JSON.stringify({accessToken:token.accessToken,refreshToken:token.refreshToken,expiresAt:token.expiresAt,purpose:'connected_app_actions_v1',actionScopes:token.scopes}),connectionCredentialContext({organizationId:b.organizationId,provider,connectionId:b.connectionId}));
+   const changed=await tx.tenantIntegrationConnection.updateMany({where:{id:current.id,organizationId:b.organizationId,provider,status:'active',revokedAt:null,updatedAt:current.updatedAt,encryptedCredential:current.encryptedCredential,consentedByUserId:b.userId,externalAccountId:b.externalAccountId},data:{encryptedCredential,scopesJson:token.scopes,consentedAt:now,lastValidatedAt:now,updatedAt}});if(changed.count!==1)throw Error('connected_action_connection_changed');newRevision=updatedAt.toISOString();signal.throwIfAborted();const latestActor=await readConnectedActionAdministrator();if(!connectedActionConsentEnabled()||!latestActor||latestActor.organizationId!==b.organizationId||latestActor.userId!==b.userId)throw Error('connected_action_administrator_required');
+  });
+  await record({organizationId:ids.organization(b.organizationId),actorUserId:ids.user(b.userId),actorKind:'user',action:'connector.connect',outcome:'success',entityRef:`connector:${provider}`,correlationId:ids.correlation(`actionconsent_${crypto.randomUUID()}`),source:'live',detail:{purpose:'connected_app_actions_v1',actionScopes:token.scopes,scopeCount:token.scopes.length,connectionRevision:newRevision,providerWritePerformed:false}});
+ }
+ });
+}
+/** Fixed endpoints only; no refresh or exchange retry. */
+export async function exchangeConnectedActionToken(b:Readonly<ActionConsentBinding>,code:string,verifier:string,signal:AbortSignal,transport:typeof fetch=fetch):Promise<ActionConsentToken>{
+ const config=registration(b.provider);if(config.clientId!==b.clientId||config.tenantId!==b.tenantId)throw Error('connected_action_connection_changed');const io=createValidationProviderIo(signal,transport),issued=Date.now();
+ try{const response=await io.read(b.provider==='teams'?`https://login.microsoftonline.com/${b.tenantId}/oauth2/v2.0/token`:'https://api.linear.app/oauth/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({grant_type:'authorization_code',client_id:b.clientId,client_secret:config.secret,redirect_uri:b.redirectUri,code,code_verifier:verifier})});if(response.status!==200)throw Error('connected_action_exchange_unconfirmed');const raw=z.object({access_token:z.string().min(1).max(32768),refresh_token:z.string().min(1).max(32768).optional(),expires_in:z.number().int().min(1).max(31536000),token_type:z.string().regex(/^bearer$/i),scope:z.union([z.string().max(4096),z.array(z.string()).max(20)])}).parse(response.json);const scopes=Array.isArray(raw.scope)?raw.scope:splitGrantedScopes(raw.scope);return actionConsentTokenSchema.parse({accessToken:raw.access_token,refreshToken:raw.refresh_token??null,expiresAt:issued+raw.expires_in*1000,scopes})}finally{io.dispose()}
+}
+export async function verifyConnectedActionIdentity(b:Readonly<ActionConsentBinding>,token:Readonly<ActionConsentToken>,signal:AbortSignal,transport:typeof fetch=fetch){const io=createValidationProviderIo(signal,transport);try{const r=await io.read(b.provider==='teams'?'https://graph.microsoft.com/v1.0/me?$select=id':'https://api.linear.app/graphql',b.provider==='teams'?{method:'GET',headers:{Authorization:`Bearer ${token.accessToken}`}}:{method:'POST',headers:{Authorization:`Bearer ${token.accessToken}`,'Content-Type':'application/json'},body:JSON.stringify({query:'query AxiomActionConsentIdentity { viewer { id } }'})});if(r.status!==200)throw Error('connected_action_identity_unavailable');if(b.provider==='teams')z.object({id:z.string().uuid()}).parse(r.json);else{const v=z.object({data:z.object({viewer:z.object({id:z.literal(b.externalAccountId)})}),errors:z.array(z.unknown()).optional()}).parse(r.json);if(v.errors?.length)throw Error('connected_action_identity_changed')}}finally{io.dispose()}}

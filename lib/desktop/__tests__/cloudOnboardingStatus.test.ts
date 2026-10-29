@@ -1,0 +1,21 @@
+/** @vitest-environment jsdom */
+import {createElement} from 'react';
+import {afterEach,beforeEach,expect,it,vi} from 'vitest';
+import {act,cleanup,render,screen,waitFor} from '@testing-library/react';
+import type {VerifiedDesktopIdentity} from '../../../desktop/src/lib/desktopClient';
+const io=vi.hoisted(()=>({client:{config:{},cloudOnboardingReadiness:vi.fn()}}));
+vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:io.client}));
+import {CloudOnboardingStatus} from '../../../desktop/src/components/CloudOnboardingStatus';
+import {isCloudOnboardingReadiness} from '../../cloud/onboardingReadinessContract';
+const identity={kind:'desktop_session',organizationId:'tenant',capabilities:['workspace:read']} as VerifiedDesktopIdentity;
+const data={aws:{vault:'available',broker:'missing',liveMode:'enabled',localPrerequisites:'missing',providerValidation:'not_checked'},azure:{vault:'available',localPrerequisites:'present',providerValidation:'not_checked'}};
+beforeEach(()=>{io.client.config={};io.client.cloudOnboardingReadiness.mockReset().mockResolvedValue({ok:true,data});});afterEach(cleanup);
+it('distinguishes missing AWS broker and Azure vault readiness without calling either connected',async()=>{const view=render(createElement(CloudOnboardingStatus,{provider:'aws',identity}));await screen.findByText(/service AWS broker is not configured/);view.rerender(createElement(CloudOnboardingStatus,{provider:'azure',identity}));await screen.findByText(/Azure access has not been checked/);expect(screen.queryByText(/connected|validated successfully/i)).toBeNull();});
+it('does not treat an unavailable response as missing or ready',async()=>{io.client.cloudOnboardingReadiness.mockResolvedValue({ok:false,error:'private-error'});render(createElement(CloudOnboardingStatus,{provider:'aws',identity}));await screen.findByText(/status is unavailable/);expect(screen.queryByText(/private-error/)).toBeNull();});
+it('discards a late response after workspace context changes',async()=>{let resolve!:(v:unknown)=>void;io.client.cloudOnboardingReadiness.mockReturnValueOnce(new Promise(r=>{resolve=r;}));const view=render(createElement(CloudOnboardingStatus,{provider:'aws',identity}));io.client.config={};io.client.cloudOnboardingReadiness.mockResolvedValue({ok:false});view.rerender(createElement(CloudOnboardingStatus,{provider:'aws',identity:{...identity,organizationId:'other'}}));await screen.findByText(/status is unavailable/);await act(async()=>resolve({ok:true,data}));expect(screen.queryByText(/broker is not configured/)).toBeNull();});
+it('does not fetch without paired read authority',()=>{render(createElement(CloudOnboardingStatus,{provider:'aws',identity:{...identity,capabilities:[]}}));expect(io.client.cloudOnboardingReadiness).not.toHaveBeenCalled();});
+it('checks the complete DTO and refuses inferred validation or inconsistent local status',()=>{expect(isCloudOnboardingReadiness(data)).toBe(true);expect(isCloudOnboardingReadiness({...data,aws:{...data.aws,providerValidation:'verified'}})).toBe(false);expect(isCloudOnboardingReadiness({...data,aws:{...data.aws,localPrerequisites:'present'}})).toBe(false);expect(isCloudOnboardingReadiness({...data,secret:'hidden'})).toBe(false);expect(isCloudOnboardingReadiness({})).toBe(false);});
+it.each(['broker','liveMode','vault'])('refuses JSON arrays in the %s enum',field=>{const literal=field==='broker'?'present':field==='liveMode'?'enabled':'available';const bad={...data,aws:{...data.aws,broker:'present',localPrerequisites:'missing',[field]:[literal]}};expect(isCloudOnboardingReadiness(bad)).toBe(false);});
+it.each([null,{},['present'],1,true])('refuses non-string broker enums %#',value=>{expect(isCloudOnboardingReadiness({...data,aws:{...data.aws,broker:value}})).toBe(false);});
+it.each([null,{},['enabled'],1,true])('refuses non-string mode enums %#',value=>{expect(isCloudOnboardingReadiness({...data,aws:{...data.aws,liveMode:value}})).toBe(false);});
+it.each([null,{},['available'],1,true])('refuses non-string vault enums %#',value=>{expect(isCloudOnboardingReadiness({...data,aws:{...data.aws,vault:value},azure:{...data.azure,vault:value}})).toBe(false);});

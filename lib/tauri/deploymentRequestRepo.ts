@@ -28,7 +28,7 @@ interface DeploymentRequestDelegate {
             correlationId: string;
             intakeJson: unknown;
             version: number;
-            submittedAt: Date;
+            submittedAt: Date | null;
         };
     }): Promise<DeploymentRequestRow>;
     findFirst(args: {
@@ -42,6 +42,7 @@ interface DeploymentRequestDelegate {
             version?: { increment: number };
             status?: string;
             closedAt?: Date;
+            submittedAt?: Date;
         };
     }): Promise<{ count: number }>;
     findMany(args: {
@@ -288,13 +289,15 @@ export async function reviseDeploymentRequest(
             return { kind: "unchanged" as const, request: existing };
         }
 
+        const submitsResolutionDraft = existing.status === "draft" && stored.kind === "resolution_draft";
         const nextVersion = existing.version + 1;
         const claimed = await tx.tauriDeploymentRequest.updateMany({
-            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion },
+            where: { id: existing.id, organizationId: input.organizationId, version: input.expectedVersion, ...(submitsResolutionDraft ? { status: "draft" } : {}) },
             data: {
                 title: input.intake.title,
                 intakeJson: input.intake,
                 version: { increment: 1 },
+                ...(submitsResolutionDraft ? { status: "submitted", submittedAt: new Date() } : {}),
             },
         });
         if (claimed.count !== 1) return { kind: "version_conflict" as const };
@@ -332,9 +335,9 @@ export async function reviseDeploymentRequest(
                 deploymentRequestId: updated.id,
                 actorUserId: input.requesterUserId,
                 actorRole: input.actorRole,
-                action: "deployment_request.revised",
-                previousValueJson: { version: existing.version, title: existing.title },
-                newValueJson: { version: updated.version, title: updated.title },
+                action: submitsResolutionDraft ? "deployment_request.submitted" : "deployment_request.revised",
+                previousValueJson: { version: existing.version, title: existing.title, ...(submitsResolutionDraft ? { status: "draft" } : {}) },
+                newValueJson: { version: updated.version, title: updated.title, ...(submitsResolutionDraft ? { status: "submitted" } : {}) },
                 source: "desktop",
                 correlationId: input.correlationId,
                 timeZone: input.intake.displayTimeZone,

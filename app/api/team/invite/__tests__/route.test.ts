@@ -20,7 +20,7 @@ vi.mock("@/lib/workforce/domains/inviteLinks", () => ({
   createInviteToken: mocks.createInviteToken,
   ASSIGNABLE_ROLES: ["admin", "operator", "security_reviewer", "finance_viewer", "read_only"],
 }));
-vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
+vi.mock("@/lib/audit/requiredAudit", () => ({ recordRequiredAudit: mocks.recordAudit }));
 
 function formRequest(fields: Record<string, string>) {
   const body = new URLSearchParams(fields);
@@ -60,7 +60,7 @@ describe("POST /api/team/invite — organization membership lifecycle", () => {
   });
 
   it("denies a caller who is not owner/admin in this workspace — never mints a token", async () => {
-    mocks.findMembership.mockResolvedValue({ role: "operator" });
+    mocks.findMembership.mockResolvedValue({ role: "operator", acceptedAt: new Date() });
     const { POST } = await import("../route");
     const res = await POST(formRequest({ email: "new@acme.test", role: "operator" }));
 
@@ -69,7 +69,7 @@ describe("POST /api/team/invite — organization membership lifecycle", () => {
   });
 
   it("mints an invite for an owner/admin caller and audits it with a correlation id", async () => {
-    mocks.findMembership.mockResolvedValue({ role: "admin" });
+    mocks.findMembership.mockResolvedValue({ role: "admin", acceptedAt: new Date() });
     const { POST } = await import("../route");
     const res = await POST(formRequest({ email: "new@acme.test", role: "operator" }));
 
@@ -81,4 +81,41 @@ describe("POST /api/team/invite — organization membership lifecycle", () => {
       correlationId: expect.any(String),
     }));
   });
+
+  it.each(["owner", "admin"])("does not mint invitations for pending %s membership", async (role) => {
+    mocks.findMembership.mockResolvedValue({ role, acceptedAt: null });
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ email: "new@example.test", role: "read_only" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.createInviteToken).not.toHaveBeenCalled();
+    expect(mocks.recordAudit).not.toHaveBeenCalled();
+  });
+
+  it("does not trust administrative claims after the membership is deleted", async () => {
+    mocks.requireContext.mockResolvedValue({ userId: "user-1", organizationId: "org-1", email: "old@example.test", roles: ["owner"] });
+    mocks.findMembership.mockResolvedValue(null);
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ email: "new@example.test", role: "read_only" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.createInviteToken).not.toHaveBeenCalled();
+  });
+
+  it("does not mint a token when current membership lookup fails", async () => {
+    mocks.findMembership.mockRejectedValue(Error("unavailable"));
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ email: "new@example.test", role: "read_only" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("insufficient_permission");
+    expect(mocks.createInviteToken).not.toHaveBeenCalled();
+  });
+  it("withholds the invitation link when required audit persistence fails", async () => {
+    mocks.findMembership.mockResolvedValue({ role: "admin", acceptedAt: new Date() });
+    mocks.recordAudit.mockRejectedValueOnce(Error("private audit diagnostic"));
+    const { POST } = await import("../route");
+    const result = await POST(formRequest({ email: "disposable@example.test", role: "read_only" }));
+    expect(locationOf(result).searchParams.get("error")).toBe("audit_unconfirmed");
+    expect(locationOf(result).searchParams.has("inviteUrl")).toBe(false);
+    expect(locationOf(result).searchParams.has("notice")).toBe(false);
+    expect(mocks.createInviteToken).toHaveBeenCalledOnce();
+  });
+
 });

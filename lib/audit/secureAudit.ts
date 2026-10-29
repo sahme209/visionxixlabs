@@ -164,6 +164,7 @@ export type AuditAction =
   | "cloud_account.toggle"
   | "connector.pause"
   | "connector.resume"
+  | "mcp.documentation_read"
   | "skill.install"
   | "skill.enable"
   | "skill.disable"
@@ -254,11 +255,21 @@ export async function record(input: RecordInput): Promise<void> {
     }
     return;
   }
+  const rec = prepareAuditRecord(input);
+  try {
+    await _store.append(rec);
+  } catch (err) {
+    console.error("[secureAudit] append failed", { action: input.action, err });
+  }
+}
+
+/** Construct the canonical redacted record without selecting a persistence store. */
+export function prepareAuditRecord(input: RecordInput, auditId: AuditEventId = newAuditId()): AuditRecord {
   const detail = input.detail
     ? sanitizeDetail(redactDeep(input.detail))
     : undefined;
-  const rec: AuditRecord = {
-    id: newAuditId(),
+  return {
+    id: auditId,
     organizationId: input.organizationId,
     actorUserId: input.actorUserId,
     actorKind: input.actorKind ?? (input.actorUserId ? "user" : "system"),
@@ -271,11 +282,6 @@ export async function record(input: RecordInput): Promise<void> {
     detail,
     errorCode: input.errorCode,
   };
-  try {
-    await _store.append(rec);
-  } catch (err) {
-    console.error("[secureAudit] append failed", { action: input.action, err });
-  }
 }
 
 /** Convert arbitrary redacted detail into the audit's flat scalar shape. */

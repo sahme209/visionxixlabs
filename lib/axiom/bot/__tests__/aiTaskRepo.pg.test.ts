@@ -1,0 +1,42 @@
+import {beforeAll,afterAll,describe,it,expect} from 'vitest';
+import {createRequire} from 'node:module';
+import {randomUUID} from 'node:crypto';
+import {realpathSync,statSync} from 'node:fs';
+import {createSavedBotTask,updateSavedBotTask} from '../savedTaskRepo';
+import {createAiTaskRun} from '../aiTaskRepo';
+import {claimAiTaskRun,claimAiTaskDispatch,cancelAiTaskRun,recoverAiTaskRun,completeAiTaskRun} from '../aiTaskLifecycle';
+const authority='c'.repeat(64);
+const socket=process.env.AXIOM_AI_TASK_PG_SOCKET;
+describe.skipIf(!socket)('AI runs actual owned PostgreSQL',()=>{
+ let client:any;
+ const scope={organizationId:'owned-run-org',userId:'owned-run-user'};
+ const createTask=()=>createSavedBotTask(client,scope,{clientRequestId:randomUUID(),title:'Owned report',instruction:'Recorded metadata only',context:''});
+ const input=(row:any)=>({taskId:row.id,expectedVersion:row.version,kind:'ai_task_response_v1',modelId:'anthropic/test',clientRequestId:randomUUID(),confirmSend:true});
+ beforeAll(async()=>{
+  if(!socket||!/^\/private\/tmp\/axiom-ai-task-prisma-pg-[^/]+\/socket$/.test(socket)||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0)throw new Error('owned_socket_required');
+  const generated=process.env.AXIOM_AI_TASK_PG_CLIENT;
+  if(!generated||!/^\/private\/tmp\/axiom-ai-task-prisma-pg-evidence-[^/]+\/generated\/index\.js$/.test(generated))throw new Error('owned_client_required');
+  const Client=createRequire(import.meta.url)(generated).PrismaClient;
+  client=new Client({datasources:{db:{url:`postgresql://recovery_fixture@localhost/neondb?host=${encodeURIComponent(socket)}`}}});
+  const [binding]=await client.$queryRawUnsafe("SELECT current_database()='neondb' AND current_user='recovery_fixture' AND current_setting('listen_addresses')='' AS private");if(!binding?.private)throw new Error('owned_binding_required');
+ });
+ afterAll(async()=>{await client?.$disconnect()});
+ it('has only the owned draft and new run/event/artifact tables',async()=>{const rows=await client.$queryRawUnsafe("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename");expect(rows.map((r:any)=>r.tablename)).toEqual(['BotAiTaskArtifact','BotAiTaskEvent','BotAiTaskRun','BotTaskDraft','BotTaskDraftEvent'])});
+ it('creates one immutable run and initial event under concurrent duplicate starts',async()=>{const task=await createTask(),body=input(task);const rows=await Promise.all([createAiTaskRun(client,scope,body,authority),createAiTaskRun(client,scope,body,authority)]);expect(rows[0].id).toBe(rows[1].id);expect(await client.botAiTaskRun.count({where:{id:rows[0].id}})).toBe(1);expect(await client.botAiTaskEvent.count({where:{runId:rows[0].id}})).toBe(1);expect(rows[0].attemptCount).toBe(0)});
+ it('replays after saved edits without resetting original snapshot or deadline',async()=>{const task=await createTask(),body=input(task),first=await createAiTaskRun(client,scope,body,authority);await updateSavedBotTask(client,scope,task.id,{title:task.title,instruction:'Changed draft only',context:'',expectedVersion:0});const replay=await createAiTaskRun(client,scope,body,authority);expect(replay.snapshotJson).toEqual(first.snapshotJson);expect(replay.deadlineAt).toEqual(first.deadlineAt);await expect(createAiTaskRun(client,scope,{...body,expectedVersion:1},authority)).rejects.toThrow()});
+ it('rejects direct snapshot/deadline changes and event mutation',async()=>{const task=await createTask(),row=await createAiTaskRun(client,scope,input(task),authority);await expect(client.botAiTaskRun.update({where:{id:row.id},data:{deadlineAt:new Date(row.deadlineAt.getTime()+1000)}})).rejects.toThrow();await expect(client.botAiTaskRun.update({where:{id:row.id},data:{snapshotJson:{title:'Tampered'}}})).rejects.toThrow();await expect(client.botAiTaskEvent.updateMany({where:{runId:row.id},data:{eventType:'run.completed'}})).rejects.toThrow()});
+ it('refuses foreign tenant and creator starts and leaves no run',async()=>{const task=await createTask(),body=input(task);for(const other of [{...scope,organizationId:'other'},{...scope,userId:'other'}])await expect(createAiTaskRun(client,other,body,authority)).rejects.toThrow();expect(await client.botAiTaskRun.count({where:{taskId:task.id}})).toBe(0)});
+ const workerId='worker_'+'a'.repeat(32);
+ const bind=(row:any)=>({runId:row.id,expectedRevision:row.revision,snapshotDigest:row.snapshotDigest,workerId});
+ const answer={kind:'answer',message:'Owned local test result. No AI call.'};
+ const receipt=(row:any)=>({usageReceiptId:'fixture-usage-'+row.id,correlationId:row.correlationId,organizationId:scope.organizationId,userId:scope.userId,modelId:row.modelId});
+ const dispatch=async(row:any)=>claimAiTaskDispatch(client,scope,bind(await claimAiTaskRun(client,scope,bind(row))),authority);
+ it('claims once under contention and fences completion after cancellation',async()=>{const task=await createTask(),row=await createAiTaskRun(client,scope,input(task),authority);const claims=await Promise.allSettled([claimAiTaskRun(client,scope,bind(row)),claimAiTaskRun(client,scope,bind(row))]);expect(claims.filter(x=>x.status==='fulfilled')).toHaveLength(1);const running=await client.botAiTaskRun.findUnique({where:{id:row.id}});await cancelAiTaskRun(client,scope,row.id,running.revision);await expect(completeAiTaskRun(client,scope,bind(running),authority,answer,receipt(running))).rejects.toThrow();expect(await client.botAiTaskArtifact.count({where:{runId:row.id}})).toBe(0);expect((await client.botAiTaskRun.findUnique({where:{id:row.id}})).status).toBe('canceled')});
+ it('stores completion, report and success event atomically; artifact remains immutable',async()=>{const task=await createTask(),row=await createAiTaskRun(client,scope,input(task),authority),running=await dispatch(row);const done=await completeAiTaskRun(client,scope,bind(running),authority,answer,receipt(running));expect(done.status).toBe('completed');const artifact=await client.botAiTaskArtifact.findFirst({where:{runId:row.id}});expect(artifact.content).toContain('No AI call.');expect(artifact.snapshotDigest).toBe(row.snapshotDigest);expect(await client.botAiTaskEvent.count({where:{runId:row.id}})).toBe(4);await expect(client.botAiTaskArtifact.update({where:{id:artifact.id},data:{content:'Rewritten'}})).rejects.toThrow()});
+ it('recovers interrupted work without increasing attempts or fabricating success',async()=>{const task=await createTask(),row=await createAiTaskRun(client,scope,input(task),authority),running=await dispatch(row);const recovered=await recoverAiTaskRun(client,scope,row.id,new Date(row.deadlineAt.getTime()+1));expect(recovered).toMatchObject({status:'outcome_unknown',attemptCount:1});expect(await client.botAiTaskArtifact.count({where:{runId:row.id}})).toBe(0);await expect(completeAiTaskRun(client,scope,bind(running),authority,answer,receipt(running))).rejects.toThrow()});
+ it('database rejects queued-to-completed state jumps without a claim',async()=>{const task=await createTask(),row=await createAiTaskRun(client,scope,input(task),authority);await expect(client.botAiTaskRun.update({where:{id:row.id},data:{status:'completed',revision:1,eventCount:2}})).rejects.toThrow()});
+
+ it('refuses completion when the saved task changed after the worker read',async()=>{const task=await createTask(),row=await createAiTaskRun(client,scope,input(task),authority),running=await dispatch(row);await updateSavedBotTask(client,scope,task.id,{title:task.title,instruction:'Changed after read',context:'',expectedVersion:0});await expect(completeAiTaskRun(client,scope,bind(running),authority,answer,receipt(running))).rejects.toThrow();expect(await client.botAiTaskArtifact.count({where:{runId:row.id}})).toBe(0)});
+ it('refuses success after a run-row lock waits beyond its deadline',async()=>{const task=await createTask(),row=await createAiTaskRun(client,scope,input(task),authority,new Date(Date.now()-59000)),running=await dispatch(row);let completion:Promise<any>|undefined;await client.$transaction(async(lock:any)=>{await lock.$queryRaw`SELECT "id" FROM "BotAiTaskRun" WHERE "id"=${row.id} FOR UPDATE`;completion=completeAiTaskRun(client,scope,bind(running),authority,answer,receipt(running)).then(()=>({completed:true}),()=>({completed:false}));await lock.$executeRawUnsafe('SELECT pg_sleep(1.3)')});expect(await completion).toEqual({completed:false});expect(await client.botAiTaskArtifact.count({where:{runId:row.id}})).toBe(0)});
+
+});

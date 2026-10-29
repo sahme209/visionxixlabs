@@ -164,10 +164,10 @@ export function GcpDeployConnect({
   if (phase === "connected" && result?.ok) {
     return (
       <CalmCard tone="emerald">
-        <KickerLine tone="emerald">gcp · connected</KickerLine>
-        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">GCP is verified.</h3>
+        <KickerLine tone="emerald">gcp · access checked</KickerLine>
+        <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Project access verified.</h3>
         <p className="text-[13px] text-zinc-300 leading-relaxed mt-2">
-          Project <code className="font-mono text-emerald-200">{result.projectId}</code> is connected through the service account <code className="font-mono text-emerald-200 break-all">{result.clientEmail}</code>. We&apos;ll start the inventory in a moment.
+          Project <code className="font-mono text-emerald-200">{result.projectId}</code> was accessible using the service account <code className="font-mono text-emerald-200 break-all">{result.clientEmail}</code>. This check does not save a workspace connection or start inventory.
         </p>
       </CalmCard>
     );
@@ -180,7 +180,7 @@ export function GcpDeployConnect({
         <KickerLine tone="zinc">gcp · finalizing</KickerLine>
         <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">Validating GCP access…</h3>
         <p className="text-[13px] text-zinc-400 leading-relaxed mt-2">
-          Authenticating the service account and confirming Viewer access on the project. Usually takes a few seconds.
+          Authenticating the service account and checking project metadata access. This does not verify all inventory permissions.
         </p>
         <div className="mt-4 flex items-center gap-2.5">
           <span className="w-4 h-4 rounded-full border-2 border-zinc-300/70 border-t-transparent animate-spin" />
@@ -215,7 +215,7 @@ export function GcpDeployConnect({
     return (
       <div className="space-y-4">
         <CalmCard tone="zinc">
-          <KickerLine tone="zinc">gcp · finish connecting</KickerLine>
+          <KickerLine tone="zinc">gcp · verify access</KickerLine>
           <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
             Paste the JSON key from Cloud Shell.
           </h3>
@@ -251,7 +251,7 @@ export function GcpDeployConnect({
           )}
           {(() => {
             const v = looksParseable(keyJson);
-            if (v.ok) return <p className="mt-2 text-[12px] text-emerald-300/90">✓ JSON detected — Finish connection will validate against Google Cloud Resource Manager.</p>;
+            if (v.ok) return <p className="mt-2 text-[12px] text-emerald-300/90">✓ JSON detected — Verify project access will validate against Google Cloud Resource Manager.</p>;
             if (v.reason === "command_not_output") return <p className="mt-2 text-[12px] text-zinc-300/90">That&apos;s the gcloud command, not its output. Run it in Cloud Shell, then copy the JSON block it prints.</p>;
             if (v.reason === "braces_but_unparseable") return <p className="mt-2 text-[12px] text-zinc-300/90">Found {"{ }"} braces but couldn&apos;t parse the JSON. Make sure the closing <code className="font-mono">{"}"}</code> is included.</p>;
             if (v.reason === "no_braces" && keyJson.trim()) return <p className="mt-2 text-[12px] text-zinc-300/90">No JSON found yet. Paste the Cloud Shell output (the block wrapped in <code className="font-mono">{"{ }"}</code>).</p>;
@@ -265,7 +265,7 @@ export function GcpDeployConnect({
               disabled={!keyJson.trim() || !looksParseable(keyJson).ok}
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 disabled:bg-zinc-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
             >
-              Finish connection
+              Verify project access
               <span aria-hidden className="opacity-70">→</span>
             </button>
             {!keyJson.trim() && (
@@ -299,7 +299,7 @@ export function GcpDeployConnect({
   return (
     <div className="space-y-4">
       <CalmCard tone="zinc">
-        <KickerLine tone="zinc">gcp · one click connect</KickerLine>
+        <KickerLine tone="zinc">gcp · project access setup</KickerLine>
         <h3 className="text-xl font-semibold text-white tracking-tight mt-1.5">
           Connect GCP through Cloud Shell.
         </h3>
@@ -368,7 +368,7 @@ export function GcpDeployConnect({
               )}
               {(() => {
                 const v = looksParseable(keyJson);
-                if (v.ok) return <p className="text-[12px] text-emerald-300/90">✓ JSON detected — Finish connection will validate against Google Cloud Resource Manager.</p>;
+                if (v.ok) return <p className="text-[12px] text-emerald-300/90">✓ JSON detected — Verify project access will validate against Google Cloud Resource Manager.</p>;
                 if (v.reason === "command_not_output") return <p className="text-[12px] text-zinc-300/90">That&apos;s the gcloud command, not its output. Run it in Cloud Shell, then copy the JSON block it prints.</p>;
                 if (v.reason === "braces_but_unparseable") return <p className="text-[12px] text-zinc-300/90">Found {"{ }"} braces but couldn&apos;t parse the JSON. Make sure the closing <code className="font-mono">{"}"}</code> is included.</p>;
                 if (v.reason === "no_braces" && keyJson.trim()) return <p className="text-[12px] text-zinc-300/90">No JSON found yet. Paste the Cloud Shell output (the block wrapped in <code className="font-mono">{"{ }"}</code>).</p>;
@@ -381,7 +381,7 @@ export function GcpDeployConnect({
                   disabled={!keyJson.trim() || !looksParseable(keyJson).ok}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 disabled:bg-zinc-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
                 >
-                  Finish connection
+                  Verify project access
                   <span aria-hidden className="opacity-70">→</span>
                 </button>
                 {!keyJson.trim() && (
@@ -433,7 +433,7 @@ export function GcpDeployConnect({
             The command creates <code className="font-mono text-zinc-300">axiom-agent-reader</code> in your active project with the built-in <strong className="text-zinc-100">Security Reviewer</strong> role, generates a key, and prints the JSON.
           </TimelineStep>
           <TimelineStep n={3} title="Paste the JSON back">
-            Copy the JSON output (or the whole terminal — we extract the JSON automatically) into the field above. You&apos;re connected.
+            Copy the JSON output (or the whole terminal — we extract the JSON automatically) into the field above. Then verify project access. This step does not save a workspace connection.
           </TimelineStep>
         </ol>
       </CalmCard>

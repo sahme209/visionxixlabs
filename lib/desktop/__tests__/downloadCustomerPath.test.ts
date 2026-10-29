@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const source = readFileSync(new URL("../../../app/download/page.tsx", import.meta.url), "utf8");
+const source = readFileSync(new URL("../../../components/cockpit/DownloadContent.tsx", import.meta.url), "utf8");
 
 describe("desktop download customer path", () => {
   it("routes every pre-hydration platform CTA through the server manifest resolver", () => {

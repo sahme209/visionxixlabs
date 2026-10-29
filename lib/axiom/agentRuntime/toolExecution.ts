@@ -6,6 +6,9 @@ import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
  */
 
 import "server-only";
+import {searchInstalledMicrosoftLearn} from "@/lib/integrations/mcp/microsoftLearn";
+import type {AgentSkillRepo} from "./skillCatalog";
+import { executeAirflowObservationTool } from "./airflowObservation";
 import { executeCloudObservationTool, type CloudObservationContext } from "./cloudObservation";
 
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
@@ -66,6 +69,7 @@ interface TenantIntegrationConnectionRow {
 }
 
 export interface ToolExecutionRepo {
+  agentSkillInstallation?: AgentSkillRepo["agentSkillInstallation"];
   environment: {
     findMany(args: { where: { organizationId: string } }): Promise<Array<{ id: string; slug: string; name: string; tier: string }>>;
   };
@@ -115,6 +119,13 @@ export async function executeReadOnlyTool(
   args: Record<string, unknown>,
   cloudContext?: CloudObservationContext,
 ): Promise<ToolExecutionResult> {
+  if (toolName === "search_microsoft_docs") {
+    if (!args || typeof args !== "object" || Array.isArray(args) || Object.keys(args).some(key => key !== "query")) return {ok:false,error:"invalid_documentation_query"};
+    if (!repo.agentSkillInstallation) return {ok:false,error:"mcp_not_enabled"};
+    const result=await searchInstalledMicrosoftLearn({agentSkillInstallation:repo.agentSkillInstallation},organizationId,args.query);
+    return result.ok ? {ok:true,result:{kind:"public_documentation",source:"Microsoft Learn MCP",...result.data}} : result;
+  }
+  if (toolName === "list_airflow_dags" || toolName === "read_airflow_runs" || toolName === "read_airflow_tasks") return executeAirflowObservationTool(organizationId, toolName, args, cloudContext);
   if (toolName === "list_cloud_accounts" || toolName === "read_aws_inventory") return executeCloudObservationTool(organizationId, toolName, args, cloudContext);
   if (toolName === "list_environments") {
     const environments = await repo.environment.findMany({ where: { organizationId } });

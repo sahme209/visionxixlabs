@@ -13,6 +13,29 @@ export async function rehearseLocalAgentReadinessHttp({ databaseUrl, client, dev
   assert.equal(await client.workspaceAgentIdentity.count(), 0, "agent_must_remain_unprovisioned");
   assert.equal(await client.organizationAIProviderPolicy.count(), 0, "model_policy_must_remain_unprovisioned");
 
+  assert.equal((await deviceRequest("/api/desktop/usage-summary")).status, 401, "billing_snapshot_requires_paired_bearer");
+  const usageResponse = await deviceRequest("/api/desktop/usage-summary", { token });
+  assert.equal(usageResponse.status, 200, "actual_billing_snapshot_read_failed");
+  assert.equal(usageResponse.headers.get("cache-control"), "no-store", "billing_snapshot_must_not_be_cached");
+  const usage = (await usageResponse.json()).data;
+  assert.deepEqual([usage.aiInvocationCount, usage.aiInputTokens, usage.aiOutputTokens, usage.aiCostCents], [0, 0, 0, 0], "readiness_fixture_must_not_infer_or_charge");
+  assert.equal(usage.billingSnapshot.version, 1, "actual_billing_snapshot_version_required");
+  assert.equal(usage.billingSnapshot.plan.available, true, "empty_plan_storage_is_known_not_unavailable");
+  assert.equal(usage.billingSnapshot.plan.status, "no_plan", "identity_flow_must_not_establish_subscription");
+  assert.equal(usage.billingSnapshot.plan.hasCustomer, false, "identity_flow_must_not_create_stripe_customer");
+  assert.equal(usage.billingSnapshot.canManageBilling, true, "current_owner_billing_role_required");
+  assert.equal(typeof usage.billingSnapshot.allowance.available, "boolean", "actual_credit_authority_read_required");
+  assert.equal("stripeCustomerId" in usage.billingSnapshot.plan, false, "billing_snapshot_must_not_expose_payment_identity");
+  // Only the guarded disposable fixture membership changes; no production actor.
+  await client.orgMembership.update({ where: { id: membership.id }, data: { role: "read_only" } });
+  try {
+    const restricted = await deviceRequest("/api/desktop/usage-summary", { token });
+    assert.equal(restricted.status, 200, "read_only_member_can_observe_own_usage");
+    assert.equal((await restricted.json()).data.billingSnapshot.canManageBilling, false, "billing_snapshot_must_refresh_current_role");
+  } finally {
+    await client.orgMembership.update({ where: { id: membership.id }, data: { role: "owner" } });
+  }
+
   assert.equal((await deviceRequest("/api/desktop/ai-providers")).status, 401, "model_catalog_requires_paired_bearer");
   const response = await deviceRequest("/api/desktop/ai-providers", { token });
   assert.equal(response.status, 200, "actual_model_policy_read_failed");
@@ -46,5 +69,5 @@ export async function rehearseLocalAgentReadinessHttp({ databaseUrl, client, dev
   for (const name of ["workspaceAgentIdentity", "organizationAIProviderPolicy", "agentActionProposal", "aIInvocation", "aIUsageReservation", "usageEvent", "deploymentExecution", "tenantBillingPlan"]) {
     assert.equal(await client[name].count(), 0, "disabled_agent_must_not_enable_dispatch_or_charge");
   }
-  return { verified: ["paired_disabled_model_policy", "disabled_agent_explanation_without_inference", "persisted_user_and_governance_reply", "foreign_history_and_send_denied", "no_identity_provider_tool_usage_dispatch_or_billing_side_effect"], transport: "real_local_next_http", persistence: "owned_disposable_postgresql", notVerified: ["react_or_browser_interaction", "successful_inference_or_tool_execution", "native_vault_or_packaged_app", "provider_or_paid_entitlement_or_production"] };
+  return { verified: ["paired_billing_snapshot_no_customer_or_subscription", "fresh_read_only_role_cannot_manage_billing", "paired_disabled_model_policy", "disabled_agent_explanation_without_inference", "persisted_user_and_governance_reply", "foreign_history_and_send_denied", "no_identity_provider_tool_usage_dispatch_or_billing_side_effect"], transport: "real_local_next_http", persistence: "owned_disposable_postgresql", notVerified: ["react_or_browser_interaction", "successful_inference_or_tool_execution", "native_vault_or_packaged_app", "provider_or_paid_entitlement_or_production"] };
 }

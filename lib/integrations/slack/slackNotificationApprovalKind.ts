@@ -1,0 +1,1 @@
+export const SLACK_NOTIFICATION_APPROVAL_KIND='slack_notification_approval_v1';

@@ -16,7 +16,7 @@ describe("read-only current AI allowance authority", () => {
   it("matches reservation purchase, usage and hold query semantics without any mutation", async () => {
     const read = fixture(), reserve = fixture();
     expect(await readCurrentAIAllowance(read.repo as never, "tenant", now)).toMatchObject({ available: true, poolCents: 20000, usedCents: 300, heldCents: 700, includedRemainingCents: 19000 });
-    await reserveAICredits(reserve.repo, { organizationId: "tenant", idempotencyKey: "fixture_request_12345", reservedCents: 100 }, now);
+    await reserveAICredits(reserve.repo as unknown as Parameters<typeof reserveAICredits>[0], { organizationId: "tenant", idempotencyKey: "fixture_request_12345", reservedCents: 100 }, now);
     expect(read.tx.tenantBillingPlan.findUnique.mock.calls).toEqual(reserve.tx.tenantBillingPlan.findUnique.mock.calls);
     expect(read.tx.addOnPurchase.findMany.mock.calls).toEqual(reserve.tx.addOnPurchase.findMany.mock.calls);
     expect(read.tx.usageEvent.aggregate.mock.calls).toEqual(reserve.tx.usageEvent.aggregate.mock.calls);

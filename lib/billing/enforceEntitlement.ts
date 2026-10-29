@@ -1,3 +1,4 @@
+import { publicBillingPolicyEnabled } from "./publicBillingConfig";
 import { denyIsolatedUnsupportedOperation } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Live entitlement enforcer — Phase 384.
@@ -43,7 +44,7 @@ const EVENT_KIND_FOR_DIMENSION: Partial<Record<EntitlementDimension, string>> = 
   monitoring_events_per_month: "monitoring_event",
 };
 
-async function countCurrentUsage(organizationId: string, dimension: EntitlementDimension): Promise<number> {
+async function countCurrentUsage(organizationId: string, dimension: EntitlementDimension, strict = false): Promise<number> {
   const monthlyEventKind = EVENT_KIND_FOR_DIMENSION[dimension];
   if (monthlyEventKind) {
     try {
@@ -55,7 +56,8 @@ async function countCurrentUsage(organizationId: string, dimension: EntitlementD
         },
       });
       return r;
-    } catch {
+    } catch (error) {
+      if (strict) throw error;
       return 0;
     }
   }
@@ -64,6 +66,7 @@ async function countCurrentUsage(organizationId: string, dimension: EntitlementD
   try {
     switch (dimension) {
       case "users":
+        if (strict) return await prisma.orgMembership.count({where:{organizationId,acceptedAt:{not:null}}});
         // No platform User model with organizationId on tenant rows yet — best-effort 0.
         // When the per-org user join table lands, count it here.
         return 0;
@@ -76,9 +79,9 @@ async function countCurrentUsage(organizationId: string, dimension: EntitlementD
         // future SaasConnectorAccount, future GithubConnection). For now we
         // approximate connector count = cloud accounts attached. Refines when
         // a unified Connector model lands.
-        return await prisma.cloudAccount.count({ where: { organizationId } }).catch(() => 0);
+        return await prisma.cloudAccount.count({ where: { organizationId } }).catch(error => { if(strict) throw error; return 0; });
       case "cloud_accounts":
-        return await prisma.cloudAccount.count({ where: { organizationId } }).catch(() => 0);
+        return await prisma.cloudAccount.count({ where: { organizationId } }).catch(error => { if(strict) throw error; return 0; });
       case "repositories":
         // No first-class Repository model yet; approximate via CodingTask's distinct repoRef.
         try {
@@ -88,18 +91,20 @@ async function countCurrentUsage(organizationId: string, dimension: EntitlementD
             select: { repoRef: true },
           });
           return distinct.length;
-        } catch { return 0; }
+        } catch(error) { if(strict) throw error; return 0; }
       case "desktop_agents":
+        if(strict)return await prisma.desktopSessionRecord.count({where:{organizationId,revokedAt:null,expiresAt:{gt:new Date()}}});
         // Desktop agent registry is its own follow-up. Return 0 until wired.
         return 0;
       case "agents_enabled":
         return await prisma.agentEngineerRecord.count({
           where: { organizationId, isEnabled: true },
-        }).catch(() => 0);
+        }).catch(error => { if(strict) throw error; return 0; });
       default:
         return 0;
     }
-  } catch {
+  } catch (error) {
+    if (strict) throw error;
     return 0;
   }
 }
@@ -114,14 +119,18 @@ export interface EnforceEntitlementInput {
 export async function enforceEntitlement(input: EnforceEntitlementInput): Promise<EntitlementDecision> {
   denyIsolatedUnsupportedOperation();
   let plan;
+  let publicPlan=false;
   try {
     const billing = await readBillingPlan(input.organizationId);
-    plan = planForStripeTier(billing.tier);
-  } catch {
+    publicPlan=!!billing.publicPlanId;
+    if (billing.pricingPlanAvailable === false) throw new Error("billing_entitlement_unavailable");
+    plan = billing.pricingPlan ?? planForStripeTier(billing.tier);
+  } catch(error) {
+    if(publicPlan || publicBillingPolicyEnabled()) throw error;
     plan = planForStripeTier("starter");
   }
 
-  const currentUsage = await countCurrentUsage(input.organizationId, input.dimension);
+  const currentUsage = await countCurrentUsage(input.organizationId, input.dimension, publicPlan);
 
   return checkEntitlement({
     plan,

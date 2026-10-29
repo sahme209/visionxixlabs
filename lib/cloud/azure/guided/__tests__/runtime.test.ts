@@ -1,0 +1,9 @@
+import {it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({db:{} as any}));
+vi.mock('@/lib/db',()=>({prisma:new Proxy({},{get(_t,k){return m.db[k]}})}));
+vi.mock('../authority',()=>({assertAzureGuidedAuthority:async()=>{}}));
+vi.mock('@/lib/desktop/desktopCommercialAccess',()=>({readDesktopCommercialAccess:async()=>({allowed:true})}));
+import {readAzureGuidedCanonical} from '../runtime';
+import {encryptScopedCredential} from '@/lib/security/credentialVault';
+import {azureCredentialContext} from '../../enrollment/policy';
+it('reused existing Reader remains connected after a guided attempt references it; real AAD/schema preserved',async()=>{vi.stubEnv('CREDENTIAL_ENCRYPTION_KEY','synthetic-only-vault-secret-over32characters');const p={organizationId:'org',userId:'user',sessionId:'paired'},id='reader',sub='9f19c344-c8a4-4eeb-8c1b-d38c567f8b46';const cipher=encryptScopedCredential(JSON.stringify({tenantId:'2e995f35-a47d-49bf-beed-19f4343f4612',subscriptionId:sub,clientId:'aea07a12-0faf-41c3-91c6-0e215dd3f4df',clientSecret:'synthetic-only'}),azureCredentialContext({organizationId:'org',accountId:id,version:1}));const credential={id,organizationId:'org',version:1,revokedAt:null,validatedAt:new Date(),encryptedConfiguration:cipher};m.db={cloudAccount:{findFirst:async()=>({id,organizationId:'org',provider:'azure',externalAccountId:sub,enabled:false,autopilotMode:'observe_only',credentialRef:'cloud-v2:'+id})},cloudAccountCredential:{findUnique:async()=>credential},azureGuidedAuthorization:{findFirst:async()=>({status:'connected_read_only',connectionId:id,resourcesJson:{authMode:'service_principal'}})}};expect(await readAzureGuidedCanonical(m.db,p,id)).toMatchObject({id,resourceId:sub,version:1,authMode:'service_principal'});expect(credential.encryptedConfiguration).toBe(cipher);credential.encryptedConfiguration=encryptScopedCredential('{}','foreign-AAD');expect(await readAzureGuidedCanonical(m.db,p,id)).toBeNull();vi.unstubAllEnvs()});

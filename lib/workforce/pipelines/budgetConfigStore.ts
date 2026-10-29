@@ -6,8 +6,8 @@
  * pure kernels (resolveRunBudgetCap, validateBudgetConfigInput) so
  * this module stays a single-purpose I/O layer.
  *
- * Loads fail-soft: a Postgres outage returns null instead of
- * throwing, letting the runner fall back to the platform default.
+ * Display callers retain the optional fail-soft read. Execution callers
+ * request a strict read so an outage cannot authorize default spending.
  */
 
 import "server-only";
@@ -42,23 +42,40 @@ function normalizePipelineOverrides(raw: unknown): PipelineOverrideRow[] {
   return out;
 }
 
+/** Execution must distinguish malformed policy from a verified absent override. */
+function assertStoredBudgetConfig(row: { defaultMaxCostCents: unknown; pipelineOverrides: unknown }): void {
+  const validCap = (value: unknown) => value === null || (typeof value === "number" && Number.isSafeInteger(value) && value > 0);
+  if (!validCap(row.defaultMaxCostCents) || !Array.isArray(row.pipelineOverrides)) throw new Error("budget_config_invalid");
+  const seen = new Set<string>();
+  for (const raw of row.pipelineOverrides) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("budget_config_invalid");
+    const entry = raw as Record<string, unknown>;
+    if (typeof entry.pipelineId !== "string" || entry.pipelineId.length === 0 || seen.has(entry.pipelineId) || !validCap(entry.maxCostCents)) {
+      throw new Error("budget_config_invalid");
+    }
+    seen.add(entry.pipelineId);
+  }
+}
+
 /**
- * Load the per-workspace budget config. Returns null when no row
- * exists OR the lookup failed — both cases fall through to the
- * platform default by design.
+ * Load the per-workspace budget config. A verified absent row returns null.
+ * With failClosedOnReadError, lookup failures propagate to the execution gate;
+ * legacy display callers may still receive null on a failed lookup.
  */
-export async function loadBudgetConfig(organizationId: string): Promise<OrganizationBudgetConfigShape | null> {
+export async function loadBudgetConfig(organizationId: string, options?: { failClosedOnReadError?: boolean }): Promise<OrganizationBudgetConfigShape | null> {
   try {
     const row = await prisma.organizationBudgetConfig.findUnique({
       where: { organizationId },
       select: { defaultMaxCostCents: true, pipelineOverrides: true },
     });
     if (!row) return null;
+    if (options?.failClosedOnReadError) assertStoredBudgetConfig(row);
     return {
       defaultMaxCostCents: row.defaultMaxCostCents,
       pipelineOverrides: normalizePipelineOverrides(row.pipelineOverrides),
     };
-  } catch {
+  } catch (error) {
+    if (options?.failClosedOnReadError) throw error;
     return null;
   }
 }

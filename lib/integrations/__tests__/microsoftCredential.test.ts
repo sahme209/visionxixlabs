@@ -14,3 +14,5 @@ describe("stored Microsoft credentials", () => {
     expect(microsoftCredentialRefreshDue({ accessToken: "a", refreshToken: null, expiresAt: 1_000 }, 950)).toBe(false);
   });
 });
+
+it('preserves explicit action-consent grants and refuses missing action scope evidence',()=>{const scopes=['User.Read','Team.ReadBasic.All','Channel.ReadBasic.All','ChannelMessage.Send'];expect(parseStoredMicrosoftCredential(JSON.stringify({accessToken:'access',refreshToken:'refresh',expiresAt:1000,purpose:'connected_app_actions_v1',actionScopes:scopes}))).toMatchObject({purpose:'connected_app_actions_v1',actionScopes:scopes});expect(parseStoredMicrosoftCredential(JSON.stringify({accessToken:'access',purpose:'connected_app_actions_v1'}))).toBeNull()});

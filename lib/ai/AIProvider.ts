@@ -1,3 +1,5 @@
+import type { SmallSonnet55Dispatch } from "@/lib/billing/smallSonnet55Request";
+import type { SmallSonnetDispatch } from "@/lib/billing/smallSonnetRequest";
 /**
  * AIProvider — single contract every provider implements.
  *
@@ -49,6 +51,10 @@ export type AITaskKind =
   | "health_check";
 
 export interface AIRequestOptions {
+  /** Internal opaque authority from the existing durable admission only. */
+  smallAgentDispatch?: SmallSonnetDispatch;
+  /** Separate exact55 AnthropicMessages protocol; never accepted by the old SDK path. */
+  smallAgent55Dispatch?: SmallSonnet55Dispatch;
   /** Server-side workspace attribution for audit and usage only; never sent to a provider. */
   organizationId?: string;
   /** Server-resolved provider policy. It is never copied into a provider request. */

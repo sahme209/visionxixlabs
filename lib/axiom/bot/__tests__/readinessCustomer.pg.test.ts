@@ -1,0 +1,34 @@
+import {beforeAll,beforeEach,afterAll,afterEach,describe,it,expect,vi} from 'vitest';
+import {createRequire} from 'node:module';
+import {randomUUID} from 'node:crypto';
+import {realpathSync,statSync} from 'node:fs';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({client:null as any}));
+vi.mock('@/lib/db',()=>({prisma:new Proxy({},{get(_target,key){const value=m.client?.[key];return typeof value==='function'?value.bind(m.client):value}})}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:async()=>({organizationId:'owned-customer',userId:'owned-user',credentialKind:'desktop_session'})}));
+vi.mock('@/lib/billing/tenantBillingStore',()=>({readBillingPlanWithAvailability:async()=>({available:true,plan:{tier:'pro',status:'active'}})}));
+import {createSavedBotTask} from '../savedTaskRepo';
+import {createReadinessRun} from '../readonlyRunRepo';
+import {handleReadinessRuns,handleReadinessRun} from '../readinessRunHttp';
+const socket=process.env.AXIOM_READINESS_CUSTOMER_PG_SOCKET;
+describe.skipIf(!socket)('customer report journey, actual local storage and simulated authenticated identity',()=>{
+ const scope={organizationId:'owned-customer',userId:'owned-user'};
+ const request=(method='GET',body?:unknown,query='')=>new NextRequest('https://owned.test/api/desktop/bot/readiness-runs'+query,{method,...(body===undefined?{}:{headers:{'content-type':'application/json'},body:JSON.stringify(body)})});
+ const task=()=>createSavedBotTask(m.client,scope,{clientRequestId:randomUUID(),title:'Owned customer report',instruction:'Report recorded workspace readiness without provider calls',context:''});
+ const input=(saved:any)=>({taskId:saved.id,expectedVersion:saved.version,adapter:'workspace_readiness_v1',clientRequestId:randomUUID(),confirmRecordedMetadata:true});
+ beforeAll(async()=>{
+  if(!socket||!/^\/private\/tmp\/axiom-readiness-customer-pg-[^/]+\/socket$/.test(socket)||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0)throw new Error('owned_socket_required');
+  const generated=process.env.AXIOM_READINESS_CUSTOMER_PG_CLIENT;if(!generated||!/^\/private\/tmp\/axiom-readiness-customer-evidence-[^/]+\/generated\/index\.js$/.test(generated))throw new Error('owned_client_required');
+  const Client=createRequire(import.meta.url)(generated).PrismaClient;m.client=new Client({datasources:{db:{url:`postgresql://recovery_fixture@localhost/neondb?host=${encodeURIComponent(socket)}`}}});
+  const [binding]=await m.client.$queryRawUnsafe("SELECT current_database()='neondb' AND current_user='recovery_fixture' AND current_setting('listen_addresses')='' AS private");if(!binding?.private)throw new Error('owned_binding_required');
+  const tables=await m.client.$queryRawUnsafe("SELECT count(*)::integer AS n FROM pg_tables WHERE schemaname='public'");expect(tables[0].n).toBe(10);
+  await m.client.orgMembership.create({data:{id:'owned-membership',organizationId:scope.organizationId,userId:scope.userId,role:'owner',acceptedAt:new Date()}});
+  await m.client.tenantIntegrationConnection.create({data:{id:'owned-slack',organizationId:scope.organizationId,provider:'slack',status:'active',lastValidatedAt:new Date(),encryptedCredential:'OWNED_SECRET_MUST_NOT_APPEAR'}});
+ });
+ beforeEach(()=>vi.stubEnv('AXIOM_BOT_READINESS_REPORTS_ENABLED','true'));
+ afterEach(()=>vi.unstubAllEnvs());afterAll(async()=>{await m.client?.$disconnect()});
+ it('saves a task, starts a report, shows persisted result and recovers a dropped response without rerun',async()=>{const saved=await task(),body=input(saved);const started=await handleReadinessRuns(request('POST',body));expect(started.status).toBe(201);const initial=await started.json();expect(initial.data.run.status).toBe('completed');const id=initial.data.run.id;const reopened=await handleReadinessRun(request(),id);expect(reopened.status).toBe(200);const result=await reopened.json();expect(result.data.report.content).toContain('slack: active');const recent=await handleReadinessRuns(request('GET',undefined,'?taskId='+saved.id));const history=await recent.json();expect(history.data.runs.map((r:any)=>r.id)).toEqual([id]);expect(JSON.stringify(history)).not.toContain('snapshot');expect(result.data.report.content).toContain('Not a live provider health check');expect(JSON.stringify(result)).not.toContain('OWNED_SECRET');expect(JSON.stringify(result)).not.toContain('Report recorded workspace readiness without provider calls');const recovered=await handleReadinessRuns(request('GET',undefined,'?clientRequestId='+body.clientRequestId));expect((await recovered.json()).data.run.id).toBe(id);expect((await handleReadinessRuns(request('POST',body))).status).toBe(201);expect(await m.client.botTaskRunEvent.count({where:{runId:id}})).toBe(3);expect(await m.client.botTaskArtifact.count({where:{runId:id}})).toBe(1)});
+ it('cancels owned queued work while disabled and reopens the canceled state',async()=>{const saved=await task(),row=await createReadinessRun(m.client,scope,input(saved));vi.stubEnv('AXIOM_BOT_READINESS_REPORTS_ENABLED','false');const canceled=await handleReadinessRun(request('DELETE',{expectedRevision:0}),row.id);expect((await canceled.json()).data.run.status).toBe('canceled');const reopened=await handleReadinessRun(request(),row.id);expect((await reopened.json()).data.run.status).toBe('canceled');expect(await m.client.botTaskArtifact.count({where:{runId:row.id}})).toBe(0)});
+ it('reopening an expired queued run records needs attention and does not execute automatically',async()=>{const saved=await task(),row=await createReadinessRun(m.client,scope,input(saved),new Date(Date.now()-31000));const reopened=await handleReadinessRun(request(),row.id);const data=await reopened.json();expect(data.data.run.status).toBe('needs_attention');expect(data.data.run.attemptCount).toBe(0);expect(data.data.report).toBeNull()});
+ it('refuses report completion after current membership is revoked even with simulated sign-in',async()=>{const saved=await task();await m.client.orgMembership.update({where:{id:'owned-membership'},data:{acceptedAt:null}});const response=await handleReadinessRuns(request('POST',input(saved)));expect(response.status).toBe(201);const data=await response.json();expect(data.data.run.status).toBe('failed');expect(await m.client.botTaskArtifact.count({where:{runId:data.data.run.id}})).toBe(0)});
+});

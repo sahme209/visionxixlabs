@@ -1,3 +1,6 @@
+import { SMALL_SONNET_55_MODEL, SMALL_SONNET_55_OUTPUT_TOKENS } from "@/lib/billing/smallSonnet55Request";
+import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "@/lib/ai/effectiveGatewayModel";
+import { boundedStructuredAIInput } from "@/lib/ai/inputByteBound";
 /**
  * The one place the agent decision loop is allowed to call an LLM.
  * Mirrors the exact fail-closed sequence lib/releaseops/instrumentedAiFetcher.ts
@@ -17,12 +20,15 @@ import { admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
 import { AI_REQUEST_MAX_OUTPUT_TOKENS } from "@/lib/billing/requestReservationCents";
 import { isConcreteGatewayModelId, loadGatewayModelCatalog } from "@/lib/ai/gatewayModelCatalog";
 import { GovernedAiCallRefusal } from "./governedAiCallRefusal";
+import { SMALL_SONNET_MODEL } from "@/lib/billing/smallSonnetRequest";
+import { AICreditAdmissionRefusal } from "@/lib/billing/aiCreditAdmissionRefusal";
 import { AgentStreamInterrupted } from "@/lib/ai/streamedDecisionMessage";
 
 export type GovernedAiCallError =
   | "workspace_ai_disabled"
   | "workspace_ai_provider_unavailable"
   | "workspace_ai_model_not_allowed"
+  | "workspace_ai_output_bound_unverified"
   | "workspace_ai_policy_unavailable"
   | "workspace_ai_credit_meter_unavailable"
   | "workspace_ai_credit_pool_exhausted";
@@ -51,9 +57,10 @@ async function currentDispatch(organizationId: string, preferredProvider?: strin
   const loaded = await loadWorkspaceAIProviderPolicyWithState(organizationId).catch(() => null);
   if (!loaded || loaded.storageState !== "ready") return { ok: false as const, error: "workspace_ai_policy_unavailable" as const };
   const manager = getAIProviderManager();
+  const serviceStatus = manager.status();
   const policy = resolveWorkspaceAIProviderPolicy({
     stored: loaded.policy,
-    serviceEnabled: manager.status().filter(p => p.configured && p.provider === "vercel_gateway" && manager.isServiceProviderAvailable(p.provider)).map(p => p.provider),
+    serviceEnabled: serviceStatus.filter(p => p.configured && p.provider === "vercel_gateway" && manager.isServiceProviderAvailable(p.provider)).map(p => p.provider),
   });
   if (!policy.enabled) return { ok: false as const, error: "workspace_ai_disabled" as const };
   if (policy.allowedProviders.length === 0) return { ok: false as const, error: "workspace_ai_provider_unavailable" as const };
@@ -64,6 +71,11 @@ async function currentDispatch(organizationId: string, preferredProvider?: strin
     return { ok: false as const, error: "workspace_ai_model_not_allowed" as const };
   }
   const selected = preferredModel ?? policy.modelSelections.vercel_gateway;
+  const effectiveModel = effectiveGatewayModel({ model: preferredModel, modelSelection: policy.modelSelections.vercel_gateway,
+    defaultModel: serviceStatus.find(row => row.provider === "vercel_gateway")?.defaultModel });
+  if (!gatewayModelOutputBoundVerified(effectiveModel)) {
+    return { ok: false as const, error: "workspace_ai_output_bound_unverified" as const };
+  }
   if (policy.allowedProviders.includes("vercel_gateway") && selected && selected !== "service-default" && !selected.startsWith("vmc/")) {
     // Dispatch deliberately bypasses the UI catalog's 900-second cache. The
     // service allowlist is applied by the existing loader on every read.
@@ -72,10 +84,10 @@ async function currentDispatch(organizationId: string, preferredProvider?: strin
     if (!catalog.some(model => model.id === selected)) return { ok: false as const, error: "workspace_ai_model_not_allowed" as const };
   }
   const only: AIProviderName | undefined = preferredProvider && isAIProviderName(preferredProvider) ? preferredProvider : undefined;
-  return { ok: true as const, manager, policy, only };
+  return { ok: true as const, manager, policy, only, effectiveModel };
 }
 
-export async function resolveGovernedAiCall(organizationId: string, preferredProvider: string | undefined, userId: string, preferredModel?: string, streaming?: { abortSignal: AbortSignal; onDraft: (message: string) => void }): Promise<GovernedAiCallResult> {
+export async function resolveGovernedAiCall(organizationId: string, preferredProvider: string | undefined, userId: string, preferredModel?: string, streaming?: { abortSignal: AbortSignal; onDraft: (message: string) => void; beforeAdmission?: () => Promise<void> }): Promise<GovernedAiCallResult> {
   if (!userId) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
   const creditDecision = await checkWorkspaceAICredits(organizationId, 0, { failClosedOnUsageReadError: true }).catch(() => null);
   if (!creditDecision) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
@@ -91,19 +103,34 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
       const current = await currentDispatch(organizationId, preferredProvider, preferredModel);
       if (!current.ok) throw new GovernedAiCallRefusal(current.error);
       streaming?.abortSignal.throwIfAborted();
-      const admission = await admitGovernedExtract({ organizationId, userId, correlationId }).catch(error => {
-        if (streaming) throw new AgentStreamInterrupted();
-        throw error;
+      const scope = { organizationId, userId, correlationId };
+      const model = preferredModel ?? current.policy.modelSelections.vercel_gateway;
+      boundedStructuredAIInput(text, schemaHint);
+      // Optional narrower caller fence, after awaited model-policy discovery.
+      // A denial cannot create an admission or a credit hold.
+      await streaming?.beforeAdmission?.();
+      streaming?.abortSignal.throwIfAborted();
+      const admission = await ((model === SMALL_SONNET_MODEL || model === SMALL_SONNET_55_MODEL)
+        ? admitGovernedExtract(scope, { model, text, schemaHint }, streaming?.abortSignal)
+        : admitGovernedExtract(scope)).catch((error: unknown) => {
+        if (error instanceof Error && error.name === "AbortError") throw error;
+        if (error instanceof AICreditAdmissionRefusal) throw new GovernedAiCallRefusal("workspace_ai_credit_pool_exhausted");
+        throw new AgentStreamInterrupted();
       });
+      // Admission can await a durable credit claim. Reread narrower caller
+      // authority after that wait and immediately before SDK consumption.
+      // Refusal retains the claimed hold; it is never treated as a free retry.
+      await streaming?.beforeAdmission?.();
+      streaming?.abortSignal.throwIfAborted();
       const options = {
         organizationId,
         allowedProviders: current.policy.allowedProviders,
         modelSelections: current.policy.modelSelections,
         fallbackOrder: current.policy.fallbackOrder,
-        model: preferredModel,
+        model: current.effectiveModel,
         correlationId,
         temperature: 0.1,
-        maxTokens: AI_REQUEST_MAX_OUTPUT_TOKENS,
+        maxTokens: model === SMALL_SONNET_55_MODEL ? SMALL_SONNET_55_OUTPUT_TOKENS : AI_REQUEST_MAX_OUTPUT_TOKENS,
         only: current.only,
       };
       const result = streaming

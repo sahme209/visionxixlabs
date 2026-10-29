@@ -1,0 +1,1 @@
+export const RELEASE_PROVIDER_MERGE_APPROVAL_KIND="release_provider_merge_approval_v1";

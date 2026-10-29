@@ -9,9 +9,7 @@
  * staticValidators.ts against the resulting virtual file contents.
  *
  * Failure semantics:
- *   - parse failed                  → stage SUCCEEDS with lintSkipped=true
- *                                     (the PR-open stage will catch + fail
- *                                     on the broken diff)
+ *   - missing/invalid proposal or unreadable base → stage fails closed
  *   - any validator failure         → stage FAILS with per-file errors;
  *                                     pipeline stops; PR never opens
  *   - no recognized file extensions → stage succeeds (nothing to validate)
@@ -21,6 +19,8 @@
  */
 
 import "server-only";
+import { createHash } from "node:crypto";
+import { loadCodingReadSnapshot } from "./codingReadSnapshot";
 
 import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
@@ -30,7 +30,7 @@ import { parseRepoRef } from "./parseRepoRef";
 import { parseUnifiedDiff } from "./parseUnifiedDiff";
 import { applyDiff } from "./applyUnifiedDiff";
 import { dispatchValidator, type ValidationFailure } from "./staticValidators";
-import { fetchFileContent } from "./githubWriteClient";
+import { readCodingGithubFile } from "./codingGithubCredential";
 import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 
 interface MetaShape {
@@ -49,8 +49,8 @@ function readMetadata(raw: Record<string, unknown>): { repoRef: string; branchHi
 
 function skipResult(reason: string, ctx: { stageId: string }, extra?: Record<string, unknown>): StageExecutorResult {
   return {
-    ok: true,
-    summary: `[lint skipped · ${reason}] downstream gates will catch any issues.`,
+    ok: false,
+    error: `Structural validation could not be completed (${reason}). Coding has stopped.`,
     detail: {
       stageId: ctx.stageId,
       lintSkipped: true,
@@ -86,12 +86,15 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
   // 2. Parse the diff.
   const parsed = parseUnifiedDiff(proposedPatchText);
   if (!parsed.ok) {
-    // The PR-open stage will catch this with its own retry/refusal.
-    // Lint stage succeeds with skipReason so it doesn't block here.
+    // Invalid proposals cannot bypass this gate as a skipped success.
     return skipResult("diff_parse_failed", ctx, { parseReason: parsed.reason });
   }
 
   if (parsed.files.length === 0) return skipResult("diff_had_no_files", ctx);
+
+  const savedBase = await loadCodingReadSnapshot(ctx.organizationId, ctx.runId, coords);
+  if (!savedBase) return skipResult("saved_repository_base_unavailable", ctx);
+  const codingValidation = {schema:1,repositoryFullName:`${coords.owner}/${coords.repo}`,baseBranch:savedBase.branch,baseCommitSha:savedBase.headSha,patchSha256:createHash("sha256").update(proposedPatchText).digest("hex")};
 
   // 3. For each modified/added file: fetch base + apply → virtual content.
   //    Walk file-by-file, collect validator failures, never short-circuit
@@ -127,13 +130,13 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
 
     let baseContent: string | null = null;
     if (fileDiff.changeKind === "modified") {
-      const fc = await fetchFileContent(coords.owner, coords.repo, fileDiff.path, meta.branchHint ?? "HEAD");
+      const fc = await readCodingGithubFile(ctx.organizationId, coords, fileDiff.path, savedBase.headSha);
       if (!fc.ok || fc.content === null) {
         entries.push({
           path: fileDiff.path,
           changeKind: fileDiff.changeKind,
           validatorDispatched: false,
-          ok: true,
+          ok: false,
           failures: [],
           skipReason: fc.ok ? "base_missing_in_repo" : "base_fetch_failed",
         });
@@ -148,7 +151,7 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
         path: fileDiff.path,
         changeKind: fileDiff.changeKind,
         validatorDispatched: false,
-        ok: true,
+        ok: false,
         failures: [],
         skipReason: applied.ok ? "applied_to_null" : `apply_${applied.reason}`,
       });
@@ -189,10 +192,12 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
 
     return {
       ok: true,
-      summary: `Lint passed · validated ${validatedCount}/${entries.length} file(s), no structural issues.`,
+      summary: `Structural check · validated ${validatedCount}/${entries.length} file(s); ${entries.length - validatedCount} unvalidated. Repository lint was not executed.`,
       detail: {
         stageId: ctx.stageId,
-        lintSkipped: false,
+        codingValidation,
+        lintSkipped: validatedCount === 0,
+        lintExecution: "not_run",
         validatedFiles: validatedCount,
         totalFiles: entries.length,
         perFile: entries.map((e) => ({
@@ -209,7 +214,7 @@ export const codeLintRealExecutor: StageExecutorFn = async (ctx) => {
   // Failures present — pipeline must stop. Return ok:false so the
   // pipeline runner marks the stage failed and halts the run.
   const firstFail = failingEntries[0];
-  const firstFailureMsg = firstFail.failures[0]?.message ?? "structural issue";
+  const firstFailureMsg = firstFail.failures[0]?.message ?? firstFail.skipReason ?? "structural check unavailable";
 
   try {
     await recordAudit({
