@@ -58,6 +58,7 @@ permissions:
 jobs:
   validate-release:
     name: Validate release identity
+    timeout-minutes: 2
     runs-on: ubuntu-latest
     outputs:
       release_tag: ${{ steps.identity.outputs.release_tag }}
@@ -94,6 +95,7 @@ jobs:
 
   sbom:
     name: Generate release SBOM
+    timeout-minutes: 5
     needs: validate-release
     runs-on: ubuntu-latest
     steps:
@@ -167,6 +169,7 @@ jobs:
             label: linux-x64
 
     runs-on: ${{ matrix.platform }}
+    timeout-minutes: ${{ startsWith(matrix.platform, 'macos-') && 10 || 20 }}
 
     steps:
       - uses: actions/checkout@v4
@@ -333,6 +336,7 @@ jobs:
   verify-candidate:
     name: Verify candidate bytes (no publication)
     needs: [validate-release, build, sbom]
+    timeout-minutes: 5
     runs-on: ubuntu-latest
     outputs:
       artifact_id: ${{ steps.review.outputs.artifact-id }}
