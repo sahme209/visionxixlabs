@@ -22,6 +22,18 @@ function pointerForControl(label) {
   if (observe) observe('after_scroll_call', { x, y });
   return { x, y };
 }
+// Wait before the single trusted click; never retry a click at a stale location.
+async function settleControlPointer(readPoint, movePointer, frame) {
+  let point = await readPoint(); let stable = 0;
+  for (let sample = 0; sample < 16; sample++) {
+    await movePointer(point); await frame();
+    const next = await readPoint();
+    stable = Math.abs(next.x - point.x) < 0.5 && Math.abs(next.y - point.y) < 0.5 ? stable + 1 : 0;
+    point = next;
+    if (stable >= 2) return point;
+  }
+  throw Error('control_geometry_unstable');
+}
 // Observation only: no event cancellation, navigation calls, source text or credentials.
 function installDocumentationClickProbe() {
   const anchor = document.querySelector('#product-tour a[href="/docs/approval-workflow"]');
@@ -220,7 +232,9 @@ try {
   async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); if (path === '/') initialNavigation.issued = true; await send('Page.navigate', { url: `${windowState.origin}${path}` }); if (path === '/') initialNavigation.navigationAcknowledged = true; await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : '#product-tour')), path, 45000, preImagePhase); }
   async function click(label) {
     currentInteraction = controlToken(label);
-    const point = await evaluate(pointerForControl, label);
+    const point = label === 'Read approval workflow'
+      ? await settleControlPointer(() => evaluate(pointerForControl, label), point => send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point }), () => evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(true))))))
+      : await evaluate(pointerForControl, label);
     await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point }); await send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
     lastInteraction = currentInteraction;
   }

@@ -1,6 +1,6 @@
 import 'server-only';
 import {z} from 'zod';
-import {recordOutlookFailure} from './outlookDiagnostics';
+import {recordOutlookFailure,recordOutlookReadStatus} from './outlookDiagnostics';
 import {createValidationProviderIo} from '@/lib/integrations/validationProviderIo';
 import type {ConnectedActionScope} from '@/lib/integrations/connectedActionContract';
 import {outlookRegistrationSchema,type OutlookRegistration,type OutlookIssuedCredential} from './outlookOAuth';
@@ -25,7 +25,7 @@ export function createOutlookProvider(ports:{clientSecret:()=>string;assertCurre
    await ports.assertCurrent(scope,signal);signal.throwIfAborted();
    const io=createValidationProviderIo(signal,fetchImpl);
    let account;
-   try{const result=await io.read('https://graph.microsoft.com/v1.0/me?$select=id,displayName,mail,userPrincipalName',{method:'GET',headers:{Accept:'application/json',Authorization:`Bearer ${issued.accessToken}`}});if(result.status!==200)throw Error('outlook_profile_unavailable');const p=profile.parse(result.json);account=outlookAccountSchema.parse({id:p.id,displayName:p.displayName??'',email:p.mail??(z.string().email().safeParse(p.userPrincipalName).success?p.userPrincipalName:null)})}finally{io.dispose()}
+   try{const result=await io.read('https://graph.microsoft.com/v1.0/me?$select=id,displayName,mail,userPrincipalName',{method:'GET',headers:{Accept:'application/json',Authorization:`Bearer ${issued.accessToken}`}});recordOutlookReadStatus('profile',result.status);if(result.status!==200)throw Error('outlook_profile_unavailable');const p=profile.parse(result.json);account=outlookAccountSchema.parse({id:p.id,displayName:p.displayName??'',email:p.mail??(z.string().email().safeParse(p.userPrincipalName).success?p.userPrincipalName:null)})}finally{io.dispose()}
    await ports.assertCurrent(scope,signal);
    // This provisional binding is never persisted. The caller CAS-binds the actual connection
    // only after all fixed mailbox/calendar reads and current-authority checks succeed.

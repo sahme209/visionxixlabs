@@ -1,5 +1,6 @@
 import 'server-only';
 import {z} from 'zod';
+import {recordOutlookReadStatus} from './outlookDiagnostics';
 import {connectedActionScopeSchema,type ConnectedActionScope} from '@/lib/integrations/connectedActionContract';
 import {outlookConnectionBindingSchema,parseOutlookCredential,outlookAccountSchema,type OutlookConnectionBinding} from './outlookConnectionContract';
 import {untilAbort,readBoundedJiraJson} from '@/lib/releaseops/jiraTicketTransport';
@@ -31,6 +32,7 @@ export function createOutlookReadinessReader(ports:OutlookReadinessPorts={}){
   const get=async(path:string)=>{
    await current();if(credential.expiresAt<=now())throw Error('outlook_refresh_required');
    const url='https://graph.microsoft.com/v1.0'+path,response=await untilAbort(ports.fetch!(url,{method:'GET',headers:{Accept:'application/json',Authorization:`Bearer ${credential.accessToken}`,Prefer:'outlook.timezone="UTC"'},signal,redirect:'error',credentials:'omit',cache:'no-store'}),signal,r=>{void r.body?.cancel().catch(()=>{})});
+   recordOutlookReadStatus(path.startsWith('/me?')?'profile':path.startsWith('/me/mailFolders/')?'inbox':'calendar',response.status);
    if(response.redirected||response.url&&response.url!==url){void response.body?.cancel().catch(()=>{});throw Error('outlook_read_unavailable')}
    const body:unknown=await readBoundedJiraJson(response,signal);await current();
    if(response.status!==200){const code=z.object({error:z.object({code:z.string()})}).safeParse(body);if(code.success&&['MailboxNotEnabledForRESTAPI','MailboxNotSupportedForRESTAPI','ErrorInvalidUser','ResourceNotFound'].includes(code.data.error.code)||response.status===404)throw Error('outlook_mailbox_unavailable');if(response.status===401)throw Error('outlook_refresh_required');if(response.status===403)throw Error('outlook_permissions_required');throw Error('outlook_read_unavailable')}
