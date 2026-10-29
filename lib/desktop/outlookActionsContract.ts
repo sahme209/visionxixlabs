@@ -1,0 +1,6 @@
+import {z} from 'zod';
+import {connectedActionDtoSchema} from '../integrations/connectedActionContract';
+const request={action:z.literal('request'),intentId:z.string().uuid(),subject:z.string().min(1).max(240),body:z.string().min(1).max(16000)},addresses=z.array(z.string().email().max(320)).min(1).max(10);
+export const outlookActionsRequestSchema=z.union([z.object({...request,kind:z.literal('outlook_mail_send'),to:addresses}).strict(),z.object({...request,kind:z.literal('outlook_event_create'),startUtc:z.string().datetime(),endUtc:z.string().datetime(),attendees:addresses}).strict(),z.object({action:z.enum(['approve','execute','cancel','recover']),id:z.string().regex(/^connected_action_[a-f0-9]{64}$/),expectedVersion:z.number().int().min(0).max(3)}).strict()]);
+export const outlookActionsDataSchema=z.object({enabled:z.boolean(),canRequest:z.boolean(),actions:z.array(connectedActionDtoSchema.extend({canApprove:z.boolean(),canExecute:z.boolean(),canCancel:z.boolean(),canRecover:z.boolean()}).refine(v=>v.intent.provider==='outlook')).max(20),truncated:z.boolean()}).strict();
+export type OutlookActionsRequest=z.infer<typeof outlookActionsRequestSchema>;export type OutlookActionsData=z.infer<typeof outlookActionsDataSchema>;

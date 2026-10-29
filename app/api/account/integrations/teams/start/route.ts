@@ -49,6 +49,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       response_type: "code",
       redirect_uri: redirectUri,
       response_mode: "query",
+      prompt: "select_account",
       scope: "openid offline_access User.Read",
       code_challenge: pkceChallenge(verifier),
       code_challenge_method: "S256",

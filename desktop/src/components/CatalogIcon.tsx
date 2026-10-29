@@ -1,5 +1,6 @@
 import { Fingerprint, Layers, Puzzle, ShieldCheck } from "lucide-react";
 const logos = {
+  outlook: new URL("../assets/providers/outlook.svg", import.meta.url).href,
   servicenow: new URL("../assets/providers/servicenow.png", import.meta.url).href,
   github: new URL("../assets/providers/github.svg", import.meta.url).href,
   slack: new URL("../assets/providers/slack.svg", import.meta.url).href,

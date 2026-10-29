@@ -36,13 +36,13 @@ export function ConnectedActionsPanel({provider,onClose,canManage=false,sourceTa
   </div>}
   {data?.actions.filter(a=>!sourceTask||a.intent.sourceTask?.taskId===sourceTask.taskId).map(a=><article key={a.id} className="space-y-3 rounded-lg border border-white/10 p-4">
    <div className="flex flex-wrap justify-between gap-2 text-xs"><strong>{a.intent.kind.replaceAll('_',' ')}</strong><span>{a.state} · attempt {a.attemptCount}/1</span></div>
-   <p className="break-all text-xs text-zinc-400">Team {a.intent.teamId}{'channelId'in a.intent?` · Channel ${a.intent.channelId}`:''}{'issueId'in a.intent?` · Issue ${a.intent.issueId}`:''}</p>
+   <p className="break-all text-xs text-zinc-400">Team {'teamId'in a.intent?a.intent.teamId:''}{'channelId'in a.intent?` · Channel ${a.intent.channelId}`:''}{'issueId'in a.intent?` · Issue ${a.intent.issueId}`:''}</p>
    {'title'in a.intent&&<h3 className="text-sm font-medium">{a.intent.title}</h3>}
    <p className="whitespace-pre-wrap break-words text-sm">{'text'in a.intent?a.intent.text:'description'in a.intent?a.intent.description:'stateId'in a.intent?`Completed state: ${a.intent.stateId}`:''}</p>
    {sourceTask&&a.intent.sourceTask?.taskVersion!==sourceTask.expectedVersion&&<p className="text-xs text-zinc-400">Historical task version. Review a new action for this saved version.</p>}<p className="break-all text-xs text-zinc-400">{a.intent.sourceTask&&<>Bot task version {a.intent.sourceTask.taskVersion} · </>}Exact plan {a.intentDigest} · expires {new Date(a.intent.expiresAt).toLocaleString()}</p>
    {a.approval&&<p className="text-xs text-zinc-400">Approved by {a.approval.approverUserId}. Approval is bound to this exact plan.</p>}
    {a.state==='unknown'&&<p role="status" className="text-sm">The provider outcome is unknown. Check the provider before any new action. This action will not be resent.</p>}
-   {a.receipt&&<a href={a.receipt.url} target="_blank" rel="noreferrer" className="text-sm underline">Open verified provider result</a>}
+   {a.receipt&&'url'in a.receipt&&<a href={a.receipt.url} target="_blank" rel="noreferrer" className="text-sm underline">Open verified provider result</a>}
    {(a.canApprove||a.canExecute)&&<label className="flex gap-2 text-xs"><input type="checkbox" checked={reviewed===a.intentDigest} disabled={busy||!!pending} onChange={e=>setReviewed(e.target.checked?a.intentDigest:'')}/>I reviewed this exact target and content.</label>}
    <div className="flex flex-wrap gap-2">{(['approve','execute','cancel','recover'] as const).map(action=>{const allowed=action==='approve'?a.canApprove:action==='execute'?a.canExecute:action==='cancel'?a.canCancel:a.canRecover;return allowed&&<button key={action} type="button" className="btn-secondary" disabled={busy||!!pending||(['approve','execute'].includes(action)&&(reviewed!==a.intentDigest||!!sourceTask&&a.intent.sourceTask?.taskVersion!==sourceTask.expectedVersion))} onClick={()=>void run({action,id:a.id,expectedVersion:a.version})}>{action==='approve'?'Approve exact action':action==='execute'?'Execute approved action once':action==='cancel'?'Cancel action':'Reconcile expired attempt'}</button>})}</div>
   </article>)}

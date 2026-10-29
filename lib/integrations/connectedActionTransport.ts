@@ -19,7 +19,7 @@ export function createConnectedActionTransport(ports:ConnectedActionTransportPor
   const now=ports.now??Date.now,controller=new AbortController(),signal=AbortSignal.any([input.signal,controller.signal]);
   const timer=setTimeout(()=>controller.abort(),15000),deadline=now()+15000;
   try{
-   const intent=connectedActionIntentSchema.parse(input.intent);
+   const intent=connectedActionIntentSchema.parse(input.intent);if(intent.provider==='outlook')return{state:'refused'};
    const guard=()=>{signal.throwIfAborted();if(!ports.isEnabled?.(intent.provider)||!ports.readCredential||!ports.fetch||!Number.isSafeInteger(now())||now()>=deadline||Date.parse(intent.expiresAt)<=now())throw Error('unavailable')};
    const current=async()=>{guard();await withGithubAbort(input.assertCurrent(),signal);guard()};
    if(input.operationId!==connectedActionId(intent)||typeof input.assertCurrent!=='function')return{state:'refused'};

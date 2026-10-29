@@ -53,7 +53,7 @@ export async function GET(request:NextRequest):Promise<Response>{
  let token:{accessToken:string;refreshToken:string|null;expiresAt:number|null},grantedScopes:string[];
  try{
   await current();
-  const response=await io.read(`https://login.microsoftonline.com/${encodeURIComponent(tenant!)}/oauth2/v2.0/token`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:clientId,client_secret:clientSecret,grant_type:'authorization_code',code,redirect_uri:attempt.redirectUri,code_verifier:verifier})});
+  const response=await io.read(`https://login.microsoftonline.com/${encodeURIComponent(tenant!)}/oauth2/v2.0/token`,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({client_id:clientId,client_secret:clientSecret,grant_type:'authorization_code',scope:'openid offline_access User.Read',code,redirect_uri:attempt.redirectUri,code_verifier:verifier})});
   const value=response.json as Record<string,unknown>|null;
   if(!response.ok){const definite=[400,401].includes(response.status)&&value&&typeof value.error==='string'&&['invalid_grant','invalid_client','unauthorized_client','invalid_request','invalid_scope','unsupported_grant_type'].includes(value.error);return returnToCompanion(definite?'exchange_failed':'exchange_outcome_unknown','exchange')}
   const validToken=(v:unknown):v is string=>typeof v==='string'&&v.length>0&&Buffer.byteLength(v,'utf8')<=16384&&!/[\x00-\x20\x7f-\x9f]/.test(v);

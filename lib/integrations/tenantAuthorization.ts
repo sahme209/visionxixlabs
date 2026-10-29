@@ -16,7 +16,7 @@ export function isTenantIntegrationProvider(value: string): value is TenantInteg
 }
 
 /** Staged OAuth providers are not advertised as usable connections. */
-export type TenantIntegrationAuthorizationProvider = TenantIntegrationProvider | "jira" | "servicenow";
+export type TenantIntegrationAuthorizationProvider = TenantIntegrationProvider | "jira" | "servicenow" | "outlook";
 
 export interface AuthorizationState {
   state: string;
@@ -60,7 +60,7 @@ export function authorizationCredentialContext(input: {
 
 /** Stored ticket credentials can use the vault before OAuth setup is registered.
  * This type does not advertise an integration or grant any provider scope. */
-export type TenantCredentialProvider = TenantIntegrationProvider | "jira" | "servicenow";
+export type TenantCredentialProvider = TenantIntegrationProvider | "jira" | "servicenow" | "outlook";
 
 /** Binds a persisted credential to its immutable connection record. */
 export function connectionCredentialContext(input: {

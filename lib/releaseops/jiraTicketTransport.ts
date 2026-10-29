@@ -5,7 +5,7 @@ import {parseJiraTicketActionCandidate,type JiraTicketActionCandidate} from './j
 
 const native=z.string().regex(/^[0-9]{1,20}$/);
 const issue=z.object({id:native,key:z.string().max(128).regex(/^[A-Z][A-Z0-9_]*-[1-9][0-9]*$/)});
-const credential=z.object({organizationId:z.string(),connectionId:z.string(),connectionRevision:z.string(),siteId:z.string().uuid(),accessToken:z.string().min(1).max(65536).refine(v=>!/[\r\n]/.test(v)),expiresAt:z.number().finite(),scopes:z.array(z.string()).max(100)}).strict();
+export const jiraTicketCredentialSchema=z.object({organizationId:z.string(),connectionId:z.string(),connectionRevision:z.string(),siteId:z.string().uuid(),accessToken:z.string().min(1).max(65536).refine(v=>!/[\r\n]/.test(v)),expiresAt:z.number().finite(),scopes:z.array(z.string()).max(100)}).strict();
 export interface JiraTicketTransportDependencies {
  /** Must re-read the durable dispatch claim, independent approval and current actors.
   * No production adapter is supplied by this module. Caller data is not authority. */
@@ -46,7 +46,7 @@ export function createJiraTicketTransport(deps:JiraTicketTransportDependencies){
    const signal=AbortSignal.any([parent,AbortSignal.timeout(Math.max(0,deadline-Date.now()))]);
    const ensure=()=>{signal.throwIfAborted();if(Date.now()>=deadline||!(deps.isEnabled??(()=>process.env.AXIOM_JIRA_TICKET_WRITES_ENABLED==='true'))())throw Error('jira_ticket_transport_stopped')};
    ensure();await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal),signal);ensure();
-   const auth=credential.parse(await untilAbort(deps.readCredential(structuredClone(c),signal),signal));ensure();
+   const auth=jiraTicketCredentialSchema.parse(await untilAbort(deps.readCredential(structuredClone(c),signal),signal));ensure();
    if(auth.organizationId!==c.organizationId||auth.connectionId!==c.connectionId||auth.connectionRevision!==c.connectionRevision||auth.siteId!==c.siteId||auth.expiresAt<=deadline||!auth.scopes.includes('write:jira-work')||!auth.scopes.includes('read:jira-work'))return{status:'refused'};
    const base=`https://api.atlassian.com/ex/jira/${c.siteId}/rest/api/3`,fetcher=deps.fetchImpl??fetch;
    const headers={Accept:'application/json',Authorization:`Bearer ${auth.accessToken}`,'Content-Type':'application/json'};

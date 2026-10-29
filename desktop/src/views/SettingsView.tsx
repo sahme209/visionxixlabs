@@ -1,3 +1,4 @@
+import {OutlookIntegrationCard} from '../components/OutlookIntegrationCard';
 import {ProviderLogo,ProviderLogoGroup,type CatalogProvider} from "../components/CatalogIcon";
 import { browserNavigationIntentPath, parseBrowserNavigationIntent } from "../../../lib/desktop/browserNavigationIntent";
 import { Disclosure } from "../components/Disclosure";
@@ -1930,6 +1931,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
       <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} tone={github?.status === "validation_overdue" ? "attention" : undefined} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
       <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
       <IntegrationRow name="Microsoft Teams" group="Collaboration" detail="Verifies Microsoft workspace identity with PKCE. Message permissions remain separately gated." state={formatConnectorState(providerStatus("teams"))} action={providerAction("teams", providerStatus("teams"), teamsCanValidate, validatingTeams, validateTeams)} />
+      <OutlookIntegrationCard />
       <IntegrationRow name="Linear" group="Work management" detail="Governed issue delegation with read and issues:create scopes, short-lived tokens, and automatic refresh rotation." state={formatConnectorState(providerStatus("linear"))} action={providerAction("linear", providerStatus("linear"), linearCanValidate, validatingLinear, validateLinear)} />
       {INTEGRATION_CENTER_ITEMS.map((item) => (
         <IntegrationRow
