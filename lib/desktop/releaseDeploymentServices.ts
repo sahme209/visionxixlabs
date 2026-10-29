@@ -52,7 +52,11 @@ export function createReleaseDeploymentServices(request:NextRequest,repo:Release
  const ports:ReleaseDeploymentServicePorts={enabled,transport:options.observationOnly||sourcePolicy===IMMUTABLE_RELEASE_POLICY&&!options.allowImmutableTagDispatch?.()?undefined:transport,preflight:async(p,signal)=>{await current(p,signal);await verifyPolicy(p,signal)},dependencies:{
   assertCurrent:authority.assertCurrent,
   readCurrentPlan:authority.readCurrentPlan,
-  verifySupportedSourcePolicy:async(tx,s,p)=>{await authority.assertCurrent(tx,s,p);await authority.readCurrentPlan(tx,s,p);const cached=proofs.get(sha256ContentHash(p));if(!enabled()||!cached||cached.expiresAt<=Date.now())throw Error('release_source_policy_preflight_required');return structuredClone(cached.proof)},
+  // The observation store already checks authority and the exact locked plan
+  // before/after this pure proof lookup. Repeating both here recursively
+  // multiplies provenance reads until the fixed observation budget expires.
+  // Execution retains its existing additional checks unchanged.
+  verifySupportedSourcePolicy:async(tx,s,p)=>{if(!options.observationOnly){await authority.assertCurrent(tx,s,p);await authority.readCurrentPlan(tx,s,p)}const cached=proofs.get(sha256ContentHash(p));if(!enabled()||!cached||cached.expiresAt<=Date.now())throw Error('release_source_policy_preflight_required');return structuredClone(cached.proof)},
   readIndependentApproval:approvals.readIndependentApproval,
   consumeIndependentApproval:approvals.consumeIndependentApproval,
  },readPlan:async(s,reviewedPlan,signal)=>{
