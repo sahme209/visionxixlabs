@@ -12,3 +12,5 @@ it('explains saved or autosaved TextEdit targets without exposing their location
  expect(computerInputRecoveryMessage('native_input_saved_document')).toContain('saved or autosaved');
  expect(computerInputRecoveryMessage('native_input_saved_document')).toContain('No text was changed');
 });
+
+it('distinguishes exact fixture mismatch without exposing text or paths',()=>{expect(safeComputerInputError('native_input_fixture_mismatch')).toBe('native_input_fixture_mismatch');expect(safeComputerInputError('native_input_fixture_mismatch: private path')).toBe('input_unavailable');expect(computerInputRecoveryMessage('native_input_fixture_mismatch')).toContain('exact disposable test text');expect(computerInputRecoveryMessage('native_input_saved_document')).not.toContain('only an unsaved')});

@@ -14,7 +14,11 @@ import {PROTECTED_TAG_POLICY} from '@/lib/tauri/releaseProtectedTagPolicy';
 const refuse=():never=>{throw Error('release_deployment_authority_unavailable')};
 const roles=new Set(['owner','admin','operator','security_reviewer','finance_viewer','read_only']);
 /** Request-bound server checks under the caller's existing transaction. No client authority flags. */
-export function createReleaseDeploymentAuthority(request:NextRequest,options:{sourcePolicy?:'github_protected_tag_v1'|'github_immutable_release_v1';isEnabled?:()=>boolean;actorPurpose?:'approver'|'executor'}={}){
+export function createReleaseDeploymentAuthority(request:NextRequest,options:{sourcePolicy?:'github_protected_tag_v1'|'github_immutable_release_v1';isEnabled?:()=>boolean;actorPurpose?:'approver'|'executor';memoizeReadOnlyTransactionPlans?:boolean}={}){
+ // Observation-only reconstruction cache: every source row is held FOR SHARE
+ // in this transaction. Never reuse across transactions or for execution. Live
+ // caller/session authority is still checked before and after every lookup.
+ const readPlans=new WeakMap<Tx,Map<string,DeploymentPlan>>();
  const guard=()=>{request.signal.throwIfAborted();if(!options.isEnabled?.())refuse()};
  async function principal(s:DeploymentScope,purpose:'approver'|'executor'){
   const capability=purpose==='approver'?'agent:approve':'deploy:execute';
@@ -34,6 +38,8 @@ export function createReleaseDeploymentAuthority(request:NextRequest,options:{so
  };
  const readCurrentPlan=async(tx:Tx,s:DeploymentScope,raw:Readonly<DeploymentPlan>)=>{
   const p=deploymentPlanSchema.parse(raw);await assertCurrent(tx,s,p);
+  const cacheKey=sha256ContentHash({scope:s,plan:p}),cached=options.memoizeReadOnlyTransactionPlans?readPlans.get(tx)?.get(cacheKey):undefined;
+  if(cached){await assertCurrent(tx,s,p);return structuredClone(cached)}
   const releases=await tx.$queryRaw<Array<{id:string;organizationId:string;requesterUserId:string;version:number;status:string;intakeJson:unknown}>>`SELECT "id","organizationId","requesterUserId","version","status","intakeJson" FROM "TauriDeploymentRequest" WHERE "id"=${p.releaseId} AND "organizationId"=${s.organizationId} FOR SHARE`;
   const parents=await tx.$queryRaw<Row[]>`SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${p.planId} AND "organizationId"=${s.organizationId} AND "workflowKind"=${RELEASE_OPERATION_PLAN_KIND} FOR SHARE`;
   const connections=await tx.$queryRaw<Array<{id:string;organizationId:string;status:string;githubInstallationId:string;updatedAt:Date;revokedAt:Date|null;suspendedAt:Date|null}>>`SELECT "id","organizationId","status","githubInstallationId","updatedAt","revokedAt","suspendedAt" FROM "GitHubInstallation" WHERE "id"=${p.connectionId} AND "organizationId"=${s.organizationId} FOR SHARE`;
@@ -51,7 +57,7 @@ export function createReleaseDeploymentAuthority(request:NextRequest,options:{so
   if(!rebuilt.ok||rebuilt.digest!==original.planDigest||merge.connectionId!==p.connectionId||merge.connectionRevision!==p.connectionRevision||merge.pullRequest.repositoryFullName!==p.repositoryFullName||connection.id!==p.connectionId||connection.organizationId!==s.organizationId||connection.status!=='active'||connection.revokedAt||connection.suspendedAt||connection.githubInstallationId!==p.installationId||connection.updatedAt.toISOString()!==p.connectionRevision)refuse();
   const parsed=parseDeploymentIntake(release.intakeJson);if(!parsed.ok) return refuse();const intake=parsed.intake,source=intake.workflowSource;if(validateIntake(intake).length)refuse();
   if(!source||source.repositoryFullName!==p.repositoryFullName||source.ref!==p.ref||source.path!==p.workflowPath||source.blobSha!==p.workflowBlobSha||!sameInputs(intake.workflowInputs,p.inputs)||p.sourcePolicy!==(options.sourcePolicy??PROTECTED_TAG_POLICY)||p.refKind!=='tag'||Date.parse(p.windowStart)<Date.parse(intake.windowStartUtc)||Date.parse(p.expiresAt)>Date.parse(intake.windowEndUtc))refuse();
-  await actor(tx,s,p.creatorUserId,undefined,'reader');await actor(tx,s,p.requesterUserId,undefined,'reader');await assertCurrent(tx,s,p);return structuredClone(p);
+  await actor(tx,s,p.creatorUserId,undefined,'reader');await actor(tx,s,p.requesterUserId,undefined,'reader');await assertCurrent(tx,s,p);if(options.memoizeReadOnlyTransactionPlans){let entries=readPlans.get(tx);if(!entries){entries=new Map();readPlans.set(tx,entries)}entries.set(cacheKey,structuredClone(p))}return structuredClone(p);
  };
  return{assertCurrent,readCurrentPlan};
 }

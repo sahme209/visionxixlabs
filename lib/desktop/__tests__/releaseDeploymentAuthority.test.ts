@@ -58,3 +58,9 @@ it('keeps the executor separate from the current security-reviewer history autho
  f.tx.$queryRaw.mockImplementation(async(q:TemplateStringsArray,...v:any[])=>q.join('').includes('OrgMembership')?[{organizationId:'org',userId:v[1],role:v[1]==='reviewer'?'operator':'owner',acceptedAt:new Date()}]:original(q,...v));
  await expect(f.authority.readCurrentPlan(f.tx,scope,f.plan)).rejects.toThrow();
 });
+it('reuses only locked read-only plan reconstruction within one transaction and rechecks live authority',async()=>{
+ const f=fullFixture(),authority=createReleaseDeploymentAuthority({signal:new AbortController().signal} as any,{isEnabled:()=>true,memoizeReadOnlyTransactionPlans:true});
+ await authority.readCurrentPlan(f.tx,scope,f.plan);const reads=()=>f.tx.$queryRaw.mock.calls.filter(([q]:[TemplateStringsArray])=>q.join('').includes('TauriDeploymentRequest')).length;expect(reads()).toBe(1);const principals=resolve.mock.calls.length;await authority.readCurrentPlan(f.tx,scope,f.plan);expect(reads()).toBe(1);expect(resolve.mock.calls.length).toBeGreaterThan(principals);
+ f.release.version++;await expect(authority.readCurrentPlan({...f.tx},scope,f.plan)).rejects.toThrow();
+ resolve.mockResolvedValue({...identity,id:'revoked'});await expect(authority.readCurrentPlan(f.tx,scope,f.plan)).rejects.toThrow();
+});

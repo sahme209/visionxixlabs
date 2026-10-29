@@ -23,7 +23,7 @@ export function createReleaseDeploymentServices(request:NextRequest,repo:Release
  const sourcePolicy=options.sourcePolicy??PROTECTED_TAG_POLICY;
  let immutableRequired=false;
  const enabled=()=>options.isEnabled?.()===true&&!request.signal.aborted;
- const authority=createReleaseDeploymentAuthority(request,{isEnabled:enabled,actorPurpose:options.actorPurpose,sourcePolicy});
+ const authority=createReleaseDeploymentAuthority(request,{isEnabled:enabled,actorPurpose:options.actorPurpose,sourcePolicy,memoizeReadOnlyTransactionPlans:options.observationOnly===true});
  const approvals=createReleaseDeploymentApprovalStore(repo,{assertCurrent:authority.assertCurrent,readCurrentPlan:authority.readCurrentPlan});
  const current=async(p:Readonly<DeploymentPlan>,signal:AbortSignal)=>{
   signal.throwIfAborted();if(!enabled()||options.isPlanAllowed&&!options.isPlanAllowed(p))throw Error('release_deployment_services_unavailable');

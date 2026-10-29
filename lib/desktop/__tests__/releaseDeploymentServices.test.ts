@@ -1,7 +1,7 @@
 import {beforeEach,it,expect,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({authority:{assertCurrent:vi.fn(),readCurrentPlan:vi.fn()},approval:{readIndependentApproval:vi.fn(),consumeIndependentApproval:vi.fn(),issue:vi.fn(),revoke:vi.fn()},policy:vi.fn(),token:vi.fn(),tag:vi.fn(),workflow:vi.fn(),boundaries:[] as any[]}));
+const mocks=vi.hoisted(()=>({authority:{assertCurrent:vi.fn(),readCurrentPlan:vi.fn()},approval:{readIndependentApproval:vi.fn(),consumeIndependentApproval:vi.fn(),issue:vi.fn(),revoke:vi.fn()},policy:vi.fn(),token:vi.fn(),tag:vi.fn(),workflow:vi.fn(),authorityOptions:[] as any[],boundaries:[] as any[]}));
 vi.mock('server-only',()=>({}));
-vi.mock('../releaseDeploymentAuthority',()=>({createReleaseDeploymentAuthority:()=>mocks.authority}));
+vi.mock('../releaseDeploymentAuthority',()=>({createReleaseDeploymentAuthority:(_r:unknown,o:unknown)=>{mocks.authorityOptions.push(o);return mocks.authority}}));
 vi.mock('@/lib/tauri/releaseDeploymentApprovalStore',()=>({RELEASE_DEPLOYMENT_APPROVAL_KIND:'release_deployment_approval_v1',createReleaseDeploymentApprovalStore:()=>mocks.approval}));
 vi.mock('@/lib/tauri/releaseProtectedTagPolicy',()=>({PROTECTED_TAG_POLICY:'github_protected_tag_v1',createProtectedTagPolicyReader:(deps:any)=>{mocks.boundaries.push(deps);return mocks.policy}}));
 vi.mock('@/lib/tauri/releaseDeploymentGithubReaders',()=>({createReleaseDeploymentGithubReaders:(deps:any)=>{mocks.boundaries.push(deps);return{readSourceTag:mocks.tag,readWorkflowContract:mocks.workflow,verifyRunReceipt:vi.fn()}} }));
@@ -11,7 +11,7 @@ import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createReleaseDeploymentServices} from '../releaseDeploymentServices';
 const scope={organizationId:'org',actorUserId:'executor',sessionId:'session'};
 function setup(enabled?:()=>boolean){const findMany=vi.fn(async()=>[]);const tx={durableAgentWorkflow:{findMany}};const repo:any={$transaction:async(fn:any)=>fn(tx)};const request:any={signal:new AbortController().signal};return{service:createReleaseDeploymentServices(request,repo,scope,{isEnabled:enabled}),request,findMany}}
-beforeEach(()=>{vi.clearAllMocks();mocks.boundaries.length=0});
+beforeEach(()=>{vi.clearAllMocks();mocks.boundaries.length=0;mocks.authorityOptions.length=0});
 it('is unavailable by default without resolving a credential or reading a plan',async()=>{const f=setup();expect(f.service.ports.enabled?.()).toBe(false);await expect(f.service.ports.readPlan!(scope,{} as any,f.request.signal)).rejects.toThrow();expect(f.findMany).not.toHaveBeenCalled();expect(mocks.token).not.toHaveBeenCalled()});
 it('rejects a substituted executor session before reading stored approvals',async()=>{const f=setup(()=>true);await expect(f.service.ports.readPlan!({...scope,sessionId:'other'},{} as any,f.request.signal)).rejects.toThrow('identity_changed');expect(f.findMany).not.toHaveBeenCalled()});
 it('becomes unavailable when the originating request is aborted',()=>{const f=setup(()=>true);expect(f.service.ports.enabled?.()).toBe(true);Object.defineProperty(f.request,'signal',{value:AbortSignal.abort()});expect(f.service.ports.enabled?.()).toBe(false)});
@@ -58,3 +58,5 @@ it('keeps observation proof lookup free of duplicate authority reads while execu
  const request:any={signal:new AbortController().signal},repo:any={$transaction:async(fn:any)=>fn({})};
  for(const observationOnly of [true,false]){const service=createReleaseDeploymentServices(request,repo,scope,{isEnabled:()=>true,observationOnly});await service.ports.preflight!(plan,request.signal);mocks.authority.assertCurrent.mockClear();mocks.authority.readCurrentPlan.mockClear();expect(await service.ports.dependencies!.verifySupportedSourcePolicy!({} as any,scope,plan)).toMatchObject({planDigest:sha256ContentHash(plan)});expect(mocks.authority.assertCurrent).toHaveBeenCalledTimes(observationOnly?0:1);expect(mocks.authority.readCurrentPlan).toHaveBeenCalledTimes(observationOnly?0:1);await expect(service.ports.dependencies!.verifySupportedSourcePolicy!({} as any,scope,{...plan,sourceCommitSha:'e'.repeat(40)})).rejects.toThrow('preflight')}
 });
+
+it('enables locked read memoization only in the server-owned observation composition',()=>{const request:any={signal:new AbortController().signal},repo:any={$transaction:vi.fn()};createReleaseDeploymentServices(request,repo,scope,{isEnabled:()=>true,observationOnly:true});expect(mocks.authorityOptions.at(-1)).toMatchObject({memoizeReadOnlyTransactionPlans:true});createReleaseDeploymentServices(request,repo,scope,{isEnabled:()=>true});expect(mocks.authorityOptions.at(-1)).toMatchObject({memoizeReadOnlyTransactionPlans:false})});

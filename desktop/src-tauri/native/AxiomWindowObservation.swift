@@ -7,6 +7,8 @@ import CommonCrypto
 
 private func axiomObservationIdentityDigest(_ value:String)->String {let data=Data(value.utf8);var digest=[UInt8](repeating:0,count:Int(CC_SHA256_DIGEST_LENGTH));data.withUnsafeBytes{bytes in _ = CC_SHA256(bytes.baseAddress,CC_LONG(bytes.count),&digest)};return digest.map{String(format:"%02x",$0)}.joined()}
 // Customer-owned, one-window read-only observer. No input, stream, disk or AI API.
+// Waiting for the human picker grants no active capture/input session.
+private let pickerSelectionSeconds:TimeInterval=180
 private typealias Reply = ([String: Any]?, String?) -> Void
 private let flags: [String: Any] = ["source":"native_selected_window", "inputAvailable":false, "aiSharingAvailable":false, "backgroundCapture":false]
 private func stamp(_ date: Date) -> String { let f = ISO8601DateFormatter(); f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]; f.timeZone = TimeZone(secondsFromGMT:0); return f.string(from:date) }
@@ -83,8 +85,8 @@ struct AxiomSelectedWindowIdentity {
         guard let owner=string(input["ownerContextRef"])else{reply(nil,"native_observation_invalid_request");return}
         if operation==1 {
             if let refusal=observationSelectionRefusal(keys(input,["ownerContextRef","confirmSelect"]) && input["confirmSelect"] as? Bool==true,pending != nil,NSApplication.shared.isActive){reply(nil,refusal);return}
-            revoke("native_observation_operation_stopped");pending=Pending(owner:owner,select:true,generation:generation,deadline:uptime+60,reply:reply)
-            let picker=SCContentSharingPicker.shared;var configuration=SCContentSharingPickerConfiguration();configuration.allowedPickerModes=[.singleWindow];configuration.allowsChangingSelectedContent=false;picker.defaultConfiguration=configuration;let observer=PickerObserver(self,generation);pickerObserver=observer;picker.add(observer);picker.isActive=true;scheduleTimeout(60);picker.present(using:.window);return
+            revoke("native_observation_operation_stopped");pending=Pending(owner:owner,select:true,generation:generation,deadline:uptime+pickerSelectionSeconds,reply:reply)
+            let picker=SCContentSharingPicker.shared;var configuration=SCContentSharingPickerConfiguration();configuration.allowedPickerModes=[.singleWindow];configuration.allowsChangingSelectedContent=false;picker.defaultConfiguration=configuration;let observer=PickerObserver(self,generation);pickerObserver=observer;picker.add(observer);picker.isActive=true;scheduleTimeout(pickerSelectionSeconds);picker.present(using:.window);return
         }
         if operation==5 {
             guard keys(input,["ownerContextRef","sessionId","expectedRevision"]),let id=string(input["sessionId"]),let revision=input["expectedRevision"] as? Int,revision>=0,revision<2147483647 else{reply(nil,"native_observation_invalid_request");return}
