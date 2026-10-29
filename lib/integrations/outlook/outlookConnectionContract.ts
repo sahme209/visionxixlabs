@@ -1,8 +1,8 @@
 import 'server-only';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
-export const OUTLOOK_READ_SCOPES=['openid','offline_access','User.Read','Mail.ReadBasic','Calendars.ReadBasic'] as const;
-export const OUTLOOK_ACTION_SCOPES=['openid','offline_access','User.Read','Mail.ReadBasic','Calendars.ReadBasic','Mail.Send','Calendars.ReadWrite'] as const;
+export const OUTLOOK_READ_SCOPES=['openid','offline_access','User.Read','Mail.ReadBasic','Calendars.Read'] as const;
+export const OUTLOOK_ACTION_SCOPES=['openid','offline_access','User.Read','Mail.ReadBasic','Calendars.Read','Mail.Send','Calendars.ReadWrite'] as const;
 export const outlookPurposeSchema=z.enum(['read','actions']);export type OutlookPurpose=z.infer<typeof outlookPurposeSchema>;
 const opaque=z.string().min(1).max(240).refine(v=>v===v.trim()&&!/[\x00-\x20\x7f-\x9f]/.test(v));
 export const outlookAccountSchema=z.object({id:opaque,displayName:z.string().max(240),email:z.string().email().max(320).nullable()}).strict();
@@ -10,7 +10,7 @@ const normalize=(scope:string)=>scope.replace(/^https:\/\/graph\.microsoft\.com\
 /** Validate exact reported authority, never manufacture omitted scopes or treat Teams consent as mail access. */
 export function validateOutlookScopes(purpose:OutlookPurpose,raw:unknown):string[]{
  outlookPurposeSchema.parse(purpose);const scopes=z.array(opaque).min(1).max(20).parse(raw),normalized=scopes.map(normalize);
- const allowed=[...(purpose==='read'?OUTLOOK_READ_SCOPES:OUTLOOK_ACTION_SCOPES),'profile','email'].map(normalize),required=purpose==='read'?['user.read','mail.readbasic','calendars.readbasic']:['user.read','mail.readbasic','mail.send','calendars.readwrite'];
+ const allowed=[...(purpose==='read'?OUTLOOK_READ_SCOPES:OUTLOOK_ACTION_SCOPES),'profile','email'].map(normalize),required=purpose==='read'?['user.read','mail.readbasic','calendars.read']:['user.read','mail.readbasic','mail.send','calendars.readwrite'];
  if(new Set(normalized).size!==normalized.length||normalized.some(s=>!allowed.includes(s))||required.some(s=>!normalized.includes(s)))throw Error('outlook_scope_insufficient');return [...scopes];
 }
 export const outlookAuthoritySchema=z.union([z.enum(['common','organizations','consumers']),z.string().uuid()]);

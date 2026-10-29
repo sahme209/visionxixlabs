@@ -32,7 +32,7 @@ it('shows the specific Teams license recovery without implying a saved-action fa
  vi.stubGlobal('fetch',vi.fn().mockResolvedValue(Response.json({ok:false,error:'connected_action_teams_license_required'},{status:409})));
  const result=await connectedActionsRequest(context(),'teams',undefined,{targets:'1'});
  expect(result).toMatchObject({ok:false,errorCode:'connected_action_teams_license_required',outcomeUnconfirmed:false});
- if(!result.ok){expect(result.error).toContain('licensed work account');expect(result.error).not.toContain('outcome could not be confirmed')}
+ if(!result.ok){expect(result.error).toContain('licensed work account');expect(result.error).toContain('Microsoft 365 Personal does not enable business channel actions');expect(result.error).not.toContain('outcome could not be confirmed')}
 });
 it('loads only the requested saved Bot task history and explains an older service',async()=>{
  const taskId='bot_'+'a'.repeat(64),f=vi.fn().mockResolvedValue(Response.json({ok:true,data}));vi.stubGlobal('fetch',f);expect((await connectedActionsRequest(context(),'linear',undefined,{taskId})).ok).toBe(true);expect(f.mock.calls[0][0]).toContain('?taskId='+taskId);

@@ -1,0 +1,82 @@
+# Install only after actual reviewer protection; no application source or signing keys.
+name: Publish reviewed installer draft
+on:
+  workflow_dispatch:
+    inputs:
+      release_id:
+        description: Exact unpublished draft release ID
+        required: true
+        type: string
+      release_tag:
+        description: Exact desktop-v stable tag
+        required: true
+        type: string
+      source_sha:
+        description: Reviewed private source SHA
+        required: true
+        type: string
+      candidate_run_id:
+        description: Reviewed successful private candidate run
+        required: true
+        type: string
+      manifest_sha256:
+        description: Independently reviewed signed manifest SHA256
+        required: true
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: axiom-installer-publication
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.repository == 'sahme209/axiom-releases' && vars.AXIOM_PROTECTED_PUBLISHER_READY == 'true'
+    environment: desktop-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+      RELEASE_ID: ${{ inputs.release_id }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      CANDIDATE_RUN_ID: ${{ inputs.candidate_run_id }}
+      MANIFEST_SHA256: ${{ inputs.manifest_sha256 }}
+      EXPECTED_GPG_FINGERPRINT: ${{ vars.AXIOM_DESKTOP_PUBLIC_KEY_FINGERPRINT }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Verify actual protection and frozen draft identity
+        run: |
+          set -euo pipefail
+          gh api repos/sahme209/axiom-releases/environments/desktop-release > protection.json
+          gh api "repos/sahme209/axiom-releases/releases/$RELEASE_ID" > draft.json
+          gh api repos/sahme209/axiom-releases/immutable-releases > immutable.json
+          node -e 'if(JSON.parse(require("fs").readFileSync("immutable.json")).enabled!==true)throw Error("Immutable releases must be enabled")'
+          node scripts/check-publication-draft.mjs protection.json draft.json
+      - name: Download draft as data only and verify exact signed bytes
+        run: |
+          set -euo pipefail
+          mkdir candidate
+          node scripts/download-publication-draft.mjs draft.json candidate
+          node scripts/verify-publication-candidate-cli.mjs > verified-candidate.json
+      - name: Recheck frozen remote asset set, then publish once
+        run: |
+          set -euo pipefail
+          gh api "repos/sahme209/axiom-releases/releases/$RELEASE_ID" > final-draft.json
+          node scripts/check-publication-draft.mjs protection.json final-draft.json draft.json
+          gh api --method PATCH "repos/sahme209/axiom-releases/releases/$RELEASE_ID" -F draft=false > published.json
+          node scripts/check-published-release.mjs published.json draft.json
+      - name: Preserve public verification receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reviewed-publication-receipt
+          path: |
+            verified-candidate.json
+            published.json
+          if-no-files-found: ignore
