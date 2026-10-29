@@ -1,0 +1,119 @@
+{
+  "releaseId": 428415966,
+  "releaseTag": "desktop-v0.1.21",
+  "manifestSha256": "53e9c966aa231b94ae217baba2ae7e00767cfbe5c11b06a829d5e22a299c99cb",
+  "candidateRun": 40948306389,
+  "sourceSha": "61434aecd23a593c902c8a13de4eb984ceda3d0b",
+  "requestedAt": "2026-10-29T21:36:33.640254+00:00",
+  "humanApprovalRequired": true,
+  "assets": [
+    {
+      "id": 689980087,
+      "name": "Axiom-Agent-desktop-v0.1.21-candidate-manifest.json",
+      "digest": "sha256:53e9c966aa231b94ae217baba2ae7e00767cfbe5c11b06a829d5e22a299c99cb",
+      "size": 3723
+    },
+    {
+      "id": 689980102,
+      "name": "Axiom-Agent-desktop-v0.1.21-candidate-manifest.json.asc",
+      "digest": "sha256:c5e3262ecd9626b5dcb598b3593265eee39e07c3a4d186a2c68abc9fb27a1fad",
+      "size": 833
+    },
+    {
+      "id": 689968306,
+      "name": "Axiom-Agent-desktop-v0.1.21-sbom.cdx.json",
+      "digest": "sha256:6895a5b8929314bb11f10bb1a930c6b5652225198860713367d2935667e315e9",
+      "size": 1771355
+    },
+    {
+      "id": 689968330,
+      "name": "Axiom-Agent-desktop-v0.1.21-sbom.cdx.json.asc",
+      "digest": "sha256:099fb6bc5a32bfb78bed3f668b851479daa06b1edcc74f4f17cab4a9627dbe47",
+      "size": 833
+    },
+    {
+      "id": 689967656,
+      "name": "Axiom.Agent-0.1.21-1.x86_64.rpm",
+      "digest": "sha256:68e5b51f9847fc80d778308f6ed8424a676d6fe9a774bb6c52836d88711a818b",
+      "size": 7966941
+    },
+    {
+      "id": 689967686,
+      "name": "Axiom.Agent-0.1.21-1.x86_64.rpm.asc",
+      "digest": "sha256:b053176b864ec44d4ba3853101e1bcc7e81e655fe6c401030cb86d651d361a4f",
+      "size": 833
+    },
+    {
+      "id": 689967701,
+      "name": "Axiom.Agent_0.1.21_aarch64.dmg",
+      "digest": "sha256:c18dc1bdf468a37d08473b9260d535ae1455f4580a822aaeaedd39d785523197",
+      "size": 8500877
+    },
+    {
+      "id": 689967784,
+      "name": "Axiom.Agent_0.1.21_aarch64.dmg.asc",
+      "digest": "sha256:595c0c37cd7516ef115535522337eadec20cd9c8c3cef4a376f5419c3bbd6710",
+      "size": 833
+    },
+    {
+      "id": 689967805,
+      "name": "Axiom.Agent_0.1.21_amd64.AppImage",
+      "digest": "sha256:4b53b5046b23e07c061b54bc5d1beb86d58f8d1406f80289a0c59295e8f2dd7f",
+      "size": 85170680
+    },
+    {
+      "id": 689967982,
+      "name": "Axiom.Agent_0.1.21_amd64.AppImage.asc",
+      "digest": "sha256:dd3a28a66c767e0f5ac2639d63d1a164fa190e9763b80522dd92800469f3d865",
+      "size": 833
+    },
+    {
+      "id": 689968012,
+      "name": "Axiom.Agent_0.1.21_amd64.deb",
+      "digest": "sha256:7787ffd711bce35bd68f24016fb9525377ca78052a25498eb96bd82ee08e85d5",
+      "size": 7967048
+    },
+    {
+      "id": 689968052,
+      "name": "Axiom.Agent_0.1.21_amd64.deb.asc",
+      "digest": "sha256:a4b71a8ebe6c862eaa07635beef2a53ba689614552b50b57529eec3430957438",
+      "size": 833
+    },
+    {
+      "id": 689968076,
+      "name": "Axiom.Agent_0.1.21_x64-setup.exe",
+      "digest": "sha256:0d80407c333229d54c9cd3d0f205b99e1944f0622f4da556b02a299eaad893f3",
+      "size": 4023071
+    },
+    {
+      "id": 689968115,
+      "name": "Axiom.Agent_0.1.21_x64-setup.exe.asc",
+      "digest": "sha256:994b6bc46cf3c2b96ba89736cd844212d93138795d1643e2ecd15cf152250dd3",
+      "size": 833
+    },
+    {
+      "id": 689968140,
+      "name": "Axiom.Agent_0.1.21_x64.dmg",
+      "digest": "sha256:d687e973f8c864cda64d1128978c4ea7d39344ebbb8c65cfa01d2559ae7511f3",
+      "size": 8915007
+    },
+    {
+      "id": 689968191,
+      "name": "Axiom.Agent_0.1.21_x64.dmg.asc",
+      "digest": "sha256:4b11c3ff774ba37dc3ddc0bef050216460c50ff9b6aa09f1f9c2ea19f364b2b4",
+      "size": 833
+    },
+    {
+      "id": 689968206,
+      "name": "Axiom.Agent_0.1.21_x64_en-US.msi",
+      "digest": "sha256:670a2b926e7e3f9f0d3a2893b4997867101f1710699b4bc3734e2baac4bd98e1",
+      "size": 5869568
+    },
+    {
+      "id": 689968243,
+      "name": "Axiom.Agent_0.1.21_x64_en-US.msi.asc",
+      "digest": "sha256:a4e2e1ed5b6f3ed383583961ca51b4ea815cecefcf5a5f6c38da1b7bb4c31485",
+      "size": 833
+    }
+  ]
+}

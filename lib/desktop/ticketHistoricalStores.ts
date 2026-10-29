@@ -1,0 +1,29 @@
+import 'server-only';
+import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction} from '@/lib/agent/workflows/releaseOperationPlanStore';
+import {createJiraTicketLifecycleStore} from '@/lib/releaseops/jiraTicketLifecycleStore';
+import {createServiceNowTicketLifecycleStore} from '@/lib/releaseops/serviceNowTicketLifecycleStore';
+import {createReleaseDeploymentExecutionStore} from '@/lib/tauri/releaseDeploymentExecutionStore';
+import {createReleaseWorkflowEvidenceStore} from '@/lib/tauri/releaseWorkflowEvidenceStore';
+import {createReleaseDeploymentEvidenceBridge} from '@/lib/tauri/releaseDeploymentEvidenceBridge';
+import type {TicketReviewScope} from '@/lib/releaseops/ticketGovernanceReviewContract';
+import type {JiraTicketActionCandidate} from '@/lib/releaseops/jiraTicketLifecycleContract';
+import type {ServiceNowTicketActionCandidate} from '@/lib/releaseops/serviceNowTicketLifecycleContract';
+import type {TicketAssociationSourcePorts} from './ticketGovernanceSource';
+/** Read-only composition of EXISTING audited stores. No claim, dispatch, finish,
+ * credential provider or write-capable lifecycle store is exposed to callers. */
+export function createTicketHistoricalStores(repo:ReleaseOperationPlanRepo,ports:{
+ assertDeploymentReader:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,source:unknown)=>Promise<void>;
+ assertTicketReader:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,candidate:Readonly<JiraTicketActionCandidate|ServiceNowTicketActionCandidate>)=>Promise<void>;
+}):Required<Pick<TicketAssociationSourcePorts,'readOriginal'|'readAccepted'|'readReviewedBinding'|'readEvidence'>>{
+ const jira=createJiraTicketLifecycleStore(repo,{transportMode:'provider',assertCurrent:async(tx,input)=>{if(input.role!=='read'||input.actorUserId!==input.scope.actorUserId||!input.candidate)throw Error('ticket_archive_read_only');await ports.assertTicketReader(tx,input.scope,input.candidate)}});
+ const sn=createServiceNowTicketLifecycleStore(repo,{transportMode:'provider',assertCurrent:async(tx,input)=>{if(input.role!=='read'||input.actorUserId!==input.scope.actorUserId||!input.candidate)throw Error('ticket_archive_read_only');await ports.assertTicketReader(tx,input.scope,input.candidate)}});
+ const deployments=createReleaseDeploymentExecutionStore(repo,{assertHistoricalReader:(tx,scope,plan)=>ports.assertDeploymentReader(tx,scope,plan)});
+ const evidence=createReleaseWorkflowEvidenceStore(repo,{assertHistoricalReader:(tx,scope,binding)=>ports.assertDeploymentReader(tx,scope,binding)});
+ const bridge=createReleaseDeploymentEvidenceBridge(repo,{historicalDeploymentStore:deployments});
+ return{
+  readOriginal:(tx,scope,id,provider)=>provider==='jira'?jira.readPublishedProvenance(scope,id,tx):sn.readPublishedProvenance(scope,id,tx),
+  readAccepted:(tx,scope,id)=>deployments.readHistoricalAcceptedSource(scope,id,tx),
+  readReviewedBinding:(tx,scope,binding)=>bridge.readHistoricalBinding(tx,scope,binding),
+  readEvidence:(tx,scope,id)=>evidence.readHistorical(scope,id,tx),
+ };
+}

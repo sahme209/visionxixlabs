@@ -1,0 +1,39 @@
+{
+  "verifiedAt": "2026-10-29T21:38:57.532176+00:00",
+  "websiteTag": "desktop-v0.1.21",
+  "runtimeReady": true,
+  "downloads": [
+    {
+      "platform": "mac-arm",
+      "filename": "Axiom.Agent_0.1.21_aarch64.dmg",
+      "websiteRedirect": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.21/Axiom.Agent_0.1.21_aarch64.dmg",
+      "bytes": 8500877,
+      "digest": "sha256:c18dc1bdf468a37d08473b9260d535ae1455f4580a822aaeaedd39d785523197",
+      "publicUnauthenticatedDownload": "PASS"
+    },
+    {
+      "platform": "mac-intel",
+      "filename": "Axiom.Agent_0.1.21_x64.dmg",
+      "websiteRedirect": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.21/Axiom.Agent_0.1.21_x64.dmg",
+      "bytes": 8915007,
+      "digest": "sha256:d687e973f8c864cda64d1128978c4ea7d39344ebbb8c65cfa01d2559ae7511f3",
+      "publicUnauthenticatedDownload": "PASS"
+    },
+    {
+      "platform": "windows",
+      "filename": "Axiom.Agent_0.1.21_x64_en-US.msi",
+      "websiteRedirect": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.21/Axiom.Agent_0.1.21_x64_en-US.msi",
+      "bytes": 5869568,
+      "digest": "sha256:670a2b926e7e3f9f0d3a2893b4997867101f1710699b4bc3734e2baac4bd98e1",
+      "publicUnauthenticatedDownload": "PASS"
+    },
+    {
+      "platform": "linux",
+      "filename": "Axiom.Agent_0.1.21_amd64.AppImage",
+      "websiteRedirect": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.21/Axiom.Agent_0.1.21_amd64.AppImage",
+      "bytes": 85170680,
+      "digest": "sha256:4b53b5046b23e07c061b54bc5d1beb86d58f8d1406f80289a0c59295e8f2dd7f",
+      "publicUnauthenticatedDownload": "PASS"
+    }
+  ]
+}

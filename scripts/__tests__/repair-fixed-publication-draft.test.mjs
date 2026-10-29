@@ -1,0 +1,8 @@
+import{test}from'node:test';import assert from'node:assert/strict';import{canonicalManifest,ID,frozenAssets}from'../repair-fixed-publication-draft.mjs';
+const fixture=()=>({schema:1,sourceSha:ID.sourceSha,runId:ID.runId,releaseTag:ID.releaseTag,version:'0.1.21',assets:[{fileName:'Axiom Agent_0.1.21_x64.dmg',sha256:'a'.repeat(64),sizeBytes:123}]});
+test('changes only canonical asset names and leaves source manifest untouched',()=>{const x=fixture(),y=canonicalManifest(x);assert.equal(y.assets[0].fileName,'Axiom.Agent_0.1.21_x64.dmg');assert.equal(x.assets[0].fileName,'Axiom Agent_0.1.21_x64.dmg');assert.deepEqual({...y,assets:x.assets},x)});
+test('rejects another run or source',()=>{assert.throws(()=>canonicalManifest({...fixture(),runId:'99'}));assert.throws(()=>canonicalManifest({...fixture(),sourceSha:'b'.repeat(40)}))});
+test('rejects collisions after GitHub normalization',()=>{const x=fixture();x.assets.push({...x.assets[0],fileName:'Axiom.Agent_0.1.21_x64.dmg'});assert.throws(()=>canonicalManifest(x))});
+test('rejects unsafe names',()=>{assert.throws(()=>canonicalManifest({...fixture(),assets:[{fileName:'../escape'}]}))});
+test('refuses published or different releases',()=>{assert.throws(()=>frozenAssets({id:ID.releaseId,tag_name:ID.releaseTag,draft:false,assets:[]}));assert.throws(()=>frozenAssets({id:1,tag_name:ID.releaseTag,draft:true,assets:[]}))});
+test('freeze binds exact asset bytes and identity',()=>{const x={id:ID.releaseId,tag_name:ID.releaseTag,draft:true,assets:[{id:1,name:'a',size:1,digest:'x',state:'uploaded'}]};for(const field of ['id','name','size','digest','state'])assert.notEqual(frozenAssets(x),frozenAssets({...x,assets:[{...x.assets[0],[field]:field==='id'||field==='size'?2:'changed'}]}))});
