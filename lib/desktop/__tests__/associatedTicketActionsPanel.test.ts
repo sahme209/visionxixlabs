@@ -46,3 +46,10 @@ it('keeps uncertain execution held when a direct read still shows its old approv
  expect(screen.getByRole('button',{name:'Close approved ticket'}).hasAttribute('disabled')).toBe(true);
  expect(m.request.mock.calls.filter(([,input])=>input.action==='dispatch')).toHaveLength(1);
 });
+it('recovers an exact saved result after reopening even when full history is unavailable',async()=>{
+ m.request.mockResolvedValueOnce({ok:false,outcomeUnconfirmed:false});render(createElement(AssociatedTicketActionsPanel,{review}));await screen.findByText(/This action is unavailable/);
+ fireEvent.change(screen.getByLabelText('Saved provider action ID'),{target:{value:id}});
+ m.request.mockResolvedValueOnce({ok:true,data:{provider:'jira',action:{...row,version:5,kind:'close',status:'confirmed',attemptCount:1,providerWritePerformed:true,canApprove:false}}});
+ fireEvent.click(screen.getByRole('button',{name:'Load saved action outcome'}));await screen.findByText('Provider write confirmed');
+ expect(m.request.mock.calls[1][1]).toEqual({action:'load',bindingDigest:hash,actionId:id});expect(m.request).toHaveBeenCalledTimes(2);
+});
