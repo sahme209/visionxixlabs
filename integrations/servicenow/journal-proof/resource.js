@@ -30,6 +30,7 @@
             }
         }
         if (matches > 1) { stop(409); return; }
-        response.setStatus(200); response.setBody({result:{present:matches===1,changeSysId:id,entryDigest:expected,observedAt:gs.nowDateTime(),entry:matchedEntry}});
+        // ServiceNow adds the single result envelope during serialization.
+        response.setStatus(200); response.setBody({present:matches===1,changeSysId:id,entryDigest:expected,observedAt:gs.nowDateTime(),entry:matchedEntry});
     } catch (error) { stop(409); }
 })(request, response);
