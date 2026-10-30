@@ -1,3 +1,4 @@
+import {ActionJourney} from './ActionJourney';
 import type {BotActionTaskReference} from '../../../lib/axiom/bot/actionTaskBindingContract';
 import {open} from '@tauri-apps/plugin-shell';
 import {useEffect,useRef,useState} from 'react';
@@ -36,7 +37,7 @@ export function ConnectedActionsPanel({provider,onClose,canManage=false,sourceTa
   </div>}
   {data?.actions.filter(a=>!sourceTask||a.intent.sourceTask?.taskId===sourceTask.taskId).map(a=><article key={a.id} className="space-y-3 rounded-lg border border-white/10 p-4">
    <div className="flex flex-wrap justify-between gap-2 text-xs"><strong>{a.intent.kind.replaceAll('_',' ')}</strong><span>{a.state} · attempt {a.attemptCount}/1</span></div>
-   <p className="break-all text-xs text-zinc-400">Team {'teamId'in a.intent?a.intent.teamId:''}{'channelId'in a.intent?` · Channel ${a.intent.channelId}`:''}{'issueId'in a.intent?` · Issue ${a.intent.issueId}`:''}</p>
+   <ActionJourney label="Connected action next step" observation={{status:a.state,attemptCount:a.attemptCount,providerWritePerformed:a.state==='confirmed'&&!!a.receipt?true:a.state==='refused'?false:null,expiresAt:a.intent.expiresAt,stale:!!error||!!pending}}/><p className="break-all text-xs text-zinc-400">Team {'teamId'in a.intent?a.intent.teamId:''}{'channelId'in a.intent?` · Channel ${a.intent.channelId}`:''}{'issueId'in a.intent?` · Issue ${a.intent.issueId}`:''}</p>
    {'title'in a.intent&&<h3 className="text-sm font-medium">{a.intent.title}</h3>}
    <p className="whitespace-pre-wrap break-words text-sm">{'text'in a.intent?a.intent.text:'description'in a.intent?a.intent.description:'stateId'in a.intent?`Completed state: ${a.intent.stateId}`:''}</p>
    {sourceTask&&a.intent.sourceTask?.taskVersion!==sourceTask.expectedVersion&&<p className="text-xs text-zinc-400">Historical task version. Review a new action for this saved version.</p>}<p className="break-all text-xs text-zinc-400">{a.intent.sourceTask&&<>Bot task version {a.intent.sourceTask.taskVersion} · </>}Exact plan {a.intentDigest} · expires {new Date(a.intent.expiresAt).toLocaleString()}</p>

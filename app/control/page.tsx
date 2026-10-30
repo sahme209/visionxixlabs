@@ -1,3 +1,4 @@
+import {CustomerJourneyEntry} from '@/components/shared/CustomerJourneyEntry';
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -53,6 +54,7 @@ export default async function ControlOverviewPage() {
       <h1 className="text-2xl font-medium tracking-tight">Overview</h1>
       <p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">Your account, connected services, and governed workspace.</p>
 
+      <CustomerJourneyEntry/>
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         <section aria-labelledby="current-plan-heading" className="flex min-h-48 flex-col rounded-2xl bg-[#111111] p-4">
           <div className="flex items-center justify-between gap-3"><h2 id="current-plan-heading" className="text-xs font-normal text-zinc-400">Current plan</h2><Link href="/control/plans" className="inline-flex min-h-8 items-center rounded-full bg-[#f3f3f3] px-3.5 text-[13px] text-black hover:bg-white">Review plans</Link></div>

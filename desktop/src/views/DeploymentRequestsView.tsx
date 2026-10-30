@@ -1,3 +1,5 @@
+import {CustomerJourneyPanel} from '../../../components/shared/CustomerJourneyPanel';
+import {releaseJourney} from '../../../lib/customerJourney/journey';
 import { intakeDateInputValue as dateInputValue } from "../lib/intakeDateInput";
 import {ReleaseTicketWorkspace} from '../components/ReleaseTicketWorkspace';
 import { ReleaseMergeReview } from "../components/ReleaseMergeReview";
@@ -624,7 +626,7 @@ export function DeploymentRequestsView() {
                   </>}
                 </div>
               </div>
-              {request.status === "draft" ? <p className="mt-3 text-xs text-amber-200">Draft only. Resolve repository, workflow, readiness and approval details before submitting the release.</p> : <ReleaseContext request={request} />}
+              {request.status === "draft" ? <p className="mt-3 text-xs text-amber-200">Draft only. Resolve repository, workflow, readiness and approval details before submitting the release.</p> : null}<ReleaseContext request={request} stale={!!loadError} />
               {terraformRequestId === request.id && <TerraformPlanReview key={`${request.id}:${request.version}`} requestId={request.id} requestVersion={request.version} />}
               {githubEvidenceErrors[request.id] && (
                 <p role="alert" className="mt-3 text-xs text-rose-300">
@@ -786,7 +788,7 @@ export function DeploymentRequestsView() {
   );
 }
 
-function ReleaseContext({ request }: { request: RequestSummary }) {
+function ReleaseContext({ request, stale }: { request: RequestSummary; stale:boolean }) {
   const context = request.releaseContext;
   const readiness = context.readiness.approvalDecision === "ready_for_human_approval";
   const approval = context.approval.noPrRequired
@@ -796,6 +798,7 @@ function ReleaseContext({ request }: { request: RequestSummary }) {
 
   return (
     <div className="mt-3" aria-label="Release context">
+      <CustomerJourneyPanel label="Release next step" journey={releaseJourney({status:request.status,approvalDecision:context.readiness.approvalDecision,blockers:context.readiness.blockers,prStatus:context.approval.prStatus,noPrRequired:context.approval.noPrRequired,rollbackAvailability:context.recovery.rollbackAvailability,stale})}/>
       <div className={`mb-2 rounded-lg border px-3 py-2 ${readiness ? "border-emerald-500/20 bg-emerald-500/5" : "border-white/20 bg-white/5"}`}>
         <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-zinc-100"}`}>
           {readiness ? "Ready for human approval" : "Not ready for human approval"}
