@@ -472,9 +472,9 @@ export function DeploymentRequestsView() {
     <ViewShell>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Requests</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Release requests</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
-            Start with a ticket or prepare a complete release request.
+            Plan a release, review its exact actions, and follow the verified outcome.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -483,7 +483,7 @@ export function DeploymentRequestsView() {
           </button>
           <button type="button" onClick={() => { invalidateRevisionRead(); setShowForm(false); setRevision(undefined); setResolutionDraftStarted(true); setShowResolutionDraft(value => !value); }} className="btn-secondary">{showResolutionDraft ? "Cancel draft" : "Start from ticket"}</button>
           <button type="button" onClick={() => { invalidateRevisionRead(); setShowResolutionDraft(false); setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
-            {showForm ? "Cancel intake" : "New request"}
+            {showForm ? "Cancel intake" : "New release"}
           </button>
         </div>
       </div>
@@ -564,24 +564,28 @@ export function DeploymentRequestsView() {
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-white truncate">{request.title}</p>
-                  <p className="text-[10px] font-mono text-zinc-500 mt-1">
-                    {request.id} · version {request.version} · correlation {request.correlationId}
-                  </p>
+                  <p className="mt-1 text-xs text-zinc-500">Version {request.version} · Updated {new Date(request.updatedAt).toLocaleString()}</p>
+                  <details className="mt-2 text-[11px] text-zinc-500">
+                    <summary className="cursor-pointer hover:text-zinc-300">Request identifiers</summary>
+                    <p className="mt-2 break-all font-mono">Request {request.id}</p>
+                    <p className="mt-1 break-all font-mono">Correlation {request.correlationId}</p>
+                  </details>
                 </div>
                 <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border border-violet-500/25 bg-violet-500/10 text-violet-200">
                   {request.status.replaceAll("_", " ")}
                 </span>
               </div>
               <div className="flex flex-wrap items-end justify-between gap-3 mt-3">
-                <p className="text-xs text-zinc-500">
-                  Request updated {new Date(request.updatedAt).toLocaleString()}.
-                </p>
+                <p className="text-xs text-zinc-500">Exact approvals and verified evidence are required before execution.</p>
                 <div className="flex flex-wrap gap-2">
                   {request.status === "draft" ? <>
                     <button type="button" className="btn-primary" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? "Opening…" : "Complete release details"}</button>
                     <button type="button" className="btn-secondary" disabled={loadingHistoryId === request.id} onClick={() => void loadRevisionHistory(request.id)}>Review history</button>
                   </> : <>
 
+                  <details className="relative self-start text-xs text-zinc-400">
+                    <summary className="btn-secondary cursor-pointer list-none">Planning tools</summary>
+                    <div className="mt-2 flex flex-wrap gap-2 rounded-lg border border-white/10 p-2">
                   <button type="button" className="btn-secondary" onClick={() => setTerraformRequestId(current => current === request.id ? undefined : request.id)}>Review Terraform evidence</button>
                   <button
                     type="button"
@@ -591,6 +595,8 @@ export function DeploymentRequestsView() {
                   >
                     {generatingRequestId === request.id ? "Generating…" : "Generate next playbook"}
                   </button>
+                    </div>
+                  </details>
                   <button
                     type="button"
                     className="btn-secondary disabled:opacity-50"
@@ -609,7 +615,7 @@ export function DeploymentRequestsView() {
                   </button>
                   <button
                     type="button"
-                    className="btn-secondary disabled:opacity-50"
+                    className="btn-primary disabled:opacity-50"
                     disabled={loadingOperationsId === request.id}
                     onClick={() => void loadOperations(request.id)}
                   >

@@ -1,3 +1,4 @@
+import {serviceNowWrittenObservationRequestSchema,type ServiceNowWrittenObservationRequest} from '../../../lib/releaseops/serviceNowWrittenLinkObservationContract';
 import {serviceNowTerminalPolicyRequestSchema,serviceNowTerminalPolicyOptionsSchema,type ServiceNowTerminalPolicyRequest,type ServiceNowTerminalPolicyOptions} from '../../../lib/releaseops/serviceNowTerminalPolicyRequest';
 import {associatedTicketActionsRequestSchema,isAssociatedTicketActionsResult,type AssociatedTicketActionsRequest,type AssociatedTicketActionsResult} from './associatedTicketActions';
 import {ticketAssociationSelectionSchema,ticketReviewId,ticketReviewNonce,isTicketGovernanceReview,type TicketAssociationSelection,type TicketGovernanceReview} from './ticketGovernance';
@@ -1597,6 +1598,14 @@ export class DesktopClient {
   associatedTicketAction(reviewId:string,input:AssociatedTicketActionsRequest,signal?:AbortSignal):Promise<ReleasePlanResult<AssociatedTicketActionsResult>> {
     if(!ticketReviewId.safeParse(reviewId).success||!associatedTicketActionsRequestSchema.safeParse(input).success)return Promise.resolve({ok:false,error:'Reload the exact ticket association and saved actions.',outcomeUnconfirmed:false});
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/ticket-governance/${reviewId}/actions`,input,(v):v is AssociatedTicketActionsResult=>isAssociatedTicketActionsResult(v,reviewId,input),signal);
+  }
+  prepareServiceNowWrittenObservation(input:ServiceNowWrittenObservationRequest,clientRequestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
+    const parsed=serviceNowWrittenObservationRequestSchema.safeParse(input);if(!parsed.success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Reload the exact unknown note and its current association.',outcomeUnconfirmed:false});
+    const selected=parsed.data;return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance',{binding:selected,clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='servicenow_written_link_observation_v1'&&v.binding.originalActionId===selected.actionId&&v.binding.originalVersion===selected.expectedVersion&&v.binding.association.reviewId===selected.association.reviewId&&v.binding.association.bindingDigest===selected.association.bindingDigest,signal);
+  }
+  lookupServiceNowWrittenObservation(clientRequestId:string,input:ServiceNowWrittenObservationRequest,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
+    const parsed=serviceNowWrittenObservationRequestSchema.safeParse(input);if(!parsed.success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Use the saved observation request ID.',outcomeUnconfirmed:false});
+    const selected=parsed.data;return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance/lookup',{clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='servicenow_written_link_observation_v1'&&v.binding.originalActionId===selected.actionId&&v.binding.originalVersion===selected.expectedVersion&&v.binding.association.reviewId===selected.association.reviewId&&v.binding.association.bindingDigest===selected.association.bindingDigest,signal);
   }
   prepareTicketAssociation(input:TicketAssociationSelection,clientRequestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
     if(!ticketAssociationSelectionSchema.safeParse(input).success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Choose an existing ticket and saved deployment evidence.',outcomeUnconfirmed:false});

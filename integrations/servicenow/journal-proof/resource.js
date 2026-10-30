@@ -23,7 +23,7 @@
             if (String(journal.getValue('element_id')) !== id || String(journal.getValue('name')) !== 'change_request' || String(journal.getValue('element')) !== 'work_notes') { stop(409); return; }
             var value = String(journal.getValue('value') || '');
             if (value.length > 8192 || value.indexOf('Axiom verified workflow evidence\n') !== 0 || /[^\x09\x0a\x0d\x20-\x7e]/.test(value)) continue;
-            if (new GlideDigest().getSHA256Hex(JSON.stringify(value)) === expected) {
+            if (String(new GlideDigest().getSHA256Hex(JSON.stringify(value))).toLowerCase() === expected) {
                 if (!journal.getElement('sys_id').canRead() || !journal.getElement('sys_created_on').canRead()) { stop(409); return; }
                 matches++; matchedEntry = {id:String(journal.getValue('sys_id')),createdAt:String(journal.getValue('sys_created_on'))};
                 if (!/^[a-f0-9]{32}$/.test(matchedEntry.id) || !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(matchedEntry.createdAt)) { stop(409); return; }
