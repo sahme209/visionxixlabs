@@ -472,7 +472,7 @@ export function DeploymentRequestsView() {
     <ViewShell>
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Releases</h1>
+          <h1 className="text-xl font-semibold tracking-tight">Release requests</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
             Plan a release, review its exact actions, and follow the verified outcome.
           </p>
@@ -615,7 +615,7 @@ export function DeploymentRequestsView() {
                   </button>
                   <button
                     type="button"
-                    className="btn-secondary disabled:opacity-50"
+                    className="btn-primary disabled:opacity-50"
                     disabled={loadingOperationsId === request.id}
                     onClick={() => void loadOperations(request.id)}
                   >

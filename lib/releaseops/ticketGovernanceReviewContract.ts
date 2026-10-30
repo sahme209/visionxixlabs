@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {serviceNowWrittenLinkObservationSchema} from './serviceNowWrittenLinkObservationContract';
 import {releaseWorkflowEvidenceBindingSchema} from '../tauri/releaseWorkflowEvidenceContract';
 import {serviceNowInstanceOriginSchema,serviceNowNativeProcessSchema} from './serviceNowTicketLifecycleContract';
 
@@ -21,7 +22,7 @@ const field=z.object({name:z.enum(['close_code','close_notes']),label:identity,r
 export const serviceNowTerminalPolicySchema=z.object({...common,kind:z.literal('servicenow_terminal_policy'),connectionId:identity,connectionRevision:instant,instanceOrigin:serviceNowInstanceOriginSchema,nativeProcess:serviceNowNativeProcessSchema,modelDigest:hash,provenance:z.literal('administrator_declared'),sourceReferences:z.array(z.object({reference:identity,digest:hash}).strict()).min(1).max(20),terminalStates:z.array(z.object({value:stateValue,label:identity,outcome:z.literal('closed')}).strict()).min(1).max(20),fields:z.array(field).max(2)}).strict().superRefine((v,c)=>{
  if(new Set(v.terminalStates.map(s=>s.value)).size!==v.terminalStates.length||new Set(v.fields.map(f=>f.name)).size!==v.fields.length||new Set(v.sourceReferences.map(r=>r.reference)).size!==v.sourceReferences.length||v.fields.some(f=>f.name==='close_notes'&&f.choices!==undefined||f.name==='close_code'&&!f.choices?.length||f.choices&&new Set(f.choices.map(x=>x.value)).size!==f.choices.length))c.addIssue({code:'custom',message:'Policy choices are ambiguous'});
 });
-export const ticketGovernanceBindingSchema=z.union([ticketReleaseAssociationSchema,serviceNowTerminalPolicySchema]);
+export const ticketGovernanceBindingSchema=z.union([ticketReleaseAssociationSchema,serviceNowTerminalPolicySchema,serviceNowWrittenLinkObservationSchema]);
 export type TicketGovernanceBinding=z.infer<typeof ticketGovernanceBindingSchema>;
 export type TicketReleaseAssociation=z.infer<typeof ticketReleaseAssociationSchema>;
 export type ServiceNowTerminalPolicy=z.infer<typeof serviceNowTerminalPolicySchema>;

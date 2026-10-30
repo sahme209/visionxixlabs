@@ -62,7 +62,7 @@ export function createTicketGovernanceRequestService(request:NextRequest,repo:Re
    });
    return service.prepare(s,await propose(s,selected,signal),nonce,signal);
   }
-  if(raw&&typeof raw==='object'&&'kind'in raw&&raw.kind==='ticket_release_association')throw Error('ticket_server_association_proposal_required');
+  if(raw&&typeof raw==='object'&&'kind'in raw&&(raw.kind==='ticket_release_association'||raw.kind==='servicenow_written_link_observation_v1'))throw Error('ticket_server_association_proposal_required');
   return service.prepare(s,raw,nonce,signal);
  }};
 }
