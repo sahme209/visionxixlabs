@@ -13,7 +13,7 @@ import Foundation
  var late=ObservationPickerHandoffPolicy(epoch:7,deadline:110);precondition(!late.publish(active:true,currentEpoch:7,now:110))
  precondition(!observationRevokeBlur(session:false,selecting:true,capture:false,eventEpoch:7,currentEpoch:7))
  precondition(!observationRevokeBlur(session:true,selecting:false,capture:false,eventEpoch:6,currentEpoch:7))
- precondition(observationRevokeBlur(session:true,selecting:false,capture:false,eventEpoch:7,currentEpoch:7))
+ precondition(!observationRevokeBlur(session:true,selecting:false,capture:false,eventEpoch:7,currentEpoch:7))
  precondition(observationRevokeBlur(session:false,selecting:false,capture:true,eventEpoch:7,currentEpoch:7))
  print("4 session-match, 8 deadline, 4 selection-refusal and 12 picker/focus assertions passed; no native observation invoked")
 }}

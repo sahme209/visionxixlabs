@@ -21,7 +21,7 @@ struct ObservationPickerHandoffPolicy {
     private(set) var published=false
     mutating func publish(active:Bool,currentEpoch:UInt64,now:TimeInterval)->Bool{guard !published,active,epoch==currentEpoch,observationBudgetValid(deadline,now) else{return false};published=true;return true}
 }
-func observationRevokeBlur(session:Bool,selecting:Bool,capture:Bool,eventEpoch:UInt64,currentEpoch:UInt64)->Bool{eventEpoch==currentEpoch && !selecting && (session || capture)}
+func observationRevokeBlur(session:Bool,selecting:Bool,capture:Bool,eventEpoch:UInt64,currentEpoch:UInt64)->Bool{eventEpoch==currentEpoch && !selecting && capture}
 private func keys(_ value:[String:Any], _ allowed:[String]) -> Bool { return Set(value.keys)==Set(allowed) }
 private func boundedLabel(_ value:String?, fallback:String)->String { guard let value=value, !value.trimmingCharacters(in:.whitespacesAndNewlines).isEmpty else{return fallback};let filtered=String(value.unicodeScalars.filter{$0.value>=32 && !(127...159).contains($0.value)});var result="";for character in filtered {if (result+String(character)).utf8.count>240{break};result.append(character)};return result.isEmpty ? fallback : result }
 
@@ -93,7 +93,7 @@ struct AxiomSelectedWindowIdentity {
             // A stale or unrelated check cannot revoke a newer selection.
             guard let s=session,observationSessionMatches(s.owner==owner,s.id==id,s.revision==revision) else{reply(["current":false],nil);return}
             // Metadata liveness only; never extends either lease or tests OS capture permission.
-            guard pending==nil,live(s) else{revoke("native_observation_session_changed");reply(["current":false],nil);return}
+            guard NSApplication.shared.isActive,pending==nil,live(s) else{revoke("native_observation_session_changed");reply(["current":false],nil);return}
             reply(["current":true],nil);return
         }
         if operation==3 {
@@ -102,6 +102,7 @@ struct AxiomSelectedWindowIdentity {
             guard let id=string(input["sessionId"]),let s=session,s.id==id,s.owner==owner else{reply(nil,"native_observation_session_changed");return};revoke("native_observation_operation_stopped");reply(["stopped":true],nil);return
         }
         guard operation==2,keys(input,["ownerContextRef","sessionId","expectedRevision","confirmCapture"]),let id=string(input["sessionId"]),let revision=input["expectedRevision"] as? Int,revision>=0,input["confirmCapture"] as? Bool==true,let s=session,s.id==id,s.owner==owner,s.revision==revision,pending==nil else{reply(nil,"native_observation_session_changed");return}
+        guard NSApplication.shared.isActive else{reply(nil,"native_observation_foreground_required");return}
         guard remaining(s)>0 else{revoke("native_observation_session_expired");reply(nil,"native_observation_session_expired");return}
         guard live(s),s.revision<2147483647 else{revoke("native_observation_session_changed");reply(nil,"native_observation_session_changed");return}
         let epoch=generation;pending=Pending(owner:owner,select:false,generation:epoch,deadline:uptime+10,reply:reply);scheduleTimeout(10)
@@ -113,9 +114,9 @@ struct AxiomSelectedWindowIdentity {
         SCScreenshotManager.captureImage(contentFilter:s.filter,configuration:config){[weak self]image,error in Task{@MainActor in
             guard let self=self,self.generation==epoch,self.pending?.generation==epoch,self.session?.id==s.id else{return}
             guard let deadline=self.pending?.deadline,observationBudgetValid(deadline,self.uptime) else{self.revoke("native_observation_operation_timeout");return}
-            guard error==nil,let image=image,self.live(s),image.width>0,image.height>0,image.width<=1600,image.height<=1600,image.width*image.height<=4_000_000 else{self.revoke("native_observation_capture_unavailable");return}
+            guard NSApplication.shared.isActive,error==nil,let image=image,self.live(s),image.width>0,image.height>0,image.width<=1600,image.height<=1600,image.width*image.height<=4_000_000 else{self.revoke("native_observation_capture_unavailable");return}
             let bytes=NSMutableData();guard let destination=CGImageDestinationCreateWithData(bytes as CFMutableData,"public.png" as CFString,1,nil)else{self.revoke("native_observation_capture_invalid");return};CGImageDestinationAddImage(destination,image,nil);guard CGImageDestinationFinalize(destination),bytes.length<=4*1024*1024 else{self.revoke("native_observation_capture_invalid");return}
-            guard self.generation==epoch,self.pending?.generation==epoch,observationBudgetValid(deadline,self.uptime),self.live(s)else{self.revoke("native_observation_operation_stopped");return}
+            guard self.generation==epoch,self.pending?.generation==epoch,observationBudgetValid(deadline,self.uptime),NSApplication.shared.isActive,self.live(s)else{self.revoke("native_observation_operation_stopped");return}
             var next=s;next.revision+=1;next.idle=self.uptime;self.session=next;self.scheduleExpiry();var result=flags;result["sessionId"]=s.id;result["revision"]=next.revision;result["observedAt"]=stamp(Date());result["width"]=image.width;result["height"]=image.height;result["pngBase64"]=(bytes as Data).base64EncodedString();result["expiresAt"]=stamp(Date().addingTimeInterval(self.remaining(next)));self.finish(result,nil)
         }}
     }
