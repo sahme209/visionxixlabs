@@ -14,6 +14,7 @@ export interface ServiceNowTicketTransportDependencies{
   * Candidate flags and caller-supplied metadata never satisfy this port. */
  assertNativePlan:(candidate:Readonly<ServiceNowTicketActionCandidate>,signal:AbortSignal)=>Promise<void|{terminalStateValues:readonly string[]}>;
  /** A separately authorized native journal read must prove the exact saved evidence append. */
+ assertJournalAbsent?:(candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<boolean>;
  readJournalEvidence?:(candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<boolean>;
  fetchImpl?:typeof fetch;
  isEnabled?:()=>boolean;
@@ -56,6 +57,8 @@ export function createServiceNowTicketTransport(deps:ServiceNowTicketTransportDe
    await current('before_dispatch');
    const auth=serviceNowTicketCredentialSchema.parse(await untilAbort(deps.readCredential(structuredClone(c),signal),signal));ensure();
    if(auth.organizationId!==c.organizationId||auth.connectionId!==c.connectionId||auth.connectionRevision!==c.connectionRevision||auth.instanceOrigin!==c.instanceOrigin||auth.expiresAt<=deadline||!auth.permissions.read||!auth.permissions.write||c.kind==='link'&&(!auth.permissions.journalRead||typeof deps.readJournalEvidence!=='function'))return{status:'refused'};
+   if(c.kind==='link'&&c.association&&(actionId!=='servicenow_action_'+sha256ContentHash({organizationId:c.organizationId,releaseId:c.releaseId,kind:'link',evidenceId:c.evidence.id})||!c.payload.work_notes.endsWith('\nAction '+actionId)))return{status:'refused'};
+   if(c.kind==='link'&&c.association&&(typeof deps.assertJournalAbsent!=='function'||await untilAbort(deps.assertJournalAbsent(structuredClone(c),signal),signal)!==true))return{status:'refused'};
    const native=await untilAbort(deps.assertNativePlan(structuredClone(c),signal),signal);ensure();
    const base=c.instanceOrigin+'/api/sn_chg_rest/v1/change',fetcher=deps.fetchImpl??fetch,headers={Accept:'application/json','Content-Type':'application/json',Authorization:`Bearer ${auth.accessToken}`};
    const cancel=(r:Response)=>{void r.body?.cancel().catch(()=>{})};

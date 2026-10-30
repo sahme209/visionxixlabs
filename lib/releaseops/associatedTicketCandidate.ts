@@ -17,6 +17,6 @@ export function buildAssociatedTicketLink(rawReference:unknown,rawBinding:unknow
   return parseJiraTicketActionCandidate({...common,siteId:a.ticket.siteId,payload,payloadDigest:sha256ContentHash(payload)});
  }
  if(!('schemaDigest'in original))throw Error('ticket_associated_source_changed');
- const payload={work_notes:serviceNowEvidenceWorkNote(evidence)};
+ const payload={work_notes:serviceNowEvidenceWorkNote(evidence,'servicenow_action_'+sha256ContentHash({organizationId:a.organizationId,releaseId:a.original.releaseId,kind:'link',evidenceId:evidence.id}))};
  return parseServiceNowTicketActionCandidate({...common,instanceOrigin:a.ticket.instanceOrigin,family:'change_request',schemaDigest:original.schemaDigest,payload,payloadDigest:sha256ContentHash(payload)});
 }
