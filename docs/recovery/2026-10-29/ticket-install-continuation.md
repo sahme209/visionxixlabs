@@ -62,3 +62,18 @@ User approved local narrow-journal implementation. Added default-off resource so
 No ServiceNow endpoint/scope/ACL/property or app setting has been installed or enabled. journalRead stays false. The unsubmitted API definition form reports Global namespace2278454; the intended route is /api/2278454/v1/axiom_evidence/change/{sys_id}/journal-proof. Actual security configuration and provider acceptance remain required. Full HTTP/client/native ServiceNow closure orchestration is not complete.
 
 Fresh Bot test authorized: one disposable TextEdit before→after edit. User shared TextEdit/Untitled; Axiom preparation refused with its existing generic target-unavailable recovery. No proposal dispatch/edit occurred. Do not report success or retry without diagnosing the concrete preflight reason. No repeated picker requests. Connected-device inventory found only an offline Mac, no Windows host. Partner Center opens sign-in; no publisher identity/Store submission is available yet.
+
+
+## October 30: local ServiceNow closure orchestration
+
+Added server-built associated ServiceNow close candidates, approved-policy/native-nextstates read composition, exact HTTP/client policy binding, native close fields, and provider-bound historical link receipts. This preserves original request provenance and requires separately approved association, accepted link and terminal policy. Native receipts retain their own expiry and are rechecked under transaction locks. Reviewer found that missing deadline check; it is corrected and re-reviewed without further important findings.
+
+Verification: 17 existing service/preparation checks; 7 client checks; 7 HTTP checks; 4 native panel checks; one actual isolated PostgreSQL service journey (5 unrelated journeys skipped), including clock advancement after native discovery causing preparation refusal, then fresh discovery/independent fixture approval/confirmed simulated dispatch. Root types and frontend production bundle pass. These are local/fixture results, not live ticket writes. Owned PostgreSQL stopped afterward.
+
+Production ServiceNow write transport remains explicitly disabled. No new production setting, deployment, ticket mutation, token consent, permanent privilege or broad Table API grant was made.
+
+Provider configuration already installed: disabled GET resource 0a03cc3c935cd310005fb6597bba1022; API e1728cf8935cd310005fb6597bba100c; admin-only REST endpoint ACL 28a180b8935cd310005fb6597bba10b8. XML exact script hash 33cea3848b1cfc668270b34ccd81a84cc00513c4a6e5f9330d9caca01425f361. Temporary security_admin elevation removed. Resource inactive, property default off, journalRead false. The REST API Auth Scope selector currently does not offer Axiom Evidence Proof; no substitute API, broad scope or activation was selected. Dedicated OAuth scope/access policy remains unfinished. CHG0030002 remains New, with native lifecycle approval required.
+
+Bot: signed detailed diagnostic app opened and restored saved paired session/task version 2 on this same Mac. Picker UI did not provide a verifiable completed TextEdit selection through supported automation. Stopped that unresolved observation; exact TextEdit text remains “Axiom acceptance before.” No native preparation/claim/dispatch/edit occurred in this attempt. This is same-machine session evidence only, not clean-machine installation or computer-input acceptance. Detailed app remains open.
+
+Customer installation: no Windows machine or verified Partner Center publisher identity is available; local Store preparation cannot be called an MSIX, Store signature, fresh-host acceptance or a fix for direct website MSI warnings. Published v0.1.21 assets remain unchanged.
