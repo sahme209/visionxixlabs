@@ -18,6 +18,7 @@ import {parseServiceNowTicketActionCandidate,type ServiceNowTicketActionCandidat
 import type {createTicketGovernanceService} from './ticketGovernanceService';
 type Candidate=JiraTicketActionCandidate|ServiceNowTicketActionCandidate;
 type Role='read'|'prepare'|'approve'|'execute';
+export type TicketActionDispatchPhase='association_preflight'|'candidate_read'|'native_closure_preflight'|'transport_preflight'|'approved_record_read'|'durable_claim'|'provider_execution'|'result_recording';
 export interface AssociatedTicketActionsPorts{
  governance:Pick<ReturnType<typeof createTicketGovernanceService>,'preflightApproved'|'readApprovedInTransaction'|'get'>;
  readOriginal:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,binding:TicketReleaseAssociation)=>Promise<{candidate:unknown}>;
@@ -144,22 +145,29 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
    signal.throwIfAborted();return amendment?sn.amend(scope,{...amendmentSchema.parse(amendment),candidate,executorUserId:binding().executorUserId,clientRequestId:input.clientRequestId}):sn.prepare(scope,{candidate,executorUserId:binding().executorUserId,clientRequestId:input.clientRequestId});
   },
   async get(scope:TicketReviewScope,id:string,signal:AbortSignal){try{await warm(scope,signal)}catch{signal.throwIfAborted();await historyHint(scope,signal)}const candidate=await selected(scope,id);if(candidate.kind==='close'&&'instanceOrigin'in candidate)try{await preflightStoredServiceNowClose(scope,candidate,signal)}catch{signal.throwIfAborted()}return store().get(scope,id)},
-  async mutate(scope:TicketReviewScope,raw:unknown,mode:'approve'|'cancel'|'dispatch'|'recover',signal:AbortSignal,onClaimStarted?:()=>void){
+  async mutate(scope:TicketReviewScope,raw:unknown,mode:'approve'|'cancel'|'dispatch'|'recover',signal:AbortSignal,onClaimStarted?:()=>void,onPhase?:(phase:TicketActionDispatchPhase)=>void){
    const input=mutation.parse(raw);if(!['approve','cancel','dispatch','recover'].includes(mode))throw Error('ticket_action_unavailable');
+   onPhase?.('association_preflight');
    if(mode==='cancel'||mode==='recover')await historyHint(scope,signal);else await warm(scope,signal);
+   onPhase?.('candidate_read');
    const candidate=await selected(scope,input.actionId);signal.throwIfAborted();
-   if((mode==='approve'||mode==='dispatch')&&candidate.kind==='close'&&'instanceOrigin'in candidate)await preflightStoredServiceNowClose(scope,candidate,signal);
+   if((mode==='approve'||mode==='dispatch')&&candidate.kind==='close'&&'instanceOrigin'in candidate){onPhase?.('native_closure_preflight');await preflightStoredServiceNowClose(scope,candidate,signal);}
    if(mode==='cancel')return store().cancel(scope,input);
    if(mode==='recover')return store().recover(scope,input.actionId);
    if(mode==='approve')return store().approve(scope,input);
    const a=binding();if(scope.actorUserId!==a.executorUserId||!ports.preflightTransport||!ports.executeTransport)throw Error('ticket_provider_execution_unavailable');
+   onPhase?.('transport_preflight');
    await ports.preflightTransport(scope,candidate,a,signal);signal.throwIfAborted();
+   onPhase?.('approved_record_read');
    const saved=await store().get(scope,input.actionId);if(saved.version!==input.expectedVersion)throw Error('ticket_action_changed');
    // From this point a failed claim response may hide a committed durable claim.
+   onPhase?.('durable_claim');
    onClaimStarted?.();
    const claim=await store().claim(scope,input.actionId);if(!claim.claimed)return claim.record;
    let result:{status:'confirmed'|'refused'|'unknown'};
+   onPhase?.('provider_execution');
    try{result=await ports.executeTransport(input.actionId,claim.candidate,signal,async(c,s)=>{s.throwIfAborted();if(sha256ContentHash(c)!==sha256ContentHash(claim.candidate))throw Error('ticket_action_changed');await store().beforeDispatch(scope,input.actionId);s.throwIfAborted()})}catch{result={status:'unknown'}}
+   onPhase?.('result_recording');
    try{return await store().finish(scope,input.actionId,result)}catch{return store().finish(scope,input.actionId,{status:'unknown'})}
   },
  };
