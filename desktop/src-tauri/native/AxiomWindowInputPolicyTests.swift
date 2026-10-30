@@ -7,6 +7,10 @@ private var nativeInputFixtureEpoch:UInt64=0
  static func main()throws {
   var count=0
   func check(_ value:Bool){precondition(value,"one-action input policy regression");count+=1}
+  check(inputPreparationRecoveryCode("axiom_not_foreground")=="native_input_foreground_required")
+  check(inputPreparationRecoveryCode("ordinary_text_area")=="native_input_text_structure_unavailable")
+  check(inputPreparationRecoveryCode("text_settable")=="native_input_text_not_editable")
+  check(inputPreparationRecoveryCode("private fixture text")=="native_input_target_unavailable")
   check(inputDisposableDocumentMayPrepare(document:"",before:"ordinary",after:"edit",nativeConsent:false))
   check(!inputDisposableDocumentMayPrepare(document:"private-file",before:"Axiom acceptance before",after:"Axiom acceptance after",nativeConsent:false))
   check(inputDisposableDocumentMayPrepare(document:"private-file",before:"Axiom acceptance before",after:"Axiom acceptance after",nativeConsent:true))
