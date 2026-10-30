@@ -1,3 +1,4 @@
+import {verifyServiceNowFreshLinkParent} from '@/lib/releaseops/serviceNowFreshLinkAttempt';
 import {associatedTicketTransactionRepository} from './associatedTicketTransactionBudget';
 import {matchHistoricalServiceNowLink} from '@/lib/releaseops/serviceNowAssociatedCloseProof';
 import {buildAssociatedServiceNowCloseCandidate} from '@/lib/releaseops/associatedServiceNowCloseCandidate';
@@ -21,13 +22,14 @@ type Candidate=JiraTicketActionCandidate|ServiceNowTicketActionCandidate;
 type Role='read'|'prepare'|'approve'|'execute';
 export type TicketActionDispatchPhase='association_preflight'|'candidate_read'|'native_closure_preflight'|'transport_preflight'|'approved_record_read'|'durable_claim'|'provider_execution'|'result_recording';
 export interface AssociatedTicketActionsPorts{
+ probeServiceNowJournal?:(scope:TicketReviewScope,candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<{absent:boolean}>;
  governance:Pick<ReturnType<typeof createTicketGovernanceService>,'preflightApproved'|'readApprovedInTransaction'|'get'>;
  readOriginal:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,binding:TicketReleaseAssociation)=>Promise<{candidate:unknown}>;
  authorize:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,userId:string,role:Role,binding:TicketReleaseAssociation,candidate?:Readonly<Candidate>)=>Promise<void>;
  writeReady:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,candidate:Readonly<Candidate>,binding:TicketReleaseAssociation)=>Promise<boolean>;
  /** Fixed server adapters only. Must check scopes/credential/journal readiness before claim. */
  preflightTransport?:(scope:TicketReviewScope,candidate:Readonly<Candidate>,binding:TicketReleaseAssociation,signal:AbortSignal)=>Promise<void>;
- executeTransport?:(id:string,candidate:Readonly<Candidate>,signal:AbortSignal,assertClaim:(candidate:Readonly<Candidate>,signal:AbortSignal)=>Promise<void>)=>Promise<{status:'confirmed'|'refused'|'unknown'}>;
+ executeTransport?:(id:string,candidate:Readonly<Candidate>,signal:AbortSignal,assertClaim:(candidate:Readonly<Candidate>,signal:AbortSignal,context?:{phase:'before_dispatch'|'confirm';issue?:{sysId:string;number:string}})=>Promise<void>)=>Promise<{status:'confirmed'|'refused'|'unknown'}>;
  readServiceNowClosureDiscovery?:(scope:TicketReviewScope,policyReference:TicketGovernanceReference,issue:{sysId:string;number:string},signal:AbortSignal)=>Promise<ServiceNowTrustedCloseMetadata>;
  readJiraClosureDiscovery?:(scope:TicketReviewScope,candidate:Readonly<JiraTicketActionCandidate>,issue:{id:string;key:string},signal:AbortSignal)=>Promise<JiraTerminalDiscovery>;
  now?:()=>number;
@@ -40,6 +42,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
  repo=associatedTicketTransactionRepository(repo);
  const reference=ticketGovernanceReferenceSchema.parse(rawReference),now=ports.now??Date.now;
  let hint:TicketReleaseAssociation|undefined;
+ const freshReceipts=new Map<string,number>();
  const snCloseReceipts=new Map<string,{candidate:ServiceNowTicketActionCandidate;expiresAt:number}>();
  const sourceChanged=(cause?:unknown):never=>{const refusal=hint?.ticket.provider==='servicenow'?new ServiceNowTicketSourceChanged():new JiraTicketSourceChanged();if(cause!==undefined)Object.defineProperty(refusal,'cause',{value:cause});throw refusal};
  function binding(){if(!hint)throw Error('ticket_association_preflight_required');return hint}
@@ -60,7 +63,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
   try{const c=parse(raw);if(!('association'in c)||!c.association||sha256ContentHash(c.association)!==sha256ContentHash(reference))sourceChanged();
    const proof=await approved(tx,scope,reference),a=ticketReleaseAssociationSchema.parse(proof.binding),original=await ports.readOriginal(tx,scope,a);
    const expected=buildAssociatedTicketLink(reference,a,original.candidate,now(),c.expiresAt);
-   if(c.kind==='link')return expected;
+   if(c.kind==='link')return 'instanceOrigin'in c&&c.freshAttempt?{...expected,freshAttempt:c.freshAttempt}:expected;
    if(c.kind==='close'&&'instanceOrigin'in c){
     if(!c.linkedEvidenceActionId||!c.terminalPolicy)throw new ServiceNowTicketSourceChanged();
     const receipt=snCloseReceipts.get(sha256ContentHash(c));if(!receipt||receipt.expiresAt<=now())throw new ServiceNowTicketSourceChanged();
@@ -73,7 +76,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
    return c;
   }catch(error){sourceChanged(error)}
  }
- const common={readApprovedTerminalPolicy:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,reference:TicketGovernanceReference)=>ports.governance.readApprovedInTransaction(tx,scope,reference),now:()=>new Date(now()),transportMode:'provider' as const,readApprovedAssociation:approved,
+ const common={verifyFreshAttemptPreparation:async(scope:TicketReviewScope,candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>)=>{const key=sha256ContentHash({scope,candidate}),until=freshReceipts.get(key);freshReceipts.delete(key);return until!==undefined&&until>now();},readApprovedTerminalPolicy:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,reference:TicketGovernanceReference)=>ports.governance.readApprovedInTransaction(tx,scope,reference),now:()=>new Date(now()),transportMode:'provider' as const,readApprovedAssociation:approved,
   assertCurrent:async(tx:ReleaseOperationPlanTransaction,input:{scope:TicketReviewScope;actorUserId:string;role:Role;candidate?:Readonly<Candidate>})=>ports.authorize(tx,input.scope,input.actorUserId,input.role,binding(),input.candidate),
   readCurrentAction:current,
   readWriteReadiness:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,candidate:Readonly<Candidate>)=>ports.writeReady(tx,scope,candidate,binding())};
@@ -109,7 +112,24 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
   if(snCloseReceipts.size>=5)throw Error('servicenow_close_preflight_bound');snCloseReceipts.set(sha256ContentHash(c),{candidate:fresh,expiresAt:Date.parse(x.metadata.expiresAt)});
  }
 
+ async function freshLinkContext(scope:TicketReviewScope,parentActionId:string,parentVersion:number,signal:AbortSignal){
+  if(!ports.probeServiceNowJournal)throw Error('servicenow_journal_adapter_unavailable');
+  const a=await warm(scope,signal);if(a.ticket.provider!=='servicenow'||scope.actorUserId!==a.executorUserId||a.requesterUserId!==a.executorUserId)throw Error('ticket_executor_required');
+  const parent=await sn.readRefusedLinkProvenance(scope,parentActionId,parentVersion);if(parent.id!==parentActionId||parent.version!==parentVersion)throw Error('servicenow_fresh_attempt_parent_changed');
+  const logical=await repo.$transaction(async tx=>{await approved(tx,scope,reference);await ports.authorize(tx,scope,scope.actorUserId,'prepare',a);return buildAssociatedTicketLink(reference,a,(await ports.readOriginal(tx,scope,a)).candidate,now())});
+  if(!('instanceOrigin'in logical)||logical.kind!=='link')throw Error('servicenow_fresh_attempt_unavailable');
+  const candidate=parseServiceNowTicketActionCandidate({...logical,freshAttempt:{parentActionId,parentVersion,parentCandidateDigest:sha256ContentHash(parent.candidate),logicalActionId:parentActionId}});if(candidate.kind!=='link')throw Error('servicenow_fresh_attempt_unavailable');
+  verifyServiceNowFreshLinkParent(parent,candidate,scope.actorUserId,a.executorUserId);signal.throwIfAborted();
+  const proof=await ports.probeServiceNowJournal(scope,candidate,signal);if(typeof proof.absent!=='boolean')throw Error('servicenow_journal_proof_unavailable');
+  const latest=await warm(scope,signal),latestParent=await sn.readRefusedLinkProvenance(scope,parentActionId,parentVersion);if(sha256ContentHash(parent)!==sha256ContentHash(latestParent))throw Error('servicenow_fresh_attempt_parent_changed');
+  const rebuilt=await repo.$transaction(async tx=>{await approved(tx,scope,reference);return buildAssociatedTicketLink(reference,latest,(await ports.readOriginal(tx,scope,latest)).candidate,now(),candidate.expiresAt)});
+  if(sha256ContentHash({...rebuilt,freshAttempt:candidate.freshAttempt})!==sha256ContentHash(candidate))throw Error('servicenow_fresh_attempt_source_changed');signal.throwIfAborted();
+  return{candidate,parent,absent:proof.absent,executorUserId:a.executorUserId};
+ }
+
  return{
+  async checkServiceNowJournal(scope:TicketReviewScope,parentActionId:string,parentVersion:number,signal:AbortSignal){const x=await freshLinkContext(scope,parentActionId,parentVersion,signal);return{parentActionId:x.parent.id,parentVersion:x.parent.version,accessVerified:true as const,absent:x.absent,noteDigest:sha256ContentHash(x.candidate.payload.work_notes),checkedAt:new Date(now()).toISOString()}},
+  async prepareServiceNowFreshLink(scope:TicketReviewScope,parentActionId:string,parentVersion:number,clientRequestId:string,signal:AbortSignal){z.string().uuid().parse(clientRequestId);const x=await freshLinkContext(scope,parentActionId,parentVersion,signal);if(!x.absent)throw Error('servicenow_exact_note_already_present');const key=sha256ContentHash({scope,candidate:x.candidate});freshReceipts.set(key,Math.min(now()+5000,Date.parse(x.candidate.expiresAt)));try{return await sn.prepare(scope,{candidate:x.candidate,executorUserId:x.executorUserId,clientRequestId})}finally{freshReceipts.delete(key)}},
   async prepareLink(scope:TicketReviewScope,clientRequestId:string,signal:AbortSignal,amendment?:{actionId:string;expectedVersion:number}){
    z.string().uuid().parse(clientRequestId);const a=await warm(scope,signal);if(scope.actorUserId!==a.executorUserId||a.requesterUserId!==a.executorUserId)throw Error('ticket_executor_required');
    const candidate=await repo.$transaction(async tx=>{await approved(tx,scope,reference);await ports.authorize(tx,scope,scope.actorUserId,'prepare',a);return buildAssociatedTicketLink(reference,a,(await ports.readOriginal(tx,scope,a)).candidate,now())});
@@ -168,7 +188,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
    const claim=await store().claim(scope,input.actionId);if(!claim.claimed)return claim.record;
    let result:{status:'confirmed'|'refused'|'unknown'};
    onPhase?.('provider_execution');
-   try{result=await ports.executeTransport(input.actionId,claim.candidate,signal,async(c,s)=>{s.throwIfAborted();if(sha256ContentHash(c)!==sha256ContentHash(claim.candidate))throw Error('ticket_action_changed');await store().beforeDispatch(scope,input.actionId);s.throwIfAborted()})}catch{result={status:'unknown'}}
+   try{result=await ports.executeTransport(input.actionId,claim.candidate,signal,async(c,s,context)=>{s.throwIfAborted();if(sha256ContentHash(c)!==sha256ContentHash(claim.candidate))throw Error('ticket_action_changed');await (binding().ticket.provider==='servicenow'?sn.beforeDispatch(scope,input.actionId,context):jira.beforeDispatch(scope,input.actionId));s.throwIfAborted()})}catch{result={status:'unknown'}}
    onPhase?.('result_recording');
    try{return await store().finish(scope,input.actionId,result)}catch{return store().finish(scope,input.actionId,{status:'unknown'})}
   },

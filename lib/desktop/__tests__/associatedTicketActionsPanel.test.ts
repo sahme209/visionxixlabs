@@ -53,3 +53,25 @@ it('recovers an exact saved result after reopening even when full history is una
  fireEvent.click(screen.getByRole('button',{name:'Load saved action outcome'}));await screen.findByText('Provider write confirmed');
  expect(m.request.mock.calls[1][1]).toEqual({action:'load',bindingDigest:hash,actionId:id});expect(m.request).toHaveBeenCalledTimes(2);
 });
+
+it('checks exact ServiceNow absence before deliberately preparing a separate review, never sending automatically',async()=>{
+ const parent={...row,id:'servicenow_action_'+hash,version:8,status:'refused',attemptCount:1,canApprove:false,review:{...row.review,issueNumber:'CHG0030002'}};
+ const snReview={...review,binding:{kind:'ticket_release_association',ticket:{provider:'servicenow'}}};
+ m.request.mockResolvedValueOnce({ok:true,data:{provider:'servicenow',actions:[parent],truncated:false}});
+ render(createElement(AssociatedTicketActionsPanel,{review:snReview}));
+ const check=await screen.findByRole('button',{name:'Check exact journal proof'});
+ expect(screen.queryByRole('button',{name:'Prepare fresh note for independent review'})).toBeNull();
+ m.request.mockResolvedValueOnce({ok:true,data:{provider:'servicenow',journalProof:{parentActionId:parent.id,parentVersion:8,accessVerified:true,absent:true,noteDigest:hash,checkedAt:new Date().toISOString()}}});
+ fireEvent.click(check);const prepare=await screen.findByRole('button',{name:'Prepare fresh note for independent review'});
+ expect(m.request.mock.calls[1][1]).toEqual({action:'check_servicenow_journal',bindingDigest:hash,parentActionId:parent.id,parentVersion:8});
+ expect(m.request).toHaveBeenCalledTimes(2);
+ m.request.mockResolvedValueOnce({ok:false});fireEvent.click(prepare);
+ await waitFor(()=>expect(m.request).toHaveBeenCalledTimes(3));
+ expect(m.request.mock.calls[2][1]).toMatchObject({action:'prepare_servicenow_fresh_link',parentActionId:parent.id,parentVersion:8});
+ expect(m.request.mock.calls.every(([,input])=>input.action!=='dispatch')).toBe(true);
+});
+it('never offers a fresh note for uncertain writes or a child attempt',async()=>{
+ const snReview={...review,binding:{kind:'ticket_release_association',ticket:{provider:'servicenow'}}};
+ m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',actions:[{...row,id:'servicenow_action_'+hash,status:'refused',attemptCount:1,providerWritePerformed:null,canApprove:false}],truncated:false}});
+ render(createElement(AssociatedTicketActionsPanel,{review:snReview}));await screen.findByText('Provider outcome unconfirmed');expect(screen.queryByRole('button',{name:'Check exact journal proof'})).toBeNull();
+});

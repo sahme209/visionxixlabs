@@ -27,7 +27,7 @@ export async function releaseOperationPlanRequest<T>(context:Context,method:'GET
  const controller=new AbortController();let dispatched=false,status:number|undefined,reader:ReadableStreamDefaultReader<Uint8Array>|undefined,response:Response|undefined,rejectStop!:(e:Error)=>void;
  const stopped=new Promise<never>((_,reject)=>{rejectStop=reject});
  const stop=()=>{controller.abort();rejectStop(new Error('stopped'));try{void reader?.cancel().catch(()=>{});if(!reader)void response?.body?.cancel().catch(()=>{})}catch{/* already consumed */}};
- const unsubscribe=context.subscribe(stop);signal?.addEventListener('abort',stop,{once:true});const timer=setTimeout(stop,25000);
+ const unsubscribe=context.subscribe(stop);signal?.addEventListener('abort',stop,{once:true});const timer=setTimeout(stop,ticketGovernancePath?60000:25000);
  const owns=()=>!controller.signal.aborted&&!signal?.aborted&&context.getConfig()===config&&context.getRevision()===revision;
  try{return await Promise.race([(async()=>{
   dispatched=true;response=await fetch(`${config.apiBase}${path}`,{method,credentials:'omit',redirect:'error',cache:'no-store',headers:{...(expectedVersion!==undefined?{'x-axiom-expected-version':String(expectedVersion)}:{}),Authorization:`Bearer ${token}`,...(correlationId?{'x-correlation-id':correlationId}:{}),...(method!=='GET'?{'Content-Type':'application/json'}:{})},...(method!=='GET'?{body:JSON.stringify(body)}:{}),signal:controller.signal});status=response.status;if(!owns())return fail(method!=='GET');

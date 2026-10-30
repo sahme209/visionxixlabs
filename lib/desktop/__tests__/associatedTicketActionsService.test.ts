@@ -26,3 +26,13 @@ it('preserves internal transaction cause when current-source validation fails wi
  try{await m.ports.readCurrentAction({},scope,f.candidate)}catch(error){refused=error}
  expect(refused).toBeInstanceOf(Error);expect(refused.cause).toBe(cause);expect(m.claim).not.toHaveBeenCalled();
 });
+
+it('forwards exact ServiceNow confirmation context to its durable recheck',async()=>{
+ const f=fixture(),sn=associatedTicketFixture('servicenow');Object.assign(f.binding,sn.binding);f.reference.bindingDigest=sha256ContentHash(f.binding);f.proof.bindingDigest=f.reference.bindingDigest;
+ const candidate=buildAssociatedTicketLink(f.reference,f.binding,sn.original,Date.parse('2030-01-01T00:00:00Z'));
+ f.repo.durableAgentWorkflow.findFirst.mockResolvedValue({inputJson:{candidate}});m.get.mockResolvedValue({version:0});m.claim.mockResolvedValue({claimed:true,candidate});m.finish.mockResolvedValue({status:'confirmed'});m.beforeDispatch.mockResolvedValue(candidate);
+ f.ports.preflightTransport=vi.fn(async()=>{});const context={phase:'confirm',issue:{sysId:'a'.repeat(32),number:'CHG0030002'}};
+ f.ports.executeTransport=vi.fn(async(_id,c,s,assertClaim)=>{await assertClaim(c,s,context);return{status:'confirmed'}});
+ const service=createAssociatedTicketActionsService(f.repo,f.reference,f.ports);await service.mutate(scope,{actionId:'servicenow_action_'+'a'.repeat(64),expectedVersion:0,clientRequestId:nonce},'dispatch',new AbortController().signal);
+ expect(m.beforeDispatch).toHaveBeenCalledWith(scope,'servicenow_action_'+'a'.repeat(64),context);
+});

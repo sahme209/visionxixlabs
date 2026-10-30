@@ -19,7 +19,7 @@ export function createTicketGovernanceHttp(createService:(request:NextRequest,sc
   try{
    if(request.nextUrl.search||request.url.length>2048||(mode==='get'?request.method!=='GET':request.method!=='POST'))throw new Refusal('invalid_ticket_governance_request',400);
    if(mode==='prepare'||mode==='lookup'?reviewId!==undefined:!id.safeParse(reviewId).success)throw new Refusal('invalid_ticket_governance_request',400);
-   const signal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);
+   const signal=AbortSignal.any([request.signal,AbortSignal.timeout(60000)]);
    const actor=await resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:mode==='approve'?'agent:approve':'workspace:read',requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:'ticket governance reviews'});
    if(!actor||actor.credentialKind!=='desktop_session'||!actor.userId||!actor.organizationId)throw new Refusal('desktop_session_required',401);
    const scope={organizationId:actor.organizationId,actorUserId:actor.userId,sessionId:actor.id};

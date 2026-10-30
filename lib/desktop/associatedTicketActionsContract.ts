@@ -3,6 +3,8 @@ import {ticketGovernanceReferenceSchema} from '../releaseops/ticketGovernanceRef
 const amendment=z.object({actionId:z.string().regex(/^(jira|servicenow)_action_[a-f0-9]{64}$/),expectedVersion:z.number().int().min(0).max(16)}).strict();
 const id=z.string().regex(/^(jira|servicenow)_action_[a-f0-9]{64}$/),nonce=z.string().uuid(),version=z.number().int().min(0).max(2147483647);
 export const associatedTicketActionsRequestSchema=z.discriminatedUnion('action',[
+ z.object({action:z.literal('check_servicenow_journal'),bindingDigest:ticketGovernanceReferenceSchema.shape.bindingDigest,parentActionId:z.string().regex(/^servicenow_action_[a-f0-9]{64}$/),parentVersion:version}).strict(),
+ z.object({action:z.literal('prepare_servicenow_fresh_link'),bindingDigest:ticketGovernanceReferenceSchema.shape.bindingDigest,parentActionId:z.string().regex(/^servicenow_action_[a-f0-9]{64}$/),parentVersion:version,clientRequestId:nonce}).strict(),
  z.object({action:z.literal('list'),bindingDigest:ticketGovernanceReferenceSchema.shape.bindingDigest}).strict(),
  z.object({action:z.literal('prepare_link'),bindingDigest:ticketGovernanceReferenceSchema.shape.bindingDigest,clientRequestId:nonce,amendment:amendment.optional()}).strict(),
  z.object({action:z.literal('close_options'),bindingDigest:ticketGovernanceReferenceSchema.shape.bindingDigest,actionId:id}).strict(),

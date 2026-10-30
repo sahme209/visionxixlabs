@@ -1,3 +1,4 @@
+import {serviceNowFreshLinkAttemptId,serviceNowLogicalLinkActionId} from './serviceNowFreshLinkAttempt';
 import 'server-only';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -57,7 +58,7 @@ export function createServiceNowTicketTransport(deps:ServiceNowTicketTransportDe
    await current('before_dispatch');
    const auth=serviceNowTicketCredentialSchema.parse(await untilAbort(deps.readCredential(structuredClone(c),signal),signal));ensure();
    if(auth.organizationId!==c.organizationId||auth.connectionId!==c.connectionId||auth.connectionRevision!==c.connectionRevision||auth.instanceOrigin!==c.instanceOrigin||auth.expiresAt<=deadline||!auth.permissions.read||!auth.permissions.write||c.kind==='link'&&(!auth.permissions.journalRead||typeof deps.readJournalEvidence!=='function'))return{status:'refused'};
-   if(c.kind==='link'&&c.association&&(actionId!=='servicenow_action_'+sha256ContentHash({organizationId:c.organizationId,releaseId:c.releaseId,kind:'link',evidenceId:c.evidence.id})||!c.payload.work_notes.endsWith('\nAction '+actionId)))return{status:'refused'};
+   if(c.kind==='link'&&c.association&&(actionId!==(c.freshAttempt?serviceNowFreshLinkAttemptId(c):serviceNowLogicalLinkActionId(c))||!c.payload.work_notes.endsWith('\nAction '+serviceNowLogicalLinkActionId(c))))return{status:'refused'};
    if(c.kind==='link'&&c.association&&(typeof deps.assertJournalAbsent!=='function'||await untilAbort(deps.assertJournalAbsent(structuredClone(c),signal),signal)!==true))return{status:'refused'};
    const native=await untilAbort(deps.assertNativePlan(structuredClone(c),signal),signal);ensure();
    const base=c.instanceOrigin+'/api/sn_chg_rest/v1/change',fetcher=deps.fetchImpl??fetch,headers={Accept:'application/json','Content-Type':'application/json',Authorization:`Bearer ${auth.accessToken}`};
