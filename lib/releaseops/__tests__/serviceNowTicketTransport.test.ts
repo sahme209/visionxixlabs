@@ -43,3 +43,10 @@ it('keeps refusal semantics when its diagnostic callback throws',async()=>{
  const t=createServiceNowTicketTransport({assertCurrent:async()=>{},readCredential:async()=>credential(),assertNativePlan:async()=>{},isEnabled:()=>false,onRefusal:()=>{throw Error('logging unavailable')}});
  expect(await t.execute(action,candidate(),new AbortController().signal)).toEqual({status:'refused'});
 });
+it('identifies pre-dispatch deadline exhaustion without increasing its budget or making a write',async()=>{
+ vi.useFakeTimers();vi.setSystemTime(new Date('2030-01-01T00:00:00.000Z'));
+ const diagnostic=vi.fn(),fetcher=vi.fn();
+ const t=createServiceNowTicketTransport({assertCurrent:async()=>{},readCredential:async()=>credential(),assertNativePlan:async()=>{vi.setSystemTime(Date.now()+15001)},isEnabled:()=>true,fetchImpl:fetcher,onRefusal:diagnostic});
+ expect(await t.execute(action,candidate(),new AbortController().signal)).toEqual({status:'refused'});
+ expect(diagnostic).toHaveBeenCalledWith({phase:'native_plan',aborted:false,deadlineExpired:true});expect(fetcher).not.toHaveBeenCalled();
+});
