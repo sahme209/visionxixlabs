@@ -19,3 +19,15 @@ it('does not report the successful native ready status as an error',async()=>{co
 it.each(['native_input_target_unavailable','native_input_ambiguous_window','native_input_expired','native_input_foreground_policy_unavailable','native_input_session_changed','native_input_accessibility_unavailable'])('retains safe native preparation refusal %s without dispatch',async error=>{const f=await fixture(),c=f.make();await c.check();f.adapter.prepare.mockRejectedValue(error);await c.prepare('after');expect(c.snapshot().error).toBe(error);expect(c.snapshot().proposal).toBeNull();expect(f.adapter.confirm).not.toHaveBeenCalled()});
 it('redacts arbitrary native errors in preparation and availability checks',async()=>{for(const nativeError of ['secret bearer or private target',Error('private response body'),{message:'native_input_target_unavailable'}]){const f=await fixture(),c=f.make();await c.check();f.adapter.prepare.mockRejectedValue(nativeError);await c.prepare('after');expect(c.snapshot().error).toBe('input_unavailable');f.adapter.status.mockRejectedValue(nativeError);await c.check();expect(c.snapshot().error).toBe('input_unavailable')}});
 it('preserves a whitelisted native status refusal and leaves input disabled',async()=>{const f=await fixture(),c=f.make();f.adapter.status.mockRejectedValue(Error('native_input_accessibility_unavailable'));await c.check();expect(c.snapshot().error).toBe('native_input_accessibility_unavailable');expect(c.snapshot().inputAvailable).toBe(false)});
+it('retires only a matched native zero-attempt no-input result before foreground recovery',async()=>{
+ for(const status of ['expired','stopped','refused']){
+  const f=await fixture();f.adapter.confirm.mockResolvedValue({...f.result,status,attemptCount:0,inputPerformed:false}as never);
+  const c=f.make();await c.check();await c.prepare('after');await c.confirm(true);
+  expect(c.snapshot().status).toBe(status);expect(f.pointer()).toBeNull();c.focusLost();await c.check();
+  expect(f.adapter.recover).not.toHaveBeenCalled();expect(c.snapshot().status).toBe('idle');expect(c.snapshot().result?.inputPerformed).toBe(false);
+ }
+});
+it('keeps a claimed or uncertain native outcome recovery pointer intact',async()=>{
+ const f=await fixture();f.adapter.confirm.mockResolvedValue({...f.result,status:'unknown',inputPerformed:null}as never);
+ const c=f.make();await c.check();await c.prepare('after');await c.confirm(true);expect(f.pointer()).not.toBeNull();
+});
