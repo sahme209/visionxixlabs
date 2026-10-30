@@ -20,12 +20,24 @@ export default async function GovernancePage() {
     prisma.agentActionProposal.findMany({ where: { organizationId, status: "proposed" }, select: { id: true, toolName: true, argsJson: true, riskLevel: true, createdAt: true, approvalExpiresAt: true, actionDigest: true, proposedByUserId: true }, orderBy: { createdAt: "asc" }, take: 20 }),
   ]);
   const canDecide = canDecideApprovals({ email: context.email, roles: context.roles });
+  const reviewTime = new Date();
+  const unavailable = proposals.filter(p => !p.actionDigest || p.approvalExpiresAt && p.approvalExpiresAt <= reviewTime).length;
+  const own = proposals.filter(p => p.proposedByUserId === String(context.userId)).length;
 
   return (
     <div className="w-full min-w-0">
 
       <h1 className="text-2xl font-medium">Governance</h1>
       <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Review pending Agent actions, workspace roles, and environment policies.</p>
+
+      <section aria-label="Governance next step" className="mt-6 rounded-xl border border-white/10 bg-white/[0.025] p-4">
+        <p className="text-[10px] uppercase tracking-wider text-zinc-500">Your next step</p>
+        <h2 className="mt-1 text-sm font-medium">{proposals.length ? "Review each exact pending action" : "No pending Agent decisions"}</h2>
+        <p className="mt-2 text-xs leading-5 text-zinc-400">{canDecide ? "Inspect the target, content and current review below before deciding. Each action needs its own independent decision." : "An authorized independent reviewer handles the decisions below. You can inspect workspace roles and environment policies."}</p>
+        {unavailable > 0 && <p role="status" className="mt-3 text-xs leading-5 text-amber-300">{unavailable} displayed {unavailable === 1 ? "proposal has" : "proposals have"} expired or lack an integrity binding. Request a fresh proposal; an old approval cannot restore it.</p>}
+        {own > 0 && <p className="mt-2 text-xs leading-5 text-zinc-400">{own} displayed {own === 1 ? "proposal is" : "proposals are"} yours and must be decided by a different authorized reviewer.</p>}
+        <details className="mt-3 text-xs leading-5 text-zinc-400"><summary className="cursor-pointer py-1">After a decision</summary><p className="mt-2">Approval can execute the exact Agent action shown below. Check its saved result before treating it as complete. If the outcome is uncertain, inspect its history before preparing another action; approval alone is not proof of success.</p><p className="mt-2">This inbox shows up to 20 pending Agent actions. Release, ticket and connected-app reviews remain in their exact workflows; this is not a complete approval or outcome history.</p></details>
+      </section>
 
       <section className="mt-10 border-t border-white/[0.08] py-7">
         <h2 className="text-base font-medium">Pending approvals</h2>

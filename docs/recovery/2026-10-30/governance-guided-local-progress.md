@@ -11,3 +11,9 @@ This increment is local implementation, not active organization enforcement or c
 - Bot composer explains Send versus Save draft once, puts input limits in a disclosure, and retains loading, errors and uncertainty. Settings links directly to Governance. Thirty-four component tests and desktop TypeScript passed.
 
 Still required: request/HTTP composition with real current principals, AWS adapter, baseline/discovery UI, exact executor coverage and drift journeys, final review/build/native visual acceptance. No universal enforcement claim is justified. ServiceNow activation candidate remains separate and unchanged. No deployment, schema change, provider write, paid CI or installer publication occurred.
+
+## Request composition and guided Governance increment
+
+Added current paired request authority, GitHub collection composition, baseline preflight orchestration and a historical revision read. Nine new focused tests passed; one actual isolated PostgreSQL historical-read journey passed (four unrelated tests skipped). The baseline orchestration assertion initially compared object identity; corrected it to compare the canonical baseline value, then all three tests passed. Desktop frontend build/types, scoped Governance types and changed web-page types passed. Governance page now identifies independent reviewer responsibility, expired/unbound/own proposals, outcome verification and the limited scope of its inbox. No new UI authority or provider write.
+
+These remain local: no production routes are mounted for Governance Intelligence and no executor coverage is registered. AWS, baseline/drift UI, end-to-end enforcement and live acceptance remain incomplete. No final whole-MVP completion claim or deployment.
