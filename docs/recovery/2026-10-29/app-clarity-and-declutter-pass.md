@@ -16,3 +16,6 @@ Settings follow-up:the existing12 sections are grouped into Account & preference
 Repository clone/setup controls now collapse once a local repository is selected; the summary remains available to reopen them. Empty standalone workspaces still expose setup. Catalog filters use Apps and Developer tools (MCP), with Connected apps and a plain-language search prompt. Internal filter IDs, routes, consent and action handlers remain unchanged.
 
 Validation: 88 repository ownership checks and 37 catalog/Bot navigation checks passed; desktop TypeScript passed. The initial repository suite hit Node experimental localStorage interference before test setup; rerunning with Node webstorage disabled passed all 88. Native visual checks remain deferred at the user's request. No deployment, provider write or publication.
+
+## Consistent Apps & skills naming
+Desktop navigation, page title, Agent link, web navigation and Control overview now use Apps & skills. Internal route/filter identifiers remain unchanged. Web catalog category labels match Apps and Developer tools (MCP); permissions, installation and action controls are unchanged. Ten navigation/return-to-draft checks pass. Native visual acceptance remains deferred.

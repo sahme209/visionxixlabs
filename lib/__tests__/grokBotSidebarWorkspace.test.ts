@@ -29,7 +29,7 @@ it('opens the distinct sidebar workspace between Agent and Releases and retains 
 });
 
 it('opens connection management from the catalogue and returns to the same workspace',async()=>{
- render(createElement(App));await screen.findByRole('button',{name:/Build with AI/});fireEvent.click(screen.getByRole('button',{name:'Plugins & Skills'}));
+ render(createElement(App));await screen.findByRole('button',{name:/Build with AI/});fireEvent.click(screen.getByRole('button',{name:'Apps & skills'}));
  fireEvent.click(await screen.findByRole('button',{name:'Connection settings'}));expect(screen.getByTestId('settings-section').textContent).toBe('integrations');
  fireEvent.click(screen.getByRole('button',{name:'Return from settings'}));expect(screen.getByRole('button',{name:'Connection settings'})).toBeTruthy();expect(screen.queryByTestId('settings-section')).toBeNull();
 });

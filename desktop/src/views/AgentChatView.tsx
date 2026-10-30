@@ -542,10 +542,10 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
         || verifiedSkillEpoch.current === null || verifiedSkillEpoch.current !== skillRefreshEpoch.current) return;
       processedSkillRequest.current = requestedSkill;
       if (requestedSkill.context !== context || requestedSkill.workspace !== identity?.organizationId) {
-        setError("Skill selection belongs to a different sign-in or workspace. Select it again from Plugins & Skills."); return;
+        setError("Skill selection belongs to a different sign-in or workspace. Select it again from Apps & skills."); return;
       }
       if (!enabledSkills.some(skill => skill.id === requestedSkill.skillId)) {
-        setError("The selected skill is not verified as enabled. Refresh Plugins & Skills before selecting it again."); return;
+        setError("The selected skill is not verified as enabled. Refresh Apps & skills before selecting it again."); return;
       }
       setInput(current => selectSkillInvocation(current, requestedSkill.skillId));
     });

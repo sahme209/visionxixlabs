@@ -7,7 +7,7 @@ const VIEW_TITLES: Partial<Record<View, { title: string; subtitle: string }>> = 
   "deployment-requests": { title: "Releases", subtitle: "Scope, evidence and approvals for delivery" },
   "airflow-automation": { title: "Batches", subtitle: "Monitor Airflow workflows and review batch operations" },
   "repository-workspace": { title: "Repositories", subtitle: "Browse local files, review changes and manage repository sync" },
-  "plugins-skills": { title: "Plugins & Skills", subtitle: "Connected apps and reusable skills" },
+  "plugins-skills": { title: "Apps & skills", subtitle: "Connected apps and reusable skills" },
   docs: { title: "Documentation", subtitle: "Product guidance and operating references" },
   settings: { title: "Settings", subtitle: "Authentication and workstation configuration" },
 };

@@ -9,7 +9,7 @@ Axiom borrows familiar interaction principles from modern developer and assistan
 - Releases: scope, current prerequisites, exact plans, approvals and recorded provider outcomes.
 - Repositories: repository context, local changes and supported sync controls.
 - Batches: Airflow workflows and separately governed batch operations.
-- Plugins & Skills: provider connections, fixed app workflows and reusable guidance; installation is not tool authority.
+- Apps & skills: provider connections, fixed app workflows and reusable guidance; installation is not tool authority.
 - Settings: current identity, preferences and supported configuration; governance and billing retain their server authority.
 
 ## Layout and language

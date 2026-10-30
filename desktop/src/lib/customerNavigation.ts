@@ -15,7 +15,7 @@ export const CUSTOMER_NAVIGATION = [
     items: [
       { id: "repository-workspace", label: "Repositories", title: "GitHub repositories" },
       { id: "airflow-automation", label: "Batches", title: "Batch automation" },
-      { id: "plugins-skills", label: "Plugins & Skills", title: "Connected apps and reusable skills" },
+      { id: "plugins-skills", label: "Apps & skills", title: "Connected apps and reusable skills" },
     ],
   },
   {

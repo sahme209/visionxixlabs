@@ -14,7 +14,7 @@ const groups = [
     { href: "/control/ai-agents", label: "AI & Agents", icon: Bot },
     { href: "/control/airflow", label: "Airflow", icon: Workflow },
     { href: "/control/integrations", label: "Integrations", icon: Plug },
-    { href: "/control/plugins", label: "Plugins & skills", icon: LayoutGrid },
+    { href: "/control/plugins", label: "Apps & skills", icon: LayoutGrid },
   ] },
   { label: "Organization", items: [
     { href: "/control/members", label: "Members", icon: Users },
