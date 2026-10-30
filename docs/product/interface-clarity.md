@@ -29,3 +29,5 @@ Use one verified canonical logo source across web and desktop. The requested rep
 ## Verification
 
 Test navigation and controlled-state retention, explicit-only execution, disabled prerequisites, expiry/uncertainty handling and keyboard navigation. Builds and jsdom checks do not substitute for visual/native acceptance. Batch production and installer changes through their existing release protections.
+
+Settings navigation uses three purpose groups: Account & preferences; Agent & security; Development & connections. Grouping is presentation only; search filters existing section labels/keywords and never writes a preference. Preserve stable internal section IDs when changing visible labels.

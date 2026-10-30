@@ -88,19 +88,20 @@ const sectionKeywords: Record<Section, string> = {
   identity: "OIDC SAML SCIM enterprise authentication",
 };
 
-const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound }> = [
-  { id: "general", label: "General", icon: Settings2 },
-  { id: "profile", label: "Profile", icon: CircleUserRound },
-  { id: "appearance", label: "Appearance", icon: Palette },
-  { id: "plan", label: "Plan & usage", icon: CreditCard },
-  { id: "agents", label: "Agents", icon: Bot },
-  { id: "models", label: "Models", icon: Code2 },
-  { id: "permissions", label: "Permissions", icon: ShieldCheck },
-  { id: "git", label: "Git & PRs", icon: GitBranch },
-  { id: "environments", label: "Environments", icon: Server },
-  { id: "identity", label: "Identity", icon: KeyRound },
-  { id: "worktrees", label: "Worktrees", icon: Trees },
-  { id: "integrations", label: "Integrations", icon: Link2 },
+const sectionGroups = ["Account & preferences", "Agent & security", "Development & connections"] as const;
+const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound; group:typeof sectionGroups[number] }> = [
+  { id: "general", group: "Account & preferences", label: "General", icon: Settings2 },
+  { id: "profile", group: "Account & preferences", label: "Profile", icon: CircleUserRound },
+  { id: "appearance", group: "Account & preferences", label: "Appearance", icon: Palette },
+  { id: "plan", group: "Account & preferences", label: "Plan & usage", icon: CreditCard },
+  { id: "agents", group: "Agent & security", label: "Agents", icon: Bot },
+  { id: "models", group: "Agent & security", label: "Models", icon: Code2 },
+  { id: "permissions", group: "Agent & security", label: "Permissions", icon: ShieldCheck },
+  { id: "git", group: "Development & connections", label: "Git & PRs", icon: GitBranch },
+  { id: "environments", group: "Development & connections", label: "Environments", icon: Server },
+  { id: "identity", group: "Agent & security", label: "Identity", icon: KeyRound },
+  { id: "worktrees", group: "Development & connections", label: "Worktrees", icon: Trees },
+  { id: "integrations", group: "Development & connections", label: "Integrations", icon: Link2 },
 ];
 
 export function SettingsView({ identity, initialSection, onClose, onOpenRepository }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" | "plan" | "integrations"; onOpenRepository?: () => void; onClose?: () => void }) {
@@ -168,7 +169,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
             <input type="search" aria-label="Search settings" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-none placeholder:text-zinc-600" />
           </label>
           {search.trim() && !sections.some(section => `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())) && <p role="status" className="px-3 py-2 text-xs text-zinc-500">No matching settings.</p>}
-          {sections.filter(section => !search.trim() || `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())).map(({ id, label, icon: Icon }) => (
+          {sectionGroups.map(group => {const visible=sections.filter(section=>section.group===group&&(!search.trim()||`${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())));return visible.length>0&&<div key={group} role="group" aria-label={group} className="mb-4"><p className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wider text-zinc-500">{group}</p>{visible.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
@@ -182,7 +183,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
               <Icon aria-hidden className="h-[15px] w-[15px]" strokeWidth={1.75} />
               <span>{label}</span>
             </button>
-          ))}
+          ))}</div>})}
           <div className="mt-6 border-t border-white/[0.06] pl-3 pt-5">
             <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-600">Signed in workspace</p>
             <p className="mt-2 truncate text-xs text-zinc-400" title={identity.organizationId}>{identity.organizationId}</p>
