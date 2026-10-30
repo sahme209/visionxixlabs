@@ -75,3 +75,21 @@ it('never offers a fresh note for uncertain writes or a child attempt',async()=>
  m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',actions:[{...row,id:'servicenow_action_'+hash,status:'refused',attemptCount:1,providerWritePerformed:null,canApprove:false}],truncated:false}});
  render(createElement(AssociatedTicketActionsPanel,{review:snReview}));await screen.findByText('Provider outcome unconfirmed');expect(screen.queryByRole('button',{name:'Check exact journal proof'})).toBeNull();
 });
+
+it('checks a consumed historical note without loading it under the new association or sending it',async()=>{
+ const snReview={...review,binding:{kind:'ticket_release_association',ticket:{provider:'servicenow'}}};
+ m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',actions:[],truncated:false}});
+ render(createElement(AssociatedTicketActionsPanel,{review:snReview}));
+ await waitFor(()=>expect(m.request).toHaveBeenCalledTimes(1));
+ const button=screen.getByRole('button',{name:'Check historical note proof'});
+ expect(button.hasAttribute('disabled')).toBe(true);
+ const parent='servicenow_action_'+hash;
+ fireEvent.change(screen.getByLabelText('Consumed ServiceNow note ID'),{target:{value:parent}});
+ fireEvent.change(screen.getByLabelText('Consumed note version'),{target:{value:'8'}});
+ m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',journalProof:{parentActionId:parent,parentVersion:8,accessVerified:true,absent:false,noteDigest:hash,checkedAt:new Date().toISOString()}}});
+ fireEvent.click(button);
+ await screen.findByText('Exact note already exists. No new note can be prepared.');
+ expect(m.request.mock.calls[1][1]).toEqual({action:'check_servicenow_journal',bindingDigest:hash,parentActionId:parent,parentVersion:8});
+ expect(m.request.mock.calls.every(([,input])=>['list','check_servicenow_journal'].includes(input.action))).toBe(true);
+ expect(screen.queryByRole('button',{name:'Prepare historical note for independent review'})).toBeNull();
+});
