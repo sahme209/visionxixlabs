@@ -1,0 +1,16 @@
+import {z} from 'zod';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+export const GOVERNANCE_COMPILER_VERSION='governance-intelligence-v1' as const;
+export const GOVERNED_ACTIONS=['discovery.read','recommendation.create','repository.merge','deployment.dispatch','integration.slack.send','integration.teams.send','integration.linear.create','integration.linear.update','integration.linear.close','integration.outlook.send','integration.outlook.event.create','computer.replace_text'] as const;
+export const identifier=z.string().min(1).max(256).refine(x=>x.trim()===x&&!/[\x00-\x1f*]/.test(x),'exact_identifier_required');
+export const digestSchema=z.string().regex(/^[a-f0-9]{64}$/);
+export const scopeSchema=z.object({repositoryId:identifier,resourceId:identifier,environment:z.enum(['production','staging','development','qa'])}).strict();
+const unique=<T>(xs:T[])=>new Set(xs).size===xs.length;
+export const evidenceInputSchema=z.object({organizationId:identifier,source:z.enum(['github','aws','document']),connectionId:identifier,connectionRevision:identifier,collectorVersion:identifier,selection:scopeSchema,observedAt:z.string().datetime(),expiresAt:z.string().datetime(),completeness:z.enum(['complete','partial','denied']),sourceDigest:digestSchema,facts:z.array(z.object({key:identifier,value:z.union([z.boolean(),z.string().max(2048),z.number().finite()]),locator:z.string().min(1).max(1024)}).strict()).max(1000)}).strict().refine(x=>Date.parse(x.expiresAt)>Date.parse(x.observedAt),'invalid_evidence_lifetime');
+export const intelligenceRuleSchema=z.object({id:identifier,actions:z.array(z.enum(GOVERNED_ACTIONS)).min(1).max(32).refine(unique),scope:scopeSchema,decision:z.enum(['allow','block','require_approval']),requirements:z.array(z.enum(['verified_evidence','rollback_verified'])).max(2).refine(unique),evidenceDigests:z.array(digestSchema).min(1).max(100).refine(unique)}).strict();
+const baselineInputSchema=z.object({organizationId:identifier,parentDigest:digestSchema.nullable(),scopes:z.array(scopeSchema).min(1).max(100),evidenceDigests:z.array(digestSchema).min(1).max(100).refine(unique),rules:z.array(intelligenceRuleSchema).min(1).max(500)}).strict();
+export function parseEvidenceSnapshot(input:unknown){const value=evidenceInputSchema.parse(input);return{...value,digest:sha256ContentHash({kind:'governance_evidence_v1',...value})}}
+export function compileBaseline(input:unknown){const b=baselineInputSchema.parse(input);if(!unique(b.rules.map(x=>x.id))||!unique(b.scopes.map(sha256ContentHash)))throw Error('duplicate_governance_binding');for(const r of b.rules){if(!b.scopes.some(s=>sha256ContentHash(s)===sha256ContentHash(r.scope))||r.evidenceDigests.some(d=>!b.evidenceDigests.includes(d)))throw Error('unbound_governance_rule')}const value={...b,compilerVersion:GOVERNANCE_COMPILER_VERSION};return{...value,digest:sha256ContentHash({kind:'governance_baseline_v1',...value})}}
+export type EvidenceSnapshot=ReturnType<typeof parseEvidenceSnapshot>;
+export type CompiledBaseline=ReturnType<typeof compileBaseline>;
+export type GovernanceScope=z.infer<typeof scopeSchema>;
