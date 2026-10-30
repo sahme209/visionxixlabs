@@ -1,3 +1,4 @@
+import {serviceNowGrantedScopesSchema} from './serviceNowScopes';
 import 'server-only';
 import {z} from 'zod';
 import {randomUUID} from 'node:crypto';
@@ -9,7 +10,7 @@ import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import {serviceNowRegistrationSchema,type ServiceNowAuthorizationActor,type ServiceNowRegistration} from './serviceNowAuthorization';
 const id=z.string().min(1).max(240).refine(v=>v===v.trim()&&!/[\x00-\x20\x7f-\x9f]/.test(v));
 const secret=z.string().min(1).max(65536).refine(v=>!/[\x00-\x20\x7f-\x9f]/.test(v));
-const tokenSchema=z.object({accessToken:secret,refreshToken:secret.nullable(),expiresAt:z.number().int().safe().nonnegative(),scopes:z.tuple([z.literal('axiom.change_management')])}).strict();
+const tokenSchema=z.object({accessToken:secret,refreshToken:secret.nullable(),expiresAt:z.number().int().safe().nonnegative(),scopes:serviceNowGrantedScopesSchema}).strict();
 type Token={accessToken:string;refreshToken:string|null;expiresAt:number;scopes:string[]};
 const envelopeSchema=z.object({kind:z.literal('servicenow_tenant_oauth_v1'),registration:serviceNowRegistrationSchema,token:tokenSchema.nullable()}).strict();
 const rowSchema=z.object({id,organizationId:id,provider:z.literal('servicenow'),status:z.enum(['pending','active']),revokedAt:z.null(),consentedByUserId:id,externalAccountId:z.string(),updatedAt:z.date(),encryptedCredential:z.string().min(1).max(262144)});
@@ -46,17 +47,29 @@ export function createServiceNowTenantConnectionAdapter(repo:ServiceNowTenantRep
    const connectionId=saved?.id??randomUUID(),registration=serviceNowRegistrationSchema.parse({organizationId:actor.organizationId,registrationId:randomUUID(),revision:revision.toISOString(),instanceOrigin:input.instanceOrigin,clientId:input.clientId,clientSecret:input.clientSecret,redirectUri:'https://visionxixlabs.com/api/integrations/servicenow/callback',scope:'axiom.change_management'});
    const encryptedCredential=z.string().min(1).max(262144).parse(encryptScopedCredential(JSON.stringify({kind:'servicenow_tenant_oauth_v1',registration,token:null}),connectionCredentialContext({organizationId:actor.organizationId,provider:'servicenow',connectionId})));
    await authority(actor,signal);
-   const data={status:'pending',encryptedCredential,externalAccountId:registration.instanceOrigin,scopesJson:[registration.scope],lastValidatedAt:null,updatedAt:revision};
+   const data={status:'pending',encryptedCredential,externalAccountId:registration.instanceOrigin,scopesJson:registration.scope.split(' '),lastValidatedAt:null,updatedAt:revision};
    if(saved){const changed=await withGithubAbort(tx.tenantIntegrationConnection.updateMany({where:{id:saved.id,organizationId:actor.organizationId,provider:'servicenow',status:'pending',revokedAt:null,consentedByUserId:actor.userId,updatedAt:saved.updatedAt,encryptedCredential:saved.encryptedCredential},data}),signal);if(changed.count!==1)fail()}
    else{const created=await withGithubAbort(tx.tenantIntegrationConnection.create({data:{...data,id:connectionId,organizationId:actor.organizationId,provider:'servicenow',consentedByUserId:actor.userId,revokedAt:null}}),signal);if(created.id!==connectionId)fail()}
    signal.throwIfAborted();return{status:'pending' as const,connectionId,configurationRevision:revision.toISOString()};
   }),signal);
  }catch{throw Error('servicenow_connection_unavailable')}},
+ /** Explicit consenting-admin request only. Keep the old token encrypted for
+  * recovery; pause connection use until a new bound OAuth grant is verified. */
+ async requestJournalProofConsent(actor:ServiceNowAuthorizationActor,raw:unknown,signal:AbortSignal){try{
+  const input=z.object({expectedRevision:z.string().datetime(),apiNamespace:z.string().regex(/^[A-Za-z0-9_]{1,80}$/)}).strict().parse(raw);
+  return await withGithubAbort(repo.$transaction(async tx=>{await authority(actor,signal);await lockAdmin(tx,actor,signal);const{row,envelope,context}=await load(tx,actor,signal);
+   const priorToken=envelope.token;if(!priorToken)throw Error('servicenow_proof_consent_unavailable');
+   if(row.status!=='active'||row.updatedAt.toISOString()!==input.expectedRevision||envelope.registration.scope!=='axiom.change_management'||envelope.registration.journalProofNamespace||!envelope.token||envelope.token.scopes.join(' ')!=='axiom.change_management')fail();
+   const time=now();if(!Number.isSafeInteger(time)||time<0)fail();const revision=new Date(Math.max(time,row.updatedAt.getTime()+1)),registration=serviceNowRegistrationSchema.parse({...envelope.registration,revision:revision.toISOString(),scope:'axiom.change_management axiom.change_evidence_read',journalProofNamespace:input.apiNamespace});
+   const cipher=z.string().min(1).max(262144).parse(encryptScopedCredential(JSON.stringify({...envelope,registration}),context));await authority(actor,signal);
+   const changed=await withGithubAbort(tx.tenantIntegrationConnection.updateMany({where:{id:row.id,organizationId:actor.organizationId,provider:'servicenow',status:'active',revokedAt:null,consentedByUserId:actor.userId,updatedAt:row.updatedAt,encryptedCredential:row.encryptedCredential},data:{status:'pending',encryptedCredential:cipher,scopesJson:[...priorToken.scopes],lastValidatedAt:null,updatedAt:revision}}),signal);if(changed.count!==1)fail();signal.throwIfAborted();return{status:'pending' as const,connectionId:row.id,configurationRevision:revision.toISOString()};
+  }),signal);
+ }catch{throw Error('servicenow_proof_consent_unavailable')}},
  async readConnectionStatus(actor:ServiceNowAuthorizationActor,signal:AbortSignal){try{await authority(actor,signal);const claimed=z.object({id,organizationId:id,provider:z.literal('servicenow'),status:z.literal('needs_attention'),revokedAt:z.null(),consentedByUserId:id,externalAccountId:serviceNowInstanceOriginSchema,updatedAt:z.date()}).safeParse(await withGithubAbort(repo.tenantIntegrationConnection.findUnique({where:{organizationId_provider:{organizationId:actor.organizationId,provider:'servicenow'}},select}),signal));if(claimed.success){if(claimed.data.organizationId!==actor.organizationId||claimed.data.consentedByUserId!==actor.userId)fail();await authority(actor,signal);return{connectionId:claimed.data.id,instanceOrigin:claimed.data.externalAccountId,configurationRevision:claimed.data.updatedAt.toISOString(),status:'needs_attention' as const,expiresAt:null}}const{row,envelope}=await load(repo,actor,signal),time=now();if(!Number.isSafeInteger(time)||time<0)fail();const token=envelope.token;return{connectionId:row.id,instanceOrigin:envelope.registration.instanceOrigin,configurationRevision:row.updatedAt.toISOString(),status:row.status==='pending'?'pending' as const:token&&token.expiresAt>time?'connected_read_only' as const:'needs_attention' as const,expiresAt:token?new Date(token.expiresAt).toISOString():null}}catch{throw Error('servicenow_connection_unavailable')}},
  async readRegistration(actor:ServiceNowAuthorizationActor,signal:AbortSignal){try{return(await load(repo,actor,signal)).envelope.registration}catch{throw Error('servicenow_connection_unavailable')}},
  async persistConnection(actor:ServiceNowAuthorizationActor,rawRegistration:ServiceNowRegistration,rawToken:Token,signal:AbortSignal){try{
   const registration=serviceNowRegistrationSchema.parse(rawRegistration),token=tokenSchema.parse(rawToken),time=now();
-  if(!Number.isSafeInteger(time)||time<0||token.expiresAt<=time||token.expiresAt>time+1800000)fail();
+  if(token.scopes.join(' ')!==registration.scope||!Number.isSafeInteger(time)||time<0||token.expiresAt<=time||token.expiresAt>time+1800000)fail();
   return await withGithubAbort(repo.$transaction(async tx=>{
    await authority(actor,signal);
    await lockAdmin(tx,actor,signal);
@@ -64,7 +77,7 @@ export function createServiceNowTenantConnectionAdapter(repo:ServiceNowTenantRep
    if(row.status!=='pending'||sha256ContentHash(envelope.registration)!==sha256ContentHash(registration))fail();
    const cipher=z.string().min(1).max(262144).parse(encryptScopedCredential(JSON.stringify({kind:'servicenow_tenant_oauth_v1',registration,token}),context));
    await authority(actor,signal);const current=now();if(!Number.isSafeInteger(current)||current<time||token.expiresAt<=current)fail();
-   const result=await withGithubAbort(tx.tenantIntegrationConnection.updateMany({where:{id:row.id,organizationId:actor.organizationId,provider:'servicenow',status:'pending',revokedAt:null,consentedByUserId:actor.userId,externalAccountId:row.externalAccountId,updatedAt:row.updatedAt,encryptedCredential:row.encryptedCredential},data:{status:'active',encryptedCredential:cipher,externalAccountId:registration.instanceOrigin,scopesJson:[registration.scope],lastValidatedAt:new Date(current),updatedAt:new Date(current)}}),signal);
+   const result=await withGithubAbort(tx.tenantIntegrationConnection.updateMany({where:{id:row.id,organizationId:actor.organizationId,provider:'servicenow',status:'pending',revokedAt:null,consentedByUserId:actor.userId,externalAccountId:row.externalAccountId,updatedAt:row.updatedAt,encryptedCredential:row.encryptedCredential},data:{status:'active',encryptedCredential:cipher,externalAccountId:registration.instanceOrigin,scopesJson:registration.scope.split(' '),lastValidatedAt:new Date(current),updatedAt:new Date(current)}}),signal);
    if(result.count!==1)fail();signal.throwIfAborted();return{connectionId:row.id};
   }),signal);
  }catch{throw Error('servicenow_connection_unavailable')}}

@@ -1,9 +1,10 @@
+import {serviceNowRequestedScopeSchema,parseServiceNowScopeResponse} from './serviceNowScopes';
 import 'server-only';
 import {z} from 'zod';
 import {serviceNowInstanceOriginSchema} from '@/lib/releaseops/serviceNowTicketLifecycleContract';
 import {readBoundedGithubBody} from '@/lib/connectors/github/boundedGithubRead';
 import {untilAbort} from '@/lib/releaseops/jiraTicketTransport';
-interface ConsentInput {instanceOrigin:string;clientId:string;redirectUri:string;state:string}
+interface ConsentInput {instanceOrigin:string;clientId:string;redirectUri:string;state:string;scope?:string}
 export interface ServiceNowOAuthDiagnostic {phase:'before_dispatch'|'provider_response'|'token_body'|'token_validation';httpStatus:number|null;scopeMatches:boolean|null;scopePresent:boolean|null;restrictionPresent:boolean|null}
 interface ExchangeInput extends ConsentInput {clientSecret:string;code:string;signal:AbortSignal;fetchImpl?:typeof fetch;now?:()=>number;onDiagnostic?:(diagnostic:Readonly<ServiceNowOAuthDiagnostic>)=>void}
 const unavailable=()=>Error('servicenow_authorization_unavailable');
@@ -21,7 +22,7 @@ function configuration(input:Pick<ConsentInput,'instanceOrigin'|'clientId'|'redi
  * No useraccount fallback, password grant, connection activation or write authority. */
 export function buildServiceNowConsentUrl(input:ConsentInput):string{
  try{const config=configuration(input);if(!/^[A-Za-z0-9_-]{43,256}$/.test(input.state))throw unavailable();
- const url=new URL('/oauth_auth.do',config.instanceOrigin);url.search=new URLSearchParams({response_type:'code',client_id:config.clientId,redirect_uri:CALLBACK,scope:SCOPE,state:input.state}).toString();return url.toString();
+ const url=new URL('/oauth_auth.do',config.instanceOrigin);url.search=new URLSearchParams({response_type:'code',client_id:config.clientId,redirect_uri:CALLBACK,scope:serviceNowRequestedScopeSchema.parse(input.scope??SCOPE),state:input.state}).toString();return url.toString();
  }catch{throw unavailable()}
 }
 /** Invoke only AFTER successfully consuming that bound one-time authorization attempt.
@@ -31,7 +32,7 @@ export async function exchangeServiceNowAuthorizationCode(input:ExchangeInput):P
  let response:Response|undefined;
  const diagnostic:ServiceNowOAuthDiagnostic={phase:'before_dispatch',httpStatus:null,scopeMatches:null,scopePresent:null,restrictionPresent:null};
  try{
-  const config=configuration(input),clientSecret=secret.parse(input.clientSecret),code=secret.max(4096).parse(input.code);
+  const requested=serviceNowRequestedScopeSchema.parse(input.scope??SCOPE),config=configuration(input),clientSecret=secret.parse(input.clientSecret),code=secret.max(4096).parse(input.code);
   if(!/^[A-Za-z0-9_-]{86}$/.test(input.state))throw unavailable();
   input.signal.throwIfAborted();const now=input.now??Date.now,issuedAt=now();if(!Number.isSafeInteger(issuedAt)||issuedAt<0)throw unavailable();
   const signal=AbortSignal.any([input.signal,AbortSignal.timeout(15000)]),fetcher=input.fetchImpl??fetch;
@@ -42,9 +43,9 @@ export async function exchangeServiceNowAuthorizationCode(input:ExchangeInput):P
   diagnostic.phase='token_body';
   const bytes=await readBoundedGithubBody(response,signal,131072);
   const raw:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));diagnostic.phase='token_validation';
-  if(raw&&typeof raw==='object'&&!Array.isArray(raw)){const facts=raw as Record<string,unknown>;diagnostic.scopePresent=Object.hasOwn(facts,'scope');diagnostic.scopeMatches=facts.scope===SCOPE;diagnostic.restrictionPresent=Object.hasOwn(facts,'restricted_to')}
-  const token=z.object({access_token:secret,refresh_token:secret.optional(),token_type:z.enum(['Bearer','bearer']),expires_in:z.number().int().min(1).max(1800),scope:z.literal(SCOPE)}).parse(raw);
+  if(raw&&typeof raw==='object'&&!Array.isArray(raw)){const facts=raw as Record<string,unknown>;diagnostic.scopePresent=Object.hasOwn(facts,'scope');diagnostic.scopeMatches=(()=>{try{parseServiceNowScopeResponse(facts.scope,requested);return true}catch{return false}})();diagnostic.restrictionPresent=Object.hasOwn(facts,'restricted_to')}
+  const token=z.object({access_token:secret,refresh_token:secret.optional(),token_type:z.enum(['Bearer','bearer']),expires_in:z.number().int().min(1).max(1800),scope:z.string()}).parse(raw);
   const expiresAt=issuedAt+token.expires_in*1000,current=now();signal.throwIfAborted();if(!Number.isSafeInteger(current)||current<issuedAt||!Number.isSafeInteger(expiresAt)||expiresAt<=current)throw unavailable();
-  return{accessToken:token.access_token,refreshToken:token.refresh_token??null,expiresAt,scopes:[SCOPE]};
+  return{accessToken:token.access_token,refreshToken:token.refresh_token??null,expiresAt,scopes:parseServiceNowScopeResponse(token.scope,requested)};
  }catch{try{input.onDiagnostic?.(Object.freeze({...diagnostic}))}catch{/* Diagnostics never change the refusal or trigger a retry. */}throw unavailable()}finally{void response?.body?.cancel().catch(()=>{})}
 }

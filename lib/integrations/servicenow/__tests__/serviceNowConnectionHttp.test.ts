@@ -22,3 +22,15 @@ it('saves only bounded administrator configuration and never echoes credentials'
 it('rejects oversized configuration before the storage port',async()=>{const configureRegistration=vi.fn();const response=await createServiceNowConnectionHttp({...options(),configureRegistration}).configure(new NextRequest('https://visionxixlabs.com/api/account/integrations/servicenow/configure',{method:'POST',headers:{'content-type':'application/json'},body:'x'.repeat(17000)}));expect(response.status).toBe(400);expect(configureRegistration).not.toHaveBeenCalled()});
 it('does not configure without administrator authority',async()=>{readActor.mockResolvedValue(null);const configureRegistration=vi.fn();const response=await createServiceNowConnectionHttp({...options(),configureRegistration}).configure(new NextRequest('https://visionxixlabs.com/api/account/integrations/servicenow/configure',{method:'POST',headers:{'content-type':'application/json'},body:'{}'}));expect(response.status).toBe(401);expect(configureRegistration).not.toHaveBeenCalled()});
 it('accepts a browser POST whose zero-byte body is represented as a stream',async()=>{const req=new NextRequest(start().url,{method:'POST',body:''});expect(req.body).not.toBeNull();const response=await createServiceNowConnectionHttp(options()).start(req);expect(response.status).toBe(200);expect(rows).toHaveLength(1)});
+
+it('binds proof-consent configuration to the current administrator and saved revision',async()=>{
+ const configureRegistration=vi.fn(),requestJournalProofConsent=vi.fn().mockResolvedValue({status:'pending',connectionId:'connection',configurationRevision:new Date(now+1).toISOString()});
+ const h=createServiceNowConnectionHttp({...options(),configureRegistration,requestJournalProofConsent});
+ const payload={kind:'journal_proof_consent',expectedRevision:new Date(now).toISOString(),apiNamespace:'2278454'};
+ const req=(value:unknown)=>new NextRequest('https://visionxixlabs.com/api/account/integrations/servicenow/configure',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(value)});
+ expect((await h.configure(req(payload))).status).toBe(200);
+ expect(requestJournalProofConsent).toHaveBeenCalledWith(actor,{expectedRevision:payload.expectedRevision,apiNamespace:'2278454'},expect.any(AbortSignal));
+ expect(configureRegistration).not.toHaveBeenCalled();
+ expect((await h.configure(req({...payload,scope:'useraccount'}))).status).toBe(409);
+ expect(requestJournalProofConsent).toHaveBeenCalledTimes(1);
+});

@@ -14,3 +14,16 @@ it('refuses credential access by another actor or a stale action binding',async(
 it('refuses an expired token and cancelled reads',async()=>{vault.decrypt.mockReturnValue(JSON.stringify({...envelope,token:{...envelope.token,expiresAt:now}}));await expect(reader().readConnection(scope,signal())).rejects.toThrow();const c=new AbortController();c.abort();await expect(reader().readConnection(scope,c.signal)).rejects.toThrow()});
 
 it('distinct independent reviewers can inspect readiness without acquiring executable credentials',async()=>{const r=createServiceNowTicketConnectionReader({tenantIntegrationConnection:{findUnique:find}},()=>now,{allowTicketWrites:org=>org==='org'}),reviewer={...scope,actorUserId:'reviewer',sessionId:'review-session'};expect(await r.readWriteAuthority(reviewer,binding,signal())).toBe(true);await expect(r.readCredential(reviewer,binding,signal())).rejects.toThrow();const catalog=await r.readCatalogCredential(reviewer,binding,signal());expect(catalog.permissions).toEqual({read:true,write:false,journalRead:false});const owner=await r.readCredential(scope,binding,signal());expect(owner.permissions.write).toBe(true);expect(await r.readWriteAuthority(reviewer,{...binding,connectionRevision:new Date(now).toISOString()},signal())).toBe(false);expect(await reader().readWriteAuthority(reviewer,binding,signal())).toBe(false)});
+
+it('requires both the exact granted proof scope and trusted namespace, and keeps catalog reads separate',async()=>{
+ const proofEnvelope={...envelope,registration:{...envelope.registration,scope:'axiom.change_management axiom.change_evidence_read',journalProofNamespace:'2278454'},token:{...envelope.token,scopes:['axiom.change_management','axiom.change_evidence_read']}};
+ find.mockResolvedValue({...row,scopesJson:proofEnvelope.token.scopes});vault.decrypt.mockReturnValue(JSON.stringify(proofEnvelope));
+ expect((await reader().readCredential(scope,binding,signal())).permissions).toEqual({read:true,write:false,journalRead:true});
+ expect(await reader().readJournalConfiguration(scope,binding,signal())).toEqual({apiNamespace:'2278454'});
+ expect((await reader().readCatalogCredential(scope,binding,signal())).permissions.journalRead).toBe(false);
+ await expect(reader().readJournalConfiguration({...scope,actorUserId:'reviewer'},binding,signal())).rejects.toThrow();
+});
+it('refuses an active token that does not match the registration consent revision',async()=>{
+ vault.decrypt.mockReturnValue(JSON.stringify({...envelope,registration:{...envelope.registration,scope:'axiom.change_management axiom.change_evidence_read',journalProofNamespace:'2278454'}}));
+ await expect(reader().readCredential(scope,binding,signal())).rejects.toThrow();
+});

@@ -8,7 +8,7 @@ import {consumeToken} from '@/lib/api/rateLimiter';
 import {createServiceNowAuthorization,type ServiceNowAuthorizationPorts} from './serviceNowAuthorization';
 import {exchangeServiceNowAuthorizationCode} from './serviceNowOAuth';
 import type {TenantConnectionRepo} from '../tenantConnectionRepo';
-interface Options extends ServiceNowAuthorizationPorts{repo:TenantConnectionRepo;enabled:()=>boolean;configureRegistration?:(actor:z.infer<typeof actorSchema>,raw:unknown,signal:AbortSignal)=>Promise<{status:"pending";connectionId:string;configurationRevision:string}>}
+interface Options extends ServiceNowAuthorizationPorts{requestJournalProofConsent?:(actor:z.infer<typeof actorSchema>,raw:unknown,signal:AbortSignal)=>Promise<{status:"pending";connectionId:string;configurationRevision:string}>;repo:TenantConnectionRepo;enabled:()=>boolean;configureRegistration?:(actor:z.infer<typeof actorSchema>,raw:unknown,signal:AbortSignal)=>Promise<{status:"pending";connectionId:string;configurationRevision:string}>}
 const CALLBACK='https://visionxixlabs.com/api/integrations/servicenow/callback';
 const actorSchema=z.object({organizationId:z.string().min(1).max(240),userId:z.string().min(1).max(240),canManageConnections:z.literal(true)}).strict();
 const json=(error:string,status:number)=>NextResponse.json({ok:false,error},{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
@@ -31,7 +31,8 @@ export function createServiceNowConnectionHttp(options:Options){
    const reader=request.body?.getReader();if(!reader)return json('invalid_servicenow_setup',400);
    let size=0;const chunks:Uint8Array[]=[];try{while(true){signal.throwIfAborted();const item=await withGithubAbort(reader.read(),signal);if(item.done)break;size+=item.value.byteLength;if(size>16384){await reader.cancel();return json('invalid_servicenow_setup',400)}chunks.push(item.value)}}catch(error){void reader.cancel().catch(()=>{});throw error}finally{reader.releaseLock()}
    const raw=JSON.parse(Buffer.concat(chunks).toString('utf8'));
-   const data=await options.configureRegistration(actor,raw,signal);
+   const proof=z.object({kind:z.literal('journal_proof_consent'),expectedRevision:z.string().datetime(),apiNamespace:z.string().regex(/^[A-Za-z0-9_]{1,80}$/)}).strict();
+   let data;if(raw&&typeof raw==='object'&&raw.kind==='journal_proof_consent'){const input=proof.parse(raw);if(!options.requestJournalProofConsent)throw Error('proof_consent_unavailable');const{kind:_,...selected}=input;data=await options.requestJournalProofConsent(actor,selected,signal)}else data=await options.configureRegistration(actor,raw,signal);
    return NextResponse.json({ok:true,data:{status:data.status,connectionId:data.connectionId,configurationRevision:data.configurationRevision}},{headers:{'Cache-Control':'private, no-store','Referrer-Policy':'no-referrer'}});
   }catch{return json('servicenow_configuration_unconfirmed',409)}
  },

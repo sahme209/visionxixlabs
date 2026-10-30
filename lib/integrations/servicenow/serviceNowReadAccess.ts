@@ -1,3 +1,4 @@
+import {serviceNowGrantedScopesSchema} from './serviceNowScopes';
 import 'server-only';
 import {z} from 'zod';
 import {serviceNowInstanceOriginSchema} from '@/lib/releaseops/serviceNowTicketLifecycleContract';
@@ -18,7 +19,7 @@ export async function readServiceNowModels(input:ReadInput){
  try{
   const instanceOrigin=serviceNowInstanceOriginSchema.parse(input.instanceOrigin),clock=input.now??Date.now;
   const accessToken=z.string().min(1).max(65536).refine(v=>!/[\x00-\x20\x7f-\x9f]/.test(v)).parse(input.token.accessToken);
-  if(input.token.scopes.length!==1||input.token.scopes[0]!=='axiom.change_management'||!Number.isSafeInteger(input.token.expiresAt))throw Error();
+  if(!serviceNowGrantedScopesSchema.safeParse(input.token.scopes).success||!Number.isSafeInteger(input.token.expiresAt))throw Error();
   const signal=AbortSignal.any([input.signal,AbortSignal.timeout(15000)]);
   const current=()=>{signal.throwIfAborted();const now=clock();if(!Number.isSafeInteger(now)||now<0||input.token.expiresAt<=now)throw Error();return now};
   current();

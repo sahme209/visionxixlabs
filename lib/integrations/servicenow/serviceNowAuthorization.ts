@@ -1,3 +1,4 @@
+import {serviceNowRequestedScopeSchema,serviceNowGrantedScopesSchema,SERVICE_NOW_PROOF_SCOPE} from './serviceNowScopes';
 import 'server-only';
 import {randomBytes,timingSafeEqual} from 'node:crypto';
 import {z} from 'zod';
@@ -10,7 +11,7 @@ import {buildServiceNowConsentUrl,exchangeServiceNowAuthorizationCode} from './s
 const unavailable=():never=>{throw Error('servicenow_authorization_unavailable')};
 const id=z.string().min(1).max(240).refine(v=>v===v.trim()&&!/[\x00-\x20\x7f-\x9f]/.test(v));
 const actorSchema=z.object({organizationId:id,userId:id,canManageConnections:z.literal(true)}).strict();
-export const serviceNowRegistrationSchema=z.object({organizationId:id,registrationId:id,revision:z.string().datetime(),instanceOrigin:serviceNowInstanceOriginSchema,clientId:z.string().regex(/^[a-f0-9]{32}$/),clientSecret:z.string().min(1).max(65536).refine(v=>!/[\x00-\x20\x7f-\x9f]/.test(v)),redirectUri:z.literal('https://visionxixlabs.com/api/integrations/servicenow/callback'),scope:z.literal('axiom.change_management')}).strict();
+export const serviceNowRegistrationSchema=z.object({organizationId:id,registrationId:id,revision:z.string().datetime(),instanceOrigin:serviceNowInstanceOriginSchema,clientId:z.string().regex(/^[a-f0-9]{32}$/),clientSecret:z.string().min(1).max(65536).refine(v=>!/[\x00-\x20\x7f-\x9f]/.test(v)),redirectUri:z.literal('https://visionxixlabs.com/api/integrations/servicenow/callback'),scope:serviceNowRequestedScopeSchema,journalProofNamespace:z.string().regex(/^[A-Za-z0-9_]{1,80}$/).optional()}).strict().superRefine((v,c)=>{if(v.scope.includes(SERVICE_NOW_PROOF_SCOPE)!==!!v.journalProofNamespace)c.addIssue({code:'custom',message:'Exact journal proof registration required'})});
 export type ServiceNowAuthorizationActor=z.infer<typeof actorSchema>;
 export type ServiceNowRegistration=z.infer<typeof serviceNowRegistrationSchema>;
 type Token=Awaited<ReturnType<typeof exchangeServiceNowAuthorizationCode>>;
@@ -58,7 +59,7 @@ export function createServiceNowAuthorization(repo:TenantConnectionRepo,ports:Se
   await claim(original,input.state,input.signal);
   await current(original,input.signal);
   const token=await(ports.exchangeCode??exchangeServiceNowAuthorizationCode)({...original.registration,code:input.code,state:input.state,signal:input.signal,now:clock});
-  if(token.scopes.length!==1||token.scopes[0]!=='axiom.change_management'||!Number.isSafeInteger(token.expiresAt)||token.expiresAt<=time()||token.expiresAt>time()+1800000)unavailable();
+  if(serviceNowGrantedScopesSchema.parse(token.scopes).join(' ')!==original.registration.scope||!Number.isSafeInteger(token.expiresAt)||token.expiresAt<=time()||token.expiresAt>time()+1800000)unavailable();
   await current(original,input.signal);await withGithubAbort(ports.verifyReadAccess!(original.registration,token,input.signal),input.signal);await current(original,input.signal);if(token.expiresAt<=time())unavailable();
   const result=await withGithubAbort(ports.persistConnection!(original.actor,original.registration,token,input.signal),input.signal);await current(original,input.signal);
   return{connectionId:id.parse(result.connectionId),status:'connected_read_only' as const};

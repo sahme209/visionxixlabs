@@ -18,3 +18,12 @@ it('leaves uncertain exchange reserved and never repeats it',async()=>{io.refres
 it('does not reactivate after current actor or provider read verification fails',async()=>{io.probe.mockImplementation(async()=>{current={...actor,userId:'other'};throw Error('unverified')});await expect(fixture()(actor,input(),new AbortController().signal)).rejects.toThrow('servicenow_refresh_outcome_unknown');expect(row.status).toBe('needs_attention');expect(updates).toHaveLength(1)});
 it.each([{organizationId:'other'},{connectionId:'other'},{revision:new Date(now).toISOString()}])('refuses foreign or stale binding before exchange %j',async delta=>{const a='organizationId' in delta?{...actor,organizationId:delta.organizationId}:actor;await expect(fixture()(a,{...input(),...('organizationId' in delta?{}:delta)},new AbortController().signal)).rejects.toThrow();expect(io.refresh).not.toHaveBeenCalled();expect(updates).toHaveLength(0)});
 it('refuses revoked membership before reserving or contacting the provider',async()=>{members=[{...actor,role:'read_only',acceptedAt:new Date()}];await expect(fixture()(actor,input(),new AbortController().signal)).rejects.toThrow();expect(io.refresh).not.toHaveBeenCalled();expect(updates).toHaveLength(0)});
+
+it('preserves the explicitly granted proof scope and namespace across a reserved refresh',async()=>{
+ const scopes=['axiom.change_management','axiom.change_evidence_read'];
+ io.decrypt.mockReturnValue(JSON.stringify({kind:'servicenow_tenant_oauth_v1',registration:{...registration,scope:scopes.join(' '),journalProofNamespace:'2278454'},token:{accessToken:'expired-access',refreshToken:'synthetic-refresh',expiresAt:now-1,scopes}}));
+ io.refresh.mockResolvedValue({accessToken:'new-access',refreshToken:'synthetic-refresh',expiresAt:now+1800000,scopes});
+ await fixture()(actor,input(),new AbortController().signal);
+ expect(io.refresh.mock.calls[0][0].approvedScopes).toEqual(scopes);expect(row.scopesJson).toEqual(scopes);
+ const saved=JSON.parse(io.encrypt.mock.calls.at(-1)![0]);expect(saved.registration.journalProofNamespace).toBe('2278454');expect(saved.token.scopes).toEqual(scopes);expect(updates).toHaveLength(2);
+});

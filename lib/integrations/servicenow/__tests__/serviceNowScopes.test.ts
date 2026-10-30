@@ -1,0 +1,5 @@
+import {expect,it} from 'vitest';
+import {serviceNowGrantedScopesSchema,serviceNowRequestedScopeSchema,parseServiceNowScopeResponse} from '../serviceNowScopes';
+const base='axiom.change_management',proof='axiom.change_evidence_read';
+it('preserves the original grant and only permits the reviewed journal-read addition',()=>{expect(serviceNowGrantedScopesSchema.parse([base])).toEqual([base]);expect(serviceNowGrantedScopesSchema.parse([proof,base])).toEqual([base,proof]);for(const s of [[],[proof],[base,base],[base,'useraccount'],[base,proof,'admin']])expect(()=>serviceNowGrantedScopesSchema.parse(s)).toThrow()});
+it('accepts exactly the requested set regardless of provider order, never an extra or missing grant',()=>{const requested=serviceNowRequestedScopeSchema.parse(base+' '+proof);expect(parseServiceNowScopeResponse(proof+' '+base,requested)).toEqual([base,proof]);for(const scope of [base,proof,base+' '+proof+' useraccount',base+' '+base+' '+proof,base+'\t'+proof])expect(()=>parseServiceNowScopeResponse(scope,requested)).toThrow();expect(()=>parseServiceNowScopeResponse(base+' '+proof,base)).toThrow()});

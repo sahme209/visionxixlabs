@@ -44,7 +44,7 @@ export function createServiceNowRefreshPersistence(repo:ServiceNowRefreshReposit
    await repo.$transaction(assertClaim);
    const freshToken={accessToken:refreshed.accessToken,refreshToken:refreshed.refreshToken,expiresAt:refreshed.expiresAt,scopes:[...refreshed.scopes]};
    await readServiceNowModels({instanceOrigin:envelope.registration.instanceOrigin,token:freshToken,signal,fetchImpl:ports.fetch,now});
-   await repo.$transaction(async tx=>{await assertClaim(tx);if(freshToken.expiresAt<=clock()+15000)fail();const revision=new Date(Math.max(clock(),claimRevision.getTime()+1)),cipher=encryptScopedCredential(JSON.stringify({...envelope,token:freshToken}),context);const result=await withGithubAbort(tx.tenantIntegrationConnection.updateMany({where:claimWhere,data:{status:'active',encryptedCredential:cipher,scopesJson:['axiom.change_management'],lastValidatedAt:new Date(clock()),updatedAt:revision}}),signal);if(result.count!==1)fail();await current()});
+   await repo.$transaction(async tx=>{await assertClaim(tx);if(freshToken.expiresAt<=clock()+15000)fail();const revision=new Date(Math.max(clock(),claimRevision.getTime()+1)),cipher=encryptScopedCredential(JSON.stringify({...envelope,token:freshToken}),context);const result=await withGithubAbort(tx.tenantIntegrationConnection.updateMany({where:claimWhere,data:{status:'active',encryptedCredential:cipher,scopesJson:[...freshToken.scopes],lastValidatedAt:new Date(clock()),updatedAt:revision}}),signal);if(result.count!==1)fail();await current()});
    return{connectionId:row.id,status:'connected_read_only' as const};
   }catch{throw Error(reserved?'servicenow_refresh_outcome_unknown':'servicenow_refresh_unavailable')}
  };
