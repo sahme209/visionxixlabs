@@ -8,6 +8,8 @@ private var nativeInputFixtureEpoch:UInt64=0
   var count=0
   func check(_ value:Bool){precondition(value,"one-action input policy regression");count+=1}
   check(inputPreparationRecoveryCode("axiom_not_foreground")=="native_input_foreground_required")
+  check(inputPreparationRecoveryCode("text_enabled_unverified")=="native_input_text_enabled_unverified")
+  check(inputPreparationRecoveryCode("text_area_count")=="native_input_text_area_count")
   check(inputPreparationRecoveryCode("ordinary_text_area")=="native_input_text_structure_unavailable")
   check(inputPreparationRecoveryCode("text_settable")=="native_input_text_not_editable")
   check(inputPreparationRecoveryCode("private fixture text")=="native_input_target_unavailable")
