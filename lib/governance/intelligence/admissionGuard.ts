@@ -11,7 +11,7 @@ export interface GovernanceGuardPorts {
  readActive(context:GovernanceAdmissionContext,signal:AbortSignal):Promise<CompiledBaseline>;
  readCoverage(context:GovernanceAdmissionContext,signal:AbortSignal):Promise<{enrolled:boolean;coveredActions:string[]}>;
  /** Only trusted server composition can construct these inputs, never request/model data. */
- readVerifiedInputs(context:GovernanceAdmissionContext,baseline:CompiledBaseline,phase:'before_claim'|'before_write',signal:AbortSignal):Promise<{evidence:EvidenceSnapshot[];providerAccessVerified:boolean;platformAllowed:boolean;autonomyLevel:number;verifiedEvidence:boolean;rollbackVerified:boolean;approval?:unknown}>;
+ readVerifiedInputs(context:GovernanceAdmissionContext,baseline:CompiledBaseline,phase:'before_claim'|'before_write',signal:AbortSignal):Promise<{evidence:EvidenceSnapshot[];providerAccessVerified:boolean;platformAllowed:boolean;autonomyLevel:number;verifiedEvidence:boolean;rollbackVerified:boolean;approval?:unknown;evidenceRefreshes?:Array<{approvedDigest:string;current:EvidenceSnapshot}>}>;
 }
 export interface GovernanceAdmissionReceipt {baselineDigest:string;contextDigest:string;checkedAt:number;phase:'before_claim'|'before_write'}
 /** A policy check does not claim or execute an action; existing durable executor guards remain mandatory. */
@@ -27,7 +27,7 @@ export function createGovernanceAdmissionGuard(ports:GovernanceGuardPorts){retur
    const baseline=structuredClone(await bounded(()=>ports.readActive(context,signal)));if(prior&&prior.baselineDigest!==baseline.digest)throw Error();
    const coverage=await bounded(()=>ports.readCoverage(context,signal)),facts=await bounded(()=>ports.readVerifiedInputs(context,baseline,phase,signal));
    signal.throwIfAborted();
-   const decision=evaluateGovernanceAdmission({request:{organizationId:context.organizationId,actorUserId:context.actorUserId,action:context.action,scope:context.scope,planDigest:context.planDigest,providerAccessVerified:facts.providerAccessVerified,platformAllowed:facts.platformAllowed,autonomyLevel:facts.autonomyLevel,verifiedEvidence:facts.verifiedEvidence,rollbackVerified:facts.rollbackVerified},active:{baseline,activeDigest:baseline.digest,approvedDigest:baseline.digest,revoked:false},evidence:facts.evidence,coverage,now:ports.now(),approval:facts.approval});
+   const decision=evaluateGovernanceAdmission({request:{organizationId:context.organizationId,actorUserId:context.actorUserId,action:context.action,scope:context.scope,planDigest:context.planDigest,providerAccessVerified:facts.providerAccessVerified,platformAllowed:facts.platformAllowed,autonomyLevel:facts.autonomyLevel,verifiedEvidence:facts.verifiedEvidence,rollbackVerified:facts.rollbackVerified},active:{baseline,activeDigest:baseline.digest,approvedDigest:baseline.digest,revoked:false},evidence:facts.evidence,coverage,now:ports.now(),approval:facts.approval,evidenceRefreshes:facts.evidenceRefreshes});
    if(!decision.allowed)throw Error();const finished=ports.now();signal.throwIfAborted();
    if(!Number.isFinite(finished)||finished<time||finished-time>15000||phase==='before_write'&&!priorCurrent(finished))throw Error();
    return{baselineDigest:baseline.digest,contextDigest,checkedAt:finished,phase};

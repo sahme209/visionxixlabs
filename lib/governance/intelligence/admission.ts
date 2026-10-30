@@ -1,3 +1,4 @@
+import {compareEvidenceSources} from './freshness';
 import {z} from 'zod';
 import {evaluateAction} from '@/lib/governance/policyEngine';
 import type {PolicyRule} from '@/lib/governance/policyModel';
@@ -6,7 +7,7 @@ import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {compileBaseline,parseEvidenceSnapshot,digestSchema,identifier,scopeSchema,GOVERNED_ACTIONS,type EvidenceSnapshot,type CompiledBaseline} from './contracts';
 const requestSchema=z.object({organizationId:identifier,actorUserId:identifier,action:z.enum(GOVERNED_ACTIONS),scope:scopeSchema,planDigest:digestSchema,providerAccessVerified:z.boolean(),platformAllowed:z.boolean(),autonomyLevel:z.number().int().min(0).max(5),verifiedEvidence:z.boolean(),rollbackVerified:z.boolean()}).strict();
 const approvalSchema=z.object({organizationId:identifier,baselineDigest:digestSchema,planDigest:digestSchema,requesterUserId:identifier,approverUserId:identifier,currentAuthorityVerified:z.boolean(),expiresAt:z.string().datetime()}).strict();
-export interface AdmissionInput {request:unknown;active:{baseline:CompiledBaseline;approvedDigest:string;activeDigest:string;revoked:boolean};evidence:EvidenceSnapshot|EvidenceSnapshot[];coverage:{enrolled:boolean;coveredActions:string[]};now:number;approval?:unknown;[key:string]:unknown}
+export interface AdmissionInput {request:unknown;active:{baseline:CompiledBaseline;approvedDigest:string;activeDigest:string;revoked:boolean};evidence:EvidenceSnapshot|EvidenceSnapshot[];coverage:{enrolled:boolean;coveredActions:string[]};now:number;approval?:unknown;evidenceRefreshes?:Array<{approvedDigest:string;current:EvidenceSnapshot}>;[key:string]:unknown}
 export function evaluateGovernanceAdmission(input:AdmissionInput){
  const result=(decision:'allowed'|'denied'|'requires_approval'|'not_enrolled',reason:string,rules:string[]=[])=>({decision,allowed:decision==='allowed',reason,matchedRuleIds:rules});
  if(!input.coverage?.enrolled)return result('not_enrolled','scope_not_enrolled');
@@ -15,8 +16,9 @@ export function evaluateGovernanceAdmission(input:AdmissionInput){
   const active=input.active,b=active.baseline,{digest,compilerVersion,...raw}=b,compiled=compileBaseline(raw);if(sha256ContentHash(compiled)!==sha256ContentHash(b)||active.revoked||active.activeDigest!==digest||active.approvedDigest!==digest||b.organizationId!==r.organizationId)return result('denied','active_baseline_unavailable');
   if(!r.platformAllowed||!r.providerAccessVerified)return result('denied','existing_authority_required');
   if(!b.scopes.some(s=>sha256ContentHash(s)===sha256ContentHash(r.scope)))return result('denied','scope_not_approved');
+  const refreshes=z.array(z.object({approvedDigest:digestSchema,current:z.unknown()}).strict()).max(100).parse(input.evidenceRefreshes??[]);if(new Set(refreshes.map(x=>x.approvedDigest)).size!==refreshes.length||refreshes.some(x=>!b.evidenceDigests.includes(x.approvedDigest)))return result('denied','evidence_refresh_unbound');
   const snapshots=Array.isArray(input.evidence)?input.evidence:[input.evidence];const verified=new Map<string,EvidenceSnapshot>();
-  for(const e of snapshots){const{digest:claimed,...source}=e,actual=parseEvidenceSnapshot(source);if(actual.digest!==claimed||e.organizationId!==r.organizationId||e.completeness!=='complete'||Date.parse(e.observedAt)>input.now||Date.parse(e.expiresAt)<=input.now)return result('denied','evidence_unavailable');verified.set(actual.digest,actual)}
+  for(const e of snapshots){const{digest:claimed,...source}=e,actual=parseEvidenceSnapshot(source);if(actual.digest!==claimed||e.organizationId!==r.organizationId||e.completeness!=='complete'||Date.parse(e.observedAt)>input.now)return result('denied','evidence_unavailable');const refresh=refreshes.find(x=>x.approvedDigest===actual.digest);if(refresh){const comparison=compareEvidenceSources(actual,refresh.current,input.now);if(comparison.status!=='unchanged')return result('denied',comparison.status==='changed'?'evidence_drift':'evidence_unavailable')}else if(Date.parse(e.expiresAt)<=input.now)return result('denied','evidence_unavailable');verified.set(actual.digest,actual)}
   if(b.evidenceDigests.some(d=>!verified.has(d)))return result('denied','evidence_missing');
   const applicable=b.rules.filter(x=>x.actions.includes(r.action)&&sha256ContentHash(x.scope)===sha256ContentHash(r.scope));if(!applicable.length)return result('denied','no_supported_rule');
   const ids=applicable.map(x=>x.id);if(applicable.some(x=>x.requirements.some(k=>k==='verified_evidence'?!r.verifiedEvidence:!r.rollbackVerified)))return result('denied','required_safeguard_missing',ids);

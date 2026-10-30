@@ -234,7 +234,7 @@ function GeneralSection({ prefs, onSave }: PreferenceSectionProps) {
     <SectionHeading title="General" detail="Application startup, notifications, and account management." />
     <Group label="Account">
       <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
-      <ActionRow title="Organization governance" detail="Manage roles, policies, approved integrations, AI authority, and billing in Axiom Control." action={<WebButton href="/control" label="Open control plane" />} />
+      <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in Axiom Control." action={<WebButton href="/control/governance" label="Open governance" />} />
       <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-600">Service verified</span>} />
     </Group>
     <Group label="Notifications">

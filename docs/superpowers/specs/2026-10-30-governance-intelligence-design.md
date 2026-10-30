@@ -1,6 +1,6 @@
 # Axiom Governance Intelligence — incremental MVP design
 
-Status: proposed local implementation; not approved or active. No customer discovery, infrastructure change, paid AI call, migration or deployment is authorized by this document.
+Status: user-approved local implementation (October 30); not active. No customer discovery, infrastructure change, paid AI call, migration or deployment is authorized by this document.
 
 ## Intent
 An organization connects existing GitHub/AWS read access and uploads policies. Axiom explains observed controls and gaps, proposes an evidence-backed baseline, and lets an authorized administrator approve an immutable version. Runtime decisions are deterministic, scoped and independent of model text. Discovery never modifies customer infrastructure or expands its own access.
@@ -43,4 +43,4 @@ Completion means demonstrated source evidence, review, enforcement and audit acr
 Design approval under the user's validation-first rule; specific permission for any schema activation/deployment; genuine administrator decisions; customer-authorized source scopes; live acceptance. This design grants none of them.
 
 ## Builder check
-Read-only reviewer identified generic-engine reuse, atomic version activation and enrolled-scope bypass coverage gaps. The design above now resolves all three as explicit implementation choices. No additional user preference is required; design approval remains pending.
+Read-only reviewer identified generic-engine reuse, atomic version activation and enrolled-scope bypass coverage gaps. The design above now resolves all three as explicit implementation choices. The user approved local implementation. Production activation and genuine human decisions remain separate.
