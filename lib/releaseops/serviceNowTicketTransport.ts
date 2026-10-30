@@ -14,6 +14,9 @@ export interface ServiceNowTicketTransportDependencies{
  /** Re-read the instance's current supported schema/model/mandatory fields and transition criteria.
   * Candidate flags and caller-supplied metadata never satisfy this port. */
  assertNativePlan:(candidate:Readonly<ServiceNowTicketActionCandidate>,signal:AbortSignal)=>Promise<void|{terminalStateValues:readonly string[]}>;
+ /** Server-only, request-local receipt from successful pre-claim native validation.
+  * Only the first duplicate associated-link check can use it; final reread remains mandatory. */
+ consumeNativeLinkPreflight?:(candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>)=>boolean;
  /** A separately authorized native journal read must prove the exact saved evidence append. */
  assertJournalAbsent?:(candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<boolean>;
  readJournalEvidence?:(candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<boolean>;
@@ -64,7 +67,7 @@ export function createServiceNowTicketTransport(deps:ServiceNowTicketTransportDe
    if(auth.organizationId!==c.organizationId||auth.connectionId!==c.connectionId||auth.connectionRevision!==c.connectionRevision||auth.instanceOrigin!==c.instanceOrigin||auth.expiresAt<=deadline||!auth.permissions.read||!auth.permissions.write||c.kind==='link'&&(!auth.permissions.journalRead||typeof deps.readJournalEvidence!=='function'))return refusal();
    phase='action_marker';if(c.kind==='link'&&c.association&&(actionId!==(c.freshAttempt?serviceNowFreshLinkAttemptId(c):serviceNowLogicalLinkActionId(c))||!c.payload.work_notes.endsWith('\nAction '+serviceNowLogicalLinkActionId(c))))return refusal();
    phase='journal_absence';if(c.kind==='link'&&c.association&&(typeof deps.assertJournalAbsent!=='function'||await untilAbort(deps.assertJournalAbsent(structuredClone(c),signal),signal)!==true))return refusal();
-   phase='native_plan';const native=await untilAbort(deps.assertNativePlan(structuredClone(c),signal),signal);ensure();
+   phase='native_plan';const reused=c.kind==='link'&&!!c.association&&deps.consumeNativeLinkPreflight?.(structuredClone(c))===true;const native=reused?undefined:await untilAbort(deps.assertNativePlan(structuredClone(c),signal),signal);ensure();
    const base=c.instanceOrigin+'/api/sn_chg_rest/v1/change',fetcher=deps.fetchImpl??fetch,headers={Accept:'application/json','Content-Type':'application/json',Authorization:`Bearer ${auth.accessToken}`};
    const cancel=(r:Response)=>{void r.body?.cancel().catch(()=>{})};
    const request=async(path:string,init:RequestInit)=>{ensure();const r=await untilAbort(fetcher(base+path,{...init,headers:{Accept:headers.Accept,Authorization:headers.Authorization,...(init.body!==undefined?{'Content-Type':'application/json'}:{})},signal,redirect:'error',cache:'no-store',credentials:'omit'}),signal,cancel);try{ensure();if(r.redirected)throw Error('servicenow_ticket_redirect');return r}catch(e){cancel(r);throw e}};

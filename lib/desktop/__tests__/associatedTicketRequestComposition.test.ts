@@ -29,3 +29,7 @@ it('requires locked current administrator authority for fresh-child prepare and 
  await expect(m.ports.preflightTransport(scope,child,fixture.binding,signal())).rejects.toThrow();expect(m.execute).not.toHaveBeenCalled();
  tx.$queryRaw.mockResolvedValue([{role:'admin'}]);await expect(m.ports.authorize(tx,scope,'owner','execute',fixture.binding,child)).resolves.toBeUndefined();
 });
+it('mints a request-local native receipt only in successful pre-claim validation and consumes it once',async()=>{
+ await m.ports.preflightTransport(scope,candidate,fixture.binding,signal());await m.ports.executeTransport('servicenow_action_'+'a'.repeat(64),candidate,signal(),vi.fn());const transport=m.transport.mock.calls[0][0];expect(transport.consumeNativeLinkPreflight(candidate)).toBe(true);expect(transport.consumeNativeLinkPreflight(candidate)).toBe(false);
+ setup();await m.ports.executeTransport('servicenow_action_'+'a'.repeat(64),candidate,signal(),vi.fn());expect(m.transport.mock.calls[1][0].consumeNativeLinkPreflight(candidate)).toBe(false);
+});

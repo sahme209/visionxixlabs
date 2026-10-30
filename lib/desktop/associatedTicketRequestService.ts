@@ -1,3 +1,4 @@
+import {createServiceNowNativeLinkPreflight} from '@/lib/releaseops/serviceNowNativeLinkPreflight';
 import {inspectServiceNowPreflight} from '@/lib/releaseops/serviceNowPreflightInspection';
 import type {ServiceNowTicketActionCandidate} from '@/lib/releaseops/serviceNowTicketLifecycleContract';
 import {createServiceNowAssociatedNativePlan} from './serviceNowAssociatedNativePlan';
@@ -42,6 +43,7 @@ export function createAssociatedTicketRequestService(request:NextRequest,repo:Re
   readCloseMetadata:async(s,c,signal)=>{if(!c.terminalPolicy)throw Error('servicenow_closure_reviews_required');const proof=await governance.preflightApproved(s,c.terminalPolicy,signal);if(proof.reviewId!==c.terminalPolicy.reviewId||proof.bindingDigest!==c.terminalPolicy.bindingDigest)throw Error('servicenow_terminal_policy_changed');return closeNative(s,c.terminalPolicy.reviewId,c.issue,signal)},
  };
  const nativePlan=createServiceNowAssociatedNativePlan(nativePlanPorts);
+ const nativeLinkPreflight=createServiceNowNativeLinkPreflight({reference,assertNativePlan:(candidate,signal)=>nativePlan(scope,candidate,signal),assertCurrent:async signal=>{signal.throwIfAborted();await current();signal.throwIfAborted()}});
  return createAssociatedTicketActionsService(repo,reference,{
   inspectServiceNowPreflight:options.inspection?async(s,c,signal)=>{await administrator();const config=await snConnection.readJournalConfiguration(s,c,signal);return inspectServiceNowPreflight(c,{apiNamespace:config.apiNamespace,createReaders:(fetcher,candidate)=>{
    const catalog=createServiceNowNativeSubmissionAdapter({readConnection:snConnection.readConnection,readCatalogCredential:snConnection.readCatalogCredential},{fetch:fetcher});const native=createServiceNowAssociatedNativePlan({...nativePlanPorts,readMetadata:catalog.readMetadata});
@@ -64,7 +66,7 @@ export function createAssociatedTicketRequestService(request:NextRequest,repo:Re
   preflightTransport:async(s,c,a,signal)=>{
    if(!('siteId'in c)){
     if(c.kind==='publish'||!snEnabled()||s.actorUserId!==a.executorUserId)throw Error('ticket_provider_execution_unavailable');if(c.kind==='close'||c.kind==='link'&&c.freshAttempt)await administrator();
-    const auth=serviceNowTicketCredentialSchema.parse(await snConnection.readCredential(s,c,signal));if(!auth.permissions.write||!auth.permissions.journalRead||auth.expiresAt<=Date.now()+15000)throw Error('servicenow_scoped_credential_unavailable');await snConnection.readJournalConfiguration(s,c,signal);await nativePlan(s,c,signal);await current();return;
+    const auth=serviceNowTicketCredentialSchema.parse(await snConnection.readCredential(s,c,signal));if(!auth.permissions.write||!auth.permissions.journalRead||auth.expiresAt<=Date.now()+15000)throw Error('servicenow_scoped_credential_unavailable');await snConnection.readJournalConfiguration(s,c,signal);if(c.kind==='link'&&c.association)await nativeLinkPreflight.validateBeforeClaim(c,signal);else{await nativePlan(s,c,signal);await current()}return;
    }if(!['link','close'].includes(c.kind))throw Error('ticket_provider_execution_unavailable');
    if(!enabled()||s.actorUserId!==a.executorUserId)throw Error('ticket_provider_execution_unavailable');
    if(c.kind==='close')await administrator();const auth=jiraTicketCredentialSchema.parse(await readJiraTicketCredential(c,a.executorUserId,current,signal));if(!auth.scopes.includes('write:jira-work')||auth.expiresAt<=Math.min(Date.now()+15000,Date.parse(c.expiresAt)))throw Error('ticket_provider_credential_unavailable');await current();
@@ -74,7 +76,7 @@ export function createAssociatedTicketRequestService(request:NextRequest,repo:Re
     if(c.kind==='publish'||!snEnabled())throw Error('ticket_provider_execution_unavailable');
     const config=await snConnection.readJournalConfiguration(scope,c,signal),credential=(candidate:Readonly<ServiceNowTicketActionCandidate>,s:AbortSignal)=>snConnection.readCredential(scope,candidate,s);
     const journal=createNarrowServiceNowJournalVerifier({apiNamespace:config.apiNamespace,readCredential:credential,assertCurrent:async(candidate,s)=>{await current();await assertClaim(candidate,s)}});
-    const transport=createServiceNowTicketTransport({onRefusal:detail=>console.warn("axiom_servicenow_transport_refused",detail),isEnabled:snEnabled,assertCurrent:async(actionId,candidate,s,context)=>{if(actionId!==id)throw Error('ticket_action_changed');await current();await assertClaim(candidate,s,context)},readCredential:credential,assertNativePlan:(candidate,s)=>nativePlan(scope,candidate,s),...journal});
+    const transport=createServiceNowTicketTransport({consumeNativeLinkPreflight:candidate=>nativeLinkPreflight.consume(candidate),onRefusal:detail=>console.warn("axiom_servicenow_transport_refused",detail),isEnabled:snEnabled,assertCurrent:async(actionId,candidate,s,context)=>{if(actionId!==id)throw Error('ticket_action_changed');await current();await assertClaim(candidate,s,context)},readCredential:credential,assertNativePlan:(candidate,s)=>nativePlan(scope,candidate,s),...journal});
     return{status:(await transport.execute(id,c,signal)).status};
    }if(!['link','close'].includes(c.kind))throw Error('ticket_provider_execution_unavailable');
    const transport=createJiraTicketTransport({isEnabled:enabled,assertCurrent:(actionId,candidate,s)=>{if(actionId!==id)throw Error('ticket_action_changed');return assertClaim(candidate,s)},readCredential:(candidate,s)=>readJiraTicketCredential(candidate,scope.actorUserId,current,s)});
