@@ -1,0 +1,9 @@
+# ServiceNow written-note reconciliation activation
+
+The user approved one exact rollout and read-only checks. Candidate `3b59629124f7db241ec82df99ae8baecee0dbcd7` is now production deployment `dpl_FCTFZDoh2BPHmcqFUoqAkkEr9x9Q`. One upload/build and one promotion were performed; no retry/rebuild or settings change. The production apex alias was independently confirmed to point to this same deployment.
+
+The prepared 5,504 candidate files matched locally. Vercel stores 5,502 exact files, omitting only `.gitignore` and `desktop/.gitignore`, identical to the explicitly recorded previous production source gate. No changed or extra stored file. The protected staged and production dynamic review routes both returned JSON 401 `desktop_session_required`. No new protection credential or share link was created.
+
+Strictly signed source-cd371 main/reviewer apps opened; Samir and Fatima saved sessions restored. Existing ServiceNow connection refreshed once through its supported flow and returned Read-only connection saved. Native saved history still shows the consumed corrective note as unknown and explicitly prohibits resubmission. A fresh association review was saved through read-only provider checks and opened in Fatima's separate reviewer session. The exact review is requested, not approved; approval is a genuine human decision. Saved provider-action lookup remains gated pending current review authority.
+
+Live written-note observation acceptance, administrator terminal policy, native Normal/New change lifecycle and separately reviewed/authorized closure remain unfinished. This activation sends no note or state transition and never resets the consumed unknown attempt. Governance and public installers are unchanged. The single rollout exception is consumed; further deployment requires a new specific exception.
