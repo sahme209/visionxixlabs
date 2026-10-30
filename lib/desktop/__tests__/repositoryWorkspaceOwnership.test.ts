@@ -970,3 +970,14 @@ it('keeps Find open when it is clicked as the newly loaded editor commits',async
   expect(screen.getByRole('button',{name:'Next match'})).toHaveProperty('disabled',false);
   expect(m.invoke.mock.calls.filter(([command])=>command==='write_repository_file'||command==='run_repository_check')).toHaveLength(0);
 });
+
+it("keeps repository setup out of the active editor until deliberately expanded", async () => {
+  await start();
+  const summary = screen.getByText("Clone or refresh repositories");
+  const setup = summary.closest("details")!;
+  expect(setup.open).toBe(false);
+  setup.open = true;
+  fireEvent(setup, new Event("toggle"));
+  expect(setup.open).toBe(true);
+  expect(m.invoke.mock.calls.filter(([name]) => name === "clone_repository" || name === "write_repository_file")).toEqual([]);
+});

@@ -739,8 +739,8 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
       {status && <span className="shrink-0 text-zinc-400">{status.branch}</span>}
       {status && <button type="button" onClick={() => setFileNavigation("changes")} className="shrink-0 text-xs text-zinc-400 hover:text-zinc-200" aria-label={`View ${status.changedFiles.length} changed files`}>{status.changedFiles.length} changed</button>}
     </div>
-    <details open={!compact || sourceExpanded} onToggle={event => { if (compact) setSourceExpanded(event.currentTarget.open); }} className="shrink-0 border-b border-white/[0.07]">
-      <summary className={compact ? "cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300" : "hidden"}>Clone or refresh repositories</summary>
+    <details open={sourceExpanded || (!compact && !selectedRepository)} onToggle={event => { if (compact || selectedRepository) setSourceExpanded(event.currentTarget.open); }} className="shrink-0 border-b border-white/[0.07]">
+      <summary className="cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300">Clone or refresh repositories</summary>
     <div className="flex flex-wrap items-center gap-2 px-4 py-3">
       <div className="w-72 min-w-0">
         <label htmlFor="clone-source" className="mb-1 block text-[11px] text-zinc-400">Clone source · GitHub</label>
