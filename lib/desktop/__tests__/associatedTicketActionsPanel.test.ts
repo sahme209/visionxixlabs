@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import {createElement} from 'react';import {afterEach,beforeEach,expect,it,vi} from 'vitest';import {cleanup,render,screen,fireEvent,waitFor} from '@testing-library/react';
+import {createElement} from 'react';import {afterEach,beforeEach,expect,it,vi} from 'vitest';import {cleanup,render,screen,fireEvent,waitFor,act} from '@testing-library/react';
 const m=vi.hoisted(()=>({request:vi.fn(),policy:vi.fn(),config:{},revision:0}));vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{config:m.config,getContextRevision:()=>m.revision,associatedTicketAction:m.request,ticketGovernanceReview:m.policy}}));
 vi.mock('../../../desktop/src/components/CatalogIcon',()=>({ProviderLogo:()=>null}));
 import {AssociatedTicketActionsPanel} from '../../../desktop/src/components/AssociatedTicketActionsPanel';
@@ -11,3 +11,14 @@ it('never offers a resend after a consumed unknown action',async()=>{m.request.m
 it('holds uncertain writes until a deliberate history refresh and does not retry',async()=>{render(createElement(AssociatedTicketActionsPanel,{review}));await screen.findByText('Exact deployment link');fireEvent.click(screen.getByLabelText('I reviewed this exact provider target and content.'));m.request.mockResolvedValue({ok:false,outcomeUnconfirmed:true});fireEvent.click(screen.getByRole('button',{name:'Approve exact provider action'}));await screen.findByText(/provider action outcome is unconfirmed/);expect(screen.getByRole('button',{name:'Save deployment link for separate review'}).hasAttribute('disabled')).toBe(true);expect(screen.getByRole('button',{name:'Reload associated action history'}).hasAttribute('disabled')).toBe(false);expect(m.request).toHaveBeenCalledTimes(2)});
 
 it('requires an approved policy and refuses ServiceNow closure when native lifecycle has no terminal choice',async()=>{const snReview={...review,binding:{kind:'ticket_release_association',ticket:{provider:'servicenow'}}},snId='servicenow_action_'+hash; m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',actions:[],truncated:false,acceptedLinks:[{id:snId,version:2,issueKey:'CHG0030002',runUrl:'https://github.com/company/app/actions/runs/123',sourceCommit:'b'.repeat(40),originalAssociationReviewId:review.id}]}});render(createElement(AssociatedTicketActionsPanel,{review:snReview}));const read=await screen.findByRole('button',{name:'Read closure options for existing confirmed link'});expect(read.hasAttribute('disabled')).toBe(true);m.policy.mockResolvedValue({ok:true,data:{...review,binding:{kind:'servicenow_terminal_policy'}}});fireEvent.change(screen.getByLabelText('Approved terminal policy review ID'),{target:{value:review.id}});fireEvent.click(screen.getByRole('button',{name:'Load approved terminal policy'}));await screen.findByText(/Approved terminal-state policy loaded/);m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',closeOptions:{linkActionId:snId,linkVersion:2,terminalPolicy:{reviewId:review.id,bindingDigest:hash},expiresAt:'2030-01-01T00:15:00.000Z',transitions:[],fields:[]}}});fireEvent.click(read);await screen.findByText(/native lifecycle or required fields do not currently support closure/);expect(screen.getByRole('button',{name:'Save exact ServiceNow closure for independent review'}).hasAttribute('disabled')).toBe(true);expect(m.request.mock.calls.every(([,input])=>!['dispatch','prepare_servicenow_close'].includes(input.action))).toBe(true)});
+
+it('disables a reviewed provider action at its deadline without another user interaction or request',async()=>{
+ vi.useFakeTimers();vi.setSystemTime(new Date('2030-01-01T00:14:59.000Z'));
+ try{
+  await act(async()=>{render(createElement(AssociatedTicketActionsPanel,{review}))});
+  fireEvent.click(screen.getByLabelText('I reviewed this exact provider target and content.'));
+  const button=screen.getByRole('button',{name:'Approve exact provider action'});expect(button.hasAttribute('disabled')).toBe(false);
+  await act(async()=>{vi.advanceTimersByTime(1001)});
+  expect(button.hasAttribute('disabled')).toBe(true);expect(screen.getByText(/This exact provider action has expired/)).toBeTruthy();expect(m.request).toHaveBeenCalledTimes(1);
+ }finally{vi.useRealTimers()}
+});
