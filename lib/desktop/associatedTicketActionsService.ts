@@ -39,7 +39,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
  const reference=ticketGovernanceReferenceSchema.parse(rawReference),now=ports.now??Date.now;
  let hint:TicketReleaseAssociation|undefined;
  const snCloseReceipts=new Map<string,{candidate:ServiceNowTicketActionCandidate;expiresAt:number}>();
- const sourceChanged=():never=>{throw hint?.ticket.provider==='servicenow'?new ServiceNowTicketSourceChanged():new JiraTicketSourceChanged()};
+ const sourceChanged=(cause?:unknown):never=>{const refusal=hint?.ticket.provider==='servicenow'?new ServiceNowTicketSourceChanged():new JiraTicketSourceChanged();if(cause!==undefined)Object.defineProperty(refusal,'cause',{value:cause});throw refusal};
  function binding(){if(!hint)throw Error('ticket_association_preflight_required');return hint}
  function parse(raw:unknown){return binding().ticket.provider==='jira'?parseJiraTicketActionCandidate(raw):parseServiceNowTicketActionCandidate(raw)}
  async function warm(scope:TicketReviewScope,signal:AbortSignal){
@@ -69,7 +69,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
    const linked=await jira.readConfirmedLinkProvenance(scope,c.linkedEvidenceActionId,tx);
    matchHistoricalJiraLink(linked.candidate,expected);if(['organizationId','releaseId','releaseVersion','connectionId','connectionRevision','siteId','sourceDigest','expiresAt'].some(k=>(c as Record<string,unknown>)[k]!== (expected as Record<string,unknown>)[k]))sourceChanged();
    return c;
-  }catch{sourceChanged()}
+  }catch(error){sourceChanged(error)}
  }
  const common={readApprovedTerminalPolicy:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,reference:TicketGovernanceReference)=>ports.governance.readApprovedInTransaction(tx,scope,reference),now:()=>new Date(now()),transportMode:'provider' as const,readApprovedAssociation:approved,
   assertCurrent:async(tx:ReleaseOperationPlanTransaction,input:{scope:TicketReviewScope;actorUserId:string;role:Role;candidate?:Readonly<Candidate>})=>ports.authorize(tx,input.scope,input.actorUserId,input.role,binding(),input.candidate),

@@ -20,3 +20,9 @@ it('signals claim uncertainty only after preflight and immediately before durabl
 it('does not signal claim uncertainty for refused native readiness',async()=>{const f=fixture(),onClaim=vi.fn();f.ports.preflightTransport=vi.fn(async()=>{throw Error('native refused')});f.ports.executeTransport=vi.fn();await expect(f.service.mutate(scope,{actionId:f.id,expectedVersion:0,clientRequestId:nonce},'dispatch',new AbortController().signal,onClaim)).rejects.toThrow('native refused');expect(onClaim).not.toHaveBeenCalled();expect(m.claim).not.toHaveBeenCalled()});
 
 it('reports bounded read-only failure phases before any claim',async()=>{const f=fixture(),phases:string[]=[];f.ports.preflightTransport=vi.fn(async()=>{expect(phases.at(-1)).toBe('transport_preflight');throw Error('native refused')});f.ports.executeTransport=vi.fn();await expect(f.service.mutate(scope,{actionId:f.id,expectedVersion:0,clientRequestId:nonce},'dispatch',new AbortController().signal,vi.fn(),phase=>phases.push(phase))).rejects.toThrow('native refused');expect(phases).toEqual(['association_preflight','candidate_read','transport_preflight']);expect(m.claim).not.toHaveBeenCalled();expect(f.ports.executeTransport).not.toHaveBeenCalled()});
+it('preserves internal transaction cause when current-source validation fails without changing its refusal type',async()=>{
+ const f=fixture(),cause=Object.assign(Error('private database detail'),{code:'P2028'});
+ await f.service.prepareLink(scope,nonce,new AbortController().signal);f.ports.readOriginal.mockRejectedValue(cause);let refused:any;
+ try{await m.ports.readCurrentAction({},scope,f.candidate)}catch(error){refused=error}
+ expect(refused).toBeInstanceOf(Error);expect(refused.cause).toBe(cause);expect(m.claim).not.toHaveBeenCalled();
+});

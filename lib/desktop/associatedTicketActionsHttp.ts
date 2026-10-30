@@ -10,8 +10,10 @@ import {createAssociatedTicketRequestService} from './associatedTicketRequestSer
 import type {TicketActionDispatchPhase} from './associatedTicketActionsService';
 import {associatedTicketActionsRequestSchema} from './associatedTicketActionsContract';
 function failureReason(error:unknown){
- const e=error&&typeof error==='object'?error as {code?:unknown;name?:unknown;message?:unknown}:{};
- if(e.code==='P2028')return 'transaction_unavailable';if(e.code==='P2034')return 'transaction_conflict';
+ const e=error&&typeof error==='object'?error as {code?:unknown;name?:unknown;message?:unknown;cause?:unknown}:{};
+ const sourceRefusal=e.message==='jira_ticket_source_changed'||e.message==='servicenow_ticket_source_changed';
+ const cause=sourceRefusal&&e.cause&&typeof e.cause==='object'?e.cause as {code?:unknown}:{};
+ if(e.code==='P2028'||cause.code==='P2028')return 'transaction_unavailable';if(e.code==='P2034'||cause.code==='P2034')return 'transaction_conflict';
  if(e.name==='TimeoutError')return 'timeout';if(e.name==='AbortError')return 'aborted';if(error instanceof z.ZodError)return 'schema_refused';
  const reasons:Record<string,string>={servicenow_scoped_credential_unavailable:'credential_unavailable',servicenow_scoped_connection_unavailable:'credential_unavailable',jira_ticket_credential_unavailable:'credential_unavailable',ticket_provider_credential_unavailable:'credential_unavailable',ticket_provider_execution_unavailable:'execution_unavailable',ticket_action_changed:'action_changed',ticket_association_changed:'association_changed',ticket_review_binding_changed:'association_changed',ticket_preflight_expired:'preflight_expired',servicenow_associated_original_changed:'original_changed',servicenow_native_model_changed:'native_model_changed',servicenow_native_authority_changed:'native_authority_changed',jira_ticket_source_changed:'source_changed',servicenow_ticket_source_changed:'source_changed',jira_ticket_write_authority_unavailable:'write_unavailable',servicenow_ticket_write_authority_unavailable:'write_unavailable',desktop_session_required:'session_unavailable',ticket_closure_administrator_required:'administrator_required'};
  return typeof e.message==='string'&&Object.hasOwn(reasons,e.message)?reasons[e.message]:'unknown';
