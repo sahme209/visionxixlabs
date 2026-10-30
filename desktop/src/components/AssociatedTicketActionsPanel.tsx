@@ -1,3 +1,4 @@
+import {ServiceNowWrittenObservationCreator} from './ServiceNowWrittenObservationCreator';
 import type {ServiceNowInspectionResult} from '../../../lib/releaseops/serviceNowInspectionContract';
 import {ActionJourney} from './ActionJourney';
 import {useEffect,useRef,useState} from 'react';
@@ -7,7 +8,7 @@ import type {AssociatedTicketAction,AssociatedTicketActionsRequest,AssociatedTic
 import {ProviderLogo} from './CatalogIcon';
 /** Exact provider plans use the existing action stores; association approval is
  * never reused as a provider-action approval. No automatic mutation or retry. */
-export function AssociatedTicketActionsPanel({review}:{review:TicketGovernanceReview}){
+export function AssociatedTicketActionsPanel({review,onObservationPrepared}:{review:TicketGovernanceReview;onObservationPrepared?:(review:TicketGovernanceReview)=>void}){
  const [drafts,setDrafts]=useState<RefreshableTicketDraft[]>([]),[acceptedLinks,setAcceptedLinks]=useState<AcceptedJiraLink[]>([]),[actions,setActions]=useState<AssociatedTicketAction[]>([]),[busy,setBusy]=useState(false),[hold,setHold]=useState(false),[message,setMessage]=useState(''),[checked,setChecked]=useState(''),[close,setClose]=useState<AssociatedTicketCloseOptions>(),[transition,setTransition]=useState('');
  const [snClose,setSnClose]=useState<AssociatedServiceNowCloseOptions>(),[policyId,setPolicyId]=useState(''),[policy,setPolicy]=useState<{reviewId:string;bindingDigest:string}>(),[closeCode,setCloseCode]=useState(''),[closeNotes,setCloseNotes]=useState('');
  const [deadlineClock,setDeadlineClock]=useState(()=>Date.now());
@@ -56,6 +57,7 @@ export function AssociatedTicketActionsPanel({review}:{review:TicketGovernanceRe
  {['awaiting_approval','approved'].includes(a.status)&&Date.parse(a.expiresAt)<=Date.now()&&<p role="status" className="text-xs text-zinc-400">This exact provider action has expired. Prepare a fresh review; the expiry does not send or retry anything.</p>}
  {(a.canApprove||a.canExecute)&&<label className="block text-xs text-zinc-400"><input type="checkbox" checked={checked===key} disabled={busy||hold} onChange={e=>setChecked(e.target.checked?key:'')}/> I reviewed this exact provider target and content.</label>}
  <button type="button" className="btn-secondary" disabled={busy} onClick={()=>void run({action:'load',bindingDigest:review.bindingDigest,actionId:a.id})}>Check saved action outcome</button>
+ {provider==='servicenow'&&a.kind==='link'&&a.status==='unknown'&&a.attemptCount===1&&a.providerWritePerformed===null&&a.transportMode==='provider'&&onObservationPrepared&&<ServiceNowWrittenObservationCreator key={`${a.id}:${a.version}:${review.id}`} review={review} actionId={a.id} actionVersion={a.version} onPrepared={onObservationPrepared}/>}
  {a.canApprove&&<button type="button" className="btn-secondary" disabled={busy||hold||checked!==key||Date.parse(a.expiresAt)<=Date.now()} onClick={()=>mutate(a,'approve')}>Approve exact provider action</button>}
  {a.canExecute&&<button type="button" className="btn-secondary" disabled={busy||hold||checked!==key||Date.parse(a.expiresAt)<=Date.now()} onClick={()=>mutate(a,'dispatch')}>{a.kind==='link'?'Send approved deployment link':'Close approved ticket'}</button>}
  {a.canCancel&&<button type="button" className="btn-secondary" disabled={busy||hold} onClick={()=>mutate(a,'cancel')}>Cancel unused provider action</button>}

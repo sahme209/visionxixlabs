@@ -3,12 +3,11 @@ import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {parseServiceNowTicketActionCandidate} from '@/lib/releaseops/serviceNowTicketLifecycleContract';
 import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
-import {ticketGovernanceReferenceSchema,type TicketGovernanceReference} from '@/lib/releaseops/ticketGovernanceReference';
+import {type TicketGovernanceReference} from '@/lib/releaseops/ticketGovernanceReference';
 import {ticketReviewScopeSchema,type TicketReviewScope} from '@/lib/releaseops/ticketGovernanceReviewContract';
-import {serviceNowWrittenLinkObservationSchema} from '@/lib/releaseops/serviceNowWrittenLinkObservationContract';
+import {serviceNowWrittenLinkObservationSchema,serviceNowWrittenObservationRequestSchema} from '@/lib/releaseops/serviceNowWrittenLinkObservationContract';
 import {buildServiceNowWrittenLinkObservation,serviceNowUnknownLinkSourceSchema,serviceNowWrittenAssociationSourceSchema} from '@/lib/releaseops/serviceNowWrittenLinkObservation';
 const actionId=z.string().regex(/^servicenow_action_[a-f0-9]{64}$/);
-export const serviceNowWrittenObservationRequestSchema=z.object({kind:z.literal('servicenow_written_link_observation_request'),actionId,expectedVersion:z.number().int().min(1).max(2147483647),association:ticketGovernanceReferenceSchema}).strict();
 interface Ports{
  assertCurrent:(scope:TicketReviewScope,signal:AbortSignal)=>Promise<void>;
  readUnknown:(scope:TicketReviewScope,id:string,version:number,signal:AbortSignal)=>Promise<unknown>;

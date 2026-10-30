@@ -1,3 +1,4 @@
+import {serviceNowWrittenObservationRequestSchema} from '@/lib/releaseops/serviceNowWrittenLinkObservationContract';
 import {serviceNowTerminalPolicyRequestSchema} from '@/lib/releaseops/serviceNowTerminalPolicyRequest';
 import 'server-only';
 import {NextRequest,NextResponse} from 'next/server';
@@ -9,7 +10,7 @@ import {ticketGovernanceBindingSchema,type TicketReviewScope} from '@/lib/releas
 import {ticketAssociationRequestSchema} from './ticketAssociationProposal';
 import type {createTicketGovernanceService} from './ticketGovernanceService';
 type Service=ReturnType<typeof createTicketGovernanceService>;
-const id=z.string().regex(/^ticket_review_[a-f0-9]{64}$/),nonce=z.string().uuid(),action=z.object({expectedVersion:z.number().int().min(0).max(2),clientRequestId:nonce}).strict(),prepare=z.object({binding:z.union([ticketGovernanceBindingSchema,ticketAssociationRequestSchema,serviceNowTerminalPolicyRequestSchema]),clientRequestId:nonce}).strict();
+const id=z.string().regex(/^ticket_review_[a-f0-9]{64}$/),nonce=z.string().uuid(),action=z.object({expectedVersion:z.number().int().min(0).max(2),clientRequestId:nonce}).strict(),prepare=z.object({binding:z.union([ticketGovernanceBindingSchema,ticketAssociationRequestSchema,serviceNowTerminalPolicyRequestSchema,serviceNowWrittenObservationRequestSchema]),clientRequestId:nonce}).strict();
 class Refusal extends Error{constructor(readonly code:string,readonly status=409){super(code)}}
 /** Installed only by trusted request-bound server composition. Does not dispatch
  * ticket writes; policy/association reviews are separate from execution authority. */

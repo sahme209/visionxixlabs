@@ -15,7 +15,7 @@ import type {TicketAssociationSourcePorts} from './ticketGovernanceSource';
 export function createTicketHistoricalStores(repo:ReleaseOperationPlanRepo,ports:{
  assertDeploymentReader:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,source:unknown)=>Promise<void>;
  assertTicketReader:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,candidate:Readonly<JiraTicketActionCandidate|ServiceNowTicketActionCandidate>)=>Promise<void>;
-}):Required<Pick<TicketAssociationSourcePorts,'readOriginal'|'readAccepted'|'readReviewedBinding'|'readEvidence'>>{
+}):Required<Pick<TicketAssociationSourcePorts,'readOriginal'|'readAccepted'|'readReviewedBinding'|'readEvidence'>>&{readUnknownLink:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,id:string,version:number)=>ReturnType<ReturnType<typeof createServiceNowTicketLifecycleStore>['readUnknownLinkHistory']>}{
  const jira=createJiraTicketLifecycleStore(repo,{transportMode:'provider',assertCurrent:async(tx,input)=>{if(input.role!=='read'||input.actorUserId!==input.scope.actorUserId||!input.candidate)throw Error('ticket_archive_read_only');await ports.assertTicketReader(tx,input.scope,input.candidate)}});
  const sn=createServiceNowTicketLifecycleStore(repo,{transportMode:'provider',assertCurrent:async(tx,input)=>{if(input.role!=='read'||input.actorUserId!==input.scope.actorUserId||!input.candidate)throw Error('ticket_archive_read_only');await ports.assertTicketReader(tx,input.scope,input.candidate)}});
  const deployments=createReleaseDeploymentExecutionStore(repo,{assertHistoricalReader:(tx,scope,plan)=>ports.assertDeploymentReader(tx,scope,plan)});
@@ -30,6 +30,7 @@ export function createTicketHistoricalStores(repo:ReleaseOperationPlanRepo,ports
  }});
  const bridge=createReleaseDeploymentEvidenceBridge(repo,{historicalDeploymentStore:deployments});
  return{
+  readUnknownLink:(tx,scope,id,version)=>sn.readUnknownLinkHistory(scope,id,version,tx),
   readOriginal:(tx,scope,id,provider)=>provider==='jira'?jira.readPublishedProvenance(scope,id,tx):sn.readPublishedProvenance(scope,id,tx),
   readAccepted:(tx,scope,id)=>deployments.readHistoricalAcceptedSource(scope,id,tx),
   readReviewedBinding:(tx,scope,binding)=>bridge.readHistoricalBinding(tx,scope,binding),

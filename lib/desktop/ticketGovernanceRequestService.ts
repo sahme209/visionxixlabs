@@ -1,3 +1,8 @@
+import {createServiceNowWrittenObservationSource} from './serviceNowWrittenObservationSource';
+import {createServiceNowWrittenObservationProposal} from './serviceNowWrittenObservationProposal';
+import {readServiceNowWrittenObservationProof} from './serviceNowWrittenObservationRead';
+import {serviceNowUnknownLinkSourceSchema,serviceNowWrittenAssociationSourceSchema} from '@/lib/releaseops/serviceNowWrittenLinkObservation';
+import {parseServiceNowTicketActionCandidate} from '@/lib/releaseops/serviceNowTicketLifecycleContract';
 import {serviceNowInspectionFetch} from '@/lib/releaseops/serviceNowPreflightInspection';
 import {createServiceNowTerminalPolicyOptions} from './serviceNowTerminalPolicyOptions';
 import {createServiceNowTerminalPolicyProposal} from './serviceNowTerminalPolicyProposal';
@@ -44,12 +49,31 @@ export function createTicketGovernanceRequestService(request:NextRequest,repo:Re
  const originals=new Map<string,{actionId:string;ticket:import('@/lib/releaseops/ticketGovernanceReviewContract').TicketReleaseAssociation['ticket']}>();
  function originalHint(candidate:unknown){const hint=originals.get(sha256ContentHash(candidate));if(!hint)throw Error('ticket_original_preflight_required');return hint}
  const model:ReturnType<typeof createServiceNowModelPreflight>=options.inspection?async()=>{throw Error('inspection_link_required')}:createServiceNowModelPreflight({readConnection:sn.readConnection,readCredential:sn.readCatalogCredential});
- const service=createTicketGovernanceService(repo,{
+ async function proofForSource(s:TicketReviewScope,source:{action:unknown;association:unknown},signal:AbortSignal){
+  const action=serviceNowUnknownLinkSourceSchema.parse(source.action),approved=serviceNowWrittenAssociationSourceSchema.parse(source.association),a=approved.binding,c=parseServiceNowTicketActionCandidate(action.candidate);
+  if(c.kind!=='link'||a.ticket.provider!=='servicenow'||a.organizationId!==s.organizationId||c.organizationId!==s.organizationId||a.executorUserId!==action.executorUserId||a.requesterUserId!==action.requesterUserId||a.ticket.connectionId!==c.connectionId||a.ticket.instanceOrigin!==c.instanceOrigin||sha256ContentHash(a.ticket.issue)!==sha256ContentHash(c.issue))throw Error('ticket_observation_source_changed');
+  const reference={reviewId:approved.reviewId,bindingDigest:approved.bindingDigest},binding={organizationId:s.organizationId,connectionId:a.ticket.connectionId,connectionRevision:a.ticket.connectionRevision,instanceOrigin:a.ticket.instanceOrigin};
+  let context=await sn.readObservationContext(s,binding,a.executorUserId,signal);const namespace=context.apiNamespace;
+  async function authority(parent:AbortSignal){await current(s,parent);const actual=await repo.$transaction(tx=>service.readApprovedInTransaction(tx,s,reference));if(sha256ContentHash(actual)!==sha256ContentHash(approved))throw Error('ticket_observation_association_changed');context=await sn.readObservationContext(s,binding,a.executorUserId,parent);if(context.apiNamespace!==namespace)throw Error('ticket_observation_reader_changed');await current(s,parent)}
+  return readServiceNowWrittenObservationProof({...binding,issue:c.issue,noteDigest:sha256ContentHash(c.payload.work_notes)},signal,{apiNamespace:namespace,assertCurrent:authority,readCredential:async()=>context.credential});
+ }
+ const writtenObservation=createServiceNowWrittenObservationSource({
+  readProof:async(s,b,signal)=>{await current(s,signal);const association=await service.preflightApproved(s,b.association,signal),action=await repo.$transaction(tx=>stores.readUnknownLink(tx,s,b.originalActionId,b.originalVersion));return proofForSource(s,{action,association},signal)},
+  readLocked:async(tx,s,b)=>({action:await stores.readUnknownLink(tx,s,b.originalActionId,b.originalVersion),association:await service.readApprovedInTransaction(tx,s,b.association)}),
+ });
+ const service:ReturnType<typeof createTicketGovernanceService>=createTicketGovernanceService(repo,{
+  writtenObservation:options.inspection?undefined:writtenObservation,
+
   assertCurrent:authority,associationSource:stores,readTicket,readModel:model,
   assertPreflightAuthority:async(s,b,signal)=>{await current(s,signal);await repo.$transaction(tx=>authority(tx,{scope:s,actorUserId:s.actorUserId,role:'reader',binding:b}));await current(s,signal)},
   readOriginalCandidate:async(s,b,signal)=>{await current(s,signal);const original=await repo.$transaction(tx=>stores.readOriginal(tx,s,b.original.actionId,b.ticket.provider))as {candidate:unknown;actionId:string;issue:unknown;executorUserId:string};if(original.actionId!==b.original.actionId)throw Error('ticket_original_changed');const readBinding=bindPublishedTicketReadCandidate(s.organizationId,b.ticket,original);originals.set(sha256ContentHash(readBinding.candidate),{actionId:original.actionId,ticket:b.ticket});await current(s,signal);return readBinding.candidate},
  });
  return{...service,readOriginalForAssociation:async(tx:import('@/lib/agent/workflows/releaseOperationPlanStore').ReleaseOperationPlanTransaction,s:TicketReviewScope,raw:unknown)=>{const a=ticketReleaseAssociationSchema.parse(raw);await current(s,request.signal);const original=await stores.readOriginal(tx,s,a.original.actionId,a.ticket.provider) as {candidate:unknown};await current(s,request.signal);return original},prepare:async(s:TicketReviewScope,raw:unknown,nonce:string,signal:AbortSignal)=>{
+  if(raw&&typeof raw==='object'&&'kind'in raw&&raw.kind==='servicenow_written_link_observation_request'){
+   if(options.inspection)throw Error('inspection_link_required');
+   const propose=createServiceNowWrittenObservationProposal({assertCurrent:current,readUnknown:(reader,id,version)=>repo.$transaction(tx=>stores.readUnknownLink(tx,reader,id,version)),readAssociation:(reader,reference,parent)=>service.preflightApproved(reader,reference,parent),readProof:proofForSource});
+   return service.prepare(s,await propose(s,raw,signal),nonce,signal);
+  }
   if(raw&&typeof raw==='object'&&'kind'in raw&&raw.kind==='servicenow_terminal_policy_request'){const propose=createServiceNowTerminalPolicyProposal(createServiceNowTerminalPolicyOptions(request));return service.prepare(s,await propose(s,raw,signal),nonce,signal)}
   if(raw&&typeof raw==='object'&&'kind'in raw&&raw.kind==='ticket_release_association_request'){
    const selected=ticketAssociationRequestSchema.parse(raw);
