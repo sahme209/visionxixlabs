@@ -19,7 +19,7 @@ func observationSelectionRefusal(_ valid:Bool,_ busy:Bool,_ active:Bool)->String
 struct ObservationPickerHandoffPolicy {
     let epoch:UInt64,deadline:TimeInterval
     private(set) var published=false
-    mutating func publish(active:Bool,currentEpoch:UInt64,now:TimeInterval)->Bool{guard !published,active,epoch==currentEpoch,observationBudgetValid(deadline,now) else{return false};published=true;return true}
+    mutating func publishIdentity(currentEpoch:UInt64,now:TimeInterval)->Bool{guard !published,epoch==currentEpoch,observationBudgetValid(deadline,now) else{return false};published=true;return true}
 }
 func observationRevokeBlur(session:Bool,selecting:Bool,capture:Bool,eventEpoch:UInt64,currentEpoch:UInt64)->Bool{eventEpoch==currentEpoch && !selecting && capture}
 private func keys(_ value:[String:Any], _ allowed:[String]) -> Bool { return Set(value.keys)==Set(allowed) }
@@ -68,12 +68,13 @@ struct AxiomSelectedWindowIdentity {
     private func remaining(_ s:Session)->TimeInterval {min(s.created+600,s.idle+120)-uptime}
     private func scheduleExpiry(){expiry?.cancel();guard let s=session else{return};let epoch=generation;let work=DispatchWorkItem{[weak self]in Task{@MainActor in guard let self=self,self.generation==epoch else{return};self.revoke("native_observation_session_expired")}};expiry=work;DispatchQueue.main.asyncAfter(deadline:.now()+max(0,remaining(s)),execute:work)}
     private func scheduleTimeout(_ seconds:Double){timer?.cancel();let epoch=generation;let work=DispatchWorkItem{[weak self]in Task{@MainActor in guard let self=self,self.generation==epoch,self.pending != nil else{return};self.revoke("native_observation_operation_timeout")}};timer=work;DispatchQueue.main.asyncAfter(deadline:.now()+seconds,execute:work)}
-    private func live(_ s:Session)->Bool {
-        guard NSApplication.shared.isActive,remaining(s)>0,let app=NSRunningApplication(processIdentifier:s.pid),!app.isTerminated,app.launchDate==s.launchDate else{return false}
+    private func liveIdentity(_ s:Session)->Bool {
+        guard remaining(s)>0,let app=NSRunningApplication(processIdentifier:s.pid),!app.isTerminated,app.launchDate==s.launchDate else{return false}
         // Query only the pinned window ID, never enumerate desktop or other windows.
         guard let rows=CGWindowListCopyWindowInfo(.optionIncludingWindow,s.windowID) as? [[String:Any]],rows.count==1,let row=rows.first,(row[kCGWindowNumber as String] as? NSNumber)?.uint32Value==s.windowID,(row[kCGWindowOwnerPID as String] as? NSNumber)?.int32Value==s.pid else{return false}
         return true
     }
+    private func live(_ s:Session)->Bool {NSApplication.shared.isActive && liveIdentity(s)}
     // Internal metadata-only handoff. No pixels, grant, mutation or lease renewal.
     func inputIdentity(_ owner:String,_ id:String,_ revision:Int)->AxiomSelectedWindowIdentity? {
         guard let s=session,s.owner==owner,s.id==id,s.revision==revision,pending==nil,live(s),let native=s.filter.includedWindows.first,native.windowID==s.windowID,let title=native.title,!title.isEmpty,let rows=CGWindowListCopyWindowInfo(.optionIncludingWindow,s.windowID) as? [[String:Any]],rows.count==1,let row=rows.first,let rawBounds=row[kCGWindowBounds as String] as? [String:Any],let bounds=CGRect(dictionaryRepresentation:rawBounds as CFDictionary),bounds.width>0,bounds.height>0 else{return nil}
@@ -93,7 +94,7 @@ struct AxiomSelectedWindowIdentity {
             // A stale or unrelated check cannot revoke a newer selection.
             guard let s=session,observationSessionMatches(s.owner==owner,s.id==id,s.revision==revision) else{reply(["current":false],nil);return}
             // Metadata liveness only; never extends either lease or tests OS capture permission.
-            guard NSApplication.shared.isActive,pending==nil,live(s) else{revoke("native_observation_session_changed");reply(["current":false],nil);return}
+            guard pending==nil,liveIdentity(s) else{revoke("native_observation_session_changed");reply(["current":false],nil);return}
             reply(["current":true],nil);return
         }
         if operation==3 {
@@ -123,8 +124,8 @@ struct AxiomSelectedWindowIdentity {
     private func finalizePickerCandidate(){
         guard let op=pending,op.select,op.generation==generation,let candidate=pickerCandidate,var policy=pickerHandoff else{return}
         guard observationBudgetValid(policy.deadline,uptime) else{revoke("native_observation_operation_timeout");return}
-        guard policy.publish(active:NSApplication.shared.isActive,currentEpoch:generation,now:uptime) else{return}
-        guard live(candidate) else{revoke("native_observation_session_changed");return}
+        guard policy.publishIdentity(currentEpoch:generation,now:uptime) else{return}
+        guard liveIdentity(candidate) else{revoke("native_observation_session_changed");return}
         session=candidate;pickerCandidate=nil;pickerHandoff=nil;scheduleExpiry();var result=flags;result["sessionId"]=candidate.id;result["revision"]=0;result["appLabel"]=candidate.appLabel;result["windowLabel"]=candidate.windowLabel;result["expiresAt"]=stamp(Date().addingTimeInterval(remaining(candidate)));finish(result,nil)
     }
     func pickerCancelled(_ epoch:UInt64){guard pickerCandidate==nil,pending?.select==true,pending?.generation==epoch,epoch==generation else{return};revoke("native_observation_selection_cancelled")}
@@ -134,7 +135,7 @@ struct AxiomSelectedWindowIdentity {
         guard let deadline=pending?.deadline,observationBudgetValid(deadline,uptime) else{revoke("native_observation_operation_timeout");return}
         guard let op=pending,op.select,op.generation==generation,filter.style == .window,filter.includedWindows.count==1,let window=filter.includedWindows.first,let app=window.owningApplication,let running=NSRunningApplication(processIdentifier:app.processID),!running.isTerminated,let launched=running.launchDate else{if pending?.select==true{revoke("native_observation_selection_unavailable")};return}
         filter.includeMenuBar=false
-        let s=Session(id:"observation_"+UUID().uuidString.lowercased(),owner:op.owner,filter:filter,windowID:window.windowID,pid:app.processID,launchDate:launched,appLabel:boundedLabel(app.applicationName,fallback:"Selected app"),windowLabel:boundedLabel(window.title,fallback:"Selected window"),created:uptime,idle:uptime,revision:0);pickerCandidate=s;pickerHandoff=ObservationPickerHandoffPolicy(epoch:generation,deadline:min(op.deadline,uptime+10));pickerOff();scheduleTimeout(min(10,max(0,op.deadline-uptime)));finalizePickerCandidate();if pickerCandidate != nil {NSApplication.shared.activate()}
+        let s=Session(id:"observation_"+UUID().uuidString.lowercased(),owner:op.owner,filter:filter,windowID:window.windowID,pid:app.processID,launchDate:launched,appLabel:boundedLabel(app.applicationName,fallback:"Selected app"),windowLabel:boundedLabel(window.title,fallback:"Selected window"),created:uptime,idle:uptime,revision:0);pickerCandidate=s;pickerHandoff=ObservationPickerHandoffPolicy(epoch:generation,deadline:min(op.deadline,uptime+10));pickerOff();scheduleTimeout(min(10,max(0,op.deadline-uptime)));finalizePickerCandidate()
     }
 }
 
