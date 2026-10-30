@@ -799,6 +799,7 @@ function ReleaseContext({ request, stale }: { request: RequestSummary; stale:boo
   return (
     <div className="mt-3" aria-label="Release context">
       <CustomerJourneyPanel label="Release next step" journey={releaseJourney({status:request.status,approvalDecision:context.readiness.approvalDecision,blockers:context.readiness.blockers,prStatus:context.approval.prStatus,noPrRequired:context.approval.noPrRequired,rollbackAvailability:context.recovery.rollbackAvailability,stale})}/>
+      <details className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-400"><summary className="cursor-pointer py-1">Recorded release details</summary>
       <div className={`mb-2 rounded-lg border px-3 py-2 ${readiness ? "border-emerald-500/20 bg-emerald-500/5" : "border-white/20 bg-white/5"}`}>
         <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-zinc-100"}`}>
           {readiness ? "Ready for human approval" : "Not ready for human approval"}
@@ -856,6 +857,7 @@ function ReleaseContext({ request, stale }: { request: RequestSummary; stale:boo
           Open Approval Center →
         </ExternalLink>
       </div>
+      </details>
     </div>
   );
 }

@@ -2,12 +2,12 @@ import type { View } from "../App";
 import type { VerifiedDesktopIdentity } from "../lib/desktopClient";
 
 const VIEW_TITLES: Partial<Record<View, { title: string; subtitle: string }>> = {
-  "axiom-bot": { title: "Axiom Bot", subtitle: "Give tasks, review results and continue saved work" },
-  agent: { title: "Agent", subtitle: "Research, plan and build with governed tools" },
+  "axiom-bot": { title: "Axiom Bot", subtitle: "Saved tasks, AI responses and reviewed app actions" },
+  agent: { title: "Agent", subtitle: "Work with code, local files and research" },
   "deployment-requests": { title: "Releases", subtitle: "Scope, evidence and approvals for delivery" },
   "airflow-automation": { title: "Batches", subtitle: "Monitor Airflow workflows and review batch operations" },
   "repository-workspace": { title: "Repositories", subtitle: "Browse local files, review changes and manage repository sync" },
-  "plugins-skills": { title: "Plugins & Skills", subtitle: "Verified systems and reusable workflows for the governed Agent" },
+  "plugins-skills": { title: "Plugins & Skills", subtitle: "Connected apps and reusable skills" },
   docs: { title: "Documentation", subtitle: "Product guidance and operating references" },
   settings: { title: "Settings", subtitle: "Authentication and workstation configuration" },
 };

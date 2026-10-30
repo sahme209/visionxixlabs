@@ -161,7 +161,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
       {activeView !== "settings" && <Sidebar compact={false} activeView={activeView} onNavigate={navigate} homeVisible={welcomeVisible} onOpenWelcome={() => {setBotAppsReturn(null);setWelcomeVisible(true)}} />}
       <main className="flex-1 flex flex-col min-w-0 min-h-0">
         {activeView !== "settings" && <TopBar welcome={welcomeVisible} splitActive={splitVisible} onToggleSplit={workspaceVisible ? () => {setRepositoryVisited(true); setSplitWorkspace(value => !value);} : undefined} activeView={activeView} identity={identity} onOpenCommands={() => setCommandsOpen(true)} />}
-        {welcomeVisible && <WelcomeView onBuild={() => navigate("agent")} onAutomate={() => navigate("airflow-automation")} onDeploy={() => navigate("deployment-requests")} />}
+        {welcomeVisible && <WelcomeView onBot={() => navigate("axiom-bot")} onBuild={() => navigate("agent")} onAutomate={() => navigate("airflow-automation")} onDeploy={() => navigate("deployment-requests")} />}
         <div hidden={!workspaceVisible} style={{display: workspaceVisible ? "flex" : "none"}} className={`engineering-panes min-h-0 flex-1 ${splitVisible ? "engineering-panes-split" : "flex-col"}`}>
         <div hidden={!splitVisible && activeView !== "agent"} style={{ display: splitVisible || activeView === "agent" ? "flex" : "none" }} className={`min-h-0 min-w-0 flex-1 flex-col ${splitVisible ? "engineering-agent-pane" : ""}`}>
           {agentVisited && <WorkspaceViewBoundary onReturnToAgent={() => navigate("agent")}>

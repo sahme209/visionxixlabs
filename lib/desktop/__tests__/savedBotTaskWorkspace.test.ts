@@ -45,7 +45,7 @@ it('opens a genuine saved instruction in the activity surface and keeps unsaved 
  render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));await screen.findByDisplayValue(saved.instruction);
  expect(screen.getByRole('region',{name:'Bot task activity'}).textContent).toContain('Saved instruction · version 0');
  fireEvent.change(screen.getByLabelText('What should Axiom Bot help with?'),{target:{value:'Unsent instruction kept'}});
- fireEvent.click(screen.getByRole('tab',{name:'Library'}));expect(screen.getByText('No task outputs yet.')).toBeTruthy();
+ fireEvent.click(screen.getByRole('tab',{name:'Workspace report'}));expect(screen.getByText('No task outputs yet.')).toBeTruthy();
  fireEvent.click(screen.getByRole('tab',{name:'Computer'}));expect(screen.getByText('Observe one window')).toBeTruthy();
  fireEvent.click(screen.getByRole('tab',{name:'Details'}));expect(screen.getByLabelText('What should Axiom Bot help with?')).toHaveProperty('value','Unsent instruction kept');expect(screen.getByLabelText('Bot task title')).toHaveProperty('value',saved.title);expect(m.update).not.toHaveBeenCalled();
 });
@@ -69,7 +69,7 @@ it('keeps the full invalid candidate when preserving conflict edits as a new dra
 
 it('supports keyboard navigation between inspector tabs without changing the draft',async()=>{
  render(createElement(Host));await screen.findByRole('button',{name:'Open saved task Saved example'});fill();
- fireEvent.keyDown(screen.getByRole('tab',{name:'Details'}),{key:'ArrowRight'});expect(screen.getByRole('tab',{name:'Library'}).getAttribute('aria-selected')).toBe('true');
+ fireEvent.keyDown(screen.getByRole('tab',{name:'Details'}),{key:'ArrowRight'});expect(screen.getByRole('tab',{name:'Workspace report'}).getAttribute('aria-selected')).toBe('true');
  expect(screen.getByLabelText('What should Axiom Bot help with?')).toHaveProperty('value','Public test instruction');
 });
 
@@ -86,7 +86,7 @@ it('closes the inspector with Escape from portaled context fields and restores f
  const trigger=screen.getByRole('button',{name:'Task details'});fireEvent.click(trigger);const context=screen.getByLabelText('Context to include');context.focus();fireEvent.keyDown(context,{key:'Escape'});
  expect(trigger.getAttribute('aria-expanded')).toBe('false');expect(document.activeElement).toBe(trigger);
 });
-it('opens the bounded report workflow from Library without replacing the saved instruction',async()=>{render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));await screen.findByDisplayValue(saved.instruction);fireEvent.click(screen.getByRole('tab',{name:'Library'}));expect(screen.getByRole('region',{name:'Recorded readiness report'})).toBeTruthy();expect(screen.getByLabelText('What should Axiom Bot help with?')).toHaveProperty('value',saved.instruction)});
+it('opens the bounded report workflow from Library without replacing the saved instruction',async()=>{render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));await screen.findByDisplayValue(saved.instruction);fireEvent.click(screen.getByRole('tab',{name:'Workspace report'}));expect(screen.getByRole('region',{name:'Recorded readiness report'})).toBeTruthy();expect(screen.getByLabelText('What should Axiom Bot help with?')).toHaveProperty('value',saved.instruction)});
 
 it.each([true,false])('runs native support only when the Computer inspector is actually visible (wide=%s)',async wide=>{
  const media={matches:wide,addEventListener:vi.fn(),removeEventListener:vi.fn()};vi.stubGlobal('matchMedia',()=>media);const flags={source:'native_selected_window',inputAvailable:false,aiSharingAvailable:false,backgroundCapture:false};native.current.mockResolvedValue({current:true});native.status.mockResolvedValue({...flags,supported:true});native.stop.mockResolvedValue({stopped:true});native.select.mockResolvedValue({...flags,sessionId:'observation_11111111-1111-4111-8111-111111111111',revision:0,appLabel:'App',windowLabel:'Window',expiresAt:new Date(Date.now()+120000).toISOString()});
@@ -98,7 +98,7 @@ it('loads shared-app evidence and reports only while their inspector is visible,
  m.prCapabilities.mockResolvedValue({ok:false,error:'Unavailable'});m.reportCapabilities.mockResolvedValue({ok:false,error:'Unavailable'});
  try{render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));await screen.findByDisplayValue(saved.instruction);await act(async()=>{});expect(m.prCapabilities).not.toHaveBeenCalled();
  fireEvent.click(screen.getByRole('button',{name:'Task details'}));await act(async()=>{});expect(m.prCapabilities).toHaveBeenCalledTimes(1);
- fireEvent.click(screen.getByRole('tab',{name:'Library'}));await act(async()=>{});expect(m.reportCapabilities).toHaveBeenCalledTimes(1);
+ fireEvent.click(screen.getByRole('tab',{name:'Workspace report'}));await act(async()=>{});expect(m.reportCapabilities).toHaveBeenCalledTimes(1);
  fireEvent.click(screen.getByRole('button',{name:'Close task details'}));expect(screen.getByLabelText('What should Axiom Bot help with?')).toHaveProperty('value',saved.instruction);
  }finally{cleanup();vi.unstubAllGlobals()}
 });
@@ -109,7 +109,7 @@ it('launches the actual shared-app workflows and saved outcomes without changing
  m.prCapabilities.mockResolvedValue({ok:true,data:{enabled:true,canStart:false,recoveryScope:'owned'}});m.prRuns.mockResolvedValue({ok:true,data:{runs:[],truncated:false}});
  try{render(createElement(Host));fireEvent.click(await screen.findByRole('button',{name:'Open saved task Saved example'}));await screen.findByDisplayValue(saved.instruction);
  fireEvent.click(screen.getByRole('button',{name:'App actions'}));expect(m.reportCapabilities).not.toHaveBeenCalled();expect(m.prCapabilities).not.toHaveBeenCalled();
- fireEvent.click(screen.getByRole('button',{name:'Open workspace report'}));await screen.findByRole('button',{name:'Open report from version 0'});expect(screen.getByRole('tab',{name:'Library'}).getAttribute('aria-selected')).toBe('true');expect(m.reports).toHaveBeenCalledWith(id,expect.any(AbortSignal));
+ fireEvent.click(screen.getByRole('button',{name:'Open workspace report'}));await screen.findByRole('button',{name:'Open report from version 0'});expect(screen.getByRole('tab',{name:'Workspace report'}).getAttribute('aria-selected')).toBe('true');expect(m.reports).toHaveBeenCalledWith(id,expect.any(AbortSignal));
  fireEvent.click(screen.getByRole('button',{name:'Open GitHub evidence'}));await screen.findByText('A current GitHub connection and read permissions are required. Review shared connections in Connect apps.');expect(m.prRuns).toHaveBeenCalledWith(id,expect.any(AbortSignal));expect(screen.getByLabelText('What should Axiom Bot help with?')).toHaveProperty('value',saved.instruction);
  }finally{cleanup();vi.unstubAllGlobals()}
 });

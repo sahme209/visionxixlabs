@@ -1,0 +1,11 @@
+# App clarity and clutter pass
+
+User asked for clearer, less cluttered sections and an interaction style informed by Cursor, Claude, Codex and ChatGPT while retaining Axiom's identity. This is an extension of the approved guided presentation work, not a governance/permissions change.
+
+Source findings: release context repeated its readiness banner and five technical fact tiles below a four-stage journey; each action card expanded all four explanations; Bot mixed three context readers and three provider-changing workflows in one undifferentiated row; its workspace-report tab was labeled Library. These problems were established from current source; native visual review remains unavailable while the Mac is locked.
+
+Changes: keep next step and responsible person visible; collapse supporting journey stages and recorded release facts behind named native details/summary disclosures. Keep uncertain/consumed-attempt recovery warnings visible outside disclosures. Group Bot workflows into Read context versus Prepare a change, retaining current disabled/dirty/saved-task gates and every existing handler. Independent-approval requirements remain visible next to provider actions. Rename the Library tab to Workspace report, retaining its internal identity, keyboard navigation, state and active-only guards. Move long workflow access notes into a supporting disclosure.
+
+No new provider action, auto-fetch, scope/grant, approval, schema, background computer access or deployment. No guessed logo: exact user-supplied white triangular transparent asset is still required. This does not claim a comprehensive visual audit of every screen; remaining passes should inspect settings and repository layout after native access is available.
+
+The welcome screen now includes an explicit Delegate a task entry, wired to existing Axiom Bot navigation, alongside coding/automation/release destinations. Sidebar purpose tooltips and top-bar descriptions distinguish workspaces without changing route IDs. Verification:57 workflow/model checks and32 entry/navigation/session checks pass; desktop types/frontend build passes; final independent review reports no important findings. Exact production build and Next TypeScript checks also pass. Native visual acceptance is pending; the Mac remains locked.

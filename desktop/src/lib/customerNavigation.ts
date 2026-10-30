@@ -4,9 +4,9 @@ export const CUSTOMER_NAVIGATION = [
     kind: "deployment",
     label: "Workspace",
     items: [
-      { id: "agent", label: "Agent" },
-      { id: "axiom-bot", label: "Axiom Bot" },
-      { id: "deployment-requests", label: "Releases", title: "Release workspace" },
+      { id: "agent", label: "Agent", title: "Work with code, local files and research" },
+      { id: "axiom-bot", label: "Axiom Bot", title: "Saved tasks, AI responses and reviewed app actions" },
+      { id: "deployment-requests", label: "Releases", title: "Plan releases and review their exact actions and evidence" },
     ],
   },
   {
@@ -15,7 +15,7 @@ export const CUSTOMER_NAVIGATION = [
     items: [
       { id: "repository-workspace", label: "Repositories", title: "GitHub repositories" },
       { id: "airflow-automation", label: "Batches", title: "Batch automation" },
-      { id: "plugins-skills", label: "Plugins & Skills" },
+      { id: "plugins-skills", label: "Plugins & Skills", title: "Connected apps and reusable skills" },
     ],
   },
   {
