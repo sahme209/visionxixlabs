@@ -1,4 +1,5 @@
 import Foundation
+import ApplicationServices
 private var nativeInputFixtureEpoch:UInt64=0
 @_cdecl("axiom_input_generation") func nativeInputGenerationFixture()->UInt64{nativeInputFixtureEpoch}
 // Synthetic policy and private fixture-file tests only. No native bridge, app,
@@ -7,8 +8,27 @@ private var nativeInputFixtureEpoch:UInt64=0
  static func main()throws {
   var count=0
   func check(_ value:Bool){precondition(value,"one-action input policy regression");count+=1}
+  check(inputEnabledBoolean(NSNumber(value:1)) == nil)
+  check(inputEnabledBoolean(NSNumber(value:0)) == nil)
+  check(inputEnabledBoolean("true" as CFString) == nil)
+  check(inputEnabledBoolean(NSNumber(value:true)) == true)
+  check(inputEnabledBoolean(NSNumber(value:false)) == false)
+  check(inputEnabledBoolean(nil) == nil)
+  check(inputTextWritabilityAllows(enabledStatus:.success,enabled:true,settableStatus:.success,settable:true))
+  check(inputTextWritabilityAllows(enabledStatus:.attributeUnsupported,enabled:nil,settableStatus:.success,settable:true))
+  for status in [AXError.success,.attributeUnsupported,.cannotComplete,.apiDisabled,.failure] {
+   for enabled in [Optional<Bool>.none,Optional(false),Optional(true)] {
+    for settableStatus in [AXError.success,.cannotComplete,.attributeUnsupported] {
+     for settable in [false,true] {
+      let expected=settableStatus == .success && settable && (status == .success && enabled == true || status == .attributeUnsupported && enabled == nil)
+      check(inputTextWritabilityAllows(enabledStatus:status,enabled:enabled,settableStatus:settableStatus,settable:settable)==expected)
+     }
+    }
+   }
+  }
   check(inputPreparationRecoveryCode("axiom_not_foreground")=="native_input_foreground_required")
   check(inputPreparationRecoveryCode("text_enabled_unverified")=="native_input_text_enabled_unverified")
+  check(inputPreparationRecoveryCode("text_enabled_false")=="native_input_text_disabled")
   check(inputPreparationRecoveryCode("text_area_count")=="native_input_text_area_count")
   check(inputPreparationRecoveryCode("ordinary_text_area")=="native_input_text_structure_unavailable")
   check(inputPreparationRecoveryCode("text_settable")=="native_input_text_not_editable")
