@@ -93,3 +93,8 @@ it('checks a consumed historical note without loading it under the new associati
  expect(m.request.mock.calls.every(([,input])=>['list','check_servicenow_journal'].includes(input.action))).toBe(true);
  expect(screen.queryByRole('button',{name:'Prepare historical note for independent review'})).toBeNull();
 });
+it('runs only a read-only prerequisite inspection for the explicit consumed action',async()=>{
+ const snReview={...review,binding:{kind:'ticket_release_association',ticket:{provider:'servicenow'}}};m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',actions:[],truncated:false}});render(createElement(AssociatedTicketActionsPanel,{review:snReview}));await waitFor(()=>expect(m.request).toHaveBeenCalledTimes(1));
+ const actionId='servicenow_action_'+hash;fireEvent.change(screen.getByLabelText('Consumed ServiceNow note ID'),{target:{value:actionId}});fireEvent.change(screen.getByLabelText('Consumed note version'),{target:{value:'3'}});
+ m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',inspection:{actionId,actionVersion:3,readOnly:true,executionAuthorized:false,status:'timeout',steps:[{phase:'native_plan',status:'timeout',elapsedMs:15000}]}}});fireEvent.click(screen.getByRole('button',{name:'Inspect current prerequisites (read only)'}));await screen.findByText(/Read-only current observations: timeout/);expect(m.request.mock.calls[1][1]).toEqual({action:'inspect_servicenow_preflight',bindingDigest:hash,actionId,expectedVersion:3});expect(m.request.mock.calls.every(([,v])=>['list','inspect_servicenow_preflight'].includes(v.action))).toBe(true);
+});

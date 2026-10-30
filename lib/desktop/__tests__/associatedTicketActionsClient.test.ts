@@ -25,3 +25,8 @@ it('binds read-only journal proof to the exact refused parent and rejects invent
 it('stops one unresponsive saved ticket observation at its finite 60-second cap without resending',async()=>{
  vi.useFakeTimers();try{const fetcher=vi.fn((_url,options)=>new Promise<Response>((_resolve,reject)=>options.signal.addEventListener('abort',()=>reject(Error('aborted')),{once:true})));vi.stubGlobal('fetch',fetcher);const pending=client().associatedTicketAction(reviewId,{action:'list',bindingDigest:hash});await vi.advanceTimersByTimeAsync(60001);expect((await pending).ok).toBe(false);expect(fetcher).toHaveBeenCalledOnce()}finally{vi.useRealTimers()}
 });
+it('binds read-only inspection to its exact historical action and refuses execution claims or provider text',()=>{
+ const snId='servicenow_action_'+hash,input={action:'inspect_servicenow_preflight' as const,bindingDigest:hash,actionId:snId,expectedVersion:3},inspection={actionId:snId,actionVersion:3,readOnly:true,executionAuthorized:false,status:'refused',steps:[{phase:'authority',status:'refused',elapsedMs:12}]},data={provider:'servicenow',inspection};
+ expect(isAssociatedTicketActionsResult(data,reviewId,input)).toBe(true);
+ for(const delta of[{actionId:'servicenow_action_'+'b'.repeat(64)},{actionVersion:4},{executionAuthorized:true},{readOnly:false},{providerText:'private response'}])expect(isAssociatedTicketActionsResult({...data,inspection:{...inspection,...delta}},reviewId,input)).toBe(false);
+});

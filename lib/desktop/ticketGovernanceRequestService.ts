@@ -1,3 +1,4 @@
+import {serviceNowInspectionFetch} from '@/lib/releaseops/serviceNowPreflightInspection';
 import {createServiceNowTerminalPolicyOptions} from './serviceNowTerminalPolicyOptions';
 import {createServiceNowTerminalPolicyProposal} from './serviceNowTerminalPolicyProposal';
 import 'server-only';
@@ -19,16 +20,16 @@ import {createTicketAssociationProposal,ticketAssociationRequestSchema} from './
 import {ticketReleaseAssociationSchema,type TicketReviewScope} from '@/lib/releaseops/ticketGovernanceReviewContract';
 /** Production-capable LOCAL composition; activation and provider write transports
  * remain separate. Every network adapter here supports fixed GET reads only. */
-export function createTicketGovernanceRequestService(request:NextRequest,repo:ReleaseOperationPlanRepo,scope:TicketReviewScope){
+export function createTicketGovernanceRequestService(request:NextRequest,repo:ReleaseOperationPlanRepo,scope:TicketReviewScope,options:{inspection?:boolean}={}){
  const authority=createTicketGovernanceAuthority(request),historicalAuthority=createTicketHistoricalReadAuthority(request);
  async function current(s:TicketReviewScope,signal:AbortSignal){
   signal.throwIfAborted();if(sha256ContentHash(s)!==sha256ContentHash(scope))throw Error('ticket_review_scope_changed');
-  const p=await resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:'workspace:read',requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:'ticket governance preflight'});
-  if(!p||p.credentialKind!=='desktop_session'||p.id!==scope.sessionId||p.userId!==scope.actorUserId||p.organizationId!==scope.organizationId)throw Error('ticket_review_session_required');signal.throwIfAborted();
+  const p=await resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:options.inspection?'connections:manage':'workspace:read',requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:'ticket governance preflight'});
+  if(!p||p.credentialKind!=='desktop_session'||p.id!==scope.sessionId||p.userId!==scope.actorUserId||p.organizationId!==scope.organizationId||options.inspection&&!['owner','admin'].includes(String(p.role)))throw Error('ticket_review_session_required');signal.throwIfAborted();
  }
  const stores=createTicketHistoricalStores(repo,{assertDeploymentReader:historicalAuthority,assertTicketReader:async(_tx,s,c)=>{if(c.organizationId!==s.organizationId)throw Error('ticket_archive_scope_changed');await current(s,request.signal)}});
  const sn=createServiceNowTicketConnectionReader(prisma as unknown as ServiceNowTicketConnectionRepository);
- const readTicket=createTicketAssociationProviderReader({fetch,assertCurrent:async(s,t,signal)=>{
+ const readTicketPorts:Parameters<typeof createTicketAssociationProviderReader>[0]={fetch,assertCurrent:async(s,t,signal)=>{
   await current(s,signal);
   const row=await prisma.tenantIntegrationConnection.findUnique({where:{organizationId_provider:{organizationId:s.organizationId,provider:t.provider}}});
   if(!row||row.id!==t.connectionId||row.organizationId!==s.organizationId||row.status!=='active'||row.revokedAt||row.updatedAt.toISOString()!==t.connectionRevision||row.externalAccountId!==(t.provider==='jira'?t.siteId:t.instanceOrigin))throw Error('ticket_review_connection_changed');
@@ -36,12 +37,13 @@ export function createTicketGovernanceRequestService(request:NextRequest,repo:Re
  },readJiraCredential:async(s,c,signal)=>{
   const hint=originalHint(c),original=await repo.$transaction(tx=>stores.readOriginal(tx,s,hint.actionId,'jira')) as {candidate:unknown;issue:unknown;executorUserId:string};const data=bindPublishedTicketReadCandidate(s.organizationId,hint.ticket,original);if(sha256ContentHash(data.candidate)!==sha256ContentHash(c))throw Error('ticket_original_changed');
   return readJiraTicketCredential(c,data.executorUserId,()=>current(s,signal),signal);
- },readServiceNowCredential:(s,c,signal)=>sn.readCatalogCredential(s,c,signal)});
+ },readServiceNowCredential:(s,c,signal)=>sn.readCatalogCredential(s,c,signal)};
+ const readTicket:ReturnType<typeof createTicketAssociationProviderReader>=async(s,t,c,signal)=>{if(!options.inspection)return createTicketAssociationProviderReader(readTicketPorts)(s,t,c,signal);if(t.provider!=='servicenow')throw Error('inspection_link_required');return createTicketAssociationProviderReader({...readTicketPorts,fetch:serviceNowInspectionFetch(t.instanceOrigin,t.issue.sysId,'inspection')})(s,t,c,signal)};
  // The original action ID is attached only within this request after audited
  // provenance read; candidates from the client cannot supply a substitute ID.
  const originals=new Map<string,{actionId:string;ticket:import('@/lib/releaseops/ticketGovernanceReviewContract').TicketReleaseAssociation['ticket']}>();
  function originalHint(candidate:unknown){const hint=originals.get(sha256ContentHash(candidate));if(!hint)throw Error('ticket_original_preflight_required');return hint}
- const model=createServiceNowModelPreflight({readConnection:sn.readConnection,readCredential:sn.readCatalogCredential});
+ const model:ReturnType<typeof createServiceNowModelPreflight>=options.inspection?async()=>{throw Error('inspection_link_required')}:createServiceNowModelPreflight({readConnection:sn.readConnection,readCredential:sn.readCatalogCredential});
  const service=createTicketGovernanceService(repo,{
   assertCurrent:authority,associationSource:stores,readTicket,readModel:model,
   assertPreflightAuthority:async(s,b,signal)=>{await current(s,signal);await repo.$transaction(tx=>authority(tx,{scope:s,actorUserId:s.actorUserId,role:'reader',binding:b}));await current(s,signal)},

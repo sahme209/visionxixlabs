@@ -1,0 +1,11 @@
+# Read-only preflight inspector — local implementation
+
+Implements the separately approved inspection design. Explicit saved ServiceNow link ID/version, current approved association, same requester/executor and current administrator are required. A dedicated read-only store reader can inspect a refused, definitely unwritten consumed child, but the original retry-parent reader still rejects children. No store prepare/claim/approve/finish/update is reachable.
+
+A fixed network wrapper permits only GET to the exact instance/change, native model catalog and narrow journal-proof path. Other methods, request bodies, foreign origins/records, extra query fields and redirects are refused before provider I/O. Inspection mode is explicit in HTTP composition; it is unavailable in ordinary execution composition. Governance's original-ticket reads also traverse the same target-bound guard; Jira and policy paths are unavailable in this mode. Administrator capability/role is checked before provider reads.
+
+Reports bounded phase names, statuses and elapsed durations only. Association preparation and final recheck each have a 15-second bound; current reader inspection has a separate 15-second bound, inside the existing HTTP observation cap. It reports current observations, never a reconstruction of a consumed attempt or execution approval. A passed inspection cannot enable a retry. Note payloads, credentials and provider errors are never returned.
+
+72 focused tests pass across helper, real governance-reader composition, service, HTTP, client and panel. These include attempted PATCH rejection, wrong administrator/target/identity/source, timer classification, exact action/version response binding and no claim/prepare calls. Backend production types and desktop frontend/types pass. Independent review's guard and administrator-ordering findings are addressed; follow-up has no new finding. Full production build is tracked separately in the continuation receipt. No live inspector test or deployment has been authorized by local approval.
+
+Production logo/clarity deployment remains64947422/dpl_FvdLdtWWe4xt7VSGdRW5x6cJ2vjm. Both b38 and7292 ServiceNow attempts stay consumed/refused; no provider note was resent. A fresh current association may be required before a future live read-only inspection.

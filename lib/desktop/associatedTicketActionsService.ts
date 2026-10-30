@@ -1,3 +1,5 @@
+import {untilAbort} from '@/lib/releaseops/jiraTicketTransport';
+import {type ServiceNowPreflightInspection} from '@/lib/releaseops/serviceNowInspectionContract';
 import {verifyServiceNowFreshLinkParent} from '@/lib/releaseops/serviceNowFreshLinkAttempt';
 import {associatedTicketTransactionRepository} from './associatedTicketTransactionBudget';
 import {matchHistoricalServiceNowLink} from '@/lib/releaseops/serviceNowAssociatedCloseProof';
@@ -22,6 +24,7 @@ type Candidate=JiraTicketActionCandidate|ServiceNowTicketActionCandidate;
 type Role='read'|'prepare'|'approve'|'execute';
 export type TicketActionDispatchPhase='association_preflight'|'candidate_read'|'native_closure_preflight'|'transport_preflight'|'approved_record_read'|'durable_claim'|'provider_execution'|'result_recording';
 export interface AssociatedTicketActionsPorts{
+ inspectServiceNowPreflight?:(scope:TicketReviewScope,candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<ServiceNowPreflightInspection>;
  probeServiceNowJournal?:(scope:TicketReviewScope,candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<{absent:boolean}>;
  governance:Pick<ReturnType<typeof createTicketGovernanceService>,'preflightApproved'|'readApprovedInTransaction'|'get'>;
  readOriginal:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,binding:TicketReleaseAssociation)=>Promise<{candidate:unknown}>;
@@ -128,6 +131,18 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
  }
 
  return{
+  async inspectServiceNowPreflight(scope:TicketReviewScope,actionId:string,version:number,signal:AbortSignal){
+   if(!ports.inspectServiceNowPreflight)throw Error('inspection_unavailable');
+   const steps:ServiceNowPreflightInspection['steps']=[];let phase:ServiceNowPreflightInspection['steps'][number]['phase']='association_preflight',began=now(),deadline=0;
+   async function step<T>(name:typeof phase,read:(s:AbortSignal)=>Promise<T>){phase=name;began=now();deadline=began+15000;const bounded=AbortSignal.any([signal,AbortSignal.timeout(15000)]);const value=await untilAbort(read(bounded),bounded);if(now()>=deadline)throw Error('inspection_deadline');bounded.throwIfAborted();steps.push({phase,status:'passed',elapsedMs:Math.max(0,Math.min(60000,Math.floor(now()-began)))});return value}
+   try{
+    const a=await step('association_preflight',s=>warm(scope,s));if(a.ticket.provider!=='servicenow'||scope.actorUserId!==a.executorUserId||a.requesterUserId!==a.executorUserId)throw Error('ticket_executor_required');
+    const context=await step('saved_record',async s=>{const saved=await sn.readRefusedLinkForInspection(scope,actionId,version);const logical=await repo.$transaction(async tx=>{await approved(tx,scope,reference);await ports.authorize(tx,scope,scope.actorUserId,'prepare',a);return buildAssociatedTicketLink(reference,a,(await ports.readOriginal(tx,scope,a)).candidate,now())});s.throwIfAborted();if(!('instanceOrigin'in logical)||logical.kind!=='link')throw Error('inspection_unavailable');matchHistoricalServiceNowLink(saved.candidate,logical);return{saved,logical}});
+    phase='inspection_readers';began=now();deadline=began+15000;const inspectionSignal=AbortSignal.any([signal,AbortSignal.timeout(15000)]);const observation=await untilAbort(ports.inspectServiceNowPreflight(scope,context.logical,inspectionSignal),inspectionSignal);steps.push(...observation.steps);if(observation.status!=='passed')return{...observation,steps,actionId,actionVersion:version};
+    await step('association_recheck',async s=>{await warm(scope,s);const after=await sn.readRefusedLinkForInspection(scope,actionId,version);if(sha256ContentHash(context.saved)!==sha256ContentHash(after))throw Error('inspection_record_changed')});
+    return{readOnly:true as const,executionAuthorized:false as const,status:'passed' as const,steps,actionId,actionVersion:version};
+   }catch{const status=now()>=deadline?'timeout' as const:'refused' as const;if(steps.at(-1)?.phase!==phase||steps.at(-1)?.status!=='passed')steps.push({phase,status,elapsedMs:Math.max(0,Math.min(60000,Math.floor(now()-began)))});else steps[steps.length-1]={phase,status,elapsedMs:Math.max(0,Math.min(60000,Math.floor(now()-began)))};return{readOnly:true as const,executionAuthorized:false as const,status,steps,actionId,actionVersion:version}}
+  },
   async checkServiceNowJournal(scope:TicketReviewScope,parentActionId:string,parentVersion:number,signal:AbortSignal){const x=await freshLinkContext(scope,parentActionId,parentVersion,signal);return{parentActionId:x.parent.id,parentVersion:x.parent.version,accessVerified:true as const,absent:x.absent,noteDigest:sha256ContentHash(x.candidate.payload.work_notes),checkedAt:new Date(now()).toISOString()}},
   async prepareServiceNowFreshLink(scope:TicketReviewScope,parentActionId:string,parentVersion:number,clientRequestId:string,signal:AbortSignal){z.string().uuid().parse(clientRequestId);const x=await freshLinkContext(scope,parentActionId,parentVersion,signal);if(!x.absent)throw Error('servicenow_exact_note_already_present');const key=sha256ContentHash({scope,candidate:x.candidate});freshReceipts.set(key,Math.min(now()+5000,Date.parse(x.candidate.expiresAt)));try{return await sn.prepare(scope,{candidate:x.candidate,executorUserId:x.executorUserId,clientRequestId})}finally{freshReceipts.delete(key)}},
   async prepareLink(scope:TicketReviewScope,clientRequestId:string,signal:AbortSignal,amendment?:{actionId:string;expectedVersion:number}){
