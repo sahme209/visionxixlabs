@@ -146,3 +146,26 @@ public func axiomObservationRequest(_ operation:Int32,_ requestID:UInt64,_ input
     let reply:Reply={result,error in let envelope:[String:Any]=error.map{["ok":false,"error":$0]} ?? ["ok":true,"data":result ?? [:]];guard let bytes=try? JSONSerialization.data(withJSONObject:envelope),bytes.count<=6*1024*1024,let json=String(data:bytes,encoding:.utf8)else{"{\"ok\":false,\"error\":\"native_observation_capture_invalid\"}".withCString{callback(requestID,$0)};return};json.withCString{callback(requestID,$0)}}
     DispatchQueue.main.async {guard let object=(try? JSONSerialization.jsonObject(with:data)) as? [String:Any]else{reply(nil,"native_observation_invalid_request");return};if #available(macOS 15.2,*){WindowObservation.shared.dispatch(operation,object,reply)}else if operation==0{var result=flags;result["supported"]=false;result["reason"]="os_unsupported";reply(result,nil)}else{reply(nil,"native_observation_unsupported")}}
 }
+
+// Key-window blur also occurs for our own NSAlert. Only actual application
+// activation changes pause observation; native capture/input guards remain authoritative.
+@MainActor private final class AxiomApplicationFocus {
+    static let shared = AxiomApplicationFocus()
+    private var callback: (@convention(c) (Bool) -> Void)?
+    private var observers: [NSObjectProtocol] = []
+    func subscribe(_ callback: @escaping @convention(c) (Bool) -> Void) {
+        self.callback = callback
+        if observers.isEmpty {
+            for name in [NSApplication.didResignActiveNotification, NSApplication.didBecomeActiveNotification] {
+                observers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { [weak self] _ in
+                    MainActor.assumeIsolated { self?.callback?(NSApplication.shared.isActive) }
+                })
+            }
+        }
+        callback(NSApplication.shared.isActive)
+    }
+}
+@_cdecl("axiom_application_focus_subscribe")
+public func axiomApplicationFocusSubscribe(_ callback: @escaping @convention(c) (Bool) -> Void) {
+    DispatchQueue.main.async { AxiomApplicationFocus.shared.subscribe(callback) }
+}

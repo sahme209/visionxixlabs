@@ -2,6 +2,7 @@
 
 mod cloud;
 mod computer_observation;
+mod application_focus;
 mod computer_input;
 mod config;
 mod git;
@@ -50,6 +51,7 @@ fn main() {
         .plugin(tauri_plugin_store::Builder::new().build())
         .invoke_handler(tauri::generate_handler![
             get_system_info,
+            application_focus::computer_observation_focus_subscribe,
             computer_input::computer_input_status,
             computer_input::computer_input_prepare,
             computer_input::computer_input_confirm,
