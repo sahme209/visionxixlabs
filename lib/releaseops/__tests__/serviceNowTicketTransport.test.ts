@@ -50,3 +50,14 @@ it('identifies pre-dispatch deadline exhaustion without increasing its budget or
  expect(await t.execute(action,candidate(),new AbortController().signal)).toEqual({status:'refused'});
  expect(diagnostic).toHaveBeenCalledWith({phase:'native_plan',aborted:false,deadlineExpired:true});expect(fetcher).not.toHaveBeenCalled();
 });
+
+it('reproduces pre-write timeout with measured read timings plus an explicitly modeled durable-check cost',async()=>{
+ const {associatedTicketFixture}=await import('@/lib/desktop/__tests__/fixtures/associatedTicket'),{buildAssociatedTicketLink}=await import('../associatedTicketCandidate'),{serviceNowLogicalLinkActionId}=await import('../serviceNowFreshLinkAttempt');
+ const f=associatedTicketFixture('servicenow'),at=Date.parse(f.binding.expiresAt)-600000;vi.useFakeTimers();vi.setSystemTime(at);const c:any=buildAssociatedTicketLink(f.reference,f.binding,f.original,at),diagnostic=vi.fn(),advance=(ms:number)=>vi.setSystemTime(Date.now()+ms);let nativeCount=0;
+ // Read-only live observations: authority1118, journal2398, native3629/3812,
+ // record93, credential4 ms. 844ms per durable check is a modeled cost based
+ // on the observed saved-record phase, not a reconstruction of the old request.
+ const fetcher=vi.fn(async(_url:unknown,init?:RequestInit)=>{if(init?.method!=='GET')throw Error('test must never write');advance(93);return Response.json({result:{sys_id:c.issue.sysId,number:c.issue.number}})});
+ const transport=createServiceNowTicketTransport({isEnabled:()=>true,onRefusal:diagnostic,assertCurrent:async()=>{advance(1118+844)},readCredential:async()=>{advance(4);return{organizationId:c.organizationId,connectionId:c.connectionId,connectionRevision:c.connectionRevision,instanceOrigin:c.instanceOrigin,accessToken:'fixture',expiresAt:at+120000,permissions:{read:true,write:true,journalRead:true}}},assertJournalAbsent:async()=>{advance(2398+2*844);return true},readJournalEvidence:async()=>true,assertNativePlan:async()=>{advance(nativeCount++===0?3629:3812)},fetchImpl:fetcher});
+ expect(await transport.execute(serviceNowLogicalLinkActionId(c),c,new AbortController().signal)).toEqual({status:'refused'});expect(diagnostic).toHaveBeenCalledWith({phase:'final_authority',aborted:false,deadlineExpired:true});expect(fetcher.mock.calls.map(([,init])=>init?.method)).toEqual(['GET']);
+});
