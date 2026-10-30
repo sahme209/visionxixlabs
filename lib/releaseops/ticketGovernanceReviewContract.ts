@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {releaseWorkflowEvidenceBindingSchema} from '@/lib/tauri/releaseWorkflowEvidenceContract';
+import {releaseWorkflowEvidenceBindingSchema} from '../tauri/releaseWorkflowEvidenceContract';
 import {serviceNowInstanceOriginSchema,serviceNowNativeProcessSchema} from './serviceNowTicketLifecycleContract';
 
 export const TICKET_GOVERNANCE_REVIEW_KIND='ticket_governance_review_v1' as const;

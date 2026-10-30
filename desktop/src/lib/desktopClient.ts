@@ -1,3 +1,4 @@
+import {ticketAssociationSelectionSchema,ticketReviewId,ticketReviewNonce,isTicketGovernanceReview,type TicketAssociationSelection,type TicketGovernanceReview} from './ticketGovernance';
 import type {BotActionTaskReference} from '../../../lib/axiom/bot/actionTaskBindingContract';
 import {slackNotificationsRequest,type SlackNotificationsResult,type SlackNotificationRequest,type SlackNotificationLookup} from "./slackNotificationsTransport";
 import {connectedActionsRequest,type ConnectedActionLookup,type ConnectedActionsResult} from './connectedActionsTransport';
@@ -1579,6 +1580,18 @@ export class DesktopClient {
   prepareJiraTicketClose(requestId:string,publishActionId:string,input:{transitionId:string;clientRequestId:string;expectedVersion?:number},signal?:AbortSignal):Promise<ReleasePlanResult<JiraTicketLifecycleState>> {
     if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^jira_action_[a-f0-9]{64}$/.test(publishActionId)||!/^[0-9]{1,20}$/.test(input.transitionId)||!validOperationUuid(input.clientRequestId)||(input.expectedVersion!==undefined&&(!Number.isInteger(input.expectedVersion)||input.expectedVersion<0))||Object.keys(input).some(k=>!['transitionId','clientRequestId','expectedVersion'].includes(k)))return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/jira-actions/${publishActionId}/close-options`,input,(v):v is JiraTicketLifecycleState=>isJiraTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].kind==='close'&&v.actions[0].status==='awaiting_approval'&&(input.expectedVersion===undefined||v.actions[0].id===publishActionId&&v.actions[0].version>input.expectedVersion),signal);
+  }
+  prepareTicketAssociation(input:TicketAssociationSelection,clientRequestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
+    if(!ticketAssociationSelectionSchema.safeParse(input).success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Choose an existing ticket and saved deployment evidence.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance',{binding:input,clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='ticket_release_association'&&v.binding.original.actionId===input.originalActionId&&v.binding.ticket.provider===input.provider&&v.binding.deployment.evidenceId===input.evidenceId&&v.binding.deployment.headReleaseVersion===input.expectedHeadVersion,signal);
+  }
+  ticketGovernanceReview(id:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
+    if(!ticketReviewId.safeParse(id).success)return Promise.resolve({ok:false,error:'Enter the saved ticket review ID.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/ticket-governance/${id}`,undefined,(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.id===id,signal);
+  }
+  mutateTicketGovernanceReview(id:string,expectedVersion:number,clientRequestId:string,mode:'approve'|'cancel',signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
+    if(!ticketReviewId.safeParse(id).success||!Number.isInteger(expectedVersion)||expectedVersion<0||expectedVersion>1||!ticketReviewNonce.safeParse(clientRequestId).success||!['approve','cancel'].includes(mode))return Promise.resolve({ok:false,error:'Reload the exact saved ticket review.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/ticket-governance/${id}/${mode==='approve'?'approval':'cancel'}`,{expectedVersion,clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.id===id&&v.version===expectedVersion+1&&(mode==='approve'?v.status==='approved':['cancelled','revoked'].includes(v.status)),signal);
   }
   jiraTicketActions(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<JiraTicketLifecycleState>> {
     if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId))return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});

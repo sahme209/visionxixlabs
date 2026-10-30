@@ -59,3 +59,6 @@ next-env.d.ts
 /public/media/homepage-mobile.png
 /public/media/homepage-walkthrough.webm
 /public/media/homepage-walkthrough.vtt
+
+# Local native ticket-review preview output (never a release artifact)
+/desktop/dist-ticket-preview/

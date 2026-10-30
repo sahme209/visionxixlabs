@@ -22,7 +22,8 @@ export async function releaseOperationPlanRequest<T>(context:Context,method:'GET
  const snBase=`${root}/servicenow-actions`;
  const snPath=method==='GET'?new RegExp(`^${snBase}(?:/metadata|/servicenow_action_[a-f0-9]{64}/close-options)?$`).test(path):method==='POST'?new RegExp(`^${snBase}(?:/servicenow_action_[a-f0-9]{64}/(?:approval|dispatch|recover|close-options))?$`).test(path):new RegExp(`^${snBase}/servicenow_action_[a-f0-9]{64}$`).test(path);
  const snRecoveryPath=method==='POST'&&new RegExp('^/api/desktop/deployments/[A-Za-z0-9_-]{1,160}/servicenow-actions/servicenow_action_[a-f0-9]{64}/recovery(?:/(?:approval|verify|cancel))?$').exec(path)?.[0]===path;
- if(!valid&&!(method!=='PATCH'&&approvalPath)&&!jiraPath&&!closePath&&!snPath&&!snRecoveryPath&&!providerApprovalPath&&!providerOperationPath&&!workflowEvidencePath&&!providerExecutionPath&&!deploymentExecutionPath&&!deploymentApprovalPath&&!githubReconnectPath)return fail();
+ const ticketGovernancePath=method==='GET'?/^\/api\/desktop\/ticket-governance\/ticket_review_[a-f0-9]{64}$/.test(path):method==='POST'&&/^\/api\/desktop\/ticket-governance(?:\/ticket_review_[a-f0-9]{64}\/(?:approval|cancel))?$/.test(path);
+ if(!ticketGovernancePath&&!valid&&!(method!=='PATCH'&&approvalPath)&&!jiraPath&&!closePath&&!snPath&&!snRecoveryPath&&!providerApprovalPath&&!providerOperationPath&&!workflowEvidencePath&&!providerExecutionPath&&!deploymentExecutionPath&&!deploymentApprovalPath&&!githubReconnectPath)return fail();
  const controller=new AbortController();let dispatched=false,status:number|undefined,reader:ReadableStreamDefaultReader<Uint8Array>|undefined,response:Response|undefined,rejectStop!:(e:Error)=>void;
  const stopped=new Promise<never>((_,reject)=>{rejectStop=reject});
  const stop=()=>{controller.abort();rejectStop(new Error('stopped'));try{void reader?.cancel().catch(()=>{});if(!reader)void response?.body?.cancel().catch(()=>{})}catch{/* already consumed */}};
