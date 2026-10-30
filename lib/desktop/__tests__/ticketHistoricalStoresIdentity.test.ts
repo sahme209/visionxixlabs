@@ -1,0 +1,14 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({deployment:vi.fn(),bridge:vi.fn(),evidenceAuthority:null as any}));
+vi.mock('@/lib/releaseops/jiraTicketLifecycleStore',()=>({createJiraTicketLifecycleStore:()=>({})}));
+vi.mock('@/lib/releaseops/serviceNowTicketLifecycleStore',()=>({createServiceNowTicketLifecycleStore:()=>({})}));
+vi.mock('@/lib/tauri/releaseDeploymentExecutionStore',()=>({createReleaseDeploymentExecutionStore:()=>({readHistoricalAcceptedSource:m.deployment})}));
+vi.mock('@/lib/tauri/releaseDeploymentEvidenceBridge',()=>({createReleaseDeploymentEvidenceBridge:()=>({readHistoricalBinding:m.bridge})}));
+vi.mock('@/lib/tauri/releaseWorkflowEvidenceStore',()=>({createReleaseWorkflowEvidenceStore:(_repo:any,ports:any)=>{m.evidenceAuthority=ports.assertHistoricalReader;return{}}}));
+import {createTicketHistoricalStores} from '../ticketHistoricalStores';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+const scope={organizationId:'org',actorUserId:'reader',sessionId:'paired'},binding={organizationId:'org',releaseId:'release',releaseVersion:5,planId:'plan',connectionRevision:'2026-10-28T12:51:47.497Z'};
+beforeEach(()=>{vi.clearAllMocks();m.deployment.mockResolvedValue({plan:{installationId:'123'}});m.bridge.mockResolvedValue(binding)});
+it('gets installation identity from audited accepted deployment and checks the full historical binding',async()=>{const authority=vi.fn(),tx={};createTicketHistoricalStores({} as any,{assertDeploymentReader:authority,assertTicketReader:vi.fn()});await m.evidenceAuthority(tx,scope,binding);expect(m.deployment).toHaveBeenCalledWith(scope,'release_deployment_'+sha256ContentHash({organizationId:'org',releaseId:'release',releaseVersion:5,planId:'plan'}),tx);expect(m.bridge).toHaveBeenCalledWith(tx,scope,binding);expect(authority).toHaveBeenCalledWith(tx,scope,{...binding,installationId:'123'});expect(binding.connectionRevision).toBe('2026-10-28T12:51:47.497Z')});
+it('refuses to authorize evidence if the accepted binding does not verify',async()=>{const authority=vi.fn();m.bridge.mockRejectedValue(Error('binding_changed'));createTicketHistoricalStores({} as any,{assertDeploymentReader:authority,assertTicketReader:vi.fn()});await expect(m.evidenceAuthority({},scope,binding)).rejects.toThrow('binding_changed');expect(authority).not.toHaveBeenCalled()});
+it('does not derive an identity when the accepted operation is unavailable',async()=>{const authority=vi.fn();m.deployment.mockRejectedValue(Error('not_accepted'));createTicketHistoricalStores({} as any,{assertDeploymentReader:authority,assertTicketReader:vi.fn()});await expect(m.evidenceAuthority({},scope,binding)).rejects.toThrow('not_accepted');expect(m.bridge).not.toHaveBeenCalled();expect(authority).not.toHaveBeenCalled()});

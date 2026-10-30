@@ -1,4 +1,5 @@
 import 'server-only';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {createJiraTicketLifecycleStore} from '@/lib/releaseops/jiraTicketLifecycleStore';
 import {createServiceNowTicketLifecycleStore} from '@/lib/releaseops/serviceNowTicketLifecycleStore';
@@ -18,7 +19,15 @@ export function createTicketHistoricalStores(repo:ReleaseOperationPlanRepo,ports
  const jira=createJiraTicketLifecycleStore(repo,{transportMode:'provider',assertCurrent:async(tx,input)=>{if(input.role!=='read'||input.actorUserId!==input.scope.actorUserId||!input.candidate)throw Error('ticket_archive_read_only');await ports.assertTicketReader(tx,input.scope,input.candidate)}});
  const sn=createServiceNowTicketLifecycleStore(repo,{transportMode:'provider',assertCurrent:async(tx,input)=>{if(input.role!=='read'||input.actorUserId!==input.scope.actorUserId||!input.candidate)throw Error('ticket_archive_read_only');await ports.assertTicketReader(tx,input.scope,input.candidate)}});
  const deployments=createReleaseDeploymentExecutionStore(repo,{assertHistoricalReader:(tx,scope,plan)=>ports.assertDeploymentReader(tx,scope,plan)});
- const evidence=createReleaseWorkflowEvidenceStore(repo,{assertHistoricalReader:(tx,scope,binding)=>ports.assertDeploymentReader(tx,scope,binding)});
+ const evidence=createReleaseWorkflowEvidenceStore(repo,{assertHistoricalReader:async(tx,scope,binding)=>{
+  // Evidence bindings retain their original revision and omit installation ID.
+  // Derive that identity only from the audited accepted deployment, never from
+  // today's mutable connection or a browser-supplied claim.
+  const operationId='release_deployment_'+sha256ContentHash({organizationId:binding.organizationId,releaseId:binding.releaseId,releaseVersion:binding.releaseVersion,planId:binding.planId});
+  const accepted=await deployments.readHistoricalAcceptedSource(scope,operationId,tx);
+  await bridge.readHistoricalBinding(tx,scope,binding);
+  await ports.assertDeploymentReader(tx,scope,{...binding,installationId:accepted.plan.installationId});
+ }});
  const bridge=createReleaseDeploymentEvidenceBridge(repo,{historicalDeploymentStore:deployments});
  return{
   readOriginal:(tx,scope,id,provider)=>provider==='jira'?jira.readPublishedProvenance(scope,id,tx):sn.readPublishedProvenance(scope,id,tx),
