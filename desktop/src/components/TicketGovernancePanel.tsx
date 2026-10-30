@@ -1,3 +1,4 @@
+import {ServiceNowWrittenObservationFacts} from './ServiceNowWrittenObservationFacts';
 import {ServiceNowTerminalPolicyCreator} from './ServiceNowTerminalPolicyCreator';
 import {AssociatedTicketActionsPanel} from './AssociatedTicketActionsPanel';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
@@ -18,6 +19,7 @@ function ReviewSession({version,provider}:{version:number;provider:'jira'|'servi
  }
  const input={kind:'ticket_release_association_request' as const,provider,originalActionId:original.trim(),evidenceId:evidence.trim(),expectedHeadVersion:Number(headVersion)},valid=ticketAssociationSelectionSchema.safeParse(input).success;
  const b=review?.binding;
+ const writtenObservation=b?.kind==='servicenow_written_link_observation_v1';
  return <section aria-label="Ticket deployment association" className="space-y-3 rounded-lg border border-white/10 p-3">
  <h4 className="text-sm font-medium text-zinc-200">Associate existing ticket with deployment evidence</h4>
  <p className="text-xs leading-5 text-zinc-400">Keep the original ticket request and deployed release distinct. Axiom rechecks the original record, successful run and current release before saving an exact review. Approval associates evidence only; it does not link or close a provider ticket.</p>
@@ -36,12 +38,12 @@ function ReviewSession({version,provider}:{version:number;provider:'jira'|'servi
  </dl>:b?.kind==='servicenow_terminal_policy'?<div className="space-y-2 break-words text-xs text-zinc-400"><p>Administrator-declared ServiceNow terminal-state policy</p><dl>{Object.entries({'Instance':b.instanceOrigin,'Connection':b.connectionId,'Connection revision':b.connectionRevision,'Process kind':b.nativeProcess.kind,'Model ID':b.nativeProcess.kind==='model'?b.nativeProcess.modelSysId:'Not a model','Process label':b.nativeProcess.label??'Not supplied','Model digest':b.modelDigest,'Policy provenance':b.provenance}).map(([label,value])=><div key={label}><dt className="font-medium">{label}</dt><dd>{value}</dd></div>)}</dl>
  <h6 className="font-medium">Terminal states</h6>{b.terminalStates.map(state=><p key={state.value}>{state.label} ({state.value}) → {state.outcome}</p>)}
  <h6 className="font-medium">Allowed closure fields</h6>{b.fields.length===0?<p>No closure fields declared.</p>:b.fields.map(field=><div key={field.name}><p>{field.label} · {field.name}</p><p>{field.required?'Required':'Optional'} · {field.writable?'Writable':'Read only'} · {field.type} · up to {field.maxBytes} bytes</p>{field.choices?.map(choice=><p key={choice.value}>{choice.value} → {choice.label}</p>)}</div>)}
- <h6 className="font-medium">Policy source evidence</h6>{b.sourceReferences.map(source=><p key={source.reference}>{source.reference} · {source.digest}</p>)}</div>:null}
+ <h6 className="font-medium">Policy source evidence</h6>{b.sourceReferences.map(source=><p key={source.reference}>{source.reference} · {source.digest}</p>)}</div>:b?.kind==='servicenow_written_link_observation_v1'?<ServiceNowWrittenObservationFacts binding={b}/>:null}
  {b&&<dl className="break-all text-xs text-zinc-500">{Object.entries({Organization:b.organizationId,Requester:b.requesterUserId,Executor:b.executorUserId,'Exact review digest':review.bindingDigest}).map(([label,value])=><div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}</dl>}
  {b&&<p className="text-xs text-zinc-500">Expires {new Date(b.expiresAt).toLocaleString()}</p>}
  {!review.current&&<p role="status" className="text-xs text-zinc-400">Historical review only. Current source could not be verified; approval is unavailable.</p>}
  {review.approval&&<p className="text-xs text-zinc-400">Independent approval recorded by {review.approval.actorUserId}.</p>}
- {review.canApprove&&review.current&&<><label className="block text-xs text-zinc-400"><input type="checkbox" checked={checked} disabled={busy||hold} onChange={e=>setChecked(e.target.checked)}/> I reviewed this exact ticket, deployment and policy evidence.</label><button type="button" className="btn-secondary" disabled={busy||hold||!checked||Date.parse(review.binding.expiresAt)<=Date.now()} onClick={()=>void run(s=>desktopClient.mutateTicketGovernanceReview(review.id,review.version,crypto.randomUUID(),'approve',s),true)}>Approve exact ticket association or policy</button></>}
+ {review.canApprove&&review.current&&<><label className="block text-xs text-zinc-400"><input type="checkbox" checked={checked} disabled={busy||hold} onChange={e=>setChecked(e.target.checked)}/> {writtenObservation?'I reviewed this exact ticket, original unknown attempt and journal proof.':'I reviewed this exact ticket, deployment and policy evidence.'}</label><button type="button" className="btn-secondary" disabled={busy||hold||!checked||Date.parse(review.binding.expiresAt)<=Date.now()} onClick={()=>void run(s=>desktopClient.mutateTicketGovernanceReview(review.id,review.version,crypto.randomUUID(),'approve',s),true)}>{writtenObservation?'Approve exact written-note observation':'Approve exact ticket association or policy'}</button></>}
  {review.canCancel&&<button type="button" className="btn-secondary" disabled={busy||hold} onClick={()=>void run(s=>desktopClient.mutateTicketGovernanceReview(review.id,review.version,crypto.randomUUID(),'cancel',s),true)}>Cancel or revoke review</button>}
  <p className="text-xs text-zinc-500">Provider execution is separate and remains unavailable from this review.</p>{b?.kind==='ticket_release_association'&&<AssociatedTicketActionsPanel key={`${review.id}:${review.version}`} review={review}/>}</article>}
  </section>;
