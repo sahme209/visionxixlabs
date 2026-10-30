@@ -22,3 +22,27 @@ it('disables a reviewed provider action at its deadline without another user int
   expect(button.hasAttribute('disabled')).toBe(true);expect(screen.getByText(/This exact provider action has expired/)).toBeTruthy();expect(m.request).toHaveBeenCalledTimes(1);
  }finally{vi.useRealTimers()}
 });
+
+it('deliberately reads only the uncertain action outcome and never resends it',async()=>{
+ const executable={...row,kind:'close',status:'approved',version:3,canApprove:false,canExecute:true};
+ m.request.mockResolvedValueOnce({ok:true,data:{provider:'jira',actions:[executable],truncated:false}});
+ render(createElement(AssociatedTicketActionsPanel,{review}));await screen.findByText('Exact deployment link');
+ fireEvent.click(screen.getByLabelText('I reviewed this exact provider target and content.'));
+ m.request.mockResolvedValueOnce({ok:false,outcomeUnconfirmed:true});
+ fireEvent.click(screen.getByRole('button',{name:'Close approved ticket'}));await screen.findByText(/provider action outcome is unconfirmed/);
+ m.request.mockResolvedValueOnce({ok:true,data:{provider:'jira',action:{...executable,version:5,status:'confirmed',attemptCount:1,providerWritePerformed:true,canExecute:false}}});
+ fireEvent.click(screen.getByRole('button',{name:'Check saved action outcome'}));await screen.findByText('Provider write confirmed');
+ expect(m.request.mock.calls[2][1]).toEqual({action:'load',bindingDigest:hash,actionId:id});
+ expect(m.request.mock.calls.filter(([,input])=>input.action==='dispatch')).toHaveLength(1);
+ expect(screen.queryByRole('button',{name:'Close approved ticket'})).toBeNull();
+});
+it('keeps uncertain execution held when a direct read still shows its old approval',async()=>{
+ const executable={...row,kind:'close',status:'approved',version:3,canApprove:false,canExecute:true};
+ m.request.mockResolvedValueOnce({ok:true,data:{provider:'jira',actions:[executable],truncated:false}});
+ render(createElement(AssociatedTicketActionsPanel,{review}));await screen.findByText('Exact deployment link');fireEvent.click(screen.getByLabelText('I reviewed this exact provider target and content.'));
+ m.request.mockResolvedValueOnce({ok:false,outcomeUnconfirmed:true});fireEvent.click(screen.getByRole('button',{name:'Close approved ticket'}));await screen.findByText(/provider action outcome is unconfirmed/);
+ m.request.mockResolvedValueOnce({ok:true,data:{provider:'jira',action:executable}});fireEvent.click(screen.getByRole('button',{name:'Check saved action outcome'}));
+ await waitFor(()=>expect(m.request).toHaveBeenCalledTimes(3));await act(async()=>{});
+ expect(screen.getByRole('button',{name:'Close approved ticket'}).hasAttribute('disabled')).toBe(true);
+ expect(m.request.mock.calls.filter(([,input])=>input.action==='dispatch')).toHaveLength(1);
+});
