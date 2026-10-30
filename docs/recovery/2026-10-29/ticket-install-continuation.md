@@ -39,3 +39,16 @@ Logs are under `work/ticket-install-completion/` and intentionally excluded from
 ## Preserved boundaries
 
 No GitHub push, paid CI, Vercel deployment, schema/env/flag change, new credentials/grants, provider action, purchase, trial, recovery SQL, migration/backfill, backup/Neon deletion, old-operation retry or human-approval impersonation. Public v0.1.21 and prior live acceptance evidence remain unchanged. Existing trials retain renewal-off/November23 follow-up. Prior AI budget last4c used; no model request was made. Guided customer workflow remains a separate planning-list item, and Governance Intelligence is not implemented.
+
+
+## Verified follow-on ticket wiring (October 29 local checkpoint)
+
+The local Jira path now builds exact link and closure candidates from independently approved association references, uses the existing one-attempt durable stores/transport, and supports closure via immutable historical link receipts after a fresh association review. Version-bound amendments apply only to unused drafts and clear prior approvals. Confirmed/unknown consumed attempts cannot be refreshed or resent. Request composition checks the paired user, tenant, connection revision, current provider consent and executor authority; closure retains administrator requirements. Network/model preflight occurs outside durable action locks.
+
+The native client now displays exact associated actions, separate review/execution controls, historical accepted links, native Jira closure choices and uncertainty holds. ServiceNow terminal-policy proposals require explicit administrator runbook evidence and a second human; a lost save response is recovered only by the original caller-owned request nonce. Model discovery cannot clear that hold.
+
+Latest verification: 41 focused action/client/policy/service checks; 8 HTTP/route checks including strict nonce lookup; 5 real isolated PostgreSQL journeys with simulated provider acknowledgements. Root and desktop types and frontend/native preview builds pass. Final source review found no further important defects in the two recovery fixes. The local fixture briefly started with default loopback configuration, was immediately stopped and restarted socket-only; fixture guards refused that first test before any journey ran. Five journeys then passed; owned PostgreSQL is stopped. No customer/cloud database was used.
+
+This is not completed live ticket acceptance. ServiceNow's associated closure composition and separately authorized narrow journal readback remain incomplete; permissions.journalRead stays false. The instance browser currently shows an invalid-login error and needs the user's existing-instance sign-in before supported access can be inspected. No Table API access was inferred or granted. Production review routes remain disabled/unshipped. KAN-4/CHG0030002 were not linked, closed or resubmitted. Genuine exact independent approvals and a new activation exception remain required after the complete package is ready.
+
+Windows remains local Store manifest/assets preparation only. No actual MSIX, Store identity/submission/signature, clean Windows installation or session persistence acceptance exists. The website MSI warning remains unresolved. Published v0.1.21 and the private backup branch are unchanged.

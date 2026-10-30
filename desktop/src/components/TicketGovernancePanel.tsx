@@ -1,3 +1,5 @@
+import {ServiceNowTerminalPolicyCreator} from './ServiceNowTerminalPolicyCreator';
+import {AssociatedTicketActionsPanel} from './AssociatedTicketActionsPanel';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {desktopClient} from '../lib/desktopClient';
 import {ticketAssociationSelectionSchema,ticketReviewId,type TicketGovernanceReview} from '../lib/ticketGovernance';
@@ -19,6 +21,7 @@ function ReviewSession({version,provider}:{version:number;provider:'jira'|'servi
  return <section aria-label="Ticket deployment association" className="space-y-3 rounded-lg border border-white/10 p-3">
  <h4 className="text-sm font-medium text-zinc-200">Associate existing ticket with deployment evidence</h4>
  <p className="text-xs leading-5 text-zinc-400">Keep the original ticket request and deployed release distinct. Axiom rechecks the original record, successful run and current release before saving an exact review. Approval associates evidence only; it does not link or close a provider ticket.</p>
+ {provider==='servicenow'&&<ServiceNowTerminalPolicyCreator onPrepared={data=>{if(current()){setReview(data);setLookup(data.id);setChecked(false)}}}/>}
  <label className="block text-xs text-zinc-400">Original published action ID<input className="mt-1 block w-full rounded border border-white/15 bg-transparent p-2" value={original} disabled={busy||hold} onChange={e=>setOriginal(e.target.value)}/></label>
  <label className="block text-xs text-zinc-400">Saved successful deployment evidence ID<input className="mt-1 block w-full rounded border border-white/15 bg-transparent p-2" value={evidence} disabled={busy||hold} onChange={e=>setEvidence(e.target.value)}/></label>
  <label className="block text-xs text-zinc-400">Current deployed release head version<input type="number" min="1" step="1" className="mt-1 block w-full rounded border border-white/15 bg-transparent p-2" value={headVersion} disabled={busy||hold} onChange={e=>setHeadVersion(e.target.value)}/></label>
@@ -40,6 +43,6 @@ function ReviewSession({version,provider}:{version:number;provider:'jira'|'servi
  {review.approval&&<p className="text-xs text-zinc-400">Independent approval recorded by {review.approval.actorUserId}.</p>}
  {review.canApprove&&review.current&&<><label className="block text-xs text-zinc-400"><input type="checkbox" checked={checked} disabled={busy||hold} onChange={e=>setChecked(e.target.checked)}/> I reviewed this exact ticket, deployment and policy evidence.</label><button type="button" className="btn-secondary" disabled={busy||hold||!checked||Date.parse(review.binding.expiresAt)<=Date.now()} onClick={()=>void run(s=>desktopClient.mutateTicketGovernanceReview(review.id,review.version,crypto.randomUUID(),'approve',s),true)}>Approve exact ticket association or policy</button></>}
  {review.canCancel&&<button type="button" className="btn-secondary" disabled={busy||hold} onClick={()=>void run(s=>desktopClient.mutateTicketGovernanceReview(review.id,review.version,crypto.randomUUID(),'cancel',s),true)}>Cancel or revoke review</button>}
- <p className="text-xs text-zinc-500">Provider execution is separate and remains unavailable from this review.</p></article>}
+ <p className="text-xs text-zinc-500">Provider execution is separate and remains unavailable from this review.</p>{b?.kind==='ticket_release_association'&&<AssociatedTicketActionsPanel key={`${review.id}:${review.version}`} review={review}/>}</article>}
  </section>;
 }

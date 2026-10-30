@@ -1,3 +1,6 @@
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+import {ticketGovernanceReferenceSchema,type TicketGovernanceReference} from '@/lib/releaseops/ticketGovernanceReference';
+import type {ReleaseOperationPlanTransaction} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import 'server-only';
 import {z} from 'zod';
 import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
@@ -37,7 +40,23 @@ export function createTicketGovernanceService(repo:ReleaseOperationPlanRepo,port
   if(!row||row.id!==id||row.organizationId!==scope.organizationId||row.workflowKind!==TICKET_GOVERNANCE_REVIEW_KIND)throw Error('ticket_review_unavailable');
   const hint=z.object({binding:ticketGovernanceBindingSchema}).passthrough().parse(row.inputJson);return warm(scope,hint.binding,signal);
  }
+ const approved=new Map<string,TicketGovernanceBinding>();
+ const approvalKey=(scope:TicketReviewScope,reference:TicketGovernanceReference)=>sha256ContentHash({scope:ticketReviewScopeSchema.parse(scope),reference:ticketGovernanceReferenceSchema.parse(reference)});
  return{
+  async preflightApproved(scope:TicketReviewScope,rawReference:TicketGovernanceReference,signal:AbortSignal){
+   const reference=ticketGovernanceReferenceSchema.parse(rawReference),key=approvalKey(scope,reference);approved.delete(key);if(approved.size>=10)throw Error('ticket_review_preflight_bound');
+   const fresh=await existing(scope,reference.reviewId,signal);if(sha256ContentHash(fresh.binding)!==reference.bindingDigest)throw Error('ticket_review_binding_changed');
+   const proof=await repo.$transaction(tx=>store.readApproved(tx,scope,reference.reviewId,fresh.binding));signal.throwIfAborted();approved.set(key,structuredClone(fresh.binding));return proof;
+  },
+  async readApprovedInTransaction(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,reference:TicketGovernanceReference){
+   const binding=approved.get(approvalKey(scope,reference));if(!binding)throw Error('ticket_review_preflight_required');
+   return store.readApproved(tx,scope,reference.reviewId,structuredClone(binding));
+  },
+  async lookup(scope:TicketReviewScope,clientRequestId:string,signal:AbortSignal){
+   ticketReviewScopeSchema.parse(scope);z.string().uuid().parse(clientRequestId);signal.throwIfAborted();
+   const rows=await repo.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,workflowKind:TICKET_GOVERNANCE_REVIEW_KIND,requestedByUserId:scope.actorUserId,inputJson:{path:['clientRequestId'],equals:clientRequestId}},orderBy:[{createdAt:'desc'},{id:'desc'}],take:2});
+   if(rows.length!==1)throw Error('ticket_review_reconciliation_unavailable');const id=rows[0].id;await store.readHistory(scope,id);try{await existing(scope,id,signal)}catch{signal.throwIfAborted();return store.readHistory(scope,id)}return store.get(scope,id);
+  },
   async prepare(scope:TicketReviewScope,binding:unknown,clientRequestId:string,signal:AbortSignal){const fresh=await warm(scope,binding,signal);return store.prepare(fresh.scope,fresh.binding,clientRequestId)},
   async get(scope:TicketReviewScope,id:string,signal:AbortSignal){signal.throwIfAborted();await store.readHistory(scope,id);try{await existing(scope,id,signal)}catch{signal.throwIfAborted();return store.readHistory(scope,id)}return store.get(scope,id)},
   async approve(scope:TicketReviewScope,input:{id:string;expectedVersion:number;clientRequestId:string},signal:AbortSignal){await existing(scope,input.id,signal);return store.approve(scope,input)},

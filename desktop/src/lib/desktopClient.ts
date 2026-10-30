@@ -1,3 +1,5 @@
+import {serviceNowTerminalPolicyRequestSchema,serviceNowTerminalPolicyOptionsSchema,type ServiceNowTerminalPolicyRequest,type ServiceNowTerminalPolicyOptions} from '../../../lib/releaseops/serviceNowTerminalPolicyRequest';
+import {associatedTicketActionsRequestSchema,isAssociatedTicketActionsResult,type AssociatedTicketActionsRequest,type AssociatedTicketActionsResult} from './associatedTicketActions';
 import {ticketAssociationSelectionSchema,ticketReviewId,ticketReviewNonce,isTicketGovernanceReview,type TicketAssociationSelection,type TicketGovernanceReview} from './ticketGovernance';
 import type {BotActionTaskReference} from '../../../lib/axiom/bot/actionTaskBindingContract';
 import {slackNotificationsRequest,type SlackNotificationsResult,type SlackNotificationRequest,type SlackNotificationLookup} from "./slackNotificationsTransport";
@@ -1580,6 +1582,21 @@ export class DesktopClient {
   prepareJiraTicketClose(requestId:string,publishActionId:string,input:{transitionId:string;clientRequestId:string;expectedVersion?:number},signal?:AbortSignal):Promise<ReleasePlanResult<JiraTicketLifecycleState>> {
     if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^jira_action_[a-f0-9]{64}$/.test(publishActionId)||!/^[0-9]{1,20}$/.test(input.transitionId)||!validOperationUuid(input.clientRequestId)||(input.expectedVersion!==undefined&&(!Number.isInteger(input.expectedVersion)||input.expectedVersion<0))||Object.keys(input).some(k=>!['transitionId','clientRequestId','expectedVersion'].includes(k)))return Promise.resolve({ok:false,error:'Reload saved Jira actions.',outcomeUnconfirmed:false});
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/jira-actions/${publishActionId}/close-options`,input,(v):v is JiraTicketLifecycleState=>isJiraTicketLifecycleState(v,requestId)&&v.actions.length===1&&v.actions[0].kind==='close'&&v.actions[0].status==='awaiting_approval'&&(input.expectedVersion===undefined||v.actions[0].id===publishActionId&&v.actions[0].version>input.expectedVersion),signal);
+  }
+  recoverServiceNowTerminalPolicy(clientRequestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
+    if(!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Use the original unconfirmed policy request ID.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance/lookup',{clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='servicenow_terminal_policy',signal);
+  }
+  serviceNowTerminalPolicyOptions(signal?:AbortSignal):Promise<ReleasePlanResult<ServiceNowTerminalPolicyOptions>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),'GET','/api/desktop/ticket-governance/servicenow-policy-options',undefined,(v):v is ServiceNowTerminalPolicyOptions=>serviceNowTerminalPolicyOptionsSchema.safeParse(v).success,signal);
+  }
+  prepareServiceNowTerminalPolicy(input:ServiceNowTerminalPolicyRequest,clientRequestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
+    const parsed=serviceNowTerminalPolicyRequestSchema.safeParse(input);if(!parsed.success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Review the administrator-declared policy fields and source evidence.',outcomeUnconfirmed:false});
+    const selected=parsed.data;return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance',{binding:selected,clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='servicenow_terminal_policy'&&v.binding.nativeProcess.kind==='model'&&v.binding.nativeProcess.modelSysId===selected.modelSysId&&JSON.stringify(v.binding.sourceReferences)===JSON.stringify(selected.sourceReferences)&&JSON.stringify(v.binding.terminalStates)===JSON.stringify(selected.terminalStates)&&JSON.stringify(v.binding.fields)===JSON.stringify(selected.fields),signal);
+  }
+  associatedTicketAction(reviewId:string,input:AssociatedTicketActionsRequest,signal?:AbortSignal):Promise<ReleasePlanResult<AssociatedTicketActionsResult>> {
+    if(!ticketReviewId.safeParse(reviewId).success||!associatedTicketActionsRequestSchema.safeParse(input).success)return Promise.resolve({ok:false,error:'Reload the exact ticket association and saved actions.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/ticket-governance/${reviewId}/actions`,input,(v):v is AssociatedTicketActionsResult=>isAssociatedTicketActionsResult(v,reviewId,input),signal);
   }
   prepareTicketAssociation(input:TicketAssociationSelection,clientRequestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
     if(!ticketAssociationSelectionSchema.safeParse(input).success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Choose an existing ticket and saved deployment evidence.',outcomeUnconfirmed:false});

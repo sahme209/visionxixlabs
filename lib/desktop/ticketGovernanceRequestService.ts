@@ -1,3 +1,5 @@
+import {createServiceNowTerminalPolicyOptions} from './serviceNowTerminalPolicyOptions';
+import {createServiceNowTerminalPolicyProposal} from './serviceNowTerminalPolicyProposal';
 import 'server-only';
 import type {NextRequest} from 'next/server';
 import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
@@ -14,7 +16,7 @@ import {bindPublishedTicketReadCandidate} from './ticketAssociationReadBinding';
 import {createServiceNowTicketConnectionReader,type ServiceNowTicketConnectionRepository} from './serviceNowTicketConnection';
 import {createServiceNowModelPreflight} from './serviceNowModelPreflight';
 import {createTicketAssociationProposal,ticketAssociationRequestSchema} from './ticketAssociationProposal';
-import type {TicketReviewScope} from '@/lib/releaseops/ticketGovernanceReviewContract';
+import {ticketReleaseAssociationSchema,type TicketReviewScope} from '@/lib/releaseops/ticketGovernanceReviewContract';
 /** Production-capable LOCAL composition; activation and provider write transports
  * remain separate. Every network adapter here supports fixed GET reads only. */
 export function createTicketGovernanceRequestService(request:NextRequest,repo:ReleaseOperationPlanRepo,scope:TicketReviewScope){
@@ -45,7 +47,8 @@ export function createTicketGovernanceRequestService(request:NextRequest,repo:Re
   assertPreflightAuthority:async(s,b,signal)=>{await current(s,signal);await repo.$transaction(tx=>authority(tx,{scope:s,actorUserId:s.actorUserId,role:'reader',binding:b}));await current(s,signal)},
   readOriginalCandidate:async(s,b,signal)=>{await current(s,signal);const original=await repo.$transaction(tx=>stores.readOriginal(tx,s,b.original.actionId,b.ticket.provider))as {candidate:unknown;actionId:string;issue:unknown;executorUserId:string};if(original.actionId!==b.original.actionId)throw Error('ticket_original_changed');const readBinding=bindPublishedTicketReadCandidate(s.organizationId,b.ticket,original);originals.set(sha256ContentHash(readBinding.candidate),{actionId:original.actionId,ticket:b.ticket});await current(s,signal);return readBinding.candidate},
  });
- return{...service,prepare:async(s:TicketReviewScope,raw:unknown,nonce:string,signal:AbortSignal)=>{
+ return{...service,readOriginalForAssociation:async(tx:import('@/lib/agent/workflows/releaseOperationPlanStore').ReleaseOperationPlanTransaction,s:TicketReviewScope,raw:unknown)=>{const a=ticketReleaseAssociationSchema.parse(raw);await current(s,request.signal);const original=await stores.readOriginal(tx,s,a.original.actionId,a.ticket.provider) as {candidate:unknown};await current(s,request.signal);return original},prepare:async(s:TicketReviewScope,raw:unknown,nonce:string,signal:AbortSignal)=>{
+  if(raw&&typeof raw==='object'&&'kind'in raw&&raw.kind==='servicenow_terminal_policy_request'){const propose=createServiceNowTerminalPolicyProposal(createServiceNowTerminalPolicyOptions(request));return service.prepare(s,await propose(s,raw,signal),nonce,signal)}
   if(raw&&typeof raw==='object'&&'kind'in raw&&raw.kind==='ticket_release_association_request'){
    const selected=ticketAssociationRequestSchema.parse(raw);
    const propose=createTicketAssociationProposal({assertCurrent:current,
