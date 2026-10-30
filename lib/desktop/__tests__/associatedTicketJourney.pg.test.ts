@@ -1,3 +1,4 @@
+import {associatedTicketTransactionRepository} from '../associatedTicketTransactionBudget';
 import {beforeAll,afterAll,describe,it,expect,vi} from 'vitest';
 import {createRequire} from 'node:module';import {randomUUID} from 'node:crypto';import {realpathSync,statSync} from 'node:fs';
 import {associatedTicketFixture} from './fixtures/associatedTicket';
@@ -43,5 +44,11 @@ describe.skipIf(!socket)('associated ticket lifecycle on owned isolated PostgreS
 
  it.each(['jira','servicenow'] as const)('keeps %s provider review fresh after time spent on the separate provenance review',async provider=>{const f=await fixture(provider,1800000),signal=new AbortController().signal;f.clock.now+=600000;const link=await f.service.prepareLink(f.owner,randomUUID(),signal);expect(Date.parse(link.expiresAt)-f.clock.now).toBe(900000);const expiresAt=link.expiresAt;f.clock.now+=120000;const approved=await f.service.mutate(f.reviewer,{actionId:link.id,expectedVersion:link.version,clientRequestId:randomUUID()},'approve',signal);expect(approved.expiresAt).toBe(expiresAt);f.clock.now+=120000;expect((await f.service.mutate(f.owner,{actionId:link.id,expectedVersion:approved.version,clientRequestId:randomUUID()},'dispatch',signal)).status).toBe('confirmed');expect(f.transport).toHaveBeenCalledTimes(1);await expect(f.service.mutate(f.owner,{actionId:link.id,expectedVersion:approved.version,clientRequestId:randomUUID()},'dispatch',signal)).rejects.toThrow();expect(f.transport).toHaveBeenCalledTimes(1)});
  it('renews only an unused expired action and clears its prior independent approval',async()=>{const f=await fixture('servicenow',1800000),signal=new AbortController().signal,link=await f.service.prepareLink(f.owner,randomUUID(),signal),approved=await f.service.mutate(f.reviewer,{actionId:link.id,expectedVersion:link.version,clientRequestId:randomUUID()},'approve',signal);f.clock.now+=960000;const amended=await f.service.prepareLink(f.owner,randomUUID(),signal,{actionId:link.id,expectedVersion:approved.version});expect(amended).toMatchObject({id:link.id,status:'awaiting_approval',attemptCount:0,canExecute:false});expect(Date.parse(amended.expiresAt)).toBe(Date.parse(f.binding.expiresAt));expect(f.transport).not.toHaveBeenCalled();expect(await f.service.mutate(f.owner,{actionId:amended.id,expectedVersion:amended.version,clientRequestId:randomUUID()},'dispatch',signal)).toMatchObject({status:'awaiting_approval',attemptCount:0,canExecute:false});expect(f.transport).not.toHaveBeenCalled();const saved=await db.durableAgentWorkflow.findUnique({where:{id:amended.id}});expect(saved.stateJson.approval).toBeNull();expect(await db.durableAgentWorkflowEvent.count({where:{workflowRunId:amended.id,eventType:'servicenow_ticket.approved'}})).toBe(1)});
+
+ it('reproduces the default transaction expiry and keeps the scoped budget finite on actual PostgreSQL',async()=>{
+  const slow=async(tx:any)=>{await tx.$queryRaw`SELECT 1::int AS alive FROM pg_sleep(6)`;return tx.$queryRaw`SELECT 1::int AS alive`};
+  await expect(db.$transaction(slow)).rejects.toMatchObject({code:'P2028'});
+  expect(await associatedTicketTransactionRepository(db).$transaction(slow)).toEqual([{alive:1}]);
+ },20000);
 
 });

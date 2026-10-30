@@ -1,3 +1,4 @@
+import {associatedTicketTransactionRepository} from './associatedTicketTransactionBudget';
 import {matchHistoricalServiceNowLink} from '@/lib/releaseops/serviceNowAssociatedCloseProof';
 import {buildAssociatedServiceNowCloseCandidate} from '@/lib/releaseops/associatedServiceNowCloseCandidate';
 import {serviceNowTerminalPolicySchema} from '@/lib/releaseops/ticketGovernanceReviewContract';
@@ -36,6 +37,7 @@ const mutation=z.object({actionId:z.string().regex(/^(jira|servicenow)_action_[a
 /** One authenticated request, one exact association. Uses the existing durable
  * one-attempt stores and transports; no second execution or approval system. */
 export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRepo,rawReference:TicketGovernanceReference,ports:AssociatedTicketActionsPorts){
+ repo=associatedTicketTransactionRepository(repo);
  const reference=ticketGovernanceReferenceSchema.parse(rawReference),now=ports.now??Date.now;
  let hint:TicketReleaseAssociation|undefined;
  const snCloseReceipts=new Map<string,{candidate:ServiceNowTicketActionCandidate;expiresAt:number}>();

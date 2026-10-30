@@ -1,0 +1,11 @@
+# Bound associated-ticket transactions without dropping checks
+
+Live cause-preserving diagnostics on e1a7c692 confirmed transaction_unavailable (P2028), action_service, elapsed10706ms, claimMayHaveStarted false during unused Jira closure renewal. The durable record remained approved version1/attempt0. No provider write ran. Earlier source_changed warnings had masked that transaction failure.
+
+Prisma's default interactive transaction deadline is five seconds. Actual owned private PostgreSQL reproduced P2028 when a six-second read was followed by another query. The former associated repository also failed the same regression. The scoped wrapper passes with maxWait 2000ms and timeout 15000ms. All 10 actual isolated PostgreSQL journeys pass, including stale-source/native-expiry/independent-approval and unconsumed-draft renewal guards. Provider responses in those journeys are simulated; this is not live ticket acceptance.
+
+The wrapper is applied only inside createAssociatedTicketActionsService, retaining the exact transaction callback/delegates and every current authority, history, provenance, clock and one-attempt check. Shared repository typing gains optional transaction options; unrelated workflows and Prisma global defaults are unchanged. No retries, schema/settings, grants or provider transport changes. HTTP's existing 25-second abort signal remains; the 15-second limit is per transaction, not a promise of total request latency. Locks can remain held longer, bounded by that limit.
+
+26 focused checks and 10 actual isolated PostgreSQL checks pass. Independent review found no important correctness/security issues. The first fixture startup used its defaults; its private-socket guard refused connection before tests, and the owned server was restarted with no TCP listener before the real regression. It is stopped after verification. No production database changes or recovery SQL ran.
+
+Exact production e1a7c692 source candidate has three runtime/type files and two test overlays. Production build/TypeScript is pending at the time of this note. No deployment authorization remains after the consumed diagnostics rollout; a new specific activation exception is required. Live success remains unverified.

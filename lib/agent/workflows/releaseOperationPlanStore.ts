@@ -10,7 +10,7 @@ export interface ReleaseOperationPlanTransaction {
  durableAgentWorkflow:{findFirst(args:{where:Record<string,unknown>}):Promise<ReleaseOperationPlanRow|null>;findMany(args:{where:Record<string,unknown>;orderBy:Record<string,string>[];take:number}):Promise<ReleaseOperationPlanRow[]>;create(args:{data:Record<string,unknown>}):Promise<ReleaseOperationPlanRow>;updateMany(args:{where:Record<string,unknown>;data:Record<string,unknown>}):Promise<{count:number}>};
  durableAgentWorkflowEvent:{findMany(args:{where:Record<string,unknown>;orderBy:{sequence:'asc'};take:number}):Promise<ReleaseOperationPlanEvent[]>;create(args:{data:ReleaseOperationPlanEvent}):Promise<unknown>};
 }
-export interface ReleaseOperationPlanRepo extends ReleaseOperationPlanTransaction {$transaction<T>(fn:(tx:ReleaseOperationPlanTransaction)=>Promise<T>):Promise<T>}
+export interface ReleaseOperationPlanRepo extends ReleaseOperationPlanTransaction {$transaction<T>(fn:(tx:ReleaseOperationPlanTransaction)=>Promise<T>,options?:{maxWait?:number;timeout?:number}):Promise<T>}
 export type ReleasePlanAuthority=(tx:ReleaseOperationPlanTransaction)=>Promise<void>;
 type Scope={organizationId:string;actorUserId:string;assertCurrent:ReleasePlanAuthority};
 export class ReleaseOperationPlanConflict extends Error {constructor(){super('Release plan changed or is unavailable. Refresh the stored release and review again.');this.name='ReleaseOperationPlanConflict'}}
