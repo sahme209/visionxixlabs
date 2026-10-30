@@ -1,4 +1,5 @@
 import 'server-only';
+import {TICKET_ASSOCIATION_WINDOW_MS,TICKET_PROVIDER_ACTION_WINDOW_MS} from './ticketReviewWindows';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction,ReleaseOperationPlanRow} from '@/lib/agent/workflows/releaseOperationPlanStore';
@@ -86,7 +87,7 @@ export function createTicketGovernanceReviewStore(repo:ReleaseOperationPlanRepo,
  return{
   async prepare(rawScope:TicketReviewScope,rawBinding:unknown,clientRequestId:string){
    const scope=ticketReviewScopeSchema.parse(rawScope),c=ticketGovernanceBindingSchema.parse(rawBinding);uuid.parse(clientRequestId);
-   if(c.organizationId!==scope.organizationId||c.requesterUserId!==scope.actorUserId||c.executorUserId!==scope.actorUserId||Date.parse(c.expiresAt)>now().getTime()+900000)refuse();
+   if(c.organizationId!==scope.organizationId||c.requesterUserId!==scope.actorUserId||c.executorUserId!==scope.actorUserId||Date.parse(c.expiresAt)>now().getTime()+(c.kind==='ticket_release_association'?TICKET_ASSOCIATION_WINDOW_MS:TICKET_PROVIDER_ACTION_WINDOW_MS))refuse();
    return repo.$transaction(async tx=>{
     const role=c.kind==='servicenow_terminal_policy'?'policy_admin':'requester';await authority(tx,scope,scope.actorUserId,role,c);await source(tx,scope,c);
     const digest=sha256ContentHash(c),id=idFor(scope.organizationId,digest),prior=await tx.durableAgentWorkflow.findFirst({where:{id,organizationId:scope.organizationId,workflowKind:TICKET_GOVERNANCE_REVIEW_KIND}});

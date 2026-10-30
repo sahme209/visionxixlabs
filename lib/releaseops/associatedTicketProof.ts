@@ -13,7 +13,7 @@ export async function verifyAssociatedTicketLink(tx:ReleaseOperationPlanTransact
  if(!read)throw Error('ticket_association_review_unavailable');
  const reference=ticketGovernanceReferenceSchema.parse((candidate as {association?:unknown})?.association),proof=proofSchema.parse(await read(tx,scope,reference)),a=proof.binding;
  if(proof.reviewId!==reference.reviewId||proof.bindingDigest!==reference.bindingDigest||sha256ContentHash(a)!==reference.bindingDigest||a.organizationId!==scope.organizationId||[a.requesterUserId,a.executorUserId].includes(proof.approverUserId)||a.original.actionId!==original.actionId||a.original.actionVersion!==original.version||a.executorUserId!==original.executorUserId||sha256ContentHash(a.ticket.issue)!==sha256ContentHash(original.issue)||(original.recovery?sha256ContentHash(original.recovery):null)!==a.original.recoveryDigest)throw Error('ticket_association_review_changed');
- if(sha256ContentHash(buildAssociatedTicketLink(reference,a,original.candidate,now))!==sha256ContentHash(candidate))throw Error('ticket_associated_candidate_changed');
+ if(sha256ContentHash(buildAssociatedTicketLink(reference,a,original.candidate,now,(candidate as {expiresAt:string}).expiresAt))!==sha256ContentHash(candidate))throw Error('ticket_associated_candidate_changed');
 }
 
 /** Historical success is immutable evidence, not current execution authority.
@@ -24,7 +24,7 @@ export function matchHistoricalJiraLink(historical:unknown,fresh:unknown){
  if(old.kind!=='link'||next.kind!=='link'||!old.association||!next.association||!('siteId'in old)||!('siteId'in next)||['organizationId','releaseId','releaseVersion','sourceDigest','connectionId','siteId','publishActionId','payloadDigest','issue','evidence','payload'].some(k=>sha256ContentHash(old[k])!==sha256ContentHash(next[k])))throw Error('ticket_historical_link_changed');
 }
 export async function verifyAssociatedTicketClosure(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,rawClose:unknown,historicalLink:unknown,original:{actionId:string;version:number;candidate:unknown;executorUserId:string;issue:unknown;recovery:unknown|null},read:ApprovedTicketAssociationReader|undefined,now:number){
- if(!read)throw Error('ticket_association_review_unavailable');const c=rawClose as Record<string,unknown>,reference=ticketGovernanceReferenceSchema.parse(c.association),proof=proofSchema.parse(await read(tx,scope,reference)),fresh=buildAssociatedTicketLink(reference,proof.binding,original.candidate,now);
+ if(!read)throw Error('ticket_association_review_unavailable');const c=rawClose as Record<string,unknown>,reference=ticketGovernanceReferenceSchema.parse(c.association),proof=proofSchema.parse(await read(tx,scope,reference)),fresh=buildAssociatedTicketLink(reference,proof.binding,original.candidate,now,c.expiresAt as string);
  await verifyAssociatedTicketLink(tx,scope,fresh,original,read,now);matchHistoricalJiraLink(historicalLink,fresh);
  if(c.kind!=='close'||!('siteId'in c)||['organizationId','releaseId','releaseVersion','sourceDigest','connectionId','connectionRevision','siteId','expiresAt','publishActionId','issue'].some(k=>sha256ContentHash(c[k])!==sha256ContentHash((fresh as Record<string,unknown>)[k])))throw Error('ticket_associated_closure_changed');
 }

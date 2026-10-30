@@ -56,7 +56,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
  async function current(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,raw:Readonly<Candidate>){
   try{const c=parse(raw);if(!('association'in c)||!c.association||sha256ContentHash(c.association)!==sha256ContentHash(reference))sourceChanged();
    const proof=await approved(tx,scope,reference),a=ticketReleaseAssociationSchema.parse(proof.binding),original=await ports.readOriginal(tx,scope,a);
-   const expected=buildAssociatedTicketLink(reference,a,original.candidate,now());
+   const expected=buildAssociatedTicketLink(reference,a,original.candidate,now(),c.expiresAt);
    if(c.kind==='link')return expected;
    if(c.kind==='close'&&'instanceOrigin'in c){
     if(!c.linkedEvidenceActionId||!c.terminalPolicy)throw new ServiceNowTicketSourceChanged();
@@ -88,12 +88,12 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
   const discovery=await ports.readJiraClosureDiscovery(scope,candidate,candidate.issue,signal);signal.throwIfAborted();await repo.$transaction(async tx=>{await approved(tx,scope,reference);const latest=await jira.readConfirmedLinkProvenance(scope,linkId,tx);if(sha256ContentHash(latest)!==sha256ContentHash(link))throw Error('ticket_link_changed')});return{link,candidate,discovery};
  }
 
- async function serviceNowCloseContext(scope:TicketReviewScope,linkId:string,rawPolicyReference:TicketGovernanceReference,signal:AbortSignal){
+ async function serviceNowCloseContext(scope:TicketReviewScope,linkId:string,rawPolicyReference:TicketGovernanceReference,signal:AbortSignal,recordedDeadline?:string){
   const a=await warm(scope,signal),policyReference=ticketGovernanceReferenceSchema.parse(rawPolicyReference);
   if(a.ticket.provider!=='servicenow'||!ports.readServiceNowClosureDiscovery)throw Error('servicenow_closure_unavailable');
   const policyProof=await ports.governance.preflightApproved(scope,policyReference,signal),policy=serviceNowTerminalPolicySchema.parse(policyProof.binding);
   if(policyProof.reviewId!==policyReference.reviewId||policyProof.bindingDigest!==policyReference.bindingDigest||sha256ContentHash(policy)!==policyReference.bindingDigest||policy.organizationId!==scope.organizationId||policy.executorUserId!==a.executorUserId)throw Error('servicenow_terminal_policy_changed');
-  const {link,candidate}=await repo.$transaction(async tx=>{const proof=await approved(tx,scope,reference);await ports.governance.readApprovedInTransaction(tx,scope,policyReference);const original=await ports.readOriginal(tx,scope,ticketReleaseAssociationSchema.parse(proof.binding)),fresh=buildAssociatedTicketLink(reference,proof.binding,original.candidate,now()),link=await sn.readConfirmedLinkProvenance(scope,linkId,tx);matchHistoricalServiceNowLink(link.candidate,fresh);if(!('instanceOrigin'in fresh)||fresh.kind!=='link')throw Error('servicenow_closure_unavailable');return{link,candidate:fresh}});
+  const {link,candidate}=await repo.$transaction(async tx=>{const proof=await approved(tx,scope,reference);await ports.governance.readApprovedInTransaction(tx,scope,policyReference);const original=await ports.readOriginal(tx,scope,ticketReleaseAssociationSchema.parse(proof.binding)),fresh=buildAssociatedTicketLink(reference,proof.binding,original.candidate,now(),recordedDeadline),link=await sn.readConfirmedLinkProvenance(scope,linkId,tx);matchHistoricalServiceNowLink(link.candidate,fresh);if(!('instanceOrigin'in fresh)||fresh.kind!=='link')throw Error('servicenow_closure_unavailable');return{link,candidate:fresh}});
   const metadata=await ports.readServiceNowClosureDiscovery(scope,policyReference,candidate.issue,signal);signal.throwIfAborted();
   const native=validateServiceNowCloseMetadata(metadata,{organizationId:scope.organizationId,connectionId:candidate.connectionId,connectionRevision:candidate.connectionRevision,instanceOrigin:candidate.instanceOrigin,consentedByUserId:a.executorUserId},candidate.issue,now());
   await repo.$transaction(async tx=>{await approved(tx,scope,reference);await ports.governance.readApprovedInTransaction(tx,scope,policyReference);const latest=await sn.readConfirmedLinkProvenance(scope,linkId,tx);if(sha256ContentHash(latest)!==sha256ContentHash(link))throw Error('servicenow_link_changed')});
@@ -101,7 +101,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
  }
  async function preflightStoredServiceNowClose(scope:TicketReviewScope,c:Extract<ServiceNowTicketActionCandidate,{kind:'close'}>,signal:AbortSignal){
   if(!c.linkedEvidenceActionId||!c.terminalPolicy)throw Error('servicenow_closure_reviews_required');
-  const x=await serviceNowCloseContext(scope,c.linkedEvidenceActionId,c.terminalPolicy,signal),fresh=buildAssociatedServiceNowCloseCandidate(x.candidate,c.linkedEvidenceActionId,x.policyReference,x.policy,x.metadata,{transitionId:c.transition.id,...(c.payload.close_code?{closeCode:c.payload.close_code}:{}),...(c.payload.close_notes?{closeNotes:c.payload.close_notes}:{}),clientRequestId:'00000000-0000-4000-8000-000000000000'},now());
+  const x=await serviceNowCloseContext(scope,c.linkedEvidenceActionId,c.terminalPolicy,signal,c.expiresAt),fresh=buildAssociatedServiceNowCloseCandidate(x.candidate,c.linkedEvidenceActionId,x.policyReference,x.policy,x.metadata,{transitionId:c.transition.id,...(c.payload.close_code?{closeCode:c.payload.close_code}:{}),...(c.payload.close_notes?{closeNotes:c.payload.close_notes}:{}),clientRequestId:'00000000-0000-4000-8000-000000000000'},now());
   if(sha256ContentHash(fresh)!==sha256ContentHash(c))throw Error('servicenow_native_close_changed');
   if(snCloseReceipts.size>=5)throw Error('servicenow_close_preflight_bound');snCloseReceipts.set(sha256ContentHash(c),{candidate:fresh,expiresAt:Date.parse(x.metadata.expiresAt)});
  }
