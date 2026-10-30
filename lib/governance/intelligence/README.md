@@ -16,3 +16,5 @@ Remaining before an MVP can be called complete:
 4. Complete isolated composed journeys, full builds, final independent review and specifically authorized activation/live acceptance.
 
 Boolean/marker-shaped inputs to pure kernels are server facts, not client authority. The server composition must load current evidence, coverage, approvals and roles from trusted stores. Never expose these pure functions as an endpoint that accepts authority flags.
+
+Local guard reliability repair: a single 15-second abort deadline now bounds authority reads; caller cancellation is propagated and the prior claim receipt is checked again after write validation. Six guard checks and scoped backend types pass; focused independent review found no Important/Critical issues. This does not add executor wiring or activate Governance.
