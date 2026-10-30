@@ -17,6 +17,8 @@ export interface ServiceNowTicketTransportDependencies{
  /** A separately authorized native journal read must prove the exact saved evidence append. */
  assertJournalAbsent?:(candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<boolean>;
  readJournalEvidence?:(candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<boolean>;
+ /** Fixed phase names only; never provider payloads, credentials or error text. */
+ onRefusal?:(detail:{phase:string;aborted:boolean;deadlineExpired:boolean})=>void;
  fetchImpl?:typeof fetch;
  isEnabled?:()=>boolean;
 }
@@ -46,38 +48,40 @@ export async function readServiceNowTicketRecoveryRecord(input:{candidate:Readon
 /** One mutation at most; no credentials from environment, refresh, redirect, or automatic retry. */
 export function createServiceNowTicketTransport(deps:ServiceNowTicketTransportDependencies){
  return{async execute(actionId:string,raw:unknown,parent:AbortSignal):Promise<ServiceNowTicketTransportResult>{
-  let dispatched=false;
+  let dispatched=false,phase="candidate",observationDeadline:number|undefined;
+  const refusal=()=>{try{deps.onRefusal?.({phase,aborted:parent.aborted,deadlineExpired:observationDeadline!==undefined&&Date.now()>=observationDeadline})}catch{/* Diagnostics cannot change an outcome. */}return{status:'refused' as const}};
   try{
    const c=parseServiceNowTicketActionCandidate(raw),enabled=()=>Boolean((deps.isEnabled??(()=>process.env.AXIOM_SERVICENOW_TICKET_WRITES_ENABLED==='true'))());
-   if(!/^servicenow_action_[a-f0-9]{64}$/.test(actionId)||!enabled()||typeof deps.assertCurrent!=='function'||typeof deps.readCredential!=='function'||typeof deps.assertNativePlan!=='function'||sha256ContentHash(c.payload)!==c.payloadDigest)return{status:'refused'};
-   if(c.kind==='publish'&&c.nativeProcess.kind==='standard'&&c.payload.description!==undefined)return{status:'refused'};
-   if(c.kind==='publish'&&c.nativeProcess.kind==='model'&&!c.nativeProcess.label)return{status:'refused'};
+   if(!/^servicenow_action_[a-f0-9]{64}$/.test(actionId)||!enabled()||typeof deps.assertCurrent!=='function'||typeof deps.readCredential!=='function'||typeof deps.assertNativePlan!=='function'||sha256ContentHash(c.payload)!==c.payloadDigest)return refusal();
+   if(c.kind==='publish'&&c.nativeProcess.kind==='standard'&&c.payload.description!==undefined)return refusal();
+   if(c.kind==='publish'&&c.nativeProcess.kind==='model'&&!c.nativeProcess.label)return refusal();
    const deadline=Math.min(Date.now()+15000,Date.parse(c.expiresAt)),signal=AbortSignal.any([parent,AbortSignal.timeout(Math.max(0,deadline-Date.now()))]);
+   observationDeadline=deadline;
    const ensure=()=>{signal.throwIfAborted();if(Date.now()>=deadline||!enabled())throw Error('servicenow_ticket_transport_stopped')};
    const current=async(phase:'before_dispatch'|'confirm',issue?:{sysId:string;number:string})=>{ensure();await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal,{phase,...(issue?{issue}:{})}),signal);ensure()};
-   await current('before_dispatch');
-   const auth=serviceNowTicketCredentialSchema.parse(await untilAbort(deps.readCredential(structuredClone(c),signal),signal));ensure();
-   if(auth.organizationId!==c.organizationId||auth.connectionId!==c.connectionId||auth.connectionRevision!==c.connectionRevision||auth.instanceOrigin!==c.instanceOrigin||auth.expiresAt<=deadline||!auth.permissions.read||!auth.permissions.write||c.kind==='link'&&(!auth.permissions.journalRead||typeof deps.readJournalEvidence!=='function'))return{status:'refused'};
-   if(c.kind==='link'&&c.association&&(actionId!==(c.freshAttempt?serviceNowFreshLinkAttemptId(c):serviceNowLogicalLinkActionId(c))||!c.payload.work_notes.endsWith('\nAction '+serviceNowLogicalLinkActionId(c))))return{status:'refused'};
-   if(c.kind==='link'&&c.association&&(typeof deps.assertJournalAbsent!=='function'||await untilAbort(deps.assertJournalAbsent(structuredClone(c),signal),signal)!==true))return{status:'refused'};
-   const native=await untilAbort(deps.assertNativePlan(structuredClone(c),signal),signal);ensure();
+   phase='authority';await current('before_dispatch');
+   phase='credential';const auth=serviceNowTicketCredentialSchema.parse(await untilAbort(deps.readCredential(structuredClone(c),signal),signal));ensure();
+   if(auth.organizationId!==c.organizationId||auth.connectionId!==c.connectionId||auth.connectionRevision!==c.connectionRevision||auth.instanceOrigin!==c.instanceOrigin||auth.expiresAt<=deadline||!auth.permissions.read||!auth.permissions.write||c.kind==='link'&&(!auth.permissions.journalRead||typeof deps.readJournalEvidence!=='function'))return refusal();
+   phase='action_marker';if(c.kind==='link'&&c.association&&(actionId!==(c.freshAttempt?serviceNowFreshLinkAttemptId(c):serviceNowLogicalLinkActionId(c))||!c.payload.work_notes.endsWith('\nAction '+serviceNowLogicalLinkActionId(c))))return refusal();
+   phase='journal_absence';if(c.kind==='link'&&c.association&&(typeof deps.assertJournalAbsent!=='function'||await untilAbort(deps.assertJournalAbsent(structuredClone(c),signal),signal)!==true))return refusal();
+   phase='native_plan';const native=await untilAbort(deps.assertNativePlan(structuredClone(c),signal),signal);ensure();
    const base=c.instanceOrigin+'/api/sn_chg_rest/v1/change',fetcher=deps.fetchImpl??fetch,headers={Accept:'application/json','Content-Type':'application/json',Authorization:`Bearer ${auth.accessToken}`};
    const cancel=(r:Response)=>{void r.body?.cancel().catch(()=>{})};
    const request=async(path:string,init:RequestInit)=>{ensure();const r=await untilAbort(fetcher(base+path,{...init,headers:{Accept:headers.Accept,Authorization:headers.Authorization,...(init.body!==undefined?{'Content-Type':'application/json'}:{})},signal,redirect:'error',cache:'no-store',credentials:'omit'}),signal,cancel);try{ensure();if(r.redirected)throw Error('servicenow_ticket_redirect');return r}catch(e){cancel(r);throw e}};
    const read=async(path:string)=>{const r=await request(path,{method:'GET'});if(r.status!==200){cancel(r);throw Error('servicenow_ticket_read_unavailable')}return readBoundedJson(r,signal)};
    if(c.kind!=='publish'){
-    const before=record(await read('/'+c.issue.sysId));if(before.sysId!==c.issue.sysId||before.number!==c.issue.number)return{status:'refused'};
+    phase='record_read';const before=record(await read('/'+c.issue.sysId));if(before.sysId!==c.issue.sysId||before.number!==c.issue.number)return refusal();
     if(c.kind==='close'){
-     if(!native||state.parse(before.value('state'))!==c.transition.fromStateValue)return{status:'refused'};
+     if(!native||state.parse(before.value('state'))!==c.transition.fromStateValue)return refusal();
      const options=collectServiceNowTerminalTransitions(await read('/'+c.issue.sysId+'/nextstates'),native.terminalStateValues);
-     if(options.discoveryDigest!==c.transition.discoveryDigest||!options.transitions.some(t=>t.id===c.transition.id&&t.fromStateValue===c.transition.fromStateValue&&t.targetStateValue===c.transition.targetStateValue))return{status:'refused'};
+     if(options.discoveryDigest!==c.transition.discoveryDigest||!options.transitions.some(t=>t.id===c.transition.id&&t.fromStateValue===c.transition.fromStateValue&&t.targetStateValue===c.transition.targetStateValue))return refusal();
     }
    }
    // Current native rules and durable authority are checked after all reads, immediately before mutation.
-   await untilAbort(deps.assertNativePlan(structuredClone(c),signal),signal);await current('before_dispatch');
+   phase='final_native_plan';await untilAbort(deps.assertNativePlan(structuredClone(c),signal),signal);phase='final_authority';await current('before_dispatch');
    let path='',method='PATCH',payload:unknown=c.payload;
    if(c.kind==='publish'){method='POST';if(c.nativeProcess.kind==='type')path='/'+c.nativeProcess.typeId;else if(c.nativeProcess.kind==='standard')path='/standard/'+c.nativeProcess.templateSysId+'?'+new URLSearchParams({short_description:c.payload.short_description}).toString();else payload={...c.payload,chg_model:c.nativeProcess.label}}else path='/'+c.issue.sysId;
-   const body=JSON.stringify(payload);if(Buffer.byteLength(body,'utf8')>24576)return{status:'refused'};
+   const body=JSON.stringify(payload);if(Buffer.byteLength(body,'utf8')>24576)return refusal();
    ensure();dispatched=true;const response=await request(path,{method,...(c.kind==='publish'&&c.nativeProcess.kind==='standard'?{}:{body})});
    // The native Change Management create endpoint documents 200; retain
    // 201 compatibility only with the same exact identity and readback checks.
@@ -93,6 +97,6 @@ export function createServiceNowTicketTransport(deps:ServiceNowTicketTransportDe
     if(state.parse(after.value('state'))!==c.transition.targetStateValue||c.payload.close_code!==undefined&&after.value('close_code')!==c.payload.close_code||c.payload.close_notes!==undefined&&after.value('close_notes')!==c.payload.close_notes)return{status:'unknown'};
    }else if(await untilAbort(deps.readJournalEvidence!(structuredClone(c),signal),signal)!==true)return{status:'unknown'};
    await current('confirm',expected);return c.kind==='publish'?{status:'confirmed',issue:expected}:{status:'confirmed'};
-  }catch{return{status:dispatched?'unknown':'refused'}}
+  }catch{if(!dispatched)return refusal();return{status:'unknown'}}
  }};
 }
