@@ -1,6 +1,7 @@
+import {SERVICE_NOW_CORRECTIVE_REPAIR_REVISION} from '@/lib/releaseops/serviceNowFreshAttemptReference';
 import {untilAbort} from '@/lib/releaseops/jiraTicketTransport';
 import {type ServiceNowPreflightInspection} from '@/lib/releaseops/serviceNowInspectionContract';
-import {verifyServiceNowFreshLinkParent} from '@/lib/releaseops/serviceNowFreshLinkAttempt';
+import {verifyServiceNowFreshLinkParent,verifyServiceNowCorrectiveLinkParents} from '@/lib/releaseops/serviceNowFreshLinkAttempt';
 import {associatedTicketTransactionRepository} from './associatedTicketTransactionBudget';
 import {matchHistoricalServiceNowLink} from '@/lib/releaseops/serviceNowAssociatedCloseProof';
 import {buildAssociatedServiceNowCloseCandidate} from '@/lib/releaseops/associatedServiceNowCloseCandidate';
@@ -130,6 +131,16 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
   return{candidate,parent,absent:proof.absent,executorUserId:a.executorUserId};
  }
 
+ async function correctiveLinkContext(scope:TicketReviewScope,parentActionId:string,parentVersion:number,refusedChildActionId:string,refusedChildVersion:number,signal:AbortSignal){
+  if(!ports.probeServiceNowJournal)throw Error('servicenow_journal_adapter_unavailable');const a=await warm(scope,signal);if(a.ticket.provider!=='servicenow'||scope.actorUserId!==a.executorUserId||a.requesterUserId!==a.executorUserId)throw Error('ticket_executor_required');
+  const parent=await sn.readRefusedLinkProvenance(scope,parentActionId,parentVersion),child=await sn.readRefusedLinkForInspection(scope,refusedChildActionId,refusedChildVersion);
+  const logical=await repo.$transaction(async tx=>{await approved(tx,scope,reference);await ports.authorize(tx,scope,scope.actorUserId,'prepare',a);return buildAssociatedTicketLink(reference,a,(await ports.readOriginal(tx,scope,a)).candidate,now())});if(!('instanceOrigin'in logical)||logical.kind!=='link')throw Error('servicenow_corrective_unavailable');
+  const candidate=parseServiceNowTicketActionCandidate({...logical,freshAttempt:{parentActionId,parentVersion,parentCandidateDigest:sha256ContentHash(parent.candidate),logicalActionId:parentActionId,correction:{refusedChildActionId,refusedChildVersion,refusedChildCandidateDigest:sha256ContentHash(child.candidate),repairRevision:SERVICE_NOW_CORRECTIVE_REPAIR_REVISION}}});if(candidate.kind!=='link')throw Error('servicenow_corrective_unavailable');
+  verifyServiceNowCorrectiveLinkParents(parent,child,candidate,scope.actorUserId,a.executorUserId);signal.throwIfAborted();const proof=await ports.probeServiceNowJournal(scope,candidate,signal);if(typeof proof.absent!=='boolean')throw Error('servicenow_journal_proof_unavailable');
+  const latest=await warm(scope,signal),latestParent=await sn.readRefusedLinkProvenance(scope,parentActionId,parentVersion),latestChild=await sn.readRefusedLinkForInspection(scope,refusedChildActionId,refusedChildVersion);if(sha256ContentHash(parent)!==sha256ContentHash(latestParent)||sha256ContentHash(child)!==sha256ContentHash(latestChild))throw Error('servicenow_corrective_parent_changed');
+  const rebuilt=await repo.$transaction(async tx=>{await approved(tx,scope,reference);return buildAssociatedTicketLink(reference,latest,(await ports.readOriginal(tx,scope,latest)).candidate,now(),candidate.expiresAt)});if(sha256ContentHash({...rebuilt,freshAttempt:candidate.freshAttempt})!==sha256ContentHash(candidate))throw Error('servicenow_corrective_source_changed');signal.throwIfAborted();return{candidate,absent:proof.absent,executorUserId:a.executorUserId};
+ }
+
  return{
   async inspectServiceNowPreflight(scope:TicketReviewScope,actionId:string,version:number,signal:AbortSignal){
    if(!ports.inspectServiceNowPreflight)throw Error('inspection_unavailable');
@@ -143,6 +154,8 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
     return{readOnly:true as const,executionAuthorized:false as const,status:'passed' as const,steps,actionId,actionVersion:version};
    }catch{const status=now()>=deadline?'timeout' as const:'refused' as const;if(steps.at(-1)?.phase!==phase||steps.at(-1)?.status!=='passed')steps.push({phase,status,elapsedMs:Math.max(0,Math.min(60000,Math.floor(now()-began)))});else steps[steps.length-1]={phase,status,elapsedMs:Math.max(0,Math.min(60000,Math.floor(now()-began)))};return{readOnly:true as const,executionAuthorized:false as const,status,steps,actionId,actionVersion:version}}
   },
+  async checkServiceNowCorrectiveJournal(scope:TicketReviewScope,parentActionId:string,parentVersion:number,childActionId:string,childVersion:number,signal:AbortSignal){const x=await correctiveLinkContext(scope,parentActionId,parentVersion,childActionId,childVersion,signal);return{parentActionId,parentVersion,refusedChildActionId:childActionId,refusedChildVersion:childVersion,repairRevision:SERVICE_NOW_CORRECTIVE_REPAIR_REVISION,accessVerified:true as const,absent:x.absent,noteDigest:sha256ContentHash(x.candidate.payload.work_notes),checkedAt:new Date(now()).toISOString()}},
+  async prepareServiceNowCorrectiveLink(scope:TicketReviewScope,parentActionId:string,parentVersion:number,childActionId:string,childVersion:number,clientRequestId:string,signal:AbortSignal){z.string().uuid().parse(clientRequestId);const x=await correctiveLinkContext(scope,parentActionId,parentVersion,childActionId,childVersion,signal);if(!x.absent)throw Error('servicenow_exact_note_already_present');const key=sha256ContentHash({scope,candidate:x.candidate});freshReceipts.set(key,Math.min(now()+5000,Date.parse(x.candidate.expiresAt)));try{return await sn.prepare(scope,{candidate:x.candidate,executorUserId:x.executorUserId,clientRequestId})}finally{freshReceipts.delete(key)}},
   async checkServiceNowJournal(scope:TicketReviewScope,parentActionId:string,parentVersion:number,signal:AbortSignal){const x=await freshLinkContext(scope,parentActionId,parentVersion,signal);return{parentActionId:x.parent.id,parentVersion:x.parent.version,accessVerified:true as const,absent:x.absent,noteDigest:sha256ContentHash(x.candidate.payload.work_notes),checkedAt:new Date(now()).toISOString()}},
   async prepareServiceNowFreshLink(scope:TicketReviewScope,parentActionId:string,parentVersion:number,clientRequestId:string,signal:AbortSignal){z.string().uuid().parse(clientRequestId);const x=await freshLinkContext(scope,parentActionId,parentVersion,signal);if(!x.absent)throw Error('servicenow_exact_note_already_present');const key=sha256ContentHash({scope,candidate:x.candidate});freshReceipts.set(key,Math.min(now()+5000,Date.parse(x.candidate.expiresAt)));try{return await sn.prepare(scope,{candidate:x.candidate,executorUserId:x.executorUserId,clientRequestId})}finally{freshReceipts.delete(key)}},
   async prepareLink(scope:TicketReviewScope,clientRequestId:string,signal:AbortSignal,amendment?:{actionId:string;expectedVersion:number}){
