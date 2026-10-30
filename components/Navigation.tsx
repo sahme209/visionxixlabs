@@ -105,7 +105,7 @@ export function Navigation() {
         }`}
       >
         <Link href="/" className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
-          <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="rounded-md" priority />
+          <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" priority />
           <span>Vision XIX Labs</span>
         </Link>
 

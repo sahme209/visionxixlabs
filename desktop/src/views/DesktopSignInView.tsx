@@ -109,7 +109,7 @@ export function DesktopSignInView({
         <div className="absolute bottom-[-15%] right-[-10%] w-[480px] h-[480px] rounded-full bg-fuchsia-500/[0.05] blur-[140px]" />
       </div>
       <div className="relative w-full max-w-[420px] text-center">
-        <div className="mx-auto mb-8 h-14 w-14 rounded-[18px] border border-white/[0.08] bg-gradient-to-b from-white/[0.08] to-transparent shadow-[0_8px_30px_rgba(0,0,0,0.4)] flex items-center justify-center text-xl font-semibold">A</div>
+        <img src="/axiom-logo.png" alt="" className="h-10 w-10 shrink-0 object-contain" />
         <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Axiom Agent</p>
         <h1 className="mt-3 text-[28px] font-medium leading-[1.15] tracking-[-0.03em]">Deployment control, from request to closure.</h1>
         <p className="mx-auto mt-3 max-w-sm text-[14px] leading-6 text-zinc-500">

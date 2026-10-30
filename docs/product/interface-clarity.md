@@ -24,7 +24,7 @@ A status shown in a summary is not an execution grant. A closed Axiom request is
 
 ## Branding
 
-Use one verified canonical logo source across web and desktop. The requested replacement is a white triangular mark with a transparent background; its source is still awaiting delivery. Do not manufacture a lookalike or reuse the rejected purple/cyan mark as the replacement. Platform icon derivatives should be reproducible and legible. Published immutable installers are versioned artifacts and must never be silently overwritten.
+Use one verified canonical logo source across web and desktop. The canonical replacement is the user-supplied white triangular mark in assets/brand/axiom-white-source.png. scripts/generate-axiom-brand.mjs turns its luminance into transparency without redrawing; the original black background is not displayed. Do not substitute a generated lookalike or reuse the rejected purple/cyan mark. Platform icon derivatives should be reproducible and legible. Published immutable installers are versioned artifacts and must never be silently overwritten.
 
 ## Verification
 

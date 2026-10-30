@@ -90,7 +90,7 @@ export function DesktopAccessRequiredView({
       </div>
       <div className="relative w-full max-w-lg rounded-2xl border border-white/[0.08] bg-zinc-950/85 p-8 shadow-2xl">
         <div className="flex items-start gap-4">
-          <div className="h-12 w-12 shrink-0 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-lg font-bold">A</div>
+          <img src="/axiom-logo.png" alt="" className="h-10 w-10 shrink-0 object-contain" />
           <div>
             <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-emerald-300">Identity verified</p>
             <h1 className="mt-1 text-2xl font-bold">{identity.access.title}</h1>

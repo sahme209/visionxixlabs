@@ -49,7 +49,7 @@ export function Footer() {
         <div className="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-[2fr_repeat(3,1fr)] lg:gap-10">
           <div>
             <Link href="/" className="inline-flex items-center gap-2.5 text-sm font-semibold text-zinc-100">
-              <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="rounded-md" />
+              <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" />
               Vision XIX Labs
             </Link>
             <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-500">Axiom Agent brings AI assistance, human authorization, execution, and evidence into one governed engineering workflow.</p>
