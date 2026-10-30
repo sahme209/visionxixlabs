@@ -20,3 +20,10 @@ it('registers before native initial state, rejects stale and malformed focus mes
 it('cleans up and fails closed if the native activation monitor is unavailable',async()=>{
  m.invoke.mockRejectedValueOnce(Error('unavailable'));await expect(subscribeNativeObservationFocus(vi.fn())).rejects.toThrow('unavailable');expect(m.remove).toHaveBeenCalledOnce();
 });
+it('does not restart input checks when both panels request the same active initial state',async()=>{
+ const change=vi.fn();await subscribeNativeObservationFocus(change);const event=m.listen.mock.calls[0][1];
+ event({payload:{sequence:1,active:true}});event({payload:{sequence:2,active:true}});
+ expect(change.mock.calls).toEqual([[true]]);
+ event({payload:{sequence:3,active:false}});event({payload:{sequence:4,active:true}});
+ expect(change.mock.calls).toEqual([[true],[false],[true]]);
+});
