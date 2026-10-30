@@ -144,7 +144,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
    signal.throwIfAborted();return amendment?sn.amend(scope,{...amendmentSchema.parse(amendment),candidate,executorUserId:binding().executorUserId,clientRequestId:input.clientRequestId}):sn.prepare(scope,{candidate,executorUserId:binding().executorUserId,clientRequestId:input.clientRequestId});
   },
   async get(scope:TicketReviewScope,id:string,signal:AbortSignal){try{await warm(scope,signal)}catch{signal.throwIfAborted();await historyHint(scope,signal)}const candidate=await selected(scope,id);if(candidate.kind==='close'&&'instanceOrigin'in candidate)try{await preflightStoredServiceNowClose(scope,candidate,signal)}catch{signal.throwIfAborted()}return store().get(scope,id)},
-  async mutate(scope:TicketReviewScope,raw:unknown,mode:'approve'|'cancel'|'dispatch'|'recover',signal:AbortSignal){
+  async mutate(scope:TicketReviewScope,raw:unknown,mode:'approve'|'cancel'|'dispatch'|'recover',signal:AbortSignal,onClaimStarted?:()=>void){
    const input=mutation.parse(raw);if(!['approve','cancel','dispatch','recover'].includes(mode))throw Error('ticket_action_unavailable');
    if(mode==='cancel'||mode==='recover')await historyHint(scope,signal);else await warm(scope,signal);
    const candidate=await selected(scope,input.actionId);signal.throwIfAborted();
@@ -155,6 +155,8 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
    const a=binding();if(scope.actorUserId!==a.executorUserId||!ports.preflightTransport||!ports.executeTransport)throw Error('ticket_provider_execution_unavailable');
    await ports.preflightTransport(scope,candidate,a,signal);signal.throwIfAborted();
    const saved=await store().get(scope,input.actionId);if(saved.version!==input.expectedVersion)throw Error('ticket_action_changed');
+   // From this point a failed claim response may hide a committed durable claim.
+   onClaimStarted?.();
    const claim=await store().claim(scope,input.actionId);if(!claim.claimed)return claim.record;
    let result:{status:'confirmed'|'refused'|'unknown'};
    try{result=await ports.executeTransport(input.actionId,claim.candidate,signal,async(c,s)=>{s.throwIfAborted();if(sha256ContentHash(c)!==sha256ContentHash(claim.candidate))throw Error('ticket_action_changed');await store().beforeDispatch(scope,input.actionId);s.throwIfAborted()})}catch{result={status:'unknown'}}
