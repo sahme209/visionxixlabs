@@ -7,6 +7,6 @@ const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${he
 writeFileSync(new URL('../assets/brand/axiom-white.svg',import.meta.url),svg);
 const png=await sharp(Buffer.from(svg)).png().toBuffer();
 for(const path of ['public/vision-xix-logo.png','desktop/public/axiom-logo.png'])writeFileSync(new URL('../'+path,import.meta.url),png);
-for(const [path,size] of [['public/favicon-32x32.png',32],['public/apple-icon.png',180],['desktop/src-tauri/icons/32x32.png',32],['desktop/src-tauri/icons/64x64.png',64],['desktop/src-tauri/icons/128x128.png',128],['desktop/src-tauri/icons/128x128@2x.png',256]])writeFileSync(new URL('../'+path,import.meta.url),await sharp(png).resize(size,size,{fit:'contain'}).png().toBuffer());
+for(const [path,size] of [['public/favicon-32x32.png',32],['public/apple-icon.png',180],['app/apple-icon.png',180],['app/icon.png',512],['desktop/src-tauri/icons/32x32.png',32],['desktop/src-tauri/icons/64x64.png',64],['desktop/src-tauri/icons/128x128.png',128],['desktop/src-tauri/icons/128x128@2x.png',256]])writeFileSync(new URL('../'+path,import.meta.url),await sharp(png).resize(size,size,{fit:'contain'}).png().toBuffer());
 
 writeFileSync(new URL('../desktop/src-tauri/icons/icon.png',import.meta.url),await sharp(png).resize(1024,1024,{fit:'contain',background:'#00000000'}).png().toBuffer());
