@@ -8,6 +8,15 @@ private var nativeInputFixtureEpoch:UInt64=0
  static func main()throws {
   var count=0
   func check(_ value:Bool){precondition(value,"one-action input policy regression");count+=1}
+  check(inputActivationForegroundAllows(frontmost:10,own:10,selected:20))
+  check(inputActivationForegroundAllows(frontmost:20,own:10,selected:20))
+  check(!inputActivationForegroundAllows(frontmost:30,own:10,selected:20))
+  check(!inputActivationForegroundAllows(frontmost:nil,own:10,selected:20))
+  check(inputFixtureActivationAllows(before:"Axiom acceptance before",after:"Axiom acceptance after",fixtureConsent:true,exactConsent:true,current:true,deadline:10,now:9))
+  for before in ["other","Axiom acceptance before\n"] {check(!inputFixtureActivationAllows(before:before,after:"Axiom acceptance after",fixtureConsent:true,exactConsent:true,current:true,deadline:10,now:9))}
+  check(!inputFixtureActivationAllows(before:"Axiom acceptance before",after:"other",fixtureConsent:true,exactConsent:true,current:true,deadline:10,now:9))
+  for flags in [(false,true,true),(true,false,true),(true,true,false)] {check(!inputFixtureActivationAllows(before:"Axiom acceptance before",after:"Axiom acceptance after",fixtureConsent:flags.0,exactConsent:flags.1,current:flags.2,deadline:10,now:9))}
+  for clock in [(10.0,10.0),(10,11),(Double.infinity,9),(10,Double.nan)] {check(!inputFixtureActivationAllows(before:"Axiom acceptance before",after:"Axiom acceptance after",fixtureConsent:true,exactConsent:true,current:true,deadline:clock.0,now:clock.1))}
   check(inputEnabledBoolean(NSNumber(value:1)) == nil)
   check(inputEnabledBoolean(NSNumber(value:0)) == nil)
   check(inputEnabledBoolean("true" as CFString) == nil)

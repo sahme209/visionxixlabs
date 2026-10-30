@@ -1,0 +1,11 @@
+# Explicit selected-window foreground activation for the disposable acceptance test
+
+Purpose: complete the exact authorized TextEdit test without a timed manual Dock switch. The existing design explicitly requires manual foreground handoff; this proposal changes that boundary and requires validation-first approval before implementation.
+
+Recommended approach: keep normal actions on their existing manual handoff path. For only the already bounded disposable fixture (exact Axiom acceptance before -> Axiom acceptance after, selected signed TextEdit process/window, separately confirmed autosaved fixture), show native consent that explicitly includes bringing this selected window forward. After the exact native action confirmation, activate only the previously bound TextEdit PID and raise only the bound window through AppKit/Accessibility. Recheck process launch identity/signature, window identity/bounds/document digest, exact before text, writability, foreground window, task owner and deadlines. Existing Rust fresh server attestation after handoff remains before the one durable claim and write. Refuse on failed activation, changed target, another foreground app, expired authority or any missing proof.
+
+No background input, global window choice, arbitrary app activation, screenshot upload, file access, new OS permission, deadline extension or automatic retry. No change to genuine independent ticket approvals. Other documents/actions retain manual foreground behavior. The macOS window-sharing consent remains separate and is never fabricated.
+
+Alternatives considered: repeat manual timed switching (already refused safely; does not satisfy delegated operation); weaken foreground checks or silently activate arbitrary apps (rejected). A fixture-scoped explicitly disclosed native consent is the only proposed expansion.
+
+Local implementation and verification only: pure Swift policy tests must reject non-fixture text, missing explicit consent, changed identity and expired deadline. Native prompts/UI copy must name the activation. Existing one-attempt, recovery and frontend tests remain; actual success requires both a confirmed native ledger result and exact document readback. No Vercel rollout, paid CI, provider action or public installer publication is included.
