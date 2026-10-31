@@ -4,9 +4,10 @@ use std::time::Duration;
 const ORIGIN:&str="https://visionxixlabs.com";
 fn task(s:&str)->bool{s.len()==68&&s.starts_with("bot_")&&s[4..].bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))}
 fn token(s:&str)->bool{s.len()<=4096&&s.starts_with("axm.desk.")&&s.split('.').count()==4&&s.split('.').skip(2).all(|v|!v.is_empty()&&v.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_'))}
-fn valid_binding(v:&Value,nonce:&str,task_id:&str,version:u32,meta:&Value)->bool{
+fn valid_binding(v:&Value,nonce:&str,task_id:&str,version:u32,meta:&Value)->bool{valid_action_binding(v,nonce,task_id,version,meta,"textedit_set_text")}
+fn valid_action_binding(v:&Value,nonce:&str,task_id:&str,version:u32,meta:&Value,action:&str)->bool{
  let Some(o)=v.as_object()else{return false};let keys=["kind","organizationId","userId","sessionId","taskId","taskVersion","action","nonce","expiresAt"];
- o.len()==keys.len()&&keys.iter().all(|k|o.contains_key(*k))&&v["kind"]=="bot_computer_owner_v1"&&v["action"]=="textedit_set_text"&&v["nonce"]==nonce&&v["taskId"]==task_id&&v["taskVersion"]==version&&v["sessionId"]==meta["id"]&&["organizationId","userId","sessionId"].iter().all(|k|v[*k].as_str().map(|s|!s.is_empty()&&s.len()<=240&&s.trim()==s&&!s.chars().any(char::is_control)).unwrap_or(false))&&["organizationId","userId"].iter().all(|k|meta.get(*k).map(|m|m==&v[*k]).unwrap_or(true))
+ o.len()==keys.len()&&keys.iter().all(|k|o.contains_key(*k))&&v["kind"]=="bot_computer_owner_v1"&&v["action"]==action&&v["nonce"]==nonce&&v["taskId"]==task_id&&v["taskVersion"]==version&&v["sessionId"]==meta["id"]&&["organizationId","userId","sessionId"].iter().all(|k|v[*k].as_str().map(|s|!s.is_empty()&&s.len()<=240&&s.trim()==s&&!s.chars().any(char::is_control)).unwrap_or(false))&&["organizationId","userId"].iter().all(|k|meta.get(*k).map(|m|m==&v[*k]).unwrap_or(true))
 }
 #[cfg(test)]fn valid_time(v:&Value,now:i64)->bool{v["expiresAt"].as_str().and_then(|s|chrono::DateTime::parse_from_rfc3339(s).ok()).map(|d|d.timestamp_millis()>now&&d.timestamp_millis()<=now+15000).unwrap_or(false)}
 #[cfg(test)]fn valid(v:&Value,nonce:&str,task_id:&str,version:u32,meta:&Value,now:i64)->bool{valid_binding(v,nonce,task_id,version,meta)&&valid_time(v,now)}
@@ -51,16 +52,18 @@ fn secure_nonce()->Result<String,String>{
  #[cfg(not(target_os="macos"))]{Err("native_input_unsupported".into())}
 }
 #[cfg(all(test,not(target_os="macos")))]#[test]fn unsupported_nonce_is_fail_closed(){assert_eq!(secure_nonce(),Err("native_input_unsupported".into()));}
-pub async fn attest(app:&tauri::AppHandle,task_id:&str,version:u32)->Result<Value,String>{
+pub async fn attest(app:&tauri::AppHandle,task_id:&str,version:u32)->Result<Value,String>{attest_action(app,task_id,version,"textedit_set_text").await}
+pub async fn attest_recovery(app:&tauri::AppHandle,task_id:&str,version:u32)->Result<Value,String>{attest_action(app,task_id,version,"textedit_read_outcome").await}
+async fn attest_action(app:&tauri::AppHandle,task_id:&str,version:u32,action:&str)->Result<Value,String>{
  if !task(task_id)||version>2147483647{return Err("owner_credential_unavailable".into())}
  let (bearer,meta,snapshot)=read_selected(app).map_err(|_|"owner_credential_unavailable")?;
  if meta["expiresAt"].as_str().and_then(|s|chrono::DateTime::parse_from_rfc3339(s).ok()).map(|d|d.timestamp_millis()>chrono::Utc::now().timestamp_millis())!=Some(true){return Err("owner_credential_unavailable".into())}
  let nonce=secure_nonce()?;
  let request_start=monotonic_now()?;
  let client=reqwest::Client::builder().redirect(reqwest::redirect::Policy::none()).connect_timeout(Duration::from_secs(3)).timeout(Duration::from_secs(5)).build().map_err(|_|"owner_service_unavailable")?;
- let (result,server_date)=tokio::time::timeout(Duration::from_secs(5),async{let mut r=client.post(format!("{ORIGIN}/api/desktop/bot/tasks/{task_id}/computer-authority")).bearer_auth(&bearer).json(&json!({"nonce":nonce,"taskVersion":version,"action":"textedit_set_text"})).send().await.map_err(|_|"owner_service_unavailable")?;if r.status()!=reqwest::StatusCode::OK{return Err("owner_service_refused")}
+ let (result,server_date)=tokio::time::timeout(Duration::from_secs(5),async{let mut r=client.post(format!("{ORIGIN}/api/desktop/bot/tasks/{task_id}/computer-authority")).bearer_auth(&bearer).json(&json!({"nonce":nonce,"taskVersion":version,"action":action})).send().await.map_err(|_|"owner_service_unavailable")?;if r.status()!=reqwest::StatusCode::OK{return Err("owner_service_refused")}
  if r.content_length().map(|n|n>8192).unwrap_or(false){return Err("owner_service_unavailable")}let date_headers:Vec<_>=r.headers().get_all(reqwest::header::DATE).iter().collect();if date_headers.len()!=1{return Err("owner_proof_time_invalid")}let server_date=date_headers[0].to_str().map_err(|_|"owner_proof_time_invalid")?.to_owned();let mut bytes=Vec::new();while let Some(chunk)=r.chunk().await.map_err(|_|"owner_service_unavailable")?{if bytes.len()+chunk.len()>8192{return Err("owner_service_unavailable")}bytes.extend_from_slice(&chunk)}Ok((serde_json::from_slice::<Value>(&bytes).map_err(|_|"owner_proof_binding_invalid")?,server_date))}).await.map_err(|_|"owner_service_unavailable")??;
- if !super::exact(&result,&["ok","data"])||result["ok"]!=true||!valid_binding(&result["data"],&nonce,task_id,version,&meta){return Err("owner_proof_binding_invalid".into())}
+ if !super::exact(&result,&["ok","data"])||result["ok"]!=true||!valid_action_binding(&result["data"],&nonce,task_id,version,&meta,action){return Err("owner_proof_binding_invalid".into())}
  if read_selected(app).map_err(|_|"owner_credential_unavailable")?.2!=snapshot{return Err("owner_credential_unavailable".into())}
  let (expiry,deadline)=clock_bound(result["data"]["expiresAt"].as_str().ok_or("owner_proof_time_invalid")?,&server_date,request_start,monotonic_now()?,chrono::Utc::now().timestamp_millis()).ok_or("owner_proof_time_invalid")?;
  let mut internal=result["data"].clone();internal["expiresAt"]=json!(expiry);internal["_nativeDeadline"]=json!(deadline);Ok(internal)
@@ -84,3 +87,5 @@ pub async fn attest(app:&tauri::AppHandle,task_id:&str,version:u32)->Result<Valu
  #[test]fn malformed_missing_and_unbounded_server_time_fail_closed(){for date in ["", "bad", "Mon, 26 Oct 2026 18:00:00 GMT, Mon, 26 Oct 2026 18:00:00 GMT"]{assert!(clock_bound(&expiry(15000),date,100.0,101.0,wall()).is_none())}for ms in [-1,0,16001]{assert!(clock_bound(&expiry(ms),DATE,100.0,101.0,wall()).is_none())}assert!(clock_bound(&expiry(16000),DATE,100.0,101.0,wall()).is_some());}
  #[test]fn client_clock_never_makes_proof_live_beyond_original_or_fifteen_seconds(){let (s,d)=clock_bound(&expiry(15000),DATE,100.0,103.0,wall()-60000).unwrap();assert_eq!(d,115.0);assert_eq!(s,expiry(-48000));assert!(clock_bound(&expiry(15000),DATE,100.0,103.0,wall()+16000).is_none());assert!(clock_bound(&expiry(15000),DATE,f64::NAN,103.0,wall()).is_none());assert!(clock_bound(&expiry(15000),DATE,104.0,103.0,wall()).is_none());}
 }
+
+#[cfg(test)]#[test]fn recovery_attestation_cannot_be_replayed_as_input(){let task="bot_".to_owned()+&"a".repeat(64);let nonce="b".repeat(64);let meta=json!({"id":"paired"});let mut proof=json!({"kind":"bot_computer_owner_v1","organizationId":"org","userId":"user","sessionId":"paired","taskId":task,"taskVersion":0,"action":"textedit_read_outcome","nonce":nonce,"expiresAt":"2030-01-01T00:00:00Z"});assert!(!valid_binding(&proof,&nonce,&task,0,&meta));assert!(valid_action_binding(&proof,&nonce,&task,0,&meta,"textedit_read_outcome"));proof["action"]=json!("textedit_set_text");assert!(!valid_action_binding(&proof,&nonce,&task,0,&meta,"textedit_read_outcome"));}

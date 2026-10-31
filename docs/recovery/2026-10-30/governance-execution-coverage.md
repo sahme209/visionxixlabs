@@ -264,3 +264,28 @@ provider/session/coverage remain simulated, fixture stopped. Scoped types and
 focused independent review pass. These are refusal seams, not proof of complete
 enforcement: other Agent/direct/native/ticket paths and actual enrolled action
 admission still need composition. Enrollment/activation therefore remain refused.
+
+## Ticket and native refusal seams
+
+Legacy Jira/ServiceNow lifecycle HTTP stores now use the same pre-claim and
+post-authority dispatch fence. The associated-ticket server composition checks
+before transport preflight and repeats the check in its actual claim-bound
+transport callbacks, including journal verification. Existing ticket/native
+lifecycle approvals and already-consumed unknown outcomes are unchanged. No
+ServiceNow note was sent, reset, renewed or recovered by this work.
+
+The Bot native owner endpoint refuses new input attestation for uncovered
+Governance enrollment. Recovery authority is now a separate exact closed action,
+textedit_read_outcome. It still verifies paired identity, current task/version,
+nonce and lifetime. Rust requests/validates that action only for recovery; Swift
+accepts it only for operation4. Recovery proof cannot authorize input, and input
+proof cannot authorize the recovery operation. Stop remains non-executing.
+No window picker, native alert or real computer input was invoked.
+
+Thirty-two server/controller/adapter checks pass (overlapping an earlier58-check
+ticket/native composition batch).329 synthetic Swift policy/metadata-ledger
+assertions and12 Rust authority tests pass. An initial Rust filter selected zero
+tests and was NOT counted; the corrected computer_input::authority filter ran12.
+Scoped backend types include all edited HTTP compositions. Focused independent
+review found no important security/recovery issue. These refusal seams are not
+complete active policy admission or coverage of every direct/Agent path.

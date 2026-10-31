@@ -166,12 +166,13 @@ final class AxiomInputLedger {
 
 private typealias InputReply=([String:Any]?,String?)->Void
 private let inputFlags:[String:Any]=["source":axiomInputSource,"inputAvailable":false,"typeAvailable":false,"pressAvailable":false,"ownerAuthorityAvailable":false,"foregroundPolicyAvailable":false,"aiSharingAvailable":false,"backgroundInput":false]
+enum AxiomInputAuthorityPurpose:String{case input="textedit_set_text";case recovery="textedit_read_outcome"}
 struct AxiomInputOwnerAuthority {
     let organizationId:String,userId:String,sessionId:String,taskId:String,taskVersion:Int,deadline:TimeInterval,wallExpiry:Date
     var ownerDigest:String{inputDigest([organizationId,userId].map{String($0.utf8.count)+":"+$0}.joined())}
     var taskDigest:String{inputDigest(taskId+"|"+String(taskVersion))}
-    init?(_ value:Any?,now:Date=Date(),uptime:TimeInterval=ProcessInfo.processInfo.systemUptime){
-        guard let v=value as? [String:Any],Set(v.keys)==Set(["kind","organizationId","userId","sessionId","taskId","taskVersion","action","nonce","expiresAt","_nativeDeadline"]),v["kind"] as? String=="bot_computer_owner_v1",v["action"] as? String=="textedit_set_text",let org=v["organizationId"] as? String,inputOpaque(org),let user=v["userId"] as? String,inputOpaque(user),let session=v["sessionId"] as? String,inputOpaque(session),let task=v["taskId"] as? String,task.hasPrefix("bot_"),task.count==68,let version=v["taskVersion"] as? Int,version>=0,version<=2147483647,let nonce=v["nonce"] as? String,nonce.count==64,nonce.allSatisfy({$0.isHexDigit && !$0.isUppercase}),let raw=v["expiresAt"] as? String,let nativeDeadline=v["_nativeDeadline"] as? Double,nativeDeadline.isFinite,nativeDeadline>uptime,nativeDeadline<=uptime+15 else{return nil}
+    init?(_ value:Any?,now:Date=Date(),uptime:TimeInterval=ProcessInfo.processInfo.systemUptime,purpose:AxiomInputAuthorityPurpose = .input){
+        guard let v=value as? [String:Any],Set(v.keys)==Set(["kind","organizationId","userId","sessionId","taskId","taskVersion","action","nonce","expiresAt","_nativeDeadline"]),v["kind"] as? String=="bot_computer_owner_v1",v["action"] as? String==purpose.rawValue,let org=v["organizationId"] as? String,inputOpaque(org),let user=v["userId"] as? String,inputOpaque(user),let session=v["sessionId"] as? String,inputOpaque(session),let task=v["taskId"] as? String,task.hasPrefix("bot_"),task.count==68,let version=v["taskVersion"] as? Int,version>=0,version<=2147483647,let nonce=v["nonce"] as? String,nonce.count==64,nonce.allSatisfy({$0.isHexDigit && !$0.isUppercase}),let raw=v["expiresAt"] as? String,let nativeDeadline=v["_nativeDeadline"] as? Double,nativeDeadline.isFinite,nativeDeadline>uptime,nativeDeadline<=uptime+15 else{return nil}
         let parser=ISO8601DateFormatter();parser.formatOptions=[.withInternetDateTime,.withFractionalSeconds];guard let expiry=parser.date(from:raw),expiry>now,expiry.timeIntervalSince(now)<=15 else{return nil}
         organizationId=org;userId=user;sessionId=session;taskId=task;taskVersion=version;deadline=min(nativeDeadline,uptime+expiry.timeIntervalSince(now));wallExpiry=expiry
     }
@@ -196,7 +197,7 @@ struct AxiomInputOwnerAuthority {
     func dispatch(_ operation:Int32,_ input:[String:Any],_ reply:@escaping InputReply){
         if operation==5 {stop();reply(["stopped":true],nil);return}
         if operation==3 {if let s=session,input["ownerContextRef"] as? String==s.owner,(input["inputSessionId"] is NSNull || input["inputSessionId"] as? String==s.policy.binding.inputSessionId){stop()};reply(["stopped":true],nil);return}
-        let authority=AxiomInputOwnerAuthority(input["authority"])
+        let authority=AxiomInputOwnerAuthority(input["authority"],purpose:operation==4 ? .recovery:.input)
         if operation==0 {var v=inputFlags;v["supported"]=true;v["ownerAuthorityAvailable"]=authority != nil;v["foregroundPolicyAvailable"]=true;v["typeAvailable"]=authority != nil&&AXIsProcessTrusted();v["inputAvailable"]=authority != nil&&AXIsProcessTrusted();v["reason"]=authority==nil ? "owner_authority_unavailable":AXIsProcessTrusted() ? "ready":"accessibility_unavailable";reply(v,nil);return}
         guard let auth=authority,auth.live(),input["taskId"] as? String==auth.taskId,input["taskVersion"] as? Int==auth.taskVersion else{reply(nil,"native_input_owner_authority_unavailable");return}
         guard let owner=input["ownerContextRef"] as? String,inputOpaque(owner),let ledger=ledger(input) else{reply(nil,"native_input_invalid_request");return}

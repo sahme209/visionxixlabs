@@ -73,6 +73,8 @@ private var nativeInputFixtureEpoch:UInt64=0
   let authorityFormatter=ISO8601DateFormatter();authorityFormatter.formatOptions=[.withInternetDateTime,.withFractionalSeconds]
   var attestation:[String:Any]=["kind":"bot_computer_owner_v1","organizationId":"org","userId":"user","sessionId":"paired","taskId":"bot_"+String(repeating:"a",count:64),"taskVersion":0,"action":"textedit_set_text","nonce":String(repeating:"a",count:64),"expiresAt":authorityFormatter.string(from:authorityNow.addingTimeInterval(14)),"_nativeDeadline":114.0]
   check(AxiomInputOwnerAuthority(attestation,now:authorityNow,uptime:100)?.deadline==114)
+  attestation["action"]="textedit_read_outcome";check(AxiomInputOwnerAuthority(attestation,now:authorityNow,uptime:100)==nil);check(AxiomInputOwnerAuthority(attestation,now:authorityNow,uptime:100,purpose:.recovery)?.deadline==114)
+  attestation["action"]="textedit_set_text";check(AxiomInputOwnerAuthority(attestation,now:authorityNow,uptime:100,purpose:.recovery)==nil)
   attestation["expiresAt"]=authorityFormatter.string(from:authorityNow.addingTimeInterval(16));check(AxiomInputOwnerAuthority(attestation,now:authorityNow,uptime:100)==nil)
   attestation["expiresAt"]=authorityFormatter.string(from:authorityNow.addingTimeInterval(-1));check(AxiomInputOwnerAuthority(attestation,now:authorityNow,uptime:100)==nil)
   attestation["expiresAt"]=authorityFormatter.string(from:authorityNow.addingTimeInterval(14));attestation["allowed"]=true;check(AxiomInputOwnerAuthority(attestation,now:authorityNow,uptime:100)==nil)

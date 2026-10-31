@@ -1,3 +1,5 @@
+import {assertNoUncoveredGovernanceExecution} from '@/lib/governance/intelligence/uncoveredExecution';
+import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import 'server-only';
 import {NextResponse,type NextRequest} from 'next/server';
 import {z} from 'zod';
@@ -6,7 +8,7 @@ import {resolveRequestDesktopSession} from '@/lib/desktop/resolveRequestDesktopS
 import {consumeToken} from '@/lib/api/rateLimiter';
 import {readBoundedGithubBody,withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import {getSavedBotTask,type SavedBotTaskRepo} from './savedTaskRepo';
-const input=z.object({nonce:z.string().regex(/^[a-f0-9]{64}$/),taskVersion:z.number().int().min(0).max(2147483647),action:z.literal('textedit_set_text')}).strict();
+const input=z.object({nonce:z.string().regex(/^[a-f0-9]{64}$/),taskVersion:z.number().int().min(0).max(2147483647),action:z.enum(['textedit_set_text','textedit_read_outcome'])}).strict();
 const options={requiredScope:'pipeline:read' as const,requiredCapability:'workspace:read' as const,requireWorkspaceMembership:true,allowApiKey:false,route:'Bot native owner verification'};
 const reply=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'}});
 /** Short-lived identity/task attestation only. This does not approve OS access or input. */
@@ -26,6 +28,7 @@ export async function handleBotComputerOwner(request:NextRequest,taskId:string){
   if(task.version!==parsed.data.taskVersion)return reply({ok:false,error:'bot_task_changed'},409);
   const current=await auth();if(current.id!==p.id||current.userId!==p.userId||current.organizationId!==p.organizationId)throw Error('owner_required');
   const latest=await withGithubAbort(getSavedBotTask(prisma as unknown as SavedBotTaskRepo,scope,taskId),signal);if(!latest||latest.version!==task.version||latest.contentHash!==task.contentHash)return reply({ok:false,error:'bot_task_changed'},409);
+  if(parsed.data.action==='textedit_set_text')await assertNoUncoveredGovernanceExecution(request,prisma as unknown as ReleaseOperationPlanRepo,{organizationId:p.organizationId,actorUserId:p.userId,sessionId:p.id},signal);
   const final=await auth();if(final.id!==p.id||final.userId!==p.userId||final.organizationId!==p.organizationId)throw Error('owner_required');signal.throwIfAborted();if(process.env.AXIOM_BOT_COMPUTER_INPUT_ENABLED!=='true')throw Error('disabled');return reply({ok:true,data:{kind:'bot_computer_owner_v1',organizationId:p.organizationId,userId:p.userId,sessionId:p.id,taskId,taskVersion:task.version,action:parsed.data.action,nonce:parsed.data.nonce,expiresAt:new Date(Date.now()+15000).toISOString()}});
  }catch{return reply({ok:false,error:'bot_computer_owner_unavailable'},503)}
 }
