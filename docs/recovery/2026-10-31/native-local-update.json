@@ -1,0 +1,17 @@
+{
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/aa960659/Axiom Agent Local Preview.app",
+  "sourceCommit": "aa960659e1b66c42a8b1826f3166eed947a4a3f6",
+  "binarySha256": "28efaddcc29ae78b5d49c85ef212f819c22e51896c53df5f3b383c35de6936b2",
+  "strictSignatureVerified": true,
+  "publicInstallerChanged": false,
+  "nativeVisualAcceptance": "pending",
+  "nativeBuild": "offline cargo tauri/custom-protocol passed",
+  "savedSessionRestored": true,
+  "observedViews": [
+    "Home",
+    "Releases with two saved requests",
+    "Apps & skills"
+  ],
+  "liveKeyboardAcceptance": "not completed: user navigated during the check; component tests pass",
+  "providerWritePerformed": false
+}
