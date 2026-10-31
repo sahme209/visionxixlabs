@@ -492,3 +492,15 @@ button, input, textarea, select { font-family:inherit; }
 @media (prefers-reduced-motion:reduce) {
   .btn-primary, .btn-secondary, .workspace-header-button { transition:none; }
 }
+
+/* Bot is one conversation canvas; only the editor needs a raised surface. */
+.bot-task-footer, .bot-workspace-context { background:transparent; }
+.bot-workspace-context { border-bottom-color:transparent; padding-top:8px; padding-bottom:0; }
+.bot-task-toolbar { padding-top:12px; padding-bottom:12px; }
+html[data-theme="light"] .workspace-topbar { background:rgb(var(--axiom-bg)); }
+html[data-theme="light"] .bot-prompt-surface {
+  background:rgb(var(--axiom-surface));
+  border-color:rgb(var(--axiom-border));
+  box-shadow:0 2px 8px rgb(52 44 28 / .035);
+}
+html[data-theme="light"] .bot-prompt-surface:focus-within { border-color:var(--app-focus); }

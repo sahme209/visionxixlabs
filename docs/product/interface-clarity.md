@@ -216,3 +216,6 @@ configuration changed. Native light-mode inspection is recorded separately.
 
 ### Native finish across the app
 Use the host system font first (SF on macOS, Segoe UI on Windows), with existing monospace styles retained for code. Shared buttons use consistent 9px corners and subtle pressed feedback. Reserve shadows for temporary overlays; keep workspace surfaces matte. Balance section headings and retain visible keyboard focus, density choices, reduced motion and all approval/state controls. This is an Axiom design interpretation of the requested Apple-like care, not a claim of Apple feature parity.
+
+### Bot canvas continuity
+Keep the Bot composer surround and access-context row on the conversation canvas rather than a contrasting cream strip. In light mode the shared top bar also matches the canvas; the sidebar retains its navigation tint. The composer alone uses a pale raised surface, with a defined focus border. Keep task metadata, access controls, warnings and all handlers visible and unchanged.

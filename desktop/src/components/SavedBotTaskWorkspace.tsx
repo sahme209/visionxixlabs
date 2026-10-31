@@ -119,7 +119,7 @@ export function SavedBotTaskWorkspace({recoveryIdentity,observationIdentity,owne
    </div>
   </aside>
   <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-   <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
+   <header className="bot-task-toolbar flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4">
     <div className="flex min-w-0 items-center gap-3"><button type="button" ref={tasksTrigger} className="btn-secondary" aria-controls={`bot-task-list-${ownerKey}`} aria-expanded={tasksOpen} onClick={()=>{setTasksOpen(!tasksOpen);setInspectorOpen(false)}}>Tasks</button><h1 className="truncate text-sm font-medium text-zinc-200">{selected?.title??"New task"}</h1><span className="rounded-full border border-white/10 px-2 py-1 text-[10px] text-zinc-500">Draft</span></div>
     <div className="flex gap-2"><button type="button" className="btn-secondary" aria-expanded={actionsOpen} onClick={()=>setActionsOpen(!actionsOpen)}>App actions</button><button type="button" className="btn-secondary" disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={()=>requestOpen("new")}>New draft</button><button type="button" ref={detailsTrigger} className="btn-secondary" aria-controls={`bot-task-inspector-${ownerKey}`} aria-expanded={inspectorOpen} onClick={()=>{setInspectorOpen(!inspectorOpen);setTasksOpen(false)}}>Task details</button></div>
    </header>
