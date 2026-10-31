@@ -1,0 +1,10 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+const m=vi.hoisted(()=>({create:vi.fn(),any:vi.fn()}));
+vi.mock('../requestService',()=>({createGovernanceRequestService:(...args:unknown[])=>{m.create(...args);return{hasAnyEnrollment:m.any}}}));
+import {assertNoUncoveredGovernanceExecution} from '../uncoveredExecution';
+const scope={organizationId:'org',actorUserId:'executor',sessionId:'paired'},request={signal:new AbortController().signal};
+beforeEach(()=>{vi.clearAllMocks();m.any.mockResolvedValue(false)});
+it('permits only a positively verified unenrolled organization without evaluating or enabling policy',async()=>{await expect(assertNoUncoveredGovernanceExecution(request as any,{}as any,scope,request.signal)).resolves.toBeUndefined();expect(m.any).toHaveBeenCalledOnce();expect(m.create.mock.calls[0][3]()).toBe(false)});
+it.each([true,undefined,null,'false'])('refuses enrolled or unknown metadata %s before any provider action',async value=>{m.any.mockResolvedValue(value);await expect(assertNoUncoveredGovernanceExecution(request as any,{}as any,scope,request.signal)).rejects.toThrow('governance_execution_coverage_unavailable')});
+it('does not reinterpret metadata read failure as legacy execution authority',async()=>{m.any.mockRejectedValue(Error('private database failure'));await expect(assertNoUncoveredGovernanceExecution(request as any,{}as any,scope,request.signal)).rejects.toThrow('governance_execution_coverage_unavailable')});
+it('refuses cancellation before attempting the metadata read',async()=>{const c=new AbortController();c.abort();await expect(assertNoUncoveredGovernanceExecution(request as any,{}as any,scope,c.signal)).rejects.toThrow();expect(m.any).not.toHaveBeenCalled()});

@@ -1,3 +1,5 @@
+import {assertNoUncoveredGovernanceExecution} from '@/lib/governance/intelligence/uncoveredExecution';
+import {fenceUncoveredMutationStore} from '@/lib/governance/intelligence/uncoveredMutationStore';
 import 'server-only';
 import {NextResponse,type NextRequest} from 'next/server';
 import {z} from 'zod';
@@ -44,7 +46,8 @@ export async function handleReleaseDeploymentExecution(request:NextRequest,reque
   else if(action.action==='cancel'){if(!operation)throw new Refusal('release_deployment_refresh_required',409);operation=await history.cancel(scope,operationId,action.expectedVersion)}
   else{if(!available||!dependencies)throw new Refusal('release_deployment_adapters_unavailable',503);
    const ready=()=>{signal.throwIfAborted();if(!ports.enabled?.())throw new Refusal('release_deployment_adapters_unavailable',503)};
-   const execution=createReleaseDeploymentExecutionStore(repo,{...dependencies,assertCurrent:async(tx,s,p,a)=>{ready();await assertCurrent(tx,s);await dependencies.assertCurrent!(tx,s,p,a);await assertCurrent(tx,s);ready()}});
+   const rawExecution=createReleaseDeploymentExecutionStore(repo,{...dependencies,assertCurrent:async(tx,s,p,a)=>{ready();await assertCurrent(tx,s);await dependencies.assertCurrent!(tx,s,p,a);await assertCurrent(tx,s);ready()}});
+   const execution=fenceUncoveredMutationStore(rawExecution,()=>assertNoUncoveredGovernanceExecution(request,repo,scope,signal));
    if(action.action==='prepare'){ready();const current=deploymentPlanSchema.parse(await withGithubAbort(ports.readPlan!(scope,plan,signal),signal));if(!bindingMatches(current))throw new Refusal('release_deployment_refresh_required',409);operation=await execution.prepare(scope,current)}
    else{if(!operation||!saved||!saved.inputJson||typeof saved.inputJson!=='object'||!('plan' in saved.inputJson))throw new Refusal('release_deployment_refresh_required',409);if(ports.preflight)await withGithubAbort(ports.preflight(deploymentPlanSchema.parse(saved.inputJson.plan),signal),signal);operation=await createReleaseDeploymentExecutor(execution,ports.transport).run(scope,operationId)}
   }

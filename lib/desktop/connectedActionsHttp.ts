@@ -1,3 +1,5 @@
+import {assertNoUncoveredGovernanceExecution} from '@/lib/governance/intelligence/uncoveredExecution';
+import {fenceUncoveredMutationStore} from '@/lib/governance/intelligence/uncoveredMutationStore';
 import {readBotActionTaskBinding,assertBotActionTaskBinding} from '@/lib/axiom/bot/actionTaskBinding';
 import 'server-only';
 import {NextRequest,NextResponse} from 'next/server';
@@ -66,7 +68,7 @@ export function createConnectedActionsHttp(ports:ConnectedActionsHttpPorts=produ
   if(!ports.repo)throw new Refusal('connected_action_adapter_unavailable',503);const repo=ports.repo;
   const assertMember=async(tx:Tx,user:string,capability:DesktopCapability)=>{const rows=await tx.$queryRaw<Array<{organizationId:string;userId:string;acceptedAt:Date|null;role:string}>>`SELECT "organizationId","userId","acceptedAt","role" FROM "OrgMembership" WHERE "organizationId"=${scope.organizationId} AND "userId"=${user} FOR SHARE`;const m=rows[0];if(rows.length!==1||m.organizationId!==scope.organizationId||m.userId!==user||!m.acceptedAt||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(m.role)||!hasDesktopCapability(m.role as DesktopWorkspaceRole,capability))throw new Refusal('connected_action_permission_required',403)};
   const assertSession=async(tx:Tx,s:Scope)=>{const rows=await tx.$queryRaw<Array<{live:boolean}>>`SELECT ("revokedAt" IS NULL AND "expiresAt">clock_timestamp()) AS "live" FROM "DesktopSessionRecord" WHERE "id"=${s.sessionId} AND "organizationId"=${s.organizationId} AND "userId"=${s.actorUserId} FOR SHARE`;if(rows.length!==1||!rows[0].live)throw new Refusal('desktop_session_required',401)};
-  const store=createConnectedActionStore(repo,{assertCurrent:async(tx,s,i,role,approval)=>{
+  const rawStore=createConnectedActionStore(repo,{assertCurrent:async(tx,s,i,role,approval)=>{
    signal.throwIfAborted();if(hash(s)!==hash(scope)||i.organizationId!==scope.organizationId||i.provider!==provider)throw new Refusal('desktop_session_required',401);
    if(!ports.commercialAllowed||!await ports.commercialAllowed(scope.organizationId))throw new Refusal('connected_action_permission_required',403);
    await assertSession(tx,scope);await assertMember(tx,scope.actorUserId,role==='approve'?'agent:approve':role==='read'?'workspace:read':'connections:manage');
@@ -82,6 +84,7 @@ export function createConnectedActionsHttp(ports:ConnectedActionsHttpPorts=produ
    const rows=await tx.$queryRaw<Connection[]>`SELECT "id","organizationId","provider","status","revokedAt","consentedByUserId","externalAccountId","updatedAt","lastValidatedAt","encryptedCredential","scopesJson" FROM "TenantIntegrationConnection" WHERE "organizationId"=${scope.organizationId} AND "provider"=${provider} FOR SHARE`;
    if(rows.length!==1||hash(connectionSchema.parse(rows[0]))!==hash(captured)||captured.id!==i.connectionId||captured.updatedAt.toISOString()!==i.connectionRevision||captured.consentedByUserId!==i.requesterUserId)throw new Refusal('connected_action_connection_changed');return structuredClone(i);
   }});
+  const store=fenceUncoveredMutationStore(rawStore,()=>assertNoUncoveredGovernanceExecution(request,repo,scope,signal));
   let actions:ConnectedActionDto[]=[],truncated=false;
   if(body?.action==='request'){
    if(!actor.capabilities.includes('connections:manage')||provider==='teams'&&body.kind!=='teams_channel_message'||provider==='linear'&&body.kind==='teams_channel_message')throw new Refusal('connected_action_permission_required',403);

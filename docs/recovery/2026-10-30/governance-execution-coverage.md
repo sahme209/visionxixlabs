@@ -232,3 +232,35 @@ The database journey now verifies disabled-configuration metadata, refusal for
 an active pointer and positive absence for another scope. External provider and
 paired-session ports remain simulated; fixture stopped. Full execution coverage
 is still incomplete; this closes one issuance bypass, not all executor gaps.
+
+## Refusal coverage for uncovered server execution
+
+`uncoveredExecution.ts` uses current paired-reader enrollment metadata with
+policy evaluation disabled. Only literal false permits existing legacy checks;
+any enrollment, unknown result, cancellation or failed read refuses. Because an
+uncovered executor cannot map every resource reliably, any enrolled scope in
+that organization conservatively blocks this legacy execution path.
+
+The actual merge coordinator now fences preparation and composes the fixed
+legacy executor/transport with fresh refusal checks before claim and both
+transport authority phases. Existing explicitly configured Governance guards
+still use their stricter scope-aware path. Read-only recovery and cancellation
+remain available. The actual transport regression demonstrates enrollment
+appearing after its GET prevents PUT, while unknown provider results retain the
+original consumed attempt without retry.
+
+`uncoveredMutationStore.ts` is mounted at the server connected-app (Teams/Linear),
+Outlook, Slack and deployment execution store compositions. It repeats the
+refusal check before claim and after original beforeDispatch authority returns.
+It does not replace their approvals, current target checks, outcomes, recovery
+or cancellation. This adds no provider I/O or new principal resolution inside
+existing store transactions. There is no policy permission fallback.
+
+Twenty-eight merge/fence/coordinator checks and38store/HTTP checks passed; two
+additional deployment HTTP refusals/recovery checks then passed in a20-check
+batch (overlap). One actual isolated request PostgreSQL journey passed with
+literal absence before fixture-only activation and refusal afterward; external
+provider/session/coverage remain simulated, fixture stopped. Scoped types and
+focused independent review pass. These are refusal seams, not proof of complete
+enforcement: other Agent/direct/native/ticket paths and actual enrolled action
+admission still need composition. Enrollment/activation therefore remain refused.
