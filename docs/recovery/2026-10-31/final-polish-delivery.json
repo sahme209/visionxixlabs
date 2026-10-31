@@ -1,0 +1,17 @@
+{
+  "sourceCommit": "567bb8989f16e86501be5b608de33de8b6f02085",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/567bb898/Axiom Agent Local Preview.app",
+  "binarySha256": "73cbaae03113588fd2fd5c6957372bbad37b846d8ec56b65913bb16227d85668",
+  "strictSignatureVerified": true,
+  "testsPassed": 121,
+  "paidAiCalls": 0,
+  "productionActivated": false,
+  "savedSessionRestored": true,
+  "nativeVisualInspection": [
+    "shared Home/navigation/header",
+    "exact workspace identity and paired-session disclosure"
+  ],
+  "nativeCommandPaletteInspection": "user changed view before command click; automated command tests passed",
+  "screenshotShownInChat": true,
+  "governanceComplete": false
+}
