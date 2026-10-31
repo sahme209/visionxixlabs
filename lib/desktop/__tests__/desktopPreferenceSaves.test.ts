@@ -10,7 +10,7 @@ vi.mock("../../../desktop/src/lib/notifications",()=>({markNotificationPrefDirty
 import {SettingsView} from "../../../desktop/src/views/SettingsView";
 const prefs={theme:"dark",notifications_enabled:false,reduce_motion:false,high_contrast:false,interface_density:"comfortable",submit_with_command_enter:false,new_message_behavior:"queue"};
 const show=()=>render(createElement(SettingsView,{identity:{organizationId:"fixture",capabilities:[]} as never}));
-beforeEach(()=>{vi.resetAllMocks();m.read.mockResolvedValue(prefs);m.write.mockResolvedValue(undefined);});afterEach(cleanup);
+beforeEach(()=>{vi.resetAllMocks();m.read.mockResolvedValue(prefs);m.write.mockResolvedValue(undefined);});afterEach(()=>{cleanup();vi.unstubAllEnvs();});
 it("prevents overlapping preference writes and shows when the change is durably saved",async()=>{
  let resolve!:()=>void;m.write.mockReturnValue(new Promise<void>(done=>{resolve=done;}));show();const toggle=await screen.findByRole("switch",{name:"System notifications"});
  await waitFor(()=>expect(toggle.hasAttribute("disabled")).toBe(false));fireEvent.click(toggle);fireEvent.click(toggle);
@@ -38,3 +38,5 @@ it('opens saved Governance inspection deliberately and returns without writing p
  expect(screen.getByRole('switch',{name:'System notifications'}).getAttribute('aria-checked')).toBe('false');
  expect(m.read).toHaveBeenCalledOnce();expect(m.write).not.toHaveBeenCalled();
 });
+
+it("hides unfinished Governance authoring from production installers",async()=>{vi.stubEnv("DEV",false);show();await screen.findByRole("switch",{name:"System notifications"});expect(screen.queryByRole("button",{name:"Inspect saved Governance"})).toBeNull();expect(m.write).not.toHaveBeenCalled();});

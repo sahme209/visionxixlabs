@@ -160,7 +160,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
     }
   }
 
-  if (governancePreview) return <GovernanceWorkspacePreview identity={identity} onClose={() => setGovernancePreview(false)} />;
+  if (import.meta.env.DEV && governancePreview) return <GovernanceWorkspacePreview identity={identity} onClose={() => setGovernancePreview(false)} />;
   return (
     <div className="settings-workbench relative flex min-h-0 flex-1 bg-axiom-bg">
       <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
@@ -238,7 +238,7 @@ function GeneralSection({ prefs, onSave, onOpenGovernance }: PreferenceSectionPr
     <Group label="Account">
       <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
       <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in Axiom Control." action={<WebButton href="/control/governance" label="Open governance" />} />
-      <ActionRow title="Governance evidence preview" detail="Inspect saved evidence and baseline history. Enforcement and authoring remain unavailable in this local preview." action={<button type="button" className="btn-secondary" onClick={onOpenGovernance}>Inspect saved Governance</button>} />
+      {import.meta.env.DEV && <ActionRow title="Governance evidence preview" detail="Inspect saved evidence and baseline history. Enforcement and authoring remain unavailable in this local preview." action={<button type="button" className="btn-secondary" onClick={onOpenGovernance}>Inspect saved Governance</button>} />}
       <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-600">Service verified</span>} />
     </Group>
     <Group label="Notifications">

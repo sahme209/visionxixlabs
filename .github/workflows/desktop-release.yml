@@ -117,7 +117,7 @@ jobs:
         env:
           REQUESTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
           SOURCE_SHA: ${{ github.sha }}
-          PUBLISH_REQUESTED: ${{ github.event_name == 'workflow_dispatch' && (inputs.publish || inputs.export_draft) }}
+          PUBLISH_REQUESTED: ${{ (github.event_name == 'workflow_dispatch' && (inputs.publish || inputs.export_draft)) || (github.event_name == 'push' && github.ref == 'refs/tags/desktop-v0.1.22' && github.sha == vars.AXIOM_DESKTOP_DRAFT_EXPORT_SOURCE && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true') }}
         run: |
           node scripts/check-desktop-release.mjs
           [[ "$REQUESTED_TAG" =~ ^desktop-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Only an exact stable desktop release tag is supported.' >&2; exit 1; }
@@ -160,6 +160,7 @@ jobs:
       - name: Upload exact SBOM candidate bytes
         uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: axiom-sbom
           path: axiom-agent.sbom.cdx.json
           if-no-files-found: error
@@ -186,6 +187,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: axiom-sbom-provenance
           path: candidate-sbom.json
           if-no-files-found: error
@@ -362,6 +364,7 @@ jobs:
       - name: Upload artefact
         uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: axiom-${{ matrix.label }}
           path: |
             desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.dmg
@@ -427,7 +430,7 @@ jobs:
           const files = walk('artifacts');
           const manifests = files.filter(file => /^candidate-(macos-arm|macos-intel|windows-x64|linux-x64|sbom)\.json$/.test(path.basename(file)));
           if (manifests.length !== 5) throw Error('Missing or duplicate platform provenance');
-          const seenPlatforms = new Set(); const seenNames = new Set(); const verified = [];
+          const seenPlatforms = new Set(); const seenNames = new Set(); const outputNames = new Set(); const verified = [];
           fs.mkdirSync('flat');
           for (const file of manifests) {
             const manifest = JSON.parse(fs.readFileSync(file));
@@ -449,7 +452,9 @@ jobs:
               const bytes = fs.readFileSync(matches[0]);
               if (bytes.length !== asset.sizeBytes || crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256) throw Error('Candidate bytes changed');
               if (manifest.platform !== 'sbom' && !asset.fileName.split(/[^0-9.]+/).includes(VERSION)) throw Error('Installer version mismatch');
-              const outputName = manifest.platform === 'sbom' ? `Axiom-Agent-${RELEASE_TAG}-sbom.cdx.json` : asset.fileName;
+              const outputName = manifest.platform === 'sbom' ? `Axiom-Agent-${RELEASE_TAG}-sbom.cdx.json` : asset.fileName.replace(/ /g, '.');
+              if (outputNames.has(outputName)) throw Error('Normalized candidate filename collision');
+              outputNames.add(outputName);
               fs.copyFileSync(matches[0], path.join('flat', outputName));
               seenNames.add(asset.fileName); verified.push({ ...asset, fileName: outputName, platform: manifest.platform, target: manifest.target });
             }
@@ -465,13 +470,15 @@ jobs:
         id: review
         uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: axiom-verified-candidate
           path: flat/*
           if-no-files-found: error
 
   export-draft:
     name: Export signed candidate without publication
-    if: github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true && inputs.export_draft == true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true'
+    timeout-minutes: 5
+    if: (github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true && inputs.export_draft == true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true') || (github.event_name == 'push' && github.ref == 'refs/tags/desktop-v0.1.22' && github.sha == vars.AXIOM_DESKTOP_DRAFT_EXPORT_SOURCE && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true')
     # Local approved export boundary: draft only. Human publication remains in
     # the public artifact repository protected job, configured separately.
     needs: [validate-release, verify-candidate]
@@ -636,6 +643,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: axiom-draft-export-verification
           path: ${{ runner.temp }}/publication-verification.json
           if-no-files-found: ignore
@@ -807,6 +815,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: axiom-publication-verification
           path: ${{ runner.temp }}/publication-verification.json
           if-no-files-found: ignore
@@ -998,6 +1007,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: axiom-draft-export-verification
           path: ${{ runner.temp }}/publication-verification.json
           if-no-files-found: ignore
@@ -1034,6 +1044,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
+          retention-days: 3
           name: axiom-v121-draft-name-recovery
           path: |
             ${{ runner.temp }}/axiom-v121-draft-recovery/before.json
