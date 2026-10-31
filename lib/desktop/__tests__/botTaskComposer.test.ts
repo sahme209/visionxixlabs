@@ -24,3 +24,5 @@ it.each([true,false])('never bypasses disabled or invalid Bot sending with Enter
  const send=vi.fn();render(createElement(BotTaskComposer,{ownerKey:'owner',draft:{...initial,title:'Review',task:disabled?'Valid task':''},onDraftChange:vi.fn(),onSend:send,sendDisabled:disabled}));
  fireEvent.keyDown(screen.getByLabelText('What should Axiom Bot help with?'),{key:'Enter'});expect(send).not.toHaveBeenCalled();
 });
+
+it('shows current draft size including retained over-limit edits without sending',()=>{const save=vi.fn();render(createElement(Host,{save}));expect(screen.getByText('0 / 4,000 instruction · 0 / 4,000 context characters')).toBeTruthy();fireEvent.change(screen.getByLabelText('Context to include'),{target:{value:'abc'}});fireEvent.change(screen.getByLabelText('What should Axiom Bot help with?'),{target:{value:'x'.repeat(4001)}});expect(screen.getByText('4,001 / 4,000 instruction · 3 / 4,000 context characters')).toBeTruthy();expect(screen.getByRole('button',{name:'Save task draft'})).toHaveProperty('disabled',true);expect(save).not.toHaveBeenCalled()});
