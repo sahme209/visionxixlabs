@@ -162,7 +162,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
 
   if (governancePreview) return <GovernanceWorkspacePreview identity={identity} onClose={() => setGovernancePreview(false)} />;
   return (
-    <div className="relative flex min-h-0 flex-1 bg-axiom-bg">
+    <div className="settings-workbench relative flex min-h-0 flex-1 bg-axiom-bg">
       <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
         <nav aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/[0.06] bg-[#18191b] px-3 pb-5 pt-8">
           {onClose && <button type="button" onClick={onClose} className="mb-6 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/[0.04] hover:text-white"><ArrowLeft aria-hidden className="h-4 w-4" />Back to workspace</button>}

@@ -107,7 +107,7 @@ export function SavedBotTaskWorkspace({recoveryIdentity,observationIdentity,owne
  const aiLocked=preparingSend||ai.sending||ai.uncertain;
  const locked=aiLocked||busy==="save"||busy==="open"||Boolean(pending);
  const visibleRows=rows.filter(task=>task.title.toLocaleLowerCase().includes(filter.trim().toLocaleLowerCase()));
- return <div onKeyDown={event=>{if(event.key==="Escape"){if(tasksOpen){event.preventDefault();closeTasks()}else if(inspectorOpen){event.preventDefault();closeInspector()}}}} className="relative flex min-h-0 flex-1 overflow-hidden">
+ return <div onKeyDown={event=>{if(event.key==="Escape"){if(tasksOpen){event.preventDefault();closeTasks()}else if(inspectorOpen){event.preventDefault();closeInspector()}}}} className="bot-task-workbench relative flex min-h-0 flex-1 overflow-hidden">
   <aside id={`bot-task-list-${ownerKey}`} aria-label="Bot task list" className={`${tasksOpen?'flex':'hidden'} absolute inset-y-0 left-0 z-20 w-56 shrink-0 flex-col border-r border-white/10 bg-zinc-950 p-4 xl:static xl:flex xl:w-52`}>
    <div className="flex items-center justify-between gap-2"><h2 className="text-sm font-semibold text-white">Tasks</h2><button type="button" className="text-xs text-zinc-400 underline" disabled={Boolean(busy)} onClick={()=>void loadList()}>Refresh saved tasks</button></div>
    <button type="button" className="mt-3 text-left text-xs text-zinc-400 xl:hidden" onClick={closeTasks}>Close task list</button>

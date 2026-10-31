@@ -1056,15 +1056,15 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
 
   return (
     <div className={`agent-workspace flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden bg-axiom-bg ${compact ? "agent-workspace-compact" : ""}`}>
-      <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-3 py-3">
+      <div className="agent-conversation-bar flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-3 py-3">
         <label className="flex min-w-[160px] flex-1 items-center gap-2 text-[11px] text-zinc-500">
-          <span className="shrink-0">Conversation</span>
+          <span className="sr-only">Conversation</span>
           <select
             aria-label="Agent conversation"
             value={conversationId ?? ""}
             onChange={(event) => void openConversation(event.target.value)}
             disabled={renamingBusy || sending || conversations.length === 0}
-            className="min-w-0 max-w-md flex-1 truncate rounded-md border border-white/10 bg-[#151719] px-2.5 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50"
+            className="agent-conversation-select min-w-0 max-w-md flex-1 truncate rounded-md border border-transparent bg-transparent px-2.5 py-1.5 text-sm font-medium text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50"
           >
             {conversations.length === 0 && <option value="">No conversations yet</option>}
             {conversations.map((conversation) => (
@@ -1074,8 +1074,10 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             ))}
           </select>
         </label>
+        <details className="agent-chat-options" onKeyDown={event=>{if(event.key==="Escape"){event.currentTarget.open=false;event.currentTarget.querySelector("summary")?.focus();event.stopPropagation();}}}><summary>Chat options</summary><div className="agent-chat-options-content">
         {conversationId && <ConversationRename onBusyChange={setRenamingBusy} key={conversationId} id={conversationId} title={conversations.find(conversation => conversation.id === conversationId)?.title ?? null} disabled={sending || loadingConversation} onRenamed={(id, title) => setConversations(current => current.map(conversation => conversation.id === id ? {...conversation, title} : conversation))} />}
         <button type="button" aria-expanded={historyOpen} aria-controls="agent-conversation-history" onClick={() => setHistoryOpen(open => !open)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06]">{historyOpen ? "Close history" : "Search chats"}</button>
+        </div></details>
         <button type="button" onClick={() => void newConversation()} disabled={renamingBusy || loadingConversation || sending} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">
           {loadingConversation ? "Loading…" : "New chat"}
         </button>
@@ -1408,7 +1410,7 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
   const isUser = turn.role === "user";
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
-      <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-6 ${isUser ? "bg-white text-black" : "bg-white/[0.04] border border-white/[0.07] text-zinc-100"}`}>
+      <div className={isUser ? "agent-user-message max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-6" : "agent-assistant-message w-full min-w-0 text-sm leading-7 text-zinc-100"}>
         {isUser ? <p className="whitespace-pre-wrap break-words">{turn.content}</p> : <AgentMessageContent text={turn.content} />}
       </div>
     </div>

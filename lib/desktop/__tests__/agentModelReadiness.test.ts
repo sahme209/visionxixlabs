@@ -1217,7 +1217,7 @@ it("offers the unified welcome and enters the retained AI workspace without send
   m.client.hasAuth.mockReturnValue(true);
   m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
   render(createElement(App));
-  await screen.findByRole("heading", {name: "What would you like to accomplish today?"});
+  await screen.findByRole("heading", {name: "What are we working on?"});
   expect(screen.getByRole("button", {name: "Axiom home"}).getAttribute("aria-current")).toBe("page");
   expect(screen.getByRole("button", {name: "Agent"}).getAttribute("aria-current")).toBeNull();
   expect(screen.getByRole("button", {name: /Automate Operations/})).toBeTruthy();
@@ -1235,7 +1235,7 @@ it("offers the unified welcome and enters the retained AI workspace without send
   expect(screen.getByRole("button", {name: "Axiom home"}).getAttribute("aria-current")).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
   fireEvent.click(screen.getByRole("button", {name: "Axiom home"}));
-  await screen.findByRole("heading", {name: "What would you like to accomplish today?"});
+  await screen.findByRole("heading", {name: "What are we working on?"});
   fireEvent.click(screen.getByRole("button", {name: /Build with AI/}));
   expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
 });
@@ -1274,7 +1274,7 @@ it("can enter Agent for the first time through a verified marketplace handoff fr
   m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
   m.client.listAgentSkills.mockResolvedValue({ok: true, data: {skills: [{id: "safe-repository-change", name: "Safe repository change", description: "Existing workflow", category: "GitHub", toolNames: ["read_github_file"], status: "enabled"}]}});
   render(createElement(App));
-  await screen.findByRole("heading", {name: "What would you like to accomplish today?"});
+  await screen.findByRole("heading", {name: "What are we working on?"});
   fireEvent.click(screen.getByRole("button", {name: "Apps & skills"}));
   fireEvent.click(await screen.findByRole("button", {name: "Use in Agent"}));
   await waitFor(() => expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("/safe-repository-change "));

@@ -181,7 +181,7 @@ function PluginsSkillsSession({ initialFilter="all",onReturnToBot,onOpenSettings
         {onReturnToBot&&<button type="button" className="mb-4 text-sm text-zinc-300 underline" onClick={()=>{if(owns())onReturnToBot()}}>Back to Axiom Bot</button>}
         <div className="flex items-start justify-between gap-6">
           <div><h1 className="text-2xl font-semibold tracking-[-0.035em]">Apps & skills</h1><p className="mt-1.5 max-w-2xl text-sm leading-6 text-zinc-500">Connect your apps, review available actions and manage reusable skills. Each action still follows workspace policy and approval.</p></div>
-          <div className="flex items-center gap-2 rounded-lg border border-emerald-400/15 bg-emerald-400/[0.05] px-3 py-2 text-[11px] text-emerald-200"><ShieldCheck className="h-3.5 w-3.5" />Guardrails always on</div>
+          <div className="flex shrink-0 items-center gap-2 text-[11px] text-zinc-500"><ShieldCheck className="h-3.5 w-3.5" />Permissions & approvals</div>
         </div>
 
         {!canManage && <p role="status" className="mt-4 text-xs text-zinc-400">A workspace administrator manages skill installation and provider consent. You can inspect available capabilities.</p>}
