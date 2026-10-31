@@ -115,3 +115,13 @@ export async function readVerifiedTerraformBackend(input: AwsEnrollmentInput & {
     const { readCustomerPlanAws } = await import("@/lib/terraform/customerPlanAwsRead");
     return readCustomerPlanAws({ profile, accountId: verified.accountId, credentials: verified.credentials, signal, budget, run });
 }
+
+/** Inactive Governance metadata boundary: fixed reads, verified tenant identity,
+ * no permission expansion and no temporary credentials returned to callers. */
+export async function readVerifiedGovernanceMetadata(input:AwsEnrollmentInput & {externalId:string;sessionName:string},selection:{operation:string;cursor:string|null},parent:AbortSignal){
+    if(!['iam.roles','iam.policy_versions','infrastructure.inventory'].includes(selection.operation)||selection.cursor!==null&&(typeof selection.cursor!=='string'||selection.cursor.length<1||selection.cursor.length>512)||!/^axiom-[a-f0-9]{32}$/.test(input.externalId)||!/^[A-Za-z0-9_+=,.@-]{2,64}$/.test(input.sessionName))throw new AwsEnrollmentError('invalid_input');
+    const parsed=parseAwsEnrollmentInput({expectedAccountId:input.expectedAccountId,roleArn:input.roleArn,region:input.region}),signal=AbortSignal.any([parent,AbortSignal.timeout(15000)]),budget={remaining:2*1024*1024};signal.throwIfAborted();
+    const verified=await assumeVerifiedRole({...parsed,externalId:input.externalId,sessionName:input.sessionName},{signal,budget});signal.throwIfAborted();
+    const{readGovernanceAwsMetadata}=await import('./governanceRead');
+    return readGovernanceAwsMetadata({credentials:verified.credentials,accountId:verified.accountId,region:parsed.region,operation:selection.operation,cursor:selection.cursor,signal,budget});
+}

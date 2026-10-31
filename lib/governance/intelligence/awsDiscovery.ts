@@ -1,0 +1,24 @@
+import 'server-only';
+import {z} from 'zod';
+import {withTenantAwsConnection,type AwsConnectionReadRepo} from '@/lib/cloud/aws/enrollment/scopedConnection';
+import {readVerifiedGovernanceMetadata} from '@/lib/cloud/aws/enrollment/stsValidation';
+import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+import {identifier} from './contracts';
+import {discoverySelectionSchema,READ_OPERATIONS,type DiscoveryPorts,type DiscoveryRead} from './discovery';
+const principalSchema=z.object({organizationId:identifier,actorUserId:identifier,sessionId:identifier}).strict();
+const accountSchema=z.object({id:identifier,organizationId:identifier,provider:z.literal('aws'),externalAccountId:z.string().regex(/^\d{12}$/),credentialRef:z.string(),regions:z.array(z.string()).max(100),enabled:z.literal(true),updatedAt:z.date()}).passthrough();
+const credentialSchema=z.object({id:identifier,organizationId:identifier,version:z.number().int().positive(),revokedAt:z.null()}).passthrough();
+/** Fixed metadata discovery through the existing tenant/vault/verified-role
+ * broker. No ambient credentials, grants, arbitrary ARN or SDK write input. */
+export function createAwsGovernanceDiscovery(ports:{scope:z.infer<typeof principalSchema>;repo:AwsConnectionReadRepo;assertActor:(scope:z.infer<typeof principalSchema>,signal:AbortSignal)=>Promise<void>;isEnabled:()=>boolean;now?:()=>number}):DiscoveryPorts{
+ const scope=principalSchema.parse(ports.scope),now=ports.now??Date.now;
+ function selected(raw:unknown){const input=discoverySelectionSchema.parse(raw),resource=/^aws:account:(\d{12}):region:([a-z]{2}(?:-[a-z]+)+-\d)$/.exec(input.selection.resourceId);if(!ports.isEnabled()||input.source!=='aws'||input.organizationId!==scope.organizationId||!resource)throw Error('governance_aws_scope_unavailable');return{input,accountId:resource[1],region:resource[2]}}
+ function bind(target:ReturnType<typeof selected>,rawAccount:unknown,rawCredential:unknown){const account=accountSchema.parse(rawAccount),credential=credentialSchema.parse(rawCredential);if(account.id!==target.input.connectionId||account.organizationId!==scope.organizationId||account.externalAccountId!==target.accountId||!account.regions.includes(target.region)||account.credentialRef!=='cloud-v2:'+account.id||credential.id!==account.id||credential.organizationId!==scope.organizationId||sha256ContentHash({accountId:account.id,updatedAt:account.updatedAt.toISOString(),credentialVersion:credential.version})!==target.input.connectionRevision)throw Error('governance_aws_connection_changed');return{account,credential}}
+ async function current(raw:unknown,signal:AbortSignal){const target=selected(raw);signal.throwIfAborted();await withGithubAbort(ports.assertActor(scope,signal),signal);const rows=await withGithubAbort(ports.repo.cloudAccount.findMany({where:{id:target.input.connectionId,organizationId:scope.organizationId,provider:'aws'},take:1}),signal),credential=await withGithubAbort(ports.repo.cloudAccountCredential.findUnique({where:{id:target.input.connectionId}}),signal);if(rows.length!==1)throw Error('governance_aws_connection_changed');bind(target,rows[0],credential);await withGithubAbort(ports.assertActor(scope,signal),signal);signal.throwIfAborted();return target}
+ return{now,assertCurrentAccess:async(raw,signal)=>{await current(raw,signal)},async read(request:DiscoveryRead,signal:AbortSignal){const{method,operation,cursor,...raw}=request,target=await current(raw,signal);if(method!=='GET'||!(READ_OPERATIONS.aws as readonly string[]).includes(operation)||!target.input.operations.includes(operation)||cursor!==null&&(typeof cursor!=='string'||!cursor||cursor.length>512))throw Error('governance_aws_fixed_read_required');
+  const data=await withGithubAbort(withTenantAwsConnection(ports.repo,{organizationId:scope.organizationId,userId:scope.actorUserId,sessionId:scope.sessionId},target.input.connectionId,async(input,connection,snapshot)=>{bind(target,snapshot.account,snapshot.credential);if(connection.id!==target.input.connectionId||input.expectedAccountId!==target.accountId||input.region!==target.region)throw Error('governance_aws_connection_changed');return readVerifiedGovernanceMetadata(input,{operation,cursor},signal)}),signal);
+  await current(raw,signal);const result=z.object({projection:z.array(z.unknown()).max(100),nextCursor:z.string().min(1).max(512).nullable()}).strict().parse(data);
+  return{facts:[{key:'resource_count' as const,value:result.projection.length,locator:target.input.selection.resourceId+'/'+operation+'/page/'+sha256ContentHash(cursor)}],sourceDigest:sha256ContentHash({organizationId:scope.organizationId,selection:target.input.selection,operation,projection:result.projection}),nextCursor:result.nextCursor};
+ }};
+}

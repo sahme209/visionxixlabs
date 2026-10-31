@@ -9,7 +9,7 @@ vi.mock("@aws-sdk/client-ec2", () => ({
   DescribeInstancesCommand: class { constructor(readonly input: unknown) {} },
 }));
 import { __resetEnvCacheForTest } from "@/lib/config/env";
-import { validateEnrollmentRole, readEnrollmentInventory } from "../stsValidation";
+import { validateEnrollmentRole, readEnrollmentInventory, readVerifiedGovernanceMetadata } from "../stsValidation";
 import { input, externalId } from "./fixture";
 const request = { ...input, externalId, sessionName: "axiom-enroll-fixture" };
 const roleArn = "arn:aws:sts::123456789012:assumed-role/ReadOnly/axiom-enroll-fixture";
@@ -59,3 +59,6 @@ it("reports inventory permission denial distinctly from identity verification", 
   mocks.ec2.mockRejectedValue(Object.assign(new Error("private provider text"), { name: "UnauthorizedOperation" }));
   await expect(readEnrollmentInventory(request)).rejects.toMatchObject({ code: "aws_inventory_denied" });
 });
+
+it("verifies the exact broker identity before governance reads with retries disabled", async()=>{mocks.ec2.mockResolvedValue({Reservations:[{OwnerId:input.expectedAccountId,Instances:[]}]});const result=await readVerifiedGovernanceMetadata(request,{operation:'infrastructure.inventory',cursor:null},new AbortController().signal);expect(result.projection).toEqual([]);expect(mocks.sts).toHaveBeenCalledTimes(2);expect(mocks.ec2).toHaveBeenCalledOnce();expect(mocks.configurations.every((c:any)=>c.maxAttempts===1&&c.ignoreConfiguredEndpointUrls===true)).toBe(true);expect(JSON.stringify(result)).not.toContain('temporary')});
+it("refuses unknown governance operations before requesting temporary credentials", async()=>{await expect(readVerifiedGovernanceMetadata(request,{operation:'iam.delete_role',cursor:null}as any,new AbortController().signal)).rejects.toThrow();expect(mocks.sts).not.toHaveBeenCalled()});

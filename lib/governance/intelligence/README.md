@@ -25,3 +25,15 @@ Current local composition increment:
 - Request authority uses existing paired sessions, commercial access and locked current membership/session reads. Collector/policy administration requires policy:manage; independent reviewers retain agent:approve without administration. Three tests passed.
 - GitHub collection request composition uses fixed organization-bound installation reads and rechecks source revision at durable save. Three composition tests passed with simulated provider/token/store ports, not live discovery.
 - Desktop frontend build/types, scoped Governance types and changed web Governance page types passed. Full activation, live acceptance and final whole-MVP review remain pending.
+
+## AWS and drift increment (local only)
+
+AWS discovery now composes with the existing tenant/vault broker and exact STS identity verification. Fixed SDK reads list IAM role metadata, customer-managed-policy default-version metadata, and regional EC2 instance metadata. Temporary credentials remain in the broker stack; clients use bounded handlers, single attempts and cancellation. No grant, deployment or live AWS call occurred. Policy documents/trust bodies/addresses are not retained, and metadata does not establish effective IAM permissions or public exposure. Unavailable IAM permissions remain unknown; they are never retried or treated as a missing control.
+
+Evidence now records the exact collection operation profile. Fresh revalidation repeats that profile, without saving a new artifact. Older snapshots remain readable but missing profiles cannot manufacture new provider reads. Existing reviewer read capabilities can revalidate; administrator collection rights are not granted to reviewers. Durable connection/vault revision checks still gate new artifact saves.
+
+Read-only drift reports compare canonical approved history to separate fresh sources, with citations and changed/unchanged/unknown results. Denial/partial data remain unknown; cancellation refuses the report. This grants no remediation or execution authority. Final source expiry is checked again before returning the report.
+
+Validation: 80-test local Governance/broker batch passed (8 isolated-PG tests intentionally skipped there), followed by five focused AWS projection tests after partition/resource-kind tightening. One actual isolated PostgreSQL artifact journey passed with recorded collection operations (two unrelated tests skipped). Ten native-panel component tests passed; Governance/desktop types and frontend build passed. Provider data in tests is simulated. New UI groups long association audit bindings in a disclosure while keeping exact site, ticket, request versions, repository, source and run visible; approval/uncertainty guards are unchanged. Not opened in the signed running apps or deployed.
+
+Still incomplete: baseline/drift HTTP and native/web workflow composition, complete registered executor coverage and end-to-end enforcement journeys/final review/activation. Collector factories remain unmounted and disabled by callers. No universal enforcement or live AWS acceptance claim.

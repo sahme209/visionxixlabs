@@ -17,3 +17,11 @@ Still required: request/HTTP composition with real current principals, AWS adapt
 Added current paired request authority, GitHub collection composition, baseline preflight orchestration and a historical revision read. Nine new focused tests passed; one actual isolated PostgreSQL historical-read journey passed (four unrelated tests skipped). The baseline orchestration assertion initially compared object identity; corrected it to compare the canonical baseline value, then all three tests passed. Desktop frontend build/types, scoped Governance types and changed web-page types passed. Governance page now identifies independent reviewer responsibility, expired/unbound/own proposals, outcome verification and the limited scope of its inbox. No new UI authority or provider write.
 
 These remain local: no production routes are mounted for Governance Intelligence and no executor coverage is registered. AWS, baseline/drift UI, end-to-end enforcement and live acceptance remain incomplete. No final whole-MVP completion claim or deployment.
+
+## AWS read broker, exact collection profiles and drift
+
+Local AWS metadata adapter, verified-role boundary and request composition implemented. Read-only revalidation does not persist fresh artifacts; administrator collection and existing reviewer read rights remain separate. The exact collection operation list is now digest-bound for future freshness checks. Older snapshots without it remain historical only. Drift reports retain canonical history and distinguish changed/unchanged/unknown, with no execution or compliance claim.
+
+The ticket review interface now keeps the exact target, source, run and differing request versions visible while grouping long technical bindings in a closed disclosure. Existing human review checkbox, expiry and uncertainty guards remain unchanged. Component verification only; the running signed applications still contain the previous verified UI.
+
+80-test local batch passed, plus five targeted AWS projection tests after tightening account/partition/resource-kind checks, ten panel tests and one actual isolated PostgreSQL profile-artifact journey. Counts overlap for the targeted AWS checks. Scoped Governance/desktop types and frontend build passed. No live provider calls, schema/settings changes, deployments or new paid CI. Owned PostgreSQL stopped.

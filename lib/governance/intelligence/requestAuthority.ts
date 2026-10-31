@@ -8,8 +8,8 @@ import {identifier} from './contracts';
 import type {RevisionScope} from './revisionStore';
 const scopeSchema=z.object({organizationId:identifier,actorUserId:identifier,sessionId:identifier}).strict();
 const roles=['owner','admin','operator','security_reviewer','finance_viewer','read_only'];
-export type GovernanceAuthorityRole='reader'|'collector'|'policy_admin'|'approver';
-const capabilities:Record<GovernanceAuthorityRole,DesktopCapability>={reader:'workspace:read',collector:'policy:manage',policy_admin:'policy:manage',approver:'agent:approve'};
+export type GovernanceAuthorityRole='reader'|'github_reader'|'aws_reader'|'collector'|'policy_admin'|'approver';
+const capabilities:Record<GovernanceAuthorityRole,DesktopCapability>={reader:'workspace:read',github_reader:'github:read',aws_reader:'workspace:read',collector:'policy:manage',policy_admin:'policy:manage',approver:'agent:approve'};
 /** Existing paired authority only. No new role or stored token permission is
  * inferred. Locked DB reads supplement the request's current commercial access. */
 export function createGovernanceRequestAuthority(request:NextRequest){return async(tx:Tx,raw:RevisionScope,role:GovernanceAuthorityRole)=>{

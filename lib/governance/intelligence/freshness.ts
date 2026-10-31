@@ -2,7 +2,7 @@ import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {parseEvidenceSnapshot,digestSchema,type EvidenceSnapshot} from './contracts';
 export function validateEvidenceEnvelope(raw:unknown):EvidenceSnapshot{const{digest,...source}=z.object({digest:digestSchema}).passthrough().parse(raw),actual=parseEvidenceSnapshot(source);if(actual.digest!==digest)throw Error('governance_evidence_changed');return actual}
-const identity=(e:EvidenceSnapshot)=>({organizationId:e.organizationId,source:e.source,connectionId:e.connectionId,connectionRevision:e.connectionRevision,collectorVersion:e.collectorVersion,selection:e.selection});
+const identity=(e:EvidenceSnapshot)=>({organizationId:e.organizationId,source:e.source,connectionId:e.connectionId,connectionRevision:e.connectionRevision,collectorVersion:e.collectorVersion,collectionOperations:e.collectionOperations,selection:e.selection});
 const content=(e:EvidenceSnapshot)=>sha256ContentHash({sourceDigest:e.sourceDigest,facts:[...e.facts].sort((a,b)=>sha256ContentHash(a).localeCompare(sha256ContentHash(b)))});
 export type EvidenceComparison={status:'unchanged'|'changed'|'unknown';reason:'current_source_matches'|'source_content_changed'|'source_identity_changed'|'evidence_unavailable';approvedDigest?:string;currentDigest?:string;observedAt?:string;expiresAt?:string;citations:string[]};
 /** Compare immutable observations. No expired digest is rewritten or extended;

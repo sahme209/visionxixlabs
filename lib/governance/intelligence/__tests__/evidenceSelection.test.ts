@@ -1,0 +1,7 @@
+import {it,expect} from 'vitest';
+import {discoverEvidence} from '../discovery';
+import {parseEvidenceSnapshot} from '../contracts';
+import {discoverySelectionFromEvidence} from '../evidenceSelection';
+const now=Date.now(),selection={organizationId:'org',source:'github',connectionId:'connection',connectionRevision:'revision',selection:{repositoryId:'repo',resourceId:'resource',environment:'production'},operations:['repository.identity','repository.workflow_permissions']};
+it('preserves the exact source read profile for later fresh observation',async()=>{const snapshot=await discoverEvidence(selection,{now:()=>now,assertCurrentAccess:async()=>{},read:async()=>({facts:[],sourceDigest:'a'.repeat(64),nextCursor:null})},new AbortController().signal);expect(discoverySelectionFromEvidence(snapshot)).toEqual(selection);expect(snapshot.collectionOperations).toEqual(selection.operations)});
+it('keeps legacy snapshots readable but refuses to invent a missing collection profile',()=>{const snapshot=parseEvidenceSnapshot({organizationId:'org',source:'github',connectionId:'connection',connectionRevision:'revision',collectorVersion:'governance-discovery-read-v1',selection:selection.selection,observedAt:new Date(now).toISOString(),expiresAt:new Date(now+60000).toISOString(),completeness:'complete',sourceDigest:'a'.repeat(64),facts:[]});expect(()=>discoverySelectionFromEvidence(snapshot)).toThrow('profile_required');const{digest,...raw}=snapshot;expect(()=>parseEvidenceSnapshot({...raw,collectionOperations:['iam.roles']})).toThrow()});
