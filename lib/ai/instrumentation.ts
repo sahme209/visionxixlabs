@@ -56,9 +56,9 @@ export async function logAIInvocation(params: LogInvocationParams): Promise<void
     await prisma.aIInvocation.create({
       data: {
         userId: params.userId ?? undefined,
-        taskType: params.taskType,
-        provider: params.provider,
-        model: params.model,
+        taskType: redact(params.taskType),
+        provider: redact(params.provider),
+        model: redact(params.model),
         latencyMs: params.latencyMs ?? undefined,
         success: params.success,
         errorMessage: params.errorMessage == null ? undefined : redact(params.errorMessage),
@@ -66,7 +66,8 @@ export async function logAIInvocation(params: LogInvocationParams): Promise<void
         tokensOut: params.tokensOut ?? undefined,
         promptHash: hash ?? undefined,
         promptPreview: preview ?? undefined,
-        requestId: params.requestId ?? undefined,
+        // Correlation IDs are identifiers, not a free-form diagnostic channel.
+        requestId: params.requestId != null && redact(params.requestId) === params.requestId ? params.requestId : undefined,
       },
     });
   } catch {
