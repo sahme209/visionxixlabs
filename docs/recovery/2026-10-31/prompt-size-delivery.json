@@ -1,0 +1,11 @@
+{
+  "runtime": "c685a75804b35e6f19e10c4cc1c25863cedd32cb",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/c685a758/Axiom Agent Local Preview.app",
+  "checks": [
+    "10 Bot composer tests passed",
+    "desktop types/build passed",
+    "offline native build passed",
+    "strict signing passed"
+  ],
+  "scope": "Live local character size indicator for instruction/context, including retained invalid drafts. No token estimate or automatic trimming, AI call, authority or provider change. Prepared local preview, not public release."
+}
