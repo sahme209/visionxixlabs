@@ -1,0 +1,12 @@
+{
+  "runtime": "962c076548d81a72f627def996a6076a0b972d23",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/962c0765/Axiom Agent Local Preview.app",
+  "checks": [
+    "5 mocked component tests passed, including raw error omission and known recovery message",
+    "desktop types/build passed",
+    "offline native build passed",
+    "strict signing passed"
+  ],
+  "behavior": "AI call log no longer directly renders arbitrary error strings from legacy get transport. Only fixed messages for known session/update codes and generic fallback. No auto retry.",
+  "scope": "Signed local preview prepared, not opened; existing a6f session preserved. No live failure injection, provider/AI call, server permission, backend or public installer change."
+}
