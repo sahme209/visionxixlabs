@@ -275,9 +275,9 @@ export default async function AiCallLogEnginePage({
             }).toString()}`}
             download
             className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"
-            title="Download up to 5000 rows in the last 24h as CSV"
+            title="CSV for spreadsheet viewing; risky text contains safety prefixes. Up to 5000 rows in the last 24h."
           >
-            download .csv
+            Spreadsheet CSV
           </a>
         </div>
         {recentCalls.length === 0 ? (

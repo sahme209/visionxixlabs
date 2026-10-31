@@ -1,18 +1,18 @@
 {
-  "candidate": "86f7c92dbac2f54932a701285cf3eee49c8883eb",
+  "candidate": "b3191cb3d2cbc5ea314093bd271afbbf03500635",
   "recordedProductionBase": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
   "sourceManifest": {
-    "source": "86f7c92dbac2f54932a701285cf3eee49c8883eb",
+    "source": "b3191cb3d2cbc5ea314093bd271afbbf03500635",
     "base": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
     "changedFiles": 10,
     "files": [
       {
         "path": "app/api/dashboard/ai-call-log/__tests__/tenantScope.test.ts",
-        "sha256": "5997e4f14bbcac382584cf6e3efc18b47be98606731d5d05036306b734739a09"
+        "sha256": "8b8f6aba974b27552413355e6402f6779caa2723e165d0080aaa1142184747a3"
       },
       {
         "path": "app/api/dashboard/ai-call-log/export.csv/route.ts",
-        "sha256": "7d128ca71125546c1f13936f5cca15b822acc4ecce3b1bedafeb5e314085dd2a"
+        "sha256": "d59c3417b7413975fba155c55a21b0231867057424490da653773a6677f020f5"
       },
       {
         "path": "app/api/dashboard/ai-call-log/route.ts",
@@ -20,7 +20,7 @@
       },
       {
         "path": "app/dashboard/ai-call-log/[engine]/page.tsx",
-        "sha256": "dca45d68f9fd55b4d7bfc915559996cdb0a89a1582803cf9d2783d252fbb5b5f"
+        "sha256": "da3e45b9276ab496bb93783d519a7f036902c1c6db804e02eb75d05e5a9b4772"
       },
       {
         "path": "app/dashboard/ai-call-log/page.tsx",
@@ -49,20 +49,26 @@
     ]
   },
   "productionVerification": {
-    "source": "86f7c92dbac2f54932a701285cf3eee49c8883eb",
+    "source": "b3191cb3d2cbc5ea314093bd271afbbf03500635",
     "base": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
-    "stage": "/private/tmp/axiom-reviewed-security-86f7c92d-_7z2hjit",
-    "archiveSha256": "17142873f07bebcdea1c10a72e2f0fcd00ac8c08cc430caccb6d90af79038c3b",
+    "stage": "/private/tmp/axiom-spreadsheet-safe-b3191cb3-4u5m40et",
+    "archiveSha256": "e31a781818a18d964639a68a7ddaa4f69fea7c52f46ea42514817da534a6459c",
     "build": "passed",
     "exitCode": 0
   },
-  "tests": "39 mocked route/responder/invocation tests passed on exact isolated candidate; two historical output regressions failed before fix then passed",
+  "tests": "51 mocked route/responder/invocation tests passed on exact isolated candidate; formula safety RED11/GREEN cases include full-width prefixes and CSV quote escaping",
   "remoteBackup": "backup/axiom-ai-log-security-candidate-20261031",
   "remoteExactShaVerified": true,
-  "recoveryBundle": "/private/tmp/axiom-reviewed-security-86f7c92d.bundle",
+  "recoveryBundle": "/private/tmp/axiom-spreadsheet-security-b3191cb3.bundle",
   "bundleVerified": true,
   "scope": "Seven source files plus three test files; no unrelated Governance or desktop polish, package/lock/schema/settings/grant changes. Local verification used synthetic env, exact locked SDK overlay with nested graph and temporary6144MiB heap.",
   "gates": "Reconcile actual production base; final review and specific Vercel activation approval before any upload/deployment. No PR/CI/activation/installer publication initiated.",
-  "previousCandidate": "3d216d5f04eaf400b4fc206f5964bf3e077a9594",
-  "focusedReview": "Self-review of direct output paths found CSV and engine diagnostics bypassing responder redaction; corrected CSV formatting and sanitized engine historical rows before grouping/truncation/rendering. Not an independent security audit or universal redaction guarantee."
+  "previousCandidate": "86f7c92dbac2f54932a701285cf3eee49c8883eb",
+  "focusedReview": "Self-review of direct output paths found CSV and engine diagnostics bypassing responder redaction; corrected CSV formatting and sanitized engine historical rows before grouping/truncation/rendering. Not an independent security audit or universal redaction guarantee.",
+  "spreadsheetExport": {
+    "behavior": "Known risky string prefixes receive a tab inside a CSV-quoted cell; ordinary quote escaping and numeric values retained; UI labels intent as Spreadsheet CSV.",
+    "reference": "https://community.owasp.org/attacks/CSV_Injection",
+    "limits": "Safety prefixes remain underlying text for programmatic import. Not universally safe for all spreadsheet tools, transformations or re-imports; no live Excel/Sheets acceptance performed.",
+    "historicalIntermediate": "Local apostrophe-prefix candidate b6f00d16 built successfully but was superseded after checking current OWASP guidance; never activated."
+  }
 }
