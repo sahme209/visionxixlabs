@@ -213,3 +213,6 @@ minimum4.75:1 across six checked pairs (not a full accessibility audit). An
 initial4.35:1 muted/sidebar pair was darkened before the final build passed.
 Desktop TypeScript/frontend build passed. No behavior, permission or backend
 configuration changed. Native light-mode inspection is recorded separately.
+
+### Native finish across the app
+Use the host system font first (SF on macOS, Segoe UI on Windows), with existing monospace styles retained for code. Shared buttons use consistent 9px corners and subtle pressed feedback. Reserve shadows for temporary overlays; keep workspace surfaces matte. Balance section headings and retain visible keyboard focus, density choices, reduced motion and all approval/state controls. This is an Axiom design interpretation of the requested Apple-like care, not a claim of Apple feature parity.
