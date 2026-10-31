@@ -28,7 +28,10 @@ const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
 function csv(field: string | number | null | undefined): string {
   if (field == null) return "";
-  const s = redact(String(field));
+  let s = redact(String(field));
+  // Keep untrusted text literal in common spreadsheet importers. This is
+  // separate from CSV quote escaping; numeric cells retain numeric values.
+  if (typeof field === "string" && /^(?:[\s\u0000-\u001f]*[=+\-@]|[\t\r\n])/.test(s)) s = "'" + s;
   if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }

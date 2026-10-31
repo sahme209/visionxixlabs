@@ -39,3 +39,14 @@ it('redacts historical engine diagnostics before truncation and rendering',async
  expect(html).not.toContain('ghp_');expect(html).toContain('[REDACTED-GITHUB-PAT]');
  for(const [query] of m.findMany.mock.calls)expect(query.where.organizationId).toBe('org-a');
 });
+it.each(['=1+1','+SUM(1)','-SUM(1)','@SUM(1)',' \t=1+1','\tplain text'])('neutralizes a common spreadsheet-formula text prefix: %s',async model=>{
+ m.findMany.mockResolvedValue([{id:'fixture',organizationId:'org-a',engineName:'ad_hoc',model,outcome:'ok',errorMessage:null,latencyMs:1,promptTokens:0,completionTokens:0,totalTokens:0,startedAt:new Date('2026-10-31T00:00:00Z')}]);
+ const response=await csv(new NextRequest('http://localhost/api/dashboard/ai-call-log/export.csv'));
+ const text=await response.text();expect(text).toContain(",ad_hoc,'"+model+',ok,');
+ expect(text).toContain(',1,0,0,0,org-a');
+});
+it('retains ordinary quoted CSV text and numeric values',async()=>{
+ m.findMany.mockResolvedValue([{id:'fixture',organizationId:'org-a',engineName:'ad_hoc',model:'ordinary, "model"',outcome:'ok',errorMessage:null,latencyMs:1,promptTokens:0,completionTokens:0,totalTokens:0,startedAt:new Date('2026-10-31T00:00:00Z')}]);
+ const text=await (await csv(new NextRequest('http://localhost/api/dashboard/ai-call-log/export.csv'))).text();
+ expect(text).toContain(',ad_hoc,"ordinary, ""model""",ok,');expect(text).toContain(',1,0,0,0,org-a');
+});
