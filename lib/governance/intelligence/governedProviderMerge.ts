@@ -1,4 +1,5 @@
 import 'server-only';
+import {governanceContextFromReviewedRelease} from './releaseScope';
 import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {parseReleaseOperationPlan,type ReleaseOperationPlan} from '@/lib/tauri/releaseOperationPlanContract';
@@ -9,7 +10,7 @@ import type {GovernanceAdmissionContext,GovernanceAdmissionReceipt,createGoverna
 interface Ports {
  guard:ReturnType<typeof createGovernanceAdmissionGuard>;
  /** Trusted stored plan + server-owned scope mapping. Never accept request facts. */
- readBinding(scope:ProviderMergeScope,id:string,signal:AbortSignal):Promise<{context:GovernanceAdmissionContext;plan:ReleaseOperationPlan}>;
+ readBinding(scope:ProviderMergeScope,id:string,signal:AbortSignal):Promise<{context:GovernanceAdmissionContext;plan:ReleaseOperationPlan;release:unknown}>;
  transport:ProviderMergeTransportPorts;
 }
 /** Local executor composition. Not mounted, not a coverage registration, and
@@ -21,7 +22,8 @@ export function createGovernedProviderMergeExecutor(store:ReleaseProviderMergeSt
   const exactScope=structuredClone(scope),signal=AbortSignal.any([...(parent?[parent]:[]),AbortSignal.timeout(15000)]);
   signal.throwIfAborted();
   const binding=structuredClone(await withGithubAbort(ports.readBinding(exactScope,id,signal),signal));
-  const context=binding.context,plan=parseReleaseOperationPlan(binding.plan);
+  const plan=parseReleaseOperationPlan(binding.plan),context=governanceContextFromReviewedRelease({scope:exactScope,row:binding.release,plan});
+  if(sha256ContentHash(context)!==sha256ContentHash(binding.context))throw Error('governance_merge_binding_unavailable');
   if(context.organizationId!==exactScope.organizationId||context.actorUserId!==exactScope.actorUserId||context.sessionId!==exactScope.sessionId||context.action!=='repository.merge'||plan.organizationId!==exactScope.organizationId||context.planDigest!==sha256ContentHash(plan))throw Error('governance_merge_binding_unavailable');
   let receipt:GovernanceAdmissionReceipt|undefined;
   const current=ports.transport.assertCurrent;

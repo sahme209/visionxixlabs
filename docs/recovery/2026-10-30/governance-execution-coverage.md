@@ -56,3 +56,20 @@ existing executor/transport suites passed as a 23-check batch; two additional
 checks cover changed stored plans and cancelled hanging bindings. Scoped server
 types passed. These checks use the actual transport with simulated fetch/store
 and admission ports, not live GitHub or a production claim. No merge occurred.
+
+## Exact release scope mapping
+
+The local governed merge factory now requires the selected stored release
+projection as well as its exact plan/context. `releaseScope.ts` rebuilds the
+merge plan against that intake/version/digest using the existing release
+validator, then derives repository/resource identity and the canonical target
+environment from the stored intake. It refuses environment aliases and custom
+names instead of guessing. The supplied context must exactly match the derived
+context. The binding reader remains responsible for current tenant/session and
+reviewed-plan authority; the store independently rechecks these before claim
+and dispatch. This pure mapping is not authority, enrollment or activation.
+
+Eight scope checks and six governed executor/actual-transport composition checks
+pass (simulated store, guard and provider). Scoped server types pass. Current
+server binding-reader/active-baseline composition and coverage registration are
+still pending; no live merge or provider read occurred.
