@@ -1,0 +1,19 @@
+{
+  "runtime": "184fb4bbabaa312bb625ee905a99c4f0c5ec8a72",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/184fb4bb/Axiom Agent Local Preview.app",
+  "checks": [
+    "desktop types and frontend build passed",
+    "offline native build passed",
+    "strict deep Developer ID signature passed",
+    "native saved session restored; Home and Settings visually inspected in Light"
+  ],
+  "changes": [
+    "host system typography across shared UI",
+    "consistent shared button and field corners",
+    "subtle enabled-button pressed feedback",
+    "theme-aware overlay depth",
+    "reduced-motion override preserved"
+  ],
+  "scope": "Local Preview; no backend deployment, public installer update, permission or workflow changes",
+  "limitations": "Not a comprehensive all-view accessibility or visual acceptance audit"
+}
