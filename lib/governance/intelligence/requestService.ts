@@ -1,4 +1,5 @@
 import 'server-only';
+import {createGovernanceDocumentStore} from './documentStore';
 import type {NextRequest} from 'next/server';
 import {z} from 'zod';
 import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
@@ -23,10 +24,12 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  const enabled=()=>{request.signal.throwIfAborted();if(!isEnabled())throw Error('governance_intelligence_unavailable')};
  const bound=(s:RevisionScope)=>{enabled();if(s.organizationId!==scope.organizationId||s.actorUserId!==scope.actorUserId||s.sessionId!==scope.sessionId)throw Error('governance_request_scope_changed')};
  async function current(s:RevisionScope,signal:AbortSignal){bound(s);signal.throwIfAborted();await repo.$transaction(tx=>authority(tx,s,'reader'));signal.throwIfAborted()}
+ const documents=createGovernanceDocumentStore(repo,{assertCurrent:async(tx,s,role)=>{bound(s);await authority(tx,s,role==='collector'?'policy_admin':'reader')}});
+ const documentArtifacts=createGovernanceEvidenceStore(repo,{assertCurrent:async(tx,s,role,evidence)=>{bound(s);await authority(tx,s,role==='collector'?'policy_admin':'reader');if(evidence)await assertGovernanceEvidenceConnection(tx,s,evidence)}});
  const history=createGovernanceEvidenceStore(repo,{assertCurrent:async(tx,s,role)=>{bound(s);if(role!=='reader')throw Error('governance_history_read_only');await authority(tx,s,'reader')}});
  const github=createGithubGovernanceCollectionRequestService(request,repo,scope,isEnabled,{revalidationOnly:true}),aws=createAwsGovernanceCollectionRequestService(request,repo,scope,isEnabled,{revalidationOnly:true});
  async function readHistorical(s:RevisionScope,digest:string,signal:AbortSignal){await current(s,signal);return(await history.read(s,digest)).snapshot}
- async function readCurrent(s:RevisionScope,e:EvidenceSnapshot,signal:AbortSignal){await current(s,signal);const selection=discoverySelectionFromEvidence(e);return selection.source==='github'?github.observe(selection):aws.observe(selection)}
+ async function readCurrent(s:RevisionScope,e:EvidenceSnapshot,signal:AbortSignal){await current(s,signal);if(e.source==='document')return documents.observe(s,e);const selection=discoverySelectionFromEvidence(e);return selection.source==='github'?github.observe(selection):aws.observe(selection)}
  const preflight=createGovernanceEvidencePreflight({assertCurrent:current,readHistorical,readCurrent,recheckLocked:async(tx,s,approved)=>{bound(s);await authority(tx,s,'reader');await assertGovernanceEvidenceConnection(tx,s,approved)}});
  const activeProofs=new Map<string,Awaited<ReturnType<typeof preflight.read>>>();
  const store=createGovernanceRevisionStore(repo,{
@@ -43,6 +46,8 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  });
  const baselines=createGovernanceBaselineService({store,preflight}),drift=createGovernanceDriftReader({assertCurrent:current,readHistorical,readCurrent});
  return{
+  /** Local service only: no HTTP upload command is enabled. */
+  async uploadDocument(raw:unknown){enabled();const saved=await documents.upload(scope,raw),requestId=z.object({requestId:nonce}).passthrough().parse(raw).requestId,artifact=await documentArtifacts.save(scope,saved.snapshot,requestId);return{...artifact,headVersion:saved.headVersion}},
   async readEvidence(digest:string){enabled();return history.read(scope,digest)},
   async listEvidence(){enabled();return history.list(scope)},
   async listRevisions(){

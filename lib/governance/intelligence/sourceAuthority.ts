@@ -1,4 +1,5 @@
 import 'server-only';
+import {assertGovernanceDocumentHead} from './documentStore';
 import type {ReleaseOperationPlanTransaction as Tx} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {validateEvidenceEnvelope} from './freshness';
@@ -18,5 +19,6 @@ export async function assertGovernanceEvidenceConnection(tx:Tx,scope:EvidenceSto
   const a=accounts[0],c=credentials[0],target=/^aws:account:(\d{12}):region:([a-z]{2}(?:-[a-z]+)+-\d)$/.exec(e.selection.resourceId);
   if(accounts.length!==1||credentials.length!==1||!target||a.id!==e.connectionId||a.organizationId!==scope.organizationId||a.provider!=='aws'||a.externalAccountId!==target[1]||!a.regions.includes(target[2])||!a.enabled||a.credentialRef!=='cloud-v2:'+a.id||c.id!==a.id||c.organizationId!==scope.organizationId||c.revokedAt||!Number.isSafeInteger(c.version)||c.version<1||sha256ContentHash({accountId:a.id,updatedAt:a.updatedAt.toISOString(),credentialVersion:c.version})!==e.connectionRevision)throw Error('governance_aws_connection_changed');return;
  }
+ if(e.source==='document'){await assertGovernanceDocumentHead(tx,scope,e);return}
  throw Error('governance_current_document_head_unavailable');
 }

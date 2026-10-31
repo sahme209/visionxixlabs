@@ -161,3 +161,35 @@ Owned PostgreSQL is stopped. A production build including TypeScript passed for
 runtime commit02478ed4 in an isolated git archive with synthetic loopback DB
 settings and no real credentials; this later source-inspection increment has
 scoped types/tests, not a repeated full build. No deployment or setting changed.
+
+## Immutable document bytes and current-head proof (local)
+
+Document parser v2 marks empty/unrecognized requirements partial rather than
+complete. The new document store retains bounded inert UTF-8 bytes in immutable
+organization/name/scope/content-bound records and maintains an audited current
+head with optimistic version comparison. No schema is added. Replacements keep
+old bytes and history; competing versions refuse, and only the identical last
+request nonce can recover without another head update. Upload capability uses
+existing policy administration, while current reader/session checks remain
+mandatory. Credential-shaped/binary/oversized data is refused before storage.
+
+Internal uploadDocument composition saves the source artifact only after the
+head/body proof is checked. No HTTP upload command or file picker is exposed
+ yet. Fresh document observations read the audited current head and retained
+bytes, never extend an expired historical snapshot. Locked source binding
+checks content, typed facts, completeness and parser version against retained
+bytes. Document revisions are content hashes: changed bytes produce changed
+source reports, mismatched revision/content pairs remain unknown, and old
+approvals cannot authorize changed sources. Parsing or upload does not approve,
+activate, grant provider access or run document instructions.
+
+Four actual owned PostgreSQL document tests and two composed request journeys
+pass, with simulated paired authority/providers. They cover unchanged freshness,
+changed-head refusal/drift, races, writer revocation, reader-only upload refusal,
+nonce recovery, retained bytes and invented-fact/credential rejection. The owned
+server is stopped. A 25-check parser/freshness/admission batch passed before the
+explicit v2 tag; nine parser checks passed after the tag, then 23 shared
+freshness/admission/guard checks passed after document drift classification.
+Scoped server types pass. No production/customer document, migration, setting,
+provider call or deployment occurred. Full build/final review for this later
+increment remain pending; the earlier full build receipt applies to02478ed4.
