@@ -31,3 +31,23 @@ it('gives each visible workspace its navigation label without creating execution
  expect(panel?.getAttribute('id')).toBe(button.getAttribute('aria-controls'));expect(panel?.getAttribute('aria-labelledby')).toBe(button.id);
  expect(screen.getAllByRole('button')).toHaveLength(2);
 });
+
+it('navigates releases by keyboard without losing drafts or introducing action controls',()=>{
+ const view=render(h(FocusedReleaseWorkspace,{items,children:item=>h(Draft,{name:item.title})}));
+ const first=screen.getByRole('button',{name:/Release Alpha/}),second=screen.getByRole('button',{name:/Release Beta/});
+ fireEvent.change(screen.getByLabelText('Release Alpha note'),{target:{value:'keep this draft'}});
+ first.focus();fireEvent.keyDown(first,{key:'ArrowDown'});
+ expect(document.activeElement).toBe(second);expect(second.getAttribute('aria-current')).toBe('true');
+ fireEvent.keyDown(second,{key:'Home'});expect(document.activeElement).toBe(first);
+ fireEvent.keyDown(first,{key:'End'});expect(document.activeElement).toBe(second);
+ fireEvent.keyDown(second,{key:'ArrowRight'});expect(document.activeElement).toBe(first);
+ expect((screen.getByLabelText('Release Alpha note') as HTMLInputElement).value).toBe('keep this draft');
+ expect(view.container.querySelectorAll('section:not([hidden])')).toHaveLength(1);
+ expect(screen.getAllByRole('button')).toHaveLength(2);
+});
+it('leaves modified browser shortcuts and ordinary typing alone',()=>{
+ render(h(FocusedReleaseWorkspace,{items,children:item=>h(Draft,{name:item.title})}));
+ const first=screen.getByRole('button',{name:/Release Alpha/});first.focus();
+ fireEvent.keyDown(first,{key:'ArrowRight',metaKey:true});fireEvent.keyDown(first,{key:'b'});
+ expect(document.activeElement).toBe(first);expect(first.getAttribute('aria-current')).toBe('true');
+});

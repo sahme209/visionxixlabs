@@ -416,3 +416,16 @@ html[data-theme="light"] [data-catalog-provider="github"] { filter: brightness(0
 .bot-task-workbench > aside button[aria-current="true"] { border-left:2px solid rgb(var(--neutral-zinc-300)); border-radius:0 8px 8px 0; }
 .settings-workbench nav[aria-label="Settings sections"] { background:rgb(var(--axiom-bg-elev)); }
 .settings-workbench nav button[aria-current="page"] { background:rgb(var(--neutral-white) / 0.055); }
+
+/* Keyboard navigation gets the same deliberate emphasis as pointer navigation. */
+.release-focus-item:focus-visible,
+.home-primary-action:focus-visible,
+.home-destination:focus-visible,
+.agent-chat-options > summary:focus-visible {
+ outline:2px solid rgb(var(--neutral-zinc-300)); outline-offset:3px;
+}
+.release-focus-list { scrollbar-width:thin; overscroll-behavior-inline:contain; }
+.release-focus-item { scroll-margin:12px; }
+@media (prefers-reduced-motion: reduce) {
+ .release-focus-item, .home-primary-action, .home-destination { transition:none; }
+}

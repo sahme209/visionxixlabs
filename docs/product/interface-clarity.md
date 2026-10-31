@@ -100,3 +100,13 @@ Desktop types/frontend build, offline native build and strict signature verifica
 Apply the focus model across the app rather than treating Releases as the product. Home now offers one primary Agent entry and three lighter navigation rows for tasks, releases and batches; no pretend prompt/composer or automatic execution. Existing entry callbacks and consent boundaries are preserved. Agent gives the conversation title and New chat prominence, moves rename/history controls into a keyboard-dismissable Chat options disclosure, uses quieter user messages and unboxed assistant responses with readable line spacing. Rename forms remain mounted; original sending/renaming/recovery guards remain. Bot uses a calmer contextual strip and current-task treatment. Apps replaces its unconditional security-sounding badge with a neutral Permissions & approvals label, and Settings uses the shared workspace surface.
 
 This is a broader interaction/visual pass, not complete visual acceptance of every operating-system size/theme or a claim of premium quality by test count. Final Agent/catalog tests:133 passed. Earlier standalone welcome/navigation/rename checks passed; two initial integrated failures referenced the intentionally replaced home heading, then passed after updating that expected copy. Frontend types/build, offline native build and strict DeveloperID signing passed. No paid AI call, provider write, new permissions, production deployment or immutable installer replacement. Prepared local bundle: /private/tmp/axiom-cohesive-workspace-local/Axiom Agent Local Preview.app. Preserve user work when opening future previews.
+
+### Keyboard continuity polish
+
+Release selection now supports arrow keys, Home and End while preserving mounted
+workspaces and drafts. Modified shortcuts and ordinary typing are untouched.
+Selected controls, Home actions and the conversation options disclosure have
+consistent visible keyboard focus; reduced-motion users receive no added
+navigation transitions. This changes navigation only, not approval or execution.
+Five focused component checks and the desktop TypeScript/frontend build pass.
+Actual native visual/keyboard acceptance of this last increment is pending.
