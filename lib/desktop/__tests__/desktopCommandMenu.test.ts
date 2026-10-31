@@ -11,3 +11,10 @@ it('moves the selection with arrow keys and preserves normal typing outside the 
 it('lets the close button activate with Enter without running a destination',()=>{const navigate=vi.fn(),close=vi.fn();render(createElement(WorkspaceCommands,{open:true,onOpenChange:close,onNavigate:navigate}));fireEvent.keyDown(screen.getByRole('button',{name:'Close commands'}),{key:'Enter'});expect(navigate).not.toHaveBeenCalled();});
 
 it('opens Axiom Bot from its searchable destination without running a task',()=>{const navigate=vi.fn(),close=vi.fn();render(createElement(WorkspaceCommands,{open:true,onOpenChange:close,onNavigate:navigate}));fireEvent.change(screen.getByRole('combobox'),{target:{value:'bot'}});expect(screen.getByRole('option',{name:'Open Axiom Bot'})).toBeTruthy();fireEvent.keyDown(screen.getByRole('combobox'),{key:'Enter'});expect(navigate).toHaveBeenCalledExactlyOnceWith('axiom-bot');expect(close).toHaveBeenCalledWith(false);});
+
+it('finds the existing Apps and skills workspace using connection names without connecting or executing',()=>{
+ const navigate=vi.fn(),close=vi.fn();render(createElement(WorkspaceCommands,{open:true,onOpenChange:close,onNavigate:navigate}));
+ fireEvent.change(screen.getByRole('combobox'),{target:{value:'Outlook'}});
+ expect(screen.getByRole('option',{name:'Open Apps & skills'})).toBeTruthy();expect(screen.getByText('Connections and reusable skills')).toBeTruthy();expect(navigate).not.toHaveBeenCalled();
+ fireEvent.keyDown(screen.getByRole('combobox'),{key:'Enter'});expect(navigate).toHaveBeenCalledExactlyOnceWith('plugins-skills');
+});

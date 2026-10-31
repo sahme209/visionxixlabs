@@ -135,3 +135,36 @@ frontend build passed. Node25's native experimental Web Storage interfered with
 the jsdom harness; tests passed with that Node-only experiment disabled. One old
 Bot test still expected the prior Library label and now uses Workspace report.
 Native visual acceptance is recorded separately after signed-app delivery.
+
+
+### Final shared-chrome and command-discovery pass
+
+Official references reviewed: Cursor Agent/command navigation
+(https://cursor.com/docs/agent/overview), Claude desktop navigation
+(https://academy.claude.com/tutorials/navigating-the-claude-desktop-app), Codex app
+(https://openai.com/index/introducing-the-codex-app/) and Grok workspace guidance
+(https://docs.x.ai/grok/user-guide). The design choices below are Axiom's own
+interpretation of focused work, discoverable navigation and explicit context;
+these references do not establish feature parity or security certification.
+
+- Shared header groups workspace tools rather than distributing controls across
+  the whole width. Exact organization ID and session kind remain in a readonly
+  access disclosure. The short access label reflects the actual verified access
+  value, with no unconditional success state. Escape and workspace/navigation
+  changes close the disclosure; opening Commands closes it as well.
+- Agent and Bot have distinct navigation icons. Existing labels/destinations,
+  command ordering and user authority are preserved.
+- Command search uses the same Apps & skills name as navigation, can discover
+  that existing destination via Outlook/connection keywords, and explains the
+  purpose of each destination. Search does not connect or execute anything.
+- Static cards no longer gain hover treatment suggesting a whole-card action;
+  actual clickable cards retain it. Status colors remain semantic, while label
+  typography and empty states are quieter and consistent across shared views.
+- Disclosure chevrons and keyboard focus use the same neutral treatment. All
+  form state stays mounted when details close; warnings and exact approvals
+  retain their current visibility/authority boundaries.
+
+Validation:121 shared-chrome/command/Agent/navigation checks pass; desktop types
+and frontend build pass. Native visual acceptance is recorded in delivery
+receipts. No provider grant, paid AI call, backend deployment or public installer
+publication belongs to this UI-only pass.

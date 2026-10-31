@@ -29,6 +29,7 @@ const icon = (children: React.ReactNode) => {
 };
 
 const IconAgent = icon(<><path d="M12 2a4 4 0 0 1 4 4v1a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z" /><path d="M5 20v-1a7 7 0 0 1 14 0v1" /><circle cx="9" cy="7" r="0.5" fill="currentColor" /><circle cx="15" cy="7" r="0.5" fill="currentColor" /></>);
+const IconBot = icon(<><path d="M5 4h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 3v-5H3V6a2 2 0 0 1 2-2z"/><path d="M8 9h8M8 13h5"/></>);
 const IconRequest = icon(<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6M8 13h8M8 17h5" /></>);
 const IconDocs = icon(<><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></>);
 const IconSettings = icon(<><circle cx="12" cy="12" r="3" /><path d="M19 12a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" /></>);
@@ -45,7 +46,7 @@ const IconAirflow = icon(<><circle cx="6" cy="6" r="2"/><circle cx="18" cy="6" r
  * direct/manual path alongside it, not replaced by it.
  */
 const customerIcons: Record<(typeof CUSTOMER_NAVIGATION)[number]["items"][number]["id"], ComponentType<SVGProps<SVGSVGElement>>> = {
-  agent: IconAgent, "axiom-bot": IconAgent, "deployment-requests": IconRequest, "airflow-automation": IconAirflow,
+  agent: IconAgent, "axiom-bot": IconBot, "deployment-requests": IconRequest, "airflow-automation": IconAirflow,
   "repository-workspace": IconRepository, "plugins-skills": IconPlugins, docs: IconDocs, settings: IconSettings,
 };
 export const CUSTOMER_NAV_GROUPS: NavGroup[] = CUSTOMER_NAVIGATION.map(group => ({
@@ -63,7 +64,7 @@ export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = f
   return (
     <aside className={`${compact ? "w-16 shrink-0" : "w-[224px]"} flex flex-col bg-[#151719] border-r border-white/[0.07]`} data-tauri-drag-region>
       <div className={`h-[68px] flex items-center ${compact ? "px-3" : "px-5"} border-b border-white/[0.06]`} data-tauri-drag-region>
-        <button type="button" aria-label="Axiom home" aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">
+        <button type="button" aria-label="Axiom home" aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400">
           <img src="/axiom-logo.png" alt="" className="h-8 w-8 shrink-0 object-contain" />
           <div className={compact ? "sr-only" : undefined}>
             <div className="text-sm font-semibold tracking-tight text-white">Axiom Agent</div>

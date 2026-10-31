@@ -29,7 +29,7 @@ export function Card({
   return (
     <div
       {...rest}
-      className={`glass-card-lift edge-light relative ${glow ? "shadow-glow-violet" : ""} ${tint ? `before:content-[''] before:absolute before:-top-12 before:-right-12 before:w-32 before:h-32 before:rounded-full before:blur-[40px] before:pointer-events-none ${tintBg}` : ""} ${className}`}
+      className={`glass-card-lift ${rest.onClick || rest.role === "button" ? "glass-card-interactive" : ""} edge-light relative ${glow ? "shadow-glow-violet" : ""} ${tint ? `before:content-[''] before:absolute before:-top-12 before:-right-12 before:w-32 before:h-32 before:rounded-full before:blur-[40px] before:pointer-events-none ${tintBg}` : ""} ${className}`}
     >
       <div className="relative z-10">{children}</div>
     </div>
@@ -183,10 +183,10 @@ export function EmptyState({
 }) {
   return (
     <Card className="p-10 text-center">
-      <div className="w-12 h-12 rounded-2xl bg-violet-500/10 border border-violet-500/20 mx-auto mb-4 flex items-center justify-center">
-        <Icon className="h-5 w-5 text-violet-300" />
+      <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 mx-auto mb-4 flex items-center justify-center">
+        <Icon className="h-5 w-5 text-zinc-400" />
       </div>
-      <h3 className="text-base font-semibold text-white mb-2">{title}</h3>
+      <h3 className="text-base font-medium text-white mb-2">{title}</h3>
       {detail && <p className="text-sm text-zinc-500 max-w-md mx-auto mb-5 leading-relaxed">{detail}</p>}
       {action}
     </Card>
