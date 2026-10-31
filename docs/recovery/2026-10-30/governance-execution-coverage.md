@@ -1,0 +1,35 @@
+# Governance execution coverage — local audit
+
+No execution path is registered as covered yet. Enrollment remains refused by
+request composition. This inventory is a starting audit, not a complete set of
+provider mutation paths or evidence of universal enforcement.
+
+| Path | Existing boundary to preserve | Outstanding Governance binding |
+| --- | --- | --- |
+| `lib/tauri/releaseProviderMergeExecutor.ts` | Durable claim, lease, before-dispatch authority, unknown-result recording | Server-owned exact repository/environment/plan; admission before claim and transport's final authority check |
+| `lib/tauri/releaseProviderMergeTransport.ts` | Fresh credential, branch policy, exact head and final authority before PUT | Repeat current baseline/source check at final authority; no network under database locks |
+| `lib/tauri/releaseDeploymentExecutionExecutor.ts` | Existing reviewed exact deployment execution | Audit all dispatch implementations and bind trusted environment/workflow/source |
+| `lib/desktop/connectedActionsHttp.ts` and `lib/integrations/connectedActionTransport.ts` | Existing exact task/intent, durable claim, before-dispatch checks and one-attempt transport | Trusted scope association for Teams/Linear; do not infer repository authority from a channel/team |
+| `lib/integrations/outlook/outlookActionTransport.ts` | Existing explicit mail/calendar action review | Trusted mailbox/calendar scope; preserve grants, independent review and no automatic resend |
+| `lib/integrations/slack/slackNotificationExecutor.ts` | Existing exact notification review and execution | Trusted workspace/channel scope and both enforcement phases |
+| `lib/axiom/agentRuntime/actionApprovalResponder.ts` | Existing tenant token and file/default-branch controls | Enumerate every supported mutation, including actions outside the current Governance action vocabulary; refuse unknown mutations in enrolled scopes |
+| `lib/agent/workflows/stepExecutors.ts` | Existing workflow step dispatch | Enumerate each concrete mutating step and descendants; a dispatcher name is not coverage |
+| Jira/ServiceNow ticket transports | Existing reviewed lifecycle, native policy and uncertainty history | Decide exact scope/action vocabulary before any enrollment claims ticket coverage |
+| Native computer input | Exact selected window/text, confirmation and durable one-attempt outcome | Native/server coverage seam and trusted scope; no background-input permission |
+
+## Local composition adapter
+
+`lib/governance/intelligence/executionBoundary.ts` performs admission before a
+trusted claim callback and immediately before its single trusted write callback.
+It carries the exact context and prior receipt, propagates cancellation, and
+never writes for a consumed claim. It does not retry, register coverage, replace
+the durable store's guards, or record a provider outcome itself. A caller must
+record post-claim failures through its existing refusal/unknown lifecycle.
+Provider callbacks must retain their own bounded transport and final authority
+checks. This adapter is not imported by a production executor yet.
+
+Five focused simulated-callback checks passed: phase order, denied/revoked
+admission, consumed claims, single failed-write invocation, cancellation after
+claim, and preservation of the original context when the caller changes its
+object. Scoped server types passed separately. No provider request, durable
+claim, deployment, setting or schema change occurred in these checks.
