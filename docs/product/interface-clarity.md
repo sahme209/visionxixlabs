@@ -71,3 +71,10 @@ disclosure. Draft values remain mounted across toggles; opening it starts no
 network operation. Saving a new draft requires a currently connected mailbox.
 Existing review, cancellation, recovery and exact approval controls remain
 outside that disclosure and retain server-derived authority.
+
+Apps & skills separates primary browsing (All, Apps, Skills, Developer tools)
+from saved-status filters. App connections are grouped by their existing purpose
+categories; available providers are not labelled as already connected. Skills
+are presented as reusable guidance, not app permissions. Search has an explicit
+accessible label. Filtering does not invoke connection/setup/install actions or
+unmount the independently displayed action/recovery workspaces.
