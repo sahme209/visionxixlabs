@@ -28,10 +28,13 @@ const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
 function csv(field: string | number | null | undefined): string {
   if (field == null) return "";
-  let s = redact(String(field));
-  // Keep untrusted text literal in common spreadsheet importers. This is
-  // separate from CSV quote escaping; numeric cells retain numeric values.
-  if (typeof field === "string" && /^(?:[\s\u0000-\u001f]*[=+\-@]|[\t\r\n])/.test(s)) s = "'" + s;
+  const s = redact(String(field));
+  // Spreadsheet-view export: prefix risky text inside a quoted field.
+  // The tab remains data for non-spreadsheet consumers; numeric cells stay numeric.
+  // No CSV mitigation is universal across spreadsheet applications/re-imports.
+  if (typeof field === "string" && /^(?:[\s\u0000-\u001f]*[=+\-@＝＋－＠]|[\t\r\n])/.test(s)) {
+    return `"\t${s.replace(/"/g, '\"\"')}"`;
+  }
   if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
