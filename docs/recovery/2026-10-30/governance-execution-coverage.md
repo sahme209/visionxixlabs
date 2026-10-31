@@ -33,3 +33,26 @@ admission, consumed claims, single failed-write invocation, cancellation after
 claim, and preservation of the original context when the caller changes its
 object. Scoped server types passed separately. No provider request, durable
 claim, deployment, setting or schema change occurred in these checks.
+
+## Provider merge composition increment
+
+`governedProviderMerge.ts` now composes the existing durable merge executor with
+its actual fixed GitHub transport. A mandatory trusted binding reader supplies
+the stored plan and organization-owned scope. It checks actor/session/org and
+exact plan hash before claiming; the existing store rechecks the plan under its
+own authority. The actual transport's initial and final authority callbacks
+repeat Governance admission using the original private pre-claim receipt.
+Existing provider approval consumption, branch policy, credential, exact head,
+lease and unknown-result recording remain unchanged. A shared 15-second signal
+bounds binding/admission/dispatch; caller cancellation cannot authorize a write.
+
+This factory is local and unmounted. No repository/environment mapping or
+coverage registration has been fabricated, and production activation remains
+refused. Connected-app, native and other Agent mutation paths are not covered
+by this factory.
+
+Six new simulated-provider composition checks pass. The first four plus the
+existing executor/transport suites passed as a 23-check batch; two additional
+checks cover changed stored plans and cancelled hanging bindings. Scoped server
+types passed. These checks use the actual transport with simulated fetch/store
+and admission ports, not live GitHub or a production claim. No merge occurred.
