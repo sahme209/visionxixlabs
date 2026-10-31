@@ -141,3 +141,23 @@ provider access, and explicitly test-only activation using simulated coverage.
 Production request composition still refuses enrollment. Owned PostgreSQL was
 stopped, and scoped server types passed. No production/customer data, provider
 request, policy activation, settings or deployment was touched by these tests.
+
+## Recorded source fact inspection (local)
+
+The read dispatcher now also accepts an exact evidence digest. It returns only
+the existing immutable artifact after tenant/current-reader and recorded-history
+validation; it performs no new provider discovery. Strict desktop DTOs bound
+fact types, counts and citation lengths and require the returned digest to match
+the selection. The view shows recorded values and plain-text citations with an
+explicit historical/no-compliance-verdict label. Citation text never becomes a
+navigation or tool instruction; incomplete evidence never implies absence.
+
+Seven HTTP checks, eleven client checks and seven evidence-view checks passed;
+scoped server and desktop types passed. The composed actual-PostgreSQL journey
+now also exercises both admission phases and refusal after recorded reviewer
+capability removal. Coverage, provider authority and exact action approval in
+that journey are simulated test-only ports, not live enforcement acceptance.
+Owned PostgreSQL is stopped. A production build including TypeScript passed for
+runtime commit02478ed4 in an isolated git archive with synthetic loopback DB
+settings and no real credentials; this later source-inspection increment has
+scoped types/tests, not a repeated full build. No deployment or setting changed.

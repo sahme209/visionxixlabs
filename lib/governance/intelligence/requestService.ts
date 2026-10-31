@@ -43,6 +43,7 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  });
  const baselines=createGovernanceBaselineService({store,preflight}),drift=createGovernanceDriftReader({assertCurrent:current,readHistorical,readCurrent});
  return{
+  async readEvidence(digest:string){enabled();return history.read(scope,digest)},
   async listEvidence(){enabled();return history.list(scope)},
   async listRevisions(){
    await current(scope,request.signal);

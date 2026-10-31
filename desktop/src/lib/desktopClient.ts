@@ -1,4 +1,4 @@
-import {governanceProposalSchema,governanceRevisionListSchema,type GovernanceRevisionList,governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
+import {governanceEvidenceArtifactSchema,type GovernanceEvidenceArtifact,governanceProposalSchema,governanceRevisionListSchema,type GovernanceRevisionList,governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
 import {serviceNowWrittenObservationRequestSchema,type ServiceNowWrittenObservationRequest} from '../../../lib/releaseops/serviceNowWrittenLinkObservationContract';
 import {serviceNowTerminalPolicyRequestSchema,serviceNowTerminalPolicyOptionsSchema,type ServiceNowTerminalPolicyRequest,type ServiceNowTerminalPolicyOptions} from '../../../lib/releaseops/serviceNowTerminalPolicyRequest';
 import {associatedTicketActionsRequestSchema,isAssociatedTicketActionsResult,type AssociatedTicketActionsRequest,type AssociatedTicketActionsResult} from './associatedTicketActions';
@@ -1611,6 +1611,10 @@ export class DesktopClient {
   }
   governanceRevisions(signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceRevisionList>> {
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'list_revisions'},(v):v is GovernanceRevisionList=>governanceRevisionListSchema.safeParse(v).success,signal);
+  }
+  governanceEvidenceArtifact(digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceEvidenceArtifact>> {
+    if(! /^[a-f0-9]{64}$/.test(digest))return Promise.resolve({ok:false,error:'Select exact recorded source evidence.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'read_evidence',digest},(v):v is GovernanceEvidenceArtifact=>governanceEvidenceArtifactSchema.safeParse(v).success&&(v as GovernanceEvidenceArtifact).snapshot.digest===digest,signal);
   }
   governanceEvidence(signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceEvidenceList>> {
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'list_evidence'},(v):v is GovernanceEvidenceList=>governanceEvidenceListSchema.safeParse(v).success,signal);

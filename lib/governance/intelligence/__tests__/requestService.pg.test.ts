@@ -4,6 +4,7 @@ vi.mock('../requestAuthority',()=>({createGovernanceRequestAuthority:(request:an
 vi.mock('@/lib/connectors/github/githubAppAuth',()=>({resolveReleaseInstallationToken:vi.fn(async()=>({token:'synthetic',expiresAt:Date.now()+60000,permissions:{administration:'read',contents:'read',metadata:'read'}}))}));
 import {createGovernanceRequestService} from '../requestService';
 import {createGovernanceRevisionStore} from '../revisionStore';
+import {createGovernanceAdmissionGuard} from '../admissionGuard';
 const socket=process.env.AXIOM_TICKET_GOVERNANCE_PG_SOCKET;
 /** Actual artifact/revision/audit stores and locked source rows. Request-session
  * verification and provider responses are explicit simulations, never live. */
@@ -27,9 +28,15 @@ describe.skipIf(!socket)('composed governance workflow on owned isolated Postgre
   const fixtureActivation=createGovernanceRevisionStore(repo,{assertCurrent:async()=>{},verifyEvidence:async()=>true,verifyCoverage:async()=>true});
   await fixtureActivation.activate(owner,proposed.id,null,randomUUID());
   const activeProof=await requester.readActiveEvidence(selected);expect(activeProof.baseline.digest).toBe(proposed.baseline.digest);expect(activeProof.evidence[0].digest).toBe(saved.snapshot.digest);expect(activeProof.evidenceRefreshes[0].approvedDigest).toBe(saved.snapshot.digest);expect(activeProof.executionAuthorized).toBe(false);
+  // Admission facts/coverage/action approval are simulated executor ports. Real
+  // request/source/revision stores still decide the active baseline evidence.
+  let admissionProof=activeProof;const exactPlanDigest='c'.repeat(64),context={...owner,action:'repository.merge',scope:selected,planDigest:exactPlanDigest};
+  const admission=createGovernanceAdmissionGuard({now:Date.now,readActive:async()=>{admissionProof=await requester.readActiveEvidence(selected);return admissionProof.baseline},readCoverage:async()=>({enrolled:true,coveredActions:['repository.merge']}),readVerifiedInputs:async()=>({...admissionProof,providerAccessVerified:true,platformAllowed:true,autonomyLevel:4,verifiedEvidence:true,rollbackVerified:false,approval:{organizationId:org,baselineDigest:proposed.baseline.digest,planDigest:exactPlanDigest,requesterUserId:'owner',approverUserId:'reviewer',currentAuthorityVerified:true,expiresAt:new Date(Date.now()+60000).toISOString()}})});
+  const admissionReceipt=await admission.assert(context,'before_claim');await admission.assert(context,'before_write',admissionReceipt);
+
   changed=true;await expect(requester.readActiveEvidence(selected)).rejects.toThrow();changed=false;
 
   expect((await requester.readDrift(proposed.id)).status).toBe('unchanged');changed=true;expect((await requester.readDrift(proposed.id)).status).toBe('changed');provider.mockRejectedValueOnce(Object.assign(Error('private denial'),{name:'AccessDeniedException'}));expect((await requester.readDrift(proposed.id)).status).toBe('unknown');expect((await requester.readRevision(proposed.id)).baseline).toEqual(proposed.baseline);
-  changed=false;await db.orgMembership.updateMany({where:{organizationId:org,userId:'reviewer'},data:{role:'read_only'}});await expect(requester.propose(input,randomUUID())).rejects.toThrow();expect((await requester.readRevision(proposed.id)).status).toBe('approved');expect(await db.durableAgentWorkflow.count({where:{organizationId:org,workflowKind:'governance_evidence_snapshot_v1'}})).toBe(1);expect(provider).toHaveBeenCalled();
+  changed=false;await db.orgMembership.updateMany({where:{organizationId:org,userId:'reviewer'},data:{role:'read_only'}});await expect(requester.propose(input,randomUUID())).rejects.toThrow();expect((await requester.readRevision(proposed.id)).status).toBe('approved');expect(await db.durableAgentWorkflow.count({where:{organizationId:org,workflowKind:'governance_evidence_snapshot_v1'}})).toBe(1);expect(provider).toHaveBeenCalled();await expect(admission.assert(context,'before_write',admissionReceipt)).rejects.toThrow('governance_admission_unavailable');
  });
 });
