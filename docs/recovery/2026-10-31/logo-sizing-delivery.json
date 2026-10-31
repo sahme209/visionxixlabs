@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "6ca6210e41f649958d9dbbb973b555db906252f8",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/6ca6210e/Axiom Agent Local Preview.app",
+  "headerLogoCssPixels": 28,
+  "websiteHeaderLogoCssPixels": 28,
+  "liveFaviconMatchesCanonical": true,
+  "liveIconMatchesCanonical": true,
+  "signatureVerified": true,
+  "binarySha256": "89b1681b79e81f28c0e012f2777edc421b44bfc0e79312fddfcd6ece9e4e40d7",
+  "newVercelBuilds": 0,
+  "savedSessionRestored": true,
+  "nativeAppOpened": true,
+  "logoMarkUnchanged": true,
+  "liveHtmlIconUrls": "unversioned; local content-addressed metadata is not yet deployed",
+  "liveFaviconSha256": "1b77e225c53238689dd4911ef93b26267ad3e7c857b06ce9f9aea742aa46aee5",
+  "live512IconSha256": "cedd8eb1034fe90f0072bad4748d6701c0f8e9ab24c18642b82a88ae3cc51992",
+  "comparison": "28px app header matches existing website header; no unverified exact Cursor pixel-size claim"
+}
