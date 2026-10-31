@@ -200,3 +200,16 @@ behavior, so inspecting or reviewing exact work is not dismissed incidentally.
 110 Agent/chrome/menu regressions and desktop types/frontend build passed;
 focused menu tests separately cover outside body-pointer input without focus
 movement. No provider action, AI call, permissions or backend setting changed.
+
+### Warm-paper light mode
+
+Light mode now uses ivory canvas#faf9f5, warm sidebar#f0eee6, pale panel#fffef9,
+soft neutral borders and charcoal text. The user's Claude reference guides the
+warmth; these are Axiom-selected tokens, not claimed exact Claude color values.
+Legacy neutral panels and scrollbars use the same warm family. Transparent white
+Axiom marks render dark only in light mode; source artwork and dark mode remain.
+Primary and selected muted text contrast on canvas/sidebar was checked directly:
+minimum4.75:1 across six checked pairs (not a full accessibility audit). An
+initial4.35:1 muted/sidebar pair was darkened before the final build passed.
+Desktop TypeScript/frontend build passed. No behavior, permission or backend
+configuration changed. Native light-mode inspection is recorded separately.

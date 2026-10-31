@@ -16,20 +16,20 @@
   color-scheme: dark;
 }
 html[data-theme="light"] {
-  --neutral-zinc-50: 9 9 11;
-  --neutral-zinc-100: 24 24 27;
-  --neutral-zinc-200: 39 39 42;
-  --neutral-zinc-300: 63 63 70;
-  --neutral-zinc-400: 82 82 91;
-  --neutral-zinc-500: 98 98 108;
-  --neutral-zinc-600: 113 113 122;
-  --neutral-zinc-700: 161 161 170;
-  --neutral-zinc-800: 212 212 216;
-  --neutral-zinc-900: 228 228 231;
-  --neutral-zinc-950: 250 250 250;
-  --neutral-white: 24 24 27; --neutral-black: 255 255 255;
-  --axiom-bg: 250 250 252; --axiom-bg-elev: 244 245 247; --axiom-surface: 255 255 255; --axiom-surface-2: 239 241 244; --axiom-border: 210 213 219; --axiom-border-soft: 225 227 232;
-  --app-canvas: #fafafc; --app-ink: #18181b; --app-secondary: #52525b; --app-border: #d2d5db; --app-panel: #ffffff; --app-focus: #52525b; --app-local: #3f3f46;
+  --neutral-zinc-50: 25 24 20;
+  --neutral-zinc-100: 37 35 30;
+  --neutral-zinc-200: 49 46 40;
+  --neutral-zinc-300: 68 64 57;
+  --neutral-zinc-400: 89 84 76;
+  --neutral-zinc-500: 105 100 91;
+  --neutral-zinc-600: 110 104 95;
+  --neutral-zinc-700: 185 178 165;
+  --neutral-zinc-800: 228 224 215;
+  --neutral-zinc-900: 240 238 230;
+  --neutral-zinc-950: 250 249 245;
+  --neutral-white: 37 35 30; --neutral-black: 255 254 249;
+  --axiom-bg: 250 249 245; --axiom-bg-elev: 240 238 230; --axiom-surface: 255 254 249; --axiom-surface-2: 245 243 236; --axiom-border: 216 212 201; --axiom-border-soft: 231 227 218;
+  --app-canvas: #faf9f5; --app-ink: #25231e; --app-secondary: #69645b; --app-border: #d8d4c9; --app-panel: #fffef9; --app-focus: #746a58; --app-local: #444039;
   color-scheme: light;
 }
 
@@ -300,19 +300,19 @@ html[data-density="compact"] {
 .repository-files-layout { overflow:hidden; }
 
 /* Legacy neutral surfaces follow the same theme without changing component behavior. */
-html[data-theme="light"] [class~="bg-[#0a0a0b]"] { background-color: #f1f2f5; }
-html[data-theme="light"] [class~="bg-[#0b0c0e]"] { background-color: #f1f2f5; }
-html[data-theme="light"] [class~="bg-[#0c0d0f]"] { background-color: #f1f2f5; }
-html[data-theme="light"] [class~="bg-[#111214]"] { background-color: #f1f2f5; }
-html[data-theme="light"] [class~="bg-[#111315]"] { background-color: #f1f2f5; }
-html[data-theme="light"] [class~="bg-[#151519]"] { background-color: #f1f2f5; }
-html[data-theme="light"] [class~="bg-[#151719]"] { background-color: #f1f2f5; }
-html[data-theme="light"] [class~="bg-[#17181a]"] { background-color: #ffffff; }
-html[data-theme="light"] [class~="bg-[#18191b]"] { background-color: #ffffff; }
-html[data-theme="light"] [class~="bg-[#181a1d]"] { background-color: #ffffff; }
-html[data-theme="light"] [class~="bg-[#1a1b1e]"] { background-color: #ffffff; }
-html[data-theme="light"] [class~="bg-[#202225]"] { background-color: #ffffff; }
-html[data-theme="light"] [class~="bg-[#242529]"] { background-color: #ffffff; }
+html[data-theme="light"] [class~="bg-[#0a0a0b]"] { background-color: #f0eee6; }
+html[data-theme="light"] [class~="bg-[#0b0c0e]"] { background-color: #f0eee6; }
+html[data-theme="light"] [class~="bg-[#0c0d0f]"] { background-color: #f0eee6; }
+html[data-theme="light"] [class~="bg-[#111214]"] { background-color: #f0eee6; }
+html[data-theme="light"] [class~="bg-[#111315]"] { background-color: #f0eee6; }
+html[data-theme="light"] [class~="bg-[#151519]"] { background-color: #f0eee6; }
+html[data-theme="light"] [class~="bg-[#151719]"] { background-color: #f0eee6; }
+html[data-theme="light"] [class~="bg-[#17181a]"] { background-color: #fffef9; }
+html[data-theme="light"] [class~="bg-[#18191b]"] { background-color: #fffef9; }
+html[data-theme="light"] [class~="bg-[#181a1d]"] { background-color: #fffef9; }
+html[data-theme="light"] [class~="bg-[#1a1b1e]"] { background-color: #fffef9; }
+html[data-theme="light"] [class~="bg-[#202225]"] { background-color: #fffef9; }
+html[data-theme="light"] [class~="bg-[#242529]"] { background-color: #fffef9; }
 html[data-theme="light"] .text-emerald-300, html[data-theme="light"] .text-emerald-400 { color:#047857; }
 html[data-theme="light"] .text-rose-300, html[data-theme="light"] .text-rose-400, html[data-theme="light"] .text-red-400 { color:#be123c; }
 html[data-theme="light"] .text-amber-300, html[data-theme="light"] .text-amber-400 { color:#92400e; }
@@ -452,3 +452,8 @@ html[data-theme="light"] [data-catalog-provider="github"] { filter: brightness(0
 .workspace-access-panel { -webkit-app-region:no-drag; user-select:text; position:absolute; right:0; top:calc(100% + 10px); z-index:40; width:260px; padding:18px; border:1px solid rgb(var(--neutral-white) / 0.12); border-radius:12px; background:rgb(var(--axiom-surface-2)); box-shadow:0 12px 36px rgb(0 0 0 / 0.2); }
 .workspace-topbar { background:rgb(var(--axiom-bg-elev)); }
 @media(max-width:760px) { .workspace-header-button { padding:7px; font-size:11px; } .workspace-header-actions { gap:4px; } }
+
+/* Warm paper light mode: transparent marks retain their shape on pale surfaces. */
+html[data-theme="light"] img[src="/axiom-logo.png"] { filter:brightness(0); opacity:0.86; }
+html[data-theme="light"] ::-webkit-scrollbar-thumb { background:#c9c3b6; }
+html[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background:#ada593; }
