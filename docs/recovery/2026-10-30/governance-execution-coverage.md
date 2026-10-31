@@ -342,3 +342,16 @@ These additions do not register full execution coverage. The legacy plugin and
 remediation connector still lacks a trusted organization binding, workforce
 execution needs admission composition, and the production baseline admission
 issuer/guard/coverage wiring is incomplete. Enrollment must remain refused.
+
+### Workforce coding authority fence
+
+The coding write-authority factory now refuses enrolled/unavailable Governance
+before capturing installation authority and before and after every scoped token
+resolution. The actual Git Data client already invokes this token resolver before
+each operation, preserving partial-write uncertainty. Separate contents-read
+credential resolution remains readable under its existing current installation
+checks.34 coding-authority/transport tests passed with simulated provider calls.
+The combined local Governance suite passed164 tests;16 database-dependent tests
+were skipped, not accepted. Scoped production types including Governance and the
+new desktop/Airflow/dashboard/workforce paths passed. This is refusal coverage,
+not completed baseline admission or permission to activate production.

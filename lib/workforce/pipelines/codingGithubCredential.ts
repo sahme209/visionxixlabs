@@ -1,5 +1,6 @@
 import "server-only";
 import { prisma } from "@/lib/db";
+import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
 import { resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
 import type { RepoCoordinates } from "./parseRepoRef";
 import { fetchFileContent } from "./githubWriteClient";
@@ -24,10 +25,18 @@ export async function createCodingWriteAuthority(organizationId: string,reposito
 }
 async function captureCodingAuthority(organizationId: string,repository: RepoCoordinates,permissionProfile?: "contents_read"): Promise<CodingWriteAuthority> {
   try {
+    if (!permissionProfile) await assertNoGovernanceEnrollmentForMutation(prisma, organizationId);
     const row=await prisma.gitHubInstallation.findFirst({where:{organizationId,status:"active"},orderBy:{installedAt:"desc"},select:{id:true,githubInstallationId:true,updatedAt:true,revokedAt:true,suspendedAt:true}});
     if(!row || !row.id || !Number.isSafeInteger(Number(row.githubInstallationId)) || !/^[1-9][0-9]*$/.test(row.githubInstallationId) || !(row.updatedAt instanceof Date) || !Number.isFinite(row.updatedAt.getTime()) || row.revokedAt || row.suspendedAt)return {ok:false,error:"github_not_connected"};
     const id=row.id,githubInstallationId=row.githubInstallationId,version=row.updatedAt.getTime();
     const target=Object.freeze({owner:repository.owner,repo:repository.repo});
-    return Object.freeze({ok:true,resolveToken:()=>resolveTenantScopedToken(organizationId,target,{id,githubInstallationId,updatedAt:new Date(version),...(permissionProfile?{permissionProfile}:{})}).catch(()=>({ok:false as const,error:"github_token_unavailable"}))});
+    return Object.freeze({ok:true,resolveToken:async()=>{
+      try {
+        if (!permissionProfile) await assertNoGovernanceEnrollmentForMutation(prisma, organizationId);
+        const token = await resolveTenantScopedToken(organizationId,target,{id,githubInstallationId,updatedAt:new Date(version),...(permissionProfile?{permissionProfile}:{})});
+        if (!permissionProfile) await assertNoGovernanceEnrollmentForMutation(prisma, organizationId);
+        return token;
+      } catch { return {ok:false as const,error:"github_write_authority_unavailable"}; }
+    }});
   }catch{return {ok:false,error:"github_not_connected"};}
 }
