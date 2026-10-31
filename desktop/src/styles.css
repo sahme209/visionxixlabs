@@ -367,3 +367,24 @@ html[data-theme="light"] [data-catalog-provider="github"] { filter: brightness(0
   .workspace-topbar-description { display: none; }
   .workspace-identity { max-width: 110px; padding-left: 8px; padding-right: 8px; }
 }
+
+/* A release is a workspace, not another expanded card in a long feed. */
+.release-focus-layout { display:grid; grid-template-columns:210px minmax(0,1fr); gap:24px; align-items:start; }
+.release-focus-list { position:sticky; top:0; min-width:0; display:flex; flex-direction:column; gap:5px; }
+.release-focus-list-heading { display:flex; justify-content:space-between; padding:4px 10px 12px; color:rgb(var(--neutral-zinc-500)); font-size:10px; font-weight:600; letter-spacing:0.09em; }
+.release-focus-item { display:flex; flex-direction:column; gap:7px; padding:13px 12px; text-align:left; border:1px solid transparent; border-radius:10px; color:rgb(var(--neutral-zinc-400)); transition:background-color 120ms; }
+.release-focus-item:hover { background:rgb(var(--neutral-white) / 0.035); }
+.release-focus-item.is-selected { background:rgb(var(--neutral-white) / 0.055); border-color:rgb(var(--neutral-white) / 0.09); }
+.release-focus-item-title { color:rgb(var(--neutral-zinc-200)); font-size:13px; font-weight:550; line-height:1.5; overflow-wrap:anywhere; }
+.release-focus-item-state { text-transform:capitalize; font-size:11px; }
+.release-focus-item-next { font-size:11px; line-height:1.5; }
+.release-focus-attention { align-self:flex-start; color:rgb(var(--neutral-zinc-300)); font-size:10px; border-left:2px solid currentColor; padding-left:6px; }
+.release-focus-detail { min-width:0; }
+.release-focus-detail .release-request-card { background:transparent; border:0; padding:0; }
+.release-focus-detail .release-request-card > :first-child { padding-bottom:16px; border-bottom:1px solid rgb(var(--neutral-white) / 0.08); }
+@media (max-width:1050px) {
+ .release-focus-layout { grid-template-columns:minmax(0,1fr); gap:20px; }
+ .release-focus-list { position:static; flex-direction:row; overflow-x:auto; padding-bottom:6px; }
+ .release-focus-list-heading { display:none; }
+ .release-focus-item { flex:0 0 220px; }
+}

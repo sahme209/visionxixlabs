@@ -1,3 +1,4 @@
+import {FocusedReleaseWorkspace} from "../components/FocusedReleaseWorkspace";
 import {CustomerJourneyPanel} from '../../../components/shared/CustomerJourneyPanel';
 import {releaseJourney} from '../../../lib/customerJourney/journey';
 import { intakeDateInputValue as dateInputValue } from "../lib/intakeDateInput";
@@ -558,8 +559,12 @@ export function DeploymentRequestsView() {
         </StateCard>
       )}
       {requests.length > 0 && (
-        <div className="space-y-2">
-          {requests.map((request) => (
+        <FocusedReleaseWorkspace key={draftIdentity.current.key} items={requests.map(request=>({
+          id:request.id,title:request.title,status:request.status,
+          nextStep:releaseJourney({status:request.status,...request.releaseContext.approval,...request.releaseContext.readiness,rollbackAvailability:request.releaseContext.recovery.rollbackAvailability,stale:!!loadError}).next.title,
+          attention:!!loadError||request.releaseContext.readiness.blockers.length>0||!!historyErrors[request.id]||!!operationErrors[request.id]||!!githubEvidenceErrors[request.id]||!!generationErrors[request.id],
+          busy:[loadingRevisionId,loadingHistoryId,loadingOperationsId,collectingGitHubEvidenceId,generatingRequestId,loadingPlaybookId].includes(request.id)||(closingBusy&&closingRequestId===request.id),
+        }))}>{item=>{const request=requests.find(request=>request.id===item.id)!;return (
             <div key={request.id} className="release-request-card glass-card p-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
@@ -788,8 +793,8 @@ export function DeploymentRequestsView() {
                 </div>
               )}
             </div>
-          ))}
-        </div>
+          );}}
+        </FocusedReleaseWorkspace>
       )}
     </ViewShell>
   );
