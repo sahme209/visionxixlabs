@@ -98,4 +98,4 @@ User priority: make cloud-AI data handling verifiably secure and token spending 
 
 Small implemented local improvement: Agent usage receipts retain provider-reported total-only counts, label missing breakdowns explicitly and never estimate usage or cost. This is transparency, not a token-reduction feature or completed security assessment.
 
-Local security hardening (9c51fe0c): AI invocation metadata uses canonical known-credential redaction; contaminated correlation IDs are omitted, normal IDs retained. Five synthetic/mock-store regression tests and focused strict types passed; full production build remains pending. This does not establish general PII detection, outbound prompt filtering or production activation.
+Local security hardening (9c51fe0c): AI invocation metadata uses canonical known-credential redaction; contaminated correlation IDs are omitted, normal IDs retained. Five synthetic/mock-store regression tests and focused strict types passed; the clean-source production build and production TypeScript also passed. Activation remains pending. This does not establish general PII detection, outbound prompt filtering or production activation.
