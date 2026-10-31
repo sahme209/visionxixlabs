@@ -3,8 +3,10 @@
   "checks": {
     "syntheticMockStoreTests": "5 passed",
     "rootTypeCheck": "Stopped after approximately two minutes with no diagnostics; NOT a pass",
-    "productionBuild": "Not run"
+    "productionBuild": "Not run",
+    "focusedTypeCheck": "PASS: actual instrumentation/redactor and resolved dependencies under root strict compiler options; no stubbed source"
   },
   "scope": "Canonical known-credential redaction extended to task/provider/model metadata; contaminated correlation ID omitted, normal ID preserved. No production deployment, provider call, database write or app restart. Not general PII filtering.",
-  "remaining": "Complete root types and production build before activation review."
+  "remaining": "Full production build and activation review before any deployment; root-wide types remain incomplete.",
+  "review": "Checked all metadata string assignments and normal identifier preservation; documented pattern-based limits. Not an independent security audit."
 }
