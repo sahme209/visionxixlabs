@@ -246,3 +246,16 @@ CAS and current-source checks remain server responsibilities before activation;
 a saved child is not active policy. Four proposal tests and eight view tests
 pass; desktop types and the frontend build pass. Final local code review is
 separate from actual signed-app/live enforcement acceptance.
+
+### Current package boundary (c683 backend plus local inspection entry)
+
+The exact c683793d tracked-source production build and TypeScript checks pass.
+Its required merge-baseline digest now flows through actual server-controlled
+approval HTTP and native exact review behind the unchanged default-OFF flag.
+The execution coverage ledger is authoritative for what is wired; enrollment
+and activation still refuse because complete mutation coverage is absent.
+
+Settings now has a deliberate read-only local evidence preview with no automatic
+read and no authoring/approval/activation controls. Source/component/navigation
+checks and desktop build pass. Do not confuse opening this preview with a live
+policy deployment, verified customer discovery or complete Governance MVP.

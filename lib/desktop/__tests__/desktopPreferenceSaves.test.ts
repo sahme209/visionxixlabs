@@ -26,3 +26,15 @@ it("keeps local preference controls unavailable if stored settings could not be 
  m.read.mockRejectedValue(new Error("private disk diagnostic"));show();await screen.findByText("Local preferences could not be loaded. Reopen Settings to try again.");expect(screen.getByRole("switch",{name:"System notifications"}).hasAttribute("disabled")).toBe(true);expect(screen.queryByText("private disk diagnostic")).toBeNull();
 });
 it('groups settings by purpose and filters navigation without saving preferences',async()=>{show();await screen.findByRole('switch',{name:'System notifications'});expect(screen.getByRole('group',{name:'Account & preferences'})).toBeTruthy();expect(screen.getByRole('group',{name:'Agent & security'})).toBeTruthy();expect(screen.getByRole('group',{name:'Development & connections'})).toBeTruthy();fireEvent.change(screen.getByRole('searchbox',{name:'Search settings'}),{target:{value:'notifications'}});expect(screen.getByRole('button',{name:'General'})).toBeTruthy();expect(screen.queryByRole('button',{name:'Models'})).toBeNull();expect(screen.queryByRole('group',{name:'Agent & security'})).toBeNull();expect(m.write).not.toHaveBeenCalled();fireEvent.click(screen.getByRole('button',{name:'General'}));expect(screen.getByRole('button',{name:'Models'})).toBeTruthy();expect(m.write).not.toHaveBeenCalled()});
+
+it('opens saved Governance inspection deliberately and returns without writing preferences',async()=>{
+ render(createElement(SettingsView,{identity:{kind:'desktop_session',organizationId:'fixture',userId:'owner',role:'admin',capabilities:['workspace:read','policy:manage'],access:{allowed:true}} as never}));
+ await screen.findByRole('switch',{name:'System notifications'});
+ fireEvent.click(screen.getByRole('button',{name:'Inspect saved Governance'}));
+ expect(screen.getByText(/Enforcement is not active/)).toBeTruthy();
+ expect(screen.getByRole('button',{name:'Load saved evidence'})).toBeTruthy();
+ expect(screen.queryByRole('button',{name:/Record independent baseline approval|Read and record metadata/})).toBeNull();
+ fireEvent.click(screen.getByRole('button',{name:'Back to Settings'}));
+ expect(screen.getByRole('switch',{name:'System notifications'}).getAttribute('aria-checked')).toBe('false');
+ expect(m.read).toHaveBeenCalledOnce();expect(m.write).not.toHaveBeenCalled();
+});

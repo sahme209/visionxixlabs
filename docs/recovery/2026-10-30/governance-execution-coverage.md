@@ -193,3 +193,22 @@ Independent local review found no important issue. No flag was changed, no scope
 enrolled, no human decision made, and no live provider read/write occurred.
 Execution composition and complete coverage across mutation paths remain open;
 activation still refuses. Native relaunch/visual verification follows separately.
+
+## Deliberate native inspection entry
+
+Settings → General → Inspect saved Governance now opens a read-only local
+preview and returns to the same Settings instance. It does not pass authoring
+identity to the evidence prototype, even for administrators. Current paired
+workspace-read access is required for the preview; all server reads still
+recheck actual authority. Identity changes remount the evidence session and
+clear displayed records. Opening performs no network request. Provider source
+checks remain separate, deliberate read controls; no collection, upload,
+proposal, approval or activation control is exposed by this entry.
+
+Four new preview checks plus eight existing evidence-view checks pass, followed
+by thirty Settings preference/permission/model checks (including the actual
+entry-and-return journey). Desktop types and frontend build pass. The current
+backend runtime's exact tracked production build is c683793d and passed before
+this frontend-only delta; no backend runtime changed in this increment. This is
+source/component acceptance; the new Settings entry is not yet in the open8c
+native preview. It is not full Governance enforcement or live acceptance.
