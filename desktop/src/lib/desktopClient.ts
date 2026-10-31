@@ -1596,6 +1596,14 @@ export class DesktopClient {
     const parsed=serviceNowTerminalPolicyRequestSchema.safeParse(input);if(!parsed.success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Review the administrator-declared policy fields and source evidence.',outcomeUnconfirmed:false});
     const selected=parsed.data;return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance',{binding:selected,clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='servicenow_terminal_policy'&&v.binding.nativeProcess.kind==='model'&&v.binding.nativeProcess.modelSysId===selected.modelSysId&&JSON.stringify(v.binding.sourceReferences)===JSON.stringify(selected.sourceReferences)&&JSON.stringify(v.binding.terminalStates)===JSON.stringify(selected.terminalStates)&&JSON.stringify(v.binding.fields)===JSON.stringify(selected.fields),signal);
   }
+  governanceApprove(id:string,version:number,digest:string,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceRevision>> {
+    if(!governanceRevisionId.safeParse(id).success||version!==0||! /^[a-f0-9]{64}$/.test(digest)||!ticketReviewNonce.safeParse(requestId).success)return Promise.resolve({ok:false,error:'Reload the exact proposed baseline before reviewing.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/review',{operation:'approve',id,version,digest,requestId},(v):v is GovernanceRevision=>governanceRevisionSchema.safeParse(v).success&&(v as GovernanceRevision).id===id&&(v as GovernanceRevision).baseline.digest===digest&&(v as GovernanceRevision).status==='approved'&&(v as GovernanceRevision).version===1,signal);
+  }
+  governanceRevoke(id:string,version:number,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceRevision>> {
+    if(!governanceRevisionId.safeParse(id).success||![0,1].includes(version)||!ticketReviewNonce.safeParse(requestId).success)return Promise.resolve({ok:false,error:'Reload the exact baseline revision before revoking.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/review',{operation:'revoke',id,version,requestId},(v):v is GovernanceRevision=>governanceRevisionSchema.safeParse(v).success&&(v as GovernanceRevision).id===id&&(v as GovernanceRevision).status==='revoked'&&(v as GovernanceRevision).version===version+1,signal);
+  }
   governanceEvidence(signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceEvidenceList>> {
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'list_evidence'},(v):v is GovernanceEvidenceList=>governanceEvidenceListSchema.safeParse(v).success,signal);
   }

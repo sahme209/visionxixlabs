@@ -55,3 +55,30 @@ Desktop DTO/client checks bind exact revision and baseline digest, reject execut
 GovernanceEvidenceView is a local read-only prototype and is NOT registered as a customer destination. It performs no automatic reads, shows source gaps, saved baseline/rule details and historical/current drift, and never offers an independent approval or activation control. Old drift remains historical after a failed source check even if an unrelated metadata reload succeeds. Editing the selected baseline clears its prior display; changed-account responses are ignored.
 
 Validation: 34 HTTP/DTO/client/view and existing release/ticket client checks passed; scoped production types including the new route, desktop types and frontend build passed. No signed app build/open, visual/native acceptance, customer read, schema/settings change, CI or deployment. Proposal/approval UI, document-head freshness, complete enforcement coverage, final review and live acceptance are still incomplete.
+
+## Exact review HTTP and desktop component (local, disabled)
+
+The separate POST `/api/desktop/governance-intelligence/review` dispatches only
+propose, approve and revoke. It rejects supplied identities/authority fields,
+binds proposal organization to the paired principal, requires existing review
+or policy-management capabilities, limits input to 64 KiB, and preserves the
+store's exact-version, independent-actor and fresh-source checks. No activation,
+collector or provider-write operation is available. The existing Governance
+flag remains OFF/unmodified; neither route is deployed.
+
+Desktop approve/revoke methods validate exact returned revision, digest/status
+and version. Lost durable acknowledgements remain unconfirmed even on HTTP409;
+there is no automatic resend. A standalone local GovernanceReviewPanel requires
+a deliberate exact-evidence checkbox, blocks self-approval, ignores account
+changes, and holds all failed decisions until saved history is deliberately
+reloaded. It is not registered/mounted in the running native app. The existing
+read-only evidence prototype remains read-only. Proposal authoring and the
+complete integrated customer workflow remain unfinished.
+
+Validation: six review HTTP checks, 15 combined Governance/ticket client checks
+and five review-panel checks passed. Scoped server types (including both routes),
+desktop types and frontend build passed. The new unmounted panel is covered by
+component tests/types, not native visual acceptance or the current application
+bundle. No actual approval, provider access, setting, deployment or schema
+change was made by this local implementation. Final whole-MVP review and full
+production build remain pending.
