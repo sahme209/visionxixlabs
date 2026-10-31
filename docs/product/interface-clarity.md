@@ -219,3 +219,5 @@ Use the host system font first (SF on macOS, Segoe UI on Windows), with existing
 
 ### Bot canvas continuity
 Keep the Bot composer surround and access-context row on the conversation canvas rather than a contrasting cream strip. In light mode the shared top bar also matches the canvas; the sidebar retains its navigation tint. The composer alone uses a pale raised surface, with a defined focus border. Keep task metadata, access controls, warnings and all handlers visible and unchanged.
+
+Native interaction finish: consistent visible keyboard location in navigation, quiet inset selection edges and brief color-only navigation feedback. Preserve reduced-motion preferences and disabled affordances; no animation of layout or hiding operational state.

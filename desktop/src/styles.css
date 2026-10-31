@@ -504,3 +504,20 @@ html[data-theme="light"] .bot-prompt-surface {
   box-shadow:0 2px 8px rgb(52 44 28 / .035);
 }
 html[data-theme="light"] .bot-prompt-surface:focus-within { border-color:var(--app-focus); }
+
+/* Native interaction finish: clear keyboard location and quiet selected state. */
+.sidebar-item, .home-destination, .settings-workbench nav button {
+  transition:background-color 120ms ease,color 120ms ease;
+}
+.sidebar-item:focus-visible, .settings-workbench nav button:focus-visible,
+.workspace-header-button:focus-visible {
+  outline:2px solid var(--app-focus); outline-offset:2px;
+}
+.sidebar-item-active, .settings-workbench nav button[aria-current="page"] {
+  box-shadow:inset 0 0 0 1px rgb(var(--neutral-white) / .035);
+}
+button:disabled { cursor:not-allowed; }
+input[type="search"]::-webkit-search-cancel-button { cursor:pointer; }
+@media (prefers-reduced-motion:reduce) {
+  .sidebar-item, .home-destination, .settings-workbench nav button { transition:none; }
+}
