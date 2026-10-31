@@ -60,3 +60,34 @@ Inspect and reuse existing adapters, identity, approvals, policy and audit syste
 New Batches sequence: Prefect → Dagster → Argo Workflows. Airflow remains the existing provider; these three are roadmap entries, not implemented connectors.
 
 These backlog additions do not themselves create accounts, grant provider access, buy services, enable production policies or authorize outbound changes. Each implementation retains existing least-privilege, exact-action approval, audit and cost controls.
+
+
+## Expanded ecosystem discovery backlog
+
+Added October 31, 2026 at the user's request. These are candidate integrations to evaluate, not implemented connectors or verified API/plan compatibility. Product names indicate potential sources; the roles below are proposed Axiom uses. Reuse existing adapters when present. Validate demand, supported APIs, licensing, least-privilege scopes and acceptance cost before selecting implementation.
+
+| Category | Additional candidates | Proposed Axiom role |
+|---|---|---|
+| Observability and release health | Grafana / Grafana Cloud, Prometheus, Dynatrace, New Relic, Elastic Observability, Splunk Observability, Sentry, OpenTelemetry collectors | Read health, errors, alerts and SLO evidence against an exact release/environment. Telemetry is evidence, not independent approval or proof of causation. |
+| Incident response | PagerDuty, incident.io, Rootly, FireHydrant | Resolve ownership/on-call context; prepare separately approved incident creation, updates and escalation. Never auto-resolve an incident from a green dashboard alone. |
+| Application and supply-chain security | Snyk, SonarQube, Semgrep, GitHub Advanced Security, Trivy, JFrog Xray, Sigstore/Cosign | Import traceable findings, code-quality results and artifact provenance; evaluate existing policy. Do not equate a passing scan with absence of vulnerabilities. |
+| Cloud posture and enterprise security | Wiz, Prisma Cloud, Microsoft Defender for Cloud, AWS Security Hub, Microsoft Sentinel | Read scoped posture/security findings and connect affected resources to proposed changes; keep remediation separate from discovery. |
+| Build, deployment and artifact systems | Jenkins, Azure DevOps, CircleCI, Buildkite, Argo CD, Flux, Harness, Spinnaker, JFrog Artifactory, Sonatype Nexus | Exact build/run/artifact evidence and separately governed deployment operations. Distinguish Argo CD deployment reconciliation from Argo Workflows batch orchestration. |
+| Secrets and privileged access | AWS Secrets Manager, Azure Key Vault, Google Secret Manager, CyberArk, 1Password Secrets Automation | References, readiness and approved brokered use; never copy secret values into prompts, logs or general evidence stores. Extend rather than duplicate Vault roadmap. |
+| Governance, risk and compliance | ServiceNow GRC, Vanta, Drata, Secureframe, AuditBoard | Map controls to source-backed evidence and export reviewed records. No implied certification or automatic auditor approval. |
+| Service catalog and ownership | Cortex, OpsLevel, Port, Atlassian Compass | Service/team ownership, dependencies and escalation context, complementing Backstage. |
+| Data and batch platforms | dbt Cloud, Databricks Workflows, Azure Data Factory, AWS Step Functions, AWS Batch, Google Cloud Workflows, Temporal | Evaluate distinct job/orchestration models after Prefect, Dagster and Argo Workflows; exact run identity, approvals and outcome recovery remain required. |
+| Enterprise content and collaboration | Google Drive, Notion, Box, Google Workspace identity, Zoom Team Chat | Traceable approved document sources and bounded notifications where customers request them; documents never become execution authority merely by being imported. |
+| Cloud and infrastructure coverage | Microsoft Azure, Google Cloud, Pulumi, Ansible Automation Platform, OpenShift | Broaden inventory, plan and governed-change coverage after auditing existing AWS/Kubernetes/infrastructure adapters. |
+
+Suggested next shortlist after current completion: **Grafana/Prometheus, Dynatrace, PagerDuty, Sentry, Snyk/SonarQube, Azure DevOps and Argo CD**. Choose the first implementation based on actual design-partner demand; this is a proposed priority, not a market-share claim.
+
+### Ecosystem product rules
+
+- Keep the customer catalog searchable by outcome/category and show **Connected**, **Available to connect**, **Needs attention** or **Planned** truthfully. Do not ship placeholders as working integrations.
+- Prefer one shared adapter contract for identity, capability discovery, read evidence, exact action plans, approval, execution, outcome observation and recovery.
+- Separate read-only evidence, notifications and mutations. Version provider APIs/capabilities; test tenant boundaries, revocation, rate limits, pagination and uncertain outcomes.
+- Customer-managed connections remain customer-owned. No new paid accounts, grants, installations or live tests are authorized merely by adding roadmap entries.
+- Broader catalog breadth comes after dependable supported workflows. Document each connector's supported operations and exclusions.
+
+Reference checks for initial observability/incident/security candidates: [Grafana Cloud](https://grafana.com/products/cloud/), [Dynatrace overview](https://docs.dynatrace.com/docs/discover-dynatrace/what-is-dynatrace), [PagerDuty incident lifecycle](https://docs.pagerduty.com/incident-management), [Wiz platform](https://www.wiz.io/platform). Remaining names require discovery before implementation.
