@@ -19,6 +19,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
+import { redact } from "@/lib/security/redaction";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -27,7 +28,7 @@ const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
 
 function csv(field: string | number | null | undefined): string {
   if (field == null) return "";
-  const s = String(field);
+  const s = redact(String(field));
   if (/[",\n\r]/.test(s)) return `"${s.replace(/"/g, '""')}"`;
   return s;
 }
