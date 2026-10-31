@@ -1,6 +1,6 @@
 # Axiom remaining work
 
-Updated October 30, 2026. This is the implementation roadmap, not a claim that planned integrations have been accepted live.
+Updated October 31, 2026. This is the implementation roadmap, not a claim that planned integrations have been accepted live.
 
 ## Current completion work
 
@@ -15,6 +15,24 @@ Updated October 30, 2026. This is the implementation roadmap, not a claim that p
 - **Releases first:** replace the crowded, unclear presentation with one obvious current step and owner, a readable progression from scope through review/execution/evidence/tickets, and supporting technical details on demand. Keep exact human review controls, uncertain outcomes, deadlines and recovery visible. Preserve existing dirty-form/session/one-attempt guards. Then apply the same spacing, hierarchy, navigation and status language across the app; Cursor, Claude, Codex and ChatGPT are interaction references, not copied branding.
 - **Outlook discoverability:** existing implementation remains in Settings → Integration Center. Local Apps & skills now also offers a searchable Outlook entry opening those same controls, with no automatic consent, mailbox read or send from merely viewing the catalog. Thirty-one catalog/Outlook-recovery tests and desktop types pass. Not yet in a newly shipped installer.
 - **GitLab integration and GitLab sign-in:** two distinct planned capabilities. Inspect existing connector inventory/auth before building. Define a reviewed design for account login/linking separately from workspace repository/merge-request/CI access, with independent consent and safe account-linking rules. No provider registration, new grant, credential, customer read or authentication deployment has occurred.
+
+## Product-wide priorities to retain for later
+
+User priorities recorded October 31, 2026. These apply across the whole product and do not replace the current completion work. They are planned quality goals, not claims that Axiom is certified or invulnerable.
+
+1. **Security as a core product investment.** Aim for independently verifiable enterprise security for AI-assisted releases and every connected action. Translate the requested “military-level” ambition into a threat model, tenant isolation, least privilege, secure identity/session/account linking, secret protection, encryption, safe AI/tool boundaries, current policy and approval enforcement, dependency/build/update integrity, and tamper-evident audit. Include negative tests for cross-tenant access, prompt injection, authorization bypass and data leakage; independent penetration testing and remediation; incident response and recovery exercises. Track findings and supporting evidence. Do not promise zero vulnerabilities or use unsupported security/certification claims in marketing. Any assurance page must distinguish implemented, tested, independently assessed and planned controls.
+2. **Premium, consistent visual design across the app.** Use Cursor, Claude, ChatGPT and Codex as references for focus, restraint, clarity and perceived capability while preserving Axiom's identity. Audit every screen, not just Releases: navigation, typography, spacing, density, empty/loading/error states, accessible contrast, keyboard operation and responsive layouts. Prefer a clear primary work surface and supporting details on demand over nested, crowded panels. Keep all necessary evidence, warnings and exact review controls available.
+3. **Intuitive operation in a sensible order.** A new user should understand what the screen is for, where to start, what happens next and who must act without reading a manual. Connect readiness → preparation → independent review → execution → verified outcome → recovery as the task requires. Preserve task context and form state across navigation; use consistent labels/statuses, contextual next actions and progressive disclosure. Validate with first-time-user task walkthroughs and observable success criteria, not appearance alone.
+4. **Broader ecosystem and workflow coverage.** Expand Apps & skills, reusable workflows, batch/orchestration providers beyond Airflow, and release/ticket/deployment providers beyond the current Jira/ServiceNow paths. Retain the integration list below. Choose additions by customer demand, safety and reuse of existing adapters; do not create a second approval or credential system. Each provider needs clear supported operations, readiness, permissions, failure/recovery behavior and acceptance evidence. A catalog entry is not a completed integration.
+
+Additional recommendations to review alongside those priorities:
+
+- **Reliability and recoverability:** explicit uncertain outcomes, durable history, idempotency where providers support it, no blind resends, tested rollback/reconciliation and backup restoration. Measure task completion and recovery success.
+- **Customer onboarding and trust:** a short path from install/sign-in to a useful verified task, clear consent and data handling, understandable support and incident reporting, and factual security documentation.
+- **Performance and accessibility:** responsive interactions, useful progress, efficient resource use, keyboard/screen-reader access and consistent platform behavior. Judge capability by user outcomes rather than installer size.
+- **Maintainability and cost control:** shared components and workflow contracts, reproducible releases, compatibility checks, bounded provider/AI usage and visible operational budgets. Prefer a few complete, dependable workflows over unsupported catalog breadth.
+
+Suggested sequence after current completion: security/threat-model assessment and highest-risk repairs first; app-wide usability/design work in parallel with measurable onboarding; then expand integrations in customer-priority order. New provider grants, spending, live actions and publication retain their existing authorization requirements.
 
 ## Subsequent integration and plugin roadmap
 
