@@ -1,0 +1,12 @@
+{
+  "runtime": "a6f7616b101b223dea7c131f1ac7ae0d3ef60e13",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/a6f7616b/Axiom Agent Local Preview.app",
+  "checks": [
+    "2 component tests passed including simulated context switch and late previous-context response",
+    "desktop types/build passed",
+    "offline native build passed",
+    "strict signing passed"
+  ],
+  "behavior": "Remount log state on desktop context revision, clear data on refresh, generation/revision-fence response and loading/error state, generic rejected-request message. No transport or server permission change.",
+  "scope": "Signed local preview prepared, not opened. No live workspace-switch acceptance, provider/AI call, production or public installer deployment."
+}
