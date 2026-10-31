@@ -320,3 +320,25 @@ classifier; uncertain dispatched outcomes retain the original hold and history.
 responses and reservation storage were simulated. No workflow was dispatched.
 This closes another legacy refusal path; it does not supply baseline admission
 or complete Airflow/alternate caller coverage or permit activation.
+
+### Airflow and dashboard dispatch refusal coverage
+
+Airflow automation now checks enrollment before source/provider reads, again
+before its durable claim, before persisting dispatch intent, and through trusted
+callbacks at PR/workflow transport. Non-mutating `none` actions retain existing
+behavior. A refusal after claim but before intent cannot schedule an automatic
+retry. Once durable intent exists, uncertainty remains held for reconciliation,
+even when a later callback reports refusal; no consumed attempt is reset.
+54 simulated claim/authority/provider tests and scoped production types passed.
+
+Dashboard ECS restarts now refuse enrolled/unavailable Governance before token
+resolution and reservation, and recheck immediately before workflow dispatch.
+Existing conditional state restoration and hold release remain limited to
+explicit definite nondispatch results. Historical receipt reads are preserved.
+32 simulated service tests and scoped production types including the real route
+passed. No provider request, production claim, schema or flag change occurred.
+
+These additions do not register full execution coverage. The legacy plugin and
+remediation connector still lacks a trusted organization binding, workforce
+execution needs admission composition, and the production baseline admission
+issuer/guard/coverage wiring is incomplete. Enrollment must remain refused.

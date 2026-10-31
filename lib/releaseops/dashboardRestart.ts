@@ -1,4 +1,5 @@
 import "server-only";
+import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
 import type { PrismaClient, Prisma } from "@prisma/client";
 import { appendAuditEvent, type AuditEventRepo } from "./auditEventResponder";
 import { applyTransition, type ReleaseStatus } from "./releaseLifecycleResponder";
@@ -10,7 +11,7 @@ import { resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantS
 import { dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "./awsEcsDeployWorkflowTemplate";
-type Repo = Pick<PrismaClient, "release" | "repository" | "environment" | "deploymentTarget" | "orgMembership" | "releaseReadinessSnapshot" | "policyViolation" | "deploymentExecution" | "auditEvent" | "branchEnvironmentPolicy" | "gitHubInstallation" | "$transaction">;
+type Repo = Pick<PrismaClient, "release" | "repository" | "environment" | "deploymentTarget" | "orgMembership" | "releaseReadinessSnapshot" | "policyViolation" | "deploymentExecution" | "auditEvent" | "branchEnvironmentPolicy" | "gitHubInstallation" | "durableAgentWorkflow" | "$transaction">;
 const fail = (error: string, status = 409) => ({ status, body: { ok: false as const, error } });
 const defaults = { token: resolveTenantScopedToken, policy: evaluateDeploymentPolicy, reserve: reserveDeploymentDispatch, release: releaseDeploymentDispatch, settle: settleDeploymentDispatch, dispatch: dispatchWorkflow, audit: appendAuditEvent, now: () => new Date() };
 async function membership(repo: Pick<Prisma.TransactionClient, "orgMembership">, organizationId: string, userId: string) {
@@ -87,6 +88,9 @@ export async function requestDashboardRestart(repo: Repo, input: {
         const installation = await repo.gitHubInstallation.findFirst(installationQuery);
         if (!installation || installation.revokedAt || installation.suspendedAt)
             return fail("github_not_connected");
+        const beforeWrite = () => assertNoGovernanceEnrollmentForMutation(repo, organizationId);
+        try { await beforeWrite(); }
+        catch { return fail("governance_execution_coverage_unavailable"); }
         const token = await deps.token(organizationId, { owner: repository.remoteOwner, repo: repository.remoteName });
         if (!token.ok)
             return fail(token.error);
@@ -130,7 +134,7 @@ export async function requestDashboardRestart(repo: Repo, input: {
         let result;
         providerInvoked = true;
         try {
-            result = await deps.dispatch({ owner: repository.remoteOwner, repo: repository.remoteName, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: release.releaseTag, inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService }, installationToken: token.token });
+            result = await deps.dispatch({ owner: repository.remoteOwner, repo: repository.remoteName, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: release.releaseTag, inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService }, installationToken: token.token, beforeWrite });
         }
         catch {
             return fail("deployment_outcome_unknown", 502);

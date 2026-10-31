@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const mocks = vi.hoisted(() => ({ find: vi.fn(), findRequired: vi.fn(), update: vi.fn(), claim: vi.fn(), openPR: vi.fn(), token: vi.fn(), dispatch: vi.fn(), createDeployment: vi.fn(), membership: vi.fn(), reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), airflow: vi.fn(), source: vi.fn(), dependencies: vi.fn(), binding: vi.fn(), target: vi.fn(), review: vi.fn(), fence: vi.fn() }));
+const mocks = vi.hoisted(() => ({ find: vi.fn(), enrollment: vi.fn(), findRequired: vi.fn(), update: vi.fn(), claim: vi.fn(), openPR: vi.fn(), token: vi.fn(), dispatch: vi.fn(), createDeployment: vi.fn(), membership: vi.fn(), reserve: vi.fn(), release: vi.fn(), settle: vi.fn(), airflow: vi.fn(), source: vi.fn(), dependencies: vi.fn(), binding: vi.fn(), target: vi.fn(), review: vi.fn(), fence: vi.fn() }));
 vi.mock("../connection", () => ({ loadAirflowClient: mocks.airflow }));
 vi.mock("../restartReviewIO", () => ({ requireCurrentRestartReview: mocks.review, fenceRestartDispatch: mocks.fence }));
-vi.mock("@/lib/db", () => { const db = { airflowAutomationExecution: {
+vi.mock("@/lib/db", () => { const db = { durableAgentWorkflow: { findMany: mocks.enrollment }, airflowAutomationExecution: {
   findUnique: mocks.find, findUniqueOrThrow: mocks.findRequired, update: mocks.update, updateMany: mocks.claim,
 }, tenantIntegrationConnection: { findFirst: mocks.binding }, orgMembership: { findUnique: mocks.membership }, environment: { findFirst: async () => ({ id: "env-1", tier: "dev" }) }, deploymentTarget: { findFirst: mocks.target }, deploymentExecution: { create: mocks.createDeployment } }; return { prisma: { ...db, $transaction: async (fn: (tx: unknown) => Promise<unknown>) => fn(db) } }; });
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
@@ -38,6 +38,7 @@ function apply(data: Record<string, unknown>) {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  mocks.enrollment.mockResolvedValue([]);
   automation.dependencyDagIds = [];
   automation.requiredDagState = "success";
   automation.createdAt = new Date(0);
@@ -428,4 +429,29 @@ it("denies approval authority revoked while remote source evidence is read", asy
   expect(mocks.claim).not.toHaveBeenCalled(); expect(mocks.token).not.toHaveBeenCalled();
   expect(mocks.reserve).not.toHaveBeenCalled(); expect(mocks.openPR).not.toHaveBeenCalled(); expect(mocks.dispatch).not.toHaveBeenCalled();
   expect(row.status).toBe("queued"); expect(row.attempt).toBe(0);
+});
+
+const enrolled = [{id:"governance_active_org",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}];
+it("blocks enrolled Airflow mutations before remote reads or claims",async()=>{
+ mocks.enrollment.mockResolvedValue(enrolled);
+ expect(await executeAirflowAutomation(row.id)).toEqual({ok:false,error:"governance_execution_coverage_unavailable"});
+ expect(mocks.airflow).not.toHaveBeenCalled();expect(mocks.claim).not.toHaveBeenCalled();expect(mocks.openPR).not.toHaveBeenCalled();
+});
+it("refuses unavailable metadata before claim",async()=>{
+ mocks.enrollment.mockRejectedValue(Error("private DB detail"));
+ expect(await executeAirflowAutomation(row.id)).toEqual({ok:false,error:"governance_execution_coverage_unavailable"});expect(mocks.claim).not.toHaveBeenCalled();
+});
+it("rechecks enrollment after remote evidence before consuming an attempt",async()=>{
+ mocks.enrollment.mockResolvedValueOnce([]).mockResolvedValue(enrolled);
+ expect(await executeAirflowAutomation(row.id)).toEqual({ok:false,error:"governance_execution_coverage_unavailable"});expect(mocks.claim).not.toHaveBeenCalled();expect(row.attempt).toBe(0);
+});
+it("never automatically retries Governance refusal introduced after claim",async()=>{
+ mocks.enrollment.mockResolvedValueOnce([]).mockResolvedValueOnce([]).mockResolvedValue(enrolled);
+ expect(await executeAirflowAutomation(row.id)).toEqual({ok:false,error:"governance_execution_coverage_unavailable"});
+ expect(row.status).toBe("failed");expect(row.nextRetryAt).toBeNull();expect(mocks.openPR).not.toHaveBeenCalled();
+});
+it("retains uncertain durable intent when transport authority changes after intent",async()=>{
+ mocks.enrollment.mockResolvedValueOnce([]).mockResolvedValueOnce([]).mockResolvedValueOnce([]).mockResolvedValue(enrolled);
+ mocks.openPR.mockImplementationOnce(async input=>{try{await input.beforeWrite();throw Error("must refuse")}catch(error){expect(String(error)).toContain("governance_execution_coverage_unavailable");return{ok:false,error:"github_write_authority_unavailable"}}});
+ expect(await executeAirflowAutomation(row.id)).toEqual({ok:false,error:"airflow_provider_outcome_unknown"});expect(row.status).toBe("needs_reconciliation");expect(row.nextRetryAt).toBeNull();
 });

@@ -4,6 +4,7 @@ import "server-only";
 import { loadAirflowClient } from "./connection";
 import { latestDependenciesReady } from "./dependencyReadiness";
 import { prisma } from "@/lib/db";
+import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { createPullRequest, dispatchWorkflow } from "@/lib/connectors/github/githubWriteClient";
 import { evaluateDeploymentPolicy, type DeploymentPolicyRepo } from "@/lib/releaseops/deploymentPolicyGuard";
@@ -27,6 +28,11 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
   if (initialAuthorityError) return { ok: false, error: initialAuthorityError };
   if (automation.organizationId !== execution.organizationId || execution.sourceDagId !== automation.dagId) {
     return { ok: false, error: "airflow_source_not_ready" };
+  }
+  const beforeWrite = () => assertNoGovernanceEnrollmentForMutation(prisma, execution.organizationId);
+  if (automation.actionType !== "none") {
+    try { await beforeWrite(); }
+    catch { return { ok: false, error: "governance_execution_coverage_unavailable" }; }
   }
   let reviewedRestart: RestartReviewRecord | null = null;
   if (automation.actionType === "deploy") {
@@ -67,6 +73,10 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
   // Competing approvals/ticks must claim the exact observed attempt before
   // any provider action. Status alone is insufficient if a concurrent retry
   // has already run and failed again. Rejection wins if it changed the row.
+  if (automation.actionType !== "none") {
+    try { await beforeWrite(); }
+    catch { return { ok: false, error: "governance_execution_coverage_unavailable" }; }
+  }
   const claim = {
     where: { id: execution.id, organizationId: execution.organizationId, status: execution.status, attempt: execution.attempt, automation: { enabled: true, updatedAt: automation.updatedAt, connectionId: automation.connectionId } },
     data: { status: "running", attempt: { increment: 1 }, errorCode: null, nextRetryAt: null, ...(actorUserId ? { decidedByUserId: actorUserId, decidedAt: new Date() } : {}) },
@@ -100,8 +110,9 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
 
     if (automation.actionType === "open_pull_request") {
       if (!automation.sourceRef || !automation.pullRequestBase || !automation.pullRequestTitle) throw new Error("pull_request_configuration_incomplete");
+      await beforeWrite();
       await markDispatchIntent();
-      const opened = await createPullRequest({ owner: repository.owner, repo: repository.repo, head: automation.sourceRef, base: automation.pullRequestBase, title: automation.pullRequestTitle, body: `Automatically proposed by Axiom after Airflow DAG ${execution.sourceDagId} run ${execution.sourceDagRunId} completed.`, installationToken: token.token });
+      const opened = await createPullRequest({ owner: repository.owner, repo: repository.repo, head: automation.sourceRef, base: automation.pullRequestBase, title: automation.pullRequestTitle, body: `Automatically proposed by Axiom after Airflow DAG ${execution.sourceDagId} run ${execution.sourceDagRunId} completed.`, installationToken: token.token, beforeWrite });
       if (!opened.ok) throw new Error(opened.error);
       providerReceipt = { action: "open_pull_request", pullRequestNumber: opened.data.number, pullRequestUrl: opened.data.htmlUrl };
       return await succeed(execution.id, providerReceipt);
@@ -136,10 +147,11 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
       }
       reservedDeploymentId = reservation.reservation.id;
       providerReceipt = { action: "deploy", evidence: deploymentEvidence("service_restart"), deploymentExecutionId: reservedDeploymentId };
+      await beforeWrite();
       finalReviewFenceStarted = true;
       await prisma.$transaction(tx => fenceRestartDispatch(tx, restartReview, execution.attempt + 1, approvalActorId!, { ...dispatchIntent, ...providerReceipt }), { isolationLevel: "Serializable" });
       providerActionStarted = true;
-      const dispatched = await dispatchWorkflow({ owner: repository.owner, repo: repository.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: automation.sourceRef, inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService }, installationToken: token.token });
+      const dispatched = await dispatchWorkflow({ owner: repository.owner, repo: repository.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: automation.sourceRef, inputs: { role_arn: target.roleArn, region: target.region, cluster: target.ecsCluster, service: target.ecsService }, installationToken: token.token, beforeWrite });
       if (!dispatched.ok) throw new Error(dispatched.error);
       providerReceipt = { action: "deploy", evidence: deploymentEvidence("service_restart"), deploymentExecutionId: reservedDeploymentId, workflowRunId: dispatched.data.workflowRunId, workflowUrl: dispatched.data.htmlUrl };
       if (!await settleDeploymentDispatch(reservationRepo, automation.organizationId, reservedDeploymentId, { workflowRunId: dispatched.data.workflowRunId, workflowUrl: dispatched.data.htmlUrl })) throw new Error("deployment_tracking_unavailable");
@@ -158,7 +170,7 @@ export async function executeAirflowAutomation(executionId: string, actorUserId?
     const reviewRefused = finalReviewFenceStarted && !providerActionStarted;
     const message = releaseUnconfirmed ? "airflow_reservation_release_unconfirmed" : providerActionStarted ? "airflow_provider_outcome_unknown" : reviewRefused ? safeReviewError(error) : error instanceof Error ? error.message.split(":")[0] : "automation_execution_failed";
     const attempt = execution.attempt + 1;
-    const retry = !providerActionStarted && !releaseUnconfirmed && !reviewRefused && attempt < automation.maxRetries;
+    const retry = !providerActionStarted && !releaseUnconfirmed && !reviewRefused && message !== "governance_execution_coverage_unavailable" && attempt < automation.maxRetries;
     if (reviewRefused && !releaseUnconfirmed) {
       try {
         const restored = await prisma.airflowAutomationExecution.updateMany({ where: { id: execution.id, organizationId: execution.organizationId, status: "running", attempt }, data: { status: "pending_approval", errorCode: message, nextRetryAt: null, completedAt: null } });
