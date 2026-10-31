@@ -82,3 +82,20 @@ component tests/types, not native visual acceptance or the current application
 bundle. No actual approval, provider access, setting, deployment or schema
 change was made by this local implementation. Final whole-MVP review and full
 production build remain pending.
+
+## Saved baseline selection (local)
+
+The read dispatcher now supports list_revisions. Request composition rechecks
+the current workspace reader before and after a bounded organization-scoped
+query; each returned revision passes the existing immutable history and current
+reader checks. Only metadata for the latest 20 revisions is returned, with an
+explicit truncation marker. No fresh provider read or approval occurs merely by
+listing saved history. The read-only prototype offers a saved-baseline selector;
+choosing an item fills the exact reference without automatically reading sources
+or recording a decision. Exact IDs remain available for older history.
+
+One actual isolated PostgreSQL composed journey passed with the new metadata
+list, real durable stores/audit and simulated paired/provider authority. The
+owned socket-only server was stopped afterward. Six read HTTP checks and 14
+combined client/evidence-view checks passed. Native registration/visual acceptance
+and the complete authoring/approval workflow remain unfinished.

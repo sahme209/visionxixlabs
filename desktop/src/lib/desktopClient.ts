@@ -1,4 +1,4 @@
-import {governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
+import {governanceRevisionListSchema,type GovernanceRevisionList,governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
 import {serviceNowWrittenObservationRequestSchema,type ServiceNowWrittenObservationRequest} from '../../../lib/releaseops/serviceNowWrittenLinkObservationContract';
 import {serviceNowTerminalPolicyRequestSchema,serviceNowTerminalPolicyOptionsSchema,type ServiceNowTerminalPolicyRequest,type ServiceNowTerminalPolicyOptions} from '../../../lib/releaseops/serviceNowTerminalPolicyRequest';
 import {associatedTicketActionsRequestSchema,isAssociatedTicketActionsResult,type AssociatedTicketActionsRequest,type AssociatedTicketActionsResult} from './associatedTicketActions';
@@ -1603,6 +1603,9 @@ export class DesktopClient {
   governanceRevoke(id:string,version:number,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceRevision>> {
     if(!governanceRevisionId.safeParse(id).success||![0,1].includes(version)||!ticketReviewNonce.safeParse(requestId).success)return Promise.resolve({ok:false,error:'Reload the exact baseline revision before revoking.',outcomeUnconfirmed:false});
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/review',{operation:'revoke',id,version,requestId},(v):v is GovernanceRevision=>governanceRevisionSchema.safeParse(v).success&&(v as GovernanceRevision).id===id&&(v as GovernanceRevision).status==='revoked'&&(v as GovernanceRevision).version===version+1,signal);
+  }
+  governanceRevisions(signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceRevisionList>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'list_revisions'},(v):v is GovernanceRevisionList=>governanceRevisionListSchema.safeParse(v).success,signal);
   }
   governanceEvidence(signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceEvidenceList>> {
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'list_evidence'},(v):v is GovernanceEvidenceList=>governanceEvidenceListSchema.safeParse(v).success,signal);

@@ -31,3 +31,18 @@ Use one verified canonical logo source across web and desktop. The canonical rep
 Test navigation and controlled-state retention, explicit-only execution, disabled prerequisites, expiry/uncertainty handling and keyboard navigation. Builds and jsdom checks do not substitute for visual/native acceptance. Batch production and installer changes through their existing release protections.
 
 Settings navigation uses three purpose groups: Account & preferences; Agent & security; Development & connections. Grouping is presentation only; search filters existing section labels/keywords and never writes a preference. Preserve stable internal section IDs when changing visible labels.
+
+## Product quality bar
+
+The user's reference products are Cursor, Claude, Codex and ChatGPT. Carry the
+interaction principles through Axiom's own identity: a focused conversation and
+work surface; clear separation of asking, planning, reviewing and acting; direct
+navigation back to the relevant file, task, source or outcome; readable progress;
+and durable recovery when an operation is uncertain. Reference names are design
+inspiration, not claims of integration or copied branding.
+
+Prefer selecting an existing task, source or baseline over pasting internal IDs.
+Keep exact evidence and version bindings available in disclosures. State who
+must act next, what their decision authorizes, and what remains unavailable.
+Use the same status words across views. A successful read, a recorded approval,
+a policy activation and a verified provider change are distinct outcomes.

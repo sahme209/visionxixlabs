@@ -43,6 +43,15 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  const baselines=createGovernanceBaselineService({store,preflight}),drift=createGovernanceDriftReader({assertCurrent:current,readHistorical,readCurrent});
  return{
   async listEvidence(){enabled();return history.list(scope)},
+  async listRevisions(){
+   await current(scope,request.signal);
+   const rows=await repo.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,workflowKind:'governance_baseline_revision_v1'},orderBy:[{createdAt:'desc'},{id:'desc'}],take:21}),items=[];
+   for(const row of rows.slice(0,20)){
+    request.signal.throwIfAborted();const saved=await store.readRevision(scope,row.id);
+    items.push({id:saved.id,version:saved.version,status:saved.status,digest:saved.baseline.digest,requesterUserId:saved.requesterUserId,createdAt:row.createdAt.toISOString(),scopes:saved.baseline.scopes,ruleCount:saved.baseline.rules.length});
+   }
+   await current(scope,request.signal);return{items,truncated:rows.length>20};
+  },
   async readRevision(id:string){enabled();return store.readRevision(scope,id)},
   async collect(raw:unknown,requestId:string){enabled();nonce.parse(requestId);const s=discoverySelectionSchema.parse(raw);return s.source==='github'?createGithubGovernanceCollectionRequestService(request,repo,scope,isEnabled).collect(s,requestId):createAwsGovernanceCollectionRequestService(request,repo,scope,isEnabled).collect(s,requestId)},
   async propose(raw:unknown,requestId:string){enabled();nonce.parse(requestId);const b=compileBaseline(raw);await repo.$transaction(tx=>authority(tx,scope,'policy_admin'));return baselines.propose(scope,b,requestId,request.signal)},
