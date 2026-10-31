@@ -1,3 +1,4 @@
+import { reportedTokenText } from "../lib/aiUsageText";
 import { useEffect, useMemo, useState } from "react";
 import { ViewShell } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
@@ -190,7 +191,8 @@ export function AiCallLogView() {
       {data && data.calls.length > 0 && (
         <div className="space-y-2">
           <p className="text-[12px] font-semibold text-zinc-200">Recent calls</p>
-          <div className="glass-card overflow-hidden">
+          <p className="text-xs text-zinc-500">Provider-reported counts only. Missing usage is not zero; tokens are not a bill or a measure of task quality.</p>
+          <div className="glass-card overflow-x-auto">
             <table className="w-full text-[11.5px] font-mono">
               <thead>
                 <tr className="border-b border-white/[0.06]">
@@ -199,8 +201,9 @@ export function AiCallLogView() {
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Model</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Outcome</th>
                   <th className="text-right px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Lat</th>
-                  <th className="text-right px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">P</th>
-                  <th className="text-right px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">C</th>
+                  <th className="text-right px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Input tokens</th>
+                  <th className="text-right px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Output tokens</th>
+                  <th className="text-right px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Total tokens</th>
                 </tr>
               </thead>
               <tbody>
@@ -215,8 +218,9 @@ export function AiCallLogView() {
                       </span>
                     </td>
                     <td className="px-3 py-1.5 text-right text-zinc-300">{c.latencyMs}ms</td>
-                    <td className="px-3 py-1.5 text-right text-zinc-400">{c.promptTokens ?? "—"}</td>
-                    <td className="px-3 py-1.5 text-right text-zinc-400">{c.completionTokens ?? "—"}</td>
+                    <td className="px-3 py-1.5 text-right text-zinc-400">{reportedTokenText(c.promptTokens) ?? "Not reported"}</td>
+                    <td className="px-3 py-1.5 text-right text-zinc-400">{reportedTokenText(c.completionTokens) ?? "Not reported"}</td>
+                    <td className="px-3 py-1.5 text-right text-zinc-400">{reportedTokenText(c.totalTokens) ?? "Not reported"}</td>
                   </tr>
                 ))}
               </tbody>
