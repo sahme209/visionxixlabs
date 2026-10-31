@@ -1,0 +1,11 @@
+{
+  "runtime": "7cbdb06677d53c0543653a9ee214258107e37e29",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/7cbdb066/Axiom Agent Local Preview.app",
+  "checks": [
+    "5 token evidence tests passed",
+    "desktop types/build passed",
+    "offline native build passed",
+    "strict signing passed"
+  ],
+  "scope": "Local preview prepared; no AI call, cost estimate, token reduction claim, backend deployment or public installer publication. Native receipt rendering not tested with live provider."
+}
