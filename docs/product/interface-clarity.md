@@ -63,3 +63,11 @@ read-only disclosure, with the warning that they are not release evidence still
 visible. This preserves mounted ticket/approval controls and all form/session
 state; it does not execute or fetch anything when the disclosure is opened.
 Actual native visual acceptance remains separate from source/type verification.
+
+Outlook presentation follow-up from actual native screenshots: use one catalog
+identity header and an embedded Connection section, keep connection/uncertainty
+status visible, and place new email/event draft fields in an explicit preparation
+disclosure. Draft values remain mounted across toggles; opening it starts no
+network operation. Saving a new draft requires a currently connected mailbox.
+Existing review, cancellation, recovery and exact approval controls remain
+outside that disclosure and retain server-derived authority.
