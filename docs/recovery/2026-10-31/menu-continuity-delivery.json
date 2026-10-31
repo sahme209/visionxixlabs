@@ -1,0 +1,16 @@
+{
+  "sourceCommit": "e2074244a73368c1f932fe575304b961122324b2",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/e2074244/Axiom Agent Local Preview.app",
+  "binarySha256": "bf7ded37eb21198bdf448cbcaaf6cbaefab55b8ea40c94ea27af085c5a98ebc5",
+  "signatureVerified": true,
+  "testsPassed": 110,
+  "targetedTestsPassed": 4,
+  "targetedTestCountOverlaps": true,
+  "paidAiCalls": 0,
+  "backendChanges": false,
+  "savedSessionRestored": true,
+  "nativeOutsideClickDismissalVerified": true,
+  "nativeEscapeCheck": "not completed: computer-control ScreenCaptureKit parameter error after reopen; automated Escape tests pass",
+  "readOnlyUiChangesOnly": true,
+  "publicInstallerChanged": false
+}
