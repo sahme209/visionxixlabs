@@ -1,0 +1,18 @@
+{
+  "sourceCommit": "540d61044ebf1afd70e19a6529ecadf286c2b3df",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/540d6104/Axiom Agent Local Preview.app",
+  "binarySha256": "a3216149a26a4c0d546d4ff6f040214ed2d5e5c379f759111e83ab8a5d0213e1",
+  "signatureVerified": true,
+  "testsPassed": 155,
+  "publicInstallerChanged": false,
+  "savedSessionRestored": true,
+  "nativeViewsInspected": [
+    "Bot compact default with both drawers closed",
+    "Releases full-width with selector above details",
+    "Agent enlarged Send and Enter-to-send hint"
+  ],
+  "screenshotsShownInChat": true,
+  "localShortcutPreference": "submit_with_command_enter=false; saved via Settings UI per user request",
+  "paidAiCalls": 0,
+  "governanceCompleted": false
+}
