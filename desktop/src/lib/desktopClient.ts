@@ -1,4 +1,5 @@
-import {governanceEvidenceArtifactSchema,type GovernanceEvidenceArtifact,governanceProposalSchema,governanceRevisionListSchema,type GovernanceRevisionList,governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
+import {decodePolicyUploadBytes} from '../../../lib/governance/intelligence/documentText';
+import {governanceDocumentLookupSchema,type GovernanceDocumentLookup,governanceDocumentUploadSchema,governanceDocumentReceiptSchema,type GovernanceDocumentReceipt,governanceEvidenceArtifactSchema,type GovernanceEvidenceArtifact,governanceProposalSchema,governanceRevisionListSchema,type GovernanceRevisionList,governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
 import {serviceNowWrittenObservationRequestSchema,type ServiceNowWrittenObservationRequest} from '../../../lib/releaseops/serviceNowWrittenLinkObservationContract';
 import {serviceNowTerminalPolicyRequestSchema,serviceNowTerminalPolicyOptionsSchema,type ServiceNowTerminalPolicyRequest,type ServiceNowTerminalPolicyOptions} from '../../../lib/releaseops/serviceNowTerminalPolicyRequest';
 import {associatedTicketActionsRequestSchema,isAssociatedTicketActionsResult,type AssociatedTicketActionsRequest,type AssociatedTicketActionsResult} from './associatedTicketActions';
@@ -1595,6 +1596,25 @@ export class DesktopClient {
   prepareServiceNowTerminalPolicy(input:ServiceNowTerminalPolicyRequest,clientRequestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
     const parsed=serviceNowTerminalPolicyRequestSchema.safeParse(input);if(!parsed.success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Review the administrator-declared policy fields and source evidence.',outcomeUnconfirmed:false});
     const selected=parsed.data;return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance',{binding:selected,clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='servicenow_terminal_policy'&&v.binding.nativeProcess.kind==='model'&&v.binding.nativeProcess.modelSysId===selected.modelSysId&&JSON.stringify(v.binding.sourceReferences)===JSON.stringify(selected.sourceReferences)&&JSON.stringify(v.binding.terminalStates)===JSON.stringify(selected.terminalStates)&&JSON.stringify(v.binding.fields)===JSON.stringify(selected.fields),signal);
+  }
+  async governanceLookupDocument(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceDocumentLookup>> {
+    const parsed=governanceDocumentUploadSchema.safeParse(raw),owner=this.config,revision=this.getContextRevision();
+    const fail=():ReleasePlanResult<GovernanceDocumentLookup>=>({ok:false,error:'Verify the original selected document and workspace before checking its saved record.',outcomeUnconfirmed:false});
+    if(!parsed.success||signal?.aborted||!globalThis.crypto?.subtle)return fail();
+    try{const selected=parsed.data,bytes=new Uint8Array(selected.utf8Bytes);decodePolicyUploadBytes(bytes);const hashed=await crypto.subtle.digest('SHA-256',bytes),sourceDigest=Array.from(new Uint8Array(hashed),b=>b.toString(16).padStart(2,'0')).join('');
+      if(owner!==this.config||revision!==this.getContextRevision()||signal?.aborted)return fail();
+      return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'lookup_document_upload',requestId:selected.requestId},(v):v is GovernanceDocumentLookup=>{const checked=governanceDocumentLookupSchema.safeParse(v);if(!checked.success)return false;if(!checked.data.found)return true;const s=checked.data.artifact.snapshot;return s.source==='document'&&s.connectionId==='upload:'+selected.name&&s.sourceDigest===sourceDigest&&s.connectionRevision===sourceDigest&&s.collectorVersion==='governance-document-v2'&&JSON.stringify(s.selection)===JSON.stringify(selected.selection)},signal);
+    }catch{return fail()}
+  }
+  async governanceUploadDocument(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceDocumentReceipt>> {
+    const parsed=governanceDocumentUploadSchema.safeParse(raw),owner=this.config,revision=this.getContextRevision();
+    const fail=():ReleasePlanResult<GovernanceDocumentReceipt>=>({ok:false,error:'Verify the selected text document and workspace before saving.',outcomeUnconfirmed:false});
+    if(!parsed.success||signal?.aborted||!globalThis.crypto?.subtle)return fail();
+    try{const selected=parsed.data,bytes=new Uint8Array(selected.utf8Bytes);decodePolicyUploadBytes(bytes);const hashed=await crypto.subtle.digest('SHA-256',bytes),sourceDigest=Array.from(new Uint8Array(hashed),b=>b.toString(16).padStart(2,'0')).join('');
+      if(owner!==this.config||revision!==this.getContextRevision()||signal?.aborted)return fail();
+      let binary='';for(let i=0;i<bytes.length;i+=4096)binary+=String.fromCharCode(...bytes.subarray(i,i+4096));
+      return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/documents',{operation:'upload_document',name:selected.name,selection:selected.selection,base64:btoa(binary),expectedVersion:selected.expectedVersion,requestId:selected.requestId},(v):v is GovernanceDocumentReceipt=>{const checked=governanceDocumentReceiptSchema.safeParse(v);return checked.success&&checked.data.name===selected.name&&checked.data.sourceDigest===sourceDigest&&JSON.stringify(checked.data.selection)===JSON.stringify(selected.selection)&&checked.data.headVersion===(selected.expectedVersion===null?0:selected.expectedVersion+1)},signal);
+    }catch{return fail()}
   }
   governancePropose(raw:unknown,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceRevision>> {
     const parsed=governanceProposalSchema.safeParse(raw);if(!parsed.success||!ticketReviewNonce.safeParse(requestId).success)return Promise.resolve({ok:false,error:'Review exact source, scope and rules before saving a proposal.',outcomeUnconfirmed:false});

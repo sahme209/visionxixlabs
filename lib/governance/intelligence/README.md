@@ -174,8 +174,7 @@ existing policy administration, while current reader/session checks remain
 mandatory. Credential-shaped/binary/oversized data is refused before storage.
 
 Internal uploadDocument composition saves the source artifact only after the
-head/body proof is checked. No HTTP upload command or file picker is exposed
- yet. Fresh document observations read the audited current head and retained
+head/body proof is checked. At that increment no HTTP upload command or file picker was exposed. Fresh document observations read the audited current head and retained
 bytes, never extend an expired historical snapshot. Locked source binding
 checks content, typed facts, completeness and parser version against retained
 bytes. Document revisions are content hashes: changed bytes produce changed
@@ -193,3 +192,40 @@ freshness/admission/guard checks passed after document drift classification.
 Scoped server types pass. No production/customer document, migration, setting,
 provider call or deployment occurred. Full build/final review for this later
 increment remain pending; the earlier full build receipt applies to02478ed4.
+
+## Bounded upload, atomic recording and recovery (local, default OFF)
+
+The new /api/desktop/governance-intelligence/documents route accepts only exact
+inert document uploads from current paired policy administrators. It bounds
+JSON/Base64/UTF-8 sizes, rejects supplied identities/URLs and validates bytes
+before storage. Neither activation, approval nor provider access is reachable.
+The existing Governance setting remains unchanged/OFF and the route is not
+deployed. Authority failures are separate from invalid file contents; uncertain
+storage results require readback, never an automatic resend.
+
+Application composition now records the document bytes, current head, source
+artifact and audit records in ONE existing-database transaction. The evidence
+store accepts an existing transaction without nesting. A recording failure
+rolls back all source changes. Exact last-nonce recovery reads the original
+artifact/snapshot instead of creating another observation. Current-user nonce
+lookup is read-only, tenant/actor bound, and never returns another uploader's
+record. Five actual document PG tests and two composed request journeys cover
+these paths; the combined 15-check PG/read-HTTP batch passed. A missing explicit
+sort in the narrow repository type was then corrected and types pass.
+
+Desktop upload verifies exact raw-byte SHA-256 with browser crypto, refuses
+binary/credential-shaped text locally, and fences account changes while hashing.
+The file panel previews escaped text and requires explicit reviewed storage.
+An unknown result holds the original request and offers only readback; it cannot
+send the bytes again. Initial document upload is available in the unregistered
+prototype only after selecting a recorded scope. Existing-version replacement
+UI remains pending. Complete recorded documents can back the typed initial
+baseline; unresolved requirements remain partial and ineligible.
+
+The 32-check HTTP/client/upload-panel batch passed, followed by the added
+five-check document HTTP suite including authority-failure classification.
+Desktop and scoped server types pass. The frontend build passed before two
+small file-generation guards, which have subsequent type/component coverage.
+No signed app was opened, source was uploaded by a real user, production setting
+changed, provider called or rollout run. The only full production build receipt
+so far remains02478ed4; a current full build and whole-MVP review are pending.

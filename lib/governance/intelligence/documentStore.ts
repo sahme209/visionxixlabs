@@ -48,7 +48,8 @@ export async function assertGovernanceDocumentHead(tx:Tx,s:Scope,raw:unknown){
  const body=await readBlob(tx,s,head.state.blobId,Date.now()),actual=body.parsed.snapshot;
  if(body.input.name!==name||hash(body.input.selection)!==hash(e.selection)||actual.sourceDigest!==head.state.sourceDigest||hash({facts:actual.facts,completeness:actual.completeness})!==hash({facts:e.facts,completeness:e.completeness}))deny();
 }
-interface Ports {assertCurrent:(tx:Tx,scope:Scope,role:'reader'|'collector')=>Promise<void>;now?:()=>Date}
+type Artifact={id:string;snapshot:EvidenceSnapshot;createdAt:string};
+interface Ports {recordSnapshot?:(tx:Tx,s:Scope,snapshot:EvidenceSnapshot,requestId:string,phase:'new'|'recover')=>Promise<Artifact>;assertCurrent:(tx:Tx,scope:Scope,role:'reader'|'collector')=>Promise<void>;now?:()=>Date}
 /** Bounded inert policy bytes + audited CAS head, using existing durable tables.
  * Uploading a source never approves/activates a policy or changes a provider. */
 export function createGovernanceDocumentStore(repo:ReleaseOperationPlanRepo,ports:Ports){
@@ -58,6 +59,11 @@ export function createGovernanceDocumentStore(repo:ReleaseOperationPlanRepo,port
   if(rows.length!==1||rows[0].organizationId!==s.organizationId||rows[0].userId!==s.actorUserId||!rows[0].acceptedAt||!ports.assertCurrent)deny();await ports.assertCurrent(tx,s,role);
  }
  async function event(tx:Tx,row:Row,s:Scope,requestId:string,previousStateDigest:string|null){await tx.durableAgentWorkflowEvent.create({data:{organizationId:s.organizationId,workflowRunId:row.id,sequence:row.version,eventType:row.workflowKind+(row.workflowKind===HEAD?'.updated':'.recorded'),actorKind:'user',actorId:s.actorUserId,detailJson:{inputDigest:hash(row.inputJson),stateDigest:hash(row.stateJson),state:row.stateJson,previousStateDigest,requestId,expectedVersion:row.version?row.version-1:null},occurredAt:row.updatedAt}})}
+ async function record(tx:Tx,s:Scope,snapshot:EvidenceSnapshot,requestId:string,phase:'new'|'recover'){
+  if(!ports.recordSnapshot)return undefined;
+  const artifact=await ports.recordSnapshot(tx,s,structuredClone(snapshot),requestId,phase);
+  if(!artifact||artifact.id!=='governance_evidence_'+hash({organizationId:s.organizationId,digest:snapshot.digest})||hash(validateEvidenceEnvelope(artifact.snapshot))!==hash(snapshot)||!z.string().datetime().safeParse(artifact.createdAt).success)deny();return artifact;
+ }
  async function create(tx:Tx,s:Scope,id:string,kind:string,input:unknown,state:unknown,requestId:string,at:Date){const row=await tx.durableAgentWorkflow.create({data:{id,organizationId:s.organizationId,workflowKind:kind,objective:'Inert policy source history; no execution authority',status:'completed',autonomyLevel:'observe',currentStep:kind===HEAD?'current':'recorded',requestedByUserId:s.actorUserId,inputJson:input,stateJson:state,attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,nextAttemptAt:null,createdAt:at,updatedAt:at,completedAt:at}});await event(tx,row,s,requestId,null);return row}
  return{
   async upload(rawScope:Scope,raw:unknown){
@@ -65,14 +71,14 @@ export function createGovernanceDocumentStore(repo:ReleaseOperationPlanRepo,port
    return repo.$transaction(async tx=>{
     await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${hid}))`;await authority(tx,s,'collector');const head=await readHead(tx,s,u.name,u.selection);
     const prior=head?.events.find(e=>(e.detailJson as {requestId:string}).requestId===u.requestId);
-    if(prior){if(prior.sequence!==head!.row.version||head!.state.blobId!==id)deny();return{snapshot:parsed.snapshot,headVersion:head!.row.version}}
+    if(prior){if(prior.sequence!==head!.row.version||head!.state.blobId!==id)deny();const recovered=parseUploadedPolicy({organizationId:s.organizationId,name:u.name,selection:u.selection,utf8Bytes:bytes,now:head!.row.updatedAt.getTime()}).snapshot,artifact=await record(tx,s,recovered,u.requestId,'recover');await authority(tx,s,'collector');return{snapshot:recovered,headVersion:head!.row.version,artifact}}
     if((head?.row.version??null)!==u.expectedVersion||head&&(head.row.version>=999||at<head.row.updatedAt))deny();
     const existing=await tx.durableAgentWorkflow.findFirst({where:{id,organizationId:s.organizationId,workflowKind:BLOB}});
     if(existing)await readBlob(tx,s,id,at.getTime());else await create(tx,s,id,BLOB,{format:1,organizationId:s.organizationId,name:u.name,selection:u.selection,createdBy:s.actorUserId,sessionId:s.sessionId,createdAt:at.toISOString(),requestId:u.requestId,sourceDigest,base64:Buffer.from(bytes).toString('base64')},{sourceDigest},u.requestId,at);
     const state={blobId:id,sourceDigest};let version=0;
     if(!head)await create(tx,s,hid,HEAD,{format:1,organizationId:s.organizationId,name:u.name,selection:u.selection,createdBy:s.actorUserId,sessionId:s.sessionId,createdAt:at.toISOString(),requestId:u.requestId},state,u.requestId,at);
     else{const changed=await tx.durableAgentWorkflow.updateMany({where:{id:hid,organizationId:s.organizationId,workflowKind:HEAD,version:head.row.version,inputJson:{equals:head.row.inputJson},stateJson:{equals:head.row.stateJson}},data:{stateJson:state,version:{increment:1},updatedAt:at,completedAt:at}});if(changed.count!==1)deny();version=head.row.version+1;await event(tx,{...head.row,stateJson:state,version,updatedAt:at},s,u.requestId,hash(head.row.stateJson))}
-    await authority(tx,s,'collector');return{snapshot:parsed.snapshot,headVersion:version};
+    const artifact=await record(tx,s,parsed.snapshot,u.requestId,'new');await authority(tx,s,'collector');return{snapshot:parsed.snapshot,headVersion:version,artifact};
    });
   },
   async observe(rawScope:Scope,raw:unknown){const s=scopeInput.parse(rawScope),approved=validateEvidenceEnvelope(raw);if(approved.organizationId!==s.organizationId||approved.source!=='document'||!approved.connectionId.startsWith('upload:'))deny();const name=nameSchema.parse(approved.connectionId.slice(7));return repo.$transaction(async tx=>{await authority(tx,s,'reader');const head=await readHead(tx,s,name,approved.selection);if(!head)deny();const body=await readBlob(tx,s,head.state.blobId,now().getTime());if(body.input.name!==name||hash(body.input.selection)!==hash(approved.selection)||body.input.sourceDigest!==head.state.sourceDigest)deny();await authority(tx,s,'reader');return body.parsed.snapshot})},
