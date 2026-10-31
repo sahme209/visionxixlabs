@@ -18,8 +18,8 @@ Test counts overlap across successive runs; do not sum them into a unique total.
 
 Production remains unchanged. The tenant-isolation source finding is important; prioritize a narrow activation review. Do not describe these local controls as active production protection.
 
-1. Reconcile the actual production source, then derive a **narrow security candidate** from that source. The current development branch also contains unfinished Governance work and should not be promoted wholesale on this document's authority.
-2. Review the exact candidate diff, preserve existing tenant/action authority and verify its build. Existing whole-source local acceptance is evidence, not a substitute for testing a different candidate.
+1. Narrow candidate **3d216d5f04eaf400b4fc206f5964bf3e077a9594** is now prepared from recorded production **3b59629124f7db241ec82df99ae8baecee0dbcd7**, with37 candidate tests and its exact production build/types passed. Reconcile the actual live production base before activation. The development branch contains unfinished Governance work and must not be promoted wholesale. See narrow-security-candidate.json for the10-file manifest and backup evidence.
+2. Complete final review of the exact narrow diff. Candidate-specific build/test evidence now exists; any later source change requires proportionate revalidation.
 3. Obtain the specific Vercel-freeze exception before any upload/deployment. No schema, role/grant, credential or provider-action change is part of these repairs.
 4. After an authorized rollout, verify only appropriately scoped session/access responses. Cross-tenant live tests require controlled test tenants and explicit authorization; do not probe other customers.
 5. Keep the active local desktop session intact. Public immutable v0.1.21 installers remain unchanged; desktop distribution follows its separately protected publication process.

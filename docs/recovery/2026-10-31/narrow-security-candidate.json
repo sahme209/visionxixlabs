@@ -1,0 +1,66 @@
+{
+  "candidate": "3d216d5f04eaf400b4fc206f5964bf3e077a9594",
+  "recordedProductionBase": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
+  "sourceManifest": {
+    "source": "3d216d5f04eaf400b4fc206f5964bf3e077a9594",
+    "base": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
+    "changedFiles": 10,
+    "files": [
+      {
+        "path": "app/api/dashboard/ai-call-log/__tests__/tenantScope.test.ts",
+        "sha256": "77b2b769bd32017669a38a00d3c0a551ef48223e07b1badfec7003ed46e85357"
+      },
+      {
+        "path": "app/api/dashboard/ai-call-log/export.csv/route.ts",
+        "sha256": "295b980c5f31e159cc9fcee58d8253962dd28b4e9944787fb5cfefecbe8f4aa2"
+      },
+      {
+        "path": "app/api/dashboard/ai-call-log/route.ts",
+        "sha256": "4151eec073173dcc32718189cbba4a060c12295c3bd159c992e390b93cd46270"
+      },
+      {
+        "path": "app/dashboard/ai-call-log/[engine]/page.tsx",
+        "sha256": "bd20ebc69d7c19d17f805d61ac7798012eb57411440514c1acb95f077e87b75b"
+      },
+      {
+        "path": "app/dashboard/ai-call-log/page.tsx",
+        "sha256": "62c2099642cd0b9cc0ebec029414e4076a59206fc59df7640a856e8bddb4c21e"
+      },
+      {
+        "path": "lib/ai/__tests__/instrumentationRedaction.test.ts",
+        "sha256": "85e2c23fb9b8859dab079f0427e191e430c62399fb66af0dded8c28d4a88dcde"
+      },
+      {
+        "path": "lib/ai/instrumentation.ts",
+        "sha256": "2b66bbc7d2d515f7d0d96de9289c2443b568f33495f23dfb1929b23eb37a6be2"
+      },
+      {
+        "path": "lib/releaseops/__tests__/aiCallLogResponder.test.ts",
+        "sha256": "87fe85b117c30cbbec54c0dc0c50828604192521750c82fb2ce944b08818a986"
+      },
+      {
+        "path": "lib/releaseops/aiCallLogResponder.ts",
+        "sha256": "f850ccc9967830022177cfa14ae8b3251670d5219c99ad2d5b8b4e470439d6c3"
+      },
+      {
+        "path": "lib/security/redaction.ts",
+        "sha256": "92c9c1005590e631163bba9a523b58f589d50ca4c04f142ce498d8f52dbe0766"
+      }
+    ]
+  },
+  "productionVerification": {
+    "source": "3d216d5f04eaf400b4fc206f5964bf3e077a9594",
+    "base": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
+    "stage": "/private/tmp/axiom-narrow-security-3d216d5f-_quzkic5",
+    "archiveSha256": "58a0c28ad3e018c62b0be4529abee04bf423cdb2e3ec856d63aa79867f24ef5a",
+    "build": "passed",
+    "exitCode": 0
+  },
+  "tests": "37 mocked route/responder/invocation tests passed on exact isolated candidate",
+  "remoteBackup": "backup/axiom-ai-log-security-candidate-20261031",
+  "remoteExactShaVerified": true,
+  "recoveryBundle": "/private/tmp/axiom-narrow-security-3d216d5f.bundle",
+  "bundleVerified": true,
+  "scope": "Seven source files plus three test files; no unrelated Governance or desktop polish, package/lock/schema/settings/grant changes. Local verification used synthetic env, exact locked SDK overlay with nested graph and temporary6144MiB heap.",
+  "gates": "Reconcile actual production base; final review and specific Vercel activation approval before any upload/deployment. No PR/CI/activation/installer publication initiated."
+}
