@@ -1,8 +1,9 @@
 import {beforeEach,it,expect,vi} from 'vitest';import {NextRequest} from 'next/server';
-const m=vi.hoisted(()=>({auth:vi.fn(),query:vi.fn(),prepare:vi.fn(),recover:vi.fn(),read:vi.fn(),consume:vi.fn(),deps:null as any,approvalDeps:null as any}));
+const m=vi.hoisted(()=>({auth:vi.fn(),query:vi.fn(),prepare:vi.fn(),recover:vi.fn(),read:vi.fn(),consume:vi.fn(),deps:null as any,approvalDeps:null as any,governed:vi.fn(),governedRun:vi.fn()}));
 vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));
 vi.mock('@/lib/tauri/releaseProviderMergeApprovalStore',()=>({createReleaseProviderMergeApprovalStore:(_repo:unknown,deps:unknown)=>{m.approvalDeps=deps;return {readProviderApproval:m.read,consumeProviderApproval:m.consume}}}));
 vi.mock('@/lib/tauri/releaseProviderMergeStore',()=>({createReleaseProviderMergeStore:(_repo:unknown,deps:any)=>{m.deps=deps;return {prepare:async(scope:unknown,planId:unknown)=>{await deps.assertCurrent({$queryRaw:m.query},scope);return m.prepare(scope,planId)},recover:async(scope:unknown,id:unknown)=>{await deps.assertCurrent({$queryRaw:m.query},scope);return m.recover(scope,id)},cancel:vi.fn()}}}));
+vi.mock('@/lib/governance/intelligence/governedProviderMerge',()=>({createGovernedProviderMergeExecutor:(store:unknown,ports:unknown)=>{m.governed(store,ports);return{run:m.governedRun}}}));
 import {createReleaseProviderMergeCoordinator} from '../releaseProviderMergeCoordinator';
 const actor={id:'session',userId:'executor',organizationId:'org',credentialKind:'desktop_session',capabilities:['github:read','deploy:execute']},planId='release_plan_'+'a'.repeat(64),op='release_merge_provider_'+'b'.repeat(64);
 const request=()=>new NextRequest('https://app.test/local-provider-coordinator');const ports=()=>({enabled:()=>true,readCredential:vi.fn(async()=>null),readDirectMergeSupport:vi.fn(async()=>null)});
@@ -34,3 +35,9 @@ it.each(['identity','capability'])('refuses %s loss at the closing principal fen
  await expect(createReleaseProviderMergeCoordinator({}as never,request(),ports()).prepare(planId)).rejects.toThrow(kind==='identity'?'identity_changed':'permission_required');
  expect(m.prepare).not.toHaveBeenCalled();
 });
+
+it('uses the configured governed executor with the existing transport and authenticated paired caller',async()=>{m.governedRun.mockResolvedValue({state:'refused'});const governance={guard:{assert:vi.fn()},readBinding:vi.fn()},p={...ports(),governance} as any;expect(await createReleaseProviderMergeCoordinator({} as never,request(),p).run(op)).toEqual({state:'refused'});expect(m.governed).toHaveBeenCalledOnce();expect(m.governed.mock.calls[0][1]).toMatchObject({guard:governance.guard,readBinding:expect.any(Function),transport:{assertCurrent:expect.any(Function),readCredential:p.readCredential}});expect(m.governedRun).toHaveBeenCalledWith({organizationId:'org',actorUserId:'executor',sessionId:'session'},op,expect.any(AbortSignal));expect(p.readCredential).not.toHaveBeenCalled()});
+it('refuses an incomplete configured Governance boundary instead of falling back to legacy execution',async()=>{await expect(createReleaseProviderMergeCoordinator({} as never,request(),{...ports(),governance:{guard:{},readBinding:vi.fn()}} as any).run(op)).rejects.toThrow('governance_unavailable');expect(m.governedRun).not.toHaveBeenCalled();expect(m.prepare).not.toHaveBeenCalled()});
+it('keeps its chosen Governance boundary when the caller later removes that port object',async()=>{const p:any={...ports(),governance:{guard:{assert:vi.fn()},readBinding:vi.fn()}},coordinator=createReleaseProviderMergeCoordinator({} as never,request(),p);delete p.governance;await coordinator.run(op);expect(m.governed).toHaveBeenCalledOnce()});
+
+it.each([null,undefined])('does not accept an explicitly empty configured Governance boundary',async governance=>{await expect(createReleaseProviderMergeCoordinator({} as never,request(),{...ports(),governance} as any).run(op)).rejects.toThrow('governance_unavailable');expect(m.governedRun).not.toHaveBeenCalled()});

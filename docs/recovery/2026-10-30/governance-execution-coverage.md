@@ -97,3 +97,22 @@ both admission phases, drift and refusal after the reviewer's role is removed.
 Stores/locks/audits are real; paired-session verification, provider responses,
 coverage and exact action authority are simulated. No live action was claimed
 or sent. Owned socket-only fixture was stopped afterward.
+
+## Existing release coordinator seam
+
+The existing provider-merge coordinator now accepts a trusted server-only
+Governance guard. If explicitly configured, it captures that branch and refuses
+missing/malformed guard configuration; it cannot fall back to legacy execution.
+Its binding reader is constructed internally, not supplied by HTTP input: it
+reads the existing prepared operation and exact reviewed plan, derives the
+repository/environment from the current stored release, and rechecks the paired
+caller around the reads. Existing actual governed executor, fixed transport,
+provider policy/credential checks and durable claim/outcome handling are reused.
+
+Twenty-six coordinator/binding-reader/governed-executor checks and twenty-one
+existing execution/operation HTTP checks pass. Scoped types explicitly include
+the edited coordinator. Focused fresh-context review found no important defect.
+All stores/provider transports in these new checks are simulated. No production
+HTTP composition supplies the guard yet; no scope is enrolled, no baseline is
+activated and no provider action ran. Remaining action-approval baseline binding
+and coverage across other executors are still required before enrollment.
