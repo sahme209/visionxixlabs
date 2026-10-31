@@ -12,3 +12,5 @@ export type GovernanceRevision=z.infer<typeof governanceRevisionSchema>;
 export type GovernanceDrift=z.infer<typeof governanceDriftSchema>;
 export const governanceRevisionListSchema=z.object({items:z.array(z.object({id:governanceRevisionId,version:z.number().int().min(0).max(2),status:z.enum(['proposed','approved','revoked']),digest,requesterUserId:identity,createdAt:z.string().datetime(),scopes:z.array(selection).min(1).max(100),ruleCount:z.number().int().min(1).max(500)}).strict().refine(v=>v.status==='proposed'?v.version===0:v.status==='approved'?v.version===1:v.version===1||v.version===2,'Invalid saved review version')).max(20),truncated:z.boolean()}).strict();
 export type GovernanceRevisionList=z.infer<typeof governanceRevisionListSchema>;
+export const governanceProposalSchema=baseline.omit({organizationId:true,compilerVersion:true,digest:true});
+export type GovernanceProposal=z.infer<typeof governanceProposalSchema>;

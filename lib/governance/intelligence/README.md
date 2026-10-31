@@ -99,3 +99,23 @@ list, real durable stores/audit and simulated paired/provider authority. The
 owned socket-only server was stopped afterward. Six read HTTP checks and 14
 combined client/evidence-view checks passed. Native registration/visual acceptance
 and the complete authoring/approval workflow remain unfinished.
+
+## Composed typed authoring and review (local prototype)
+
+The optional authenticated-identity mode of GovernanceEvidenceView now connects
+saved-source selection, an initial single-rule proposal and the exact saved
+review panel. Without that identity it preserves the read-only prototype.
+Authoring is limited to complete recorded GitHub evidence, merge/deployment
+rules that block or require independent approval and verified evidence, and a
+null parent. It cannot silently replace an existing active baseline. The server
+still performs current-source preflight and independent review under locks.
+Returned proposals must match exact typed scopes, rules and evidence bindings.
+
+The composed UI test proves deliberate save followed by self-approval refusal;
+no human decision or provider action is simulated as a real acceptance. Two
+proposal-panel checks, ten client checks and the six-test evidence-view suite
+pass; the earlier three-panel suite passed before the new composed test.
+Desktop types passed before that test-only addition. This view is still not
+registered in customer navigation or opened in a signed build. General baseline
+editing, document source-head freshness, collector entry points, complete
+mutation coverage, final whole-MVP review and activation remain pending.
