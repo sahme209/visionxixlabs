@@ -1,0 +1,11 @@
+{
+  "runtime": "43a129eb340c04e789d0060a7b574cebeba7de6c",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/43a129eb/Axiom Agent Local Preview.app",
+  "checks": [
+    "desktop build and types passed",
+    "offline Rust build passed",
+    "strict signing passed",
+    "saved session restored; native Light Bot surface visually inspected"
+  ],
+  "scope": "Presentation only: continuous footer/context canvas, compact toolbar, canvas-matched light header, distinct pale composer; typography and handlers retained. No AI request or provider action; setup was loading during inspection. No public deployment."
+}
