@@ -1,3 +1,12 @@
+## Three standing product priorities
+
+Every feature and design decision must satisfy all three:
+1. **Security:** protect data, identity and actions with verifiable controls and genuine approvals.
+2. **Visual quality:** one cohesive, clean, premium product across every screen.
+3. **Clarity and ease:** users understand the purpose, where to start, what happens next and the outcome with minimal effort.
+
+These are continuous acceptance criteria, not optional final polish.
+
 # Axiom interface clarity
 
 Axiom borrows familiar interaction principles from modern developer and assistant workspaces: a stable navigation rail, a clear central task, readable conversation, focused composition, and supporting context on demand. Preserve Axiom's own brand and governed execution model.
