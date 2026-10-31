@@ -1,0 +1,10 @@
+{
+  "runtime": "9c51fe0c",
+  "checks": {
+    "syntheticMockStoreTests": "5 passed",
+    "rootTypeCheck": "Stopped after approximately two minutes with no diagnostics; NOT a pass",
+    "productionBuild": "Not run"
+  },
+  "scope": "Canonical known-credential redaction extended to task/provider/model metadata; contaminated correlation ID omitted, normal ID preserved. No production deployment, provider call, database write or app restart. Not general PII filtering.",
+  "remaining": "Complete root types and production build before activation review."
+}
