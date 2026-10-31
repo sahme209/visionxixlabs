@@ -88,3 +88,12 @@ Five new composition checks and the 20-check guard/merge/scope regression batch
 pass; scoped backend types pass. Ports/provider responses in these checks are
 simulated. This adapter is not mounted in production, coverage is not complete,
 and activation still refuses. No existing approval, action or source was used.
+
+The owned isolated PostgreSQL request journey now uses this actual request
+admission adapter rather than a handwritten test closure. One composed journey
+passed (one unrelated document journey skipped): immutable collect/propose,
+self-review refusal, separate reviewer approval, explicit fixture-only activation,
+both admission phases, drift and refusal after the reviewer's role is removed.
+Stores/locks/audits are real; paired-session verification, provider responses,
+coverage and exact action authority are simulated. No live action was claimed
+or sent. Owned socket-only fixture was stopped afterward.
