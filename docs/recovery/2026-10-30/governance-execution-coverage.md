@@ -73,3 +73,18 @@ Eight scope checks and six governed executor/actual-transport composition checks
 pass (simulated store, guard and provider). Scoped server types pass. Current
 server binding-reader/active-baseline composition and coverage registration are
 still pending; no live merge or provider read occurred.
+
+## Paired request admission composition
+
+`requestAdmission.ts` binds every admission context to the original paired
+organization, actor and session. Each claim/write phase obtains the actual
+request service's fresh active-baseline proof, retaining evidence privately for
+that invocation. Evidence and refresh receipts cannot be supplied by the action
+authority port. Its exact-action authority must independently verify the same
+baseline digest; an older provider approval is not reinterpreted as Governance
+approval. Missing coverage, swapped actors and source expiry remain refusals.
+
+Five new composition checks and the 20-check guard/merge/scope regression batch
+pass; scoped backend types pass. Ports/provider responses in these checks are
+simulated. This adapter is not mounted in production, coverage is not complete,
+and activation still refuses. No existing approval, action or source was used.
