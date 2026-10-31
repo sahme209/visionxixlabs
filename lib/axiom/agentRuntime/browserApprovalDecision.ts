@@ -1,3 +1,4 @@
+import {assertNoGovernanceEnrollmentForMutation,type GovernanceEnrollmentMetadataRepo} from '@/lib/governance/intelligence/enrollmentMetadata';
 import "server-only";
 import { randomUUID } from "node:crypto";
 import type { Prisma } from "@prisma/client";
@@ -9,7 +10,7 @@ import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
 
 export type BrowserApprovalResult =
   | { ok: true; status: "rejected" | "executed" | "failed"; errorMessage?: string | null }
-  | { ok: false; error: "not_found" | "already_decided" | "self_approval_forbidden" | "approval_expired" | "proposal_integrity_failed" | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" };
+  | { ok: false; error: "not_found" | "already_decided" | "self_approval_forbidden" | "approval_expired" | "proposal_integrity_failed" | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "governance_execution_coverage_unavailable" };
 
 export async function decideAgentAction(input: {
   organizationId: string;
@@ -54,6 +55,8 @@ export async function decideAgentAction(input: {
       return { ok: false, error: "workspace_agent_policy_unavailable" };
     }
   }
+
+  if(input.decision==='approve')try{await assertNoGovernanceEnrollmentForMutation(prisma as unknown as GovernanceEnrollmentMetadataRepo,input.organizationId)}catch{return{ok:false,error:'governance_execution_coverage_unavailable'}}
 
   const claimedStatus = input.decision === "approve" ? "approved" : "rejected";
   const claimed = await prisma.$transaction(async (tx) => {

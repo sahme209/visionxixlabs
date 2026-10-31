@@ -1,3 +1,4 @@
+import {assertNoGovernanceEnrollmentForMutation,type GovernanceEnrollmentMetadataRepo} from '@/lib/governance/intelligence/enrollmentMetadata';
 import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 /**
  * Executes an approved AgentActionProposal. This is the only place the
@@ -30,7 +31,7 @@ import {
   type DeploymentReservationRepo,
 } from "@/lib/billing/deploymentDispatchReservation";
 
-export interface ActionExecutionRepo {
+export interface ActionExecutionRepo extends GovernanceEnrollmentMetadataRepo {
   $transaction?: DeploymentReservationRepo["$transaction"];
   tenantBillingPlan?: DeploymentReservationRepo["tenantBillingPlan"];
   deploymentExecution?: DeploymentExecutionRepo["deploymentExecution"] & DeploymentReservationRepo["deploymentExecution"];
@@ -54,6 +55,10 @@ export async function executeApprovedAction(
   actorUserId = "agent-approver",
   operationId?: string,
 ): Promise<ActionExecutionResult> {
+  const governanceSignal=AbortSignal.timeout(15000);
+  const beforeWrite=()=>assertNoGovernanceEnrollmentForMutation(repo,organizationId,governanceSignal);
+  const supportedWrites=['create_github_branch','commit_github_file','commit_github_files','open_github_pull_request','trigger_aws_deploy','create_environment','configure_deployment_target','connect_identity_provider'];
+  if(supportedWrites.includes(toolName))try{await beforeWrite()}catch{return{ok:false,error:'governance_execution_coverage_unavailable'}}
   const repositoryFullName = typeof args.repositoryFullName === "string" ? args.repositoryFullName : "";
   const parsed = parseRepositoryFullName(repositoryFullName);
 
@@ -64,7 +69,7 @@ export async function executeApprovedAction(
     if (!baseBranch || !newBranchName) return { ok: false, error: "invalid_payload" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
-    const result = await createBranch({ owner: parsed.owner, repo: parsed.repo, baseBranch, newBranchName, installationToken: token.token });
+    const result = await createBranch({ owner: parsed.owner, repo: parsed.repo, baseBranch, newBranchName, beforeWrite, installationToken: token.token });
     return result.ok ? { ok: true, result: result.data } : { ok: false, error: result.error };
   }
 
@@ -85,7 +90,7 @@ export async function executeApprovedAction(
     if (branch === defaultBranch.data) return { ok: false, error: "github_pull_request_cycle_required" };
     const result = await commitFile({
       owner: parsed.owner, repo: parsed.repo, branch, path, content, message,
-      installationToken: token.token,
+      beforeWrite, installationToken: token.token,
       expectedSha: review.baseSha,
     });
     return result.ok ? { ok: true, result: result.data } : { ok: false, error: result.error };
@@ -112,7 +117,7 @@ export async function executeApprovedAction(
     const defaultBranch = await getRepositoryDefaultBranch({ owner: parsed.owner, repo: parsed.repo, installationToken: token.token });
     if (!defaultBranch.ok) return { ok: false, error: defaultBranch.error };
     if (branch === defaultBranch.data) return { ok: false, error: "github_pull_request_cycle_required" };
-    const result = await commitFiles({ owner: parsed.owner, repo: parsed.repo, branch, files, message, installationToken: token.token });
+    const result = await commitFiles({ owner: parsed.owner, repo: parsed.repo, branch, files, message, beforeWrite, installationToken: token.token });
     return result.ok ? { ok: true, result: result.data } : { ok: false, error: result.error };
   }
 
@@ -125,7 +130,7 @@ export async function executeApprovedAction(
     if (!head || !base || !title) return { ok: false, error: "invalid_payload" };
     const token = await resolveTenantScopedToken(organizationId, parsed);
     if (!token.ok) return { ok: false, error: token.error };
-    const result = await createPullRequest({ owner: parsed.owner, repo: parsed.repo, head, base, title, body, installationToken: token.token });
+    const result = await createPullRequest({ owner: parsed.owner, repo: parsed.repo, head, base, title, body, beforeWrite, installationToken: token.token });
     return result.ok ? { ok: true, result: result.data } : { ok: false, error: result.error };
   }
 
@@ -221,7 +226,7 @@ export async function executeApprovedAction(
     const result = await dispatchWorkflow({
       owner: parsed.owner, repo: parsed.repo, workflowFile: AWS_ECS_DEPLOY_WORKFLOW_FILENAME, ref: sourceRef,
       inputs: { role_arn: reviewedTarget.roleArn, region: reviewedTarget.region, cluster: reviewedTarget.ecsCluster, service: reviewedTarget.ecsService },
-      installationToken: token.token,
+      beforeWrite, installationToken: token.token,
     });
     if (!result.ok) {
       if (!isDefiniteWorkflowDispatchRejection(result.error)) return { ok: false, error: "deployment_outcome_unknown" };
@@ -259,6 +264,7 @@ export async function executeApprovedAction(
   }
 
   if (toolName === "create_environment") {
+    try{await beforeWrite()}catch{return{ok:false,error:'governance_execution_coverage_unavailable'}}
     const result = await buildEnvironmentCreateResponse(repo as unknown as EnvironmentCreateRepo, {
       organizationId,
       slug: typeof args.slug === "string" ? args.slug : "",
@@ -269,6 +275,7 @@ export async function executeApprovedAction(
   }
 
   if (toolName === "configure_deployment_target") {
+    try{await beforeWrite()}catch{return{ok:false,error:'governance_execution_coverage_unavailable'}}
     const result = await buildDeploymentTargetUpsertResponse(repo as unknown as DeploymentTargetRepo, {
       organizationId,
       environmentId: typeof args.environmentId === "string" ? args.environmentId : "",
@@ -281,6 +288,7 @@ export async function executeApprovedAction(
   }
 
   if (toolName === "connect_identity_provider") {
+    try{await beforeWrite()}catch{return{ok:false,error:'governance_execution_coverage_unavailable'}}
     const result = await buildIdentityProviderCreateResponse(repo as unknown as IdentityProviderRepo, {
       organizationId,
       actorUserId,

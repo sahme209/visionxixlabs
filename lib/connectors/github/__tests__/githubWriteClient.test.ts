@@ -544,3 +544,19 @@ describe("bounded workflow metadata file reads", () => {
     expect(result).toEqual({ok:false,error:'github_provenance_read_unavailable'});
   });
 });
+
+describe('server-owned mutation admission',()=>{
+ beforeEach(()=>{fetchMock.mockReset();});
+ it('rechecks admission after branch observation and before its only POST',async()=>{fetchMock.mockResolvedValueOnce(jsonResponse(200,{object:{sha:'base'}})).mockResolvedValueOnce(jsonResponse(201,{ref:'refs/heads/new',object:{sha:'base'}}));const beforeWrite=vi.fn(async()=>{throw Error('enrolled')});const result=await createBranch({owner:'acme',repo:'widgets',baseBranch:'main',newBranchName:'new',installationToken:'synthetic',beforeWrite}as any);expect(result).toEqual({ok:false,error:'github_write_authority_unavailable'});expect(beforeWrite).toHaveBeenCalledOnce();expect(fetchMock).toHaveBeenCalledTimes(1)});
+ it('does not submit a pull request when current policy cannot be verified',async()=>{fetchMock.mockResolvedValue(jsonResponse(201,{number:4,html_url:'https://github.test/pr/4'}));const beforeWrite=vi.fn(async()=>{throw Error('unavailable')});expect(await createPullRequest({owner:'acme',repo:'widgets',head:'feature',base:'main',title:'Reviewed',installationToken:'synthetic',beforeWrite}as any)).toEqual({ok:false,error:'github_write_authority_unavailable'});expect(fetchMock).not.toHaveBeenCalled()});
+ it('keeps a dispatched network failure unknown and does not retry',async()=>{fetchMock.mockRejectedValueOnce(Error('lost response'));const beforeWrite=vi.fn(async()=>{});expect(await createPullRequest({owner:'acme',repo:'widgets',head:'feature',base:'main',title:'Reviewed',installationToken:'synthetic',beforeWrite}as any)).toEqual({ok:false,error:'action_outcome_unknown'});expect(fetchMock).toHaveBeenCalledOnce();expect(beforeWrite).toHaveBeenCalledOnce()});
+});
+
+
+describe('multi-object mutation authority',()=>{
+ beforeEach(()=>{fetchMock.mockReset();});
+ const input={owner:'acme',repo:'widgets',branch:'axiom/change',message:'Reviewed',installationToken:'synthetic',files:[{path:'src/a.ts',content:'new a',expectedSha:'a-old'},{path:'src/b.ts',content:'new b',expectedSha:null}]};
+ function provider(){fetchMock.mockImplementation(async(url:string,options:any)=>{if(options.method==='POST'||options.method==='PATCH')return jsonResponse(201,{sha:'created',html_url:'https://github.test/commit'});if(url.includes('/git/ref/heads/'))return jsonResponse(200,{object:{type:'commit',sha:'parent'}});if(url.includes('/git/commits/'))return jsonResponse(200,{tree:{sha:'tree'}});if(url.includes('/contents/src/a.ts'))return jsonResponse(200,{type:'file',path:'src/a.ts',sha:'a-old',encoding:'base64',content:Buffer.from('old').toString('base64'),html_url:'https://github.test/a'});return jsonResponse(404,{message:'Not Found'})})}
+ it('checks current authority before every blob, tree, commit and reference mutation',async()=>{provider();const beforeWrite=vi.fn(async()=>{});expect((await commitFiles({...input,beforeWrite})).ok).toBe(true);expect(beforeWrite).toHaveBeenCalledTimes(5);expect(fetchMock.mock.calls.filter(c=>['POST','PATCH'].includes(c[1]?.method))).toHaveLength(5)});
+ it('keeps partial object creation unknown when later authority is refused and never advances the branch',async()=>{provider();let checks=0;const beforeWrite=vi.fn(async()=>{if(++checks>1)throw Error('enrolled')});expect(await commitFiles({...input,beforeWrite})).toEqual({ok:false,error:'action_outcome_unknown'});expect(fetchMock.mock.calls.filter(c=>c[1]?.method==='POST')).toHaveLength(1);expect(fetchMock.mock.calls.some(c=>c[1]?.method==='PATCH')).toBe(false)});
+});

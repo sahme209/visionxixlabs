@@ -39,6 +39,7 @@ import { executeApprovedAction, type ActionExecutionRepo } from "../actionApprov
 const target = { id: "target-1", provider: "aws", updatedAt: new Date("2026-10-16T00:00:00Z"), organizationId: "org-1", roleArn: "arn:aws:iam::123:role/x", region: "us-east-2", ecsCluster: "c", ecsService: "s" };
 const review = { kind: "ecs_restart_target", organizationId: "org-1", environmentId: "env_1", environmentTier: "dev", targetId: target.id, provider: "aws", targetUpdatedAt: target.updatedAt.toISOString(), roleArn: target.roleArn, region: target.region, ecsCluster: target.ecsCluster, ecsService: target.ecsService };
 const repo: ActionExecutionRepo = {
+  durableAgentWorkflow:{findMany:vi.fn(async()=>[])},
   environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1", tier: "dev" })) },
   deploymentTarget: { findUnique: vi.fn(async () => ({ ...target })) },
   repository: { findMany: vi.fn(async () => []) },
@@ -47,6 +48,7 @@ const repo: ActionExecutionRepo = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  (repo.durableAgentWorkflow!.findMany as any).mockResolvedValue([]);
   mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "installation-token" });
   mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "sha-main" } });
   mocks.getRepositoryDefaultBranch.mockResolvedValue({ ok: true, data: "main" });
@@ -161,6 +163,7 @@ describe("executeApprovedAction", () => {
 
   it("trigger_aws_deploy 404s when the environment doesn't belong to this org", async () => {
     const otherOrgRepo: ActionExecutionRepo = {
+      durableAgentWorkflow:repo.durableAgentWorkflow,
       environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "other_org", tier: "dev" })) },
       deploymentTarget: { findUnique: vi.fn() },
       repository: { findMany: vi.fn(async () => []) },
@@ -172,6 +175,7 @@ describe("executeApprovedAction", () => {
 
   it("trigger_aws_deploy fails closed when no deploy target is configured", async () => {
     const noTargetRepo: ActionExecutionRepo = {
+      durableAgentWorkflow:repo.durableAgentWorkflow,
       environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1", tier: "dev" })) },
       deploymentTarget: { findUnique: vi.fn(async () => null) },
       repository: { findMany: vi.fn(async () => []) },
@@ -183,6 +187,7 @@ describe("executeApprovedAction", () => {
 
   it("trigger_aws_deploy denies a promotion-required policy with no promotedFromExecutionId, even without deploymentExecution storage wired in", async () => {
     const promotionRepo: ActionExecutionRepo = {
+      durableAgentWorkflow:repo.durableAgentWorkflow,
       environment: { findUnique: vi.fn(async () => ({ id: "env_1", organizationId: "org-1", tier: "dev" })) },
       deploymentTarget: { findUnique: vi.fn(async () => ({ ...target })) },
       repository: { findMany: vi.fn(async () => [{ id: "repo_1", organizationId: "org-1", provider: "github", remoteOwner: "acme", remoteName: "widgets" }]) },
@@ -240,3 +245,7 @@ describe("reviewed ECS restart target binding", () => {
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled(); expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(changingRepo, "org-1", "held");
   });
 });
+
+it("refuses enrolled Agent execution before resolving a token or calling GitHub",async()=>{mocks.createBranch.mockResolvedValue({ok:true,data:{ref:"feature",sha:"synthetic"}});(repo.durableAgentWorkflow!.findMany as any).mockResolvedValue([{id:"governance_active_x",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}]);expect(await executeApprovedAction(repo,"org-1","create_github_branch",{repositoryFullName:"acme/widgets",baseBranch:"main",newBranchName:"feature"})).toEqual({ok:false,error:"governance_execution_coverage_unavailable"});expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();expect(mocks.createBranch).not.toHaveBeenCalled()});
+
+it("binds the Agent final write callback to fresh tenant enrollment rather than proposal-time access",async()=>{mocks.resolveTenantScopedToken.mockImplementationOnce(async()=>{(repo.durableAgentWorkflow!.findMany as any).mockResolvedValue([{id:"governance_active_x",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}]);return{ok:true,token:"synthetic"}});mocks.createBranch.mockImplementationOnce(async(input:any)=>{await expect(input.beforeWrite()).rejects.toThrow("governance_execution_coverage_unavailable");return{ok:false,error:"github_write_authority_unavailable"}});expect(await executeApprovedAction(repo,"org-1","create_github_branch",{repositoryFullName:"acme/widgets",baseBranch:"main",newBranchName:"feature"})).toEqual({ok:false,error:"github_write_authority_unavailable"});expect(mocks.createBranch).toHaveBeenCalledOnce()});

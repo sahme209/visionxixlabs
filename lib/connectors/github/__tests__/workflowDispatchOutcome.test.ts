@@ -9,3 +9,5 @@ describe("workflow dispatch rejection evidence", () => {
     expect(isDefiniteWorkflowDispatchRejection(error)).toBe(false);
   });
 });
+
+it("recognizes only the exact server before-write refusal as non-dispatched",()=>{expect(isDefiniteWorkflowDispatchRejection("workflow_dispatch_failed: github_write_authority_unavailable")).toBe(true);expect(isDefiniteWorkflowDispatchRejection("workflow_dispatch_failed: github_write_authority_unavailable: provider text")).toBe(false)});

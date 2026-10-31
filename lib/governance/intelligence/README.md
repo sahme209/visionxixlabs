@@ -1,13 +1,13 @@
 # Governance Intelligence — local foundations
 
-This package is not an active customer enforcement feature. A new local read-only route is disabled by default and not deployed; no executor imports the admission guard. It grants no execution authority. Local design/implementation approval does not activate it.
+This package is not an active customer enforcement feature. A new local read-only route is disabled by default and not deployed; selected merge execution paths have a trusted admission seam, while uncovered enrolled execution paths refuse. It grants no execution authority. Local design/implementation approval does not activate it.
 
 Implemented locally:
 - Strict tenant-bound evidence and immutable baseline contracts; closed supported fact/action types and deterministic generic-engine adapter.
-- Read-only fixed-operation collection ports with pagination, deadlines, cancellation and explicit partial/denied results. GitHub fixed-GET request composition now binds existing paired principals, current memberships and tenant installations; it is not mounted or enabled. AWS composition remains pending.
+- Read-only fixed-operation collection ports with pagination, deadlines, cancellation and explicit partial/denied results. GitHub fixed-GET request composition now binds existing paired principals, current memberships and tenant installations; it is not mounted or enabled. AWS metadata collection composition is implemented locally and has not made live discovery calls.
 - Bounded UTF-8 text/Markdown requirement extraction with exact known clauses, source hashes and line citations; unsupported prose stays unresolved. No model calls.
 - Immutable revision records, independent approvals, atomic active-scope pointers, revocation and hash-linked audit history using existing durable workflow tables. Actual isolated PostgreSQL journeys cover races and stale authority. No schema migration.
-- A two-phase admission guard with exact context/revision binding. It is not connected to existing executors. Enrollment refuses when trusted execution coverage is missing.
+- A two-phase admission guard with exact context/revision binding. A selected merge coordinator can use the trusted guard; uncovered mutation paths are being fenced. Enrollment still refuses when trusted execution coverage is missing.
 
 Remaining before an MVP can be called complete:
 1. Bind real existing organization-scoped connections, source authorization and immutable evidence artifacts; current-source freshness proofs must support unchanged approved sources without forcing approval every five minutes.
@@ -259,3 +259,9 @@ Settings now has a deliberate read-only local evidence preview with no automatic
 read and no authoring/approval/activation controls. Source/component/navigation
 checks and desktop build pass. Do not confuse opening this preview with a live
 policy deployment, verified customer discovery or complete Governance MVP.
+
+## Current execution safety checkpoint (local only)
+
+Unconfigured merge, connected-app, deployment and ticket server execution paths refuse when enrollment metadata is present or unavailable. Native computer recovery uses a distinct read-only owner attestation and cannot authorize input. Agent approvals and GitHub mutators now recheck tenant enrollment before mutation; partial Git object creation and dispatched unknown responses retain uncertain outcomes and cannot become automatic retries. The shared metadata reader grants no authority and request-service callers still verify paired readers.
+
+The latest Agent/GitHub slice passes 116 simulated unit checks and scoped TypeScript verification. Earlier native separation passed 12 Rust authority checks and 329 synthetic Swift assertions. These are local results, not live provider or computer acceptance. Remaining direct legacy callers, complete trusted admission composition and production activation are not complete; enrollment activation continues to refuse.

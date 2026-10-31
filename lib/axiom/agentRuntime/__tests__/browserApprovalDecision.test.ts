@@ -2,9 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { agentActionDigest } from "../proposalIntegrity";
 
 const mocks = vi.hoisted(() => ({
-  findFirst: vi.fn(), updateMany: vi.fn(), update: vi.fn(), createTurn: vi.fn(), createAudit: vi.fn(), execute: vi.fn(), identity: vi.fn(),
+  findFirst: vi.fn(), updateMany: vi.fn(), update: vi.fn(), createTurn: vi.fn(), createAudit: vi.fn(), execute: vi.fn(), identity: vi.fn(), enrollment:vi.fn(),
 }));
 const transactionRepo = {
+  durableAgentWorkflow:{findMany:mocks.enrollment},
   agentActionProposal: { updateMany: mocks.updateMany, update: mocks.update },
   agentConversationTurn: { create: mocks.createTurn },
   secureAuditRecord: { create: mocks.createAudit },
@@ -27,7 +28,7 @@ const actionDigest = agentActionDigest({ organizationId: base.organizationId, co
 
 describe("browser agent approval decision", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.clearAllMocks();mocks.enrollment.mockResolvedValue([]);
     mocks.findFirst.mockResolvedValue({ ...base, actionDigest });
     mocks.updateMany.mockResolvedValue({ count: 1 });
     mocks.update.mockResolvedValue({});
@@ -141,4 +142,6 @@ describe("browser agent approval decision", () => {
     expect(mocks.createAudit).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ action: "approval.deny", entityRef: `agent_action:${base.id}` }) }));
     expect(mocks.execute).not.toHaveBeenCalled();
   });
+it("refuses an uncovered Agent approval before consuming the proposal while retaining rejection",async()=>{const {decideAgentAction}=await import("../browserApprovalDecision");mocks.enrollment.mockResolvedValue([{id:"governance_active_x",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}]);expect(await decideAgentAction({organizationId:"org-1",proposalId:base.id,actorUserId:"reviewer-1",actorRole:"admin",decision:"approve",now:reviewNow})).toEqual({ok:false,error:"governance_execution_coverage_unavailable"});expect(mocks.updateMany).not.toHaveBeenCalled();expect(mocks.execute).not.toHaveBeenCalled();expect((await decideAgentAction({organizationId:"org-1",proposalId:base.id,actorUserId:"reviewer-1",actorRole:"admin",decision:"reject",now:reviewNow})).ok).toBe(true)});
+
 });

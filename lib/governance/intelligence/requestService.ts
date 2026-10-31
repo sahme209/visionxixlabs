@@ -1,3 +1,4 @@
+import {readGovernanceEnrollmentMetadata} from './enrollmentMetadata';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {GovernanceBaselineStale} from './errors';
 import {governanceContextFromReviewedRelease} from './releaseScope';
@@ -63,8 +64,7 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
   async lookupDocumentUpload(requestId:string){enabled();nonce.parse(requestId);return history.lookupDocumentUpload(scope,requestId)},
   async listCollectionSources(){enabled();return sourceDirectory.list(scope)},
   async hasAnyEnrollment(){
-   await enrollmentReader();const rows=await repo.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,OR:[{workflowKind:'governance_baseline_active_v1'},{id:{startsWith:'governance_active_'}}]},orderBy:[{id:'asc'}],take:1});
-   if(rows.length>1||rows.some(row=>row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1'&&!row.id.startsWith('governance_active_')))throw Error('governance_enrollment_unavailable');await enrollmentReader();return rows.length===1;
+   await enrollmentReader();const present=await readGovernanceEnrollmentMetadata(repo,scope.organizationId,request.signal);await enrollmentReader();return present;
   },
   /** Only a verified absent active pointer means legacy/non-enrolled. Any
    * malformed/inaccessible pointer refuses; never infer absence from failure. */

@@ -80,11 +80,12 @@ export function isSafeRepositoryPath(path: string): boolean {
 async function gh<T>(
   path: string,
   token: string,
-  init: { method?: string; body?: unknown; apiVersion?: string; bounded?: { signal: AbortSignal; maxBytes: number; budget?: GithubReadBudget } } = {},
+  init: { beforeWrite?: () => Promise<void>; method?: string; body?: unknown; apiVersion?: string; bounded?: { signal: AbortSignal; maxBytes: number; budget?: GithubReadBudget } } = {},
 ): Promise<GithubWriteResult<T>> {
   // A lost write response cannot establish whether GitHub applied the change.
   // Keep the one-shot action consumed; callers must reconcile before a new proposal.
   const isWrite = init.method !== undefined && !["GET", "HEAD"].includes(init.method.toUpperCase());
+  let writeDispatched = false;
   try {
     if (init.bounded) {
       const bytes = await boundedRead(`${GITHUB_API}${path}`, {
@@ -93,6 +94,11 @@ async function gh<T>(
       }, init.bounded.signal, init.bounded.maxBytes, init.bounded.budget);
       return { ok: true, data: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)) as T };
     }
+    if (isWrite && init.beforeWrite !== undefined) {
+      if (typeof init.beforeWrite !== "function") throw Error("invalid_write_authority");
+      await init.beforeWrite();
+    }
+    writeDispatched = isWrite;
     const response = await fetch(`${GITHUB_API}${path}`, {
       method: init.method ?? "GET",
       headers: {
@@ -112,7 +118,7 @@ async function gh<T>(
     return { ok: true, data };
   } catch (error) {
     if (init.bounded) return { ok: false, error: "github_provenance_read_unavailable" };
-    if (isWrite) return { ok: false, error: "action_outcome_unknown" };
+    if (isWrite) return { ok: false, error: writeDispatched ? "action_outcome_unknown" : "github_write_authority_unavailable" };
     return { ok: false, error: error instanceof Error ? error.message : "network_error" };
   }
 }
@@ -290,7 +296,9 @@ export async function getFile(input: GetFileInput): Promise<GithubWriteResult<{ 
   return { ok: true, data: { path: result.data.path, sha: result.data.sha, content, htmlUrl: result.data.html_url } };
 }
 
-export interface CreateBranchInput {
+interface GithubMutationAuthority { /** Trusted server-only current authority. Never from serialized request/model data. */ beforeWrite?: () => Promise<void> }
+
+export interface CreateBranchInput extends GithubMutationAuthority {
   owner: string;
   repo: string;
   baseBranch: string;
@@ -309,13 +317,13 @@ export async function createBranch(input: CreateBranchInput): Promise<GithubWrit
   const created = await gh<{ ref: string; object: { sha: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/refs`,
     input.installationToken,
-    { method: "POST", body: { ref: `refs/heads/${input.newBranchName}`, sha: base.data.object.sha } },
+    { method: "POST", beforeWrite: input.beforeWrite, body: { ref: `refs/heads/${input.newBranchName}`, sha: base.data.object.sha } },
   );
   if (!created.ok) return { ok: false, error: created.error };
   return { ok: true, data: { ref: created.data.ref, sha: created.data.object.sha } };
 }
 
-export interface CommitFileInput {
+export interface CommitFileInput extends GithubMutationAuthority {
   owner: string;
   repo: string;
   branch: string;
@@ -356,13 +364,13 @@ export async function commitFile(input: CommitFileInput): Promise<GithubWriteRes
   const result = await gh<{ content: { sha: string; html_url: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}`,
     input.installationToken,
-    { method: "PUT", body },
+    { method: "PUT", beforeWrite: input.beforeWrite, body },
   );
   if (!result.ok) return { ok: false, error: result.error };
   return { ok: true, data: { sha: result.data.content.sha, htmlUrl: result.data.content.html_url } };
 }
 
-export interface CommitFilesInput {
+export interface CommitFilesInput extends GithubMutationAuthority {
   owner: string;
   repo: string;
   branch: string;
@@ -407,30 +415,33 @@ export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteR
     }
   }
 
+  let wroteObject = false;
+  const writeFailure = (error:string) => ({ok:false as const,error:wroteObject && error==="github_write_authority_unavailable"?"action_outcome_unknown":error});
   const treeEntries: Array<{ path: string; mode: "100644"; type: "blob"; sha: string }> = [];
   for (const file of input.files) {
     const blob = await gh<{ sha?: unknown }>(`${basePath}/git/blobs`, input.installationToken, {
-      method: "POST",
+      method: "POST", beforeWrite: input.beforeWrite,
       body: { content: Buffer.from(file.content, "utf8").toString("base64"), encoding: "base64" },
     });
-    if (!blob.ok || typeof blob.data.sha !== "string") return { ok: false, error: blob.ok ? "github_blob_unavailable" : blob.error };
+    if (!blob.ok || typeof blob.data.sha !== "string") return writeFailure(blob.ok ? "github_blob_unavailable" : blob.error);
+    wroteObject = true;
     treeEntries.push({ path: file.path, mode: "100644", type: "blob", sha: blob.data.sha });
   }
   const tree = await gh<{ sha?: unknown }>(`${basePath}/git/trees`, input.installationToken, {
-    method: "POST",
+    method: "POST", beforeWrite: input.beforeWrite,
     body: { base_tree: parent.data.tree.sha, tree: treeEntries },
   });
-  if (!tree.ok || typeof tree.data.sha !== "string") return { ok: false, error: tree.ok ? "github_tree_create_failed" : tree.error };
+  if (!tree.ok || typeof tree.data.sha !== "string") return writeFailure(tree.ok ? "github_tree_create_failed" : tree.error);
   const commit = await gh<{ sha?: unknown; html_url?: unknown }>(`${basePath}/git/commits`, input.installationToken, {
-    method: "POST",
+    method: "POST", beforeWrite: input.beforeWrite,
     body: { message: input.message, tree: tree.data.sha, parents: [parentSha] },
   });
-  if (!commit.ok || typeof commit.data.sha !== "string") return { ok: false, error: commit.ok ? "github_commit_create_failed" : commit.error };
+  if (!commit.ok || typeof commit.data.sha !== "string") return writeFailure(commit.ok ? "github_commit_create_failed" : commit.error);
   const updated = await gh<unknown>(`${basePath}/git/refs/heads/${encodeURIComponent(input.branch)}`, input.installationToken, {
-    method: "PATCH",
+    method: "PATCH", beforeWrite: input.beforeWrite,
     body: { sha: commit.data.sha, force: false },
   });
-  if (!updated.ok) return { ok: false, error: updated.error };
+  if (!updated.ok) return writeFailure(updated.error);
   return {
     ok: true,
     data: {
@@ -441,7 +452,7 @@ export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteR
   };
 }
 
-export interface CreatePullRequestInput {
+export interface CreatePullRequestInput extends GithubMutationAuthority {
   owner: string;
   repo: string;
   head: string;
@@ -457,9 +468,9 @@ export async function createPullRequest(
   const result = await gh<{ number: number; html_url: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/pulls`,
     input.installationToken,
-    { method: "POST", body: { title: input.title, head: input.head, base: input.base, body: input.body ?? "" } },
+    { method: "POST", beforeWrite: input.beforeWrite, body: { title: input.title, head: input.head, base: input.base, body: input.body ?? "" } },
   );
-  if (!result.ok) return { ok: false, error: result.error === "action_outcome_unknown" ? result.error : `pull_request_create_failed: ${result.error}` };
+  if (!result.ok) return { ok: false, error: (result.error === "action_outcome_unknown" || result.error === "github_write_authority_unavailable") ? result.error : `pull_request_create_failed: ${result.error}` };
   if (!result.data || !Number.isSafeInteger(result.data.number) || result.data.number < 1 || typeof result.data.html_url !== "string" || !result.data.html_url) {
     return { ok: false, error: "action_outcome_unknown" };
   }
@@ -584,7 +595,7 @@ export async function getPullRequestGovernanceEvidence(input: {
   };
 }
 
-export interface DispatchWorkflowInput {
+export interface DispatchWorkflowInput extends GithubMutationAuthority {
   owner: string;
   repo: string;
   /** Workflow filename, e.g. "axiom-deploy-aws-ecs.yml" — not a numeric ID. */
@@ -613,7 +624,7 @@ export async function dispatchWorkflow(input: DispatchWorkflowInput): Promise<Gi
   const result = await gh<{ workflow_run_id?: number | string; run_url?: string; html_url?: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/actions/workflows/${encodeURIComponent(input.workflowFile)}/dispatches`,
     input.installationToken,
-    { method: "POST", body: { ref: input.ref, inputs: input.inputs }, apiVersion: "2026-03-10" },
+    { method: "POST", beforeWrite: input.beforeWrite, body: { ref: input.ref, inputs: input.inputs }, apiVersion: "2026-03-10" },
   );
   if (!result.ok) return { ok: false, error: `workflow_dispatch_failed: ${result.error}` };
   return {
