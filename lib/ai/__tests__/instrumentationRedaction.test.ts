@@ -60,4 +60,29 @@ describe("AI invocation credential-redaction boundary", () => {
     await logAIInvocation({ ...base, promptHash: digest });
     expect(m.create.mock.calls[1][0].data.promptHash).toBe(digest);
   });
+  it("redacts known credentials in metadata and drops a contaminated correlation identifier", async () => {
+    await logAIInvocation({ ...base, taskType: "task " + fixtureToken, provider: "provider " + fixtureToken, model: "model " + fixtureToken, requestId: fixtureToken });
+    const data = m.create.mock.calls[0][0].data;
+    expect(JSON.stringify(data)).not.toContain(fixtureToken);
+    expect(data.taskType).toContain("[REDACTED-GITHUB-PAT]");
+    expect(data.provider).toContain("[REDACTED-GITHUB-PAT]");
+    expect(data.model).toContain("[REDACTED-GITHUB-PAT]");
+    expect(data.requestId).toBeUndefined();
+    await logAIInvocation({ ...base, requestId: "req-safe-123" });
+    expect(m.create.mock.calls[1][0].data).toMatchObject({ taskType: base.taskType, provider: base.provider, model: base.model, requestId: "req-safe-123" });
+  });
+
+  it.each([-1, 1.5, NaN, Infinity, 2_147_483_648, Number.MAX_SAFE_INTEGER + 1])("does not persist invalid provider token counts: %s", async value => {
+    await logAIInvocation({ ...base, tokensIn: value, tokensOut: value });
+    expect(m.create.mock.calls[0][0].data.tokensIn).toBeUndefined();
+    expect(m.create.mock.calls[0][0].data.tokensOut).toBeUndefined();
+  });
+  it("preserves reported zero and valid counts while leaving unknown counts absent", async () => {
+    await logAIInvocation({ ...base, tokensIn: 0, tokensOut: 2_147_483_647 });
+    expect(m.create.mock.calls[0][0].data).toMatchObject({ tokensIn: 0, tokensOut: 2_147_483_647 });
+    await logAIInvocation(base);
+    expect(m.create.mock.calls[1][0].data.tokensIn).toBeUndefined();
+    expect(m.create.mock.calls[1][0].data.tokensOut).toBeUndefined();
+  });
+
 });

@@ -254,3 +254,22 @@ describe("buildAiCallLogResponse", () => {
     expect(e1.stats.latencyP95Ms).toBeGreaterThan(0);
   });
 });
+
+describe("AI call log disclosure boundary",()=>{
+ const secret="ghp_"+"z".repeat(36);
+ it("redacts known credentials before storing diagnostic text",async()=>{
+  const repo=makeRepo();await persistAiCallLog(repo,input({engineName:"engine "+secret,model:secret,errorMessage:"failed "+secret,outcome:"error"}));
+  expect(JSON.stringify(repo._rows)).not.toContain(secret);
+ });
+ it("redacts legacy rows and engine names in responses without rewriting history",async()=>{
+  const repo=makeRepo();repo._rows.push({id:'old',startedAt:NOW,...input({engineName:secret,model:secret,errorMessage:secret,outcome:'error'})});
+  const result=await buildAiCallLogResponse(repo,{organizationId:'o'});
+  expect(result.status).toBe(200);expect(JSON.stringify(result.body)).not.toContain(secret);
+  expect(repo._rows[0].errorMessage).toBe(secret);
+ });
+ it("does not return raw database exceptions",async()=>{
+  const repo=makeRepo();repo.aiCallLog.findMany=async()=>{throw new Error('private-db-detail '+secret)};
+  const result=await buildAiCallLogResponse(repo,{organizationId:'o'});
+  expect(result).toEqual({status:500,body:{ok:false,error:'read_failed',hint:'AI call history could not be loaded.'}});
+ });
+});

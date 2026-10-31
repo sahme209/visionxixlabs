@@ -38,6 +38,12 @@ export interface LogInvocationParams {
   requestId?: string;
 }
 
+// Unknown/malformed counters are absent evidence, never zero or credit.
+// Match the existing PostgreSQL/Prisma Int storage range without schema changes.
+function reportedTokenCount(value: number | undefined): number | undefined {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= 0 && value <= 2_147_483_647 ? value : undefined;
+}
+
 export async function logAIInvocation(params: LogInvocationParams): Promise<void> {
   try {
     // Redact before truncation: cutting a token first can make its remaining
@@ -56,17 +62,18 @@ export async function logAIInvocation(params: LogInvocationParams): Promise<void
     await prisma.aIInvocation.create({
       data: {
         userId: params.userId ?? undefined,
-        taskType: params.taskType,
-        provider: params.provider,
-        model: params.model,
+        taskType: redact(params.taskType),
+        provider: redact(params.provider),
+        model: redact(params.model),
         latencyMs: params.latencyMs ?? undefined,
         success: params.success,
         errorMessage: params.errorMessage == null ? undefined : redact(params.errorMessage),
-        tokensIn: params.tokensIn ?? undefined,
-        tokensOut: params.tokensOut ?? undefined,
+        tokensIn: reportedTokenCount(params.tokensIn),
+        tokensOut: reportedTokenCount(params.tokensOut),
         promptHash: hash ?? undefined,
         promptPreview: preview ?? undefined,
-        requestId: params.requestId ?? undefined,
+        // Correlation IDs are identifiers, not a free-form diagnostic channel.
+        requestId: params.requestId != null && redact(params.requestId) === params.requestId ? params.requestId : undefined,
       },
     });
   } catch {

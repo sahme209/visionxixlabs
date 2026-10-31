@@ -1,7 +1,7 @@
 /**
  * Canonical secret redaction.
  *
- * One redaction pipeline runs over every string that leaves the platform:
+ * Shared pattern-based redaction used by participating call sites, including:
  *  - structured logs
  *  - error bodies returned to users
  *  - audit/event payloads
@@ -10,8 +10,10 @@
  *  - connector sync / desktop sync envelopes
  *  - debug panels
  *
- * The redactor is intentionally aggressive — false positives ("[REDACTED]"
- * appearing in a public string) are recoverable; leaking a real key isn't.
+ * Coverage depends on each caller applying this helper before disclosure.
+ * Known credential patterns do not detect every secret or arbitrary personal
+ * data; this helper does not establish universal outbound filtering.
+ * False positives are possible and should remain visible for correction.
  *
  * Why patterns are bundled into named groups: enterprise reviewers ask
  * "what do you scrub for AWS / GCP / GitHub" — we want one place to point
