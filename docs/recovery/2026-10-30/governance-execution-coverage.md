@@ -152,3 +152,17 @@ production coordinator supplies neither Governance guard nor verifier; enrollmen
 still refuses. All other mutation coverage and exact human review/activation
 remain required. No provider write, claim, grant, migration, deployment or paid
 build occurred.
+
+## Enrollment-transition fence
+
+`readScopeEnrollment` verifies the paired reader and the exact tenant-derived
+active-pointer primary key. A malformed/inaccessible record cannot be mistaken
+for an absent enrollment. The separate server-only scope-aware admission wrapper
+preserves existing executor authority only for positively absent enrollment;
+it repeats the check before write, rejects enrollment transitions, changed
+baselines, unknown reads and forged/modified prior receipts. Strict admission
+remains mandatory for enrolled scopes. Seven focused checks and the updated
+actual owned request PostgreSQL journey pass; source/provider/action coverage in
+the fixture remains simulated, fixture stopped. This wrapper is not selected by
+production composition yet. It grants no authority to an uncovered executor or
+a caller-supplied scope and does not enable enrollment.

@@ -1,3 +1,4 @@
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {GovernanceBaselineStale} from './errors';
 import {governanceContextFromReviewedRelease} from './releaseScope';
 import type {ProviderMergeScope} from '@/lib/tauri/releaseProviderMergeStore';
@@ -58,6 +59,16 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
   async lookupCollectionRequest(requestId:string){enabled();nonce.parse(requestId);return history.lookupCollectionRequest(scope,requestId)},
   async lookupDocumentUpload(requestId:string){enabled();nonce.parse(requestId);return history.lookupDocumentUpload(scope,requestId)},
   async listCollectionSources(){enabled();return sourceDirectory.list(scope)},
+  /** Only a verified absent active pointer means legacy/non-enrolled. Any
+   * malformed/inaccessible pointer refuses; never infer absence from failure. */
+  async readScopeEnrollment(rawSelection:unknown){
+   enabled();const selection=scopeSchema.parse(rawSelection);await current(scope,request.signal);const id='governance_active_'+sha256ContentHash({organizationId:scope.organizationId,scope:selection});
+   // Exact tenant-derived primary key; inspect a conflicting malformed row as
+   // unavailable rather than masking it as an absent enrollment.
+   const row=await repo.durableAgentWorkflow.findFirst({where:{id}});
+   if(!row){await current(scope,request.signal);return{enrolled:false as const}}
+   if(row.id!==id||row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1')throw Error('governance_enrollment_unavailable');const candidate=await store.readActiveCandidate(scope,selection);await current(scope,request.signal);return{enrolled:true as const,baselineDigest:candidate.baseline.digest};
+  },
   async readEvidence(digest:string){enabled();return history.read(scope,digest)},
   async listEvidence(){enabled();return history.list(scope)},
   async listRevisions(){

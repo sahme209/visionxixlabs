@@ -5,6 +5,7 @@ import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {evaluateGovernanceAdmission} from './admission';
 import {identifier,digestSchema,scopeSchema,GOVERNED_ACTIONS,type CompiledBaseline,type EvidenceSnapshot} from './contracts';
 const contextSchema=z.object({organizationId:identifier,actorUserId:identifier,sessionId:identifier,action:z.enum(GOVERNED_ACTIONS),scope:scopeSchema,planDigest:digestSchema}).strict();
+export const parseGovernanceAdmissionContext=(raw:unknown)=>contextSchema.parse(raw);
 export type GovernanceAdmissionContext=z.infer<typeof contextSchema>;
 export interface GovernanceGuardPorts {
  now():number;
