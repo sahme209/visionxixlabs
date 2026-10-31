@@ -31,6 +31,9 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  const enabled=()=>{request.signal.throwIfAborted();if(!isEnabled())throw Error('governance_intelligence_unavailable')};
  const bound=(s:RevisionScope)=>{enabled();if(s.organizationId!==scope.organizationId||s.actorUserId!==scope.actorUserId||s.sessionId!==scope.sessionId)throw Error('governance_request_scope_changed')};
  async function current(s:RevisionScope,signal:AbortSignal){bound(s);signal.throwIfAborted();await repo.$transaction(tx=>authority(tx,s,'reader'));signal.throwIfAborted()}
+ // Enrollment metadata is a safety fence even when feature configuration is OFF.
+ // This never grants discovery, policy evaluation, approval or execution.
+ async function enrollmentReader(){request.signal.throwIfAborted();await repo.$transaction(tx=>authority(tx,scope,'reader'));request.signal.throwIfAborted()}
  const documentArtifacts=createGovernanceEvidenceStore(repo,{assertCurrent:async(tx,s,role,evidence)=>{bound(s);await authority(tx,s,role==='collector'?'policy_admin':'reader');if(evidence)await assertGovernanceEvidenceConnection(tx,s,evidence)}});
  const documents=createGovernanceDocumentStore(repo,{assertCurrent:async(tx,s,role)=>{bound(s);await authority(tx,s,role==='collector'?'policy_admin':'reader')},recordSnapshot:async(tx,s,snapshot,requestId,phase)=>phase==='recover'?documentArtifacts.read(s,snapshot.digest,tx):documentArtifacts.save(s,snapshot,requestId,tx)});
  const sourceDirectory=createGovernanceSourceDirectory(repo,{assertCurrent:async(tx,s)=>{bound(s);await authority(tx,s,'policy_admin')}});
@@ -60,18 +63,18 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
   async lookupDocumentUpload(requestId:string){enabled();nonce.parse(requestId);return history.lookupDocumentUpload(scope,requestId)},
   async listCollectionSources(){enabled();return sourceDirectory.list(scope)},
   async hasAnyEnrollment(){
-   await current(scope,request.signal);const rows=await repo.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,OR:[{workflowKind:'governance_baseline_active_v1'},{id:{startsWith:'governance_active_'}}]},orderBy:[{id:'asc'}],take:1});
-   if(rows.length>1||rows.some(row=>row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1'&&!row.id.startsWith('governance_active_')))throw Error('governance_enrollment_unavailable');await current(scope,request.signal);return rows.length===1;
+   await enrollmentReader();const rows=await repo.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,OR:[{workflowKind:'governance_baseline_active_v1'},{id:{startsWith:'governance_active_'}}]},orderBy:[{id:'asc'}],take:1});
+   if(rows.length>1||rows.some(row=>row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1'&&!row.id.startsWith('governance_active_')))throw Error('governance_enrollment_unavailable');await enrollmentReader();return rows.length===1;
   },
   /** Only a verified absent active pointer means legacy/non-enrolled. Any
    * malformed/inaccessible pointer refuses; never infer absence from failure. */
   async readScopeEnrollment(rawSelection:unknown){
-   enabled();const selection=scopeSchema.parse(rawSelection);await current(scope,request.signal);const id='governance_active_'+sha256ContentHash({organizationId:scope.organizationId,scope:selection});
+   const selection=scopeSchema.parse(rawSelection);await enrollmentReader();const id='governance_active_'+sha256ContentHash({organizationId:scope.organizationId,scope:selection});
    // Exact tenant-derived primary key; inspect a conflicting malformed row as
    // unavailable rather than masking it as an absent enrollment.
    const row=await repo.durableAgentWorkflow.findFirst({where:{id}});
-   if(!row){await current(scope,request.signal);return{enrolled:false as const}}
-   if(row.id!==id||row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1')throw Error('governance_enrollment_unavailable');const candidate=await store.readActiveCandidate(scope,selection);await current(scope,request.signal);return{enrolled:true as const,baselineDigest:candidate.baseline.digest};
+   if(!row){await enrollmentReader();return{enrolled:false as const}}
+   if(row.id!==id||row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1')throw Error('governance_enrollment_unavailable');enabled();const candidate=await store.readActiveCandidate(scope,selection);await current(scope,request.signal);return{enrolled:true as const,baselineDigest:candidate.baseline.digest};
   },
   async readEvidence(digest:string){enabled();return history.read(scope,digest)},
   async listEvidence(){enabled();return history.list(scope)},

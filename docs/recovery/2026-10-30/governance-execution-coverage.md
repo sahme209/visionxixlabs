@@ -212,3 +212,23 @@ backend runtime's exact tracked production build is c683793d and passed before
 this frontend-only delta; no backend runtime changed in this increment. This is
 source/component acceptance; the new Settings entry is not yet in the open8c
 native preview. It is not full Governance enforcement or live acceptance.
+
+## Feature-disable approval fence
+
+A reproduced regression allowed approval issuance to skip Governance composition
+when its feature flag was OFF. The regression first returned201 instead of409.
+Approval HTTP now always selects the trusted enrollment preflight unless an
+explicit server composition is supplied; malformed explicit composition still
+refuses. A metadata-only paired-reader check can prove absence even while the
+feature is OFF. An exact active pointer still requires enabled policy checks,
+so disabling configuration cannot mint an unbound legacy decision for that scope.
+Other positively absent scopes preserve legacy behavior. Revocation does not
+warm Governance and remains available. No source read or execution authority is
+granted by enrollment metadata.
+
+Twenty-six approval HTTP/composition checks pass, plus scoped backend types and
+one actual isolated request PostgreSQL journey (one unrelated journey skipped).
+The database journey now verifies disabled-configuration metadata, refusal for
+an active pointer and positive absence for another scope. External provider and
+paired-session ports remain simulated; fixture stopped. Full execution coverage
+is still incomplete; this closes one issuance bypass, not all executor gaps.

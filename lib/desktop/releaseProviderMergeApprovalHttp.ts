@@ -27,7 +27,7 @@ export interface ProviderMergeApprovalHttpPorts {governance?:{readBaseline(scope
 export async function handleReleaseProviderMergeApproval(request:NextRequest,requestId:string,planId:string,ports:ProviderMergeApprovalHttpPorts={}){try{
  if(!['GET','POST','DELETE'].includes(request.method))throw new Refusal('method_not_allowed',405);
  if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||request.nextUrl.searchParams.size||request.url.length>2048)throw new Refusal('invalid_provider_approval',400);
- if(request.method!=='DELETE'&&!Object.hasOwn(ports,'governance')&&process.env.AXIOM_GOVERNANCE_INTELLIGENCE_ENABLED==='true')ports={...ports,governance:createGovernanceMergeApprovalHttpPorts(request,prisma as unknown as ReleaseOperationPlanRepo&AwsConnectionReadRepo,()=>process.env.AXIOM_GOVERNANCE_INTELLIGENCE_ENABLED==='true')};
+ if(request.method!=='DELETE'&&!Object.hasOwn(ports,'governance'))ports={...ports,governance:createGovernanceMergeApprovalHttpPorts(request,prisma as unknown as ReleaseOperationPlanRepo&AwsConnectionReadRepo,()=>process.env.AXIOM_GOVERNANCE_INTELLIGENCE_ENABLED==='true')};
  const governance=request.method==='DELETE'?undefined:ports.governance?{readBaseline:ports.governance.readBaseline,assertBaseline:ports.governance.assertBaseline}:undefined;
  if(request.method!=='DELETE'&&Object.hasOwn(ports,'governance')&&(!governance||typeof governance.readBaseline!=='function'||typeof governance.assertBaseline!=='function'))throw new Refusal('provider_governance_unavailable',503);
  const manage=request.method!=='GET',actor=await principal(request,manage),signal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);
@@ -44,7 +44,7 @@ export async function handleReleaseProviderMergeApproval(request:NextRequest,req
  const scope={organizationId:org,actorUserId:String(actor.userId),sessionId:String(actor.id)};
  let governanceBaselineDigest:string|undefined,governanceUnavailable=false;
  if(governance){try{governanceBaselineDigest=await withGithubAbort(governance.readBaseline(scope,stored.plan,release,signal),signal);if(governanceBaselineDigest!==undefined&&!/^[a-f0-9]{64}$/.test(governanceBaselineDigest))throw new Refusal('provider_governance_unavailable',503)}catch(error){if(!(error instanceof GovernanceBaselineStale))throw error;governanceUnavailable=true}await assertCaller()}
- if(request.method==='POST'){const input=issueSchema.parse(mutation);if(!governance&&input.governanceBaselineDigest!==undefined)throw new Refusal('invalid_provider_approval',400);if(governanceUnavailable||input.governanceBaselineDigest!==governanceBaselineDigest)throw new Refusal('provider_approval_refresh_required',409)}
+ if(request.method==='POST'){const input=issueSchema.parse(mutation);if((!governance||governanceBaselineDigest===undefined)&&input.governanceBaselineDigest!==undefined)throw new Refusal('invalid_provider_approval',400);if(governanceUnavailable||input.governanceBaselineDigest!==governanceBaselineDigest)throw new Refusal('provider_approval_refresh_required',409)}
  const store=createReleaseProviderMergeApprovalStore(prisma as unknown as ReleaseOperationPlanRepo,{assertCurrent:assertAuthority,...(governance?{assertGovernanceBaseline:governance.assertBaseline}:{})});
  let approval;
  if(request.method==='POST'){const input=issueSchema.parse(mutation);approval=await withGithubAbort(store.issue(scope,{planId,...input,executorUserId:release.requesterUserId}),signal)}
