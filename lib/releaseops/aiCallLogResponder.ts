@@ -9,6 +9,7 @@
  *     dashboard with per-engine breakdown.
  */
 
+import { redact } from "../security/redaction";
 import { isMissingTable } from "./releaseListResponder";
 import {
   computeCircuitState,
@@ -130,7 +131,13 @@ export async function persistAiCallLog(
   input: PersistInput,
 ): Promise<CallLogView | null> {
   try {
-    const row = await repo.aiCallLog.create({ data: input });
+    const row = await repo.aiCallLog.create({ data: {
+      ...input,
+      engineName: redact(input.engineName),
+      model: input.model === null ? null : redact(input.model),
+      outcome: redact(input.outcome),
+      errorMessage: input.errorMessage === null ? null : redact(input.errorMessage),
+    } });
     return rowToView(row);
   } catch {
     return null;
@@ -141,10 +148,10 @@ function rowToView(row: CallLogRow): CallLogView {
   return {
     id: row.id,
     organizationId: row.organizationId,
-    engineName: row.engineName,
-    model: row.model,
-    outcome: row.outcome,
-    errorMessage: row.errorMessage,
+    engineName: redact(row.engineName),
+    model: row.model === null ? null : redact(row.model),
+    outcome: redact(row.outcome),
+    errorMessage: row.errorMessage === null ? null : redact(row.errorMessage),
     latencyMs: row.latencyMs,
     promptTokens: row.promptTokens,
     completionTokens: row.completionTokens,
@@ -235,7 +242,7 @@ export async function buildAiCallLogResponse(
         completionTokens: c.completionTokens,
       }));
       engines.push({
-        engineName,
+        engineName: redact(engineName),
         state: computeCircuitState(outcomes, now, input.circuitConfig),
         stats: computeEngineStats(summaries),
       });
@@ -285,7 +292,7 @@ export async function buildAiCallLogResponse(
     }
     return {
       status: 500,
-      body: { ok: false, error: "read_failed", hint: err instanceof Error ? err.message : "unknown" },
+      body: { ok: false, error: "read_failed", hint: "AI call history could not be loaded." },
     };
   }
 }
