@@ -16,11 +16,12 @@ import {
 } from "@/lib/releaseops/aiCallLogResponder";
 
 export const dynamic = "force-dynamic";
+const PRIVATE_LOG_HEADERS = { "Cache-Control": "private, no-store", "Vary": "Cookie, Authorization" };
 
 export async function GET(req: NextRequest) {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId) {
-    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401, headers: PRIVATE_LOG_HEADERS });
   }
 
   const engineName = req.nextUrl.searchParams.get("engineName") ?? undefined;
@@ -29,7 +30,7 @@ export async function GET(req: NextRequest) {
   const take = takeRaw ? Number.parseInt(takeRaw, 10) : undefined;
 
   // Workspace roles do not authorize cross-tenant operations.
-  if (scope === "global") return NextResponse.json({ ok: false, error: "global_scope_unavailable" }, { status: 403 });
+  if (scope === "global") return NextResponse.json({ ok: false, error: "global_scope_unavailable" }, { status: 403, headers: PRIVATE_LOG_HEADERS });
   const organizationId = String(ctx.organizationId);
 
   const r = await buildAiCallLogResponse(
@@ -40,5 +41,5 @@ export async function GET(req: NextRequest) {
       ...(typeof take === "number" && Number.isFinite(take) ? { take } : {}),
     },
   );
-  return NextResponse.json(r.body, { status: r.status });
+  return NextResponse.json(r.body, { status: r.status, headers: PRIVATE_LOG_HEADERS });
 }

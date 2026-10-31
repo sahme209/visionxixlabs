@@ -1,6 +1,6 @@
 # Local AI observability security batch
 
-Prepared October 31, 2026. Latest verified narrow candidate: `293762c346fd9c42b49d3531a28fa46849940bce`. This is a review handoff, not a deployment approval or independent security assessment.
+Prepared October 31, 2026. Latest verified narrow candidate: `bf5dbd65cd480786c39e84f0954e1cdfc55b281c`. This is a review handoff, not a deployment approval or independent security assessment.
 
 ## Completed local repairs
 
@@ -18,7 +18,7 @@ Test counts overlap across successive runs; do not sum them into a unique total.
 
 Production remains unchanged. The tenant-isolation source finding is important; prioritize a narrow activation review. Do not describe these local controls as active production protection.
 
-1. Narrow candidate **293762c346fd9c42b49d3531a28fa46849940bce** is now prepared from recorded production **3b59629124f7db241ec82df99ae8baecee0dbcd7**, with52 candidate tests and its exact production build/types passed. Reconcile the actual live production base before activation. The development branch contains unfinished Governance work and must not be promoted wholesale. See narrow-security-candidate.json for the10-file manifest and backup evidence.
+1. Narrow candidate **bf5dbd65cd480786c39e84f0954e1cdfc55b281c** is now prepared from recorded production **3b59629124f7db241ec82df99ae8baecee0dbcd7**, with56 candidate tests and its exact production build/types passed. Reconcile the actual live production base before activation. The development branch contains unfinished Governance work and must not be promoted wholesale. See narrow-security-candidate.json for the11-file manifest and backup evidence.
 2. Complete final review of the exact narrow diff. Candidate-specific build/test evidence now exists; any later source change requires proportionate revalidation.
 3. Obtain the specific Vercel-freeze exception before any upload/deployment. No schema, role/grant, credential or provider-action change is part of these repairs.
 4. After an authorized rollout, verify only appropriately scoped session/access responses. Cross-tenant live tests require controlled test tenants and explicit authorization; do not probe other customers.
@@ -39,3 +39,5 @@ Focused output review: CSV and the direct engine page previously bypassed respon
 Spreadsheet export review: CSV text with common ASCII/full-width formula prefixes or leading control prefixes receives a quoted tab safety prefix; ordinary CSV quotes and numeric values remain valid. All51 candidate tests and the exact production build/types pass. The UI identifies this as Spreadsheet CSV because safety prefixes affect raw programmatic imports. Based on [OWASP CSV Injection guidance](https://community.owasp.org/attacks/CSV_Injection); there is no universal sanitization guarantee across all spreadsheet tools and transformations. No live spreadsheet acceptance was performed.
 
 Audit export integrity: failed database reads now return a generic503/no-store JSON response without a download header, instead of falsely successful empty CSV. Genuine empty data remains a valid export. Regression RED→GREEN; updated candidate has52 tests and exact full production build/types passing.
+
+Authenticated cache privacy: web and paired-desktop log JSON uses explicit private,no-store and Vary Cookie/Authorization headers, including successful and expired-session responses. Four RED regressions now pass;56 candidate tests and exact production build/types pass. This does not purge previously cached data or guarantee noncompliant cache behavior. Paired-desktop scopes/credential checks remain unchanged.

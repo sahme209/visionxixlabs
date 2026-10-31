@@ -1,14 +1,14 @@
 {
-  "candidate": "293762c346fd9c42b49d3531a28fa46849940bce",
+  "candidate": "bf5dbd65cd480786c39e84f0954e1cdfc55b281c",
   "recordedProductionBase": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
   "sourceManifest": {
-    "source": "293762c346fd9c42b49d3531a28fa46849940bce",
+    "source": "bf5dbd65cd480786c39e84f0954e1cdfc55b281c",
     "base": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
-    "changedFiles": 10,
+    "changedFiles": 11,
     "files": [
       {
         "path": "app/api/dashboard/ai-call-log/__tests__/tenantScope.test.ts",
-        "sha256": "ab819fbcbab290b65fb649456e30487b9734f4d6da09864e6ced4c41976bacc7"
+        "sha256": "40f2ab1841a569dfa2cf577bfadcc322d1858e6028077c68555618727fbaab4e"
       },
       {
         "path": "app/api/dashboard/ai-call-log/export.csv/route.ts",
@@ -16,7 +16,11 @@
       },
       {
         "path": "app/api/dashboard/ai-call-log/route.ts",
-        "sha256": "4151eec073173dcc32718189cbba4a060c12295c3bd159c992e390b93cd46270"
+        "sha256": "d8b092271a9a2c90d6bbc41e2489c361d6341db484c891b901c1374da6f1b69a"
+      },
+      {
+        "path": "app/api/desktop/ai-call-log/route.ts",
+        "sha256": "2c6b9792da6fca345973c38f00b3f0a70e234d688371065f5480731fc03ff4ef"
       },
       {
         "path": "app/dashboard/ai-call-log/[engine]/page.tsx",
@@ -49,21 +53,21 @@
     ]
   },
   "productionVerification": {
-    "source": "293762c346fd9c42b49d3531a28fa46849940bce",
+    "source": "bf5dbd65cd480786c39e84f0954e1cdfc55b281c",
     "base": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
-    "stage": "/private/tmp/axiom-export-integrity-293762c3-bw44dy3s",
-    "archiveSha256": "d0970cf4f079e25f1003f7a91a83bd10f79034e092f870b52b6aa0a11c68902d",
+    "stage": "/private/tmp/axiom-private-logs-bf5dbd65-gme418ej",
+    "archiveSha256": "b15b2ffe5a1778c06de1282ee4b50ab2d9407d2bbec462ff1dfb3ac415eeda2b",
     "build": "passed",
     "exitCode": 0
   },
-  "tests": "52 mocked route/responder/invocation tests passed on exact isolated candidate; export-unavailable regression RED then GREEN",
+  "tests": "56 mocked route/responder/invocation tests passed on exact isolated candidate; four cache-boundary tests RED then GREEN for web/desktop success and expired sessions",
   "remoteBackup": "backup/axiom-ai-log-security-candidate-20261031",
   "remoteExactShaVerified": true,
-  "recoveryBundle": "/private/tmp/axiom-export-integrity-293762c3.bundle",
+  "recoveryBundle": "/private/tmp/axiom-private-logs-bf5dbd65.bundle",
   "bundleVerified": true,
-  "scope": "Seven source files plus three test files; no unrelated Governance or desktop polish, package/lock/schema/settings/grant changes. Local verification used synthetic env, exact locked SDK overlay with nested graph and temporary6144MiB heap.",
+  "scope": "Eight source files plus three test files; no unrelated Governance or desktop polish, package/lock/schema/settings/grant changes. Local verification used synthetic env, exact locked SDK overlay with nested graph and temporary6144MiB heap.",
   "gates": "Reconcile actual production base; final review and specific Vercel activation approval before any upload/deployment. No PR/CI/activation/installer publication initiated.",
-  "previousCandidate": "b3191cb3d2cbc5ea314093bd271afbbf03500635",
+  "previousCandidate": "293762c346fd9c42b49d3531a28fa46849940bce",
   "focusedReview": "Self-review of direct output paths found CSV and engine diagnostics bypassing responder redaction; corrected CSV formatting and sanitized engine historical rows before grouping/truncation/rendering. Not an independent security audit or universal redaction guarantee.",
   "spreadsheetExport": {
     "behavior": "Known risky string prefixes receive a tab inside a CSV-quoted cell; ordinary quote escaping and numeric values retained; UI labels intent as Spreadsheet CSV.",
@@ -71,5 +75,6 @@
     "limits": "Safety prefixes remain underlying text for programmatic import. Not universally safe for all spreadsheet tools, transformations or re-imports; no live Excel/Sheets acceptance performed.",
     "historicalIntermediate": "Local apostrophe-prefix candidate b6f00d16 built successfully but was superseded after checking current OWASP guidance; never activated."
   },
-  "exportFailureIntegrity": "A rejected log query returns generic503 JSON, no-store and no download header; genuine empty reads still return valid CSV. No raw exception or false successful empty audit export."
+  "exportFailureIntegrity": "A rejected log query returns generic503 JSON, no-store and no download header; genuine empty reads still return valid CSV. No raw exception or false successful empty audit export.",
+  "cachePrivacy": "Web and paired-desktop AI log JSON responses explicitly use Cache-Control private,no-store and Vary Cookie,Authorization; success and auth refusal verified. Existing native pipeline:read/session-only authority unchanged. No guarantee about noncompliant caches or already-stored historical responses."
 }
