@@ -119,3 +119,25 @@ Desktop types passed before that test-only addition. This view is still not
 registered in customer navigation or opened in a signed build. General baseline
 editing, document source-head freshness, collector entry points, complete
 mutation coverage, final whole-MVP review and activation remain pending.
+
+## Active-source preflight composition (local)
+
+The revision store now has a historical active-candidate read for out-of-lock
+source preparation. It returns executionAuthorized=false, rejects revoked or
+superseded records and requires current reader authority. It deliberately does
+not treat stale source evidence as execution authority. The existing readActive
+method still requires current principals and fresh evidence.
+
+The internal, non-HTTP readActiveEvidence request method warms current sources
+outside locks, then reloads the current active pointer and consumes the exact
+request-local proof under existing locked source/role checks. A changed active
+digest, expired proof or changed source refuses. It does not supply coverage,
+provider permission or an action approval and returns no execution authority.
+
+Six actual isolated PostgreSQL revision journeys passed, including stale source
+versus candidate reads and revoked-candidate refusal. The composed request
+journey passed with real artifact/revision/audit storage, simulated paired and
+provider access, and explicitly test-only activation using simulated coverage.
+Production request composition still refuses enrollment. Owned PostgreSQL was
+stopped, and scoped server types passed. No production/customer data, provider
+request, policy activation, settings or deployment was touched by these tests.

@@ -15,7 +15,7 @@ import {createAwsGovernanceCollectionRequestService} from './awsCollectionReques
 import {assertGovernanceEvidenceConnection} from './sourceAuthority';
 import {discoverySelectionFromEvidence} from './evidenceSelection';
 import {discoverySelectionSchema} from './discovery';
-import {compileBaseline,type EvidenceSnapshot} from './contracts';
+import {compileBaseline,scopeSchema,type EvidenceSnapshot} from './contracts';
 /** Local request composition; no route or production flag activates it. Reads
  * bind existing paired authority. No executor coverage is invented here. */
 export function createGovernanceRequestService(request:NextRequest,repo:ReleaseOperationPlanRepo&AwsConnectionReadRepo,scope:RevisionScope,isEnabled:()=>boolean){
@@ -28,6 +28,7 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  async function readHistorical(s:RevisionScope,digest:string,signal:AbortSignal){await current(s,signal);return(await history.read(s,digest)).snapshot}
  async function readCurrent(s:RevisionScope,e:EvidenceSnapshot,signal:AbortSignal){await current(s,signal);const selection=discoverySelectionFromEvidence(e);return selection.source==='github'?github.observe(selection):aws.observe(selection)}
  const preflight=createGovernanceEvidencePreflight({assertCurrent:current,readHistorical,readCurrent,recheckLocked:async(tx,s,approved)=>{bound(s);await authority(tx,s,'reader');await assertGovernanceEvidenceConnection(tx,s,approved)}});
+ const activeProofs=new Map<string,Awaited<ReturnType<typeof preflight.read>>>();
  const store=createGovernanceRevisionStore(repo,{
   assertCurrent:async(tx,s,actor,role)=>{bound(s);
    if(actor===s.actorUserId){await authority(tx,s,role);return}
@@ -36,7 +37,7 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
    await authority(tx,s,'reader');const rows=await tx.$queryRaw<Array<{organizationId:string;userId:string;role:string;acceptedAt:Date|null}>>`SELECT "organizationId","userId","role","acceptedAt" FROM "OrgMembership" WHERE "organizationId"=${s.organizationId} AND "userId"=${actor} FOR SHARE`,m=rows[0];
    const capability=role==='policy_admin'?'policy:manage':role==='approver'?'agent:approve':'workspace:read';
    if(rows.length!==1||m.organizationId!==s.organizationId||m.userId!==actor||!m.acceptedAt||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(m.role)||!hasDesktopCapability(m.role as DesktopWorkspaceRole,capability))throw Error('governance_recorded_principal_unavailable');
-  },verifyEvidence:async(tx,s,b)=>{await preflight.read(tx,s,b);return true},
+  },verifyEvidence:async(tx,s,b)=>{const proof=await preflight.read(tx,s,b);activeProofs.set(b.digest,proof);return true},
   // Deliberately no verifyCoverage port. Unregistered executor seams cannot
   // enroll a scope, even if a baseline has genuine independent approval.
  });
@@ -58,6 +59,14 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
   async approve(id:string,version:number,digest:string,requestId:string){enabled();nonce.parse(requestId);await repo.$transaction(tx=>authority(tx,scope,'approver'));return baselines.approve(scope,id,version,digest,requestId,request.signal)},
   async revoke(id:string,version:number,requestId:string){enabled();nonce.parse(requestId);return store.revoke(scope,id,version,requestId)},
   async readDrift(id:string){enabled();const saved=await store.readRevision(scope,id);return drift.read(scope,saved.baseline,request.signal)},
+  /** Internal composition only; not a public route or permission to execute. */
+  async readActiveEvidence(rawSelection:unknown){
+   enabled();const selection=scopeSchema.parse(rawSelection),candidate=await store.readActiveCandidate(scope,selection);activeProofs.delete(candidate.baseline.digest);
+   await preflight.warm(scope,candidate.baseline,request.signal);
+   const baseline=await store.readActive(scope,selection),proof=activeProofs.get(baseline.digest);
+   if(baseline.digest!==candidate.baseline.digest||!proof||proof.expiresAt<=Date.now())throw Error('governance_active_evidence_unavailable');
+   request.signal.throwIfAborted();return{baseline,...structuredClone(proof),executionAuthorized:false as const};
+  },
   async activate(){enabled();throw Error('governance_execution_coverage_unavailable')},
  };
 }
