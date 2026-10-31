@@ -336,9 +336,9 @@ export function ExternalLink({
 
 export function ViewShell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex-1 overflow-y-auto bg-axiom-bg">
+    <div className="workspace-view flex-1 overflow-y-auto bg-axiom-bg">
       <div className="aurora-bg">
-        <div className="relative z-10 max-w-6xl mx-auto px-8 py-10 space-y-8">
+        <div className="workspace-content relative z-10 max-w-6xl mx-auto px-6 py-8 space-y-6 sm:px-8">
           {children}
         </div>
       </div>

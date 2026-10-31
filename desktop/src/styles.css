@@ -341,3 +341,29 @@ html[data-theme="light"] .text-fuchsia-50, html[data-theme="light"] .text-fuchsi
 
 /* Keep the cockpit’s light GitHub mark legible on desktop light surfaces. */
 html[data-theme="light"] [data-catalog-provider="github"] { filter: brightness(0.15); }
+
+/* Shared workspace polish: presentation only; execution/review controls retain
+   their original state, handlers and authority. Respect light/compact themes. */
+.workspace-content { min-width: 0; }
+.workspace-content > :first-child h1 { letter-spacing: -0.035em; }
+.workspace-content > :first-child p { max-width: 66ch; line-height: 1.65; }
+.workspace-view .glass-card { border-radius: 14px; }
+.sidebar-item-active { background: rgb(var(--neutral-white) / 0.055); }
+.sidebar-item-active::before { height: 14px; left: -3px; }
+.sidebar-item { min-height: 36px; }
+.btn-primary, .btn-secondary { min-height: 36px; padding: 8px 13px; font-size: 13px; line-height: 1.4; border-radius: 8px; }
+.btn-primary:disabled, .btn-secondary:disabled { cursor: not-allowed; opacity: 0.45; }
+.release-workspace-heading { padding-bottom: 8px; }
+.release-request-card { border-color: rgb(var(--neutral-white) / 0.09); }
+.release-action-toolbar { padding-top: 14px; border-top: 1px solid rgb(var(--neutral-white) / 0.07); }
+.release-request-card > .glass-card { background: transparent; }
+@media (max-width: 900px) {
+  .workspace-identity { max-width: 150px; }
+  .workspace-identity > span:last-child { display: none; }
+  .workspace-topbar-description { max-width: 32ch; }
+}
+@media (max-width: 680px) {
+  .workspace-topbar { padding-left: 14px; padding-right: 14px; gap: 8px; }
+  .workspace-topbar-description { display: none; }
+  .workspace-identity { max-width: 110px; padding-left: 8px; padding-right: 8px; }
+}

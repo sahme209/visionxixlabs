@@ -78,3 +78,11 @@ categories; available providers are not labelled as already connected. Skills
 are presented as reusable guidance, not app permissions. Search has an explicit
 accessible label. Filtering does not invoke connection/setup/install actions or
 unmount the independently displayed action/recovery workspaces.
+
+## Shared visual refinement — October31 local preview
+
+The shared workspace now uses tighter, responsive content spacing, consistent control sizing and a quiet filled current-navigation state. The canonical mark has more breathing room. Top-bar identity remains available while its secondary description yields at narrow widths. Light theme, compact density, keyboard focus and reduced-motion preferences retain their existing mechanisms.
+
+The reachable Releases workspace (DeploymentRequestsView, not the dormant legacy ReleasesView) uses one clear heading, stronger request titles, neutral record-status badges and a separated action toolbar. Request data, warnings, owner/next-step guidance, review controls, mounted forms and provider handlers are unchanged. This is a presentation pass, not a change in security authority or a claim that any release is ready.
+
+Verification: desktop TypeScript/frontend build and37 existing navigation/journey/catalog checks passed. Offline native build and strict Developer ID signature verification passed. The first native command used an absent package feature; corrected to the existing tauri/custom-protocol dependency feature. No installer rebuild/publication, provider mutation or production rollout. Local visual acceptance is recorded separately.

@@ -470,11 +470,11 @@ export function DeploymentRequestsView() {
 
   return (
     <ViewShell>
-      <div className="flex flex-wrap items-start justify-between gap-4">
+      <div className="release-workspace-heading flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight">Release requests</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Releases</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
-            Plan a release, review its exact actions, and follow the verified outcome.
+            Prepare the scope. Review the actions. Follow the verified outcome.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -560,10 +560,10 @@ export function DeploymentRequestsView() {
       {requests.length > 0 && (
         <div className="space-y-2">
           {requests.map((request) => (
-            <div key={request.id} className="glass-card p-4">
+            <div key={request.id} className="release-request-card glass-card p-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white truncate">{request.title}</p>
+                  <p className="text-base font-semibold tracking-tight text-white truncate">{request.title}</p>
                   <p className="mt-1 text-xs text-zinc-500">Version {request.version} · Updated {new Date(request.updatedAt).toLocaleString()}</p>
                   <details className="mt-2 text-[11px] text-zinc-500">
                     <summary className="cursor-pointer hover:text-zinc-300">Request identifiers</summary>
@@ -571,12 +571,12 @@ export function DeploymentRequestsView() {
                     <p className="mt-1 break-all font-mono">Correlation {request.correlationId}</p>
                   </details>
                 </div>
-                <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border border-violet-500/25 bg-violet-500/10 text-violet-200">
+                <span className="shrink-0 text-[11px] font-medium capitalize px-2.5 py-1 rounded-md border border-white/10 bg-white/[0.04] text-zinc-300">
                   {request.status.replaceAll("_", " ")}
                 </span>
               </div>
               <ReleaseContext request={request} stale={!!loadError} />
-              <div className="flex flex-wrap items-end justify-between gap-3 mt-3">
+              <div className="release-action-toolbar flex flex-wrap items-end justify-between gap-3 mt-4">
                 <p className="text-xs text-zinc-500">Exact approvals and verified evidence are required before execution.</p>
                 <div className="flex flex-wrap gap-2">
                   {request.status === "draft" ? <>
