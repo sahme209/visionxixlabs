@@ -168,3 +168,22 @@ Validation:121 shared-chrome/command/Agent/navigation checks pass; desktop types
 and frontend build pass. Native visual acceptance is recorded in delivery
 receipts. No provider grant, paid AI call, backend deployment or public installer
 publication belongs to this UI-only pass.
+
+
+### Logo sizing and live favicon verification
+
+The app header mark is28CSSpixels, matching the existing website navigation and
+footer marks. This is an optical sizing choice for Axiom, not an unsupported
+claim that Cursor publishes a required sidebar pixel size. Its official brand
+reference is https://cursor.com/brand. The supplied white triangular transparent
+mark is unchanged; larger welcome-page artwork and standard native icon assets
+retain their distinct roles.
+
+Read-only verification of https://visionxixlabs.com confirmed the live favicon
+and512px icon bytes exactly match canonical local assets. The32px favicon SHA256
+is1b77e225c53238689dd4911ef93b26267ad3e7c857b06ce9f9aea742aa46aee5;
+the512px icon SHA256 iscedd8eb1034fe90f0072bad4748d6701c0f8e9ab24c18642b82a88ae3cc51992.
+The current live HTML still uses unversioned icon URLs; local versioned metadata
+has not been activated. A stale browser favicon cache is therefore distinct
+from the actual served logo. No extra Vercel rollout is needed to replace bytes
+that are already current, and none was performed.

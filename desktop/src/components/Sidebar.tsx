@@ -65,7 +65,7 @@ export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = f
     <aside className={`${compact ? "w-16 shrink-0" : "w-[224px]"} flex flex-col bg-[#151719] border-r border-white/[0.07]`} data-tauri-drag-region>
       <div className={`h-[68px] flex items-center ${compact ? "px-3" : "px-5"} border-b border-white/[0.06]`} data-tauri-drag-region>
         <button type="button" aria-label="Axiom home" aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400">
-          <img src="/axiom-logo.png" alt="" className="h-8 w-8 shrink-0 object-contain" />
+          <img src="/axiom-logo.png" alt="" className="h-7 w-7 shrink-0 object-contain" />
           <div className={compact ? "sr-only" : undefined}>
             <div className="text-sm font-semibold tracking-tight text-white">Axiom Agent</div>
             <div className="text-[10px] text-zinc-500 tracking-tight">v{DESKTOP_VERSION} · Desktop</div>
