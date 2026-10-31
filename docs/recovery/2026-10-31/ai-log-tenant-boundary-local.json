@@ -1,0 +1,41 @@
+{
+  "runtime": "65a794ac9ae847f057b931940e0465452f217f65",
+  "finding": "Customer-facing JSON/CSV and server engine page allowed scope=global to omit org filters without a platform-wide authority check. Local source finding; no live cross-tenant request performed.",
+  "repair": "Refuse global JSON/CSV requests403 before log queries; redirect global engine-page requests before log queries; force authenticated organization in each read; remove customer global controls. Organization owner is not platform-wide authority.",
+  "checks": [
+    "Before repair: 3 scope regression tests failed,2 ordinary-scope tests passed",
+    "After repair:25 route/responder mock-store tests passed",
+    "Exact clean-source production build and production TypeScript passed"
+  ],
+  "productionVerification": {
+    "source": "65a794ac9ae847f057b931940e0465452f217f65",
+    "stage": "/private/tmp/axiom-log-tenant-65a794ac-z5p0temh",
+    "archiveSha256": "f71a5171b0b4edd596c5e7767e0e3a4344d44de21996daf2128bf7ca83e56a90",
+    "build": "passed",
+    "dependencyOverlay": "143 exact locked SDK packages; scripts disabled, lock integrities matched",
+    "exitCode": 0,
+    "attempts": [
+      {
+        "exitCode": 1,
+        "reason": "Webpack worker JavaScript heap out of memory near default4GB",
+        "log": "/private/tmp/axiom-log-tenant-production.log"
+      },
+      {
+        "exitCode": 1,
+        "log": "/private/tmp/axiom-log-tenant-production-6gb.log",
+        "temporaryNodeHeapMiB": 6144,
+        "reason": "Temporary overlay omitted original nested dependency directories; MSAL resolved root16.5.1 instead of nested16.13.0"
+      },
+      {
+        "exitCode": 0,
+        "log": "/private/tmp/axiom-log-tenant-production-graph.log",
+        "temporaryNodeHeapMiB": 6144,
+        "nestedDependencyTreesPreserved": 4
+      }
+    ],
+    "temporaryNodeHeapMiB": 6144,
+    "nestedDependencyTreesPreserved": 4
+  },
+  "scope": "No production activation, role/grant/schema change, real DB read/write, provider/AI call or app restart. Current signed desktop remains open.",
+  "remaining": "Specific reviewed activation before claiming production tenant protection."
+}
