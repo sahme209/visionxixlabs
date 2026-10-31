@@ -75,7 +75,12 @@ export async function GET(req: NextRequest) {
       totalTokens: true,
       organizationId: true,
     },
-  }).catch(() => []);
+  }).catch(() => null);
+
+  // Unavailable evidence is not an empty, successfully verified export.
+  if (rows === null) {
+    return NextResponse.json({ ok: false, error: "export_unavailable" }, { status: 503, headers: { "Cache-Control": "no-store" } });
+  }
 
   const header = [
     "id", "started_at", "engine_name", "model", "outcome",

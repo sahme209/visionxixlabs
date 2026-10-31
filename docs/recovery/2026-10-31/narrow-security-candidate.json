@@ -1,18 +1,18 @@
 {
-  "candidate": "b3191cb3d2cbc5ea314093bd271afbbf03500635",
+  "candidate": "293762c346fd9c42b49d3531a28fa46849940bce",
   "recordedProductionBase": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
   "sourceManifest": {
-    "source": "b3191cb3d2cbc5ea314093bd271afbbf03500635",
+    "source": "293762c346fd9c42b49d3531a28fa46849940bce",
     "base": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
     "changedFiles": 10,
     "files": [
       {
         "path": "app/api/dashboard/ai-call-log/__tests__/tenantScope.test.ts",
-        "sha256": "8b8f6aba974b27552413355e6402f6779caa2723e165d0080aaa1142184747a3"
+        "sha256": "ab819fbcbab290b65fb649456e30487b9734f4d6da09864e6ced4c41976bacc7"
       },
       {
         "path": "app/api/dashboard/ai-call-log/export.csv/route.ts",
-        "sha256": "d59c3417b7413975fba155c55a21b0231867057424490da653773a6677f020f5"
+        "sha256": "40f4f1fb42a026063196fc42d977ef536e393abf80b72bc71c9817fc986aeae0"
       },
       {
         "path": "app/api/dashboard/ai-call-log/route.ts",
@@ -49,26 +49,27 @@
     ]
   },
   "productionVerification": {
-    "source": "b3191cb3d2cbc5ea314093bd271afbbf03500635",
+    "source": "293762c346fd9c42b49d3531a28fa46849940bce",
     "base": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
-    "stage": "/private/tmp/axiom-spreadsheet-safe-b3191cb3-4u5m40et",
-    "archiveSha256": "e31a781818a18d964639a68a7ddaa4f69fea7c52f46ea42514817da534a6459c",
+    "stage": "/private/tmp/axiom-export-integrity-293762c3-bw44dy3s",
+    "archiveSha256": "d0970cf4f079e25f1003f7a91a83bd10f79034e092f870b52b6aa0a11c68902d",
     "build": "passed",
     "exitCode": 0
   },
-  "tests": "51 mocked route/responder/invocation tests passed on exact isolated candidate; formula safety RED11/GREEN cases include full-width prefixes and CSV quote escaping",
+  "tests": "52 mocked route/responder/invocation tests passed on exact isolated candidate; export-unavailable regression RED then GREEN",
   "remoteBackup": "backup/axiom-ai-log-security-candidate-20261031",
   "remoteExactShaVerified": true,
-  "recoveryBundle": "/private/tmp/axiom-spreadsheet-security-b3191cb3.bundle",
+  "recoveryBundle": "/private/tmp/axiom-export-integrity-293762c3.bundle",
   "bundleVerified": true,
   "scope": "Seven source files plus three test files; no unrelated Governance or desktop polish, package/lock/schema/settings/grant changes. Local verification used synthetic env, exact locked SDK overlay with nested graph and temporary6144MiB heap.",
   "gates": "Reconcile actual production base; final review and specific Vercel activation approval before any upload/deployment. No PR/CI/activation/installer publication initiated.",
-  "previousCandidate": "86f7c92dbac2f54932a701285cf3eee49c8883eb",
+  "previousCandidate": "b3191cb3d2cbc5ea314093bd271afbbf03500635",
   "focusedReview": "Self-review of direct output paths found CSV and engine diagnostics bypassing responder redaction; corrected CSV formatting and sanitized engine historical rows before grouping/truncation/rendering. Not an independent security audit or universal redaction guarantee.",
   "spreadsheetExport": {
     "behavior": "Known risky string prefixes receive a tab inside a CSV-quoted cell; ordinary quote escaping and numeric values retained; UI labels intent as Spreadsheet CSV.",
     "reference": "https://community.owasp.org/attacks/CSV_Injection",
     "limits": "Safety prefixes remain underlying text for programmatic import. Not universally safe for all spreadsheet tools, transformations or re-imports; no live Excel/Sheets acceptance performed.",
     "historicalIntermediate": "Local apostrophe-prefix candidate b6f00d16 built successfully but was superseded after checking current OWASP guidance; never activated."
-  }
+  },
+  "exportFailureIntegrity": "A rejected log query returns generic503 JSON, no-store and no download header; genuine empty reads still return valid CSV. No raw exception or false successful empty audit export."
 }

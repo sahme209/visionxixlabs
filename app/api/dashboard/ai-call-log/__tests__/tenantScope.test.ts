@@ -50,3 +50,10 @@ it('retains ordinary quoted CSV text and numeric values',async()=>{
  const text=await (await csv(new NextRequest('http://localhost/api/dashboard/ai-call-log/export.csv'))).text();
  expect(text).toContain(',ad_hoc,"ordinary, ""model""",ok,');expect(text).toContain(',1,0,0,0,org-a');
 });
+it('does not turn an unavailable export into a successful empty audit file',async()=>{
+ m.findMany.mockRejectedValue(new Error('synthetic-private-database-diagnostic'));
+ const response=await csv(new NextRequest('http://localhost/api/dashboard/ai-call-log/export.csv'));
+ expect(response.status).toBe(503);
+ expect(response.headers.get('Content-Disposition')).toBeNull();
+ expect(await response.json()).toEqual({ok:false,error:'export_unavailable'});
+});
