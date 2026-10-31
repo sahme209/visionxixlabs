@@ -860,7 +860,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   }, [turns, pendingProposal, streamingDraft, sending, toolActivity]);
   useLayoutEffect(() => {
     const editor = composerRef.current;
-    if (editor) { editor.style.height = "auto"; editor.style.height = `${Math.max(48, Math.min(200, editor.scrollHeight))}px`; }
+    if (editor) { editor.style.height = "auto"; editor.style.height = `${Math.max(64, Math.min(200, editor.scrollHeight))}px`; }
   }, [input]);
   function jumpToLatest() { followsLatest.current = true; setNewActivity(false); scrollRef.current?.scrollTo({top: scrollRef.current.scrollHeight, behavior: "smooth"}); }
 
@@ -1263,7 +1263,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
       </div>
       {newActivity && <button type="button" onClick={jumpToLatest} className="absolute bottom-3 right-5 rounded-full border border-white/15 bg-[#242529] px-3 py-2 text-xs text-zinc-200 shadow-lg">Jump to latest</button>}
       </div>
-      <div aria-label="Agent composer" className="min-h-0 max-h-[45vh] shrink overflow-y-auto border-t border-white/[0.06] px-5 py-3">
+      <div aria-label="Agent composer" className="agent-composer min-h-0 max-h-[45vh] shrink overflow-y-auto px-5 py-4">
         <div className="max-w-3xl mx-auto">
           {needsRecovery && !sending && <div role="status" className="mb-3 rounded-lg border border-white/20 bg-white/5 p-3 text-xs text-zinc-200">
             <p>Review the saved conversation before sending another request. Reloading does not retry AI work or confirm that an interrupted operation has finished.</p>
@@ -1295,7 +1295,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           <p aria-label="Request configuration" className="sr-only">
             {OPERATION_MODES.find(mode => mode.id === operationMode)?.label} · {resolveAgentProfile(agentProfile)?.label} · {modelOptions.find(model => model.key === selectedModel)?.label ?? "No approved model"}{composerMode === "code" ? ` · File: ${filePath || "Choose a file below"}` : " · Chat"}
           </p>
-          <div className="mb-3 flex items-end gap-3">
+          <div className="agent-prompt-row mb-2 flex items-end gap-3">
           <textarea
             ref={composerRef}
             aria-label="Agent request"
@@ -1308,17 +1308,18 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             placeholder={pendingProposal ? "Approve or reject the proposed action above to continue…" : operationMode === "inspect" ? "Ask, research or plan in this workspace…" : operationMode === "engineer" && composerMode === "code" ? "Describe the change you want in this file…" : operationMode === "engineer" ? "Build, research or plan with your Agent…" : "Describe the operational outcome you want proposed…"}
             disabled={loadingConversation || !conversationId || Boolean(pendingProposal)}
             rows={2}
-            className="min-h-[48px] flex-1 resize-none rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-zinc-100 placeholder:text-zinc-600 outline-none focus:border-white/25 disabled:opacity-50"
+            className="agent-prompt-input min-h-[64px] flex-1 resize-none rounded-xl border-0 bg-transparent px-4 py-4 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none disabled:opacity-50"
           />
           <button
             type="button"
             onClick={submitDraft}
             disabled={renamingBusy || modelState !== "ready" || !selectedModel || Boolean(selectedModelUnavailable) || loadingConversation || (needsRecovery && !sending) || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
-            className="rounded-lg bg-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-950 disabled:opacity-40"
+            className="agent-send-button bg-zinc-100 text-sm font-semibold text-zinc-950 disabled:opacity-40"
           >
             {sending || currentQueue.length ? newMessageBehavior === "interrupt" && sending ? "Interrupt & queue" : "Queue message" : "Send"}
           </button>
           </div>
+          <p className="agent-send-hint mb-3 text-[11px] text-zinc-500">{submitWithCommandEnter ? "⌘ / Ctrl + Enter to send" : "Enter to send"} · Shift + Enter for a new line</p>
           <Disclosure className="mb-3 rounded-lg border border-white/[0.06] px-3 py-2" buttonClassName="text-xs text-zinc-400" label={<>Agent configuration · {resolveAgentProfile(agentProfile)?.label}</>}>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <label className="text-xs text-zinc-400">Agent

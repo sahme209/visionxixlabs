@@ -470,7 +470,7 @@ export function DeploymentRequestsView() {
   }
 
   return (
-    <ViewShell>
+    <ViewShell wide>
       <div className="release-workspace-heading flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Releases</h1>

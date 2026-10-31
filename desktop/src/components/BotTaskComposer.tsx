@@ -1,4 +1,4 @@
-import {useId,useRef,useState} from 'react';
+import {useId,useLayoutEffect,useRef,useState} from 'react';
 import {createPortal} from 'react-dom';
 import type {AxiomBotDraft} from './AxiomBotDraftTask';
 interface Props {ownerKey:string;draft:AxiomBotDraft;onDraftChange:(next:AxiomBotDraft)=>void;onSave?:(draft:AxiomBotDraft)=>void;onSend?:(draft:AxiomBotDraft)=>void;sendDisabled?:boolean;statusText?:string;editingDisabled?:boolean;saveDisabled?:boolean;onCandidateChange?:(invalid:boolean)=>void;detailsTarget?:HTMLElement|null}
@@ -16,6 +16,10 @@ export function BotTaskComposer({ownerKey,draft,onDraftChange,onSave,onSend,send
   if(new TextEncoder().encode(JSON.stringify({title:v.title,instruction:v.task,context:v.context})).byteLength>16384)return 'The combined draft exceeds the 16 KiB data limit. Your full text is retained for correction.';
  }
  const error=owned?validate(value):undefined;
+ const inputRef=useRef<HTMLTextAreaElement>(null);
+ useLayoutEffect(()=>{const input=inputRef.current;if(input){input.style.height='auto';input.style.height=`${Math.min(144,Math.max(64,input.scrollHeight))}px`}},[value.task]);
+ const sendReady=Boolean(onSend)&&!editingDisabled&&!sendDisabled&&!error&&Boolean(value.title.trim()&&value.task.trim());
+ const sendDraft=()=>{if(sendReady)onSend?.(value)};
  function edit(field:'title'|'task'|'context',text:string){
   if(!owned||editingDisabled)return;
   if(field==='title')titleMode.current.automatic=false;
@@ -29,16 +33,16 @@ export function BotTaskComposer({ownerKey,draft,onDraftChange,onSave,onSend,send
  const metadata=<div className="space-y-4">
   <label className="block space-y-2 text-xs text-zinc-400"><span>Bot task title</span><input aria-label="Bot task title" className={fieldClass} value={value.title} disabled={editingDisabled} onChange={e=>edit('title',e.target.value)} aria-invalid={Boolean(error)} aria-describedby={error?errorId:undefined}/></label>
   <label className="block space-y-2 text-xs text-zinc-400"><span>Context to include</span><textarea aria-label="Context to include" className={fieldClass} rows={4} value={value.context} disabled={editingDisabled} onChange={e=>edit('context',e.target.value)} aria-invalid={Boolean(error)} aria-describedby={error?errorId:undefined}/></label>
-  <p className="text-[11px] leading-5 text-zinc-500">Only include information you are authorized to share. Do not include passwords, API keys, access tokens or other secrets.</p>
+  <p className="text-[11px] leading-5 text-zinc-500">Task and context: 4,000 characters each; title: 200; combined data: 16 KiB. Only include information you are authorized to share. Do not include passwords, API keys, access tokens or other secrets.</p>
  </div>;
  return <section aria-label="Axiom Bot draft task" className="space-y-3">
-  <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+  <div className="bot-prompt-surface rounded-2xl border border-white/10 p-3">
    <label className="sr-only" htmlFor={`bot-instruction-${id}`}>What should Axiom Bot help with?</label>
-   <textarea id={`bot-instruction-${id}`} aria-label="What should Axiom Bot help with?" placeholder="Give Axiom Bot a task…" className="min-h-20 w-full resize-y border-0 bg-transparent text-sm leading-6 text-zinc-200 outline-none placeholder:text-zinc-500" rows={3} value={value.task} disabled={editingDisabled} onChange={e=>edit('task',e.target.value)} aria-invalid={Boolean(error)} aria-describedby={`${guidanceId}${error?' '+errorId:''}`}/>
-   <div className="mt-3 flex flex-wrap items-center justify-between gap-3"><span className="text-xs text-zinc-500">{statusText??"Draft · execution unavailable"}</span><div className="flex flex-wrap gap-2">{onSave&&<button type="button" className={`${onSend?"btn-secondary":"btn-primary"} disabled:opacity-40`} disabled={editingDisabled||saveDisabled||Boolean(error)||!value.title.trim()||!value.task.trim()} onClick={()=>{if(!editingDisabled&&!saveDisabled&&!error&&value.title.trim()&&value.task.trim())onSave(value)}}>Save task draft</button>}{onSend&&<button type="button" className="btn-primary disabled:opacity-40" disabled={editingDisabled||sendDisabled||Boolean(error)||!value.title.trim()||!value.task.trim()} onClick={()=>{if(!editingDisabled&&!sendDisabled&&!error&&value.title.trim()&&value.task.trim())onSend(value)}}>Send</button>}</div></div>
+   <textarea ref={inputRef} id={`bot-instruction-${id}`} aria-label="What should Axiom Bot help with?" placeholder="Give Axiom Bot a task…" className="min-h-16 max-h-36 w-full resize-none overflow-y-auto border-0 bg-transparent px-1 py-2 text-sm leading-6 text-zinc-200 outline-none placeholder:text-zinc-500" rows={2} value={value.task} disabled={editingDisabled} onChange={e=>edit('task',e.target.value)} onKeyDown={e=>{if(onSend&&e.key==='Enter'&&!e.shiftKey&&!e.altKey&&!e.nativeEvent.isComposing&&e.nativeEvent.keyCode!==229){e.preventDefault();sendDraft()}}} aria-invalid={Boolean(error)} aria-describedby={`${guidanceId}${error?' '+errorId:''}`}/>
+   <div className="mt-3 flex flex-wrap items-center justify-between gap-3"><span className="text-xs text-zinc-500">{statusText??"Draft · execution unavailable"}</span><div className="flex flex-wrap gap-2">{onSave&&<button type="button" className={`${onSend?"btn-secondary":"btn-primary"} disabled:opacity-40`} disabled={editingDisabled||saveDisabled||Boolean(error)||!value.title.trim()||!value.task.trim()} onClick={()=>{if(!editingDisabled&&!saveDisabled&&!error&&value.title.trim()&&value.task.trim())onSave(value)}}>Save task draft</button>}{onSend&&<button type="button" className="btn-primary bot-send-button disabled:opacity-40" disabled={!sendReady} onClick={sendDraft}>Send</button>}</div></div>
   </div>
-  <p id={guidanceId} className="text-[11px] leading-5 text-zinc-500">{onSend?'Send saves this version and asks the selected AI model to respond. It does not use tools or change apps. Save draft stores your task without starting it.':onSave?'Save uploads this draft to your signed-in workspace. It does not start a task.':'Unsent draft · separate from Agent chat. No background work runs.'}</p>
-  <details className="text-[11px] leading-5 text-zinc-500"><summary className="cursor-pointer py-1">Input limits</summary><p className="pt-2">Task and context: 4,000 characters each; title: 200; combined data: 16 KiB.</p></details>
+  <p id={guidanceId} className="text-[11px] leading-5 text-zinc-500">{onSend?'AI response only · No app changes. Enter to send, Shift + Enter for a new line. Save draft does not start a task.':onSave?'Save uploads this draft to your signed-in workspace. It does not start a task.':'Unsent draft · separate from Agent chat. No background work runs.'}</p>
+
   {error&&<p id={errorId} role="alert" className="text-xs text-rose-300">{error}</p>}
   {detailsTarget?createPortal(metadata,detailsTarget):<details className="text-sm text-zinc-400"><summary>Task details</summary><div className="pt-4">{metadata}</div></details>}
  </section>;

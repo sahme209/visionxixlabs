@@ -334,11 +334,11 @@ export function ExternalLink({
   );
 }
 
-export function ViewShell({ children }: { children: ReactNode }) {
+export function ViewShell({ children, wide = false }: { children: ReactNode; wide?: boolean }) {
   return (
     <div className="workspace-view flex-1 overflow-y-auto bg-axiom-bg">
       <div className="aurora-bg">
-        <div className="workspace-content relative z-10 max-w-6xl mx-auto px-6 py-8 space-y-6 sm:px-8">
+        <div className={`workspace-content relative z-10 ${wide ? "w-full" : "max-w-6xl mx-auto"} px-6 py-8 space-y-6 sm:px-8`}>
           {children}
         </div>
       </div>

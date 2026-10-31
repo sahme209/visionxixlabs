@@ -110,3 +110,28 @@ consistent visible keyboard focus; reduced-motion users receive no added
 navigation transitions. This changes navigation only, not approval or execution.
 Five focused component checks and the desktop TypeScript/frontend build pass.
 Actual native visual/keyboard acceptance of this last increment is pending.
+
+### Focused conversation and full-width release workspace
+
+User feedback identified permanent Bot side panels, an oversized empty activity
+area, a weak Agent send affordance, an invisible keyboard preference and an
+unnecessary release left column. Bot now keeps task history and details in
+explicit drawers at every window size. Hidden inspectors do not request native
+computer support or evidence capabilities. The empty state and composer are
+compact; only long activity, task lists or explicitly opened tools need scroll.
+Bot Enter sends through the existing exact save/send path; Shift+Enter and IME
+composition remain text input, and disabled/invalid sending cannot bypass guards.
+
+Agent uses one clearly bounded prompt surface, a larger send target and an
+honest shortcut hint. Saved shortcut preferences remain respected; this user's
+existing Command/Ctrl+Enter preference was explicitly switched off through the
+native Settings UI per their Enter-to-send request. No paid AI call was used to
+verify the preference. Releases uses the full available workspace width and a
+compact horizontal selector above the selected release rather than another
+permanent left column. Existing mounted drafts and exact reviews remain intact.
+
+Verification:155 component/Agent/Bot regressions passed, desktop TypeScript and
+frontend build passed. Node25's native experimental Web Storage interfered with
+the jsdom harness; tests passed with that Node-only experiment disabled. One old
+Bot test still expected the prior Library label and now uses Workspace report.
+Native visual acceptance is recorded separately after signed-app delivery.
