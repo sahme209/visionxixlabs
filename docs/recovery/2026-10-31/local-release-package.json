@@ -1,0 +1,20 @@
+{
+  "commit": "aa960659e1b66c42a8b1826f3166eed947a4a3f6",
+  "stage": "/private/tmp/axiom-local-release-aa960659-uth_ci65",
+  "archive": "/private/tmp/axiom-local-release-aa960659-uth_ci65.tar",
+  "archiveSha256": "e17bb0bce0c02d51a55c5a24705f6896dae3442e1c035a03530d5c170193666f",
+  "trackedFilesVerified": 5632,
+  "deployed": false,
+  "nativeAcceptance": "pending for keyboard polish",
+  "governanceComplete": false,
+  "productionBuildExitCode": 0,
+  "buildLog": "/private/tmp/axiom-aa960659-local-release-build.log",
+  "historyBundle": "/private/tmp/axiom-local-release-aa960659.bundle",
+  "historyBundleSha256": "4d9f01deead9af1dcea0128e21ff7604f9e927df2e985caa84383e38ac237165",
+  "frontendBuild": "passed",
+  "keyboardTests": {
+    "passed": 5
+  },
+  "privateBackupBranch": "backup/axiom-progress-2026-10-30-1743",
+  "productionActivated": false
+}
