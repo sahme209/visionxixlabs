@@ -1,5 +1,5 @@
 import { reportedTokenText } from "../lib/aiUsageText";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import { ViewShell } from "../components/Primitives";
 import { desktopClient } from "../lib/desktopClient";
 
@@ -86,22 +86,33 @@ const ENGINE_LABEL: Record<string, string> = {
 };
 
 export function AiCallLogView() {
+  const revision = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
+  return <ScopedAiCallLog key={revision} revision={revision} />;
+}
+
+function ScopedAiCallLog({ revision }: { revision: number }) {
   const [resp, setResp] = useState<Body | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
   const [engineFilter, setEngineFilter] = useState<string | null>(null);
 
+  const generation = useRef(0);
   function load() {
+    const request = ++generation.current;
+    const current = () => request === generation.current && revision === desktopClient.getContextRevision();
+    setResp(null);
     setLoading(true);
     setNetworkError(null);
     void desktopClient.aiCallLog<LogData>({ take: 200, ...(engineFilter ? { engineName: engineFilter } : {}) })
       .then((result) => {
+        if (!current()) return;
         if (result.ok) setResp({ ok: true, data: result.data });
         else setNetworkError(result.error);
       })
-      .finally(() => setLoading(false));
+      .catch(() => { if (current()) setNetworkError("AI call log could not be loaded."); })
+      .finally(() => { if (current()) setLoading(false); });
   }
-  useEffect(() => { load(); }, [engineFilter]);
+  useEffect(() => { load(); return () => { generation.current++; }; }, [engineFilter]);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
