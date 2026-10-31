@@ -1,0 +1,33 @@
+{
+  "sourceCommit": "de9b630a35dee5338dfd270b3754c7a991466159",
+  "productionBaseCommit": "3b59629124f7db241ec82df99ae8baecee0dbcd7",
+  "archive": "/private/tmp/axiom-reviewed-local-de9b630a.tar",
+  "archiveSha256": "05956f6ee23a3fb77955f55fdbf81a926a0d4551d79173e6990f33959d3c542e",
+  "trackedFileCount": 5618,
+  "productionBuild": {
+    "source": "de9b630a35dee5338dfd270b3754c7a991466159",
+    "stage": "/private/tmp/axiom-final-de9b630a-vfsd2q08",
+    "log": "/private/tmp/axiom-final-de9b630a-production.log",
+    "exit": 0
+  },
+  "nativePreview": {
+    "sourceCommit": "de9b630a35dee5338dfd270b3754c7a991466159",
+    "app": "/private/tmp/axiom-apps-clarity-de9b630a-7oiv7n3k/Axiom Agent Local Preview.app",
+    "binarySha256": "ada00ad707479fb7ad247fd938e693e807a75a1c6b9f199936ee3237da5c850b",
+    "strictSigningVerified": true,
+    "opened": true,
+    "publicInstaller": false,
+    "newPermissions": false,
+    "savedWorkspaceAccessRestored": true,
+    "nativeCategoryAndFilterLayoutInspected": true,
+    "providerConsentOrWritePerformed": false
+  },
+  "focusedTests": 66,
+  "isolatedPostgresJourneys": 1,
+  "isolatedUnrelatedSkipped": 1,
+  "independentReview": "No important findings; static only",
+  "productionChanged": false,
+  "governanceEnforcementReady": false,
+  "publishedInstallerChanged": false,
+  "fullManifestSha256": "f2be1162c4ad575363edcc8b0594160f1e844aaf2cf614a2ed608ceb995ae290"
+}
