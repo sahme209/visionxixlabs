@@ -1,0 +1,11 @@
+{
+  "runtime": "41dec581a7d24e6be730d02e3d4b0d68e312481c",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/41dec581/Axiom Agent Local Preview.app",
+  "checks": [
+    "desktop build/types passed",
+    "offline native build passed",
+    "strict signing passed",
+    "native saved workspace restored"
+  ],
+  "scope": "Small shared CSS polish: navigation keyboard focus/selection edges/color-only feedback/disabled cursor. Reduced motion retained. Not comprehensive visual audit; no backend or public installer publication."
+}
