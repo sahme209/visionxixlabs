@@ -1,3 +1,4 @@
+import {AXIOM_FAVICON_URL,AXIOM_APP_ICON_URL,AXIOM_APPLE_ICON_URL} from '@/lib/brandAssets';
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
@@ -55,11 +56,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/vision-xix-logo.png", sizes: "any", type: "image/png" },
+      { url: AXIOM_FAVICON_URL, sizes: "32x32", type: "image/png" },
+      { url: AXIOM_APP_ICON_URL, sizes: "512x512", type: "image/png" },
     ],
-    shortcut: "/favicon-32x32.png",
-    apple: "/apple-icon.png",
+    shortcut: AXIOM_FAVICON_URL,
+    apple: AXIOM_APPLE_ICON_URL,
   },
   openGraph: {
     type: "website",

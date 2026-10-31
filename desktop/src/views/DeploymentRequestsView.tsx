@@ -511,7 +511,7 @@ export function DeploymentRequestsView() {
             </div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Latest {Math.min(executions.length, 5)}</span>
           </div>
-          <div className="mt-3 space-y-2">
+          <details className="mt-3"><summary className="cursor-pointer py-1 text-xs text-zinc-400">Browse recorded workflow runs</summary><div className="mt-3 space-y-2">
             {executions.slice(0, 5).map((execution) => (
               <div key={execution.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-black/15 px-3 py-2.5">
                 <div className="min-w-0">
@@ -534,7 +534,7 @@ export function DeploymentRequestsView() {
                 )}
               </div>
             ))}
-          </div>
+          </div></details>
         </section>
       )}
 
@@ -575,6 +575,7 @@ export function DeploymentRequestsView() {
                   {request.status.replaceAll("_", " ")}
                 </span>
               </div>
+              <ReleaseContext request={request} stale={!!loadError} />
               <div className="flex flex-wrap items-end justify-between gap-3 mt-3">
                 <p className="text-xs text-zinc-500">Exact approvals and verified evidence are required before execution.</p>
                 <div className="flex flex-wrap gap-2">
@@ -632,7 +633,7 @@ export function DeploymentRequestsView() {
                   </>}
                 </div>
               </div>
-              {request.status === "draft" ? <p className="mt-3 text-xs text-amber-200">Draft only. Resolve repository, workflow, readiness and approval details before submitting the release.</p> : null}<ReleaseContext request={request} stale={!!loadError} />
+              {request.status === "draft" ? <p className="mt-3 text-xs text-amber-200">Draft only. Resolve repository, workflow, readiness and approval details before submitting the release.</p> : null}
               {terraformRequestId === request.id && <TerraformPlanReview key={`${request.id}:${request.version}`} requestId={request.id} requestVersion={request.version} />}
               {githubEvidenceErrors[request.id] && (
                 <p role="alert" className="mt-3 text-xs text-rose-300">

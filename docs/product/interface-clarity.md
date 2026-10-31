@@ -46,3 +46,20 @@ Keep exact evidence and version bindings available in disclosures. State who
 must act next, what their decision authorizes, and what remains unavailable.
 Use the same status words across views. A successful read, a recorded approval,
 a policy activation and a verified provider change are distinct outcomes.
+
+## Releases refinement priority
+
+The user finds Releases specifically confusing despite its useful evidence.
+After the current enforcement work, prioritize orientation over adding panels:
+show the selected release, its current stage, the next responsible person/action,
+and the last verified outcome first. Present scope, review, execution, evidence,
+tickets and activity as a coherent progression. Retain technical facts in named
+supporting sections, and preserve every approval, uncertain-result and recovery
+guard. Carry this hierarchy consistently across the rest of Axiom.
+
+First local Releases refinement: show each release's next-step/owner guidance
+before its action toolbar. Keep unrelated recorded workflow observations in a
+read-only disclosure, with the warning that they are not release evidence still
+visible. This preserves mounted ticket/approval controls and all form/session
+state; it does not execute or fetch anything when the disclosure is opened.
+Actual native visual acceptance remains separate from source/type verification.
