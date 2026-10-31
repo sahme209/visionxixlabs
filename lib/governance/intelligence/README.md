@@ -229,3 +229,9 @@ small file-generation guards, which have subsequent type/component coverage.
 No signed app was opened, source was uploaded by a real user, production setting
 changed, provider called or rollout run. The only full production build receipt
 so far remains02478ed4; a current full build and whole-MVP review are pending.
+
+### Local source collection entry point
+
+Existing-connection directory and fixed-profile collect/readback HTTP paths are implemented locally, default OFF. Metadata directory omits credentials; inconsistent provider configuration is reported separately. Collection binds the paired organization, exact connection revision, repository/resource/environment and closed read profile. Unknown recording outcomes retain the original nonce and permit read-only lookup, never an automatic provider retry.
+
+The unregistered Governance prototype now mounts deliberate discovery for verified policy administrators, including empty workspaces. Confirmed artifacts appear directly as historical facts and baseline inputs without a second provider read; no automatic baseline proposal/approval/activation occurs. Full history stays explicitly incomplete until loaded. Directory/client/read/collection/view suites: 44 current checks pass; scoped backend and desktop types plus frontend production build pass. Earlier isolated request-store journeys cover the directory/nonce path with simulated provider responses. No real provider discovery or production activation occurred. General baseline revision, trusted executor coverage/enrollment, full composed enforcement and final review remain unfinished.

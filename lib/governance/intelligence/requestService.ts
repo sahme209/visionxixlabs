@@ -1,3 +1,4 @@
+import {createGovernanceSourceDirectory} from './sourceDirectory';
 import 'server-only';
 import {createGovernanceDocumentStore} from './documentStore';
 import type {NextRequest} from 'next/server';
@@ -26,6 +27,7 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  async function current(s:RevisionScope,signal:AbortSignal){bound(s);signal.throwIfAborted();await repo.$transaction(tx=>authority(tx,s,'reader'));signal.throwIfAborted()}
  const documentArtifacts=createGovernanceEvidenceStore(repo,{assertCurrent:async(tx,s,role,evidence)=>{bound(s);await authority(tx,s,role==='collector'?'policy_admin':'reader');if(evidence)await assertGovernanceEvidenceConnection(tx,s,evidence)}});
  const documents=createGovernanceDocumentStore(repo,{assertCurrent:async(tx,s,role)=>{bound(s);await authority(tx,s,role==='collector'?'policy_admin':'reader')},recordSnapshot:async(tx,s,snapshot,requestId,phase)=>phase==='recover'?documentArtifacts.read(s,snapshot.digest,tx):documentArtifacts.save(s,snapshot,requestId,tx)});
+ const sourceDirectory=createGovernanceSourceDirectory(repo,{assertCurrent:async(tx,s)=>{bound(s);await authority(tx,s,'policy_admin')}});
  const history=createGovernanceEvidenceStore(repo,{assertCurrent:async(tx,s,role)=>{bound(s);if(role!=='reader')throw Error('governance_history_read_only');await authority(tx,s,'reader')}});
  const github=createGithubGovernanceCollectionRequestService(request,repo,scope,isEnabled,{revalidationOnly:true}),aws=createAwsGovernanceCollectionRequestService(request,repo,scope,isEnabled,{revalidationOnly:true});
  async function readHistorical(s:RevisionScope,digest:string,signal:AbortSignal){await current(s,signal);return(await history.read(s,digest)).snapshot}
@@ -48,7 +50,9 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  return{
   /** Paired source upload; its route is disabled by default and undeployed. */
   async uploadDocument(raw:unknown){enabled();const saved=await documents.upload(scope,raw);if(!saved.artifact)throw Error('governance_document_artifact_unavailable');return{...saved.artifact,headVersion:saved.headVersion}},
+  async lookupCollectionRequest(requestId:string){enabled();nonce.parse(requestId);return history.lookupCollectionRequest(scope,requestId)},
   async lookupDocumentUpload(requestId:string){enabled();nonce.parse(requestId);return history.lookupDocumentUpload(scope,requestId)},
+  async listCollectionSources(){enabled();return sourceDirectory.list(scope)},
   async readEvidence(digest:string){enabled();return history.read(scope,digest)},
   async listEvidence(){enabled();return history.list(scope)},
   async listRevisions(){
