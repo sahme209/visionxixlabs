@@ -4,7 +4,7 @@ Updated October 31, 2026. This is the implementation roadmap, not a claim that p
 
 ## Current completion work
 
-1. **ServiceNow:** the exact deployment-evidence note exists in CHG0030002 and matches the reviewed payload. Preserve its one consumed, unknown Axiom attempt; complete narrow proof-reader verification and independently reviewed read-only outcome reconciliation, then follow the native approval lifecycle and exact closure approval. Never resend the note.
+1. **ServiceNow:** the exact deployment-evidence note exists in CHG0030002 and matches the reviewed payload. Preserve its one consumed, unknown Axiom attempt; narrow OAuth proof-reader presence was verified; complete independently reviewed read-only outcome reconciliation, then follow the native approval lifecycle and exact closure approval. Never resend the note.
 2. **Governance Intelligence MVP:** approved for local implementation. Source-bound evidence/baseline contracts, strict admission kernel, bounded collectors/document parsing and immutable revision/activation foundations exist with local/isolated database tests. Finish current-authority/source composition, enforcement coverage across the named executors, drift and integrated native/web workflow, then full review/acceptance. Not enabled in production.
 3. **Customer installation:** finish factual Store listing/age rating, real product screenshots, Microsoft certification/signing and clean-Windows installation/sign-in/session persistence. No Windows host is currently available; website MSI signing warnings remain unresolved.
 4. **Ship newer desktop repairs:** preserve a source backup and publish a fresh protected installer version containing the newer repairs, canonical logo and interface cleanup. Published immutable v0.1.21 downloads remain unchanged. Do not overwrite them.
@@ -12,7 +12,7 @@ Updated October 31, 2026. This is the implementation roadmap, not a claim that p
 
 ## Next interface and account work requested by the user
 
-- **Releases first:** replace the crowded, unclear presentation with one obvious current step and owner, a readable progression from scope through review/execution/evidence/tickets, and supporting technical details on demand. Keep exact human review controls, uncertain outcomes, deadlines and recovery visible. Preserve existing dirty-form/session/one-attempt guards. Then apply the same spacing, hierarchy, navigation and status language across the app; Cursor, Claude, Codex and ChatGPT are interaction references, not copied branding.
+- **Releases first:** replace the crowded, unclear presentation with one obvious current step and owner, a readable progression from scope through review/execution/evidence/tickets, and supporting technical details on demand. Keep exact human review controls, uncertain outcomes, deadlines and recovery visible. Preserve existing dirty-form/session/one-attempt guards. Then apply the same spacing, hierarchy, navigation and status language across the app; Shared local layout, navigation, typography, warm light mode and Bot canvas refinements are now delivered in the signed Local Preview. Remaining work is whole-flow usability/accessibility acceptance and shipping the newer installer. Cursor, Claude, Codex, ChatGPT, Grok and Apple are interaction references, not copied branding.
 - **Outlook discoverability:** existing implementation remains in Settings → Integration Center. Local Apps & skills now also offers a searchable Outlook entry opening those same controls, with no automatic consent, mailbox read or send from merely viewing the catalog. Thirty-one catalog/Outlook-recovery tests and desktop types pass. Not yet in a newly shipped installer.
 - **GitLab integration and GitLab sign-in:** two distinct planned capabilities. Inspect existing connector inventory/auth before building. Define a reviewed design for account login/linking separately from workspace repository/merge-request/CI access, with independent consent and safe account-linking rules. No provider registration, new grant, credential, customer read or authentication deployment has occurred.
 
@@ -53,5 +53,10 @@ Inspect and reuse existing adapters, identity, approvals, policy and audit syste
 | 11 | Backstage | Service ownership and developer catalog | Planned catalog/ownership source; reuse discovered ownership in governance workflows |
 | 12 | Apache Airflow | Workflow orchestration and pipeline governance | Extend existing integration. Hosted trial execution passed; broader pipeline governance, scheduling/recovery and customer-hosted acceptance remain distinct |
 | 13 | GitLab | Source-control/CI integration plus a separate GitLab sign-in option | Newly requested; design and provider setup pending, not enabled |
+| 14 | Prefect | Python workflow scheduling, run monitoring and governed recovery | Planned Batches extension; first priority among the new batch providers; read-only inventory before reviewed execution |
+| 15 | Dagster | Data-pipeline orchestration, asset checks and freshness monitoring | Planned Batches extension; second priority; distinguish data-quality evidence from execution authority |
+| 16 | Argo Workflows | Kubernetes-native container batch workflows | Planned Batches extension; third priority; tenant/namespace-scoped discovery before governed execution |
+
+New Batches sequence: Prefect → Dagster → Argo Workflows. Airflow remains the existing provider; these three are roadmap entries, not implemented connectors.
 
 These backlog additions do not themselves create accounts, grant provider access, buy services, enable production policies or authorize outbound changes. Each implementation retains existing least-privilege, exact-action approval, audit and cost controls.
