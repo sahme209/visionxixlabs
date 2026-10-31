@@ -25,3 +25,7 @@ Local AWS metadata adapter, verified-role boundary and request composition imple
 The ticket review interface now keeps the exact target, source, run and differing request versions visible while grouping long technical bindings in a closed disclosure. Existing human review checkbox, expiry and uncertainty guards remain unchanged. Component verification only; the running signed applications still contain the previous verified UI.
 
 80-test local batch passed, plus five targeted AWS projection tests after tightening account/partition/resource-kind checks, ten panel tests and one actual isolated PostgreSQL profile-artifact journey. Counts overlap for the targeted AWS checks. Scoped Governance/desktop types and frontend build passed. No live provider calls, schema/settings changes, deployments or new paid CI. Owned PostgreSQL stopped.
+
+## Read-only Governance boundary and prototype
+
+A disabled-by-default local read route, strict desktop DTO/client and an unregistered read-only native prototype are implemented. Thirty-four focused HTTP/DTO/client/view and existing release/ticket client checks passed; scoped production types (including route), desktop types and frontend build passed. The prototype does not automatically discover sources or offer approval/activation. Failed reads cannot make old drift current through unrelated metadata refreshes. No new settings, deployment, live provider reads or signed-app update occurred. Full proposal/approval screens, document freshness heads and actual enforcement coverage remain incomplete.

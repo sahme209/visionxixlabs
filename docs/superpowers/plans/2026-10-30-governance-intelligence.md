@@ -28,25 +28,25 @@
 ### Task 1: Evidence, baseline and deterministic admission kernel
 Files: create lib/governance/intelligence/contracts.ts, compiler.ts, admission.ts and __tests__/kernel.test.ts. Reuse lib/governance/policyModel.ts and policyEngine.ts through a strictly validated subset.
 Interfaces: parseEvidenceSnapshot(unknown); compileBaseline(input): immutable digest-bound compiled result; evaluateGovernanceAdmission(request, activeRevision, evidence, coverage): allowed/denied/requires_approval with typed reason codes and matched rule IDs. No I/O or activation from compilation.
-- [ ] Write tests for organization-bound hashes, malformed scopes, missing facts, unknown rules/actions, deny precedence, real approval evidence required, no-match refusal and uninvolved unenrolled scopes.
-- [ ] Run focused Vitest and observe missing-module failure.
-- [ ] Implement closed actions/scopes and canonical digest binding; never use generic engine.allowed as authority.
-- [ ] Run focused tests/types; commit only kernel and tests.
+- [x] Write tests for organization-bound hashes, malformed scopes, missing facts, unknown rules/actions, deny precedence, real approval evidence required, no-match refusal and uninvolved unenrolled scopes.
+- [x] Run focused Vitest and observe missing-module failure.
+- [x] Implement closed actions/scopes and canonical digest binding; never use generic engine.allowed as authority.
+- [x] Run focused tests/types; commit only kernel and tests.
 
 ### Task 2: Bounded evidence collection and documented requirements
 Files: create lib/governance/intelligence/discovery.ts, documentRequirements.ts and corresponding tests.
 Interfaces: discoverEvidence(scope, selection, readPorts, signal): EvidenceSnapshot; parseUploadedPolicy({organizationId,name,utf8Bytes}): source evidence + unresolved/supported requirements. Ports are current verified connection readers; GitHub GET and AWS explicit read command allowlists only.
-- [ ] Test malicious references, oversized uploads, unsupported MIME, cancellation, pagination bounds, denied/partial pages and tenant changes before provider reads.
-- [ ] Implement bounded ports and deterministic known-control extraction with exact byte/line evidence. Ambiguous text remains unresolved.
-- [ ] Verify no SDK mutation or arbitrary network request is reachable; test and commit.
+- [x] Test malicious references, oversized uploads, unsupported MIME, cancellation, pagination bounds, denied/partial pages and tenant changes before provider reads.
+- [x] Implement bounded ports and deterministic known-control extraction with exact byte/line evidence. Ambiguous text remains unresolved.
+- [x] Verify no SDK mutation or arbitrary network request is reachable; test and commit.
 
 ### Task 3: Immutable revision, approval and activation composition
 Files: create lib/governance/intelligence/revisionStore.ts, approvalComposition.ts, __tests__/revisionStore.test.ts and isolated PG journey. Reuse existing durable workflow/history/approval mechanisms; inspect precise storage fit before choosing an additive local schema proposal.
 Interfaces: proposeBaseline(scope,candidate); approveBaseline(scope,id,version,digest); activateBaseline(scope,id,expectedActiveDigest); revokeBaseline(scope,id,version); readActiveBaseline(scope,selection). Exact actor capability checks through existing authorizers, audit events through existing store.
-- [ ] Test tenant-bound reads, immutable history, self approval, stale/edited digest, duplicate decisions, concurrent activation and revocation.
-- [ ] Implement atomic active revision pointer and typed audit receipts; no PolicyProposal upsert can activate it.
-- [ ] Run isolated actual PostgreSQL journeys with mocked external facts; no production database or migration.
-- [ ] Commit verified store/composition and explicit storage limitations.
+- [x] Test tenant-bound reads, immutable history, self approval, stale/edited digest, duplicate decisions, concurrent activation and revocation.
+- [x] Implement atomic active revision pointer and typed audit receipts; no PolicyProposal upsert can activate it.
+- [x] Run isolated actual PostgreSQL journeys with mocked external facts; no production database or migration.
+- [x] Commit verified store/composition and explicit storage limitations.
 
 ### Task 4: Execution coverage and current-authority integration
 Files: create lib/governance/intelligence/coverage.ts and admissionGuard.ts; modify only reviewed existing executor admission seams discovered in this task; corresponding integration tests.
@@ -65,3 +65,5 @@ Interfaces: compareBaselineEvidence(approvedRevision,snapshots): verified drift|
 - [ ] Document remaining schema/activation/provider/human gates; no production enablement.
 
 Plan self-review: all spec sections map to tasks1–5. MVP uses bounded UTF-8 text/Markdown uploads, optional model assistance remains off, scheduling deferred. No implementation-method approval requested because user explicitly selected autonomous local progress without routine checkpoints.
+
+Local continuation note: Tasks 1–3 foundations and request composition are verified; this does not imply activation or complete executor coverage. The read-only HTTP/client/prototype view is now locally tested but intentionally not customer navigation. The production feature flag remains absent/off; the existing production deployment excludes this work. Task 4 and the remaining Task 5 mutation/review workflow, document-head freshness and final acceptance are open. Exact evidence and simulation limits are documented in lib/governance/intelligence/README.md.

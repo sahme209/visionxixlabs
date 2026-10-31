@@ -1,6 +1,6 @@
 # Governance Intelligence — local foundations
 
-This package is not an active customer enforcement feature. No production route or executor imports it, and it grants no authority. Local design/implementation approval does not activate it.
+This package is not an active customer enforcement feature. A new local read-only route is disabled by default and not deployed; no executor imports the admission guard. It grants no execution authority. Local design/implementation approval does not activate it.
 
 Implemented locally:
 - Strict tenant-bound evidence and immutable baseline contracts; closed supported fact/action types and deterministic generic-engine adapter.
@@ -45,3 +45,13 @@ Shared locked source binding now rechecks exact GitHub installation or AWS accou
 `requestService.ts` now composes current paired authority, immutable artifact/revision stores, exact read-only source rechecks, request-local preflight and drift. Another recorded principal is checked through their current accepted role, never by adopting their session or making a decision on their behalf. Collection requires policy administration; source revalidation uses existing reader capabilities. Activation explicitly refuses because actual executor coverage remains unregistered.
 
 One composed journey passed on owned socket-only isolated PostgreSQL: artifact collection, immutable proposal, self-approval refusal, separate reviewer approval, unchanged/changed/unknown drift, no active scope, and refusal to reuse an approval after reviewer-role removal. Durable stores, memberships and audit records are real PostgreSQL; paired-session/commercial authorization and provider responses are simulated. A connection-local temporary GitHubInstallation fixture was used because the narrow fixture database has no production installation table. No production/customer database or provider call occurred. Scoped production types passed. HTTP/client/native workflow and enforcement remain unfinished.
+
+## Read-only HTTP and native prototype
+
+The local POST `/api/desktop/governance-intelligence/read` accepts only list_evidence, read_revision and read_drift. Paired workspace authority, strict 2 KiB input, rate limiting, total cancellation and bounded private responses apply. Approval, collection, activation, revocation and provider writes are not reachable from this dispatcher. The route defaults OFF unless the separately authorized future setting AXIOM_GOVERNANCE_INTELLIGENCE_ENABLED is explicitly enabled. No setting was created or changed and no deployment occurred.
+
+Desktop DTO/client checks bind exact revision and baseline digest, reject execution claims and malformed current-source reports, preserve account-change cancellation and make no automatic retries. The existing transport now allows only this exact read path; failed reads do not masquerade as uncertain provider writes. Existing release/ticket transport behavior remains unchanged.
+
+GovernanceEvidenceView is a local read-only prototype and is NOT registered as a customer destination. It performs no automatic reads, shows source gaps, saved baseline/rule details and historical/current drift, and never offers an independent approval or activation control. Old drift remains historical after a failed source check even if an unrelated metadata reload succeeds. Editing the selected baseline clears its prior display; changed-account responses are ignored.
+
+Validation: 34 HTTP/DTO/client/view and existing release/ticket client checks passed; scoped production types including the new route, desktop types and frontend build passed. No signed app build/open, visual/native acceptance, customer read, schema/settings change, CI or deployment. Proposal/approval UI, document-head freshness, complete enforcement coverage, final review and live acceptance are still incomplete.

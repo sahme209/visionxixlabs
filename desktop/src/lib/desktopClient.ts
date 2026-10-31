@@ -1,3 +1,4 @@
+import {governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
 import {serviceNowWrittenObservationRequestSchema,type ServiceNowWrittenObservationRequest} from '../../../lib/releaseops/serviceNowWrittenLinkObservationContract';
 import {serviceNowTerminalPolicyRequestSchema,serviceNowTerminalPolicyOptionsSchema,type ServiceNowTerminalPolicyRequest,type ServiceNowTerminalPolicyOptions} from '../../../lib/releaseops/serviceNowTerminalPolicyRequest';
 import {associatedTicketActionsRequestSchema,isAssociatedTicketActionsResult,type AssociatedTicketActionsRequest,type AssociatedTicketActionsResult} from './associatedTicketActions';
@@ -1594,6 +1595,17 @@ export class DesktopClient {
   prepareServiceNowTerminalPolicy(input:ServiceNowTerminalPolicyRequest,clientRequestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<TicketGovernanceReview>> {
     const parsed=serviceNowTerminalPolicyRequestSchema.safeParse(input);if(!parsed.success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Review the administrator-declared policy fields and source evidence.',outcomeUnconfirmed:false});
     const selected=parsed.data;return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance',{binding:selected,clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='servicenow_terminal_policy'&&v.binding.nativeProcess.kind==='model'&&v.binding.nativeProcess.modelSysId===selected.modelSysId&&JSON.stringify(v.binding.sourceReferences)===JSON.stringify(selected.sourceReferences)&&JSON.stringify(v.binding.terminalStates)===JSON.stringify(selected.terminalStates)&&JSON.stringify(v.binding.fields)===JSON.stringify(selected.fields),signal);
+  }
+  governanceEvidence(signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceEvidenceList>> {
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'list_evidence'},(v):v is GovernanceEvidenceList=>governanceEvidenceListSchema.safeParse(v).success,signal);
+  }
+  governanceRevision(id:string,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceRevision>> {
+    if(!governanceRevisionId.safeParse(id).success)return Promise.resolve({ok:false,error:'Select an exact saved baseline revision.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'read_revision',id},(v):v is GovernanceRevision=>governanceRevisionSchema.safeParse(v).success&&(v as GovernanceRevision).id===id,signal);
+  }
+  governanceDrift(id:string,baselineDigest:string,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceDrift>> {
+    if(!governanceRevisionId.safeParse(id).success||! /^[a-f0-9]{64}$/.test(baselineDigest))return Promise.resolve({ok:false,error:'Reload the exact saved baseline before checking sources.',outcomeUnconfirmed:false});
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'read_drift',id},(v):v is GovernanceDrift=>governanceDriftSchema.safeParse(v).success&&(v as GovernanceDrift).baselineDigest===baselineDigest,signal);
   }
   associatedTicketAction(reviewId:string,input:AssociatedTicketActionsRequest,signal?:AbortSignal):Promise<ReleasePlanResult<AssociatedTicketActionsResult>> {
     if(!ticketReviewId.safeParse(reviewId).success||!associatedTicketActionsRequestSchema.safeParse(input).success)return Promise.resolve({ok:false,error:'Reload the exact ticket association and saved actions.',outcomeUnconfirmed:false});
