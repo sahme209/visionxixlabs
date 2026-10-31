@@ -1,0 +1,17 @@
+{
+  "source": "0c5783f6c55416eeaec5372ebba140021f1f9524",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/0c5783f6/Axiom Agent Local Preview.app",
+  "checks": [
+    "desktop types and frontend build passed",
+    "offline Rust build passed",
+    "strict deep code signature passed",
+    "six selected text contrast pairs passed >=4.5:1"
+  ],
+  "native": [
+    "saved session restored",
+    "existing Light preference verified unchanged",
+    "warm ivory Home and dark transparent logo visually inspected"
+  ],
+  "scope": "Local Preview only; no backend or installer publication; dark mode unchanged",
+  "recordedUtc": "2026-10-31T14:35:26.350167+00:00"
+}
