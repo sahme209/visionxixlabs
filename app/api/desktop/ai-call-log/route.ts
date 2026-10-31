@@ -7,6 +7,7 @@ import { buildAiCallLogResponse, type AiCallLogRepo } from "@/lib/releaseops/aiC
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+const PRIVATE_LOG_HEADERS = { "Cache-Control": "private, no-store", "Vary": "Cookie, Authorization" };
 
 export async function GET(request: NextRequest): Promise<Response> {
   const session = await resolveRequestDesktopSession(request, {
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest): Promise<Response> {
     route: "GET /api/desktop/ai-call-log",
     allowApiKey: false,
   });
-  if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
+  if (!session) return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401, headers: PRIVATE_LOG_HEADERS });
 
   const engineName = request.nextUrl.searchParams.get("engineName") ?? undefined;
   const takeRaw = request.nextUrl.searchParams.get("take");
@@ -24,5 +25,5 @@ export async function GET(request: NextRequest): Promise<Response> {
     ...(engineName ? { engineName } : {}),
     ...(typeof take === "number" && Number.isFinite(take) ? { take } : {}),
   });
-  return NextResponse.json(result.body, { status: result.status });
+  return NextResponse.json(result.body, { status: result.status, headers: PRIVATE_LOG_HEADERS });
 }

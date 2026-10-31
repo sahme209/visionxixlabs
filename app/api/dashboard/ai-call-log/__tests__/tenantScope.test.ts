@@ -2,16 +2,18 @@ import * as React from "react";
 import {renderToStaticMarkup} from "react-dom/server";
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';
 import {NextRequest} from 'next/server';
-const m=vi.hoisted(()=>({context:vi.fn(),findMany:vi.fn(),groupBy:vi.fn()}));
+const m=vi.hoisted(()=>({context:vi.fn(),findMany:vi.fn(),groupBy:vi.fn(),session:vi.fn()}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.session}));
 vi.mock('@/lib/auth/currentContext',()=>({currentContext:m.context}));
 vi.mock('@/lib/db',()=>({prisma:{aiCallLog:{findMany:m.findMany,groupBy:m.groupBy}}}));
 vi.mock('@/lib/billing/aiCallCostAttribution',()=>({rollupAiCallCost:async()=>({attributedCallCount:0,unattributedCallCount:0,totalCents:0,perModel:[]}),formatCents:()=>'$0.00'}));
 vi.mock('next/navigation',()=>({redirect:(url:string)=>{throw new Error('REDIRECT:'+url)}}));
 import {GET as list} from '../route';
+import {GET as desktopList} from '@/app/api/desktop/ai-call-log/route';
 import {GET as csv} from '../export.csv/route';
 import enginePage from '@/app/dashboard/ai-call-log/[engine]/page';
 afterEach(()=>vi.unstubAllGlobals());
-beforeEach(()=>{vi.stubGlobal("React",React);vi.resetAllMocks();m.context.mockResolvedValue({isAuthenticated:true,organizationId:'org-a',roles:['OWNER']});m.findMany.mockResolvedValue([]);m.groupBy.mockResolvedValue([])});
+beforeEach(()=>{vi.stubGlobal("React",React);vi.resetAllMocks();m.session.mockResolvedValue({organizationId:"org-a"});m.context.mockResolvedValue({isAuthenticated:true,organizationId:'org-a',roles:['OWNER']});m.findMany.mockResolvedValue([]);m.groupBy.mockResolvedValue([])});
 it.each([list,csv])('refuses global scope before any database read even for an org owner',async handler=>{
  const result=await handler(new NextRequest('http://localhost/api/dashboard/ai-call-log?scope=global'));
  expect(result.status).toBe(403);expect(m.findMany).not.toHaveBeenCalled();
@@ -56,4 +58,16 @@ it('does not turn an unavailable export into a successful empty audit file',asyn
  expect(response.status).toBe(503);
  expect(response.headers.get('Content-Disposition')).toBeNull();
  expect(await response.json()).toEqual({ok:false,error:'export_unavailable'});
+});
+
+it.each([list,desktopList])('marks authenticated AI log JSON private and non-cacheable',async handler=>{
+ const response=await handler(new NextRequest('http://localhost/api/ai-call-log'));
+ expect(response.status).toBe(200);expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+ expect(response.headers.get('Vary')).toContain('Cookie');expect(response.headers.get('Vary')).toContain('Authorization');
+});
+it.each([list,desktopList])('does not permit caching of expired-session responses',async handler=>{
+ m.context.mockResolvedValue({isAuthenticated:false,roles:[]});m.session.mockResolvedValue(null);
+ const response=await handler(new NextRequest('http://localhost/api/ai-call-log'));
+ expect(response.status).toBe(401);expect(response.headers.get('Cache-Control')).toBe('private, no-store');
+ expect(m.findMany).not.toHaveBeenCalled();
 });
