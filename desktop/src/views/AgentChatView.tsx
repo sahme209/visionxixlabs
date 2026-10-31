@@ -1,3 +1,4 @@
+import {useDismissibleDetails} from "../lib/useDismissibleDetails";
 import { Disclosure } from "../components/Disclosure";
 import {AgentMessageContent} from "../components/AgentMessageContent";
 import { AGENT_TOOL_ACTIVITY_LABELS, type AgentToolActivity, type AgentMessageIssue } from "../../../lib/desktop/agentMessageStreamProtocol";
@@ -202,6 +203,7 @@ export function AgentChatView({ onOpenSettings, identity, active = true, compact
 }
 
 function AgentChatSession({ onOpenSettings, identity, active, compact = false, requestedSkill, requestedLocalCode, requestedAirflow, onReviewLocalEdit }: { onOpenSettings?: (destination: AgentSettingsDestination) => void; identity?: VerifiedDesktopIdentity; active: boolean; compact?: boolean; requestedSkill?: AgentSkillRequest; requestedLocalCode?: AgentLocalCodeRequest; requestedAirflow?: AgentAirflowRequest; onReviewLocalEdit?: (edit: LocalCodingProposal, edits?: LocalCodingProposal[]) => void }) {
+  const chatOptions=useDismissibleDetails();
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [renamingBusy, setRenamingBusy] = useState(false);
@@ -1074,7 +1076,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             ))}
           </select>
         </label>
-        <details className="agent-chat-options" onKeyDown={event=>{if(event.key==="Escape"){event.currentTarget.open=false;event.currentTarget.querySelector("summary")?.focus();event.stopPropagation();}}}><summary>Chat options</summary><div className="agent-chat-options-content">
+        <details ref={chatOptions.ref} className="agent-chat-options" onKeyDown={chatOptions.onKeyDown} onBlur={chatOptions.onBlur}><summary>Chat options</summary><div className="agent-chat-options-content">
         {conversationId && <ConversationRename onBusyChange={setRenamingBusy} key={conversationId} id={conversationId} title={conversations.find(conversation => conversation.id === conversationId)?.title ?? null} disabled={sending || loadingConversation} onRenamed={(id, title) => setConversations(current => current.map(conversation => conversation.id === id ? {...conversation, title} : conversation))} />}
         <button type="button" aria-expanded={historyOpen} aria-controls="agent-conversation-history" onClick={() => setHistoryOpen(open => !open)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06]">{historyOpen ? "Close history" : "Search chats"}</button>
         </div></details>

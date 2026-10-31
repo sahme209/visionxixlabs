@@ -187,3 +187,16 @@ The current live HTML still uses unversioned icon URLs; local versioned metadata
 has not been activated. A stale browser favicon cache is therefore distinct
 from the actual served logo. No extra Vercel rollout is needed to replace bytes
 that are already current, and none was performed.
+
+
+### Floating-menu continuity
+
+Workspace access and Agent chat options now share one dismissible-details hook:
+outside pointer input closes the floating menu without stealing focus; Escape
+returns focus to its summary; keyboard focus leaving the menu dismisses it.
+Children stay mounted, including unsaved form edits. Events inside stay inside.
+Inline evidence, policy and approval disclosures deliberately do not adopt this
+behavior, so inspecting or reviewing exact work is not dismissed incidentally.
+110 Agent/chrome/menu regressions and desktop types/frontend build passed;
+focused menu tests separately cover outside body-pointer input without focus
+movement. No provider action, AI call, permissions or backend setting changed.

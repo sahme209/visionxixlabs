@@ -1,4 +1,5 @@
-import {useEffect,useRef} from "react";
+import {useEffect} from "react";
+import {useDismissibleDetails} from "../lib/useDismissibleDetails";
 import type { View } from "../App";
 import type { VerifiedDesktopIdentity } from "../lib/desktopClient";
 
@@ -17,7 +18,7 @@ export function TopBar({ activeView, identity, onOpenCommands, onToggleSplit, sp
   const meta = welcome ? {title: "Axiom", subtitle: "Build, operate and deliver"} : splitActive ? {title: "Engineering workspace", subtitle: "Code, research and plan with your Agent"} : VIEW_TITLES[activeView] ?? { title: "Deployment workspace", subtitle: "Unavailable surfaces are not part of customer navigation" };
   const workspace = identity.organizationId;
   const accessActive = identity.access.allowed;
-  const accessMenu=useRef<HTMLDetailsElement>(null);
+  const accessDetails=useDismissibleDetails(),accessMenu=accessDetails.ref;
   useEffect(()=>{if(accessMenu.current)accessMenu.current.open=false},[activeView,workspace,welcome,splitActive]);
 
   return (
@@ -29,7 +30,7 @@ export function TopBar({ activeView, identity, onOpenCommands, onToggleSplit, sp
       <div className="workspace-header-actions no-drag flex shrink-0 items-center gap-2">
       {onToggleSplit && <button type="button" aria-pressed={splitActive} onClick={onToggleSplit} className="workspace-header-button" title="Switch between focused chat and the editor workspace">{splitActive ? "Single pane" : "Editor & Agent"}</button>}
       {onOpenCommands && <button type="button" onClick={()=>{if(accessMenu.current)accessMenu.current.open=false;onOpenCommands()}} className="workspace-header-button" title="Command/Ctrl+Shift+P"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4.5 4.5"/></svg>Commands</button>}
-      <details ref={accessMenu} className="workspace-access" onKeyDown={event=>{if(event.key==='Escape'){event.currentTarget.open=false;event.currentTarget.querySelector('summary')?.focus();event.stopPropagation()}}}>
+      <details ref={accessMenu} className="workspace-access" onKeyDown={accessDetails.onKeyDown} onBlur={accessDetails.onBlur}>
         <summary className="workspace-header-button" aria-label={`Workspace access: ${accessActive?'active':'needs attention'}`} title={`Workspace ${workspace}`}><span aria-hidden="true" className={`h-1.5 w-1.5 rounded-full ${accessActive?'bg-emerald-400':'bg-amber-400'}`}/>{accessActive?'Access active':'Access needs attention'}<span aria-hidden="true" className="text-[10px]">⌄</span></summary>
         <div className="workspace-access-panel">
           <p className="text-xs font-medium text-zinc-200">Current workspace</p><p className="mt-2 break-all text-xs text-zinc-400">{workspace}</p>
