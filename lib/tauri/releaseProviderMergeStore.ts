@@ -10,7 +10,7 @@ const id = z.string().min(1).max(240).refine(v => v === v.trim() && !/[\x00-\x1f
 const hash = z.string().regex(/^[a-f0-9]{64}$/), instant = z.string().datetime();
 const scopeSchema = z.object({ organizationId: id, actorUserId: id, sessionId: id }).strict();
 export type ProviderMergeScope = z.infer<typeof scopeSchema>;
-const approvalSchema = z.object({ kind: z.literal('verified_release_provider_merge_approval_v1'), id, organizationId: id, planId: id, planDigest: hash, executorUserId: id, approverUserId: id, expiresAt: instant,sourcePolicy:z.literal('expected_head_observed_base') }).strict();
+const approvalSchema = z.object({ governanceBaselineDigest:hash.optional(), kind: z.literal('verified_release_provider_merge_approval_v1'), id, organizationId: id, planId: id, planDigest: hash, executorUserId: id, approverUserId: id, expiresAt: instant,sourcePolicy:z.literal('expected_head_observed_base') }).strict();
 export type ProviderMergeApproval = z.infer<typeof approvalSchema>;
 const bindingSchema = z.object({ format: z.literal(1), mode:z.literal('provider'), scope: scopeSchema, planId: id, planVersion: z.literal(1), planInput: z.unknown(), creatorUserId: id, requesterUserId: id, approval: approvalSchema }).strict();
 type Binding = z.infer<typeof bindingSchema>;

@@ -116,3 +116,39 @@ All stores/provider transports in these new checks are simulated. No production
 HTTP composition supplies the guard yet; no scope is enrolled, no baseline is
 activated and no provider action ran. Remaining action-approval baseline binding
 and coverage across other executors are still required before enrollment.
+
+## Exact baseline-bound provider approvals
+
+The existing provider-merge approval store now supports an optional immutable
+`governanceBaselineDigest` for a *new* independently reviewed decision. It is
+preserved in the execution binding and consumed by the same atomic one-attempt
+claim. The baseline-aware reader refuses old unbound approvals, changed digests,
+revocation and a missing trusted baseline verifier. Every new bound approval's
+audit events include the full immutable binding hash; removing/changing the
+field or retrofitting old approval history refuses. Old unbound records retain
+their original representation and legacy behavior.
+
+The request service exposes a DB-only exact baseline verifier that derives the
+merge scope from the stored release and reuses the caller's existing transaction.
+Current active revision, principals and prewarmed source receipts are checked;
+there is no nested transaction or provider network read under these locks.
+The owned request PostgreSQL journey passed this actual verifier and deliberate
+digest-mismatch refusal, and its provider-spy count did not increase. External
+session/provider/action coverage remain simulated. Fixture stopped.
+
+Approval/store regression batch: 59 passed before the added historical-stale
+regression; the later 44-test approval/preflight batch passed including that new
+case. An additional invalid-clock classification regression passed with all four
+preflight checks. Backend/desktop types and existing approval panel/HTTP tests
+pass. Review found one historical recovery issue, corrected: only typed baseline
+or source invalidation becomes a stale historical DTO; missing configuration,
+invalid clock or caller authority remains a hard failure. Execution always
+refuses stale decisions. The saved approval panel displays a bound digest when
+present.
+
+This does not enable issuer HTTP input or a new human decision: the current
+HTTP/native issuance flow does not yet offer baseline-bound approval. Default
+production coordinator supplies neither Governance guard nor verifier; enrollment
+still refuses. All other mutation coverage and exact human review/activation
+remain required. No provider write, claim, grant, migration, deployment or paid
+build occurred.

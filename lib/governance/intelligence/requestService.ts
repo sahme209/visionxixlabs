@@ -1,3 +1,8 @@
+import {GovernanceBaselineStale} from './errors';
+import {governanceContextFromReviewedRelease} from './releaseScope';
+import type {ProviderMergeScope} from '@/lib/tauri/releaseProviderMergeStore';
+import type {ReleaseOperationPlan} from '@/lib/tauri/releaseOperationPlanContract';
+import type {ReleaseOperationPlanTransaction} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {createGovernanceSourceDirectory} from './sourceDirectory';
 import 'server-only';
 import {createGovernanceDocumentStore} from './documentStore';
@@ -77,6 +82,14 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
    const baseline=await store.readActive(scope,selection),proof=activeProofs.get(baseline.digest);
    if(baseline.digest!==candidate.baseline.digest||!proof||proof.expiresAt<=Date.now())throw Error('governance_active_evidence_unavailable');
    request.signal.throwIfAborted();return{baseline,...structuredClone(proof),executionAuthorized:false as const};
+  },
+  /** Locked, DB-only verification for a separately reviewed exact merge
+   * approval. A prior out-of-lock active evidence warm-up is mandatory. */
+  async assertMergeApprovalBaseline(tx:ReleaseOperationPlanTransaction,rawScope:ProviderMergeScope,expectedDigest:string,plan:ReleaseOperationPlan){
+   bound(rawScope);if(!/^[a-f0-9]{64}$/.test(expectedDigest)||plan.organizationId!==scope.organizationId)throw Error('governance_merge_baseline_unavailable');
+   const rows=await tx.$queryRaw<Array<{id:string;organizationId:string;version:number;status:string;intakeJson:unknown}>>`SELECT "id","organizationId","version","status","intakeJson" FROM "TauriDeploymentRequest" WHERE "id"=${plan.requestId} AND "organizationId"=${scope.organizationId} FOR SHARE`;
+   if(rows.length!==1)throw Error('governance_merge_baseline_unavailable');const context=governanceContextFromReviewedRelease({scope,row:rows[0],plan}),baseline=await store.readActive(scope,context.scope,tx);
+   if(baseline.digest!==expectedDigest)throw new GovernanceBaselineStale('baseline_changed');bound(rawScope);
   },
   async activate(){enabled();throw Error('governance_execution_coverage_unavailable')},
  };

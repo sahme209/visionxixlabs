@@ -1,3 +1,4 @@
+import {GovernanceBaselineStale} from './errors';
 import 'server-only';
 import {z} from 'zod';
 import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
@@ -22,7 +23,7 @@ type Receipt={evidence:EvidenceSnapshot[];evidenceRefreshes:Array<{approvedDiges
 export function createGovernanceEvidencePreflight(ports:Ports){
  const now=ports.now??Date.now,receipts=new Map<string,Receipt>(),generations=new Map<string,number>();
  const key=(s:Scope,b:CompiledBaseline)=>sha256ContentHash({scope:s,baselineDigest:b.digest});
- function live(id:string,generation:number|undefined,receipt:Receipt){const at=now();if(generations.get(id)!==generation||receipts.get(id)!==receipt||!Number.isFinite(at)||receipt.expiresAt<=at)throw Error('governance_evidence_preflight_expired')}
+ function live(id:string,generation:number|undefined,receipt:Receipt){const at=now();if(!Number.isFinite(at))throw Error('governance_evidence_clock_unavailable');if(generations.get(id)!==generation||receipts.get(id)!==receipt||receipt.expiresAt<=at)throw new GovernanceBaselineStale('source_receipt_unavailable')}
  return{
   async warm(rawScope:Scope,rawBaseline:CompiledBaseline,parent:AbortSignal){
    const s=scopeSchema.parse(rawScope),b=baseline(rawBaseline),id=key(s,b),signal=AbortSignal.any([parent,AbortSignal.timeout(15000)]);
@@ -37,7 +38,7 @@ export function createGovernanceEvidencePreflight(ports:Ports){
    signal.throwIfAborted();if(generations.get(id)!==generation)throw Error('governance_evidence_preflight_superseded');const at=now();if(!Number.isFinite(at))throw Error('governance_evidence_clock_unavailable');const receipt={evidence,evidenceRefreshes:refreshes,expiresAt:Math.min(at+30000,...refreshes.map(r=>Date.parse(r.current.expiresAt)))};receipts.set(id,structuredClone(receipt));return structuredClone(receipt);
   },
   async read(tx:Tx,rawScope:Scope,rawBaseline:CompiledBaseline){
-   const s=scopeSchema.parse(rawScope),b=baseline(rawBaseline),id=key(s,b),generation=generations.get(id),receipt=receipts.get(id);if(!receipt||s.organizationId!==b.organizationId)throw Error('governance_evidence_preflight_required');live(id,generation,receipt);
+   const s=scopeSchema.parse(rawScope),b=baseline(rawBaseline),id=key(s,b),generation=generations.get(id),receipt=receipts.get(id);if(s.organizationId!==b.organizationId)throw Error('governance_evidence_scope_changed');if(!receipt)throw new GovernanceBaselineStale('source_receipt_unavailable');live(id,generation,receipt);
    for(const approved of receipt.evidence){const current=receipt.evidenceRefreshes.find(r=>r.approvedDigest===approved.digest)!.current;verifyCurrentEvidence(approved,current,now());await ports.recheckLocked(tx,s,structuredClone(approved),structuredClone(current));live(id,generation,receipt)}
    return structuredClone(receipt);
   },
