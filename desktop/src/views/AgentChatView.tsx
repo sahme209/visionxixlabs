@@ -1,3 +1,4 @@
+import { aiUsageText } from "../lib/aiUsageText";
 import {useDismissibleDetails} from "../lib/useDismissibleDetails";
 import { Disclosure } from "../components/Disclosure";
 import {AgentMessageContent} from "../components/AgentMessageContent";
@@ -1421,9 +1422,7 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
 }
 
 function UsageReceipt({ usage }: { usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } }) {
-  const tokenText = usage.inputTokens === null && usage.outputTokens === null
-    ? "Token totals were not reported by the provider."
-    : `${usage.inputTokens ?? "—"} input · ${usage.outputTokens ?? "—"} output tokens`;
+  const tokenText = aiUsageText(usage);
   return (
     <section className="rounded-xl border border-violet-300/[0.12] bg-violet-300/[0.025] px-4 py-3" aria-label="Latest governed AI usage">
       <p className="text-xs font-medium text-zinc-200">Latest governed AI usage</p>

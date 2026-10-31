@@ -91,3 +91,9 @@ Suggested next shortlist after current completion: **Grafana/Prometheus, Dynatra
 - Broader catalog breadth comes after dependable supported workflows. Document each connector's supported operations and exclusions.
 
 Reference checks for initial observability/incident/security candidates: [Grafana Cloud](https://grafana.com/products/cloud/), [Dynatrace overview](https://docs.dynatrace.com/docs/discover-dynatrace/what-is-dynatrace), [PagerDuty incident lifecycle](https://docs.pagerduty.com/incident-management), [Wiz platform](https://www.wiz.io/platform). Remaining names require discovery before implementation.
+
+## Secure and efficient cloud AI
+
+User priority: make cloud-AI data handling verifiably secure and token spending transparent. Planned work: context minimization, authorized redaction/secret protection, provider retention/data-boundary review, scoped tools, safe caching with tenant isolation and invalidation, task budgets and suitable model selection. Benchmark tokens and cost per successfully completed equivalent task, including retries and quality; do not claim competitor savings without reproducible evidence. Review dependency security, licensing and maintenance before adopting optimization libraries.
+
+Small implemented local improvement: Agent usage receipts retain provider-reported total-only counts, label missing breakdowns explicitly and never estimate usage or cost. This is transparency, not a token-reduction feature or completed security assessment.
