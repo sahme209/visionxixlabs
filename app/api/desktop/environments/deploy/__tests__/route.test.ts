@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   findEnvironment: vi.fn(),
+  enrollment: vi.fn(),
   findTarget: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
   dispatchWorkflow: vi.fn(),
@@ -25,6 +26,7 @@ vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
 vi.mock("@/lib/db", () => ({
   prisma: {
     environment: { findUnique: mocks.findEnvironment },
+    durableAgentWorkflow: { findMany: mocks.enrollment },
     deploymentTarget: { findUnique: mocks.findTarget },
     repository: { findMany: mocks.findRepositories },
     branchEnvironmentPolicy: { findMany: mocks.findBranchPolicies },
@@ -67,6 +69,7 @@ const target = { id: "dt_1", organizationId: "org-1", environmentId: "env_1", pr
 describe("POST /api/desktop/environments/deploy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.enrollment.mockReset().mockResolvedValue([]);
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findRepositories.mockResolvedValue([]);
     mocks.findBranchPolicies.mockResolvedValue([]);
@@ -240,4 +243,36 @@ describe("POST /api/desktop/environments/deploy", () => {
     await expect(res.json()).resolves.toMatchObject({ error: "production_bypass_audit_unavailable" });
     expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
   });
+  it.each(["enrolled", "unavailable"])("refuses %s governance before credentials or reservation, including emergency policy bypass", async state => {
+    mocks.resolveRequestDesktopSession.mockResolvedValue(adminSession);
+    mocks.findEnvironment.mockResolvedValue({id:"env_1",organizationId:"org-1",tier:"prod"});
+    mocks.findTarget.mockResolvedValue(target);
+    if(state === "enrolled") mocks.enrollment.mockResolvedValue([{id:"governance_active_org",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}]);
+    else mocks.enrollment.mockRejectedValue(Error("private storage detail"));
+    const {POST}=await import("../route");
+    const response=await POST(request({repositoryFullName:"acme/widgets",environmentId:"env_1",emergencyBypass:true,bypassReason:"Emergency policy exception cannot bypass governance"}));
+    expect(response.status).toBe(409);
+    expect(await response.text()).toContain("governance_execution_coverage_unavailable");
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
+    expect(mocks.reserveDeploymentDispatch).not.toHaveBeenCalled();
+    expect(mocks.dispatchWorkflow).not.toHaveBeenCalled();
+  });
+
+  it("rechecks after reservation and releases only a definite pre-dispatch refusal", async()=>{
+    mocks.findEnvironment.mockResolvedValue({id:"env_1",organizationId:"org-1"});
+    mocks.findTarget.mockResolvedValue(target);
+    mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:"fixture"});
+    mocks.enrollment.mockResolvedValueOnce([]).mockResolvedValue([{id:"governance_active_org",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}]);
+    mocks.dispatchWorkflow.mockImplementationOnce(async input=>{
+      try { await input.beforeWrite(); throw Error("test must refuse before provider dispatch"); }
+      catch(error) { expect(String(error)).toContain("governance_execution_coverage_unavailable"); return {ok:false,error:"workflow_dispatch_failed: github_write_authority_unavailable"}; }
+    });
+    const {POST}=await import("../route");
+    const response=await POST(request({repositoryFullName:"acme/widgets",environmentId:"env_1"}));
+    expect(response.status).toBe(502);
+    expect(mocks.enrollment).toHaveBeenCalledTimes(2);
+    expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(expect.anything(),"org-1","exec-1");
+    expect(mocks.settleDeploymentDispatch).not.toHaveBeenCalled();
+  });
+
 });

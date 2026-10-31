@@ -307,3 +307,16 @@ installer publication was performed. Tests cover initial enrollment, metadata
 failure, positive absence, enrollment introduced before transport and missing
 session. Other environment/Airflow/alternate callers and real default admission
 remain incomplete; activation must continue refusing incomplete coverage.
+
+### Desktop environment dispatch refusal fence
+
+The desktop ECS deployment entry point now refuses enrolled/unavailable Governance
+before resolving provider credentials or reserving deployment usage. The same
+trusted callback is checked by the actual GitHub write transport immediately
+before dispatch. Emergency deployment-policy bypass cannot bypass this fence.
+A definite pre-dispatch refusal releases the reservation using the existing
+classifier; uncertain dispatched outcomes retain the original hold and history.
+33 route/classification checks and scoped production types passed; provider
+responses and reservation storage were simulated. No workflow was dispatched.
+This closes another legacy refusal path; it does not supply baseline admission
+or complete Airflow/alternate caller coverage or permit activation.

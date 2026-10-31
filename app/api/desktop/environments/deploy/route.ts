@@ -21,6 +21,7 @@ import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
+import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
 import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
@@ -101,6 +102,13 @@ export async function POST(request: NextRequest): Promise<Response> {
   const target = await prisma.deploymentTarget.findUnique({ where: { environmentId } });
   if (!target || target.organizationId !== organizationId) {
     return NextResponse.json({ ok: false, error: "deployment_target_not_configured" }, { status: 409 });
+  }
+
+  // Emergency deployment policy bypass does not bypass Governance enrollment.
+  const beforeWrite = () => assertNoGovernanceEnrollmentForMutation(prisma, organizationId, request.signal);
+  try { await beforeWrite(); }
+  catch {
+    return NextResponse.json({ ok: false, error: "governance_execution_coverage_unavailable" }, { status: 409 });
   }
 
   const tokenResult = await resolveTenantScopedToken(organizationId, repo);
@@ -205,6 +213,7 @@ export async function POST(request: NextRequest): Promise<Response> {
       service: target.ecsService,
     },
     installationToken: tokenResult.token,
+    beforeWrite,
   });
   if (!dispatchResult.ok) {
     if (!isDefiniteWorkflowDispatchRejection(dispatchResult.error)) {
