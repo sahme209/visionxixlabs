@@ -4,7 +4,7 @@
  * Audit-handoff CSV for the AI call log. Filters mirror the live
  * surface:
  *   ?engineName=council_voter   scope to a single engine
- *   ?scope=org | global         org filter (default org)
+ *   Workspace-scoped only; global requests are refused.
  *   ?since=<iso>                lower bound (default last 24h)
  *
  * Columns:
@@ -40,6 +40,7 @@ export async function GET(req: NextRequest) {
 
   const engineName = req.nextUrl.searchParams.get("engineName") ?? null;
   const scope = req.nextUrl.searchParams.get("scope") === "global" ? "global" : "org";
+  if (scope === "global") return NextResponse.json({ ok: false, error: "global_scope_unavailable" }, { status: 403 });
   const sinceRaw = req.nextUrl.searchParams.get("since");
   const sinceParsed = sinceRaw ? new Date(sinceRaw) : null;
   const since = sinceParsed && !Number.isNaN(sinceParsed.getTime())
@@ -50,7 +51,7 @@ export async function GET(req: NextRequest) {
     where: {
       startedAt: { gte: since },
       ...(engineName ? { engineName } : {}),
-      ...(scope === "org" ? { organizationId: String(ctx.organizationId) } : {}),
+      organizationId: String(ctx.organizationId),
     },
     orderBy: { startedAt: "desc" },
     take: 5000,

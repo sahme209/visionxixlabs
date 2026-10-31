@@ -1,6 +1,6 @@
 /**
  * GET /api/dashboard/ai-call-log — Phase 531.
- * Query: ?engineName=council_voter&scope=org|global&take=100
+ * Query: ?engineName=council_voter&take=100 (workspace-scoped only)
  *
  * Engineer-facing log of every AI provider call. Per-engine
  * breakdown includes circuit state + latency p50/p95 + token
@@ -28,16 +28,15 @@ export async function GET(req: NextRequest) {
   const takeRaw = req.nextUrl.searchParams.get("take");
   const take = takeRaw ? Number.parseInt(takeRaw, 10) : undefined;
 
-  // scope=org → restrict by organizationId
-  // scope=global → no org filter (engineer ops view)
-  // Anything else → fall back to org-scoped
-  const organizationId = scope === "global" ? undefined : ctx.organizationId;
+  // Workspace roles do not authorize cross-tenant operations.
+  if (scope === "global") return NextResponse.json({ ok: false, error: "global_scope_unavailable" }, { status: 403 });
+  const organizationId = String(ctx.organizationId);
 
   const r = await buildAiCallLogResponse(
     prisma as unknown as AiCallLogRepo,
     {
       ...(engineName ? { engineName } : {}),
-      ...(organizationId !== undefined ? { organizationId } : {}),
+      organizationId,
       ...(typeof take === "number" && Number.isFinite(take) ? { take } : {}),
     },
   );

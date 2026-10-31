@@ -7,8 +7,7 @@
  * histogram, outcome split, top error messages, recent calls.
  *
  * Server-rendered (no client state) and reads AiCallLog directly via
- * Prisma. ?scope=global flips off the org filter for the engineer
- * ops view; default scope is the caller's org.
+ * Prisma. All reads stay within the authenticated workspace.
  *
  * Empty engines (engine has no rows in the last 24h) render an
  * honest 'no calls in window' state — no fabricated latency.
@@ -64,10 +63,10 @@ export default async function AiCallLogEnginePage({
   const { engine: engineRaw } = await params;
   const engineName = decodeURIComponent(engineRaw);
   const sp = await searchParams;
-  const scope: "org" | "global" = sp.scope === "global" ? "global" : "org";
+  if (sp.scope === "global") redirect("/dashboard/ai-call-log");
 
   const since = new Date(Date.now() - TWENTY_FOUR_HOURS_MS);
-  const orgFilter = scope === "org" ? { organizationId: String(ctx.organizationId) } : {};
+  const orgFilter = { organizationId: String(ctx.organizationId) };
 
   const [recentCalls, outcomeGroups, errorRows] = await Promise.all([
     prisma.aiCallLog.findMany({
@@ -170,7 +169,7 @@ export default async function AiCallLogEnginePage({
   return (
     <div className="max-w-5xl mx-auto px-1 -mt-2">
       <Link
-        href={`/dashboard/ai-call-log${scope === "global" ? "?scope=global" : ""}`}
+        href="/dashboard/ai-call-log"
         className="inline-flex items-center gap-1.5 text-[12px] text-zinc-500 hover:text-white transition-colors mb-6"
       >
         <ArrowLeftIcon className="h-3.5 w-3.5" />
@@ -183,34 +182,12 @@ export default async function AiCallLogEnginePage({
           {engineLabel}
         </h1>
         <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
-          Last 24 hours · {scope === "global" ? "every tenant" : "your workspace only"}.
+          Last 24 hours · your workspace only.
           {totalCalls === 0
             ? <> No calls in window — this engine hasn&apos;t been invoked yet.</>
             : <> {totalCalls} call{totalCalls === 1 ? "" : "s"} across {provider} provider hit{provider === 1 ? "" : "s"}.</>}
         </p>
-        {/* Scope toggle */}
-        <div className="mt-4 flex items-center gap-2 text-[11px] font-mono">
-          <Link
-            href={`/dashboard/ai-call-log/${encodeURIComponent(engineName)}`}
-            className={`px-2.5 py-1 rounded-full border transition-colors ${
-              scope === "org"
-                ? "text-white border-white/[0.18] bg-white/[0.04]"
-                : "text-zinc-500 border-white/[0.06] hover:text-zinc-200 hover:border-white/[0.12]"
-            }`}
-          >
-            org
-          </Link>
-          <Link
-            href={`/dashboard/ai-call-log/${encodeURIComponent(engineName)}?scope=global`}
-            className={`px-2.5 py-1 rounded-full border transition-colors ${
-              scope === "global"
-                ? "text-white border-white/[0.18] bg-white/[0.04]"
-                : "text-zinc-500 border-white/[0.06] hover:text-zinc-200 hover:border-white/[0.12]"
-            }`}
-          >
-            global
-          </Link>
-        </div>
+
       </header>
 
       {/* Outcome tiles */}
@@ -285,7 +262,6 @@ export default async function AiCallLogEnginePage({
           <a
             href={`/api/dashboard/ai-call-log/export.csv?${new URLSearchParams({
               engineName,
-              ...(scope === "global" ? { scope: "global" } : {}),
             }).toString()}`}
             download
             className="text-[11px] font-mono text-zinc-500 hover:text-white transition-colors"

@@ -103,14 +103,13 @@ export default function AiCallLogPage() {
   const [resp, setResp] = useState<Body | null>(null);
   const [loading, setLoading] = useState(true);
   const [networkError, setNetworkError] = useState<string | null>(null);
-  const [scope, setScope] = useState<"org" | "global">("org");
   const [engineFilter, setEngineFilter] = useState<string | null>(null);
 
   function load() {
     setLoading(true);
     setNetworkError(null);
     const params = new URLSearchParams();
-    params.set("scope", scope);
+    params.set("scope", "org");
     params.set("take", "200");
     if (engineFilter) params.set("engineName", engineFilter);
     fetch(`/api/dashboard/ai-call-log?${params.toString()}`, { credentials: "include" })
@@ -120,7 +119,7 @@ export default function AiCallLogPage() {
       .finally(() => setLoading(false));
   }
 
-  useEffect(() => { load(); }, [scope, engineFilter]);
+  useEffect(() => { load(); }, [engineFilter]);
 
   const data = resp?.ok ? resp.data : null;
   const errorBody = resp && !resp.ok ? resp : null;
@@ -143,7 +142,7 @@ export default function AiCallLogPage() {
         kicker={`Engineer · AI provider observability${data ? ` · ${data.summary.total} calls · ${overallSuccessRate}% success` : ""}`}
         title={<>Every AI call, <span className="text-zinc-500">timed + token-counted + breakered.</span></>}
         description="Every provider call across every engine (council voter, ×3 rationale enrichers, memory summary, memory chat, proactive suggestion) is logged here with engine name, model, latency, token usage, and outcome. The circuit breaker derives state from the recent window: 3+ failures in the last 10 calls trip it open, with a 60s cooldown to half-open. Engineers tune thresholds per-engine without code changes."
-        helps="Use scope=org for your tenant's calls; scope=global is the engineer ops view across all orgs. Filter by engine to drill into one specific path."
+        helps="Calls are restricted to your current workspace. Filter by engine to inspect a specific path."
         connectFirst="Trigger any AGI engine (run a council decision, ask the AGI a question, generate suggestions). Each call writes one row here."
         engineers={["Platform team", "AI Operations", "SRE"]}
         requiresApproval="Read-only · no operator writes from this page"
@@ -155,8 +154,7 @@ export default function AiCallLogPage() {
       />
 
       <div className="mb-5 flex items-center gap-2 flex-wrap">
-        <FilterPill label="My org" active={scope === "org"} onClick={() => setScope("org")} />
-        <FilterPill label="Global (engineer)" active={scope === "global"} onClick={() => setScope("global")} />
+        <span className="text-xs text-zinc-400">Current workspace only</span>
         <span className="text-[10.5px] font-mono text-zinc-500 ml-2">|</span>
         <FilterPill label="All engines" active={!engineFilter} onClick={() => setEngineFilter(null)} />
         {data?.engines.map((e) => (
