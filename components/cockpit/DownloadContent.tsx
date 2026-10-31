@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import {formatDesktopInstallerSize} from "@/lib/desktop/downloadSize";
 
 type PlatformId = "mac-arm" | "mac-intel" | "windows" | "linux";
 type PlatformDetection = PlatformId | "choose";
@@ -70,10 +71,6 @@ function detectPlatform(): PlatformDetection {
   // Browser platform strings are not reliable CPU architecture evidence.
   // Keep both Mac installers explicit instead of guessing from "MacIntel".
   return "choose";
-}
-
-function formatSize(bytes: number) {
-  return `${(bytes / 1_048_576).toFixed(1)} MB`;
 }
 
 export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
@@ -141,7 +138,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
                 {cockpit ? "Back to integrations" : "Explore the web demo"} <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
-            <p className="mt-4 text-xs text-zinc-400">{releaseStatus}{detectedAsset ? ` · ${formatSize(detectedAsset.sizeBytes)}` : ""}</p>
+            <p className="mt-4 text-xs text-zinc-400">{releaseStatus}{detectedAsset ? ` · ${(formatDesktopInstallerSize(detectedAsset.sizeBytes)??"Size unavailable")}` : ""}</p>
           </div>
         </section>
 
@@ -157,7 +154,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
         <section id="downloads" className={cockpit ? "mb-6 scroll-mt-6" : "mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10"}>
           <div className={cockpit ? "mb-3" : "mb-6 border-t border-white/[0.08] pt-8"}>
             <h2 className={cockpit ? "text-sm font-medium text-zinc-100" : "text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl"}>{cockpit ? "Desktop installers" : "Use Axiom on your workstation."}</h2>
-            <p className={cockpit ? "mt-1 text-xs text-zinc-500" : "mt-2 text-base text-zinc-400"}>One governed workspace across macOS, Windows, and Linux.</p>
+            <p className={cockpit ? "mt-1 text-xs text-zinc-500" : "mt-2 text-base text-zinc-400"}>One governed workspace across macOS, Windows, and Linux. Sizes are per-platform installer downloads; installed size may differ.</p>
           </div>
 
           <div className="grid gap-3 lg:grid-cols-3">
@@ -266,6 +263,7 @@ function DownloadCard({
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 Download for {platformLabel[id]}
               </a>
+              {asset&&<p className="mt-2 break-all text-[11px] leading-5 text-zinc-400" title={Number.isSafeInteger(asset.sizeBytes)&&asset.sizeBytes>0?`${asset.sizeBytes.toLocaleString('en-US')} bytes`:undefined}>{formatDesktopInstallerSize(asset.sizeBytes)??'Size unavailable'} download · {asset.fileName}</p>}
               {asset ? <p className="mt-2 text-[11px] leading-5 text-zinc-400">{platformLabel[id]} · {asset.signed === true
                 ? ((id === "mac-arm" || id === "mac-intel")
                   ? (asset.notarized === true ? "Manifest reports signed and notarized" : "Manifest reports signed; notarization not confirmed")
