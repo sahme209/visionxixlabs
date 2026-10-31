@@ -1,0 +1,17 @@
+{
+  "runtime": "a1a054bb3d22d5aeee4fe268592bd3becb9dac82",
+  "checks": [
+    "12 synthetic/mock-store logging tests passed",
+    "focused strict TypeScript passed",
+    "clean-source production build and production TypeScript passed"
+  ],
+  "productionVerification": {
+    "source": "a1a054bb3d22d5aeee4fe268592bd3becb9dac82",
+    "stage": "/private/tmp/axiom-token-integrity-a1a054bb-12wug490",
+    "archiveSha256": "8c0c16f3564514ae5ee724d3c9d2517b8e3e2a5f75a724d04f8c2bdb723813f7",
+    "build": "passed",
+    "exitCode": 0
+  },
+  "behavior": "Only nonnegative integer token counts within existing Prisma Int range are persisted. Zero retained; malformed/unknown counters omitted without clamping, estimation or billing changes.",
+  "scope": "Local backend repair; no production activation, real provider call, AI call, schema migration or app restart."
+}
