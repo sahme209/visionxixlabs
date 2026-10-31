@@ -1,0 +1,19 @@
+{
+  "runtime": "9ad8c3fc818a873de3607b01eba919146b193f0d",
+  "checks": [
+    "20 mocked responder tests passed",
+    "focused strict types passed",
+    "optimized production compilation passed",
+    "full production build INCOMPLETE: stalled type subprocess deliberately stopped"
+  ],
+  "productionVerification": {
+    "source": "9ad8c3fc818a873de3607b01eba919146b193f0d",
+    "stage": "/private/tmp/axiom-log-disclosure-9ad8c3fc-0zmuwumo",
+    "archiveSha256": "66fb01632b7f706c65587942a276d39df9a5427ce3d0236e50faec7dc74d33b0",
+    "build": "incomplete: compiled successfully, production type subprocess stopped after over 3 minutes with no diagnostics/progress; exit1 caused by termination, not a reported source type error",
+    "exitCode": 1
+  },
+  "behavior": "Known credential redaction before new AI-call-log persistence and historical read serialization, including engine names; fixed generic read_failed hint. Historical database rows unmodified; tenant filters and circuit logic unchanged.",
+  "scope": "Local backend repair; no real DB mutation, provider/AI call, production activation or app restart. Does not guarantee detection of all secrets or personal data.",
+  "remaining": "Complete full production build before activation review."
+}
