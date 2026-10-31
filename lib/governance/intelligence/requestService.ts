@@ -59,6 +59,10 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
   async lookupCollectionRequest(requestId:string){enabled();nonce.parse(requestId);return history.lookupCollectionRequest(scope,requestId)},
   async lookupDocumentUpload(requestId:string){enabled();nonce.parse(requestId);return history.lookupDocumentUpload(scope,requestId)},
   async listCollectionSources(){enabled();return sourceDirectory.list(scope)},
+  async hasAnyEnrollment(){
+   await current(scope,request.signal);const rows=await repo.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,OR:[{workflowKind:'governance_baseline_active_v1'},{id:{startsWith:'governance_active_'}}]},orderBy:[{id:'asc'}],take:1});
+   if(rows.length>1||rows.some(row=>row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1'&&!row.id.startsWith('governance_active_')))throw Error('governance_enrollment_unavailable');await current(scope,request.signal);return rows.length===1;
+  },
   /** Only a verified absent active pointer means legacy/non-enrolled. Any
    * malformed/inaccessible pointer refuses; never infer absence from failure. */
   async readScopeEnrollment(rawSelection:unknown){

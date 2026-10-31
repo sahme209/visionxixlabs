@@ -166,3 +166,30 @@ actual owned request PostgreSQL journey pass; source/provider/action coverage in
 the fixture remains simulated, fixture stopped. This wrapper is not selected by
 production composition yet. It grants no authority to an uncovered executor or
 a caller-supplied scope and does not enable enrollment.
+
+## Exact baseline review HTTP/native path
+
+Provider-purpose approval HTTP now selects the actual Governance request-service
+preflight only behind the existing, unchanged default-OFF Governance server flag.
+A trusted composition checks current enrollment and warms source proof outside
+locks; positively unenrolled organizations/scopes keep existing issuer behavior.
+The required active digest is returned for human review. POST must echo that
+exact digest, never silently attach new policy to an old decision. The store's
+locked baseline verifier rechecks authority/pointer/source receipts. Explicitly
+malformed composition and unknown checks refuse. Revocation remains available
+without warming policy sources.
+
+Native review shows the exact required digest before its human checkbox, carries
+it into approval, and treats a wrong acknowledgement as unknown with no automatic
+retry. Existing unbound approvals become historical stale metadata when current
+policy requires a different binding; they are never rewritten. A real human must
+still review and approve using their own current session.
+
+Thirty-five HTTP/composition/client/panel checks, scoped backend/desktop types and
+one actual owned isolated request PostgreSQL journey pass. The PG journey uses
+the actual HTTP-preflight composition and locked verifier; external provider,
+request-session and coverage/action authority remain simulated. Fixture stopped.
+Independent local review found no important issue. No flag was changed, no scope
+enrolled, no human decision made, and no live provider read/write occurred.
+Execution composition and complete coverage across mutation paths remain open;
+activation still refuses. Native relaunch/visual verification follows separately.

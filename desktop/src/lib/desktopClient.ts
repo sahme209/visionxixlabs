@@ -1763,8 +1763,8 @@ export class DesktopClient {
   providerMergeApproval(requestId:string,planId:string,digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
     return this.providerMergeApprovalRequest('GET',requestId,planId,digest,undefined,signal);
   }
-  approveProviderMerge(requestId:string,planId:string,digest:string,input:{expectedPlanVersion:1;clientRequestId:string;sourcePolicy:'expected_head_observed_base'},signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
-    if(input.expectedPlanVersion!==1||input.sourcePolicy!=='expected_head_observed_base'||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['expectedPlanVersion','clientRequestId','sourcePolicy'].includes(k)))return Promise.resolve({ok:false,error:'Reload provider merge approval.',outcomeUnconfirmed:false});
+  approveProviderMerge(requestId:string,planId:string,digest:string,input:{expectedPlanVersion:1;clientRequestId:string;sourcePolicy:'expected_head_observed_base';governanceBaselineDigest?:string},signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
+    if(input.governanceBaselineDigest!==undefined&&!/^[a-f0-9]{64}$/.test(input.governanceBaselineDigest)||input.expectedPlanVersion!==1||input.sourcePolicy!=='expected_head_observed_base'||!validOperationUuid(input.clientRequestId)||Object.keys(input).some(k=>!['expectedPlanVersion','clientRequestId','sourcePolicy','governanceBaselineDigest'].includes(k)))return Promise.resolve({ok:false,error:'Reload provider merge approval.',outcomeUnconfirmed:false});
     return this.providerMergeApprovalRequest('POST',requestId,planId,digest,input,signal);
   }
   revokeProviderMergeApproval(requestId:string,planId:string,digest:string,input:{id:string;expectedVersion:0;clientRequestId:string},signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
@@ -1773,7 +1773,7 @@ export class DesktopClient {
   }
   private providerMergeApprovalRequest(method:'GET'|'POST'|'DELETE',requestId:string,planId:string,digest:string,body:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<ProviderMergeApprovalState>> {
     if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||!/^[a-f0-9]{64}$/.test(digest))return Promise.resolve({ok:false,error:'Reload provider merge approval.',outcomeUnconfirmed:false});
-    return releaseOperationPlanRequest(this.savedTaskContext(),method,`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${planId}/provider-approval`,body,(v):v is ProviderMergeApprovalState=>isProviderMergeApprovalState(v,planId,digest)&&(method==='GET'||method==='POST'&&v.approval?.status==='approved'&&v.approval.version===0||method==='DELETE'&&v.approval?.status==='revoked'&&v.approval.id===(body as {id:string}).id&&v.approval.version===1),signal);
+    return releaseOperationPlanRequest(this.savedTaskContext(),method,`/api/desktop/deployments/${encodeURIComponent(requestId)}/operation-plans/${planId}/provider-approval`,body,(v):v is ProviderMergeApprovalState=>isProviderMergeApprovalState(v,planId,digest)&&(method==='GET'||method==='POST'&&v.approval?.status==='approved'&&v.approval.version===0&&v.approval.governanceBaselineDigest===(body as {governanceBaselineDigest?:string}).governanceBaselineDigest||method==='DELETE'&&v.approval?.status==='revoked'&&v.approval.id===(body as {id:string}).id&&v.approval.version===1),signal);
   }
   releaseExecutionApproval(requestId:string,planId:string,digest:string,signal?:AbortSignal):Promise<ReleasePlanResult<ExecutionApprovalState>> {
     return this.executionApprovalRequest('GET',requestId,planId,digest,undefined,signal);
