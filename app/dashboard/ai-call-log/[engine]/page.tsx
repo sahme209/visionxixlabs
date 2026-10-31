@@ -18,6 +18,7 @@ import { redirect } from "next/navigation";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
+import { redact } from "@/lib/security/redaction";
 import { rollupAiCallCost, formatCents } from "@/lib/billing/aiCallCostAttribution";
 
 export const dynamic = "force-dynamic";
@@ -68,7 +69,7 @@ export default async function AiCallLogEnginePage({
   const since = new Date(Date.now() - TWENTY_FOUR_HOURS_MS);
   const orgFilter = { organizationId: String(ctx.organizationId) };
 
-  const [recentCalls, outcomeGroups, errorRows] = await Promise.all([
+  const [storedRecentCalls, outcomeGroups, storedErrorRows] = await Promise.all([
     prisma.aiCallLog.findMany({
       where: {
         engineName,
@@ -118,6 +119,15 @@ export default async function AiCallLogEnginePage({
     }).catch(() => [] as Array<{ errorMessage: string | null }>),
   ]);
 
+  // Sanitize historical diagnostics before truncation, grouping or rendering.
+  // Existing rows and query authority remain unchanged.
+  const recentCalls = storedRecentCalls.map(call => ({
+    ...call,
+    model: call.model === null ? null : redact(call.model),
+    errorMessage: call.errorMessage === null ? null : redact(call.errorMessage),
+  }));
+  const errorRows = storedErrorRows.map(row => ({ errorMessage: row.errorMessage === null ? null : redact(row.errorMessage) }));
+
   // Outcome counts.
   const counts = { ok: 0, error: 0, timeout: 0, short_circuit: 0 };
   for (const g of outcomeGroups) {
@@ -164,7 +174,7 @@ export default async function AiCallLogEnginePage({
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
 
-  const engineLabel = ENGINE_LABEL[engineName] ?? engineName;
+  const engineLabel = ENGINE_LABEL[engineName] ?? redact(engineName);
 
   return (
     <div className="max-w-5xl mx-auto px-1 -mt-2">
@@ -177,7 +187,7 @@ export default async function AiCallLogEnginePage({
       </Link>
 
       <header className="mb-10">
-        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">engine · {engineName}</p>
+        <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">engine · {redact(engineName)}</p>
         <h1 className="text-[28px] sm:text-[34px] leading-[1.1] font-semibold text-white tracking-[-0.02em] mb-3">
           {engineLabel}
         </h1>

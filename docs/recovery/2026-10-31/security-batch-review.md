@@ -18,7 +18,7 @@ Test counts overlap across successive runs; do not sum them into a unique total.
 
 Production remains unchanged. The tenant-isolation source finding is important; prioritize a narrow activation review. Do not describe these local controls as active production protection.
 
-1. Narrow candidate **3d216d5f04eaf400b4fc206f5964bf3e077a9594** is now prepared from recorded production **3b59629124f7db241ec82df99ae8baecee0dbcd7**, with37 candidate tests and its exact production build/types passed. Reconcile the actual live production base before activation. The development branch contains unfinished Governance work and must not be promoted wholesale. See narrow-security-candidate.json for the10-file manifest and backup evidence.
+1. Narrow candidate **86f7c92dbac2f54932a701285cf3eee49c8883eb** is now prepared from recorded production **3b59629124f7db241ec82df99ae8baecee0dbcd7**, with39 candidate tests and its exact production build/types passed. Reconcile the actual live production base before activation. The development branch contains unfinished Governance work and must not be promoted wholesale. See narrow-security-candidate.json for the10-file manifest and backup evidence.
 2. Complete final review of the exact narrow diff. Candidate-specific build/test evidence now exists; any later source change requires proportionate revalidation.
 3. Obtain the specific Vercel-freeze exception before any upload/deployment. No schema, role/grant, credential or provider-action change is part of these repairs.
 4. After an authorized rollout, verify only appropriately scoped session/access responses. Cross-tenant live tests require controlled test tenants and explicit authorization; do not probe other customers.
@@ -33,3 +33,5 @@ The previous production type stall was traced to a filesystem read on an SDK dec
 Pattern redaction is not general PII removal or detection of every secret. This batch is not an independent penetration test, zero-vulnerability guarantee, universal execution coverage or Governance MVP completion. Governance's real admission/coverage/workflow gates, ServiceNow's already-written unknown-note reconciliation/native lifecycle/closure, customer installation/Store acceptance and protected publication remain on the roadmap. Preserve all historical attempts and genuine human approvals.
 
 Standing priorities: **security, visual quality, clarity and ease**. Token savings must be measured per equivalent successful task; these changes improve integrity/transparency and do not establish reduced token consumption.
+
+Focused output review: CSV and the direct engine page previously bypassed responder redaction for old rows. Two RED tests reproduced it. The updated candidate applies canonical known-credential redaction at those outputs, before engine truncation/grouping;39 candidate tests and its full production build/types pass. This is self-review, not an independent assessment or blanket signoff. Preserve the specific activation gate.
