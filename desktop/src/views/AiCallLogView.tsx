@@ -107,7 +107,11 @@ function ScopedAiCallLog({ revision }: { revision: number }) {
       .then((result) => {
         if (!current()) return;
         if (result.ok) setResp({ ok: true, data: result.data });
-        else setNetworkError(result.error);
+        else setNetworkError(result.error === "desktop_session_required"
+          ? "Sign in to your workspace again to view AI call history."
+          : result.error === "migration_pending"
+            ? "AI call history is temporarily unavailable while a service update is pending."
+            : "AI call log could not be loaded. Refresh to try again.");
       })
       .catch(() => { if (current()) setNetworkError("AI call log could not be loaded."); })
       .finally(() => { if (current()) setLoading(false); });

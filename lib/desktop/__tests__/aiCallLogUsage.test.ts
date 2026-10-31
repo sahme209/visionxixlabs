@@ -46,3 +46,16 @@ it('keeps a newer refresh result when an older request later rejects',async()=>{
  expect(screen.queryByText('synthetic-private-old-failure')).toBeNull();
  expect(screen.getByRole('button',{name:'Refresh'})).toBeTruthy();
 });
+
+it('never renders an arbitrary failed-response diagnostic',async()=>{
+ const privateDiagnostic='synthetic-private-provider-token=fixture-not-real';
+ mock.load.mockResolvedValue({ok:false,error:privateDiagnostic});
+ render(createElement(AiCallLogView));
+ expect(await screen.findByText('AI call log could not be loaded. Refresh to try again.')).toBeTruthy();
+ expect(screen.queryByText(privateDiagnostic)).toBeNull();
+});
+it('keeps a known session recovery message actionable',async()=>{
+ mock.load.mockResolvedValue({ok:false,error:'desktop_session_required'});
+ render(createElement(AiCallLogView));
+ expect(await screen.findByText('Sign in to your workspace again to view AI call history.')).toBeTruthy();
+});
