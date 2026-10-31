@@ -7,5 +7,11 @@
     "offline native build passed",
     "strict signing passed"
   ],
-  "scope": "Live local character size indicator for instruction/context, including retained invalid drafts. No token estimate or automatic trimming, AI call, authority or provider change. Prepared local preview, not public release."
+  "scope": "Live local character size indicator for instruction/context, including retained invalid drafts. No token estimate or automatic trimming, AI call, authority or provider change. Prepared local preview, not public release.",
+  "nativeAcceptance": [
+    "opened signed c685a758 app",
+    "saved workspace restored",
+    "Bot displays 0 / 4,000 instruction and 0 / 4,000 context characters"
+  ],
+  "nativeLimit": "Typing verification stopped when user changed app state; no test text entered or send performed."
 }
