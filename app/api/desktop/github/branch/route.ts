@@ -15,6 +15,9 @@ import { createBranch } from "@/lib/connectors/github/githubWriteClient";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 
+import { prisma } from "@/lib/db";
+import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
+
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
@@ -43,6 +46,16 @@ export async function POST(request: NextRequest): Promise<Response> {
   const repo = parseRepositoryFullName(repositoryFullName);
   if (!repo) return NextResponse.json({ ok: false, error: "invalid_repository_full_name" }, { status: 400 });
 
+  // Enrollment is not an execution grant. These legacy endpoints have no
+  // baseline admission yet, so enrolled or unavailable authority must refuse.
+  const beforeWrite = () => assertNoGovernanceEnrollmentForMutation(
+    prisma, String(session.organizationId), request.signal,
+  );
+  try { await beforeWrite(); }
+  catch {
+    return NextResponse.json({ ok: false, error: "governance_execution_coverage_unavailable" }, { status: 409 });
+  }
+
   const tokenResult = await resolveTenantScopedToken(String(session.organizationId), repo);
   if (!tokenResult.ok) return NextResponse.json({ ok: false, error: tokenResult.error }, { status: 409 });
 
@@ -52,6 +65,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     baseBranch,
     newBranchName,
     installationToken: tokenResult.token,
+    beforeWrite,
   });
   if (!result.ok) return NextResponse.json({ ok: false, error: result.error }, { status: 502 });
 

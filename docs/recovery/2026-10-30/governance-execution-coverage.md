@@ -289,3 +289,21 @@ tests and was NOT counted; the corrected computer_input::authority filter ran12.
 Scoped backend types include all edited HTTP compositions. Focused independent
 review found no important security/recovery issue. These refusal seams are not
 complete active policy admission or coverage of every direct/Agent path.
+
+### Desktop GitHub legacy mutation fences (remaining-credit increment)
+
+The paired desktop branch, single-file commit and pull-request routes now use the
+existing tenant enrollment metadata refusal check before credential resolution,
+and pass a trusted server-created callback to the existing GitHub transport for
+an immediate pre-write recheck. Request data cannot supply this callback. Existing
+paired-session capability, tenant token, default-branch restriction and audit
+behavior remain. Enrolled or unavailable metadata refuses; only positive absence
+permits the existing legacy path. This is refusal coverage, not policy admission.
+
+Verification: 15 new simulated route tests plus existing enrollment/transport
+checks: 68 passed. Scoped production TypeScript for the three real route entry
+points passed. No live GitHub reads/writes, full build, deployment, new grant or
+installer publication was performed. Tests cover initial enrollment, metadata
+failure, positive absence, enrollment introduced before transport and missing
+session. Other environment/Airflow/alternate callers and real default admission
+remain incomplete; activation must continue refusing incomplete coverage.
