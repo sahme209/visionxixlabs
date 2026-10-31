@@ -1,0 +1,877 @@
+{
+  "packages": [
+    {
+      "name": "@aws-sdk/client-acm",
+      "version": "3.1049.0",
+      "integrity": "sha512-8jspNa0YqUud7yBPHGCN2A5zrI7P78ZgmJXF5Ut0AzJ2GhISJ7zl7NB8NtB2LRQQ5dURU266FlGOjC+Np4VrNA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-acm/package"
+    },
+    {
+      "name": "@aws-sdk/client-backup",
+      "version": "3.1049.0",
+      "integrity": "sha512-OPmdj3CXejXz7IQ+sYVU4v5Baw/WCZl2aTeUixvcU9XKDmnUXv5IrQLQ9ZBOKGmiTfTGlEHNqGo1Rv3hb1xZvQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-backup/package"
+    },
+    {
+      "name": "@aws-sdk/client-cloudtrail",
+      "version": "3.1049.0",
+      "integrity": "sha512-BiV+Pqytvnk08782qpYtsvUGH+iaAn95MbxrLrnqE5OAliLw8J5DSXaD+vc33MCnUPGt/CBk9SDE9tNFnIBg8Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-cloudtrail/package"
+    },
+    {
+      "name": "@aws-sdk/client-cloudwatch",
+      "version": "3.1049.0",
+      "integrity": "sha512-pxzt53Ch0luCqnSaWNI7vL8MjvF5WFTRV/VzyuHoWOydbaC3RQT2i5DcAW7hjaYQmmRItQnvazTeO+obsBR+4Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-cloudwatch/package"
+    },
+    {
+      "name": "@aws-sdk/client-cloudwatch-logs",
+      "version": "3.1049.0",
+      "integrity": "sha512-gruZzN053b5FyFD5PCOYstLkS3ksoHxMMiRBvwO6Es4MXubxhoEj4JSmAe07+ybwTW2SINyUu4zQ52zZ/WCNEQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-cloudwatch-logs/package"
+    },
+    {
+      "name": "@aws-sdk/client-cost-explorer",
+      "version": "3.1001.0",
+      "integrity": "sha512-22UGfiaBugzb07UDDBt4x8TExalG0rjBfLnD6DOuGHfDMc3lHZrHWXAV4gU4rJc6Er71WSzmYjYrH1yfRayzaw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-cost-explorer/package"
+    },
+    {
+      "name": "@aws-sdk/client-dynamodb",
+      "version": "3.1001.0",
+      "integrity": "sha512-mPmib0VFBnPR3s9Yz+e5HFd2HIbRlLrlnAbD+aEmPKB7Wqm4MOfWp7xMYyxpms+/CdDFnB1dk3vQyD5x6l4abw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-dynamodb/package"
+    },
+    {
+      "name": "@aws-sdk/client-ec2",
+      "version": "3.1001.0",
+      "integrity": "sha512-yROJVvWStAno73KbmurBNIp/9iITAPEJNMv6l9TN7R2Vrq3nEYPfd2/sgAy3Woe75fjKONHFHyE5gXmvcSpVzw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-ec2/package"
+    },
+    {
+      "name": "@aws-sdk/client-ecr",
+      "version": "3.1049.0",
+      "integrity": "sha512-DkLyg4kXthvZOLT84gdXVBwQQ4qc749TG05r1boTMmlgF/ns+7JjgFpJ1CNXIgxP4Q/72N//H3vIUhTVNBi8NA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-ecr/package"
+    },
+    {
+      "name": "@aws-sdk/client-ecs",
+      "version": "3.1049.0",
+      "integrity": "sha512-lq9VbUFru9bwYzEEq2rR/i7nqW+ETuvhnEp2ya9BihmqRPF2Lenk7isDoRkOyE26h3tMGLSxVyizfqPSe5QTSw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-ecs/package"
+    },
+    {
+      "name": "@aws-sdk/client-eks",
+      "version": "3.1049.0",
+      "integrity": "sha512-g9Kxhv3YlUTtQ14s+X1ycnjvX/XM1CRHG81id/SFFl/uYWGXt1NEP675IbNu1+4XLb8kotDdSAJu89onJW9p2A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-eks/package"
+    },
+    {
+      "name": "@aws-sdk/client-elastic-load-balancing-v2",
+      "version": "3.1049.0",
+      "integrity": "sha512-2qbgUmAuheODBoJtzJH+28gbHe3fB+TMFDFpHUN5F/gFzIwy2F5XgYGS7huXtzO3x+6KWQmFiMlQzSC0A/aWHg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-elastic-load-balancing-v2/package"
+    },
+    {
+      "name": "@aws-sdk/client-guardduty",
+      "version": "3.1049.0",
+      "integrity": "sha512-xAboWzzpKfiaFy/c+YndbedKy2QBHqNqzZLRorEbxJezK2Usxy7yn3URiyDQHuxZVtqmETInNBFUlkKOFluxDg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-guardduty/package"
+    },
+    {
+      "name": "@aws-sdk/client-iam",
+      "version": "3.1000.0",
+      "integrity": "sha512-RR4mq7t+4Fb2iaFDTcXF6Tcigl2nSWUyH61rwtiSbRrNp9A3xSexCSw79SIAkfwsuhk8Ig/ZVt5qpRHWRj2zgA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-iam/package"
+    },
+    {
+      "name": "@aws-sdk/client-lambda",
+      "version": "3.1049.0",
+      "integrity": "sha512-aMN6q+BLouSD6LDbSxXoqH3X55yacDFOH9+7RbUABFbo5NFMZCLtswbNE8UI6unk9fIUMA6V9YEm64SHmfIhaA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-lambda/package"
+    },
+    {
+      "name": "@aws-sdk/client-rds",
+      "version": "3.1001.0",
+      "integrity": "sha512-d941K1G02qd00GB2rNo6XjM01jcaa0izwDovFZbKHWgswPKW441+jmhF725U/AVldyabjtHaLskSCEuBNRabgQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-rds/package"
+    },
+    {
+      "name": "@aws-sdk/client-s3",
+      "version": "3.1001.0",
+      "integrity": "sha512-uKgFjQuBjMcd0iigLQwnqIp9gOy/5TGBxa42rcb6l5byDt1mrwOe6fyWTEUEJaNHG2LKYSPUibteGvM1zfm0Rw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-s3/package"
+    },
+    {
+      "name": "@aws-sdk/client-secrets-manager",
+      "version": "3.1049.0",
+      "integrity": "sha512-SHj5WzvYis2OBhbGY83WyFluUMl4DU6ZuJPrlAECfvr2lkRI4uiLd7a3MSmdZ5FlINcURLrPqhyHdzvZHCy3qw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-secrets-manager/package"
+    },
+    {
+      "name": "@aws-sdk/client-sns",
+      "version": "3.1049.0",
+      "integrity": "sha512-0ROCDKyA1czi7vx1LPigBtUEZ4fNHaewIyEp8GewGqow3mOCqnxPCsKIAxV0gxdy3ECbQhLPfmGzsBgJojJpbA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-sns/package"
+    },
+    {
+      "name": "@aws-sdk/client-sqs",
+      "version": "3.1049.0",
+      "integrity": "sha512-AiYaJS3uqH/u6uxxNOuCP9B7pUBDvsrf2LG6HTp7wGFbio3GxcJchUHpSBtbD0j2ZaGyZpOJyuPJ1/4sY5Z20Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-sqs/package"
+    },
+    {
+      "name": "@aws-sdk/client-ssm",
+      "version": "3.1049.0",
+      "integrity": "sha512-xSsmaANuuw/8UZy8rAIuD1z8tJF77p9UfWa+4psuHJDIrOdZLdRwbKNC3iCbvsIDc4v4+LOxaEJec2fdYl88lA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-ssm/package"
+    },
+    {
+      "name": "@aws-sdk/client-sts",
+      "version": "3.1000.0",
+      "integrity": "sha512-PMUloaoajk/YxLWh4OFC5H8wauISkeG5/OS/I0ZeptMVq36hKQmJgYFhOqcCWAm6u/88JX9XztmKCTX8CyFPVg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-sts/package"
+    },
+    {
+      "name": "@aws-sdk/client-wafv2",
+      "version": "3.1049.0",
+      "integrity": "sha512-xeAwe8llOiU94mTgq2KBpfafsXk/tg0qQT/A2sUUXNtlh+TOlTLXWylaX1lhHEruNJz26S1bib7SMwvlWv7gZg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/client-wafv2/package"
+    },
+    {
+      "name": "@aws-sdk/core",
+      "version": "3.974.13",
+      "integrity": "sha512-+Y5/4tHki0uYgyx8eun146DegRVQBpdKGK5RbV0FTKJPpaKTchvqVxrrRFK6Wk0JksO4iAZKw3eqxGEIwtO98w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/core/package"
+    },
+    {
+      "name": "@aws-sdk/crc64-nvme",
+      "version": "3.972.3",
+      "integrity": "sha512-UExeK+EFiq5LAcbHm96CQLSia+5pvpUVSAsVApscBzayb7/6dJBJKwV4/onsk4VbWSmqxDMcfuTD+pC4RxgZHg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/crc64-nvme/package"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-env",
+      "version": "3.972.38",
+      "integrity": "sha512-m3WjZEgPtioMhPmwqUt+DhlTJ2i9ufR6DhfkyXojb9puEvfR+ur2U5shavu5/Cc9WHHsDCvALi6UFHgcqjhQ5w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/credential-provider-env/package"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-http",
+      "version": "3.972.40",
+      "integrity": "sha512-D78L/m2Dr6cJnnSvWoAudPhQmCwmJ7j6APXsPYmFpPaKfQTfCSu0rdm8j14Np+VmXF9z8Aj8HE3xFpsrwtfgeg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/credential-provider-http/package"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-ini",
+      "version": "3.972.42",
+      "integrity": "sha512-Mu5ESvFXeinafVM8jTIvRqcvK2Ehj4kz3auT39yUcHwu1Vfxo6xRlmUafdKLW4tusjAJukQwK09sCSMgOm7OKg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/credential-provider-ini/package"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-login",
+      "version": "3.972.42",
+      "integrity": "sha512-O6WkZga3kf0yqyJYd1dbeJqVhEgJx/x1UaLgtbR+XuL/YP+K5y6QTxQKL7ka9z3jnQASESKGAPnRyt4D5hQrxA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/credential-provider-login/package"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-node",
+      "version": "3.972.43",
+      "integrity": "sha512-D/DJmbrWRP5BXEO3FH+ar4el+2n6OlGofiud7dQun2jES+AQEJjczenp1jBb4MBN7CpGpS8nsWGQLtuzc9tQbA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/credential-provider-node/package"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-process",
+      "version": "3.972.38",
+      "integrity": "sha512-EnbYVajGgbkb24s0K1eo4VNAPV5mHIET7LSvirTaFCwkfrfaOJxtSE+wY/tJdKDS21cEYkZs2ruCaAm+W4iblg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/credential-provider-process/package"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-sso",
+      "version": "3.972.42",
+      "integrity": "sha512-RVV/9NbFwI8ZHEH5dn39lGyFmSbSVj1+orZdr6QsOe1mW9DCglmlen0cFaNZmCcqkqc7erNRHNBduxbeZuHAnw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/credential-provider-sso/package"
+    },
+    {
+      "name": "@aws-sdk/credential-provider-web-identity",
+      "version": "3.972.42",
+      "integrity": "sha512-/67fXX0ddllD4u2Nujc5PvT4byHgpMUfz6+RxIKi/0nFIckeorm7JvXgzBuDyVKw0s58EbofmETDWUf9vTEuHQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/credential-provider-web-identity/package"
+    },
+    {
+      "name": "@aws-sdk/dynamodb-codec",
+      "version": "3.972.17",
+      "integrity": "sha512-Q2sff1qeHbFSsmRXAhzCl6KM1FVUPvk4njNWvGkBcbbLwTc+i3AxErv1SWhE1SQP0ETMPbcJOEDgc+Ycw1htQg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/dynamodb-codec/package"
+    },
+    {
+      "name": "@aws-sdk/endpoint-cache",
+      "version": "3.972.11",
+      "integrity": "sha512-8q1ICxcDjHId3bBryuu/j+1L9y5/3uQnwzLDt5j2ElcjZSoWmFtymdJy7OjLrluSMe0Z4mq5bcH4fxBXvlEHfw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/endpoint-cache/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-bucket-endpoint",
+      "version": "3.972.6",
+      "integrity": "sha512-3H2bhvb7Cb/S6WFsBy/Dy9q2aegC9JmGH1inO8Lb2sWirSqpLJlZmvQHPE29h2tIxzv6el/14X/tLCQ8BQU6ZQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-bucket-endpoint/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-endpoint-discovery",
+      "version": "3.972.6",
+      "integrity": "sha512-p5DYw2cpnsuT/bFA4DEBxucY/wn3TVGDZ7wonEds6EEox35I5DThCsw6aWDIN/fTpG0FMLO3q7s1PUKozWl3CQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-endpoint-discovery/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-expect-continue",
+      "version": "3.972.6",
+      "integrity": "sha512-QMdffpU+GkSGC+bz6WdqlclqIeCsOfgX8JFZ5xvwDtX+UTj4mIXm3uXu7Ko6dBseRcJz1FA6T9OmlAAY6JgJUg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-expect-continue/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-flexible-checksums",
+      "version": "3.973.2",
+      "integrity": "sha512-KM6QujWdasNjRLG+f7YEqEY5D36vR6Govm7nPIwxjILpb5rJ0pPJZpYY1nrzgtlxwJIYAznfBK5YXoLOHKHyfQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-flexible-checksums/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-host-header",
+      "version": "3.972.6",
+      "integrity": "sha512-5XHwjPH1lHB+1q4bfC7T8Z5zZrZXfaLcjSMwTd1HPSPrCmPFMbg3UQ5vgNWcVj0xoX4HWqTGkSf2byrjlnRg5w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-host-header/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-location-constraint",
+      "version": "3.972.6",
+      "integrity": "sha512-XdZ2TLwyj3Am6kvUc67vquQvs6+D8npXvXgyEUJAdkUDx5oMFJKOqpK+UpJhVDsEL068WAJl2NEGzbSik7dGJQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-location-constraint/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-logger",
+      "version": "3.972.6",
+      "integrity": "sha512-iFnaMFMQdljAPrvsCVKYltPt2j40LQqukAbXvW7v0aL5I+1GO7bZ/W8m12WxW3gwyK5p5u1WlHg8TSAizC5cZw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-logger/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-recursion-detection",
+      "version": "3.972.6",
+      "integrity": "sha512-dY4v3of5EEMvik6+UDwQ96KfUFDk8m1oZDdkSc5lwi4o7rFrjnv0A+yTV+gu230iybQZnKgDLg/rt2P3H+Vscw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-recursion-detection/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-sdk-ec2",
+      "version": "3.972.12",
+      "integrity": "sha512-ADSc0UZGVIlkvMt71PZROy9usWk6KaAGyN8vo0t4a+xAkTChsBWon0VKxSbvG6ZowBzfP4k9y81VHL6067ie2A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-sdk-ec2/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-sdk-rds",
+      "version": "3.972.12",
+      "integrity": "sha512-GuINAPlf4U/PPvden7WfONQJCDz7Vr45lJz9n+reMPD6RGYk5sZPJ1pnDSwnNh1eUdJfC2nELK7yanOPWrXv6w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-sdk-rds/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-sdk-s3",
+      "version": "3.972.16",
+      "integrity": "sha512-U4K1rqyJYvT/zgTI3+rN+MToa51dFnnq1VSsVJuJWPNEKcEnuZVqf7yTpkJJMkYixVW5TTi1dgupd+nmJ0JyWw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-sdk-s3/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-sdk-sqs",
+      "version": "3.972.24",
+      "integrity": "sha512-ej3vwWFzTP2B0FxlU2JelMaxplEncflFv2ARsoMQ9TXI/yfmsPEZw8zkOdsQp3rMEJ/vN7iKTYDYIcpeMmDRoQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-sdk-sqs/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-ssec",
+      "version": "3.972.6",
+      "integrity": "sha512-acvMUX9jF4I2Ew+Z/EA6gfaFaz9ehci5wxBmXCZeulLuv8m+iGf6pY9uKz8TPjg39bdAz3hxoE0eLP8Qz+IYlA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-ssec/package"
+    },
+    {
+      "name": "@aws-sdk/middleware-user-agent",
+      "version": "3.972.16",
+      "integrity": "sha512-AmVxtxn8ZkNJbuPu3KKfW9IkJgTgcEtgSwbo0NVcAb31iGvLgHXj2nbbyrUDfh2fx8otXmqL+qw1lRaTi+V3vA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/middleware-user-agent/package"
+    },
+    {
+      "name": "@aws-sdk/nested-clients",
+      "version": "3.997.10",
+      "integrity": "sha512-FtQ/Bt327peZJuyo4WZSOLVUTw9ujRxntepiC7L65FxA2P82Xlq0g14T22BuqBUeMjDoxa9nvwiMHjLIfP3eUg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/nested-clients/package"
+    },
+    {
+      "name": "@aws-sdk/region-config-resolver",
+      "version": "3.972.6",
+      "integrity": "sha512-Aa5PusHLXAqLTX1UKDvI3pHQJtIsF7Q+3turCHqfz/1F61/zDMWfbTC8evjhrrYVAtz9Vsv3SJ/waSUeu7B6gw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/region-config-resolver/package"
+    },
+    {
+      "name": "@aws-sdk/s3-request-presigner",
+      "version": "3.1053.0",
+      "integrity": "sha512-F2424BizKG4Jg/I7kr9bNCRqE1fo8ZnHBad+s3KalL20SwI1KCk7KnVJRdIpNVHbHqrhg/UZaLxaAjY7vLUUYw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/s3-request-presigner/package"
+    },
+    {
+      "name": "@aws-sdk/signature-v4-multi-region",
+      "version": "3.996.28",
+      "integrity": "sha512-qs9z5LqXO/CZC2Lg9SGKpoLU8Rhi+m2pFKZqfO9pytX1clc0katqtsDNupJxFy0xT9wsZSPzM2v1y+/H/zfp5Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/signature-v4-multi-region/package"
+    },
+    {
+      "name": "@aws-sdk/token-providers",
+      "version": "3.1049.0",
+      "integrity": "sha512-r7+d0lQMTHKypkmaF5jRTBYLYHCUHzt3gaVoN9SidLhQeWhCmHk3AKrboDTpPF5b7Pt7vKu3+oeMjznM2Eu1ow==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/token-providers/package"
+    },
+    {
+      "name": "@aws-sdk/types",
+      "version": "3.973.9",
+      "integrity": "sha512-kuBfgQVdcz5Bmapc4A13YbpVw/pXkesfhetcFYwbntqas8sF41OHyd4o28+/TG2ZQdHBsv90Lsu5y6oitvYCdg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/types/package"
+    },
+    {
+      "name": "@aws-sdk/util-arn-parser",
+      "version": "3.972.2",
+      "integrity": "sha512-VkykWbqMjlSgBFDyrY3nOSqupMc6ivXuGmvci6Q3NnLq5kC+mKQe2QBZ4nrWRE/jqOxeFP2uYzLtwncYYcvQDg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/util-arn-parser/package"
+    },
+    {
+      "name": "@aws-sdk/util-endpoints",
+      "version": "3.996.3",
+      "integrity": "sha512-yWIQSNiCjykLL+ezN5A+DfBb1gfXTytBxm57e64lYmwxDHNmInYHRJYYRAGWG1o77vKEiWaw4ui28e3yb1k5aQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/util-endpoints/package"
+    },
+    {
+      "name": "@aws-sdk/util-format-url",
+      "version": "3.972.6",
+      "integrity": "sha512-0YNVNgFyziCejXJx0rzxPiD2rkxTWco4c9wiMF6n37Tb9aQvIF8+t7GyEyIFCwQHZ0VMQaAl+nCZHOYz5I5EKw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/util-format-url/package"
+    },
+    {
+      "name": "@aws-sdk/util-locate-window",
+      "version": "3.965.4",
+      "integrity": "sha512-H1onv5SkgPBK2P6JR2MjGgbOnttoNzSPIRoeZTNPZYyaplwGg50zS3amXvXqF0/qfXpWEC9rLWU564QTB9bSog==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/util-locate-window/package"
+    },
+    {
+      "name": "@aws-sdk/util-user-agent-browser",
+      "version": "3.972.6",
+      "integrity": "sha512-Fwr/llD6GOrFgQnKaI2glhohdGuBDfHfora6iG9qsBBBR8xv1SdCSwbtf5CWlUdCw5X7g76G/9Hf0Inh0EmoxA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/util-user-agent-browser/package"
+    },
+    {
+      "name": "@aws-sdk/util-user-agent-node",
+      "version": "3.973.1",
+      "integrity": "sha512-kmgbDqT7aCBEVrqESM2JUjbf0zhDUQ7wnt3q1RuVS+3mglrcfVb2bwkbmf38npOyyPGtQPV5dWN3m+sSFAVAgQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/util-user-agent-node/package"
+    },
+    {
+      "name": "@aws-sdk/xml-builder",
+      "version": "3.972.25",
+      "integrity": "sha512-GH+Kjz4nPKWKHnsiQpnhP1MJdTGIcK4rAka6tzakgjjUkVgNsmPeEbbRAf09SzS1hjGu6duGHCBsxYke0BhHjQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@aws-sdk/xml-builder/package"
+    },
+    {
+      "name": "@azure/abort-controller",
+      "version": "2.1.2",
+      "integrity": "sha512-nBrLsEWm4J2u5LpAPjxADTlq3trDgVZZXHNKabeXZtpq3d3AbN/KGO82R87rdDz5/lYB024rtEf10/q0urNgsA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/abort-controller/package"
+    },
+    {
+      "name": "@azure/arm-compute",
+      "version": "23.3.0",
+      "integrity": "sha512-shWghknI8LhhQhiGDcz89WSbuXogRALmiZ0TOUD6Ezv6t1UhAu4ess+q7O/EMsaErAHqiqBpFpLS/aTc6GNqxA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/arm-compute/package"
+    },
+    {
+      "name": "@azure/arm-containerservice",
+      "version": "21.6.0",
+      "integrity": "sha512-DrelRh6wzeGAZsCKNLBA02LSzSgyD7jCaIzZ33Iy3nTvpYjuaISSTJyTCcf1QOCclUBUS19Pg2TbBG6KxMOuQg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/arm-containerservice/package"
+    },
+    {
+      "name": "@azure/arm-keyvault",
+      "version": "3.2.0",
+      "integrity": "sha512-LZMEl/i/FeQTsIqNpAyddki07OSO8UcqbArN5Ge3Ka76lvRkr6PYMtBBWfAT0EHNvFtqONsfRYFzDNtTz3A6Mg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/arm-keyvault/package"
+    },
+    {
+      "name": "@azure/arm-network",
+      "version": "36.0.0",
+      "integrity": "sha512-fTVEl0u0VfvcrZJ6296W5/kVDae49yyx/PD91D+OgZJCzgechOsJtx1oLTiDXvAmY/2CrcSJpNsAWNhbmV0cKQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/arm-network/package"
+    },
+    {
+      "name": "@azure/arm-resources",
+      "version": "7.0.0",
+      "integrity": "sha512-ezC1YLuPp1bh0GQFALcBvBxAB+9H5O0ynS40jp1t6hTlYe2t61cSplM3M4+4+nt9FCFZOjQSgAwj4KWYb8gruA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/arm-resources/package"
+    },
+    {
+      "name": "@azure/arm-security",
+      "version": "5.0.0",
+      "integrity": "sha512-lmg36E9fsGc6G3jdXbJK5y7Rx+OkXt8CpXn1Jqv1OARM+Q7mz2BQSab5K+KMc2G+GSOmQKbwUnCD5tIbLF/GFg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/arm-security/package"
+    },
+    {
+      "name": "@azure/arm-storage",
+      "version": "19.1.0",
+      "integrity": "sha512-eGwTw2lHVgAXNMOFN2Y6wWmZ700/Payubig4fSf0Yaz9nn3UzNqNor57wEtCxf4VxuhoXcD8k2bisjddu4jNGQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/arm-storage/package"
+    },
+    {
+      "name": "@azure/arm-subscriptions",
+      "version": "6.0.0",
+      "integrity": "sha512-QkhMIRvP6koytI5EXC99ZxJDC1eBigYG6KEoHSF1fAKKeQgtZzaczTfX8Pc7zjZpks5J91kMcMk99UEj8+ahPw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/arm-subscriptions/package"
+    },
+    {
+      "name": "@azure/core-auth",
+      "version": "1.10.1",
+      "integrity": "sha512-ykRMW8PjVAn+RS6ww5cmK9U2CyH9p4Q88YJwvUslfuMmN98w/2rdGRLPqJYObapBCdzBVeDgYWdJnFPFb7qzpg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/core-auth/package"
+    },
+    {
+      "name": "@azure/core-client",
+      "version": "1.10.1",
+      "integrity": "sha512-Nh5PhEOeY6PrnxNPsEHRr9eimxLwgLlpmguQaHKBinFYA/RU9+kOYVOQqOrTsCL+KSxrLLl1gD8Dk5BFW/7l/w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/core-client/package"
+    },
+    {
+      "name": "@azure/core-lro",
+      "version": "2.7.2",
+      "integrity": "sha512-0YIpccoX8m/k00O7mDDMdJpbr6mf1yWo2dfmxt5A8XVZVVMz2SSKaEbMCeJRvgQ0IaSlqhjT47p4hVIRRy90xw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/core-lro/package"
+    },
+    {
+      "name": "@azure/core-paging",
+      "version": "1.6.2",
+      "integrity": "sha512-YKWi9YuCU04B55h25cnOYZHxXYtEvQEbKST5vqRga7hWY9ydd3FZHdeQF8pyh+acWZvppw13M/LMGx0LABUVMA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/core-paging/package"
+    },
+    {
+      "name": "@azure/core-rest-pipeline",
+      "version": "1.23.0",
+      "integrity": "sha512-Evs1INHo+jUjwHi1T6SG6Ua/LHOQBCLuKEEE6efIpt4ZOoNonaT1kP32GoOcdNDbfqsD2445CPri3MubBy5DEQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/core-rest-pipeline/package"
+    },
+    {
+      "name": "@azure/core-tracing",
+      "version": "1.3.1",
+      "integrity": "sha512-9MWKevR7Hz8kNzzPLfX4EAtGM2b8mr50HPDBvio96bURP/9C+HjdH3sBlLSNNrvRAr5/k/svoH457gB5IKpmwQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/core-tracing/package"
+    },
+    {
+      "name": "@azure/core-util",
+      "version": "1.13.1",
+      "integrity": "sha512-XPArKLzsvl0Hf0CaGyKHUyVgF7oDnhKoP85Xv6M4StF/1AhfORhZudHtOyf2s+FcbuQ9dPRAjB8J2KvRRMUK2A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/core-util/package"
+    },
+    {
+      "name": "@azure/identity",
+      "version": "4.13.1",
+      "integrity": "sha512-5C/2WD5Vb1lHnZS16dNQRPMjN6oV/Upba+C9nBIs15PmOi6A3ZGs4Lr2u60zw4S04gi+u3cEXiqTVP7M4Pz3kw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/identity/package"
+    },
+    {
+      "name": "@azure/logger",
+      "version": "1.3.0",
+      "integrity": "sha512-fCqPIfOcLE+CGqGPd66c8bZpwAji98tZ4JI9i/mlTNTlsIWslCfpg48s/ypyLxZTump5sypjrKn2/kY7q8oAbA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/logger/package"
+    },
+    {
+      "name": "@azure/msal-browser",
+      "version": "5.8.0",
+      "integrity": "sha512-X7IZV77bN56l7sbLjkcbQJX1t3U4tgxqztDr/XFbUcUfKk+z2FavcLgKP+OYUNj0wl/pEEtV9lldW9siY8BuHQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/msal-browser/package"
+    },
+    {
+      "name": "@azure/msal-common",
+      "version": "16.5.1",
+      "integrity": "sha512-WS9w9SfI8SEYO7mTnxGeZ3UwQfhAVYCWglYF2/7GNx3ioHiAs2gPkl9eSwVs8cPrmiGh+zi9ai/OOKoq4cyzDw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/msal-common/package"
+    },
+    {
+      "name": "@azure/msal-node",
+      "version": "5.6.0",
+      "integrity": "sha512-uFY9NxrWHw8PwZx7gAX6PDn+9vdfS05+levc/kwkx77IkjfaldnQbbcQzzDIZ5Hq5Zdr6/z92oAIoRWKp6MnOA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@azure/msal-node/package"
+    },
+    {
+      "name": "@google-cloud/compute",
+      "version": "6.9.0",
+      "integrity": "sha512-bqhbJDMqaZIzLdJ64TPs3FvtKC5OGB/DEZpNqDov1342N2yyMXfCCSAD3/FnQJ11jcBZFe30Ip8VEM4x8WTGMQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@google-cloud/compute/package"
+    },
+    {
+      "name": "@google-cloud/container",
+      "version": "7.2.0",
+      "integrity": "sha512-HYvn/pEyUvhkOLnt/F+Xo7R6mDK7VvlJ0gquw59E9vTu4SqqQ5HcFFpQdrpYPfoxFDFgaxaKY1FpFZYFlsABjA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@google-cloud/container/package"
+    },
+    {
+      "name": "@google-cloud/paginator",
+      "version": "7.1.0",
+      "integrity": "sha512-PNCXdAQgNoQODZuqyhmkN2nUpB2q9UFzawZ1oyCDyEyhcheRoCKJJhSKhEIeKpM/NCLnC6Q4We4HEkGCwNDnCA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@google-cloud/paginator/package"
+    },
+    {
+      "name": "@google-cloud/projectify",
+      "version": "6.1.0",
+      "integrity": "sha512-tKAx9q6vTtbgZcqCojKWK8k6Dy2XBsE7BkNrrBsblxNXrKImYnljqeGfYh9qnTrlTjC9F19pTyCkGcl3pFMW/w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@google-cloud/projectify/package"
+    },
+    {
+      "name": "@google-cloud/promisify",
+      "version": "6.1.0",
+      "integrity": "sha512-H+Rytzi5zYMyoAmU/zgYLgq7fJ9FY4QQEg4k6gfFx/RY1COJ2xxyIfe8bZ62lqEbWM1DJH7IYETqTFmqNtuUhQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@google-cloud/promisify/package"
+    },
+    {
+      "name": "@google-cloud/resource-manager",
+      "version": "6.2.1",
+      "integrity": "sha512-x/7G3qwLt9e+D2sL3hMS/sa7F0r3mW+b+eikR7IqpJTp4n6l6MPSRo0auprf3xiG16H5IwFaIaJ7HoOaeh5tNw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@google-cloud/resource-manager/package"
+    },
+    {
+      "name": "@google-cloud/security-center",
+      "version": "9.3.1",
+      "integrity": "sha512-GPj7Vo8mKp5VerKzAAsUqXuBRg7qeAndf7BMI4dWJUm5hE/Ts7TBFZbeJX9jBLp9GbUHFxhKEYfuqnLUTVw+fw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@google-cloud/security-center/package"
+    },
+    {
+      "name": "@google-cloud/storage",
+      "version": "8.4.0",
+      "integrity": "sha512-M3kA6UA2Tjp5aznCrgKcm9CzOjiQyRMnquqalqXAeS5wvkqqZxN8wpNjjHafOSYs6lQ82U7f2i8we4eTfIrpkA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@google-cloud/storage/package"
+    },
+    {
+      "name": "@smithy/abort-controller",
+      "version": "4.2.10",
+      "integrity": "sha512-qocxM/X4XGATqQtUkbE9SPUB6wekBi+FyJOMbPj0AhvyvFGYEmOlz6VB22iMePCQsFmMIvFSeViDvA7mZJG47g==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/abort-controller/package"
+    },
+    {
+      "name": "@smithy/chunked-blob-reader",
+      "version": "5.2.1",
+      "integrity": "sha512-y5d4xRiD6TzeP5BWlb+Ig/VFqF+t9oANNhGeMqyzU7obw7FYgTgVi50i5JqBTeKp+TABeDIeeXFZdz65RipNtA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/chunked-blob-reader/package"
+    },
+    {
+      "name": "@smithy/chunked-blob-reader-native",
+      "version": "4.2.2",
+      "integrity": "sha512-QzzYIlf4yg0w5TQaC9VId3B3ugSk1MI/wb7tgcHtd7CBV9gNRKZrhc2EPSxSZuDy10zUZ0lomNMgkc6/VVe8xg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/chunked-blob-reader-native/package"
+    },
+    {
+      "name": "@smithy/config-resolver",
+      "version": "4.4.9",
+      "integrity": "sha512-ejQvXqlcU30h7liR9fXtj7PIAau1t/sFbJpgWPfiYDs7zd16jpH0IsSXKcba2jF6ChTXvIjACs27kNMc5xxE2Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/config-resolver/package"
+    },
+    {
+      "name": "@smithy/core",
+      "version": "3.35.0",
+      "integrity": "sha512-zRMhfkByhT2snNdr1si24vJitU6Cr9ix2MikUfWmkAgp4jrNP0GcKSP5YvwQ+TlI8AZXER5QOGJn3JsVtSD9/A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/core/package"
+    },
+    {
+      "name": "@smithy/credential-provider-imds",
+      "version": "4.3.3",
+      "integrity": "sha512-I2Bti0DKFo2IJyN28ijCsx51BAumEYR4/1yZ1FXyBygy9MqbnMqCev4JPth/MbpRfBSRAX35hITSnAdJRo1u5w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/credential-provider-imds/package"
+    },
+    {
+      "name": "@smithy/eventstream-codec",
+      "version": "4.2.10",
+      "integrity": "sha512-A4ynrsFFfSXUHicfTcRehytppFBcY3HQxEGYiyGktPIOye3Ot7fxpiy4VR42WmtGI4Wfo6OXt/c1Ky1nUFxYYQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/eventstream-codec/package"
+    },
+    {
+      "name": "@smithy/eventstream-serde-browser",
+      "version": "4.2.10",
+      "integrity": "sha512-0xupsu9yj9oDVuQ50YCTS9nuSYhGlrwqdaKQel9y2Fz7LU9fNErVlw9N0o4pm4qqvWEGbSTI4HKc6XJfB30MVw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/eventstream-serde-browser/package"
+    },
+    {
+      "name": "@smithy/eventstream-serde-config-resolver",
+      "version": "4.3.10",
+      "integrity": "sha512-8kn6sinrduk0yaYHMJDsNuiFpXwQwibR7n/4CDUqn4UgaG+SeBHu5jHGFdU9BLFAM7Q4/gvr9RYxBHz9/jKrhA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/eventstream-serde-config-resolver/package"
+    },
+    {
+      "name": "@smithy/eventstream-serde-node",
+      "version": "4.2.10",
+      "integrity": "sha512-uUrxPGgIffnYfvIOUmBM5i+USdEBRTdh7mLPttjphgtooxQ8CtdO1p6K5+Q4BBAZvKlvtJ9jWyrWpBJYzBKsyQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/eventstream-serde-node/package"
+    },
+    {
+      "name": "@smithy/eventstream-serde-universal",
+      "version": "4.2.10",
+      "integrity": "sha512-aArqzOEvcs2dK+xQVCgLbpJQGfZihw8SD4ymhkwNTtwKbnrzdhJsFDKuMQnam2kF69WzgJYOU5eJlCx+CA32bw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/eventstream-serde-universal/package"
+    },
+    {
+      "name": "@smithy/fetch-http-handler",
+      "version": "5.4.3",
+      "integrity": "sha512-F+DRf8IJazRJgYog2A/yJK7eYVc0rqTlRzO+5ZxjJd4WkZoKz0IJRncf7G6t1pdVT3kryJcwuTFhN1c5m6N47A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/fetch-http-handler/package"
+    },
+    {
+      "name": "@smithy/hash-blob-browser",
+      "version": "4.2.11",
+      "integrity": "sha512-DrcAx3PM6AEbWZxsKl6CWAGnVwiz28Wp1ZhNu+Hi4uI/6C1PIZBIaPM2VoqBDAsOWbM6ZVzOEQMxFLLdmb4eBQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/hash-blob-browser/package"
+    },
+    {
+      "name": "@smithy/hash-node",
+      "version": "4.2.10",
+      "integrity": "sha512-1VzIOI5CcsvMDvP3iv1vG/RfLJVVVc67dCRyLSB2Hn9SWCZrDO3zvcIzj3BfEtqRW5kcMg5KAeVf1K3dR6nD3w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/hash-node/package"
+    },
+    {
+      "name": "@smithy/hash-stream-node",
+      "version": "4.2.10",
+      "integrity": "sha512-w78xsYrOlwXKwN5tv1GnKIRbHb1HygSpeZMP6xDxCPGf1U/xDHjCpJu64c5T35UKyEPwa0bPeIcvU69VY3khUA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/hash-stream-node/package"
+    },
+    {
+      "name": "@smithy/invalid-dependency",
+      "version": "4.2.10",
+      "integrity": "sha512-vy9KPNSFUU0ajFYk0sDZIYiUlAWGEAhRfehIr5ZkdFrRFTAuXEPUd41USuqHU6vvLX4r6Q9X7MKBco5+Il0Org==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/invalid-dependency/package"
+    },
+    {
+      "name": "@smithy/is-array-buffer",
+      "version": "4.2.1",
+      "integrity": "sha512-Yfu664Qbf1B4IYIsYgKoABt010daZjkaCRvdU/sPnZG6TtHOB0md0RjNdLGzxe5UIdn9js4ftPICzmkRa9RJ4Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/is-array-buffer/package"
+    },
+    {
+      "name": "@smithy/md5-js",
+      "version": "4.2.10",
+      "integrity": "sha512-Op+Dh6dPLWTjWITChFayDllIaCXRofOed8ecpggTC5fkh8yXes0vAEX7gRUfjGK+TlyxoCAA05gHbZW/zB9JwQ==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/md5-js/package"
+    },
+    {
+      "name": "@smithy/middleware-compression",
+      "version": "4.6.2",
+      "integrity": "sha512-Q9d+luiRjyHT6kCL/9NyGpdZJgodh4vtvfHC6H8SqoVKrV2k9RoyI9/IloVfdCYks3/2DIi7BsYYLcda5KZS0A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/middleware-compression/package"
+    },
+    {
+      "name": "@smithy/middleware-content-length",
+      "version": "4.2.10",
+      "integrity": "sha512-TQZ9kX5c6XbjhaEBpvhSvMEZ0klBs1CFtOdPFwATZSbC9UeQfKHPLPN9Y+I6wZGMOavlYTOlHEPDrt42PMSH9w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/middleware-content-length/package"
+    },
+    {
+      "name": "@smithy/middleware-endpoint",
+      "version": "4.4.21",
+      "integrity": "sha512-CoVGZaqIC0tEjz0ga3ciwCMA5fd/4lIOwO2wx0fH+cTi1zxSFZnMJbIiIF9G1d4vRSDyTupDrpS3FKBBJGkRZg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/middleware-endpoint/package"
+    },
+    {
+      "name": "@smithy/middleware-retry",
+      "version": "4.4.38",
+      "integrity": "sha512-WdHvdhjE6Fj78vxFwDKFDwlqGOGRUWrwGeuENUbTVE46Su9mnQM+dXHtbnCaQvwuSYrRsjpe8zUsFpwUp/azlA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/middleware-retry/package"
+    },
+    {
+      "name": "@smithy/middleware-serde",
+      "version": "4.2.11",
+      "integrity": "sha512-STQdONGPwbbC7cusL60s7vOa6He6A9w2jWhoapL0mgVjmR19pr26slV+yoSP76SIssMTX/95e5nOZ6UQv6jolg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/middleware-serde/package"
+    },
+    {
+      "name": "@smithy/middleware-stack",
+      "version": "4.2.10",
+      "integrity": "sha512-pmts/WovNcE/tlyHa8z/groPeOtqtEpp61q3W0nW1nDJuMq/x+hWa/OVQBtgU0tBqupeXq0VBOLA4UZwE8I0YA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/middleware-stack/package"
+    },
+    {
+      "name": "@smithy/node-config-provider",
+      "version": "4.3.10",
+      "integrity": "sha512-UALRbJtVX34AdP2VECKVlnNgidLHA2A7YgcJzwSBg1hzmnO/bZBHl/LDQQyYifzUwp1UOODnl9JJ3KNawpUJ9w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/node-config-provider/package"
+    },
+    {
+      "name": "@smithy/node-http-handler",
+      "version": "4.7.3",
+      "integrity": "sha512-/jPhevcTFPMVl6KNjbaI47iOg1zxC7IsnX4PQDGVZKMFceOXtB8IEYaB7a9VvkP/3oC60WzTeKocvSI7vLT0vA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/node-http-handler/package"
+    },
+    {
+      "name": "@smithy/property-provider",
+      "version": "4.2.10",
+      "integrity": "sha512-5jm60P0CU7tom0eNrZ7YrkgBaoLFXzmqB0wVS+4uK8PPGmosSrLNf6rRd50UBvukztawZ7zyA8TxlrKpF5z9jw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/property-provider/package"
+    },
+    {
+      "name": "@smithy/protocol-http",
+      "version": "5.3.10",
+      "integrity": "sha512-2NzVWpYY0tRdfeCJLsgrR89KE3NTWT2wGulhNUxYlRmtRmPwLQwKzhrfVaiNlA9ZpJvbW7cjTVChYKgnkqXj1A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/protocol-http/package"
+    },
+    {
+      "name": "@smithy/querystring-builder",
+      "version": "4.2.10",
+      "integrity": "sha512-HeN7kEvuzO2DmAzLukE9UryiUvejD3tMp9a1D1NJETerIfKobBUCLfviP6QEk500166eD2IATaXM59qgUI+YDA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/querystring-builder/package"
+    },
+    {
+      "name": "@smithy/querystring-parser",
+      "version": "4.2.10",
+      "integrity": "sha512-4Mh18J26+ao1oX5wXJfWlTT+Q1OpDR8ssiC9PDOuEgVBGloqg18Fw7h5Ct8DyT9NBYwJgtJ2nLjKKFU6RP1G1Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/querystring-parser/package"
+    },
+    {
+      "name": "@smithy/service-error-classification",
+      "version": "4.2.10",
+      "integrity": "sha512-0R/+/Il5y8nB/By90o8hy/bWVYptbIfvoTYad0igYQO5RefhNCDmNzqxaMx7K1t/QWo0d6UynqpqN5cCQt1MCg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/service-error-classification/package"
+    },
+    {
+      "name": "@smithy/shared-ini-file-loader",
+      "version": "4.4.5",
+      "integrity": "sha512-pHgASxl50rrtOztgQCPmOXFjRW+mCd7ALr/3uXNzRrRoGV5G2+78GOsQ3HlQuBVHCh9o6xqMNvlIKZjWn4Euug==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/shared-ini-file-loader/package"
+    },
+    {
+      "name": "@smithy/signature-v4",
+      "version": "5.4.3",
+      "integrity": "sha512-53+75QuPl6DL+ct6vVEB51FDO5oulXr20TPV46VvJZg76lIlXNWfxi8j+G2V/t0I2qxCBOa3vX/8bmjrpFVo9g==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/signature-v4/package"
+    },
+    {
+      "name": "@smithy/smithy-client",
+      "version": "4.12.1",
+      "integrity": "sha512-Xf9UFHlAihewfkmLNZ6I/Ek6kcYBKoU3cbRS9Z4q++9GWoW0YFbAHs7wMbuXm+nGuKHZ5OKheZMuDdaWPv8DJw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/smithy-client/package"
+    },
+    {
+      "name": "@smithy/types",
+      "version": "4.19.0",
+      "integrity": "sha512-r7jh49VJxGerfAcTQA6gXcKc+98zOp/tqRwzYjgOE+iSQsP6cEU1hq2QzbuipmP68QtYdY9wKEhiCQZIzHgZ4Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/types/package"
+    },
+    {
+      "name": "@smithy/url-parser",
+      "version": "4.2.10",
+      "integrity": "sha512-uypjF7fCDsRk26u3qHmFI/ePL7bxxB9vKkE+2WKEciHhz+4QtbzWiHRVNRJwU3cKhrYDYQE3b0MRFtqfLYdA4A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/url-parser/package"
+    },
+    {
+      "name": "@smithy/util-base64",
+      "version": "4.3.1",
+      "integrity": "sha512-BKGuawX4Doq/bI/uEmg+Zyc36rJKWuin3py89PquXBIBqmbnJwBBsmKhdHfNEp0+A4TDgLmT/3MSKZ1SxHcR6w==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-base64/package"
+    },
+    {
+      "name": "@smithy/util-body-length-browser",
+      "version": "4.2.1",
+      "integrity": "sha512-SiJeLiozrAoCrgDBUgsVbmqHmMgg/2bA15AzcbcW+zan7SuyAVHN4xTSbq0GlebAIwlcaX32xacnrG488/J/6g==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-body-length-browser/package"
+    },
+    {
+      "name": "@smithy/util-body-length-node",
+      "version": "4.2.2",
+      "integrity": "sha512-4rHqBvxtJEBvsZcFQSPQqXP2b/yy/YlB66KlcEgcH2WNoOKCKB03DSLzXmOsXjbl8dJ4OEYTn31knhdznwk7zw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-body-length-node/package"
+    },
+    {
+      "name": "@smithy/util-buffer-from",
+      "version": "4.2.1",
+      "integrity": "sha512-/swhmt1qTiVkaejlmMPPDgZhEaWb/HWMGRBheaxwuVkusp/z+ErJyQxO6kaXumOciZSWlmq6Z5mNylCd33X7Ig==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-buffer-from/package"
+    },
+    {
+      "name": "@smithy/util-config-provider",
+      "version": "4.2.1",
+      "integrity": "sha512-462id/00U8JWFw6qBuTSWfN5TxOHvDu4WliI97qOIOnuC/g+NDAknTU8eoGXEPlLkRVgWEr03jJBLV4o2FL8+A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-config-provider/package"
+    },
+    {
+      "name": "@smithy/util-defaults-mode-browser",
+      "version": "4.3.37",
+      "integrity": "sha512-JlPZhV1kQCGNJgofRTU6E8kHrjCKsb6cps8gco8QDVaFl7biFYzHg0p1x89ytIWyVyCkY3nOpO8tJPM47Vqlww==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-defaults-mode-browser/package"
+    },
+    {
+      "name": "@smithy/util-defaults-mode-node",
+      "version": "4.2.40",
+      "integrity": "sha512-BM5cPEsyxHdYYO4Da77E94lenhaVPNUzBTyCGDkcw/n/mE8Q1cfHwr+n/w2bNPuUsPC30WaW5/hGKWOTKqw8kw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-defaults-mode-node/package"
+    },
+    {
+      "name": "@smithy/util-endpoints",
+      "version": "3.3.1",
+      "integrity": "sha512-xyctc4klmjmieQiF9I1wssBWleRV0RhJ2DpO8+8yzi2LO1Z+4IWOZNGZGNj4+hq9kdo+nyfrRLmQTzc16Op2Vg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-endpoints/package"
+    },
+    {
+      "name": "@smithy/util-hex-encoding",
+      "version": "4.2.1",
+      "integrity": "sha512-c1hHtkgAWmE35/50gmdKajgGAKV3ePJ7t6UtEmpfCWJmQE9BQAQPz0URUVI89eSkcDqCtzqllxzG28IQoZPvwA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-hex-encoding/package"
+    },
+    {
+      "name": "@smithy/util-middleware",
+      "version": "4.2.10",
+      "integrity": "sha512-LxaQIWLp4y0r72eA8mwPNQ9va4h5KeLM0I3M/HV9klmFaY2kN766wf5vsTzmaOpNNb7GgXAd9a25P3h8T49PSA==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-middleware/package"
+    },
+    {
+      "name": "@smithy/util-retry",
+      "version": "4.2.10",
+      "integrity": "sha512-HrBzistfpyE5uqTwiyLsFHscgnwB0kgv8vySp7q5kZ0Eltn/tjosaSGGDj/jJ9ys7pWzIP/icE2d+7vMKXLv7A==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-retry/package"
+    },
+    {
+      "name": "@smithy/util-stream",
+      "version": "4.5.16",
+      "integrity": "sha512-c7awZV6cxY0czgDDSr+Bz0XfRtg8AwW2BWhrHhLJISrpmwv8QzA2qzTllWyMVNdy1+UJr9vCm29hzuh3l8TTFw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-stream/package"
+    },
+    {
+      "name": "@smithy/util-uri-escape",
+      "version": "4.2.1",
+      "integrity": "sha512-YmiUDn2eo2IOiWYYvGQkgX5ZkBSiTQu4FlDo5jNPpAxng2t6Sjb6WutnZV9l6VR4eJul1ABmCrnWBC9hKHQa6Q==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-uri-escape/package"
+    },
+    {
+      "name": "@smithy/util-utf8",
+      "version": "4.2.1",
+      "integrity": "sha512-DSIwNaWtmzrNQHv8g7DBGR9mulSit65KSj5ymGEIAknmIN8IpbZefEep10LaMG/P/xquwbmJ1h9ectz8z6mV6g==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-utf8/package"
+    },
+    {
+      "name": "@smithy/util-waiter",
+      "version": "4.2.10",
+      "integrity": "sha512-4eTWph/Lkg1wZEDAyObwme0kmhEb7J/JjibY2znJdrYRgKbKqB7YoEhhJVJ4R1g/SYih4zuwX7LpJaM8RsnTVg==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/util-waiter/package"
+    },
+    {
+      "name": "@smithy/uuid",
+      "version": "1.1.1",
+      "integrity": "sha512-dSfDCeihDmZlV2oyr0yWPTUfh07suS+R5OB+FZGiv/hHyK3hrFBW5rR1UYjfa57vBsrP9lciFkRPzebaV1Qujw==",
+      "path": "/private/tmp/axiom-locked-sdk-overlay/packages/@smithy/uuid/package"
+    }
+  ],
+  "originalDependenciesChanged": false,
+  "stage": "/private/tmp/axiom-log-disclosure-9ad8c3fc-0zmuwumo",
+  "packageScriptsExecuted": false,
+  "productionVerification": {
+    "source": "9ad8c3fc818a873de3607b01eba919146b193f0d",
+    "stage": "/private/tmp/axiom-log-disclosure-9ad8c3fc-0zmuwumo",
+    "archiveSha256": "66fb01632b7f706c65587942a276d39df9a5427ce3d0236e50faec7dc74d33b0",
+    "build": "passed",
+    "exitCode": 0,
+    "dependencyOverlay": "/private/tmp/axiom-locked-sdk-overlay/node_modules",
+    "restoredSdkPackages": 143,
+    "allLockIntegritiesMatched": true
+  },
+  "directProductionTypesSeconds": 23.31,
+  "scope": "Isolated build only; no repository dependency/lockfile/source setting changes or production deployment."
+}

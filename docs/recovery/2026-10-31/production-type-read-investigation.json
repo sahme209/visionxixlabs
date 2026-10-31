@@ -9,11 +9,19 @@
   ],
   "dependenciesChangedInCheckout": false,
   "compilerValidationWeakened": false,
-  "result": "Full production types still INCOMPLETE; owned type processes terminated. No source fix claimed; dependency file availability/read latency must be resolved before further full-build acceptance.",
+  "result": "Production verification unblocked with exact locked SDK copies in a temporary build-only overlay; no compiler validation weakened. Earlier failed/incomplete attempts remain historical.",
   "artifacts": [
     "/private/tmp/axiom-type-process-sample.txt",
     "/private/tmp/axiom-sdk-restore/restore-receipt.json",
     "/private/tmp/axiom-log-disclosure-restored-types.log"
   ],
-  "scope": "No production/provider/AI/realDB call, dependency version change, paid CI or app restart."
+  "scope": "No production/provider/AI/realDB call, dependency version change, paid CI or app restart.",
+  "resolvedVerification": {
+    "restoredSdkPackages": 143,
+    "allLockIntegritiesMatched": true,
+    "originalDependenciesChanged": false,
+    "directProductionTypes": "PASS in 23.31 seconds",
+    "fullProductionBuild": "PASS, exit 0",
+    "receipt": "locked-sdk-build-recovery.json"
+  }
 }
