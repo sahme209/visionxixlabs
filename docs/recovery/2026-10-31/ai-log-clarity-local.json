@@ -1,0 +1,12 @@
+{
+  "runtime": "9fdc654d7c6d98ec07fffcfb339d33ea64355b2d",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/9fdc654d/Axiom Agent Local Preview.app",
+  "checks": [
+    "6 token formatter/component tests passed with simulated transport",
+    "desktop types/build passed",
+    "offline native build passed",
+    "strict signing passed"
+  ],
+  "behavior": "AI call log labels Input/Output/Total tokens, shows reported totals, missing data explicit, zero retained, invalid values unknown; overflow scroll protects narrow layout. No inferred billing or efficiency claim.",
+  "scope": "Signed local preview prepared, not opened; current app session preserved. No provider/AI call or backend/public release."
+}
