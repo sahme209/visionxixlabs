@@ -1,0 +1,19 @@
+{
+  "source": "9ad8c3fc818a873de3607b01eba919146b193f0d",
+  "investigation": [
+    "Direct exact production tsc also stalled, separate from Next wrapper",
+    "Sample showed synchronous node/libuv filesystem read wait",
+    "Open descriptor identified client-ec2 CreateSubnetCommand.d.ts; ls flags confirmed compressed,dataless placeholder",
+    "Exact existing client-ec2 3.1001.0 fetched with npm pack --ignore-scripts into temporary folder; package integrity recorded",
+    "Temporary build-only dependency overlay moved open descriptor beyond original file to client-ssm CreatePatchBaselineCommand.d.ts; that second file showed no dataless flag when inspected; cause of second wait not established"
+  ],
+  "dependenciesChangedInCheckout": false,
+  "compilerValidationWeakened": false,
+  "result": "Full production types still INCOMPLETE; owned type processes terminated. No source fix claimed; dependency file availability/read latency must be resolved before further full-build acceptance.",
+  "artifacts": [
+    "/private/tmp/axiom-type-process-sample.txt",
+    "/private/tmp/axiom-sdk-restore/restore-receipt.json",
+    "/private/tmp/axiom-log-disclosure-restored-types.log"
+  ],
+  "scope": "No production/provider/AI/realDB call, dependency version change, paid CI or app restart."
+}
