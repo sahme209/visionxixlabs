@@ -1,3 +1,4 @@
+import {createGovernanceExecutionPolicyRequestService} from './executionPolicyRequestService';
 import {readGovernanceEnrollmentMetadata} from './enrollmentMetadata';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {GovernanceBaselineStale} from './errors';
@@ -29,6 +30,7 @@ import {compileBaseline,scopeSchema,type EvidenceSnapshot} from './contracts';
  * bind existing paired authority. No executor coverage is invented here. */
 export function createGovernanceRequestService(request:NextRequest,repo:ReleaseOperationPlanRepo&AwsConnectionReadRepo,scope:RevisionScope,isEnabled:()=>boolean){
  const authority=createGovernanceRequestAuthority(request),nonce=z.string().uuid();
+ const executionPolicies=createGovernanceExecutionPolicyRequestService(request,repo,scope,isEnabled);
  const enabled=()=>{request.signal.throwIfAborted();if(!isEnabled())throw Error('governance_intelligence_unavailable')};
  const bound=(s:RevisionScope)=>{enabled();if(s.organizationId!==scope.organizationId||s.actorUserId!==scope.actorUserId||s.sessionId!==scope.sessionId)throw Error('governance_request_scope_changed')};
  async function current(s:RevisionScope,signal:AbortSignal){bound(s);signal.throwIfAborted();await repo.$transaction(tx=>authority(tx,s,'reader'));signal.throwIfAborted()}
@@ -58,6 +60,8 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
  });
  const baselines=createGovernanceBaselineService({store,preflight}),drift=createGovernanceDriftReader({assertCurrent:current,readHistorical,readCurrent});
  return{
+  /** Separate reviewed limits; does not enroll baseline scopes or dispatch. */
+  executionPolicies,
   /** Paired source upload; its route is disabled by default and undeployed. */
   async uploadDocument(raw:unknown){enabled();const saved=await documents.upload(scope,raw);if(!saved.artifact)throw Error('governance_document_artifact_unavailable');return{...saved.artifact,headVersion:saved.headVersion}},
   async lookupCollectionRequest(requestId:string){enabled();nonce.parse(requestId);return history.lookupCollectionRequest(scope,requestId)},

@@ -7,6 +7,24 @@ import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {compileBaseline,parseEvidenceSnapshot,digestSchema,identifier,scopeSchema,GOVERNED_ACTIONS,type EvidenceSnapshot,type CompiledBaseline} from './contracts';
 const requestSchema=z.object({organizationId:identifier,actorUserId:identifier,action:z.enum(GOVERNED_ACTIONS),scope:scopeSchema,planDigest:digestSchema,providerAccessVerified:z.boolean(),platformAllowed:z.boolean(),autonomyLevel:z.number().int().min(0).max(5),verifiedEvidence:z.boolean(),rollbackVerified:z.boolean()}).strict();
 const approvalSchema=z.object({organizationId:identifier,baselineDigest:digestSchema,planDigest:digestSchema,requesterUserId:identifier,approverUserId:identifier,currentAuthorityVerified:z.boolean(),expiresAt:z.string().datetime()}).strict();
+// This vocabulary is more specific than policyEngine's legacy apply/execute
+// signals. Exact human approval never raises the tenant's execution ceiling.
+// Exhaustive typing prevents a new governed action from silently inheriting read
+// authority. Level 5 still preserves every action's existing approval boundary.
+const minimumAutonomy:Record<typeof GOVERNED_ACTIONS[number],number>={
+ 'discovery.read':0,
+ 'recommendation.create':1,
+ 'repository.merge':4,
+ 'deployment.dispatch':4,
+ 'integration.slack.send':4,
+ 'integration.teams.send':4,
+ 'integration.linear.create':4,
+ 'integration.linear.update':4,
+ 'integration.linear.close':4,
+ 'integration.outlook.send':4,
+ 'integration.outlook.event.create':4,
+ 'computer.replace_text':4,
+};
 export interface AdmissionInput {request:unknown;active:{baseline:CompiledBaseline;approvedDigest:string;activeDigest:string;revoked:boolean};evidence:EvidenceSnapshot|EvidenceSnapshot[];coverage:{enrolled:boolean;coveredActions:string[]};now:number;approval?:unknown;evidenceRefreshes?:Array<{approvedDigest:string;current:EvidenceSnapshot}>;[key:string]:unknown}
 export function evaluateGovernanceAdmission(input:AdmissionInput){
  const result=(decision:'allowed'|'denied'|'requires_approval'|'not_enrolled',reason:string,rules:string[]=[])=>({decision,allowed:decision==='allowed',reason,matchedRuleIds:rules});
@@ -15,6 +33,7 @@ export function evaluateGovernanceAdmission(input:AdmissionInput){
   const r=requestSchema.parse(input.request);if(!Number.isFinite(input.now)||!input.coverage.coveredActions.includes(r.action))return result('denied','action_not_covered');
   const active=input.active,b=active.baseline,{digest,compilerVersion,...raw}=b,compiled=compileBaseline(raw);if(sha256ContentHash(compiled)!==sha256ContentHash(b)||active.revoked||active.activeDigest!==digest||active.approvedDigest!==digest||b.organizationId!==r.organizationId)return result('denied','active_baseline_unavailable');
   if(!r.platformAllowed||!r.providerAccessVerified)return result('denied','existing_authority_required');
+  if(r.autonomyLevel<minimumAutonomy[r.action])return result('denied','autonomy_execution_unavailable');
   if(!b.scopes.some(s=>sha256ContentHash(s)===sha256ContentHash(r.scope)))return result('denied','scope_not_approved');
   const refreshes=z.array(z.object({approvedDigest:digestSchema,current:z.unknown()}).strict()).max(100).parse(input.evidenceRefreshes??[]);if(new Set(refreshes.map(x=>x.approvedDigest)).size!==refreshes.length||refreshes.some(x=>!b.evidenceDigests.includes(x.approvedDigest)))return result('denied','evidence_refresh_unbound');
   const snapshots=Array.isArray(input.evidence)?input.evidence:[input.evidence];const verified=new Map<string,EvidenceSnapshot>();
