@@ -111,3 +111,7 @@ The three actual desktop GitHub mutation callers now revalidate the exact paired
 ## Local progress — final enrollment transition during admission
 
 The actual scope-aware admission wrapper now rechecks the current active baseline after its awaited strict decision. Three race regressions and five isolated real-store merge journeys validate refusal after revocation before claim (simulated provider/authority and explicitly test-only coverage). Positive merge remains accepted in that fixture. Scoped types are pending; comprehensive production coverage/enrollment and full customer workflow remain incomplete. See ../recovery/2026-11-01/governance-final-enrollment-recheck.md. No production enablement or live execution is implied.
+
+## Website reference progress — team pricing to task help
+
+Visible Cursor follow-up verified the top-level Teams pricing state and the usage FAQ's help-article destination. Captured the narrow article hierarchy and current/legacy version distinctions. Hidden table-of-contents activation was not accepted. This is partial reference research only; authentic Axiom demos, all-control documentation and the other pending audit interactions remain required. See ../research/website-audit/cursor.md.
