@@ -8,7 +8,7 @@ beforeEach(()=>{vi.resetAllMocks();f.enrollment.mockResolvedValue([]);f.installa
 it("binds a callable authority to the captured installation revision and exact repository",async()=>{
  const a=await createCodingWriteAuthority("org",{owner:"owned",repo:"repo"});expect(a.ok).toBe(true);if(!a.ok)throw Error("fixture authority required");
  expect(await a.resolveToken()).toMatchObject({ok:true});expect(await a.resolveToken()).toMatchObject({ok:true});
- expect(f.installation).toHaveBeenCalledTimes(3);expect(f.mint).toHaveBeenCalledTimes(2);
+ expect(f.mint).toHaveBeenCalledTimes(2);
  for(const [input] of f.mint.mock.calls)expect(input).toMatchObject({installationId:123,repositories:["repo"]});
 });
 it.each([
@@ -51,4 +51,13 @@ it("preserves separately authorized read-only coding evidence for enrolled works
  f.enrollment.mockResolvedValue([{id:'governance_active_org',organizationId:'org',workflowKind:'governance_baseline_active_v1'}]);
  const {resolveCodingGithubCredential}=await import('../codingGithubCredential');
  expect(await resolveCodingGithubCredential('org',{owner:'owned',repo:'repo'})).toMatchObject({ok:true});expect(f.enrollment).not.toHaveBeenCalled();
+});
+
+it("refuses captured coding authority revoked while the scoped token is minted",async()=>{
+ const authority=await createCodingWriteAuthority('org',{owner:'owned',repo:'repo'});if(!authority.ok)throw Error('fixture');
+ f.mint.mockImplementationOnce(async()=>{
+  f.installation.mockResolvedValue({id:'installation',githubInstallationId:'123',updatedAt:date,revokedAt:date,suspendedAt:null});
+  return {ok:true,installationId:123,token:'synthetic'};
+ });
+ expect(await authority.resolveToken()).toMatchObject({ok:false});
 });
