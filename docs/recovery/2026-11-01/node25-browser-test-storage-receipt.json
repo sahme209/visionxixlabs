@@ -1,0 +1,36 @@
+{
+  "nodeVersion": "25.2.1",
+  "affectedSuites": [
+    "components/__tests__/PrivacyConsent.test.ts",
+    "components/__tests__/resilienceTerraformAuthority.test.ts",
+    "lib/desktop/__tests__/agentConnectedContext.test.ts",
+    "lib/desktop/__tests__/agentModelReadiness.test.ts",
+    "lib/desktop/__tests__/agentRestartObservationJourney.test.ts",
+    "lib/desktop/__tests__/agentStreamingApplication.test.ts",
+    "lib/desktop/__tests__/botAiTaskController.test.ts",
+    "lib/desktop/__tests__/botPrEvidencePanel.test.ts",
+    "lib/desktop/__tests__/botReadinessReportPanel.test.ts",
+    "lib/desktop/__tests__/repositoryWorkspaceOwnership.test.ts"
+  ],
+  "workerEnvironment": "NODE_OPTIONS=--no-experimental-webstorage",
+  "parentOnlyFlagRun": {
+    "failed": 17
+  },
+  "targetedRuns": [
+    {
+      "files": 2,
+      "passed": 17
+    },
+    {
+      "files": 8,
+      "passed": 282
+    }
+  ],
+  "fullSuiteGreen": false,
+  "appRuntimeChanged": false,
+  "logs": {
+    "/private/tmp/axiom-browser-storage-environment-check.log": "e5ba133261a9d62903c2110f50b7ab0cdbdb94827cf6261935314abd952de6ba",
+    "/private/tmp/axiom-browser-storage-environment-green.log": "d860407569b1ab2131d6ad7bbffbff9ec2b2f0a0eb0be6ee44cc8325f61476ae",
+    "/private/tmp/axiom-localstorage-affected-green.log": "9a4a789483924ea076bed8bd12b26c55ae94991807ec94fa68b273ca4b4a3991"
+  }
+}

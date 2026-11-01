@@ -110,7 +110,7 @@ The three actual desktop GitHub mutation callers now revalidate the exact paired
 
 ## Local progress — final enrollment transition during admission
 
-The actual scope-aware admission wrapper now rechecks the current active baseline after its awaited strict decision. Three race regressions and five isolated real-store merge journeys validate refusal after revocation before claim (simulated provider/authority and explicitly test-only coverage). Positive merge remains accepted in that fixture. Scoped types are pending; comprehensive production coverage/enrollment and full customer workflow remain incomplete. See ../recovery/2026-11-01/governance-final-enrollment-recheck.md. No production enablement or live execution is implied.
+The actual scope-aware admission wrapper now rechecks the current active baseline after its awaited strict decision. Three race regressions and five isolated real-store merge journeys validate refusal after revocation before claim (simulated provider/authority and explicitly test-only coverage). Positive merge remains accepted in that fixture. Scoped actual merge-composition types now pass; comprehensive production coverage/enrollment and full customer workflow remain incomplete. See ../recovery/2026-11-01/governance-final-enrollment-recheck.md. No production enablement or live execution is implied.
 
 ## Website reference progress — team pricing to task help
 

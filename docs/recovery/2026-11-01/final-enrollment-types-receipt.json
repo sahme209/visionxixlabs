@@ -1,0 +1,9 @@
+{
+  "runtimeSource": "b1bfa94f6f261de3f09089188543f7b407e49571",
+  "command": "tsc --project work/governance-intelligence/tsconfig.final-enrollment-read.json --noEmit",
+  "exitCode": 0,
+  "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "restarted": false,
+  "terminated": false,
+  "productionBuild": false
+}
