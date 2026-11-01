@@ -1,0 +1,116 @@
+{
+  "format": 1,
+  "inventorySourceCommit": "6d97a5bfd937cd11865dc9002fb127f4689fa8c0",
+  "scope": "Initial source-backed review priorities only. Not an activation or authority input.",
+  "boundaries": [
+    {
+      "source": {
+        "file": "lib/connectors/github/githubWriteClient.ts",
+        "sha256": "887bdf106277876c135d110774794c2661aef13e7407325d36d78be25a902e25"
+      },
+      "classification": "modern_installation_transport",
+      "candidateIds": [
+        "mutation_candidate_9573a71a178f6b7418c8_1",
+        "mutation_candidate_9573a71a178f6b7418c8_2",
+        "mutation_candidate_cde768afa6f426f100e6_1",
+        "mutation_candidate_343a6c3839c334f2e717_1",
+        "mutation_candidate_f44be9889c460f22afef_1",
+        "mutation_candidate_e69a3ed17252e4a00be5_1",
+        "mutation_candidate_1a7836b560db0024fcd1_1",
+        "mutation_candidate_1a7836b560db0024fcd1_2",
+        "mutation_candidate_343a6c3839c334f2e717_2",
+        "mutation_candidate_9573a71a178f6b7418c8_3",
+        "mutation_candidate_cde768afa6f426f100e6_2",
+        "mutation_candidate_1a7836b560db0024fcd1_3",
+        "mutation_candidate_1a7836b560db0024fcd1_4",
+        "mutation_candidate_1a7836b560db0024fcd1_5",
+        "mutation_candidate_9573a71a178f6b7418c8_4",
+        "mutation_candidate_9573a71a178f6b7418c8_5",
+        "mutation_candidate_f30841fc4dbc6f4c8c1e_1",
+        "mutation_candidate_9573a71a178f6b7418c8_6",
+        "mutation_candidate_343a6c3839c334f2e717_3",
+        "mutation_candidate_69c030a2bc43bce2c4e0_1",
+        "mutation_candidate_1a7836b560db0024fcd1_6",
+        "mutation_candidate_1a7836b560db0024fcd1_7",
+        "mutation_candidate_343a6c3839c334f2e717_4",
+        "mutation_candidate_84e71c49b14debd754e2_1",
+        "mutation_candidate_cde768afa6f426f100e6_3",
+        "mutation_candidate_84e71c49b14debd754e2_2",
+        "mutation_candidate_84e71c49b14debd754e2_3",
+        "mutation_candidate_0ad253fc2bd700cd1f56_1",
+        "mutation_candidate_f30841fc4dbc6f4c8c1e_2",
+        "mutation_candidate_9573a71a178f6b7418c8_7",
+        "mutation_candidate_9573a71a178f6b7418c8_8",
+        "mutation_candidate_1a7836b560db0024fcd1_8",
+        "mutation_candidate_1a7836b560db0024fcd1_9",
+        "mutation_candidate_1a7836b560db0024fcd1_10",
+        "mutation_candidate_343a6c3839c334f2e717_5",
+        "mutation_candidate_f30841fc4dbc6f4c8c1e_3",
+        "mutation_candidate_1a7836b560db0024fcd1_11",
+        "mutation_candidate_1a7836b560db0024fcd1_12",
+        "mutation_candidate_343a6c3839c334f2e717_6",
+        "mutation_candidate_9573a71a178f6b7418c8_9",
+        "mutation_candidate_1a7836b560db0024fcd1_13",
+        "mutation_candidate_1a7836b560db0024fcd1_14"
+      ],
+      "note": "Existing current-authority callbacks; every caller and canonical scope still require closure review.",
+      "coverageEstablished": false,
+      "authorityIssued": false
+    },
+    {
+      "source": {
+        "file": "lib/connectors/githubWrite.ts",
+        "sha256": "d7c8a1700964a629adc51a1374c54ccd5e25101242afb1af77249eaa68017cbd"
+      },
+      "classification": "legacy_guard_required",
+      "candidateIds": [
+        "mutation_candidate_ce11d85ac2a6dd7162d9_1",
+        "mutation_candidate_63300a0d57967cddc81c_1",
+        "mutation_candidate_67543b1d6afcea0de048_1",
+        "mutation_candidate_63300a0d57967cddc81c_2",
+        "mutation_candidate_63300a0d57967cddc81c_3",
+        "mutation_candidate_63300a0d57967cddc81c_4",
+        "mutation_candidate_63300a0d57967cddc81c_5",
+        "mutation_candidate_19bf9e54a328c3083e02_1"
+      ],
+      "note": "Unbound calls refuse; synthetic positive closures are not actual production authority.",
+      "coverageEstablished": false,
+      "authorityIssued": false
+    },
+    {
+      "source": {
+        "file": "lib/plugins/aws/disable-unused-access-key.ts",
+        "sha256": "bb7ab7a087feb2b7fd0f9943f2150e367eb74c10249baf467befc9744a0cc2a2"
+      },
+      "classification": "legacy_guard_and_flag_required",
+      "candidateIds": [
+        "mutation_candidate_88bf29ef3ec4ae53048b_1",
+        "mutation_candidate_27300af93cc17a2473ca_1",
+        "mutation_candidate_fac82a9b4aa080c7629d_1"
+      ],
+      "note": "Default-OFF flag plus mandatory server guard; current engine issues none. maxAttempts1 preserves one SDK attempt.",
+      "coverageEstablished": false,
+      "authorityIssued": false
+    },
+    {
+      "source": {
+        "file": "lib/cloud/aws/templateHosting.ts",
+        "sha256": "653c46d56540a64145c168eea78abe7d112c27295f0ffc4cf09895e63706ee17"
+      },
+      "classification": "platform_template_publication_needs_separate_review",
+      "candidateIds": [
+        "mutation_candidate_5769b72cebec6f2f6bb8_1",
+        "mutation_candidate_8c55369c0c241f87a198_1",
+        "mutation_candidate_ce3d7254c76bd4217191_1",
+        "mutation_candidate_136e228867e82c90355f_1",
+        "mutation_candidate_6acfcca47decbe3491bc_1",
+        "mutation_candidate_34135f447f77c70939b4_1",
+        "mutation_candidate_b562de83ac4af3afa1f7_1"
+      ],
+      "note": "Publishes platform-owned static connection template using broker account; not automatically a customer-governed deployment or an exemption. No live call authorized.",
+      "coverageEstablished": false,
+      "authorityIssued": false
+    }
+  ],
+  "remaining": "Caller closure, canonical tenant/resource binding, native surfaces, delegated SDK commands and all unresolved cases remain unverified."
+}
