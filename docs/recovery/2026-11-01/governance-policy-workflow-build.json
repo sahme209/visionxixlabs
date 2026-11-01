@@ -1,0 +1,11 @@
+{
+  "source": "cbb5daa584f0dcdbfa2ca480f7a595fed46e15b9",
+  "stage": "/private/tmp/axiom-policy-workflow-final-_4bpupnr",
+  "archiveSha256": "629a3a760980c961851200270e4e2501e18849b89e465e7ab0d3bdac5e7b2ec5",
+  "productionBuild": "passed",
+  "productionTypeScript": "passed",
+  "exitCode": 0,
+  "log": "/private/tmp/axiom-policy-workflow-final-build.log",
+  "environment": "Synthetic unreachable loopback database, locked SDK overlay, no production settings/provider actions",
+  "productionActivation": false
+}

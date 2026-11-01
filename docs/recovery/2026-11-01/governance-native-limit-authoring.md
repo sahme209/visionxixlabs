@@ -8,6 +8,6 @@ Verification:32 focused checks across proposal/client/review-panel/evidence-view
 
 The form is mounted only inside the unregistered local Governance prototype and only for presentation capability policy:manage. Durable paired server checks remain authoritative. Existing signed apps/sessions were preserved; no signed-native visual or production acceptance is claimed.
 
-Remaining: unrecorded pending restart recovery; comprehensive executor coverage and transactional baseline enrollment; composed enforcement journeys and final current-source builds/review before separately authorized live activation. No full Governance MVP claim. Exact full production build for this batch is recorded separately when finished. No deployment, settings/schema, grants, credentials, paid CI or publication occurred.
+Remaining: unrecorded pending restart recovery; comprehensive executor coverage and transactional baseline enrollment; composed enforcement journeys and final current-source builds/review before separately authorized live activation. No full Governance MVP claim. Exact clean-source cbb5daa5 full production build and Next TypeScript passed, including all prior policy recovery/directory changes. Receipt: governance-policy-workflow-build.json. No deployment, settings/schema, grants, credentials, paid CI or publication occurred.
 
 Evidence: /private/tmp/axiom-policy-proposal-{red,focused,types,final-tests,frontend}.log.
