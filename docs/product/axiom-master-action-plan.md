@@ -115,3 +115,7 @@ The actual scope-aware admission wrapper now rechecks the current active baselin
 ## Website reference progress — team pricing to task help
 
 Visible Cursor follow-up verified the top-level Teams pricing state and the usage FAQ's help-article destination. Captured the narrow article hierarchy and current/legacy version distinctions. Hidden table-of-contents activation was not accepted. This is partial reference research only; authentic Axiom demos, all-control documentation and the other pending audit interactions remain required. See ../research/website-audit/cursor.md.
+
+## Local progress — actual desktop write connection closure
+
+Branch/commit/PR routes now use captured current installation authority for issuance and final transport, with a coherent persisted session/membership/installation/enrollment snapshot after all earlier awaited checks.81 focused cases, six actual isolated database cases, scoped caller types and resolved independent review pass. Provider and request-auth boundaries are simulated. This closes the previously recorded provider-installation freshness gap in these three callers only; other callers and comprehensive execution coverage/enrollment remain unfinished. See ../recovery/2026-11-01/desktop-github-pinned-write-authority.md.

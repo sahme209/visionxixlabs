@@ -8,7 +8,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
-import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
+import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { createPullRequest } from "@/lib/connectors/github/githubWriteClient";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "governance_execution_coverage_unavailable" }, { status: 409 });
   }
 
-  const tokenResult = await resolveTenantScopedToken(String(session.organizationId), repo);
+  const tokenResult = await beforeWrite.resolveToken(repo);
   if (!tokenResult.ok) return NextResponse.json({ ok: false, error: tokenResult.error }, { status: 409 });
 
   const result = await createPullRequest({

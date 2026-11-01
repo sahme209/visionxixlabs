@@ -19,7 +19,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
   return { ...actual, resolveTenantScopedToken: mocks.resolveTenantScopedToken };
 });
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ createBranch: mocks.createBranch }));
-vi.mock("@/lib/db",()=>({prisma:{durableAgentWorkflow:{findMany:async()=>[]}}}));
+vi.mock("@/lib/db",()=>({prisma:{$queryRaw:async()=>[{sessionId:session.id,userId:session.userId,organizationId:session.organizationId,sessionLive:true,role:"admin",acceptedAt:new Date(),connectionId:"fixture-installation",githubInstallationId:"123",connectionRevision:new Date("2026-11-01T00:00:00Z"),connectionRevokedAt:null,connectionSuspendedAt:null,connectionStatus:"active",enrolled:false}],durableAgentWorkflow:{findMany:async()=>[]},gitHubInstallation:{findFirst:async()=>({id:"fixture-installation",githubInstallationId:"123",updatedAt:new Date("2026-11-01T00:00:00Z"),revokedAt:null,suspendedAt:null})}}}));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 
 function request(body: object) {
