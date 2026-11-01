@@ -5,7 +5,7 @@ vi.mock("../githubAppAuth", () => ({ resolveGithubInstallationToken: mocks.mint 
 import { resolveTenantScopedToken } from "../resolveTenantScopedToken";
 const revision = new Date("2026-10-16T00:00:00Z");
 const row = { id: "tenant-install", githubInstallationId: "19", updatedAt: revision, revokedAt: null, suspendedAt: null };
-beforeEach(() => { vi.clearAllMocks(); mocks.installation.mockResolvedValue(row); mocks.mint.mockResolvedValue({ ok: true, token: "fixture-scoped-token", installationId: 19 }); });
+beforeEach(() => { vi.resetAllMocks(); mocks.installation.mockResolvedValue(row); mocks.mint.mockResolvedValue({ ok: true, token: "fixture-scoped-token", installationId: 19 }); });
 
 it("pins tenant installation identity/revision and scopes issuance to exactly one repository", async () => {
   expect(await resolveTenantScopedToken("org", { owner: "owner", repo: "repo" }, row)).toEqual({ ok: true, token: "fixture-scoped-token" });
@@ -34,4 +34,25 @@ it("uses the supplied installation repository rather than ambient database autho
     { gitHubInstallation: { findFirst: scopedLookup } })).toEqual({ ok: true, token: "fixture-scoped-token" });
   expect(scopedLookup).toHaveBeenCalledWith(expect.objectContaining({ where: { organizationId: "org", status: "active" } }));
   expect(mocks.installation).not.toHaveBeenCalled();
+});
+
+it.each([
+  null, { ...row, id: "replaced" }, { ...row, githubInstallationId: "20" },
+  { ...row, updatedAt: new Date("2026-10-16T00:00:01Z") },
+  { ...row, revokedAt: revision }, { ...row, suspendedAt: revision },
+])("does not release a minted token after its pinned installation changes", async changed => {
+  mocks.installation.mockResolvedValueOnce(row).mockResolvedValueOnce(changed);
+  expect(await resolveTenantScopedToken("org", { owner: "owner", repo: "repo" }, row))
+    .toEqual({ ok: false, error: "github_not_connected" });
+});
+it("refuses a post-mint installation lookup failure without exposing the token", async () => {
+  mocks.installation.mockResolvedValueOnce(row).mockRejectedValueOnce(new Error("fixture database unavailable"));
+  expect(await resolveTenantScopedToken("org", { owner: "owner", repo: "repo" }, row))
+    .toEqual({ ok: false, error: "github_not_connected" });
+});
+it("refuses cancellation during mint even if the provider returns success", async () => {
+  const controller = new AbortController();
+  mocks.mint.mockImplementationOnce(async () => { controller.abort(); return {ok:true,token:"fixture-scoped-token",installationId:19}; });
+  expect(await resolveTenantScopedToken("org", {owner:"owner",repo:"repo"}, {...row,signal:controller.signal}))
+    .toEqual({ok:false,error:"github_token_unavailable"});
 });

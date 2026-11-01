@@ -1,0 +1,9 @@
+# Pinned installation token issuance: local revalidation
+
+The existing expected-installation resolver checked identity/revision only before the token-provider await. Eight new tests reproduced returning a minted token after installation replacement, revision change, revocation, suspension, lookup failure or cancellation. The resolver now snapshots primitive expected values before awaiting and validates the same installation again after successful issuance, checking cancellation before returning. Existing two-argument callers are unchanged and do not acquire this pinned authority guarantee.
+
+72 focused tests pass across pinned issuance and three related readers; the actual GitHub caller scoped TypeScript check passes. Independent read-only review reported no important findings. Provider and storage boundaries are simulated; no real token was requested. Evidence: /private/tmp/axiom-pinned-token-revalidation-{red,green,types}.log.
+
+A bare npm test run is in progress under owned session4407, log /private/tmp/axiom-pinned-token-project-suite.log. It has already reported failures outside this focused batch, including stripeTestOriginalProof, jiraTicketLifecycleRoute, ECS release cryptographic-evidence suites, native UI and Resilience suites. Their causes are not yet classified as existing, environment-dependent or regressions. The terminal summary must be reconciled before any whole-suite passing claim. Do not rerun merely because observation times out.
+
+This does not establish full Governance coverage, enrollment, current authority in legacy two-argument callers, or final transport authority for every mutation. No production build of this increment, deployment, flag, schema, permission, credential, provider action or paid CI was performed. Earlier exact5c build evidence remains separate. Full Governance activation remains refused.

@@ -48,20 +48,35 @@ export async function resolveTenantScopedToken(organizationId: string, repo: Rep
   expectedInstallation?: { id: string; githubInstallationId: string; updatedAt: Date; signal?: AbortSignal; permissionProfile?: GithubReadPermissionProfile },
   installationRepo: InstallationRepo = prisma as unknown as InstallationRepo,
 ): Promise<ResolveTenantScopedTokenResult> {
-  const installation = await installationRepo.gitHubInstallation.findFirst({
+  // Capture primitive revision values before the provider await. A mutable
+  // caller object cannot move the expected installation while minting.
+  const pinned = expectedInstallation ? {
+    id: expectedInstallation.id,
+    githubInstallationId: expectedInstallation.githubInstallationId,
+    updatedAt: expectedInstallation.updatedAt.getTime(),
+  } : null;
+  const signal = expectedInstallation?.signal;
+  if (signal?.aborted) return { ok: false, error: "github_token_unavailable" };
+  const readInstallation = () => installationRepo.gitHubInstallation.findFirst({
     where: { organizationId, status: "active" },
     orderBy: { installedAt: "desc" },
-    select: expectedInstallation ? { githubInstallationId: true, id: true, updatedAt: true, revokedAt: true, suspendedAt: true } : { githubInstallationId: true },
+    select: pinned ? { githubInstallationId: true, id: true, updatedAt: true, revokedAt: true, suspendedAt: true } : { githubInstallationId: true },
   }).catch(() => null);
-  if (!installation) return { ok: false, error: "github_not_connected" };
-  if (expectedInstallation && (installation.id !== expectedInstallation.id || installation.githubInstallationId !== expectedInstallation.githubInstallationId
-    || installation.updatedAt?.getTime() !== expectedInstallation.updatedAt.getTime() || installation.revokedAt || installation.suspendedAt))
-    return { ok: false, error: "github_not_connected" };
+  const matches = (row: Awaited<ReturnType<typeof readInstallation>>) => !!row && (!pinned || (
+    row.id === pinned.id && row.githubInstallationId === pinned.githubInstallationId
+    && row.updatedAt?.getTime() === pinned.updatedAt && !row.revokedAt && !row.suspendedAt
+  ));
+  const installation = await readInstallation();
+  if (!installation || !matches(installation)) return { ok: false, error: "github_not_connected" };
+  if (signal?.aborted) return { ok: false, error: "github_token_unavailable" };
 
   const installationId = Number(installation.githubInstallationId);
   const outcome = await resolveGithubInstallationToken({ installationId, repositories: [repo.repo], ...(expectedInstallation?.signal ? { signal: expectedInstallation.signal } : {}), ...(expectedInstallation?.permissionProfile ? { permissionProfile: expectedInstallation.permissionProfile } : {}) });
+  if (signal?.aborted) return { ok: false, error: "github_token_unavailable" };
   if (!outcome.ok) return { ok: false, error: "github_token_unavailable" };
   if (expectedInstallation && outcome.installationId !== installationId) return { ok: false, error: "github_token_unavailable" };
+  if (pinned && !matches(await readInstallation())) return { ok: false, error: "github_not_connected" };
+  if (signal?.aborted) return { ok: false, error: "github_token_unavailable" };
   return { ok: true, token: outcome.token };
 }
 
