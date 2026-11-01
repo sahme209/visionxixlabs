@@ -3,6 +3,10 @@ import {createRequire} from 'node:module';
 import {randomUUID} from 'node:crypto';
 import {realpathSync,statSync} from 'node:fs';
 import {NextRequest} from 'next/server';
+const httpActors=vi.hoisted(()=>new Map<string,unknown>());
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:async(r:NextRequest)=>httpActors.get(r.headers.get('x-fixture-actor')??'')??null}));
+vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));
+import {createGovernanceExecutionPolicyHttp} from '../executionPolicyHttp';
 vi.mock('../requestAuthority',()=>({createGovernanceRequestAuthority:()=>async(tx:any,s:any,role:string)=>{
  const rows=await tx.$queryRaw`SELECT "role" FROM "OrgMembership" WHERE "organizationId"=${s.organizationId} AND "userId"=${s.actorUserId}`;
  const expected=role==='policy_admin'?'admin':role==='approver'?'security_reviewer':null;
@@ -80,6 +84,23 @@ describe.skipIf(!socket)('execution policies on owned isolated PostgreSQL',()=>{
   expect(await f.owner.activate(a.id,null,null,activationNonce)).toEqual(saved);
   await expect(f.executor.readAuthority(f.selection,'repository.merge')).rejects.toThrow();
   expect((await f.owner.readRevision(first.id)).status).toBe('proposed');
+ });
+
+ it('HTTP to durable policy lifecycle preserves independent review, exact activation and revocation',async()=>{
+  const f=await fixture();httpActors.clear();
+  for(const name of ['owner','reviewer','executor']){const scope=f.scopes[name];httpActors.set(name,{id:scope.sessionId,userId:name,organizationId:f.org,credentialKind:'desktop_session',capabilities:name==='reviewer'?['workspace:read','agent:approve']:name==='owner'?['workspace:read','policy:manage','agent:approve']:['workspace:read']})}
+  const handle=createGovernanceExecutionPolicyHttp((r,scope)=>createGovernanceExecutionPolicyRequestService(r,db,scope,()=>true),()=>true);
+  const request=(name:string,body:unknown)=>handle(new NextRequest('https://fixture.test/api/desktop/governance-intelligence/execution-policy',{method:'POST',headers:{'content-type':'application/json','x-fixture-actor':name},body:JSON.stringify(body)}));
+  const {organizationId:ignored,...policy}=f.policy();
+  const saved=await request('owner',{operation:'propose',policy,requestId:randomUUID()});expect(saved.status).toBe(200);const proposal=(await saved.json()).data;
+  const self=await request('owner',{operation:'approve',id:proposal.id,version:0,digest:proposal.policy.digest,requestId:randomUUID()});expect(self.status).toBe(409);
+  expect((await request('reviewer',{operation:'approve',id:proposal.id,version:0,digest:proposal.policy.digest,requestId:randomUUID()})).status).toBe(200);
+  expect((await request('owner',{operation:'activate',id:proposal.id,pointerVersion:null,parentDigest:null,requestId:randomUUID()})).status).toBe(200);
+  const authority=await f.executor.readAuthority(f.selection,'repository.merge');expect(authority).toMatchObject({policyDigest:proposal.policy.digest,autonomyLevel:4,executionAuthorized:false});
+  expect((await request('executor',{operation:'activate',id:proposal.id,pointerVersion:0,parentDigest:null,requestId:randomUUID()})).status).toBe(403);
+  expect((await request('owner',{operation:'revoke',id:proposal.id,version:1,requestId:randomUUID()})).status).toBe(200);
+  await expect(f.executor.readAuthority(f.selection,'repository.merge')).rejects.toThrow();
+  const history=await request('executor',{operation:'read',id:proposal.id});expect(history.status).toBe(200);expect((await history.json()).data.status).toBe('revoked');
  });
 
 });

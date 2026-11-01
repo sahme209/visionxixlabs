@@ -265,3 +265,13 @@ policy deployment, verified customer discovery or complete Governance MVP.
 Unconfigured merge, connected-app, deployment and ticket server execution paths refuse when enrollment metadata is present or unavailable. Native computer recovery uses a distinct read-only owner attestation and cannot authorize input. Agent approvals and GitHub mutators now recheck tenant enrollment before mutation; partial Git object creation and dispatched unknown responses retain uncertain outcomes and cannot become automatic retries. The shared metadata reader grants no authority and request-service callers still verify paired readers.
 
 The latest Agent/GitHub slice passes 116 simulated unit checks and scoped TypeScript verification. Earlier native separation passed 12 Rust authority checks and 329 synthetic Swift assertions. These are local results, not live provider or computer acceptance. Remaining direct legacy callers, complete trusted admission composition and production activation are not complete; enrollment activation continues to refuse.
+
+## Persisted execution-limit HTTP path (local only)
+
+The numeric execution-policy issuer now has a default-OFF paired endpoint for
+exact proposal/read/independent review/activation/revocation. Activation changes
+only the limit pointer; it never enrolls a baseline or grants execution coverage.
+Eleven boundary tests, one actual isolated PostgreSQL HTTP-to-durable-store
+journey and scoped production types pass; provider/session authentication is
+simulated in that journey. Native policy forms and comprehensive executor
+coverage remain unfinished. See docs/recovery/2026-11-01/governance-execution-policy-http.md.

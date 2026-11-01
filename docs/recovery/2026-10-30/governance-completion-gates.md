@@ -1,7 +1,17 @@
 # Governance completion gates
 
-Current verified implementation: 8e086e35. Local code only; production activation
-is refused. Passing individual safeguards does not satisfy these gates.
+Current checkpoint: local numeric issuer1388, actual merge composition10e
+(exact production build/types passed), and the subsequent local execution-policy
+HTTP composition described in the November1 receipt. Production activation is
+still refused. Passing these selected paths does not satisfy all gates below.
+
+Progress against gates1–2: the actual merge request now reads persisted numeric
+limits, exact baseline-bound independent provider approval, actual stored plan
+and fresh provider facts before claim and final transport. Its isolated real-store
+journeys use simulated provider responses. Coverage remains empty in production,
+so enrollment/activation cannot yet succeed. The execution-limit workflow has
+a paired default-OFF backend endpoint; a native customer workflow is unfinished.
+The remaining list retains all non-merge mutations and full activation checks.
 
 ## Remaining implementation, in dependency order
 
