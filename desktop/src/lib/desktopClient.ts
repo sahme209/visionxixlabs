@@ -1,3 +1,4 @@
+import {createExecutionPolicyClient} from './governanceExecutionPolicy';
 import {decodePolicyUploadBytes} from '../../../lib/governance/intelligence/documentText';
 import {governanceSourceDirectorySchema,type GovernanceSourceDirectory,governanceCollectionSchema,governanceDocumentLookupSchema,type GovernanceDocumentLookup,governanceDocumentUploadSchema,governanceDocumentReceiptSchema,type GovernanceDocumentReceipt,governanceEvidenceArtifactSchema,type GovernanceEvidenceArtifact,governanceProposalSchema,governanceRevisionListSchema,type GovernanceRevisionList,governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
 import {serviceNowWrittenObservationRequestSchema,type ServiceNowWrittenObservationRequest} from '../../../lib/releaseops/serviceNowWrittenLinkObservationContract';
@@ -1627,6 +1628,7 @@ export class DesktopClient {
       return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/documents',{operation:'upload_document',name:selected.name,selection:selected.selection,base64:btoa(binary),expectedVersion:selected.expectedVersion,requestId:selected.requestId},(v):v is GovernanceDocumentReceipt=>{const checked=governanceDocumentReceiptSchema.safeParse(v);return checked.success&&checked.data.name===selected.name&&checked.data.sourceDigest===sourceDigest&&JSON.stringify(checked.data.selection)===JSON.stringify(selected.selection)&&checked.data.headVersion===(selected.expectedVersion===null?0:selected.expectedVersion+1)},signal);
     }catch{return fail()}
   }
+  governanceExecutionPolicies(){return createExecutionPolicyClient(this.savedTaskContext())}
   governancePropose(raw:unknown,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceRevision>> {
     const parsed=governanceProposalSchema.safeParse(raw);if(!parsed.success||!ticketReviewNonce.safeParse(requestId).success)return Promise.resolve({ok:false,error:'Review exact source, scope and rules before saving a proposal.',outcomeUnconfirmed:false});
     const selected=parsed.data;

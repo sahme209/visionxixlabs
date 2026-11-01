@@ -1,0 +1,39 @@
+import {z} from 'zod';
+import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
+const identity=z.string().min(1).max(256).refine(v=>v.trim()===v&&!/[\x00-\x1f*]/.test(v)),digest=z.string().regex(/^[a-f0-9]{64}$/),nonce=z.string().uuid(),version=z.number().int().min(0).max(999);
+export const executionPolicyId=z.string().regex(/^governance_execution_policy_[a-f0-9]{64}$/);
+export const executionPolicyScope=z.object({repositoryId:identity,resourceId:identity,environment:z.enum(['production','staging','development','qa'])}).strict();
+export const executionPolicyProposalSchema=z.object({scope:executionPolicyScope,parentDigest:digest.nullable(),autonomyLevel:z.number().int().min(0).max(5),actions:z.array(z.enum(['discovery.read','recommendation.create','repository.merge','deployment.dispatch','integration.slack.send','integration.teams.send','integration.linear.create','integration.linear.update','integration.linear.close','integration.outlook.send','integration.outlook.event.create','computer.replace_text'])).min(1).max(12).refine(v=>new Set(v).size===v.length),executorUserIds:z.array(identity).min(1).max(100).refine(v=>new Set(v).size===v.length),expiresAt:z.string().datetime()}).strict();
+export const executionPolicyRevisionSchema=z.object({id:executionPolicyId,version:z.number().int().min(0).max(2),status:z.enum(['proposed','approved','revoked']),policy:executionPolicyProposalSchema.extend({organizationId:identity,digest}).strict(),requesterUserId:identity,approval:z.object({userId:identity,sessionId:identity,digest,clientRequestId:nonce,at:z.string().datetime()}).strict().nullable(),executionAuthorized:z.literal(false)}).strict().superRefine((v,c)=>{if(v.status==='proposed'&&(v.version!==0||v.approval)||v.status==='approved'&&(v.version!==1||!v.approval)||v.status==='revoked'&&v.version!==(v.approval?2:1)||v.approval&&(v.approval.userId===v.requesterUserId||v.policy.executorUserIds.includes(v.approval.userId)||v.approval.digest!==v.policy.digest))c.addIssue({code:'custom',message:'Invalid historical execution-policy review'})});
+export const executionPolicyActivationSchema=z.object({digest,pointerVersion:version,executionAuthorized:z.literal(false)}).strict();
+const pointerSchema=z.discriminatedUnion('found',[z.object({found:z.literal(false),scope:executionPolicyScope,executionAuthorized:z.literal(false)}).strict(),z.object({found:z.literal(true),scope:executionPolicyScope,revisionId:executionPolicyId,digest,pointerVersion:version,parentDigest:digest.nullable(),policyStatus:z.enum(['proposed','approved','revoked']),expiresAt:z.string().datetime(),executionAuthorized:z.literal(false)}).strict()]);
+const mutationSchema=z.discriminatedUnion('operation',[
+ z.object({operation:z.literal('propose'),policy:executionPolicyProposalSchema,requestId:nonce}).strict(),
+ z.object({operation:z.literal('approve'),id:executionPolicyId,version:z.literal(0),digest,requestId:nonce}).strict(),
+ z.object({operation:z.literal('activate'),id:executionPolicyId,digest,pointerVersion:version.nullable(),parentDigest:digest.nullable(),requestId:nonce}).strict(),
+ z.object({operation:z.literal('revoke'),id:executionPolicyId,version:z.union([z.literal(0),z.literal(1)]),requestId:nonce}).strict(),
+]);
+export type ExecutionPolicyRevision=z.infer<typeof executionPolicyRevisionSchema>;
+export type ExecutionPolicyMutation=z.infer<typeof mutationSchema>;
+export type ExecutionPolicyPointer=z.infer<typeof pointerSchema>;
+export type ExecutionPolicyResult=ExecutionPolicyRevision|z.infer<typeof executionPolicyActivationSchema>;
+export type ExecutionPolicyLookup={found:false;historical:true;executionAuthorized:false}|{found:true;result:ExecutionPolicyResult;historical:true;executionAuthorized:false};
+const equal=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
+function matches(raw:unknown,request:ExecutionPolicyMutation):raw is ExecutionPolicyResult{
+ if(request.operation==='activate'){const r=executionPolicyActivationSchema.safeParse(raw);return r.success&&r.data.digest===request.digest&&r.data.pointerVersion===(request.pointerVersion===null?0:request.pointerVersion+1)}
+ const r=executionPolicyRevisionSchema.safeParse(raw);if(!r.success)return false;const v=r.data;
+ if(request.operation==='propose'){const{organizationId:ignored,digest:ignoredDigest,...proposal}=v.policy;return v.status==='proposed'&&equal(proposal,request.policy)}
+ return v.id===request.id&&(request.operation==='approve'?v.policy.digest===request.digest&&v.status==='approved'&&v.version===1&&v.approval?.clientRequestId===request.requestId:v.status==='revoked'&&v.version===request.version+1);
+}
+/** Fixed paired paths, exact acknowledgements and inert original-outcome lookup.
+ * Nothing here dispatches a provider action or changes baseline enrollment. */
+export function createExecutionPolicyClient(context:Parameters<typeof releaseOperationPlanRequest>[0]){
+ const path='/api/desktop/governance-intelligence/execution-policy';
+ const fail=<T>():Promise<ReleasePlanResult<T>>=>Promise.resolve({ok:false,error:'Load the exact policy and workspace before taking this step.',outcomeUnconfirmed:false});
+ return{
+  read(id:string,signal?:AbortSignal){if(!executionPolicyId.safeParse(id).success)return fail<ExecutionPolicyRevision>();return releaseOperationPlanRequest(context,'POST',path,{operation:'read',id},(v):v is ExecutionPolicyRevision=>executionPolicyRevisionSchema.safeParse(v).success&&(v as ExecutionPolicyRevision).id===id,signal)},
+  active(raw:unknown,signal?:AbortSignal){const selection=executionPolicyScope.safeParse(raw);if(!selection.success)return fail<ExecutionPolicyPointer>();return releaseOperationPlanRequest(context,'POST',path,{operation:'read_active',selection:selection.data},(v):v is ExecutionPolicyPointer=>{const r=pointerSchema.safeParse(v);return r.success&&equal(r.data.scope,selection.data)},signal)},
+  mutate(raw:unknown,signal?:AbortSignal){const selected=mutationSchema.safeParse(raw);if(!selected.success)return fail<ExecutionPolicyResult>();const request=selected.data,body=request.operation==='activate'?(({digest:ignored,...rest})=>rest)(request):request;return releaseOperationPlanRequest(context,'POST',path,body,(v):v is ExecutionPolicyResult=>matches(v,request),signal)},
+  lookup(raw:unknown,signal?:AbortSignal){const selected=mutationSchema.safeParse(raw);if(!selected.success)return fail<ExecutionPolicyLookup>();const request=selected.data;return releaseOperationPlanRequest(context,'POST',path,{operation:'lookup',recordedOperation:request.operation,requestId:request.requestId},(v):v is ExecutionPolicyLookup=>{if(!v||typeof v!=='object'||Array.isArray(v))return false;const r=v as ExecutionPolicyLookup;if(r.historical!==true||r.executionAuthorized!==false||typeof r.found!=='boolean')return false;return equal(Object.keys(r).sort(),(r.found?['found','historical','executionAuthorized','result']:['found','historical','executionAuthorized']).sort())&&(!r.found||matches(r.result,request))},signal)},
+ };
+}

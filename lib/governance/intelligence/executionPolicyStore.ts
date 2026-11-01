@@ -389,11 +389,11 @@ export function createGovernanceExecutionPolicyStore(repo: ReleaseOperationPlanR
             return transaction(s,async tx=>{
                 await authority(tx,s,s.actorUserId,s.sessionId,'reader');
                 const p=await pointer(tx,s,selection);
-                if(!p){await authority(tx,s,s.actorUserId,s.sessionId,'reader');return{found:false as const,executionAuthorized:false as const}}
+                if(!p){await authority(tx,s,s.actorUserId,s.sessionId,'reader');return{found:false as const,scope:selection,executionAuthorized:false as const}}
                 const x=await load(tx,s,p.state.revisionId);
                 if(x.policy.digest!==p.state.digest||sha256ContentHash(x.policy.scope)!==sha256ContentHash(selection)||x.policy.parentDigest!==p.state.parentDigest)deny();
                 await authority(tx,s,s.actorUserId,s.sessionId,'reader');
-                return{found:true as const,revisionId:x.row.id,digest:x.policy.digest,pointerVersion:p.row.version,parentDigest:x.policy.parentDigest,policyStatus:x.state.status,expiresAt:x.policy.expiresAt,executionAuthorized:false as const};
+                return{found:true as const,scope:selection,revisionId:x.row.id,digest:x.policy.digest,pointerVersion:p.row.version,parentDigest:x.policy.parentDigest,policyStatus:x.state.status,expiresAt:x.policy.expiresAt,executionAuthorized:false as const};
             });
         },
         async propose(rawScope: RevisionScope, raw: unknown, requestId: string) {

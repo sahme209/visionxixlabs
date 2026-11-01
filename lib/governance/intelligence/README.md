@@ -283,3 +283,10 @@ named executor to inspect parent/CAS metadata.24 store/HTTP checks, scoped types
 and one expanded actual isolated PostgreSQL journey pass (simulated paired auth).
 Native forms/client DTOs and the subsequent exact full batch build remain pending.
 See docs/recovery/2026-11-01/governance-execution-policy-recovery.md.
+
+The unregistered native Governance prototype now includes exact execution-limit
+review, pointer-gated limit activation/revocation and historical-outcome lookup.
+Strict client DTOs retain exact scope/digest/version/nonce boundaries.52 focused
+checks, desktop types/build and scoped server types pass; no signed/live visual
+or execution acceptance. Proposal authoring, policy directory and restart-safe
+pending recovery remain unfinished. Complete coverage/enrollment still refuses.

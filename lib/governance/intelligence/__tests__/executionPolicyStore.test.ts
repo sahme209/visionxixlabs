@@ -121,7 +121,7 @@ it('recovers an old activation receipt after revocation without restoring its au
  await expect(f.store.readAuthority(f.executor,selection,'repository.merge')).rejects.toThrow();expect([...f.rows]).toEqual(rows);
 });
 it('reads the active limit pointer as non-authorizing history including revoked or expired policy',async()=>{
- const f=fixture();expect(await f.store.readActivePointer(f.owner,selection)).toEqual({found:false,executionAuthorized:false});
+ const f=fixture();expect(await f.store.readActivePointer(f.owner,selection)).toEqual({found:false,scope:selection,executionAuthorized:false});
  const r=await f.approved();await f.store.activate(f.owner,r.id,null,null,randomUUID());
  expect(await f.store.readActivePointer(f.owner,selection)).toMatchObject({found:true,revisionId:r.id,digest:r.policy.digest,pointerVersion:0,policyStatus:'approved',executionAuthorized:false});
  await f.store.revoke(f.owner,r.id,1,randomUUID());f.expire();

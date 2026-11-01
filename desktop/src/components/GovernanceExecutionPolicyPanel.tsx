@@ -1,0 +1,68 @@
+import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
+import {desktopClient} from '../lib/desktopClient';
+import {executionPolicyId,type ExecutionPolicyRevision,type ExecutionPolicyMutation,type ExecutionPolicyPointer} from '../lib/governanceExecutionPolicy';
+interface Props {organizationId:string;currentUserId:string;canManage:boolean;canApprove:boolean;scopes:Array<{repositoryId:string;resourceId:string;environment:'production'|'staging'|'development'|'qa'}>}
+/** Local prototype. Capabilities affect presentation only; paired server services
+ * independently enforce current authority, exact scope and human independence. */
+export function GovernanceExecutionPolicyPanel(props:Props){const rev=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);return <PolicySession key={rev+':'+props.organizationId+':'+props.currentUserId} {...props}/>}
+function PolicySession({organizationId,currentUserId,canManage,canApprove}:Props){
+ const owner=useRef({config:desktopClient.config,revision:desktopClient.getContextRevision()}).current,alive=useRef(true),running=useRef(false),active=useRef<AbortController|undefined>(undefined);
+ const[id,setId]=useState(''),[policy,setPolicy]=useState<ExecutionPolicyRevision>(),[pointer,setPointer]=useState<ExecutionPolicyPointer>(),[checked,setChecked]=useState(false),[held,setHeld]=useState(false),[pending,setPending]=useState<ExecutionPolicyMutation>(),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[clock,setClock]=useState(Date.now());
+ useEffect(()=>{alive.current=true;const timer=setInterval(()=>setClock(Date.now()),15000);return()=>{alive.current=false;clearInterval(timer);active.current?.abort()}},[]);
+ const owns=()=>alive.current&&owner.config===desktopClient.config&&owner.revision===desktopClient.getContextRevision();
+ const client=()=>desktopClient.governanceExecutionPolicies();
+ const expired=Boolean(policy&&Date.parse(policy.policy.expiresAt)<=clock);
+ const independent=Boolean(policy&&canApprove&&currentUserId&&policy.requesterUserId!==currentUserId&&!policy.policy.executorUserIds.includes(currentUserId));
+ const parentMatches=Boolean(policy&&pointer&&(pointer.found?pointer.digest: null)===policy.policy.parentDigest);
+ async function read(kind:'policy'|'pointer'|'outcome'){
+  if(running.current||!owns()||kind==='policy'&&!executionPolicyId.safeParse(id).success||kind==='pointer'&&!policy||kind==='outcome'&&!pending)return;
+  running.current=true;setBusy(true);setMessage('');const c=new AbortController();active.current=c;
+  try{
+   if(kind==='policy'){
+    const result=await client().read(id,c.signal);if(!owns())return;
+    setChecked(false);setPointer(undefined);setPolicy(undefined);
+    if(!result.ok){setMessage(result.error);return}
+    if(result.data.policy.organizationId!==organizationId){setMessage('This policy does not belong to this workspace.');return}
+    setPolicy(result.data);setClock(Date.now());if(!pending)setHeld(false);
+   }else if(kind==='pointer'){
+    setPointer(undefined);setChecked(false);const result=await client().active(policy!.policy.scope,c.signal);if(!owns())return;
+    if(!result.ok)setMessage(result.error);else setPointer(result.data);
+   }else{
+    const result=await client().lookup(pending!,c.signal);if(!owns())return;
+    if(!result.ok)setMessage(result.error);
+    else if(!result.data.found)setMessage('No confirmed original result is visible. Keep this request; it will not be sent again.');
+    else{setPending(undefined);setPolicy(undefined);setPointer(undefined);setChecked(false);setMessage('Original result found as historical evidence. Load the exact policy and current pointer again; this receipt grants no current authority.');}
+   }
+  }catch{if(owns())setMessage('The read could not be confirmed. No decision was repeated.')}
+  finally{if(owns())setBusy(false);running.current=false}
+ }
+ async function decide(kind:'approve'|'activate'|'revoke'){
+  if(running.current||held||pending||!checked||!policy||!owns()||kind==='approve'&&(!independent||policy.status!=='proposed'||expired)||kind==='activate'&&(!canManage||policy.status!=='approved'||expired||!parentMatches)||kind==='revoke'&&(!canManage||policy.status==='revoked'))return;
+  const requestId=crypto.randomUUID(),request:ExecutionPolicyMutation=kind==='approve'?{operation:kind,id:policy.id,version:0,digest:policy.policy.digest,requestId}:kind==='activate'?{operation:kind,id:policy.id,digest:policy.policy.digest,pointerVersion:pointer!.found?pointer!.pointerVersion:null,parentDigest:policy.policy.parentDigest,requestId}:{operation:kind,id:policy.id,version:policy.version as 0|1,requestId};
+  running.current=true;setBusy(true);setHeld(true);setChecked(false);setPending(request);setMessage('');const c=new AbortController();active.current=c;
+  try{const result=await client().mutate(request,c.signal);if(!owns())return;
+   if(!result.ok)setMessage(result.outcomeUnconfirmed?'The policy decision is unconfirmed. Check only its original saved outcome; no automatic resubmission.':result.error+' Keep the original request for read-only recovery.');
+   else{if('policy' in result.data&&(result.data.policy.organizationId!==organizationId||JSON.stringify(result.data.policy)!==JSON.stringify(policy.policy))){setMessage('The returned policy does not match the exact reviewed workspace and limits. Keep the original request for read-only recovery.');return}setPending(undefined);setPointer(undefined);if('policy' in result.data)setPolicy(result.data);setMessage('Limits recorded. This does not authorize a provider action. Load the exact policy again before another decision.');}
+  }catch{if(owns())setMessage('The policy decision is unconfirmed. Check the original saved outcome; do not resubmit.')}
+  finally{if(owns())setBusy(false);running.current=false}
+ }
+ if(!owns())return <p role="status">Workspace changed. Load policy history in the current account.</p>;
+ return <section aria-label="Execution limits" className="rounded-xl border border-white/10 p-4 space-y-4" aria-busy={busy}>
+ <header><h2 className="font-medium">Execution limits</h2><p className="mt-1 text-xs text-zinc-400">A ceiling sets the maximum eligible authority. It does not authorize a provider action, enroll a baseline or replace independent action approvals.</p></header>
+ <label className="block text-sm">Saved execution-limit policy ID<input value={id} disabled={busy} onChange={e=>{setId(e.target.value);setPolicy(undefined);setPointer(undefined);setChecked(false)}} className="mt-1 w-full rounded border border-white/15 bg-transparent p-2"/></label>
+ <button className="btn-secondary" disabled={busy||!executionPolicyId.safeParse(id).success} onClick={()=>void read('policy')}>Load exact policy</button>
+ {policy&&<div className="space-y-3"><p className="text-sm">{policy.status} · version {policy.version}</p><p className="text-sm">Maximum level {policy.policy.autonomyLevel} · expires {new Date(policy.policy.expiresAt).toLocaleString()}</p><p className="text-xs text-zinc-400">{policy.policy.scope.repositoryId} · {policy.policy.scope.resourceId} · {policy.policy.scope.environment}</p><p className="text-sm">Actions: {policy.policy.actions.join(', ')}</p><p className="text-sm">Named executors: {policy.policy.executorUserIds.join(', ')}</p><p className="text-xs text-zinc-400">Requested by {policy.requesterUserId}{policy.approval?' · independently reviewed by '+policy.approval.userId:''}</p>
+ <details className="text-xs text-zinc-400"><summary>Exact policy identifiers</summary><p className="break-all">{policy.id}</p><p className="break-all">Digest {policy.policy.digest}</p><p className="break-all">Parent {policy.policy.parentDigest??'No prior limit pointer'}</p></details>
+ {expired&&<p role="status" className="text-sm text-amber-300">These limits have expired. Historical records do not restore execution authority.</p>}
+ {canManage&&policy.status==='approved'&&<button className="btn-secondary" disabled={busy||Boolean(pending)} onClick={()=>void read('pointer')}>Read current limit pointer</button>}
+ {pointer&&<p className="text-xs text-zinc-400">{pointer.found?'Historical pointer version '+pointer.pointerVersion+' · '+pointer.policyStatus:'No existing limit pointer'}{!parentMatches?' · parent changed; activation refused':''}</p>}
+ {policy.status!=='revoked'&&<><label className="flex gap-2 text-sm"><input type="checkbox" checked={checked} disabled={busy||held||Boolean(pending)} onChange={e=>setChecked(e.target.checked)}/>I reviewed this exact scope, limit, named executors and expiry.</label>
+ {policy.status==='proposed'&&<button className="btn-primary" disabled={busy||held||Boolean(pending)||!checked||!independent||expired} onClick={()=>void decide('approve')}>Record independent limit approval</button>}
+ {canManage&&policy.status==='approved'&&<button className="btn-primary" disabled={busy||held||Boolean(pending)||!checked||!parentMatches||expired} onClick={()=>void decide('activate')}>Activate these limits</button>}
+ {canManage&&<button className="btn-secondary ml-2" disabled={busy||held||Boolean(pending)||!checked} onClick={()=>void decide('revoke')}>Revoke this limit policy</button>}
+ {!independent&&policy.status==='proposed'&&<p className="text-xs text-zinc-400">A current authorized reviewer who neither proposed these limits nor appears as an executor must make the independent decision.</p>}</>}
+ </div>}
+ {pending&&<div className="space-y-2"><p className="break-all text-xs text-zinc-400">Original {pending.operation} request {pending.requestId}. Kept for read-only lookup.</p><button className="btn-secondary" disabled={busy} onClick={()=>void read('outcome')}>Check original saved outcome</button></div>}
+ {message&&<p role="status" className="text-sm text-zinc-300">{message}</p>}
+ </section>;
+}
