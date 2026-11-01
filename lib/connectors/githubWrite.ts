@@ -1,3 +1,5 @@
+import 'server-only';
+import {withGithubAbort,readBoundedGithubBody} from './github/boundedGithubRead';
 /**
  * Cloud Automation: GitHub write capability.
  * Creates pull requests for remediation (IaC patches, workflow updates, etc.).
@@ -13,6 +15,9 @@ export interface CreatePROptions {
   head: string; // branch name
   base?: string; // default: main
   files?: Array<{ path: string; content: string }>;
+  /** Trusted server closure; never supplied by request/model input. */
+  beforeWrite?: (signal:AbortSignal)=>Promise<void>;
+  signal?: AbortSignal;
 }
 
 export interface CreatePRResult {
@@ -20,6 +25,8 @@ export interface CreatePRResult {
   prUrl?: string;
   prNumber?: number;
   error?: string;
+  outcomeUnconfirmed?: boolean;
+  providerWriteAttempted?: boolean;
 }
 
 /**
@@ -27,7 +34,7 @@ export interface CreatePRResult {
  * If files are provided, creates a new branch, commits files, then opens PR.
  * Requires repo write access (contents, pull_requests).
  */
-export async function createPullRequest(opts: CreatePROptions): Promise<CreatePRResult> {
+async function runPullRequest(opts: CreatePROptions, request:typeof fetch): Promise<CreatePRResult> {
   const { token, owner, repo, title, body, head, base = "main", files = [] } = opts;
 
   if (!token?.trim()) {
@@ -47,7 +54,7 @@ export async function createPullRequest(opts: CreatePROptions): Promise<CreatePR
   try {
     if (files.length > 0) {
       // 1. Get base branch ref SHA
-      const refRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${base}`, {
+      const refRes = await request(`https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${base}`, {
         headers,
       });
       if (!refRes.ok) {
@@ -66,7 +73,7 @@ export async function createPullRequest(opts: CreatePROptions): Promise<CreatePR
       // 2. Create blobs for each file
       const treeItems: Array<{ path: string; sha: string; mode: string; type: string }> = [];
       for (const f of files) {
-        const blobRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/blobs`, {
+        const blobRes = await request(`https://api.github.com/repos/${owner}/${repo}/git/blobs`, {
           method: "POST",
           headers,
           body: JSON.stringify({
@@ -83,7 +90,7 @@ export async function createPullRequest(opts: CreatePROptions): Promise<CreatePR
       }
 
       // 3. Create tree
-      const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees`, {
+      const treeRes = await request(`https://api.github.com/repos/${owner}/${repo}/git/trees`, {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -98,7 +105,7 @@ export async function createPullRequest(opts: CreatePROptions): Promise<CreatePR
       const treeData = (await treeRes.json()) as { sha: string };
 
       // 4. Create commit
-      const commitRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/commits`, {
+      const commitRes = await request(`https://api.github.com/repos/${owner}/${repo}/git/commits`, {
         method: "POST",
         headers,
         body: JSON.stringify({
@@ -119,31 +126,18 @@ export async function createPullRequest(opts: CreatePROptions): Promise<CreatePR
 
       // 5. Create branch ref pointing to our commit (use unique branch name)
       const branchRef = `refs/heads/${head}`;
-      const createRefRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs`, {
+      const createRefRes = await request(`https://api.github.com/repos/${owner}/${repo}/git/refs`, {
         method: "POST",
         headers,
         body: JSON.stringify({ ref: branchRef, sha: commitData.sha }),
       });
       if (!createRefRes.ok) {
-        if (createRefRes.status === 422) {
-          // Branch exists — PATCH to update
-          const patchRes = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${head}`,
-            { method: "PATCH", headers, body: JSON.stringify({ sha: commitData.sha }) }
-          );
-          if (!patchRes.ok) {
-            const err = await patchRes.json().catch(() => ({}));
-            return { success: false, error: (err as { message?: string }).message || "Failed to update branch" };
-          }
-        } else {
-          const err = await createRefRes.json().catch(() => ({}));
-          return { success: false, error: (err as { message?: string }).message || "Failed to create branch" };
-        }
+        return {success:false,error:'branch_creation_refused'};
       }
     }
 
     // 6. Create PR
-    const prRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
+    const prRes = await request(`https://api.github.com/repos/${owner}/${repo}/pulls`, {
       method: "POST",
       headers,
       body: JSON.stringify({
@@ -174,4 +168,30 @@ export async function createPullRequest(opts: CreatePROptions): Promise<CreatePR
       error: e instanceof Error ? e.message : "Unknown error",
     };
   }
+}
+
+/** Unbound legacy writers refuse. This transport does not issue authority or
+ * create durable claims. Configured callers must own exact current authority,
+ * one-attempt recording and unknown-result recovery before supplying a guard. */
+export async function createPullRequest(opts:CreatePROptions):Promise<CreatePRResult>{
+  let providerWriteAttempted=false;
+  const unavailable=()=>({success:false as const,error:'github_legacy_write_authority_unavailable',outcomeUnconfirmed:providerWriteAttempted,providerWriteAttempted});
+  if(typeof opts.beforeWrite!=='function')return unavailable();
+  const signal=AbortSignal.any([...(opts.signal?[opts.signal]:[]),AbortSignal.timeout(15000)]),budget={remainingBytes:1024*1024};
+  try{
+    signal.throwIfAborted();await withGithubAbort(opts.beforeWrite(signal),signal);signal.throwIfAborted();
+    const request:typeof fetch=async(url,init)=>{
+      signal.throwIfAborted();
+      const method=(init?.method??'GET').toUpperCase();
+      if(method!=='GET'&&method!=='HEAD'){
+        await withGithubAbort(opts.beforeWrite!(signal),signal);signal.throwIfAborted();providerWriteAttempted=true;
+      }
+      const response=await withGithubAbort(fetch(url,{...init,signal,redirect:'error'}),signal);
+      const bytes=await readBoundedGithubBody(response,signal,256*1024,budget);
+      return new Response([204,205,304].includes(response.status)?null:Uint8Array.from(bytes).buffer,{status:response.status,statusText:response.statusText,headers:response.headers});
+    };
+    const result=await runPullRequest(opts,request);
+    if(!result.success)return unavailable();
+    return{...result,outcomeUnconfirmed:false,providerWriteAttempted};
+  }catch{return unavailable()}
 }

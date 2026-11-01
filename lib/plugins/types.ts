@@ -20,6 +20,9 @@ export interface ExecutionPluginLogger {
 }
 
 export interface ExecutionPluginContext {
+  /** Trusted server-only current mutation guard. Legacy engine does not issue it. */
+  beforeMutation?: (signal:AbortSignal)=>Promise<void>;
+  mutationSignal?: AbortSignal;
   userId: string;
   projectId?: string;
   leadId?: string;

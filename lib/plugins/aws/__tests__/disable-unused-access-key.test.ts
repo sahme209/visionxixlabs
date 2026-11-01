@@ -88,16 +88,30 @@ describe("aws:disable-unused-access-key kill-switch", () => {
     expect(mocks.send).not.toHaveBeenCalled();
   });
 
-  it("allows the real mutation only when the flag is exactly 'true'", async () => {
+  it("requires a trusted current guard as well as the explicit flag", async () => {
     process.env.AWS_IAM_MUTATION_ENABLED = "true";
     mocks.send.mockResolvedValue({});
     const { run } = await import("../disable-unused-access-key");
-    const result = await run(validInput, makeCtx(false));
+    const beforeMutation=vi.fn(async()=>{});
+    const result = await run(validInput, {...makeCtx(false),beforeMutation});
 
+    const{IAMClient}=await import("@aws-sdk/client-iam");
+    expect(IAMClient).toHaveBeenCalledWith(expect.objectContaining({maxAttempts:1}));
+    expect(beforeMutation).toHaveBeenCalledOnce();
     expect(result.ok).toBe(true);
     expect(mocks.send).toHaveBeenCalledTimes(1);
   });
 
+  it("refuses flag-only unbound execution and guards that reject",async()=>{
+    process.env.AWS_IAM_MUTATION_ENABLED="true";const{run}=await import("../disable-unused-access-key");
+    expect(await run(validInput,makeCtx(false))).toMatchObject({ok:false,data:{reasonCode:'legacy_iam_authority_unavailable',providerWriteAttempted:false}});
+    expect(await run(validInput,{...makeCtx(false),beforeMutation:async()=>{throw Error('private authority')}})).toMatchObject({ok:false,data:{providerWriteAttempted:false}});
+    expect(mocks.send).not.toHaveBeenCalled();
+  });
+  it("preserves a dispatched IAM failure as unknown without resending",async()=>{
+    process.env.AWS_IAM_MUTATION_ENABLED="true";mocks.send.mockRejectedValueOnce(Error('private provider response'));const{run}=await import("../disable-unused-access-key");
+    const r=await run(validInput,{...makeCtx(false),beforeMutation:async()=>{}});expect(r).toMatchObject({ok:false,data:{outcomeUnconfirmed:true,providerWriteAttempted:true}});expect(JSON.stringify(r)).not.toContain('private provider response');expect(mocks.send).toHaveBeenCalledOnce();
+  });
   it("rejects missing input before ever checking the kill-switch or credentials", async () => {
     const { run } = await import("../disable-unused-access-key");
     const result = await run({}, makeCtx(false));

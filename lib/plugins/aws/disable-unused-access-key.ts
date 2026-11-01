@@ -13,6 +13,7 @@
  */
 
 import crypto from "node:crypto";
+import {withGithubAbort} from "@/lib/connectors/github/boundedGithubRead";
 import { IAMClient, UpdateAccessKeyCommand } from "@aws-sdk/client-iam";
 import { registerExecutionPlugin } from "../executionRegistry";
 import { getCredentialProvider } from "../credentials";
@@ -37,6 +38,7 @@ function createIAMClient(creds: IAMCreds): IAMClient {
   const region = creds.region ?? "us-east-1";
   return new IAMClient({
     region,
+    maxAttempts:1,
     credentials: {
       accessKeyId: creds.accessKeyId,
       secretAccessKey: creds.secretAccessKey,
@@ -115,15 +117,20 @@ export async function run(input: Record<string, unknown>, ctx: ExecutionPluginCo
     };
   }
 
+  let providerWriteAttempted=false;
+  if(typeof ctx.beforeMutation!=='function')return{ok:false,error:'legacy_iam_authority_unavailable',data:{reasonCode:'legacy_iam_authority_unavailable',providerWriteAttempted:false,outcomeUnconfirmed:false},summary:'Current tenant-scoped mutation authority is unavailable'};
+  const signal=AbortSignal.any([...(ctx.mutationSignal?[ctx.mutationSignal]:[]),AbortSignal.timeout(15000)]);
   try {
+    signal.throwIfAborted();await withGithubAbort(ctx.beforeMutation(signal),signal);signal.throwIfAborted();
     const client = createIAMClient(creds);
-    await client.send(
+    providerWriteAttempted=true;
+    await withGithubAbort(client.send(
       new UpdateAccessKeyCommand({
         UserName: userName,
         AccessKeyId: accessKeyId,
         Status: "Inactive",
-      })
-    );
+      }),{abortSignal:signal}
+    ),signal);
     logger.info("disable-unused-access-key success", { accessKeyId: `${accessKeyId.slice(0, 8)}...`, userName });
     return {
       ok: true,
@@ -138,15 +145,10 @@ export async function run(input: Record<string, unknown>, ctx: ExecutionPluginCo
       summary: `Disabled access key for user ${userName}`,
       rollbackHints: rollbackSteps,
     };
-  } catch (e) {
-    const err = e as { name?: string; message?: string };
-    const msg = err?.message ?? String(e);
-    logger.error("disable-unused-access-key failed", { error: msg });
-    return {
-      ok: false,
-      error: msg,
-      summary: "Failed to disable access key",
-    };
+  } catch {
+    const reasonCode=providerWriteAttempted?'legacy_iam_outcome_unknown':'legacy_iam_authority_unavailable';
+    logger.error('disable-unused-access-key refused or unconfirmed',{reasonCode,providerWriteAttempted});
+    return{ok:false,error:reasonCode,summary:providerWriteAttempted?'IAM outcome unconfirmed; do not resend':'Current mutation authority unavailable',data:{reasonCode,providerWriteAttempted,outcomeUnconfirmed:providerWriteAttempted}};
   }
 }
 
