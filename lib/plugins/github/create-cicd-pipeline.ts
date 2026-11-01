@@ -188,7 +188,7 @@ async function run(
     };
   }
 
-  const token = await getGitHubToken(ctx.credentialsKey);
+  const token = await getGitHubToken(ctx.userId, ctx.credentialsKey);
   if (!token) {
     return {
       ok: false,

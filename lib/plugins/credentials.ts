@@ -1,5 +1,5 @@
 /**
- * Credential retrieval — per-tenant only.
+ * Owner-bound legacy credential retrieval; not organization execution authority.
  * NEVER uses process.env for user workloads. Looks up encrypted creds from lead connectors.
  * credentialsKey is interpreted as leadId for lookup.
  * Supports assume-role format (roleArn, externalId) — uses broker to assume, returns temp creds.
@@ -35,36 +35,30 @@ export interface CredentialProvider {
   getGCPCredentials(userId: string, credentialsKey?: string): Promise<GCPCredentials | null>;
 }
 
-async function getConnectorPayload(
-  credentialsKey: string | undefined,
-  connectorType: string
-): Promise<Record<string, unknown> | null> {
-  if (!credentialsKey?.trim()) return null;
-
-  const lead = await prisma.lead.findUnique({
-    where: { id: credentialsKey.trim() },
-    select: { fullPayload: true },
-  });
-  if (!lead) return null;
-
-  const payload = (lead.fullPayload as Record<string, unknown>) || {};
-  const connectors = (payload.connectors as Record<string, Record<string, unknown>>) || {};
-  const connector = connectors[connectorType];
-  if (!connector || typeof connector.encryptedCredRef !== "string") return null;
-
-  try {
-    const plain = decryptCredential(connector.encryptedCredRef);
-    return JSON.parse(plain) as Record<string, unknown>;
-  } catch {
-    return null;
-  }
+/** The encrypted payload and its stored owner must be checked in one read.
+ * This is a credential ownership check, not a role or Governance grant. */
+async function getOwnedConnector(userId:string,credentialsKey:string|undefined,connectorType:string):Promise<Record<string,unknown>|null>{
+  if(typeof userId!=='string'||!userId||userId.length>256||userId.trim()!==userId||typeof credentialsKey!=='string'||!credentialsKey.trim()||credentialsKey.trim().length>256)return null;
+  const lead=await prisma.lead.findUnique({where:{id:credentialsKey.trim()},select:{userId:true,fullPayload:true}});
+  if(!lead||lead.userId!==userId)return null;
+  const payload=lead.fullPayload;
+  if(!payload||typeof payload!=='object'||Array.isArray(payload))return null;
+  const connectors=(payload as Record<string,unknown>).connectors;
+  if(!connectors||typeof connectors!=='object'||Array.isArray(connectors))return null;
+  const connector=(connectors as Record<string,unknown>)[connectorType];
+  if(!connector||typeof connector!=='object'||Array.isArray(connector)||typeof (connector as Record<string,unknown>).encryptedCredRef!=='string')return null;
+  return connector as Record<string,unknown>;
+}
+async function getConnectorPayload(userId:string,credentialsKey:string|undefined,connectorType:string):Promise<Record<string,unknown>|null>{
+  const connector=await getOwnedConnector(userId,credentialsKey,connectorType);if(!connector)return null;
+  try{return JSON.parse(decryptCredential(connector.encryptedCredRef as string)) as Record<string,unknown>}catch{return null}
 }
 
 async function getAWSCredentialsFromVault(
   userId: string,
   credentialsKey?: string
 ): Promise<AWSCredentials | null> {
-  const parsed = await getConnectorPayload(credentialsKey, "aws");
+  const parsed = await getConnectorPayload(userId, credentialsKey, "aws");
   if (!parsed) return null;
 
   if (parsed.roleArn && parsed.awsAccountId) {
@@ -95,10 +89,10 @@ async function getAWSCredentialsFromVault(
 }
 
 async function getAzureCredentialsFromVault(
-  _userId: string,
+  userId: string,
   credentialsKey?: string
 ): Promise<AzureCredentials | null> {
-  const parsed = await getConnectorPayload(credentialsKey, "azure");
+  const parsed = await getConnectorPayload(userId, credentialsKey, "azure");
   if (!parsed) return null;
 
   const tenantId = parsed.tenantId ? String(parsed.tenantId) : null;
@@ -113,10 +107,10 @@ async function getAzureCredentialsFromVault(
 }
 
 async function getGCPCredentialsFromVault(
-  _userId: string,
+  userId: string,
   credentialsKey?: string
 ): Promise<GCPCredentials | null> {
-  const parsed = await getConnectorPayload(credentialsKey, "gcp");
+  const parsed = await getConnectorPayload(userId, credentialsKey, "gcp");
   if (!parsed) return null;
 
   let saJson: Record<string, unknown>;
@@ -165,20 +159,7 @@ export function getCredentialProvider(): CredentialProvider {
 /**
  * Get GitHub token from lead's connector. credentialsKey = leadId.
  */
-export async function getGitHubToken(credentialsKey?: string): Promise<string | null> {
-  if (!credentialsKey?.trim()) return null;
-  const lead = await prisma.lead.findUnique({
-    where: { id: credentialsKey.trim() },
-    select: { fullPayload: true },
-  });
-  if (!lead) return null;
-  const payload = (lead.fullPayload as Record<string, unknown>) || {};
-  const connectors = (payload.connectors as Record<string, Record<string, unknown>>) || {};
-  const github = connectors.github;
-  if (!github || typeof github.encryptedCredRef !== "string") return null;
-  try {
-    return decryptCredential(github.encryptedCredRef);
-  } catch {
-    return null;
-  }
+export async function getGitHubToken(userId:string,credentialsKey?:string):Promise<string|null>{
+  const connector=await getOwnedConnector(userId,credentialsKey,'github');if(!connector)return null;
+  try{return decryptCredential(connector.encryptedCredRef as string)}catch{return null}
 }
