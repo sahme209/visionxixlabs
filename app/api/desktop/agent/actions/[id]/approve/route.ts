@@ -1,11 +1,9 @@
 /**
  * POST /api/desktop/agent/actions/[id]/approve
  *
- * The only route in the entire agent runtime that can turn a proposal
- * into a real GitHub/AWS write action. Admin/owner-only — a proposal
- * the agent raised for one user still requires an admin's explicit
- * approval, the same authority bar as every other write action in this
- * codebase (GitHub branch/PR/commit, AWS deploy trigger).
+ * Records an exact independent human review only. No provider credential,
+ * deployment reservation or write is invoked by this endpoint. Requester
+ * execution is a separate workflow; review permission is not execution rights.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -28,6 +26,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const { id } = await params;
   const result = await decideAgentAction({ organizationId: String(session.organizationId), proposalId: id, actorUserId: String(session.userId), actorRole: session.role ?? "unknown", decision: "approve", correlationId: request.headers.get("x-correlation-id") ?? undefined });
-  if (!result.ok) return NextResponse.json(result, { status: result.error === "not_found" ? 404 : result.error === "self_approval_forbidden" ? 403 : result.error === "approval_expired" ? 410 : 409 });
+  if (!result.ok) return NextResponse.json(result, { status: result.error === "not_found" ? 404 : (result.error === "self_approval_forbidden" || result.error === "approval_authority_required") ? 403 : result.error === "approval_expired" ? 410 : result.error === "approval_authority_unavailable" ? 503 : 409 });
   return NextResponse.json({ ok: true, data: { id, status: result.status, errorMessage: result.errorMessage ?? null } });
 }

@@ -26,6 +26,6 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
 
   const { id } = await params;
   const result = await decideAgentAction({ organizationId: String(session.organizationId), proposalId: id, actorUserId: String(session.userId), actorRole: session.role ?? "unknown", decision: "reject", correlationId: request.headers.get("x-correlation-id") ?? undefined });
-  if (!result.ok) return NextResponse.json(result, { status: result.error === "not_found" ? 404 : result.error === "self_approval_forbidden" ? 403 : result.error === "approval_expired" ? 410 : 409 });
+  if (!result.ok) return NextResponse.json(result, { status: result.error === "not_found" ? 404 : (result.error === "self_approval_forbidden" || result.error === "approval_authority_required") ? 403 : result.error === "approval_expired" ? 410 : result.error === "approval_authority_unavailable" ? 503 : 409 });
   return NextResponse.json({ ok: true, data: { id, status: result.status } });
 }

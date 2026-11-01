@@ -1,6 +1,6 @@
 # Agent review and execution separation — local implementation proposal
 
-Status: proposed, not implemented or approved. This is a concrete extension of the approved Governance integration design; it changes existing Agent decision semantics and must be reviewed before implementation. No rollout, provider write, role change or historical recovery is included.
+Status: user approved local implementation November1 (“Approve local separation”); implementation is partial. This is a concrete extension of the approved Governance integration design; it changes existing Agent decision semantics and must be reviewed before implementation. No rollout, provider write, role change or historical recovery is included.
 
 ## Confirmed current composition
 

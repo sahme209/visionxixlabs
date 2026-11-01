@@ -1,16 +1,15 @@
-import {assertNoGovernanceEnrollmentForMutation,type GovernanceEnrollmentMetadataRepo} from '@/lib/governance/intelligence/enrollmentMetadata';
 import "server-only";
 import { randomUUID } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 
 import { prisma } from "@/lib/db";
 import { agentActionDigest } from "./proposalIntegrity";
-import { executeApprovedAction, type ActionExecutionRepo, type ActionExecutionResult } from "./actionApprovalResponder";
+import {hasDesktopCapability,type DesktopWorkspaceRole} from "@/lib/desktop/desktopAuthorization";
 import { readWorkspaceAgentIdentity } from "./agentIdentityPolicy";
 
 export type BrowserApprovalResult =
-  | { ok: true; status: "rejected" | "executed" | "failed"; errorMessage?: string | null }
-  | { ok: false; error: "not_found" | "already_decided" | "self_approval_forbidden" | "approval_expired" | "proposal_integrity_failed" | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "governance_execution_coverage_unavailable" };
+  | { ok: true; status: "approved" | "rejected"; errorMessage?: string | null }
+  | { ok: false; error: "not_found" | "already_decided" | "self_approval_forbidden" | "approval_expired" | "proposal_integrity_failed" | "workspace_agent_disabled" | "workspace_agent_policy_unavailable" | "agent_tool_not_allowed" | "governance_execution_coverage_unavailable" | "approval_authority_required" | "approval_authority_unavailable" };
 
 export async function decideAgentAction(input: {
   organizationId: string;
@@ -56,15 +55,25 @@ export async function decideAgentAction(input: {
     }
   }
 
-  if(input.decision==='approve')try{await assertNoGovernanceEnrollmentForMutation(prisma as unknown as GovernanceEnrollmentMetadataRepo,input.organizationId)}catch{return{ok:false,error:'governance_execution_coverage_unavailable'}}
 
   const claimedStatus = input.decision === "approve" ? "approved" : "rejected";
-  const claimed = await prisma.$transaction(async (tx) => {
+  try { return await prisma.$transaction(async (tx):Promise<BrowserApprovalResult> => {
+    const rows=await tx.$queryRaw<Array<{organizationId:string;userId:string;role:string;acceptedAt:Date|null}>>`SELECT "organizationId","userId","role","acceptedAt" FROM "OrgMembership" WHERE "organizationId"=${input.organizationId} AND "userId"=${input.actorUserId} FOR SHARE`;
+    const member=rows[0],required=input.decision==='reject'&&input.actorUserId===proposal.proposedByUserId?'workspace:read':'agent:approve';
+    if(rows.length!==1||!member||member.organizationId!==input.organizationId||member.userId!==input.actorUserId||!(member.acceptedAt instanceof Date)||!Number.isFinite(member.acceptedAt.getTime())||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(member.role)||!hasDesktopCapability(member.role as DesktopWorkspaceRole,required))return{ok:false,error:'approval_authority_required'};
+    // Acquire both authority/source locks before sampling time. Sampling before
+    // a contended proposal lock could approve an already-expired decision.
+    const locked=await tx.$queryRaw<Array<{id:string}>>`SELECT "id" FROM "AgentActionProposal" WHERE "id"=${proposal.id} AND "organizationId"=${input.organizationId} FOR UPDATE`;
+    if(locked.length!==1||locked[0].id!==proposal.id)return{ok:false,error:'already_decided'};
+    const clocks=await tx.$queryRaw<Array<{checkedAt:Date}>>`SELECT clock_timestamp() AS "checkedAt"`;
+    const decidedAt=clocks[0]?.checkedAt;
+    if(clocks.length!==1||!(decidedAt instanceof Date)||!Number.isFinite(decidedAt.getTime()))return{ok:false,error:'approval_authority_unavailable'};
+    if(expiresAt<=decidedAt){await tx.agentActionProposal.updateMany({where:{id:proposal.id,organizationId:input.organizationId,status:'proposed',actionDigest:digest},data:{status:'expired',decidedAt}});return{ok:false,error:'approval_expired'}}
     const claim = await tx.agentActionProposal.updateMany({
-      where: { id: proposal.id, organizationId: input.organizationId, status: "proposed", actionDigest: digest },
-      data: { status: claimedStatus, decidedByUserId: input.actorUserId, decidedAt: now },
+      where: { id: proposal.id, organizationId: input.organizationId, status: "proposed", actionDigest: digest,conversationId:proposal.conversationId,proposedByUserId:proposal.proposedByUserId,toolName:proposal.toolName,argsJson:{equals:proposal.argsJson as Prisma.InputJsonValue},approvalExpiresAt:proposal.approvalExpiresAt },
+      data: { status: claimedStatus, decidedByUserId: input.actorUserId, decidedAt },
     });
-    if (claim.count !== 1) return false;
+    if (claim.count !== 1) return {ok:false,error:'already_decided'};
     await tx.secureAuditRecord.create({ data: {
       id: `aud_${randomUUID()}`,
       organizationId: input.organizationId,
@@ -75,51 +84,12 @@ export async function decideAgentAction(input: {
       entityRef: `agent_action:${proposal.id}`,
       correlationId,
       source: "live",
-      occurredAt: now,
-      detail: { actionDigest: digest, actorRole: input.actorRole, toolName: proposal.toolName, riskLevel: proposal.riskLevel },
+      occurredAt: decidedAt,
+      detail: { actionDigest: digest, actorRole: member.role, toolName: proposal.toolName, riskLevel: proposal.riskLevel,decisionFormat:'agent_review_only_v1',requesterUserId:proposal.proposedByUserId,expiresAt:expiresAt.toISOString() },
     } });
-    if (input.decision === "reject") {
-      await tx.agentConversationTurn.create({ data: { conversationId: proposal.conversationId, role: "tool_result", actionProposalId: proposal.id, content: `${proposal.toolName} was rejected.` } });
-    }
-    return true;
-  });
-  if (!claimed) return { ok: false, error: "already_decided" };
-  if (input.decision === "reject") return { ok: true, status: "rejected" };
-
-  let execution: ActionExecutionResult;
-  try {
-    execution = await executeApprovedAction(
-      prisma as unknown as ActionExecutionRepo,
-      input.organizationId,
-      proposal.toolName,
-      proposal.argsJson as Record<string, unknown>,
-      input.actorUserId,
-      `agent-action:${proposal.id}`,
-    );
-  } catch {
-    // The provider may have accepted a write before an unexpected failure.
-    // Keep the claimed decision consumed and never retry or expose raw errors.
-    execution = { ok: false, error: "action_outcome_unknown" };
-  }
-  const status = execution.ok ? "executed" : "failed";
-  await prisma.$transaction(async (tx) => {
-    await tx.agentActionProposal.update({ where: { id: proposal.id }, data: {
-      status,
-      resultJson: execution.ok ? (execution.result as Prisma.InputJsonValue) : undefined,
-      errorMessage: execution.ok ? null : execution.error,
-      executedAt: new Date(),
-    } });
-    await tx.agentConversationTurn.create({ data: {
-      conversationId: proposal.conversationId,
-      role: "tool_result",
-      actionProposalId: proposal.id,
-      content: execution.ok ? `${proposal.toolName} approved and executed.`
-        : execution.error === "action_outcome_unknown"
-          ? `${proposal.toolName} approved; provider outcome unconfirmed. Review the external outcome before retrying; this approval cannot execute again.`
-          : execution.error === "deployment_outcome_unknown"
-          ? `${proposal.toolName} approved; provider outcome unconfirmed. Its reservation is retained. Review the external outcome before retrying.`
-          : `${proposal.toolName} approved but failed: ${execution.error}`,
-    } });
-  });
-  return execution.ok ? { ok: true, status } : { ok: true, status, errorMessage: execution.error };
+    await tx.agentConversationTurn.create({ data: { conversationId: proposal.conversationId, role: "tool_result", actionProposalId: proposal.id, content: input.decision==='reject'?`${proposal.toolName} was rejected.`:`${proposal.toolName} review approved. Waiting for the requester to execute this exact action; nothing has been executed.` } });
+    // Review is deliberately not execution. The future requester operation must
+    // load this versioned review evidence; old approved history cannot adopt it.
+    return {ok:true,status:claimedStatus};
+  }); }catch{return{ok:false,error:'approval_authority_unavailable'}}
 }

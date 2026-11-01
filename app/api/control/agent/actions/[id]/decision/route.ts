@@ -31,7 +31,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     correlationId: request.headers.get("x-correlation-id") ?? undefined,
   });
   if (!result.ok) {
-    const status = result.error === "not_found" ? 404 : result.error === "self_approval_forbidden" ? 403 : result.error === "approval_expired" ? 410 : 409;
+    const status = result.error === "not_found" ? 404 : (result.error === "self_approval_forbidden" || result.error === "approval_authority_required") ? 403 : result.error === "approval_expired" ? 410 : result.error === "approval_authority_unavailable" ? 503 : 409;
     return NextResponse.json(result, { status });
   }
   return NextResponse.json(result);

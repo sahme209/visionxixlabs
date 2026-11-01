@@ -125,3 +125,7 @@ Exact e175c8ac production build and TypeScript now pass for the combined pinned-
 ## Local progress — deployment-specific current authority
 
 Direct environment dispatch now binds the current paired actor and captured installation through final transport. Closed normal/emergency profiles retain deploy:execute and the additional production-bypass permission; GitHub write is not a substitute.73 focused route/actual-transport checks,9 isolated PostgreSQL cases, scoped types and independent review pass. Current target/policy/plan admission, other shared callers and complete coverage/enrollment remain open. No provider dispatch or activation occurred. See ../recovery/2026-11-01/direct-deployment-current-authority.md.
+
+## Approved Agent separation — partial local implementation
+
+User approved docs/recovery/2026-11-01/agent-review-execution-separation-proposal.md. Task1 now records exact current human review without invoking execution;20 service+8 route checks,6 actual isolated database journeys, scoped types and source review pass. A real lock-wait expiry race was reproduced and fixed. Native waiting controls and separate requester execution remain unfinished, so this intermediate backend must not ship. Existing consumed history and current reject-entry limitations are preserved. Follow docs/superpowers/plans/2026-11-01-agent-review-execution-separation.md Tasks2–5 without another routine checkpoint; local authorization covers this plan only, not live actions or activation.

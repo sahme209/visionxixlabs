@@ -2,9 +2,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { agentActionDigest } from "../proposalIntegrity";
 
 const mocks = vi.hoisted(() => ({
-  findFirst: vi.fn(), updateMany: vi.fn(), update: vi.fn(), createTurn: vi.fn(), createAudit: vi.fn(), execute: vi.fn(), identity: vi.fn(), enrollment:vi.fn(),
+  lock:vi.fn(),clock:vi.fn(),authority:vi.fn(), findFirst: vi.fn(), updateMany: vi.fn(), update: vi.fn(), createTurn: vi.fn(), createAudit: vi.fn(), execute: vi.fn(), identity: vi.fn(), enrollment:vi.fn(),
 }));
 const transactionRepo = {
+  $queryRaw:(sql:TemplateStringsArray,...values:unknown[])=>sql.join('').includes('AgentActionProposal')?mocks.lock(sql,...values):sql.join('').includes('clock_timestamp')?mocks.clock():mocks.authority(sql,...values),
   durableAgentWorkflow:{findMany:mocks.enrollment},
   agentActionProposal: { updateMany: mocks.updateMany, update: mocks.update },
   agentConversationTurn: { create: mocks.createTurn },
@@ -28,7 +29,7 @@ const actionDigest = agentActionDigest({ organizationId: base.organizationId, co
 
 describe("browser agent approval decision", () => {
   beforeEach(() => {
-    vi.clearAllMocks();mocks.enrollment.mockResolvedValue([]);
+    vi.clearAllMocks();mocks.lock.mockResolvedValue([{id:base.id}]);mocks.clock.mockResolvedValue([{checkedAt:reviewNow}]);mocks.authority.mockImplementation(async(_sql,org,user)=>[{organizationId:org,userId:user,role:'admin',acceptedAt:reviewNow,checkedAt:reviewNow}]);mocks.enrollment.mockResolvedValue([]);
     mocks.findFirst.mockResolvedValue({ ...base, actionDigest });
     mocks.updateMany.mockResolvedValue({ count: 1 });
     mocks.update.mockResolvedValue({});
@@ -67,33 +68,18 @@ describe("browser agent approval decision", () => {
     expect(mocks.execute).not.toHaveBeenCalled();
   });
 
-  it("executes a separately approved action still allowed by current policy", async () => {
-    const { decideAgentAction } = await import("../browserApprovalDecision");
-    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow })).toEqual({ ok: true, status: "executed" });
-    expect(mocks.execute).toHaveBeenCalledTimes(1);
+  it('records a current separately reviewed action without executing it',async()=>{
+    const {decideAgentAction}=await import('../browserApprovalDecision');
+    expect(await decideAgentAction({organizationId:'org-1',proposalId:base.id,actorUserId:'reviewer-1',actorRole:'admin',decision:'approve',now:reviewNow})).toEqual({ok:true,status:'approved'});
+    expect(mocks.execute).not.toHaveBeenCalled();expect(mocks.update).not.toHaveBeenCalled();
+    expect(mocks.createTurn).toHaveBeenCalledWith({data:expect.objectContaining({content:expect.stringContaining('Waiting for the requester')})});
   });
-
-  it("records uncertainty without claiming that the provider action failed or completed", async () => {
-    mocks.execute.mockResolvedValue({ ok: false, error: "deployment_outcome_unknown" });
-    const { decideAgentAction } = await import("../browserApprovalDecision");
-    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow })).toMatchObject({ ok: true, errorMessage: "deployment_outcome_unknown" });
-    expect(mocks.createTurn).toHaveBeenCalledWith({ data: expect.objectContaining({ content: expect.stringContaining("provider outcome unconfirmed") }) });
+  it.each(['failed','executed','approved'])('never adopts consumed %s history as a new approval',async status=>{
+    mocks.findFirst.mockResolvedValue({...base,actionDigest,status,errorMessage:'action_outcome_unknown'});
+    const {decideAgentAction}=await import('../browserApprovalDecision');
+    expect(await decideAgentAction({organizationId:'org-1',proposalId:base.id,actorUserId:'reviewer-1',actorRole:'admin',decision:'approve',now:reviewNow})).toEqual({ok:false,error:'already_decided'});
+    expect(mocks.execute).not.toHaveBeenCalled();expect(mocks.updateMany).not.toHaveBeenCalled();
   });
-
-  it("records an unexpected execution exception as unconfirmed without leaking or retrying", async () => {
-    mocks.execute.mockRejectedValue(new Error("PRIVATE_PROVIDER_DETAIL"));
-    const { decideAgentAction } = await import("../browserApprovalDecision");
-    const result = await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow });
-    expect(result).toEqual({ ok: true, status: "failed", errorMessage: "action_outcome_unknown" });
-    expect(mocks.execute).toHaveBeenCalledTimes(1);
-    expect(mocks.update).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ errorMessage: "action_outcome_unknown" }) }));
-    expect(mocks.createTurn).toHaveBeenCalledWith({ data: expect.objectContaining({ content: expect.stringContaining("provider outcome unconfirmed") }) });
-    expect(JSON.stringify(mocks.createTurn.mock.calls)).not.toContain("PRIVATE_PROVIDER_DETAIL");
-    mocks.findFirst.mockResolvedValue({ ...base, actionDigest, status: "failed" });
-    expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: reviewNow })).toEqual({ ok: false, error: "already_decided" });
-    expect(mocks.execute).toHaveBeenCalledTimes(1);
-  });
-
   it("lets an authorized proposer reject their own pending action without execution authority", async () => {
     mocks.identity.mockRejectedValue(new Error("Agent disabled"));
     const { decideAgentAction } = await import("../browserApprovalDecision");
@@ -142,6 +128,32 @@ describe("browser agent approval decision", () => {
     expect(mocks.createAudit).toHaveBeenCalledWith(expect.objectContaining({ data: expect.objectContaining({ action: "approval.deny", entityRef: `agent_action:${base.id}` }) }));
     expect(mocks.execute).not.toHaveBeenCalled();
   });
-it("refuses an uncovered Agent approval before consuming the proposal while retaining rejection",async()=>{const {decideAgentAction}=await import("../browserApprovalDecision");mocks.enrollment.mockResolvedValue([{id:"governance_active_x",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}]);expect(await decideAgentAction({organizationId:"org-1",proposalId:base.id,actorUserId:"reviewer-1",actorRole:"admin",decision:"approve",now:reviewNow})).toEqual({ok:false,error:"governance_execution_coverage_unavailable"});expect(mocks.updateMany).not.toHaveBeenCalled();expect(mocks.execute).not.toHaveBeenCalled();expect((await decideAgentAction({organizationId:"org-1",proposalId:base.id,actorUserId:"reviewer-1",actorRole:"admin",decision:"reject",now:reviewNow})).ok).toBe(true)});
+  it.each(['enrolled','unavailable'])('records review while %s execution coverage remains separately refused',async state=>{
+    if(state==='enrolled')mocks.enrollment.mockResolvedValue([{id:'governance_active_x',organizationId:'org-1',workflowKind:'governance_baseline_active_v1'}]);else mocks.enrollment.mockRejectedValue(Error('unavailable'));
+    const {decideAgentAction}=await import('../browserApprovalDecision');
+    expect(await decideAgentAction({organizationId:'org-1',proposalId:base.id,actorUserId:'reviewer-1',actorRole:'admin',decision:'approve',now:reviewNow})).toEqual({ok:true,status:'approved'});
+    expect(mocks.enrollment).not.toHaveBeenCalled();expect(mocks.execute).not.toHaveBeenCalled();
+  });
+
+  it('records review only and never invokes execution under the reviewer identity',async()=>{
+    mocks.authority.mockResolvedValue([{organizationId:'org-1',userId:'reviewer-1',role:'security_reviewer',acceptedAt:reviewNow,checkedAt:reviewNow}]);
+    const {decideAgentAction}=await import('../browserApprovalDecision');
+    expect(await decideAgentAction({organizationId:'org-1',proposalId:base.id,actorUserId:'reviewer-1',actorRole:'security_reviewer',decision:'approve',now:reviewNow})).toEqual({ok:true,status:'approved'});
+    expect(mocks.execute).not.toHaveBeenCalled();
+    expect(mocks.createAudit).toHaveBeenCalledWith({data:expect.objectContaining({action:'approval.grant',detail:expect.objectContaining({decisionFormat:'agent_review_only_v1'})})});
+  });
+
+  it('refuses a stale caller role when current persisted membership cannot approve',async()=>{
+    mocks.authority.mockResolvedValue([{organizationId:'org-1',userId:'reviewer-1',role:'operator',acceptedAt:reviewNow,checkedAt:reviewNow}]);
+    const {decideAgentAction}=await import('../browserApprovalDecision');
+    expect(await decideAgentAction({organizationId:'org-1',proposalId:base.id,actorUserId:'reviewer-1',actorRole:'admin',decision:'approve',now:reviewNow})).toEqual({ok:false,error:'approval_authority_required'});
+    expect(mocks.updateMany).not.toHaveBeenCalled();expect(mocks.execute).not.toHaveBeenCalled();
+  });
+  it('refuses expiry reached at the locked decision check even if initial policy lookup started in time',async()=>{
+    mocks.clock.mockResolvedValue([{checkedAt:base.approvalExpiresAt}]);
+    const {decideAgentAction}=await import('../browserApprovalDecision');
+    expect(await decideAgentAction({organizationId:'org-1',proposalId:base.id,actorUserId:'reviewer-1',actorRole:'admin',decision:'approve',now:reviewNow})).toEqual({ok:false,error:'approval_expired'});
+    expect(mocks.execute).not.toHaveBeenCalled();expect(mocks.createAudit).not.toHaveBeenCalled();
+  });
 
 });
