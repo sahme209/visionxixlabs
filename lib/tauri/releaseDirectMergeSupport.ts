@@ -1,3 +1,4 @@
+import {sha256ContentHash} from './contentHash';
 import 'server-only';
 import {z} from 'zod';
 import {parseReleaseOperationPlan,type ReleaseOperationPlan} from './releaseOperationPlanContract';
@@ -19,6 +20,15 @@ export interface ReleaseDirectMergeSupportDependencies{
 const repository=z.object({full_name:z.string(),archived:z.boolean(),disabled:z.boolean(),default_branch:z.string(),allow_merge_commit:z.boolean(),allow_squash_merge:z.boolean(),allow_rebase_merge:z.boolean()}).passthrough();
 const pullRequest=z.object({number:z.number().int().positive(),state:z.literal('open'),draft:z.literal(false),merged:z.literal(false),head:z.object({sha,ref:z.string(),repo:z.object({full_name:z.string()}).passthrough()}).passthrough(),base:z.object({sha,ref:z.string(),repo:z.object({full_name:z.string()}).passthrough()}).passthrough()}).passthrough();
 const knownRules=new Set(['creation','update','deletion','required_linear_history','required_deployments','required_signatures','pull_request','required_status_checks','non_fast_forward','required_workflows','code_scanning','merge_queue','commit_message_pattern','commit_author_email_pattern','committer_email_pattern','branch_name_pattern','file_path_restriction','max_file_path_length','file_extension_restriction','max_file_size']);
+const verifiedSupportEvidence=new WeakMap<object,{planDigest:string;credentialDigest:string;supportDigest:string;sourceDigest:string;observedAt:string;expiresAt:string}>();
+/** Only results issued by this actual reader carry provenance. An optional
+ * caller field, copied object or synthetic transport Boolean cannot supply it. */
+export function readVerifiedDirectMergeSupportEvidence(raw:unknown,plan:Readonly<ReleaseOperationPlan>,credential:Readonly<ProviderMergeCredential>){
+ if(!raw||typeof raw!=='object')throw Error('merge_support_evidence_unavailable');
+ const proof=verifiedSupportEvidence.get(raw);
+ if(!proof||proof.planDigest!==sha256ContentHash(plan)||proof.credentialDigest!==sha256ContentHash(credential)||proof.supportDigest!==sha256ContentHash(raw))throw Error('merge_support_evidence_unavailable');
+ return{sourceDigest:proof.sourceDigest,observedAt:proof.observedAt,expiresAt:proof.expiresAt};
+}
 /** Active-branch rules are all active organization/repository rules. Any uncertain/truncated policy refuses.
  * This is not proof that the installation actor lacks ruleset/protection bypass entitlement.
  * Production authority wiring must independently verify that policy; no such verifier is installed here. */
@@ -42,7 +52,9 @@ export function createReleaseDirectMergeSupportReader(deps:ReleaseDirectMergeSup
    phase='topology';const evidence=verifiedUnstackedTopologySchema.parse(await bounded(()=>deps.readTopologyEvidence!(structuredClone(plan),signal)));
    if(evidence.organizationId!==plan.organizationId||evidence.connectionId!==plan.connectionId||evidence.connectionRevision!==plan.connectionRevision||evidence.repositoryFullName!==plan.pullRequest.repositoryFullName||evidence.pullRequestNumber!==plan.pullRequest.number||evidence.headSha!==plan.pullRequest.headSha||evidence.baseSha!==plan.pullRequest.baseSha||Date.parse(evidence.observedAt)>now()||now()-Date.parse(evidence.observedAt)>30000||Date.parse(evidence.expiresAt)<=now()||Date.parse(evidence.expiresAt)>now()+30000)return null;
    phase='final_authority';await current();guard();if(Date.parse(evidence.expiresAt)<=now()||now()-Date.parse(evidence.observedAt)>30000)return null;
-   verified=true;return {organizationId:plan.organizationId,connectionId:plan.connectionId,connectionRevision:plan.connectionRevision,repositoryFullName:plan.pullRequest.repositoryFullName,pullRequestNumber:plan.pullRequest.number,headSha:plan.pullRequest.headSha,baseSha:plan.pullRequest.baseSha,mergeQueueRequired:false,stacked:false,sourcePolicy:'expected_head_observed_base'};
+   const support:DirectMergeSupport={organizationId:plan.organizationId,connectionId:plan.connectionId,connectionRevision:plan.connectionRevision,repositoryFullName:plan.pullRequest.repositoryFullName,pullRequestNumber:plan.pullRequest.number,headSha:plan.pullRequest.headSha,baseSha:plan.pullRequest.baseSha,mergeQueueRequired:false,stacked:false,sourcePolicy:'expected_head_observed_base'};
+   verifiedSupportEvidence.set(support,{planDigest:sha256ContentHash(plan),credentialDigest:sha256ContentHash(credential),supportDigest:sha256ContentHash(support),sourceDigest:sha256ContentHash({repository:r,pullRequest:pr,rules,topology:evidence}),observedAt:evidence.observedAt,expiresAt:evidence.expiresAt});
+   verified=true;return support;
   }catch{return null}finally{try{deps.onDiagnostic?.({phase,outcome:verified?'verified':signal.aborted||now()>=deadline?'deadline_or_abort':'refused'})}catch{/* Diagnostics never change authorization or results. */}clearTimeout(timer);controller.abort()}
  };
 }

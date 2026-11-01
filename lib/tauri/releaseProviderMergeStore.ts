@@ -71,7 +71,7 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
         live: boolean;
     }>> `SELECT clock_timestamp() < ${deadline} AND clock_timestamp() >= ${start} AS "live"`; if (rows.length !== 1 || rows[0].live !== true)
         refuse(); }
-    async function current(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, binding: Binding) {
+    async function current(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, binding: Binding, allowConsumed = true) {
         const p = planInput(binding), plan = p.plan;
         const plans = await tx.$queryRaw<ReleaseOperationPlanRow[]> `SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${binding.planId} AND "organizationId"=${scope.organizationId} FOR SHARE`;
         const stored = plans[0];
@@ -103,7 +103,7 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
         const built = buildReleaseMergePlan(release, { organizationId: scope.organizationId, requestId: plan.requestId, expectedVersion: plan.requestVersion, expectedDigest: plan.intakeDigest, method: plan.method, observation: { connectionId: plan.connectionId, connectionRevision: plan.connectionRevision, repositoryFullName: plan.pullRequest.repositoryFullName, number: plan.pullRequest.number, headRepositoryFullName: plan.pullRequest.repositoryFullName, headRef: plan.pullRequest.headRef, headSha: plan.pullRequest.headSha, baseRef: plan.pullRequest.baseRef, baseSha: plan.pullRequest.baseSha, state: 'open', draft: false, merged: false } });
         if (!built.ok || built.digest !== p.planDigest)
             refuse();
-        const a = await approval(tx, scope, binding.planId, executionId(binding));
+        const a = await approval(tx, scope, binding.planId, allowConsumed ? executionId(binding) : undefined);
         if (sha256ContentHash(a) !== sha256ContentHash(binding.approval))
             refuse('approval_unavailable');
         if (a.organizationId !== scope.organizationId || a.planId !== binding.planId || a.planDigest !== p.planDigest || a.executorUserId !== scope.actorUserId || [binding.creatorUserId, binding.requesterUserId, scope.actorUserId].includes(a.approverUserId))
@@ -134,6 +134,18 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
             await live(tx, binding);
             return dto(previous);
         } const at = now(); const saved = await tx.durableAgentWorkflow.create({ data: { id: execution, organizationId: scope.organizationId, workflowKind: RELEASE_PROVIDER_MERGE_KIND, objective:'Execute one exact independently approved provider merge', status: 'paused_for_input', autonomyLevel: 'observe', currentStep: 'prepared', inputJson: binding, stateJson: { state: 'prepared' }, requestedByUserId: scope.actorUserId, attemptCount: 0, maxAttempts: 1, version: 0, leaseOwner: null, leaseExpiresAt: null, approvalProposalId: null, nextAttemptAt: null, createdAt: at, updatedAt: at } }); await event(tx, saved, 'prepared'); await current(tx,scope,binding); await live(tx,binding); return dto(saved); }); },
+        /** DB-only authority for an unconsumed prepared operation. No lease,
+         * approval consumption, provider request or durable mutation occurs. */
+        async validatePrepared(rawScope: ProviderMergeScope, execution: string) {
+            const scope = scopeSchema.parse(rawScope);
+            return repo.$transaction(async tx => {
+                const row = await load(tx, scope, execution), s = snapshot(row);
+                if (s.state !== 'prepared') refuse();
+                await current(tx, scope, s.binding, false);
+                await live(tx, s.binding);
+                return structuredClone(planInput(s.binding).plan);
+            });
+        },
         async claim(rawScope: ProviderMergeScope, execution: string) { const scope = scopeSchema.parse(rawScope); return repo.$transaction(async (tx) => { const row = await load(tx, scope, execution), s = snapshot(row); await authority(tx, scope, s.binding); if (s.state !== 'prepared')
             return { claimed: false as const, record: dto(row) }; await current(tx, scope, s.binding); if (typeof deps.consumeProviderApproval !== 'function') refuse('approval_consumption_unavailable'); await deps.consumeProviderApproval!(tx, scope, s.binding.approval.id, row.id); const lease = new Date(Math.min(now().getTime() + 30000, Date.parse(planInput(s.binding).deadlineAt), Date.parse(s.binding.approval.expiresAt))); const updated = await change(tx, row, 'dispatching', { attemptCount: 1, leaseOwner: row.id, leaseExpiresAt: lease }); await current(tx,scope,s.binding); await live(tx,s.binding,lease); return { claimed: true as const, record: dto(updated), plan:structuredClone(planInput(s.binding).plan),leaseExpiresAt: lease }; }); },
         async beforeDispatch(rawScope: ProviderMergeScope, execution: string) { const scope = scopeSchema.parse(rawScope); return repo.$transaction(async (tx) => { const row = await load(tx, scope, execution), s = snapshot(row); if (s.state !== 'dispatching')

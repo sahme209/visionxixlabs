@@ -80,6 +80,12 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
    if(!row){await enrollmentReader();return{enrolled:false as const}}
    if(row.id!==id||row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1')throw Error('governance_enrollment_unavailable');enabled();const candidate=await store.readActiveCandidate(scope,selection);await current(scope,request.signal);return{enrolled:true as const,baselineDigest:candidate.baseline.digest};
   },
+  /** No complete executor manifest is registered. Limits and exact approval
+   * cannot turn an uncovered scope into execution coverage. */
+  async readExecutionCoverage(selection:unknown){
+   const enrollment=await this.readScopeEnrollment(selection);
+   return{enrolled:enrollment.enrolled,coveredActions:[] as string[]};
+  },
   async readEvidence(digest:string){enabled();return history.read(scope,digest)},
   async listEvidence(){enabled();return history.list(scope)},
   async listRevisions(){

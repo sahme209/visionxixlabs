@@ -1,12 +1,14 @@
 import {beforeEach,it,expect,vi} from 'vitest';import {NextRequest} from 'next/server';
 const m=vi.hoisted(()=>({auth:vi.fn(),before:vi.fn(),credential:vi.fn(),policy:vi.fn(),credentialDeps:null as any,policyDeps:null as any,transport:null as any,scopedDeps:null as any,topologyDeps:null as any}));
+vi.mock('@/lib/governance/intelligence/uncoveredExecution',()=>({assertNoUncoveredGovernanceExecution:async()=>{}}));
+vi.mock('@/lib/governance/intelligence/requestService',()=>({createGovernanceRequestService:()=>({hasAnyEnrollment:async()=>false})}));
 vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.auth}));
 vi.mock('@/lib/tauri/releaseProviderMergeApprovalStore',()=>({createReleaseProviderMergeApprovalStore:()=>({})}));
-vi.mock('@/lib/tauri/releaseProviderMergeStore',()=>({createReleaseProviderMergeStore:()=>({beforeDispatch:m.before})}));
+vi.mock('@/lib/tauri/releaseProviderMergeStore',()=>({createReleaseProviderMergeStore:()=>({beforeDispatch:m.before,get:async()=>({state:'dispatching'})})}));
 vi.mock('@/lib/tauri/releaseProviderMergeCredential',()=>({createReleaseProviderMergeCredentialReader:(d:any)=>{m.credentialDeps=d;return async(p:any,s:any)=>{await d.assertCurrent(p,s);return m.credential()}}}));
 vi.mock('@/lib/tauri/releaseDirectMergeSupport',()=>({createReleaseDirectMergeSupportReader:(d:any)=>{m.policyDeps=d;return m.policy}}));
 vi.mock('@/lib/tauri/releaseProviderMergeTransport',()=>({createReleaseProviderMergeTransport:(d:any)=>{m.transport=d;return {execute:async()=>{await d.readCredential(plan,new AbortController().signal);return {state:'refused'}}}}}));
-vi.mock('@/lib/tauri/releaseProviderMergeExecutor',()=>({createReleaseProviderMergeExecutor:(_s:any,t:any)=>({run:()=>t.execute()})}));
+vi.mock('@/lib/tauri/releaseProviderMergeExecutor',()=>({createReleaseProviderMergeExecutor:(_s:any,t:any)=>({run:()=>t.execute({operationId:op,plan,signal:new AbortController().signal})})}));
 vi.mock('../releaseProviderMergeToken',()=>({createReleaseMergePolicyCredential:(d:any)=>{m.topologyDeps=d;return vi.fn()},createReleaseProviderMergeToken:(d:any)=>{m.scopedDeps=d;return async(p:any,s:any)=>{await d.assertCurrent(p,s);return null}}}));
 import {createReleaseProviderMergeCoordinator} from '../releaseProviderMergeCoordinator';
 const plan={kind:'test-bound-plan'},op='release_merge_provider_'+'a'.repeat(64),actor={id:'session',userId:'executor',organizationId:'org',credentialKind:'desktop_session',capabilities:['github:read','deploy:execute']};

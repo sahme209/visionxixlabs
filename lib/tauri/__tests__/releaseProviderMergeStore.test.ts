@@ -58,3 +58,16 @@ it('rejects a simulated record and caller ownership or session changes without t
 it('refused/cancelled outcomes cannot contain receipts or reopen provider input',async()=>{const f=fixture(),p=await f.store.prepare(f.scope,f.planId);await f.store.claim(f.scope,p.id);await expect(f.store.finish(f.scope,p.id,{state:'refused',receipt})).rejects.toThrow();expect((await f.store.finish(f.scope,p.id,{state:'refused'}))).toMatchObject({state:'refused',providerWritePerformed:false});expect((await f.store.claim(f.scope,p.id)).claimed).toBe(false)});
 it('GET leaves expired running history untouched; explicit version-bound recovery alone records unknown',async()=>{const f=fixture(),p=await f.store.prepare(f.scope,f.planId);await f.store.claim(f.scope,p.id);f.now.setTime(f.now.getTime()+31000);const before=structuredClone(f.rows),events=f.events.length;expect(await f.store.get(f.scope,p.id)).toMatchObject({state:'dispatching',version:1,attemptCount:1});expect(f.rows).toEqual(before);expect(f.events).toHaveLength(events);await expect(f.store.recover(f.scope,p.id,0)).rejects.toThrow();expect(f.rows).toEqual(before);expect(await f.store.recover(f.scope,p.id,1)).toMatchObject({state:'unknown',version:2,attemptCount:1});expect(f.events).toHaveLength(events+1)});
 it('late authority loss during recovery rolls back the outcome event and state',async()=>{const f=fixture(),p=await f.store.prepare(f.scope,f.planId);await f.store.claim(f.scope,p.id);f.now.setTime(f.now.getTime()+31000);const before=structuredClone(f.rows),events=f.events.length;f.authority.mockResolvedValueOnce(undefined).mockRejectedValue(Error('session revoked'));await expect(f.store.recover(f.scope,p.id,1)).rejects.toThrow();expect(f.rows).toEqual(before);expect(f.events).toHaveLength(events)});
+it('validates a prepared exact operation without a claim, write, approval consumption or lease',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.planId),before=structuredClone(f.rows),events=f.events.length;
+ expect(await f.store.validatePrepared(f.scope,p.id)).toEqual(f.plan.inputJson.plan);
+ expect(f.readApproval).toHaveBeenLastCalledWith(expect.anything(),f.scope,f.planId,undefined);
+ expect(f.rows).toEqual(before);expect(f.events).toHaveLength(events);expect(f.deps.consumeProviderApproval).not.toHaveBeenCalled();
+ f.release.version++;await expect(f.store.validatePrepared(f.scope,p.id)).rejects.toThrow();
+});
+it('prepared validation refuses changed identity and every consumed operation',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.planId);
+ await expect(f.store.validatePrepared({...f.scope,sessionId:'other'},p.id)).rejects.toThrow();
+ await f.store.claim(f.scope,p.id);await expect(f.store.validatePrepared(f.scope,p.id)).rejects.toThrow();
+ await f.store.finish(f.scope,p.id,{state:'unknown'});await expect(f.store.validatePrepared(f.scope,p.id)).rejects.toThrow();
+});
