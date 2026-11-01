@@ -1,0 +1,12 @@
+{
+  "source": "5c342bbdc7d44ec07e2d9e37593572a41b5805c6",
+  "stage": "/private/tmp/axiom-github-authority-final-2xt1t886",
+  "archiveSha256": "7dce778400e2a08d69210faa263bce34b12ebc17de69cd51c9b5f5dcd9d70b0e",
+  "verification": "Final Next route summary and BUILD_ID present; compilation and TypeScript passed. Original process handle expired before exit code could be retrieved; no numeric exit-code claim.",
+  "buildId": "RBxQkGeRvNYDxRNY-XfGo",
+  "logSha256": "7fead2c20ae49d4ace71f14f5cd6e5f23e3fda964a3151b85c5ee71a1633ebca",
+  "restarted": false,
+  "terminated": false,
+  "governanceComplete": false,
+  "productionActivated": false
+}

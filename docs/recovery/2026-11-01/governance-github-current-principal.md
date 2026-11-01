@@ -9,3 +9,5 @@ Nine new revocation/identity races failed before the implementation. The shared 
 The earlier48 transport checks remain accepted for the unchanged mandatory-guard transport. Full current production verification is batched with this related caller change. No new provider/credential call, database mutation, human decision, setting/schema/grant, paid CI, deployment or installer publication occurred. Current signed app sessions are preserved.
 
 Evidence: /private/tmp/axiom-github-current-principal-{red,green,final,extra}.log and /private/tmp/axiom-modern-gh-required-types.log. The initial green log includes invalid old fixture failures; final/extra logs supersede them, not the production implementation.
+
+Exact-source production build reached the final route summary and generated BUILD_ID after successful compilation and TypeScript. The original process handle expired before its numeric exit status was retrieved; that limitation is retained in github-authority-build-receipt.json. No restart or termination occurred. Temporary same-version dependency cache preparation cannot be attributed as the cause of completion.

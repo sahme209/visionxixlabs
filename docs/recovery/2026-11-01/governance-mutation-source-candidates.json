@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "sourceCommit": "d6f56ff6496ae3b96541b4fc57d05dd3f636e6e7",
+  "sourceCommit": "5c342bbdc7d44ec07e2d9e37593572a41b5805c6",
   "scope": [
     "app",
     "lib",
@@ -12,21 +12,21 @@
   ],
   "dirtySourceFiles": [],
   "counts": {
-    "typescriptJavascriptFiles": 3248,
+    "typescriptJavascriptFiles": 3249,
     "filesWithParseErrors": 0,
     "nativeFilesRequiringManualReview": 21,
-    "candidates": 14484,
+    "candidates": 14487,
     "byKind": {
       "aws_sdk": 93,
       "http_transport": 580,
-      "method_candidate": 13754,
+      "method_candidate": 13757,
       "unresolved_send": 57
     },
     "byMode": {
       "credential_broker": 9,
       "observation": 99,
       "potential_write": 237,
-      "unresolved": 14139
+      "unresolved": 14142
     }
   },
   "coverageEstablished": false,
@@ -556,12 +556,12 @@
     {"file":"app/api/desktop/environments/deployments/[id]/route.ts","sha256":"977c040cea93388b3138edc4d50b380fe94d192935618ea01d3c6bedc28672ac","parseErrorCount":0},
     {"file":"app/api/desktop/environments/deployments/route.ts","sha256":"64511454379e466f774a01ff91380a018a17b55337a7f100ddfeea2d6daedce5","parseErrorCount":0},
     {"file":"app/api/desktop/environments/route.ts","sha256":"67ed27c73d1798ff061cffafcef62fddbca72d022c302453a60cf7f0d0545cf6","parseErrorCount":0},
-    {"file":"app/api/desktop/github/branch/route.ts","sha256":"6499ffdf5f14d677156af18173e88fb02f1410d546f29e002146efe33a623004","parseErrorCount":0},
+    {"file":"app/api/desktop/github/branch/route.ts","sha256":"0800baf002cbac32d18fa872ef43160c847ee546ea049328ad4d4925cbe40bb8","parseErrorCount":0},
     {"file":"app/api/desktop/github/branches/route.ts","sha256":"5272a7961cb2f61de4a9e39da37ac74f508004cdcf952d534b6e6b3907137c9f","parseErrorCount":0},
     {"file":"app/api/desktop/github/clone-token/route.ts","sha256":"c5bbd6d95e190bc7ecd62399a48cccd4b34fc33a161644ffff42c01f554f1cee","parseErrorCount":0},
-    {"file":"app/api/desktop/github/commit/route.ts","sha256":"74a5b1dcd517f0dae6eeca1055267d832c7d4fb03670923c7886115604d2d2cb","parseErrorCount":0},
+    {"file":"app/api/desktop/github/commit/route.ts","sha256":"bf473f3f07cf5405e5a5237633e86e598ce116fb557b8fc9cc571b63d74dec0e","parseErrorCount":0},
     {"file":"app/api/desktop/github/files/route.ts","sha256":"b1ecc8a5a7571757e9b729abc5c33b90d6e9266bdc990d7ab21dd133e35ad065","parseErrorCount":0},
-    {"file":"app/api/desktop/github/pull-request/route.ts","sha256":"fb8b913b77da6610c6299575e59869b745951fe9baa8b3ed2f57a1c1d8202251","parseErrorCount":0},
+    {"file":"app/api/desktop/github/pull-request/route.ts","sha256":"360f88054e99c4799dbafffed794d1ca796ae89f08547aab7c1781c054dd5722","parseErrorCount":0},
     {"file":"app/api/desktop/github/repositories/route.ts","sha256":"6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525","parseErrorCount":0},
     {"file":"app/api/desktop/github/workflow-inputs/route.ts","sha256":"3b6ff1eddbf8f7c12c26d3bf605e3153e3357586bdd2edab52a2a1d90e83ad6b","parseErrorCount":0},
     {"file":"app/api/desktop/github/workflows/route.ts","sha256":"83d08bf98fd055430b80be4f53861f9d86008e9cd06a553db437940996c1a2b5","parseErrorCount":0},
@@ -2352,6 +2352,7 @@
     {"file":"lib/desktop/cloudNativeReturn.ts","sha256":"6e0fe7d60c0c8e1ee4a4b2ea741fe96d4c8fc360596923fffbe192cf13274cbb","parseErrorCount":0},
     {"file":"lib/desktop/connectedActionsContract.ts","sha256":"ee91bd1e0b3a3cc93eb1f0f5039a4460443cfafcd76390efbf5885250257fb08","parseErrorCount":0},
     {"file":"lib/desktop/connectedActionsHttp.ts","sha256":"251c237fc8f1c77bca9b997ccf6ab2bb3f230efb80b9448b463223fd2aa9aeff","parseErrorCount":0},
+    {"file":"lib/desktop/currentGithubWriteAuthority.ts","sha256":"4da12c87d0dd4da5cf8902cd793a055a30a3ca2570b949e10e0e94421d28fb5b","parseErrorCount":0},
     {"file":"lib/desktop/desktopAuthPolicy.ts","sha256":"169861f10a34642d37788ae0632d67196347ae9140444468fd203d64ce843f45","parseErrorCount":0},
     {"file":"lib/desktop/desktopAuthorization.ts","sha256":"525a513aa3c06b67eeb3b176a70802e8e6a2e1158b5b8f90c3d02ffdb6b0a7c3","parseErrorCount":0},
     {"file":"lib/desktop/desktopBillingSummary.ts","sha256":"797a8b7d21fe8e1e5ff910ca5b8f13972750dad8ac7aa9478dd511a5275e0705","parseErrorCount":0},
@@ -3731,9 +3732,12 @@
     {"candidateId":"mutation_candidate_2954cc3378ae3b14df43_1","source":{"file":"app/api/desktop/environments/deploy/route.ts","line":228,"sha256":"20773085f387b136c377b84965d760531b571ab2631eb32d62096216159949f0"},"kind":"method_candidate","operation":"settleDeploymentDispatch","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
     {"candidateId":"mutation_candidate_4befe856347a06f4f4e3_2","source":{"file":"app/api/desktop/environments/deploy/route.ts","line":271,"sha256":"20773085f387b136c377b84965d760531b571ab2631eb32d62096216159949f0"},"kind":"method_candidate","operation":"deploymentEvidence","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
     {"candidateId":"mutation_candidate_b5db57d7aa52d3e33479_1","source":{"file":"app/api/desktop/environments/deployments/[id]/route.ts","line":47,"sha256":"977c040cea93388b3138edc4d50b380fe94d192935618ea01d3c6bedc28672ac"},"kind":"method_candidate","operation":"updateMany","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
-    {"candidateId":"mutation_candidate_82d7a16c786f8f2d5b23_1","source":{"file":"app/api/desktop/github/branch/route.ts","line":62,"sha256":"6499ffdf5f14d677156af18173e88fb02f1410d546f29e002146efe33a623004"},"kind":"method_candidate","operation":"createBranch","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
-    {"candidateId":"mutation_candidate_0dee9d8445204678d93c_1","source":{"file":"app/api/desktop/github/commit/route.ts","line":71,"sha256":"74a5b1dcd517f0dae6eeca1055267d832c7d4fb03670923c7886115604d2d2cb"},"kind":"method_candidate","operation":"commitFile","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
-    {"candidateId":"mutation_candidate_959cc698a54df15a96df_1","source":{"file":"app/api/desktop/github/pull-request/route.ts","line":64,"sha256":"fb8b913b77da6610c6299575e59869b745951fe9baa8b3ed2f57a1c1d8202251"},"kind":"method_candidate","operation":"createPullRequest","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
+    {"candidateId":"mutation_candidate_39bf3eafd2fc3982e11e_1","source":{"file":"app/api/desktop/github/branch/route.ts","line":51,"sha256":"0800baf002cbac32d18fa872ef43160c847ee546ea049328ad4d4925cbe40bb8"},"kind":"method_candidate","operation":"createCurrentGithubWriteGuard","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
+    {"candidateId":"mutation_candidate_82d7a16c786f8f2d5b23_1","source":{"file":"app/api/desktop/github/branch/route.ts","line":60,"sha256":"0800baf002cbac32d18fa872ef43160c847ee546ea049328ad4d4925cbe40bb8"},"kind":"method_candidate","operation":"createBranch","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
+    {"candidateId":"mutation_candidate_f1f57df2e81a576d20b4_1","source":{"file":"app/api/desktop/github/commit/route.ts","line":54,"sha256":"bf473f3f07cf5405e5a5237633e86e598ce116fb557b8fc9cc571b63d74dec0e"},"kind":"method_candidate","operation":"createCurrentGithubWriteGuard","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
+    {"candidateId":"mutation_candidate_0dee9d8445204678d93c_1","source":{"file":"app/api/desktop/github/commit/route.ts","line":69,"sha256":"bf473f3f07cf5405e5a5237633e86e598ce116fb557b8fc9cc571b63d74dec0e"},"kind":"method_candidate","operation":"commitFile","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
+    {"candidateId":"mutation_candidate_c759fd8f9b3697e72ba7_1","source":{"file":"app/api/desktop/github/pull-request/route.ts","line":53,"sha256":"360f88054e99c4799dbafffed794d1ca796ae89f08547aab7c1781c054dd5722"},"kind":"method_candidate","operation":"createCurrentGithubWriteGuard","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
+    {"candidateId":"mutation_candidate_959cc698a54df15a96df_1","source":{"file":"app/api/desktop/github/pull-request/route.ts","line":62,"sha256":"360f88054e99c4799dbafffed794d1ca796ae89f08547aab7c1781c054dd5722"},"kind":"method_candidate","operation":"createPullRequest","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
     {"candidateId":"mutation_candidate_69b26b5901f6d0f118cf_1","source":{"file":"app/api/desktop/github/repositories/route.ts","line":60,"sha256":"6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525"},"kind":"method_candidate","operation":"startsWith","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},
     {"candidateId":"mutation_candidate_a2bcd621be956e91d580_1","source":{"file":"app/api/desktop/github/repositories/route.ts","line":91,"sha256":"6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525"},"kind":"http_transport","operation":"fetch","method":null,"mode":"unresolved","endpointHost":"api.github.com","status":"unreviewed","authority":"none","coverageReceipt":null},
     {"candidateId":"mutation_candidate_6438c07af01cc6bfe4c2_1","source":{"file":"app/api/desktop/github/repositories/route.ts","line":103,"sha256":"6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525"},"kind":"method_candidate","operation":"cancel","mode":"unresolved","status":"unreviewed","authority":"none","coverageReceipt":null},

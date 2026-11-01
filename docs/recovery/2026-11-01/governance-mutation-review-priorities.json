@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "inventorySourceCommit": "d6f56ff6496ae3b96541b4fc57d05dd3f636e6e7",
+  "inventorySourceCommit": "5c342bbdc7d44ec07e2d9e37593572a41b5805c6",
   "scope": "Initial source-backed review priorities only. Not an activation or authority input.",
   "boundaries": [
     {
@@ -108,6 +108,17 @@
         "mutation_candidate_b562de83ac4af3afa1f7_1"
       ],
       "note": "Publishes platform-owned static connection template using broker account; not automatically a customer-governed deployment or an exemption. No live call authorized.",
+      "coverageEstablished": false,
+      "authorityIssued": false
+    },
+    {
+      "source": {
+        "file": "lib/desktop/currentGithubWriteAuthority.ts",
+        "sha256": "4da12c87d0dd4da5cf8902cd793a055a30a3ca2570b949e10e0e94421d28fb5b"
+      },
+      "classification": "current_paired_principal_and_unenrolled_metadata_guard",
+      "candidateIds": [],
+      "note": "Current paired actor/write capability rechecked around enrollment reads. Provider installation freshness, complete caller closure and baseline admission remain unverified. See governance-github-current-principal.md.",
       "coverageEstablished": false,
       "authorityIssued": false
     }
