@@ -1,5 +1,7 @@
 # Axiom remaining work
 
+Master execution plan: [application + website action plan](axiom-master-action-plan.md), updated November 1, 2026. It includes the visible reference-site audit, authentic product demos, every-control documentation coverage, and future support-AI knowledge foundation. Execution paused at the user's request.
+
 Updated October 31, 2026. This is the implementation roadmap, not a claim that planned integrations have been accepted live.
 
 ## Current completion work
