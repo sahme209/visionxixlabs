@@ -78,3 +78,9 @@ Local website batch 7ea48aa8 passed 61 focused tests and its full production bui
 - Existing one-time Vercel authorization is now being used for verified narrow website/security candidate7ea48aa8; no promotion claimed before exact source and auth gates.
 
 - A1 website activation COMPLETE: READY dpl_5h2XV1vRLbPFtGDwsMDGGUD2QEpJ, source7ea48aa8;5509 uploaded file hashes match; auth401; same-deployment promotion once; liveapex canonicalfaviconbytes/metadata verified. See ../recovery/2026-11-01/website-live-acceptance.json. Installer still blocked.
+
+## Local progress — execution authority and documentation coverage
+
+- User approved the missing persisted execution-policy design. Local numeric-ceiling fix and real durable policy issuer/current-reader now exist with independent review, scoped types,190 unit checks and four explicitly run isolated PostgreSQL journeys (simulated paired/provider boundaries; not live enforcement). Exact clean-source production build and TypeScript passed for1388f4c1; later merge integration is a separate source increment. Actual merge composition, executor coverage, baseline enrollment and native customer workflow remain open.
+- B4/B5: source inventory tooling found2,602 candidates across749 trackedTSXfiles; all candidates remain unreviewed. No runtime/all-control documentation completeness claim. Versioned support-article schema and human review/media/recovery coverage process are saved under documentation-coverage/. No support-AI agent or retrieval activation exists.
+- B1: Cursor broader first-pass destinations and partial control checks recorded; ChatGPT overview hero/menu interactions verified and plugin detail audit started. Remaining controls and sites are tracked, not assumed complete.

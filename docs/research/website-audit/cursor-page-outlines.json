@@ -1,0 +1,352 @@
+[
+  {
+    "url": "https://cursor.com/cloud",
+    "title": "Cursor · Cloud Agents",
+    "headings": [
+      "The next level of autonomy",
+      "Trusted every day by world-class teams",
+      "Everywhere you work",
+      "Desktop",
+      "Mobile",
+      "Slack and Microsoft Teams",
+      "#team-eng",
+      "Linear and Jira"
+    ],
+    "destinations": [
+      "https://cursor.com/agents",
+      "https://cursor.com/docs/cloud-agent",
+      "https://cursor.com/automations",
+      "https://cursor.com/docs/cloud-agent/capabilities",
+      "/blog/third-era",
+      "/blog/agent-computer-use",
+      "/blog/bugbot-autofix",
+      "/blog"
+    ],
+    "controlCount": 38,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/mobile",
+    "title": "Cursor · Mobile",
+    "headings": [
+      "Build from anywhere",
+      "The best of local and cloud",
+      "Cloud Agents",
+      "All Repos",
+      "Remote Control",
+      "From ideas to production",
+      "Move work forward",
+      "Get demos of work"
+    ],
+    "destinations": [
+      "https://apps.apple.com/app/cursor/id6767085653",
+      "/docs/cloud-agent",
+      "/docs/cloud-agent/mobile#remote-control"
+    ],
+    "controlCount": 26,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/automate",
+    "title": "Cursor · Automations",
+    "headings": [
+      "Save time by eliminating repetitive tasks.",
+      "Trusted by engineering teams at",
+      "Create your self-driving codebase",
+      "Improve code quality",
+      "Speed up time to merge",
+      "Improve codebase knowledge",
+      "See value immediately",
+      "Daily digest of repo changes"
+    ],
+    "destinations": [
+      "https://cursor.com/automations",
+      "https://cursor.com/marketplace/automations/daily-digest",
+      "https://cursor.com/marketplace/automations/add-test-coverage",
+      "https://cursor.com/marketplace/automations/fix-slack-bugs",
+      "https://cursor.com/marketplace/automations/assign-pr-reviewers",
+      "https://cursor.com/marketplace/automations/investigate-datadog-errors",
+      "https://cursor.com/marketplace/automations/find-critical-bugs"
+    ],
+    "controlCount": 8,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/cli",
+    "title": "Cursor CLI — Run Agents in Terminal, GitHub Actions and Automations & Scripts",
+    "headings": [
+      "Ship code with agents",
+      "Same commands, any environment.",
+      "Always access the latest models",
+      "Use in your preferred IDE",
+      "Write powerful scripts and automations",
+      "Learn more",
+      "Get started with Cursor CLI",
+      "Using Headless CLI"
+    ],
+    "destinations": [
+      "/docs/cli/overview",
+      "/docs/cli/headless",
+      "/docs/cli/shell-mode",
+      "/docs/cli/github-actions"
+    ],
+    "controlCount": 5,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/bugbot",
+    "title": "AI Code Review Built for Production | Bugbot by Cursor",
+    "headings": [
+      "AI code review that catches real bugs",
+      "A mandatory pre-merge check for thousands of teams",
+      "Ship with confidence",
+      "Adapts to your standards",
+      "High signal, low noise",
+      "Questions & Answers",
+      "How does Bugbot integrate with my existing workflow?↓↑",
+      "Can I customize how Bugbot does reviews?↓↑"
+    ],
+    "destinations": [
+      "https://cursor.com/dashboard/bugbot"
+    ],
+    "controlCount": 9,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/marketplace/harness",
+    "title": "Harness | Cursor Plugins",
+    "headings": [
+      "Harness",
+      "Related plugins"
+    ],
+    "destinations": [
+      "/marketplace",
+      "/marketplace#marketplace-category-productivity",
+      "https://www.harness.io/",
+      "https://github.com/harness/harness-ai",
+      "https://cursor.com/docs/context/skills",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/analyze-costs/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/audit-report/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/chaos-experiment/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-agent/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-agent-template/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-connector/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-environment/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-infrastructure/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-pipeline/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-pipeline-v1/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-policy/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-secret/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-service/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-template/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/create-trigger/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/debug-pipeline/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/dora-metrics/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/gitops-status/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/manage-delegates/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/manage-feature-flags/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/manage-freeze-windows/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/manage-pull-requests/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/manage-roles/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/manage-slos/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/manage-users/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/migrate-pipeline/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/run-pipeline/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/scorecard-review/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/security-report/SKILL.md",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/skills/template-usage/SKILL.md",
+      "https://cursor.com/docs/context/hooks",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/hooks/hooks.json",
+      "https://cursor.com/docs/context/rules",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/rules/harness.mdc",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/rules/plugin-standards.mdc",
+      "https://cursor.com/docs/context/mcp",
+      "https://github.com/harness/harness-ai/blob/494bf8c826e9fc21a82262b133cd9906afec68b3/plugins/cursor/mcp.json",
+      "/marketplace/padlet",
+      "/marketplace/heptabase",
+      "/marketplace/motion",
+      "/marketplace/athenahq",
+      "/marketplace/make",
+      "/marketplace/automattic"
+    ],
+    "controlCount": 52,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/learn",
+    "title": "Learn Cursor — Official Tutorials",
+    "headings": [
+      "Cursor Learn",
+      "You've completed this chapter"
+    ],
+    "destinations": [
+      "/learn/how-ai-models-work"
+    ],
+    "controlCount": 1,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/blog",
+    "title": "Blog · Cursor",
+    "headings": [
+      "Blog",
+      "Customer stories",
+      "Press",
+      "Videos",
+      "Changelog",
+      "Get started with Cursor."
+    ],
+    "destinations": [
+      "/blog/joining-spacex",
+      "https://x.ai/news/grok-4-7",
+      "/blog/git-at-any-scale",
+      "/blog",
+      "/blog/topic/product",
+      "/blog/topic/research",
+      "/blog/topic/company",
+      "/blog/topic/ideas",
+      "/blog/topic/customers",
+      "/blog/claude-code-extension-security-notice",
+      "/blog/agent-sdk",
+      "/blog/improved-token-efficiency",
+      "/blog/rollouts-and-security-reviewer",
+      "/blog/projects",
+      "/blog/self-hosted-machines",
+      "/blog/firetiger",
+      "/blog/aiuc-1",
+      "/blog/builds",
+      "/blog/self-driving-codebases",
+      "/blog/navan",
+      "/blog/grab",
+      "/blog/basis",
+      "/blog/nokia",
+      "https://thenewstack.io/cursor-open-sources-security-agents/",
+      "https://techcrunch.com/2026/03/05/cursor-is-rolling-out-a-new-system-for-agentic-coding/",
+      "https://www.bloomberg.com/news/articles/2026-03-02/cursor-recurring-revenue-doubles-in-three-months-to-2-billion",
+      "https://www.cnbc.com/2026/02/24/cursor-announces-major-update-as-ai-coding-agent-battle-heats-up.html",
+      "/blog/topic/press",
+      "https://youtu.be/XbZvC4KTH68",
+      "https://youtu.be/29BYxvvF1iM",
+      "https://youtu.be/TQhv6Wol6Ns",
+      "https://youtu.be/IccjZDV93lw",
+      "https://www.youtube.com/@cursor_ai",
+      "/changelog/agent-sdk",
+      "/changelog/cloud-agent-canvases-and-environments",
+      "/changelog/origin-app-marketplace",
+      "/changelog/remote-control-local-agents",
+      "/changelog",
+      "/download",
+      "/contact-sales?source=blog_footer"
+    ],
+    "controlCount": 47,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/brand",
+    "title": "Cursor · Brand Guidelines",
+    "headings": [
+      "Cursor brand guidelines",
+      "Brand assets",
+      "Name"
+    ],
+    "destinations": [
+      "https://ptht05hbb1ssoooe.public.blob.vercel-storage.com/assets/brand/cursor-brand-assets.zip"
+    ],
+    "controlCount": 1,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/en-US/data-use",
+    "title": "Cursor · Data Use & Privacy Overview",
+    "headings": [
+      "Data Use & Privacy Overview"
+    ],
+    "destinations": [
+      "mailto:hi@cursor.com",
+      "http://www.cursor.com/privacy",
+      "https://cursor.com/help/security-and-privacy/privacy",
+      "https://x.ai/legal/faq-enterprise",
+      "https://developers.openai.com/api/docs/guides/your-data",
+      "https://privacy.claude.com/en/articles/7996866-how-long-do-you-store-my-organization-s-data",
+      "https://dev.meta.ai/help/policies-and-privacy/zero-data-retention"
+    ],
+    "controlCount": 7,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/en-US/privacy",
+    "title": "Cursor · Privacy Policy",
+    "headings": [
+      "Privacy Policy",
+      "Table of Contents",
+      "#Introduction",
+      "#1. Personal data we collect",
+      "#2. How we use personal data",
+      "#3. How we share personal data",
+      "#4. Retention",
+      "#5. Security"
+    ],
+    "destinations": [
+      "/terms-of-service",
+      "/privacy",
+      "#introduction",
+      "#1-personal-data-we-collect",
+      "#2-how-we-use-personal-data",
+      "#3-how-we-share-personal-data",
+      "#4-retention",
+      "#5-security",
+      "#6-your-rights-and-choices",
+      "#7-privacy-policy-changes",
+      "#8-contacting-us",
+      "https://www.cursor.com/",
+      "https://www.cursor.com/cookie-policy",
+      "https://www.cursor.com/terms-of-service",
+      "http://trust.cursor.com/subprocessors",
+      "mailto:hi@cursor.com"
+    ],
+    "controlCount": 30,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://cursor.com/grok",
+    "title": "Grok 4.7 for Agentic Coding and Knowledge Work",
+    "headings": [
+      "Grok 4.7",
+      "Announcements",
+      "Introducing Grok 4.7",
+      "Grok 4.7 Model Card",
+      "Cursor partners with SpaceX on model training",
+      "Built for coding and knowledge work alike",
+      "Long-horizon problemsLong-horizonproblems",
+      "Ambitious engineeringAmbitiousengineering"
+    ],
+    "destinations": [
+      "/login",
+      "https://x.ai/news/grok-4-7",
+      "https://media.x.ai/v1/website/4p7card-5eccc980.pdf",
+      "/blog/spacex-model-training",
+      "/download",
+      "/docs/cli/overview",
+      "https://cursor.com/agents",
+      "https://cursor.com/api/install-slack-app"
+    ],
+    "controlCount": 21,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://authenticator.cursor.sh/",
+    "title": "Sign in",
+    "headings": [],
+    "destinations": [],
+    "controlCount": 0,
+    "status": "outline_inspected_controls_not_all_accepted"
+  },
+  {
+    "url": "https://status.x.ai/",
+    "title": "SpaceXSI Status",
+    "headings": [],
+    "destinations": [],
+    "controlCount": 0,
+    "status": "outline_inspected_controls_not_all_accepted"
+  }
+]

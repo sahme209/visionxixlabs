@@ -1,0 +1,11 @@
+{
+  "source": "1388f4c14972d59699e65715d33627cee70467b1",
+  "stage": "/private/tmp/axiom-governance-policy-final-zifmnbwt",
+  "log": "/private/tmp/axiom-governance-policy-final-build.log",
+  "productionBuild": "passed",
+  "productionTypeScript": "passed",
+  "exitCode": 0,
+  "environment": "synthetic loopback DB/unreachable, no secrets; exact locked SDK overlay; temporary6144MiB heap",
+  "scope": "Numeric ceiling and persisted execution-policy batch only. Later merge composition requires its own source verification.",
+  "productionActivation": false
+}
