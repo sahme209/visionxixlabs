@@ -1,0 +1,120 @@
+{
+  "runId": 41224761240,
+  "runAttempt": 2,
+  "sourceSha": "0f82571b888ca9d47c203a878456189ddf01d9f5",
+  "status": "completed",
+  "conclusion": "failure",
+  "estimatedComputeUSD": 0.93,
+  "additionalLimitUSD": 2,
+  "cancelThresholdUSD": 1.72,
+  "attempt1BillableMilliseconds": 0,
+  "jobs": [
+    {
+      "id": 124929188126,
+      "name": "Validate release identity",
+      "status": "completed",
+      "roundedMinutes": 1,
+      "estimatedUSD": 0.006
+    },
+    {
+      "id": 124929243763,
+      "name": "Generate release SBOM",
+      "status": "completed",
+      "roundedMinutes": 1,
+      "estimatedUSD": 0.006
+    },
+    {
+      "id": 124929243827,
+      "name": "Build (windows-x64)",
+      "status": "completed",
+      "roundedMinutes": 12,
+      "estimatedUSD": 0.12
+    },
+    {
+      "id": 124929243828,
+      "name": "Build (macos-intel)",
+      "status": "completed",
+      "roundedMinutes": 6,
+      "estimatedUSD": 0.372
+    },
+    {
+      "id": 124929243832,
+      "name": "Build (macos-arm)",
+      "status": "completed",
+      "roundedMinutes": 6,
+      "estimatedUSD": 0.372
+    },
+    {
+      "id": 124929243877,
+      "name": "Build (linux-x64)",
+      "status": "completed",
+      "roundedMinutes": 9,
+      "estimatedUSD": 0.054
+    }
+  ],
+  "checkedAt": "2026-11-01T18:05:23.993021+00:00",
+  "limits": "Compute estimate, not invoice; excludes skipped and unassigned jobs. Storage/publication headroom reserved.",
+  "draftExportReadyRestoredFalse": true,
+  "draftSourceWhitelistRemoved": true,
+  "published": false,
+  "nextRetryAuthorized": false,
+  "timingApiCaveat": "Timing endpoint returned zero durations even for completed attempt2 jobs; not treated as a settled invoice or proof of no charge. Conservative wall-time estimate retained.",
+  "retainedFiles": [
+    {
+      "path": "axiom-linux-x64/candidate-linux-x64.json",
+      "bytes": 776,
+      "sha256": "fa25ecb36bb3e3aa70d6584487d693f4609f265d0291f4805795326e7fd57ffa"
+    },
+    {
+      "path": "axiom-linux-x64/release-attestation-linux-x64.env",
+      "bytes": 66,
+      "sha256": "5ae31740e62f9e2e0ee6c892868eddf64599a69763c0de278ca3452bec0419f9"
+    },
+    {
+      "path": "axiom-linux-x64/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/appimage/Axiom Agent_0.1.22_amd64.AppImage",
+      "bytes": 85166584,
+      "sha256": "6fa19ccbbe6bf1724003e0b7c62839f68c330cd45a165b53791626ce89f9614e"
+    },
+    {
+      "path": "axiom-linux-x64/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/deb/Axiom Agent_0.1.22_amd64.deb",
+      "bytes": 7942836,
+      "sha256": "ebb81e5a2e9f7619e88da5f52a95c69e47d7ea514d1844fdca8a41aa36098c31"
+    },
+    {
+      "path": "axiom-linux-x64/src-tauri/target/x86_64-unknown-linux-gnu/release/bundle/rpm/Axiom Agent-0.1.22-1.x86_64.rpm",
+      "bytes": 7942785,
+      "sha256": "931c646e33290d10f39cd9a68ac1725b20b2d1673b18484db054f8e01d66f8e2"
+    },
+    {
+      "path": "axiom-sbom/axiom-agent.sbom.cdx.json",
+      "bytes": 1773938,
+      "sha256": "75c907608a1de4c061904e7aef2494bbc2d2b1b32963a4839de75fb23b45aef3"
+    },
+    {
+      "path": "axiom-sbom-provenance/candidate-sbom.json",
+      "bytes": 393,
+      "sha256": "792d502aaa2df521d2e28da52c906286396b992543f8f92aaf688d3926ae70f7"
+    },
+    {
+      "path": "axiom-windows-x64/candidate-windows-x64.json",
+      "bytes": 601,
+      "sha256": "eb66918c39d2b2dda269d954ecccd07e437d79820d0d4c4aa324413cded8a519"
+    },
+    {
+      "path": "axiom-windows-x64/release-attestation-windows-x64.env",
+      "bytes": 68,
+      "sha256": "9aa29a651c2af689ec2dba20593c18ca8afe2b6ab323c079f92335d5e4ada65b"
+    },
+    {
+      "path": "axiom-windows-x64/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/msi/Axiom Agent_0.1.22_x64_en-US.msi",
+      "bytes": 5783552,
+      "sha256": "9f441512d7b45ed47759b3e5aa35b337af58da345bf0120873cf3ca2047fe79c"
+    },
+    {
+      "path": "axiom-windows-x64/src-tauri/target/x86_64-pc-windows-msvc/release/bundle/nsis/Axiom Agent_0.1.22_x64-setup.exe",
+      "bytes": 3987128,
+      "sha256": "3155316a267e20e2048de181a4db6b02f5464d9d5a7e8c9c10b1e370620c022a"
+    }
+  ],
+  "artifactLimitations": "Downloaded successful run artifacts only; incomplete cross-platform set. Not a customer release, clean-host acceptance or trusted Windows signing verification."
+}

@@ -149,6 +149,7 @@ public func axiomObservationRequest(_ operation:Int32,_ requestID:UInt64,_ input
 
 // Key-window blur also occurs for our own NSAlert. Only actual application
 // activation changes pause observation; native capture/input guards remain authoritative.
+@available(macOS 10.15, *)
 @MainActor private final class AxiomApplicationFocus {
     static let shared = AxiomApplicationFocus()
     private var callback: (@convention(c) (Bool) -> Void)?
@@ -167,5 +168,13 @@ public func axiomObservationRequest(_ operation:Int32,_ requestID:UInt64,_ input
 }
 @_cdecl("axiom_application_focus_subscribe")
 public func axiomApplicationFocusSubscribe(_ callback: @escaping @convention(c) (Bool) -> Void) {
-    DispatchQueue.main.async { AxiomApplicationFocus.shared.subscribe(callback) }
+    DispatchQueue.main.async {
+        if #available(macOS 10.15, *) {
+            AxiomApplicationFocus.shared.subscribe(callback)
+        } else {
+            // Older systems cannot support the observation/input feature.
+            // Never report active authority without its supported focus monitor.
+            callback(false)
+        }
+    }
 }

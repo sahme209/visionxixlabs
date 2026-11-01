@@ -13,3 +13,7 @@ The user approved one failed-job retry within the original $2 additional allowan
 - Candidate creation is not public publication. Exact assets/source/signatures must be verified; final protected publisher approval must be personally performed by the user.
 
 The original retry approval is consumed. No new Vercel deployment, provider write, credential, grant, schema or spending-cap change is authorized.
+
+## Final result
+
+Attempt 2 completed: identity validation, SBOM, Windows and Linux succeeded; both Macs failed at the reproduced native Swift availability check. No draft export or publication occurred. Successful artifacts were downloaded and hashed locally before their three-day retention expires. Estimated compute is $0.93, not a settled invoice. The timing endpoint returned zero durations even for real completed jobs, so it is not used as proof of free usage. Draft export readiness is OFF and its exact-source whitelist is removed. The one retry authorization is consumed; no further run started. See v122-attempt2-result.json and v122-macos-availability-repair.md.
