@@ -14,7 +14,7 @@ import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 
 import { prisma } from "@/lib/db";
-import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
+import { createCurrentGithubWriteGuard } from "@/lib/desktop/currentGithubWriteAuthority";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -50,9 +50,7 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   // Enrollment is not an execution grant. These legacy endpoints have no
   // baseline admission yet, so enrolled or unavailable authority must refuse.
-  const beforeWrite = () => assertNoGovernanceEnrollmentForMutation(
-    prisma, String(session.organizationId), request.signal,
-  );
+  const beforeWrite = createCurrentGithubWriteGuard(request,session,prisma);
   try { await beforeWrite(); }
   catch {
     return NextResponse.json({ ok: false, error: "governance_execution_coverage_unavailable" }, { status: 409 });

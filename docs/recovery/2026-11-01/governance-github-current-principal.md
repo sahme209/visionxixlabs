@@ -1,0 +1,11 @@
+# Current paired principal at desktop GitHub write boundaries
+
+The branch, single-file commit and PR routes previously captured their initial authenticated session and rechecked only enrollment metadata at transport. The local guard now binds the exact initial paired session/user/organization/kind and freshly resolves current github:write authority and accepted membership both before and after the awaited enrollment check. Reusing the closure at actual transport repeats those checks. The guard has one15-second request-bound deadline and disables incidental session-heartbeat recording. It reuses the resolver's existing membership rules; it introduces no role assignment or identity-recovery mechanism.
+
+This is still a positively-unenrolled legacy path: any enrollment or unavailable metadata refuses. It cannot issue baseline admission, scoped provider credentials or coverage. Provider-installation revision/revocation freshness remains a separate incomplete caller-composition requirement.
+
+Nine new revocation/identity races failed before the implementation. The shared composition suite now passes30 cases including later account, session, tenant, API-key-kind and capability changes, authority lost during metadata await, and explicit heartbeat-free resolver options. The13 older branch/commit/PR route cases pass after their fixtures were made explicit about full paired principals and positive enrollment absence; their previous missing metadata setup was not valid positive-path evidence. Tests use mocked provider/auth/storage ports, not live identity or provider acceptance. Actual caller scoped TypeScript and focused independent source review pass.
+
+The earlier48 transport checks remain accepted for the unchanged mandatory-guard transport. Full current production verification is batched with this related caller change. No new provider/credential call, database mutation, human decision, setting/schema/grant, paid CI, deployment or installer publication occurred. Current signed app sessions are preserved.
+
+Evidence: /private/tmp/axiom-github-current-principal-{red,green,final,extra}.log and /private/tmp/axiom-modern-gh-required-types.log. The initial green log includes invalid old fixture failures; final/extra logs supersede them, not the production implementation.

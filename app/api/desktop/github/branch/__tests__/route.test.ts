@@ -1,3 +1,4 @@
+// These route fixtures model a positively unenrolled workspace; revocation/enrollment races are tested separately.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
@@ -18,6 +19,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
   return { ...actual, resolveTenantScopedToken: mocks.resolveTenantScopedToken };
 });
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ createBranch: mocks.createBranch }));
+vi.mock("@/lib/db",()=>({prisma:{durableAgentWorkflow:{findMany:async()=>[]}}}));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 
 function request(body: object) {
@@ -28,7 +30,7 @@ function request(body: object) {
   });
 }
 
-const session = { id: "sess-1", userId: "user-1", organizationId: "org-1", credentialKind: "desktop_session" as const };
+const session = { id: "sess-1", userId: "user-1", organizationId: "org-1", credentialKind: "desktop_session" as const, role:"admin", capabilities:["workspace:read","github:write"] };
 
 describe("POST /api/desktop/github/branch", () => {
   beforeEach(() => {
