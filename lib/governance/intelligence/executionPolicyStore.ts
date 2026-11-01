@@ -330,6 +330,16 @@ export function createGovernanceExecutionPolicyStore(repo: ReleaseOperationPlanR
         await event(tx, next, s.actorUserId, s.sessionId, requestId, sha256ContentHash(row.stateJson));
         return next;
     }
+    async function recordedResult(tx: Tx, s: RevisionScope, row: Row, id: string, requestId: string, expected: {operation: z.infer<typeof requestInput>['operation']; inputDigest?: string}) {
+                sane(row, s, REQUEST);
+                const saved = requestInput.parse(row.inputJson), state = requestState.parse(row.stateJson);
+                if (row.id !== id || row.version !== 0 || row.currentStep !== 'recorded' || row.requestedByUserId !== s.actorUserId || saved.organizationId !== s.organizationId || saved.actorUserId !== s.actorUserId || saved.sessionId !== s.sessionId || saved.operation !== expected.operation || (expected.inputDigest !== undefined && saved.inputDigest !== expected.inputDigest) || saved.clientRequestId !== requestId || saved.createdAt !== row.createdAt.toISOString() || state.resultDigest !== sha256ContentHash(state.result)) deny();
+                const events = await tx.durableAgentWorkflowEvent.findMany({where: {organizationId: s.organizationId, workflowRunId: id}, orderBy: {sequence: 'asc'}, take: 2});
+                if (events.length !== 1) deny();
+                const e = events[0], detail = eventDetail.parse(e.detailJson);
+                if (e.organizationId !== s.organizationId || e.workflowRunId !== id || e.sequence !== 0 || e.eventType !== REQUEST + '.recorded' || e.actorKind !== 'user' || e.actorId !== s.actorUserId || detail.actorSessionId !== s.sessionId || detail.inputDigest !== sha256ContentHash(row.inputJson) || detail.stateDigest !== sha256ContentHash(row.stateJson) || sha256ContentHash(detail.state) !== detail.stateDigest || detail.previousStateDigest !== null || detail.expectedVersion !== null || detail.clientRequestId !== requestId || e.occurredAt.getTime() !== row.createdAt.getTime() || row.updatedAt.getTime() !== row.createdAt.getTime()) deny();
+                return structuredClone(state.result);
+    }
     /** A nonce is organization-wide and single purpose. The marker and result
      * commit atomically with the mutation under the existing organization lock.
      * Recovery returns the original inert result, never a new current grant. */
@@ -340,14 +350,7 @@ export function createGovernanceExecutionPolicyStore(repo: ReleaseOperationPlanR
             const inputDigest = sha256ContentHash(input);
             const row = await tx.durableAgentWorkflow.findFirst({where: {id}});
             if (row) {
-                sane(row, s, REQUEST);
-                const saved = requestInput.parse(row.inputJson), state = requestState.parse(row.stateJson);
-                if (row.id !== id || row.version !== 0 || row.currentStep !== 'recorded' || row.requestedByUserId !== s.actorUserId || saved.organizationId !== s.organizationId || saved.actorUserId !== s.actorUserId || saved.sessionId !== s.sessionId || saved.operation !== operation || saved.inputDigest !== inputDigest || saved.clientRequestId !== requestId || saved.createdAt !== row.createdAt.toISOString() || state.resultDigest !== sha256ContentHash(state.result)) deny();
-                const events = await tx.durableAgentWorkflowEvent.findMany({where: {organizationId: s.organizationId, workflowRunId: id}, orderBy: {sequence: 'asc'}, take: 2});
-                if (events.length !== 1) deny();
-                const e = events[0], detail = eventDetail.parse(e.detailJson);
-                if (e.organizationId !== s.organizationId || e.workflowRunId !== id || e.sequence !== 0 || e.eventType !== REQUEST + '.recorded' || e.actorKind !== 'user' || e.actorId !== s.actorUserId || detail.actorSessionId !== s.sessionId || detail.inputDigest !== sha256ContentHash(row.inputJson) || detail.stateDigest !== sha256ContentHash(row.stateJson) || sha256ContentHash(detail.state) !== detail.stateDigest || detail.previousStateDigest !== null || detail.expectedVersion !== null || detail.clientRequestId !== requestId || e.occurredAt.getTime() !== row.createdAt.getTime() || row.updatedAt.getTime() !== row.createdAt.getTime()) deny();
-                return structuredClone(state.result) as T;
+                return await recordedResult(tx, s, row, id, requestId, {operation, inputDigest}) as T;
             }
             const result = await run(tx);
             await create(tx, s, id, REQUEST, {format: 1, organizationId: s.organizationId, actorUserId: s.actorUserId, sessionId: s.sessionId, operation, inputDigest, clientRequestId: requestId, createdAt: now().toISOString()}, {result, resultDigest: sha256ContentHash(result)}, 'recorded', requestId);
@@ -365,6 +368,34 @@ export function createGovernanceExecutionPolicyStore(repo: ReleaseOperationPlanR
         executionAuthorized: false as const
     });
     return {
+        /** Historical receipt lookup never invokes the original mutation and
+         * cannot re-establish current policy authority. */
+        async lookupRequest(rawScope: RevisionScope, operation: z.infer<typeof requestInput>['operation'], requestId: string) {
+            const s=callerSchema.parse(rawScope);nonce.parse(requestId);requestInput.shape.operation.parse(operation);
+            return transaction(s,async tx=>{
+                await authority(tx,s,s.actorUserId,s.sessionId,'reader');
+                const id='governance_execution_policy_request_'+sha256ContentHash({organizationId:s.organizationId,requestId});
+                const row=await tx.durableAgentWorkflow.findFirst({where:{id}});
+                if(!row){await authority(tx,s,s.actorUserId,s.sessionId,'reader');return{found:false as const,historical:true as const,executionAuthorized:false as const}}
+                const result=await recordedResult(tx,s,row,id,requestId,{operation});
+                await authority(tx,s,s.actorUserId,s.sessionId,'reader');
+                return{found:true as const,result,historical:true as const,executionAuthorized:false as const};
+            });
+        },
+        /** Reads the pointer for exact parent/CAS selection, including historical
+         * revoked/expired limits. It is deliberately not readAuthority. */
+        async readActivePointer(rawScope: RevisionScope, rawSelection: GovernanceScope) {
+            const s=callerSchema.parse(rawScope),selection=scopeSchema.parse(rawSelection);
+            return transaction(s,async tx=>{
+                await authority(tx,s,s.actorUserId,s.sessionId,'reader');
+                const p=await pointer(tx,s,selection);
+                if(!p){await authority(tx,s,s.actorUserId,s.sessionId,'reader');return{found:false as const,executionAuthorized:false as const}}
+                const x=await load(tx,s,p.state.revisionId);
+                if(x.policy.digest!==p.state.digest||sha256ContentHash(x.policy.scope)!==sha256ContentHash(selection)||x.policy.parentDigest!==p.state.parentDigest)deny();
+                await authority(tx,s,s.actorUserId,s.sessionId,'reader');
+                return{found:true as const,revisionId:x.row.id,digest:x.policy.digest,pointerVersion:p.row.version,parentDigest:x.policy.parentDigest,policyStatus:x.state.status,expiresAt:x.policy.expiresAt,executionAuthorized:false as const};
+            });
+        },
         async propose(rawScope: RevisionScope, raw: unknown, requestId: string) {
             const s = callerSchema.parse(rawScope), policy = compileExecutionPolicy(raw);
             nonce.parse(requestId);

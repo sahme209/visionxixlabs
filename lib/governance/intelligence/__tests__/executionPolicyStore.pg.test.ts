@@ -92,15 +92,22 @@ describe.skipIf(!socket)('execution policies on owned isolated PostgreSQL',()=>{
   const handle=createGovernanceExecutionPolicyHttp((r,scope)=>createGovernanceExecutionPolicyRequestService(r,db,scope,()=>true),()=>true);
   const request=(name:string,body:unknown)=>handle(new NextRequest('https://fixture.test/api/desktop/governance-intelligence/execution-policy',{method:'POST',headers:{'content-type':'application/json','x-fixture-actor':name},body:JSON.stringify(body)}));
   const {organizationId:ignored,...policy}=f.policy();
-  const saved=await request('owner',{operation:'propose',policy,requestId:randomUUID()});expect(saved.status).toBe(200);const proposal=(await saved.json()).data;
+  const proposalNonce=randomUUID();const saved=await request('owner',{operation:'propose',policy,requestId:proposalNonce});expect(saved.status).toBe(200);const proposal=(await saved.json()).data;
   const self=await request('owner',{operation:'approve',id:proposal.id,version:0,digest:proposal.policy.digest,requestId:randomUUID()});expect(self.status).toBe(409);
   expect((await request('reviewer',{operation:'approve',id:proposal.id,version:0,digest:proposal.policy.digest,requestId:randomUUID()})).status).toBe(200);
-  expect((await request('owner',{operation:'activate',id:proposal.id,pointerVersion:null,parentDigest:null,requestId:randomUUID()})).status).toBe(200);
+  const activationNonce=randomUUID();expect((await request('owner',{operation:'activate',id:proposal.id,pointerVersion:null,parentDigest:null,requestId:activationNonce})).status).toBe(200);
   const authority=await f.executor.readAuthority(f.selection,'repository.merge');expect(authority).toMatchObject({policyDigest:proposal.policy.digest,autonomyLevel:4,executionAuthorized:false});
   expect((await request('executor',{operation:'activate',id:proposal.id,pointerVersion:0,parentDigest:null,requestId:randomUUID()})).status).toBe(403);
   expect((await request('owner',{operation:'revoke',id:proposal.id,version:1,requestId:randomUUID()})).status).toBe(200);
   await expect(f.executor.readAuthority(f.selection,'repository.merge')).rejects.toThrow();
   const history=await request('executor',{operation:'read',id:proposal.id});expect(history.status).toBe(200);expect((await history.json()).data.status).toBe('revoked');
+  const count=await db.durableAgentWorkflow.count({where:{organizationId:f.org}});
+  const recovered=await request('owner',{operation:'lookup',recordedOperation:'activate',requestId:activationNonce});expect(recovered.status).toBe(200);expect((await recovered.json()).data).toMatchObject({found:true,historical:true,executionAuthorized:false,result:{digest:proposal.policy.digest,pointerVersion:0,executionAuthorized:false}});
+  const original=await request('owner',{operation:'lookup',recordedOperation:'propose',requestId:proposalNonce});expect((await original.json()).data.result.id).toBe(proposal.id);
+  expect((await request('reviewer',{operation:'lookup',recordedOperation:'propose',requestId:proposalNonce})).status).toBe(409);
+  const pointer=await request('owner',{operation:'read_active',selection:f.selection});expect((await pointer.json()).data).toMatchObject({found:true,revisionId:proposal.id,policyStatus:'revoked',pointerVersion:0,executionAuthorized:false});
+  expect(await db.durableAgentWorkflow.count({where:{organizationId:f.org}})).toBe(count);
+  await expect(f.executor.readAuthority(f.selection,'repository.merge')).rejects.toThrow();
  });
 
 });

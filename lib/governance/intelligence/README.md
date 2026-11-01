@@ -275,3 +275,11 @@ Eleven boundary tests, one actual isolated PostgreSQL HTTP-to-durable-store
 journey and scoped production types pass; provider/session authentication is
 simulated in that journey. Native policy forms and comprehensive executor
 coverage remain unfinished. See docs/recovery/2026-11-01/governance-execution-policy-http.md.
+
+The execution-policy workflow also exposes read-only original-request lookup and
+exact active-pointer history. Historical activation receipts remain inert after
+revocation; lookup never resends a decision. The administrator need not be a
+named executor to inspect parent/CAS metadata.24 store/HTTP checks, scoped types
+and one expanded actual isolated PostgreSQL journey pass (simulated paired auth).
+Native forms/client DTOs and the subsequent exact full batch build remain pending.
+See docs/recovery/2026-11-01/governance-execution-policy-recovery.md.

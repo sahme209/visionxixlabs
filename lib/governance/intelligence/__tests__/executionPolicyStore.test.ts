@@ -104,3 +104,34 @@ it('refuses damaged durable request receipts instead of repeating the policy mut
  await expect(f.store.propose(f.owner,raw,requestId)).rejects.toThrow();
  expect(f.rows.get(r.id)!.version).toBe(0);
 });
+it('recovers only the exact original caller operation as inert history without another mutation',async()=>{
+ const f=fixture(),nonce=randomUUID(),r=await f.store.propose(f.owner,f.policy(),nonce),count=f.rows.size,eventCount=f.events.length;
+ expect(await f.store.lookupRequest(f.owner,'propose',nonce)).toEqual({found:true,result:r,historical:true,executionAuthorized:false});
+ expect(f.rows.size).toBe(count);expect(f.events).toHaveLength(eventCount);
+ expect(await f.store.lookupRequest(f.owner,'propose',randomUUID())).toEqual({found:false,historical:true,executionAuthorized:false});
+ await expect(f.store.lookupRequest(f.reviewer,'propose',nonce)).rejects.toThrow();
+ await expect(f.store.lookupRequest({...f.owner,sessionId:'other'},'propose',nonce)).rejects.toThrow();
+ await expect(f.store.lookupRequest(f.owner,'activate',nonce)).rejects.toThrow();
+ f.deny('owner');await expect(f.store.lookupRequest(f.owner,'propose',nonce)).rejects.toThrow();
+});
+it('recovers an old activation receipt after revocation without restoring its authority',async()=>{
+ const f=fixture(),r=await f.approved(),nonce=randomUUID(),receipt=await f.store.activate(f.owner,r.id,null,null,nonce);
+ await f.store.revoke(f.owner,r.id,1,randomUUID());const rows=structuredClone([...f.rows]);
+ expect(await f.store.lookupRequest(f.owner,'activate',nonce)).toEqual({found:true,result:receipt,historical:true,executionAuthorized:false});
+ await expect(f.store.readAuthority(f.executor,selection,'repository.merge')).rejects.toThrow();expect([...f.rows]).toEqual(rows);
+});
+it('reads the active limit pointer as non-authorizing history including revoked or expired policy',async()=>{
+ const f=fixture();expect(await f.store.readActivePointer(f.owner,selection)).toEqual({found:false,executionAuthorized:false});
+ const r=await f.approved();await f.store.activate(f.owner,r.id,null,null,randomUUID());
+ expect(await f.store.readActivePointer(f.owner,selection)).toMatchObject({found:true,revisionId:r.id,digest:r.policy.digest,pointerVersion:0,policyStatus:'approved',executionAuthorized:false});
+ await f.store.revoke(f.owner,r.id,1,randomUUID());f.expire();
+ expect(await f.store.readActivePointer(f.owner,selection)).toMatchObject({found:true,policyStatus:'revoked',executionAuthorized:false});
+ await expect(f.store.readAuthority(f.executor,selection,'repository.merge')).rejects.toThrow();
+});
+it('refuses damaged recovery or pointer records instead of inferring absence',async()=>{
+ const f=fixture(),nonce=randomUUID();await f.store.propose(f.owner,f.policy(),nonce);
+ const marker=[...f.rows.values()].find(x=>x.workflowKind==='governance_execution_policy_request_v1')!;f.events.find(e=>e.workflowRunId===marker.id)!.detailJson={};
+ await expect(f.store.lookupRequest(f.owner,'propose',nonce)).rejects.toThrow();
+ const g=fixture(),r=await g.approved();await g.store.activate(g.owner,r.id,null,null,randomUUID());const pointer=[...g.rows.values()].find(x=>x.workflowKind==='governance_execution_policy_active_v1')!;pointer.stateJson={};
+ await expect(g.store.readActivePointer(g.owner,selection)).rejects.toThrow();
+});
