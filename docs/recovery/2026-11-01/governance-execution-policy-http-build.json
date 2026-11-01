@@ -1,0 +1,11 @@
+{
+  "source": "852e27479f371b1bb9b1372d2099af3e7673e6d3",
+  "stage": "/private/tmp/axiom-policy-http-final-qit93zgb",
+  "archiveSha256": "bbaa78853ac9f0fcf0b311c37d7f6463d531059cfb7fa05af313b6bb354cd875",
+  "productionBuild": "passed",
+  "productionTypeScript": "passed",
+  "exitCode": 0,
+  "log": "/private/tmp/axiom-policy-http-final-build.log",
+  "environment": "Synthetic unreachable loopback database; locked SDK overlay; no production settings or provider actions",
+  "productionActivation": false
+}

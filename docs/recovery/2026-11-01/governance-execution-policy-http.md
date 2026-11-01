@@ -16,4 +16,4 @@ An active numeric ceiling remains executionAuthorized=false. It does not enroll 
 
 No client form or signed-app acceptance is claimed by this increment. Native policy authoring/review/activation and full executor coverage remain. No new environment setting, deployment, CI, permission, credential or provider action occurred.
 
-Logs: /private/tmp/axiom-execution-policy-http-{red,green,types,pg}.log. Exact full production build is recorded separately after the source commit.
+Logs: /private/tmp/axiom-execution-policy-http-{red,green,types,pg}.log. Exact clean852e2747 full production build and Next TypeScript passed; source/archive/environment receipt: governance-execution-policy-http-build.json.
