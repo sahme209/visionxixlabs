@@ -1,0 +1,11 @@
+{
+  "source": "10e628ed61d66a6a84c9c5a32334350b0d5f4701",
+  "stage": "/private/tmp/axiom-governed-merge-final-14kx41bi",
+  "log": "/private/tmp/axiom-governed-merge-final-build.log",
+  "productionBuild": "passed",
+  "productionTypeScript": "passed",
+  "exitCode": 0,
+  "verification": "Owned build session15784 completed exit0; synthetic unreachable loopback database and locked SDK overlay; no provider actions.",
+  "limitations": "Merge composition locally verified; production coverage remains empty and enrollment/activation refuse incomplete coverage. Not full Governance MVP.",
+  "productionActivation": false
+}
