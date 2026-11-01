@@ -368,6 +368,45 @@ export function createGovernanceExecutionPolicyStore(repo: ReleaseOperationPlanR
         executionAuthorized: false as const
     });
     return {
+        /** Bounded saved-record directory, never a complete-history claim. */
+        async listSaved(rawScope: RevisionScope) {
+            const s=callerSchema.parse(rawScope);
+            return transaction(s,async tx=>{
+                await authority(tx,s,s.actorUserId,s.sessionId,'reader');
+                const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:s.organizationId,workflowKind:REVISION},orderBy:[{createdAt:'desc'},{id:'desc'}],take:21});
+                const items=[];
+                for(const row of rows.slice(0,20)){
+                    const x=await load(tx,s,row.id);
+                    items.push({id:x.row.id,version:x.row.version,status:x.state.status,digest:x.policy.digest,scope:x.policy.scope,autonomyLevel:x.policy.autonomyLevel,expiresAt:x.policy.expiresAt,requesterUserId:x.input.requesterUserId,createdAt:x.input.createdAt});
+                }
+                await authority(tx,s,s.actorUserId,s.sessionId,'reader');
+                return{items,truncated:rows.length>20,executionAuthorized:false as const};
+            });
+        },
+        /** Original request metadata is restricted to this caller and exact
+         * paired session. A listed receipt is historical, not current authority. */
+        async listRequests(rawScope: RevisionScope) {
+            const s=callerSchema.parse(rawScope);
+            return transaction(s,async tx=>{
+                await authority(tx,s,s.actorUserId,s.sessionId,'reader');
+                const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:s.organizationId,workflowKind:REQUEST,requestedByUserId:s.actorUserId,inputJson:{path:['sessionId'],equals:s.sessionId}},orderBy:[{createdAt:'desc'},{id:'desc'}],take:21});
+                const items=[];
+                for(const row of rows.slice(0,20)){
+                    const input=requestInput.parse(row.inputJson),expectedId='governance_execution_policy_request_'+sha256ContentHash({organizationId:s.organizationId,requestId:input.clientRequestId});
+                    const result=await recordedResult(tx,s,row,expectedId,input.clientRequestId,{operation:input.operation});
+                    if(input.operation==='activate'){
+                        const receipt=z.object({digest:digestSchema,pointerVersion:version,executionAuthorized:z.literal(false)}).strict().parse(result);
+                        items.push({requestId:input.clientRequestId,operation:input.operation,createdAt:input.createdAt,digest:receipt.digest});
+                    }else{
+                        const r=z.object({id:identifier,policy:z.unknown()}).passthrough().parse(result),policy=unpackPolicy(r.policy),x=await load(tx,s,r.id);
+                        if(x.policy.digest!==policy.digest||policy.organizationId!==s.organizationId)deny();
+                        items.push({requestId:input.clientRequestId,operation:input.operation,createdAt:input.createdAt,digest:policy.digest,revisionId:x.row.id});
+                    }
+                }
+                await authority(tx,s,s.actorUserId,s.sessionId,'reader');
+                return{items,truncated:rows.length>20,historical:true as const,executionAuthorized:false as const};
+            });
+        },
         /** Historical receipt lookup never invokes the original mutation and
          * cannot re-establish current policy authority. */
         async lookupRequest(rawScope: RevisionScope, operation: z.infer<typeof requestInput>['operation'], requestId: string) {

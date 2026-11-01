@@ -1,12 +1,13 @@
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {desktopClient} from '../lib/desktopClient';
-import {executionPolicyId,type ExecutionPolicyRevision,type ExecutionPolicyMutation,type ExecutionPolicyPointer} from '../lib/governanceExecutionPolicy';
+import {executionPolicyId,type ExecutionPolicyRevision,type ExecutionPolicyMutation,type ExecutionPolicyPointer,type ExecutionPolicyDirectory,type ExecutionPolicyRequests} from '../lib/governanceExecutionPolicy';
 interface Props {organizationId:string;currentUserId:string;canManage:boolean;canApprove:boolean;scopes:Array<{repositoryId:string;resourceId:string;environment:'production'|'staging'|'development'|'qa'}>}
 /** Local prototype. Capabilities affect presentation only; paired server services
  * independently enforce current authority, exact scope and human independence. */
 export function GovernanceExecutionPolicyPanel(props:Props){const rev=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);return <PolicySession key={rev+':'+props.organizationId+':'+props.currentUserId} {...props}/>}
 function PolicySession({organizationId,currentUserId,canManage,canApprove}:Props){
  const owner=useRef({config:desktopClient.config,revision:desktopClient.getContextRevision()}).current,alive=useRef(true),running=useRef(false),active=useRef<AbortController|undefined>(undefined);
+ const[directory,setDirectory]=useState<ExecutionPolicyDirectory>(),[requests,setRequests]=useState<ExecutionPolicyRequests>();
  const[id,setId]=useState(''),[policy,setPolicy]=useState<ExecutionPolicyRevision>(),[pointer,setPointer]=useState<ExecutionPolicyPointer>(),[checked,setChecked]=useState(false),[held,setHeld]=useState(false),[pending,setPending]=useState<ExecutionPolicyMutation>(),[busy,setBusy]=useState(false),[message,setMessage]=useState(''),[clock,setClock]=useState(Date.now());
  useEffect(()=>{alive.current=true;const timer=setInterval(()=>setClock(Date.now()),15000);return()=>{alive.current=false;clearInterval(timer);active.current?.abort()}},[]);
  const owns=()=>alive.current&&owner.config===desktopClient.config&&owner.revision===desktopClient.getContextRevision();
@@ -14,11 +15,13 @@ function PolicySession({organizationId,currentUserId,canManage,canApprove}:Props
  const expired=Boolean(policy&&Date.parse(policy.policy.expiresAt)<=clock);
  const independent=Boolean(policy&&canApprove&&currentUserId&&policy.requesterUserId!==currentUserId&&!policy.policy.executorUserIds.includes(currentUserId));
  const parentMatches=Boolean(policy&&pointer&&(pointer.found?pointer.digest: null)===policy.policy.parentDigest);
- async function read(kind:'policy'|'pointer'|'outcome'){
+ async function read(kind:'policy'|'pointer'|'outcome'|'saved'|'requests'){
   if(running.current||!owns()||kind==='policy'&&!executionPolicyId.safeParse(id).success||kind==='pointer'&&!policy||kind==='outcome'&&!pending)return;
   running.current=true;setBusy(true);setMessage('');const c=new AbortController();active.current=c;
   try{
-   if(kind==='policy'){
+   if(kind==='saved'){const result=await client().list(c.signal);if(!owns())return;if(!result.ok)setMessage(result.error);else setDirectory(result.data);
+   }else if(kind==='requests'){const result=await client().requests(c.signal);if(!owns())return;if(!result.ok)setMessage(result.error);else setRequests(result.data);
+   }else if(kind==='policy'){
     const result=await client().read(id,c.signal);if(!owns())return;
     setChecked(false);setPointer(undefined);setPolicy(undefined);
     if(!result.ok){setMessage(result.error);return}
@@ -49,6 +52,9 @@ function PolicySession({organizationId,currentUserId,canManage,canApprove}:Props
  if(!owns())return <p role="status">Workspace changed. Load policy history in the current account.</p>;
  return <section aria-label="Execution limits" className="rounded-xl border border-white/10 p-4 space-y-4" aria-busy={busy}>
  <header><h2 className="font-medium">Execution limits</h2><p className="mt-1 text-xs text-zinc-400">A ceiling sets the maximum eligible authority. It does not authorize a provider action, enroll a baseline or replace independent action approvals.</p></header>
+ <div className="flex flex-wrap gap-2"><button className="btn-secondary" disabled={busy} onClick={()=>void read('saved')}>Load saved limit policies</button><button className="btn-secondary" disabled={busy} onClick={()=>void read('requests')}>Load my recorded decisions</button></div>
+ {directory&&<div className="space-y-2"><label className="block text-sm">Saved limit policies<select value={directory.items.some(p=>p.id===id)?id:''} disabled={busy} onChange={e=>{setId(e.target.value);setPolicy(undefined);setPointer(undefined);setChecked(false)}} className="mt-1 w-full rounded border border-white/15 bg-transparent p-2"><option value="">Choose a saved policy</option>{directory.items.map(p=><option key={p.id} value={p.id}>{p.status} · level {p.autonomyLevel} · {p.scope.repositoryId} · {p.scope.environment}</option>)}</select></label><p className="text-xs text-zinc-400">{directory.items.length} recent records. {directory.truncated?'More history exists; use an exact saved ID.':'This bounded list is not proof of complete history.'}</p></div>}
+ {requests&&<details className="text-xs text-zinc-400" open><summary>My recorded decisions in this paired session</summary><p className="mt-2">Historical receipts only. Unrecorded or still-unconfirmed requests may not appear. Nothing will be resent.</p>{requests.items.map(r=><div key={r.requestId} className="mt-2 space-y-1"><p>{r.operation} · {new Date(r.createdAt).toLocaleString()}</p><p className="break-all">Original request {r.requestId}</p><p className="break-all">Policy digest {r.digest}</p>{r.revisionId&&<button className="btn-secondary" disabled={busy} onClick={()=>{setId(r.revisionId!);setPolicy(undefined);setPointer(undefined);setChecked(false)}}>Select policy from this receipt</button>}</div>)}{requests.truncated&&<p>Showing the latest20 recorded decisions.</p>}</details>}
  <label className="block text-sm">Saved execution-limit policy ID<input value={id} disabled={busy} onChange={e=>{setId(e.target.value);setPolicy(undefined);setPointer(undefined);setChecked(false)}} className="mt-1 w-full rounded border border-white/15 bg-transparent p-2"/></label>
  <button className="btn-secondary" disabled={busy||!executionPolicyId.safeParse(id).success} onClick={()=>void read('policy')}>Load exact policy</button>
  {policy&&<div className="space-y-3"><p className="text-sm">{policy.status} · version {policy.version}</p><p className="text-sm">Maximum level {policy.policy.autonomyLevel} · expires {new Date(policy.policy.expiresAt).toLocaleString()}</p><p className="text-xs text-zinc-400">{policy.policy.scope.repositoryId} · {policy.policy.scope.resourceId} · {policy.policy.scope.environment}</p><p className="text-sm">Actions: {policy.policy.actions.join(', ')}</p><p className="text-sm">Named executors: {policy.policy.executorUserIds.join(', ')}</p><p className="text-xs text-zinc-400">Requested by {policy.requesterUserId}{policy.approval?' · independently reviewed by '+policy.approval.userId:''}</p>

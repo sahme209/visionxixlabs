@@ -106,6 +106,9 @@ describe.skipIf(!socket)('execution policies on owned isolated PostgreSQL',()=>{
   const original=await request('owner',{operation:'lookup',recordedOperation:'propose',requestId:proposalNonce});expect((await original.json()).data.result.id).toBe(proposal.id);
   expect((await request('reviewer',{operation:'lookup',recordedOperation:'propose',requestId:proposalNonce})).status).toBe(409);
   const pointer=await request('owner',{operation:'read_active',selection:f.selection});expect((await pointer.json()).data).toMatchObject({found:true,revisionId:proposal.id,policyStatus:'revoked',pointerVersion:0,executionAuthorized:false});
+  const directory=await request('executor',{operation:'list_saved'});expect(directory.status).toBe(200);expect((await directory.json()).data.items).toEqual([expect.objectContaining({id:proposal.id,status:'revoked',digest:proposal.policy.digest})]);
+  const own=await request('owner',{operation:'list_requests'});expect(own.status).toBe(200);expect((await own.json()).data.items).toEqual(expect.arrayContaining([expect.objectContaining({requestId:proposalNonce,operation:'propose',revisionId:proposal.id}),expect.objectContaining({requestId:activationNonce,operation:'activate',digest:proposal.policy.digest})]));
+  const executorHistory=await request('executor',{operation:'list_requests'});expect((await executorHistory.json()).data.items).toEqual([]);
   expect(await db.durableAgentWorkflow.count({where:{organizationId:f.org}})).toBe(count);
   await expect(f.executor.readAuthority(f.selection,'repository.merge')).rejects.toThrow();
  });

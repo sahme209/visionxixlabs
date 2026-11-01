@@ -63,6 +63,8 @@ export function createGovernanceExecutionPolicyRequestService(request: NextReque
     }
     const store = createGovernanceExecutionPolicyStore(repo, { assertCurrent: current });
     return {
+        listSaved: () => { enabled(); return store.listSaved(scope); },
+        listRequests: () => { enabled(); return store.listRequests(scope); },
         lookupRequest: (operation: Parameters<typeof store.lookupRequest>[1], requestId: string) => { enabled(); return store.lookupRequest(scope, operation, requestId); },
         readActivePointer: (selection: Parameters<typeof store.readActivePointer>[1]) => { enabled(); return store.readActivePointer(scope, selection); },
         propose: (raw: unknown, requestId: string) => { enabled(); return store.propose(scope, raw, requestId); },

@@ -7,7 +7,7 @@ function fixture(){
  const rows=new Map<string,ReleaseOperationPlanRow>(),events:ReleaseOperationPlanEvent[]=[];
  const owner={organizationId:'org',actorUserId:'owner',sessionId:'owner-session'},reviewer={...owner,actorUserId:'reviewer',sessionId:'reviewer-session'},executor={...owner,actorUserId:'executor',sessionId:'executor-session'};
  let expired=false,denied:string|null=null,casFailure=false;
- const matches=(row:any,where:any)=>Object.entries(where).every(([k,v])=>v&&typeof v==='object'&&'equals' in v?JSON.stringify(row[k])===JSON.stringify(v.equals):row[k]===v);
+ const matches=(row:any,where:any)=>Object.entries(where).every(([k,v])=>v&&typeof v==='object'&&'equals' in v?JSON.stringify('path' in v?(v.path as string[]).reduce((x:any,key:string)=>x?.[key],row[k]):row[k])===JSON.stringify(v.equals):row[k]===v);
  const tx:any={
   async $queryRaw(strings:TemplateStringsArray,...values:any[]){
    const sql=strings.join('?');if(sql.includes('pg_advisory'))return[{locked:1}];
@@ -16,6 +16,7 @@ function fixture(){
    throw Error('unexpected_query');
   },
   durableAgentWorkflow:{
+   async findMany({where,take}:any){return structuredClone([...rows.values()].filter(r=>matches(r,where)).sort((a,b)=>b.createdAt.getTime()-a.createdAt.getTime()||b.id.localeCompare(a.id)).slice(0,take));},
    async findFirst({where}:any){return [...rows.values()].find(r=>matches(r,where))??null;},
    async create({data}:any){if(rows.has(data.id))throw Error('duplicate');const row=structuredClone(data);rows.set(row.id,row);return structuredClone(row);},
    async updateMany({where,data}:any){const r=[...rows.values()].find(r=>matches(r,where));if(!r||casFailure)return{count:0};rows.set(r.id,{...r,...data,version:r.version+1});return{count:1};},
@@ -134,4 +135,16 @@ it('refuses damaged recovery or pointer records instead of inferring absence',as
  await expect(f.store.lookupRequest(f.owner,'propose',nonce)).rejects.toThrow();
  const g=fixture(),r=await g.approved();await g.store.activate(g.owner,r.id,null,null,randomUUID());const pointer=[...g.rows.values()].find(x=>x.workflowKind==='governance_execution_policy_active_v1')!;pointer.stateJson={};
  await expect(g.store.readActivePointer(g.owner,selection)).rejects.toThrow();
+});
+
+it('lists validated saved policies and only this actor session original decision receipts without writes',async()=>{
+ const f=fixture(),nonce=randomUUID(),r=await f.store.propose(f.owner,f.policy(),nonce);await f.store.approve(f.reviewer,r.id,0,r.policy.digest,randomUUID());const before=structuredClone([...f.rows]);
+ expect(await f.store.listSaved(f.executor)).toMatchObject({items:[{id:r.id,status:'approved',digest:r.policy.digest,autonomyLevel:4}],truncated:false,executionAuthorized:false});
+ expect(await f.store.listRequests(f.owner)).toMatchObject({items:[{requestId:nonce,operation:'propose',revisionId:r.id,digest:r.policy.digest}],truncated:false,historical:true,executionAuthorized:false});
+ expect((await f.store.listRequests(f.executor)).items).toHaveLength(0);expect([...f.rows]).toEqual(before);
+ f.deny('owner');await expect(f.store.listRequests(f.owner)).rejects.toThrow();
+});
+it('refuses damaged listed records and never calls an empty result complete history',async()=>{
+ const f=fixture(),nonce=randomUUID(),r=await f.store.propose(f.owner,f.policy(),nonce);f.events.find(e=>e.workflowRunId===r.id)!.actorId='other';await expect(f.store.listSaved(f.owner)).rejects.toThrow();
+ const g=fixture();await g.store.propose(g.owner,g.policy(),randomUUID());const receipt=[...g.rows.values()].find(r=>r.workflowKind==='governance_execution_policy_request_v1')!;receipt.stateJson={};await expect(g.store.listRequests(g.owner)).rejects.toThrow();
 });

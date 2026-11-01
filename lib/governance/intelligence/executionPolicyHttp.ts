@@ -11,6 +11,8 @@ import type {RevisionScope} from './revisionStore';
 const id=z.string().regex(/^governance_execution_policy_[a-f0-9]{64}$/),digest=z.string().regex(/^[a-f0-9]{64}$/),requestId=z.string().uuid(),version=z.number().int().min(0).max(999);
 const input=z.discriminatedUnion('operation',[
  z.object({operation:z.literal('read'),id}).strict(),
+ z.object({operation:z.literal('list_saved')}).strict(),
+ z.object({operation:z.literal('list_requests')}).strict(),
  z.object({operation:z.literal('lookup'),recordedOperation:z.enum(['propose','approve','activate','revoke']),requestId}).strict(),
  z.object({operation:z.literal('read_active'),selection:scopeSchema}).strict(),
  z.object({operation:z.literal('propose'),policy:z.record(z.string(),z.unknown()),requestId}).strict(),
@@ -18,7 +20,7 @@ const input=z.discriminatedUnion('operation',[
  z.object({operation:z.literal('activate'),id,pointerVersion:version.nullable(),parentDigest:digest.nullable(),requestId}).strict(),
  z.object({operation:z.literal('revoke'),id,version,requestId}).strict(),
 ]);
-type Service=Pick<ReturnType<typeof createGovernanceExecutionPolicyRequestService>,'propose'|'readRevision'|'lookupRequest'|'readActivePointer'|'approve'|'activate'|'revoke'>;
+type Service=Pick<ReturnType<typeof createGovernanceExecutionPolicyRequestService>,'propose'|'readRevision'|'listSaved'|'listRequests'|'lookupRequest'|'readActivePointer'|'approve'|'activate'|'revoke'>;
 /** Manages numeric execution ceilings only. An active ceiling is not baseline
  * enrollment, execution coverage, provider access or a provider-action approval.
  * Paired durable services recheck principals/independence and CAS under locks. */
@@ -39,7 +41,7 @@ export function createGovernanceExecutionPolicyHttp(compose:(request:NextRequest
    for(;;){const r=await withGithubAbort(reader.read(),signal);if(r.done)break;size+=r.value.byteLength;if(size>65536)return reply({ok:false,error:'invalid_governance_execution_policy_request'},400);chunks.push(r.value)}
    try{raw=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)))}catch{signal.throwIfAborted();return reply({ok:false,error:'invalid_governance_execution_policy_request'},400)}
   }finally{void reader.cancel().catch(()=>{});reader.releaseLock()}
-  const selected=input.parse(raw),readOnly=['read','lookup','read_active'].includes(selected.operation),required=readOnly?'workspace:read':selected.operation==='approve'?'agent:approve':'policy:manage';
+  const selected=input.parse(raw),readOnly=['read','lookup','read_active','list_saved','list_requests'].includes(selected.operation),required=readOnly?'workspace:read':selected.operation==='approve'?'agent:approve':'policy:manage';
   if(!actor.capabilities?.includes(required))return reply({ok:false,error:'governance_execution_policy_permission_required'},403);
   let policy:unknown;
   if(selected.operation==='propose'){
@@ -48,7 +50,7 @@ export function createGovernanceExecutionPolicyHttp(compose:(request:NextRequest
   }
   const scope={organizationId:actor.organizationId,actorUserId:actor.userId,sessionId:actor.id},headers=new Headers(request.headers);headers.delete('content-length');
   const service=compose(new NextRequest(request.url,{method:'POST',headers,signal}),scope);signal.throwIfAborted();mutationStarted=!readOnly;
-  const pending=selected.operation==='lookup'?service.lookupRequest(selected.recordedOperation,selected.requestId):selected.operation==='read_active'?service.readActivePointer(selected.selection):selected.operation==='read'?service.readRevision(selected.id):selected.operation==='propose'?service.propose(policy,selected.requestId):selected.operation==='approve'?service.approve(selected.id,selected.version,selected.digest,selected.requestId):selected.operation==='activate'?service.activate(selected.id,selected.pointerVersion,selected.parentDigest,selected.requestId):service.revoke(selected.id,selected.version,selected.requestId);
+  const pending=selected.operation==='list_saved'?service.listSaved():selected.operation==='list_requests'?service.listRequests():selected.operation==='lookup'?service.lookupRequest(selected.recordedOperation,selected.requestId):selected.operation==='read_active'?service.readActivePointer(selected.selection):selected.operation==='read'?service.readRevision(selected.id):selected.operation==='propose'?service.propose(policy,selected.requestId):selected.operation==='approve'?service.approve(selected.id,selected.version,selected.digest,selected.requestId):selected.operation==='activate'?service.activate(selected.id,selected.pointerVersion,selected.parentDigest,selected.requestId):service.revoke(selected.id,selected.version,selected.requestId);
   const data=await withGithubAbort<unknown>(pending,signal);signal.throwIfAborted();
   if(Buffer.byteLength(JSON.stringify(data))>262144)throw Error('governance_execution_policy_response_unavailable');
   return reply({ok:true,data});

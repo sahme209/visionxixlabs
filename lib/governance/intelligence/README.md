@@ -290,3 +290,11 @@ Strict client DTOs retain exact scope/digest/version/nonce boundaries.52 focused
 checks, desktop types/build and scoped server types pass; no signed/live visual
 or execution acceptance. Proposal authoring, policy directory and restart-safe
 pending recovery remain unfinished. Complete coverage/enrollment still refuses.
+
+The prototype can deliberately discover up to20 validated saved limit policies
+and original decision metadata for the current user/exact paired session.
+Selection does not read/approve/resend. Bounded lists do not prove full history
+or the absence of unrecorded work.45 focused checks, scoped types/frontend build,
+one actual isolatedPG journey and review pass; authentication was simulated.
+Proposal authoring and unrecorded pending restart recovery remain unfinished.
+See docs/recovery/2026-11-01/governance-policy-directory.md.
