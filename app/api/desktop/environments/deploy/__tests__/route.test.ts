@@ -4,6 +4,8 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   findEnvironment: vi.fn(),
+  installation: vi.fn(),
+  snapshot: vi.fn(),
   enrollment: vi.fn(),
   findTarget: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
@@ -25,6 +27,8 @@ vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
 }));
 vi.mock("@/lib/db", () => ({
   prisma: {
+    $queryRaw: mocks.snapshot,
+    gitHubInstallation: {findFirst:mocks.installation},
     environment: { findUnique: mocks.findEnvironment },
     durableAgentWorkflow: { findMany: mocks.enrollment },
     deploymentTarget: { findUnique: mocks.findTarget },
@@ -69,6 +73,8 @@ const target = { id: "dt_1", organizationId: "org-1", environmentId: "env_1", pr
 describe("POST /api/desktop/environments/deploy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.installation.mockReset().mockResolvedValue({id:"connection",githubInstallationId:"123",updatedAt:new Date("2026-11-01T00:00:00Z"),revokedAt:null,suspendedAt:null});
+    mocks.snapshot.mockReset().mockResolvedValue([{sessionId:session.id,userId:session.userId,organizationId:session.organizationId,sessionLive:true,role:"admin",acceptedAt:new Date(),connectionId:"connection",githubInstallationId:"123",connectionRevision:new Date("2026-11-01T00:00:00Z"),connectionRevokedAt:null,connectionSuspendedAt:null,connectionStatus:"active",enrolled:false}]);
     mocks.enrollment.mockReset().mockResolvedValue([]);
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findRepositories.mockResolvedValue([]);
@@ -262,17 +268,46 @@ describe("POST /api/desktop/environments/deploy", () => {
     mocks.findEnvironment.mockResolvedValue({id:"env_1",organizationId:"org-1"});
     mocks.findTarget.mockResolvedValue(target);
     mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:"fixture"});
-    mocks.enrollment.mockResolvedValueOnce([]).mockResolvedValue([{id:"governance_active_org",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}]);
+
     mocks.dispatchWorkflow.mockImplementationOnce(async input=>{
+      mocks.enrollment.mockResolvedValue([{id:"governance_active_org",organizationId:"org-1",workflowKind:"governance_baseline_active_v1"}]);
       try { await input.beforeWrite(); throw Error("test must refuse before provider dispatch"); }
       catch(error) { expect(String(error)).toContain("governance_execution_coverage_unavailable"); return {ok:false,error:"workflow_dispatch_failed: github_write_authority_unavailable"}; }
     });
     const {POST}=await import("../route");
     const response=await POST(request({repositoryFullName:"acme/widgets",environmentId:"env_1"}));
     expect(response.status).toBe(502);
-    expect(mocks.enrollment).toHaveBeenCalledTimes(2);
+    expect(mocks.enrollment).toHaveBeenCalled();
     expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(expect.anything(),"org-1","exec-1");
     expect(mocks.settleDeploymentDispatch).not.toHaveBeenCalled();
+  });
+
+  it('binds deployment token issuance to the captured installation',async()=>{
+    mocks.findEnvironment.mockResolvedValue({id:'env_1',organizationId:'org-1'});mocks.findTarget.mockResolvedValue(target);mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'fixture'});mocks.dispatchWorkflow.mockResolvedValue({ok:true,data:{workflowRunId:'123'}});
+    const {POST}=await import('../route');expect((await POST(request({repositoryFullName:'acme/widgets',environmentId:'env_1'}))).status).toBe(200);
+    expect(mocks.resolveTenantScopedToken).toHaveBeenCalledWith('org-1',{owner:'acme',repo:'widgets'},expect.objectContaining({id:'connection',githubInstallationId:'123',signal:expect.any(AbortSignal)}),expect.any(Object));
+  });
+  it.each([false,true])('rechecks current deployment and emergency rights after reservation (bypass=%s)',async emergency=>{
+    mocks.resolveRequestDesktopSession.mockResolvedValue(emergency?adminSession:session);
+    mocks.findEnvironment.mockResolvedValue({id:'env_1',organizationId:'org-1',tier:emergency?'prod':'dev'});mocks.findTarget.mockResolvedValue(target);mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'fixture'});
+    mocks.reserveDeploymentDispatch.mockImplementationOnce(async()=>{mocks.resolveRequestDesktopSession.mockResolvedValue({...session,capabilities:emergency?['deploy:execute']:['github:write']});return{ok:true,reused:false,reservation:{id:'exec-1'},planId:'free',used:0,limit:10}});
+    mocks.dispatchWorkflow.mockImplementationOnce(async input=>{try{await input.beforeWrite();return{ok:true,data:{workflowRunId:'123'}}}catch{return{ok:false,error:'workflow_dispatch_failed: github_write_authority_unavailable'}}});
+    const {POST}=await import('../route');const res=await POST(request({repositoryFullName:'acme/widgets',environmentId:'env_1',emergencyBypass:emergency,bypassReason:'A legitimate incident still needs current deployment authority.'}));
+    expect(res.status).toBe(502);expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(expect.anything(),'org-1','exec-1');expect(mocks.settleDeploymentDispatch).not.toHaveBeenCalled();
+  });
+
+  it.each(['revoked_before_send','lost_response_after_send'])('uses the actual transport and preserves reservation semantics for %s',async state=>{
+    mocks.findEnvironment.mockResolvedValue({id:'env_1',organizationId:'org-1',tier:'dev'});mocks.findTarget.mockResolvedValue(target);mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'synthetic-fixture-token'});
+    mocks.reserveDeploymentDispatch.mockImplementationOnce(async()=>{if(state==='revoked_before_send')mocks.resolveRequestDesktopSession.mockResolvedValue(null);return{ok:true,reused:false,reservation:{id:'exec-1'},planId:'free',used:0,limit:10}});
+    const actual=await vi.importActual<typeof import('@/lib/connectors/github/githubWriteClient')>('@/lib/connectors/github/githubWriteClient');
+    mocks.dispatchWorkflow.mockImplementationOnce(actual.dispatchWorkflow);
+    const provider=vi.fn(async(_url:unknown,_init:unknown)=>{throw Error('synthetic lost provider response')});vi.stubGlobal('fetch',provider);
+    try{
+      const {POST}=await import('../route');const res=await POST(request({repositoryFullName:'acme/widgets',environmentId:'env_1'}));expect(res.status).toBe(502);
+      if(state==='revoked_before_send'){expect(provider).not.toHaveBeenCalled();expect(mocks.releaseDeploymentDispatch).toHaveBeenCalledWith(expect.anything(),'org-1','exec-1')}
+      else{expect(provider).toHaveBeenCalledOnce();expect(provider.mock.calls[0]?.[1]).toMatchObject({method:'POST'});expect(mocks.releaseDeploymentDispatch).not.toHaveBeenCalled();expect(await res.json()).toMatchObject({error:'deployment_outcome_unknown'})}
+      expect(mocks.settleDeploymentDispatch).not.toHaveBeenCalled();
+    }finally{vi.unstubAllGlobals()}
   });
 
 });

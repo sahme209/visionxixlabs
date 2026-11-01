@@ -1,5 +1,5 @@
 import 'server-only';
-import {hasDesktopCapability,type DesktopWorkspaceRole} from './desktopAuthorization';
+import {hasDesktopCapability,type DesktopWorkspaceRole,type DesktopCapability} from './desktopAuthorization';
 import type {ReleaseOperationPlanTransaction} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import type {NextRequest} from 'next/server';
 import {resolveRequestDesktopSession,type DesktopRequestPrincipal} from './resolveRequestDesktopSession';
@@ -8,14 +8,15 @@ import {resolveTenantScopedToken,type InstallationRepo,type RepoRef} from '@/lib
 import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 /** Current paired actor and captured installation for legacy writes only.
  * Resolves existing connection credentials; never baseline admission or coverage. */
-export function createCurrentGithubWriteGuard(request:NextRequest,initial:DesktopRequestPrincipal,repo:GovernanceEnrollmentMetadataRepo&InstallationRepo&Pick<ReleaseOperationPlanTransaction,'$queryRaw'>){
+export function createCurrentGithubWriteGuard(request:NextRequest,initial:DesktopRequestPrincipal,repo:GovernanceEnrollmentMetadataRepo&InstallationRepo&Pick<ReleaseOperationPlanTransaction,'$queryRaw'>,profile:'repository_write'|'deployment_dispatch'|'production_bypass_dispatch'='repository_write'){
+ const required:readonly DesktopCapability[]|null=profile==='repository_write'?['github:write']:profile==='deployment_dispatch'?['deploy:execute']:profile==='production_bypass_dispatch'?['deploy:execute','deploy:production_bypass']:null;
  const bound={id:initial.id,userId:initial.userId,organizationId:initial.organizationId,credentialKind:initial.credentialKind};
  let pinned:{id:string;githubInstallationId:string;updatedAt:Date}|undefined;
  const signal=AbortSignal.any([request.signal,AbortSignal.timeout(15000)]);
  async function current(){
-  signal.throwIfAborted();
-  const actor=await withGithubAbort(resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:'github:write',requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:'github mutation current authority'}),signal);
-  if(bound.credentialKind!=='desktop_session'||!bound.id||!bound.userId||!bound.organizationId||!actor||actor.credentialKind!=='desktop_session'||actor.id!==bound.id||actor.userId!==bound.userId||actor.organizationId!==bound.organizationId||!actor.capabilities?.includes('github:write'))throw Error('github_write_authority_unavailable');
+  signal.throwIfAborted();if(!required)throw Error('github_write_authority_unavailable');
+  const actor=await withGithubAbort(resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:required[0],requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:'github mutation current authority'}),signal);
+  if(bound.credentialKind!=='desktop_session'||!bound.id||!bound.userId||!bound.organizationId||!actor||actor.credentialKind!=='desktop_session'||actor.id!==bound.id||actor.userId!==bound.userId||actor.organizationId!==bound.organizationId||!required.every(capability=>actor.capabilities?.includes(capability)))throw Error('github_write_authority_unavailable');
   signal.throwIfAborted();
  }
  async function installation(){
@@ -43,7 +44,7 @@ export function createCurrentGithubWriteGuard(request:NextRequest,initial:Deskto
    WHERE s."id"=${bound.id} AND s."organizationId"=${bound.organizationId} AND s."userId"=${bound.userId}
    AND i."id"=(SELECT latest."id" FROM "GitHubInstallation" latest WHERE latest."organizationId"=${bound.organizationId} AND latest."status"='active' ORDER BY latest."installedAt" DESC LIMIT 1)`,signal);
   const row=rows[0];
-  if(rows.length!==1||!row||row.sessionId!==bound.id||row.userId!==bound.userId||row.organizationId!==bound.organizationId||row.sessionLive!==true||!(row.acceptedAt instanceof Date)||!Number.isFinite(row.acceptedAt.getTime())||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(row.role)||!hasDesktopCapability(row.role as DesktopWorkspaceRole,'github:write')||row.connectionId!==pinned.id||row.githubInstallationId!==pinned.githubInstallationId||!(row.connectionRevision instanceof Date)||row.connectionRevision.getTime()!==pinned.updatedAt.getTime()||row.connectionRevokedAt!==null||row.connectionSuspendedAt!==null||row.connectionStatus!=='active'||row.enrolled!==false)throw Error('github_write_authority_unavailable');
+  if(rows.length!==1||!row||row.sessionId!==bound.id||row.userId!==bound.userId||row.organizationId!==bound.organizationId||row.sessionLive!==true||!(row.acceptedAt instanceof Date)||!Number.isFinite(row.acceptedAt.getTime())||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(row.role)||!required||!required.every(capability=>hasDesktopCapability(row.role as DesktopWorkspaceRole,capability))||row.connectionId!==pinned.id||row.githubInstallationId!==pinned.githubInstallationId||!(row.connectionRevision instanceof Date)||row.connectionRevision.getTime()!==pinned.updatedAt.getTime()||row.connectionRevokedAt!==null||row.connectionSuspendedAt!==null||row.connectionStatus!=='active'||row.enrolled!==false)throw Error('github_write_authority_unavailable');
   signal.throwIfAborted();
  }
  const beforeWrite=async()=>{await current();await installation();await assertNoGovernanceEnrollmentForMutation(repo,bound.organizationId,signal);await current();await snapshot()};

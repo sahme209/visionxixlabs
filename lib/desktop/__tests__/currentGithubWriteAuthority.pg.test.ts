@@ -17,18 +17,18 @@ describe.skipIf(!socket)('current desktop GitHub persisted authority snapshot',(
   const [r]=await db.$queryRawUnsafe("SELECT current_database()='policy_fixture' AND current_user='policy_fixture' AND current_setting('listen_addresses')='' AS private");if(!r?.private)throw Error('owned_fixture_required');
  });
  afterAll(async()=>db?.$disconnect());
- async function fixture(){
+ async function fixture(profile:NonNullable<Parameters<typeof createCurrentGithubWriteGuard>[3]>='repository_write',role:'admin'|'operator'='admin',prepare=true){
   const org='github-guard-'+randomUUID(),user='actor',sessionId=org+'-session',id=org+'-connection',now=new Date();
-  await db.orgMembership.create({data:{organizationId:org,userId:user,role:'admin',acceptedAt:now}});
+  await db.orgMembership.create({data:{organizationId:org,userId:user,role,acceptedAt:now}});
   await db.desktopSessionRecord.create({data:{id:sessionId,organizationId:org,userId:user,expiresAt:new Date(Date.now()+60000)}});
   const connection={id,organizationId:org,githubInstallationId:'123',accountLogin:'team',status:'active',installedAt:now,updatedAt:now};
   await db.gitHubInstallation.create({data:connection});
-  const principal={id:sessionId,organizationId:org,userId:user,credentialKind:'desktop_session' as const,role:'admin' as const,capabilities:['github:write' as const]};
+  const principal={id:sessionId,organizationId:org,userId:user,credentialKind:'desktop_session' as const,role,capabilities:['github:write' as const,'deploy:execute' as const,'deploy:production_bypass' as const]};
   auth.current.mockResolvedValue(principal);
   let change:(()=>Promise<void>)|undefined;
   const repo={$queryRaw:db.$queryRaw.bind(db),gitHubInstallation:db.gitHubInstallation,durableAgentWorkflow:{findMany:async(args:any)=>{const rows=await db.durableAgentWorkflow.findMany(args);if(change){const run=change;change=undefined;await run()}return rows}}};
-  const guard=createCurrentGithubWriteGuard(new NextRequest('https://app.test/local'),principal,repo);
-  await guard();
+  const guard=createCurrentGithubWriteGuard(new NextRequest('https://app.test/local'),principal,repo,profile);
+  if(prepare)await guard();
   return{guard,org,user,sessionId,id,connection,duringMetadata(run:()=>Promise<void>){change=run}};
  }
  it('accepts the exact current persisted session, membership, installation and absent enrollment',async()=>{const f=await fixture();await expect(f.guard()).resolves.toBeUndefined()});
@@ -42,4 +42,15 @@ describe.skipIf(!socket)('current desktop GitHub persisted authority snapshot',(
   });
   await expect(f.guard()).rejects.toThrow('github_write_authority_unavailable');
  });
+ it('accepts current persisted operator deployment rights',async()=>{
+  const f=await fixture('deployment_dispatch','operator');await expect(f.guard()).resolves.toBeUndefined();
+ });
+ it('does not turn operator deployment rights into emergency-bypass authority',async()=>{
+  const f=await fixture('production_bypass_dispatch','operator',false);await expect(f.guard()).rejects.toThrow('github_write_authority_unavailable');
+ });
+ it('refuses persisted loss of bypass rights during metadata even when auth returns old admin rights',async()=>{
+  const f=await fixture('production_bypass_dispatch');f.duringMetadata(async()=>{await db.orgMembership.update({where:{organizationId_userId:{organizationId:f.org,userId:f.user}},data:{role:'operator'}})});
+  await expect(f.guard()).rejects.toThrow('github_write_authority_unavailable');
+ });
+
 });

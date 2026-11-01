@@ -21,8 +21,8 @@ import { deploymentEvidence } from "@/lib/releaseops/deploymentEvidence";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { prisma } from "@/lib/db";
-import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
-import { resolveTenantScopedToken, parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
+import { createCurrentGithubWriteGuard } from "@/lib/desktop/currentGithubWriteAuthority";
+import { parseRepositoryFullName } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { dispatchWorkflow, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { isDefiniteWorkflowDispatchRejection } from "@/lib/connectors/github/workflowDispatchOutcome";
 import { AWS_ECS_DEPLOY_WORKFLOW_FILENAME } from "@/lib/releaseops/awsEcsDeployWorkflowTemplate";
@@ -105,13 +105,13 @@ export async function POST(request: NextRequest): Promise<Response> {
   }
 
   // Emergency deployment policy bypass does not bypass Governance enrollment.
-  const beforeWrite = () => assertNoGovernanceEnrollmentForMutation(prisma, organizationId, request.signal);
+  const beforeWrite = createCurrentGithubWriteGuard(request,session,prisma,emergencyBypass?"production_bypass_dispatch":"deployment_dispatch");
   try { await beforeWrite(); }
   catch {
     return NextResponse.json({ ok: false, error: "governance_execution_coverage_unavailable" }, { status: 409 });
   }
 
-  const tokenResult = await resolveTenantScopedToken(organizationId, repo);
+  const tokenResult = await beforeWrite.resolveToken(repo);
   if (!tokenResult.ok) {
     return NextResponse.json({ ok: false, error: tokenResult.error }, { status: 409 });
   }
