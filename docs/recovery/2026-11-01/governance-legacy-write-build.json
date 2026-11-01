@@ -1,0 +1,11 @@
+{
+  "source": "28d967e8b4adddc033e81bf069ccd9da2ff14b67",
+  "stage": "/private/tmp/axiom-legacy-boundaries-final-h2plnzd3",
+  "archiveSha256": "14242f3cf2fbc0b9068337249727fd4ed94ade6665bbab3cf6f5e66416d24a4f",
+  "productionBuild": "passed",
+  "productionTypeScript": "passed",
+  "exitCode": 0,
+  "log": "/private/tmp/axiom-legacy-boundaries-final-build.log",
+  "environment": "Synthetic unreachable loopback database, locked SDK overlay; no provider actions",
+  "productionActivation": false
+}

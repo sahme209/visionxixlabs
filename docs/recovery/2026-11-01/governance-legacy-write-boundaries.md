@@ -14,7 +14,7 @@ The legacy IAM plugin keeps its default-OFF switch and dry-run behavior. Flag=tr
 
 Eight GitHub transport checks pass after initial RED cases: unbound/changed/cancelled authority, exact guard phases, partial-write uncertainty, no422 overwrite/retry, bounded response bodies and no private error disclosure. Seven IAM checks pass, including an explicit SDK maxAttempts regression that failed before its fix. The preceding ownership checks also passed in the initial combined20-check run (overlap; not an additional unique count). Scoped production TypeScript includes both actual writers, engine types and remediation route.
 
-Independent review found the SDK-retry gap; the correction was reviewed as resolved, with no remaining important findings. All network/SDK responses and guard authority are simulated. No provider call, human decision, deployment, setting/schema/grant/credential, paid CI or publication occurred. Full exact current production build receipt follows separately.
+Independent review found the SDK-retry gap; the correction was reviewed as resolved, with no remaining important findings. All network/SDK responses and guard authority are simulated. No provider call, human decision, deployment, setting/schema/grant/credential, paid CI or publication occurred. Exact clean28d967e8 full production build and Next TypeScript passed, including the prior owner-binding repair. Receipt: governance-legacy-write-build.json.
 
 ## Still incomplete
 
