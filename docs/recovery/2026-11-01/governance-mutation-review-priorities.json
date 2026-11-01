@@ -1,14 +1,14 @@
 {
   "format": 1,
-  "inventorySourceCommit": "6d97a5bfd937cd11865dc9002fb127f4689fa8c0",
+  "inventorySourceCommit": "d6f56ff6496ae3b96541b4fc57d05dd3f636e6e7",
   "scope": "Initial source-backed review priorities only. Not an activation or authority input.",
   "boundaries": [
     {
       "source": {
         "file": "lib/connectors/github/githubWriteClient.ts",
-        "sha256": "887bdf106277876c135d110774794c2661aef13e7407325d36d78be25a902e25"
+        "sha256": "e151fc81ec9e2c0c8abe1a2db4be3b78b15832191252826a565f6e1475fe1591"
       },
-      "classification": "modern_installation_transport",
+      "classification": "mandatory_server_guard_transport",
       "candidateIds": [
         "mutation_candidate_9573a71a178f6b7418c8_1",
         "mutation_candidate_9573a71a178f6b7418c8_2",
@@ -53,7 +53,7 @@
         "mutation_candidate_1a7836b560db0024fcd1_13",
         "mutation_candidate_1a7836b560db0024fcd1_14"
       ],
-      "note": "Existing current-authority callbacks; every caller and canonical scope still require closure review.",
+      "note": "Five mutation entries and final write require guards; caller principal/installation freshness and complete coverage remain unverified. See governance-required-github-guards.md.",
       "coverageEstablished": false,
       "authorityIssued": false
     },
