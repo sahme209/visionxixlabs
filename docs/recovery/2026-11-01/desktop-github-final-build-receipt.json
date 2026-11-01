@@ -1,0 +1,11 @@
+{
+  "source": "e175c8acc5072a2833179268a357507fbeab97d4",
+  "stage": "/private/tmp/axiom-gh-write-final-cwb_ilxt",
+  "archiveSha256": "35c6afd293cce4582b351a68ef238db683d8fd85a326417e676f1c22866733e8",
+  "status": "passed",
+  "log": "/private/tmp/axiom-gh-write-final-build.log",
+  "deployment": false,
+  "exitCode": 0,
+  "seconds": 89.68,
+  "logSha256": "5b63aca12b1db66173c99ef5e21cc54ca3b8cdfb49d2ddffd3414f6edfe8bc66"
+}
