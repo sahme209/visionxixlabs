@@ -84,10 +84,13 @@ describe.skipIf(!socket)('actual merge admission stores with simulated GitHub',(
   const readDirectMergeSupport=createReleaseDirectMergeSupportReader({isEnabled:()=>true,assertCurrent:adapterCurrent,readTopologyEvidence:topology,fetch:fetcher as typeof fetch});
   const provider=createMergeProviderPreflight({assertCurrent:adapterCurrent,readCredential,readDirectMergeSupport}),readBinding=createGovernanceMergeBindingReader(db,store,async()=>{}),binding=await readBinding(scope,operation.id,new AbortController().signal);
   let coveredActions=['repository.merge'];
-  const service={executionPolicies:policies('executor'),readActiveEvidence:async()=>({baseline:await baselines.readActive(scope,selection),evidence:[evidence],evidenceRefreshes:[],expiresAt:Date.now()+30000,executionAuthorized:false as const}),readScopeEnrollment:async()=>({enrolled:true as const,baselineDigest:baseline.digest}),readExecutionCoverage:async()=>({enrolled:true,coveredActions})};
+  const service={executionPolicies:policies('executor'),readActiveEvidence:async()=>({baseline:await baselines.readActive(scope,selection),evidence:[evidence],evidenceRefreshes:[],expiresAt:Date.now()+30000,executionAuthorized:false as const}),readScopeEnrollment:async()=>({enrolled:true as const,baselineDigest:(await baselines.readActiveCandidate(scope,selection)).baseline.digest}),readExecutionCoverage:async()=>({enrolled:true,coveredActions})};
   const guard=createGovernanceMergeRequestAdmission(scope,operation.id,binding,db,store,approvals,service,provider);
   const run=()=>createGovernedProviderMergeExecutor(store,{guard,readBinding,transport:{isEnabled:()=>true,assertCurrent:async(_id,p,s)=>{const current=await store.beforeDispatch(scope,operation.id);s.throwIfAborted();if(sha256ContentHash(current)!==sha256ContentHash(p))throw Error('plan_changed');},readCredential,readDirectMergeSupport,fetch:fetcher as typeof fetch}}).run(scope,operation.id);
-  return{calls,store,scope,operation,run,policy,policies,withoutCoverage(){coveredActions=[];},afterTarget(action:()=>Promise<void>){afterTarget=action;}};
+  return{calls,store,scope,operation,run,policy,policies,revokeBaselineAfterFinalLimits(){
+   const original=service.executionPolicies.readAuthority;let reads=0;
+   service.executionPolicies.readAuthority=async(...args:Parameters<typeof original>)=>{const result=await original(...args);if(++reads===3)await baselines.revoke(identities.owner,proposal.id,1,randomUUID());return result};
+  },withoutCoverage(){coveredActions=[];},afterTarget(action:()=>Promise<void>){afterTarget=action;}};
  }
  it('proves provider authority before real claim and rechecks before the single actual-transport PUT',async()=>{
   const f=await fixture();expect(await f.run()).toMatchObject({state:'confirmed',attemptCount:1});
@@ -113,6 +116,13 @@ describe.skipIf(!socket)('actual merge admission stores with simulated GitHub',(
  it('missing production-equivalent coverage refuses before a claim or provider credential proof',async()=>{
   const f=await fixture();f.withoutCoverage();await expect(f.run()).rejects.toThrow('governance_admission_unavailable');
   expect(f.calls).toHaveLength(0);expect(await f.store.get(f.scope,f.operation.id)).toMatchObject({state:'prepared',attemptCount:0});
+ });
+
+ it('refuses a real baseline revocation after the final action-authority await before claiming',async()=>{
+  const f=await fixture();f.revokeBaselineAfterFinalLimits();
+  await expect(f.run()).rejects.toThrow('governance_admission_unavailable');
+  expect(f.calls.some(c=>c.method==='PUT')).toBe(false);
+  expect(await f.store.get(f.scope,f.operation.id)).toMatchObject({state:'prepared',attemptCount:0});
  });
 
 });

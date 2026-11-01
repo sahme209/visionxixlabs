@@ -20,7 +20,12 @@ export function createScopeAwareGovernanceAdmission(scope:RevisionScope,ports:{
    const enrollment=await withGithubAbort(ports.readEnrollment(context,signal),signal);signal.throwIfAborted();
    if(enrollment.enrolled!==true&&enrollment.enrolled!==false||original&&original.enrolled!==enrollment.enrolled)throw Error();
    let receipt:GovernanceAdmissionReceipt;
-   if(enrollment.enrolled){if(!/^[a-f0-9]{64}$/.test(enrollment.baselineDigest)||prior&&prior.baselineDigest!==enrollment.baselineDigest)throw Error();receipt=await ports.guard.assert(context,phase,prior,signal);if(receipt.baselineDigest!==enrollment.baselineDigest)throw Error()}
+   if(enrollment.enrolled){if(!/^[a-f0-9]{64}$/.test(enrollment.baselineDigest)||prior&&prior.baselineDigest!==enrollment.baselineDigest)throw Error();receipt=await ports.guard.assert(context,phase,prior,signal);if(receipt.baselineDigest!==enrollment.baselineDigest)throw Error();
+    // Admission awaits provider and durable authority checks. Re-read the
+    // active pointer afterward; its earlier presence is not current authority.
+    const latest=await withGithubAbort(ports.readEnrollment(context,signal),signal);
+    if(latest.enrolled!==true||latest.baselineDigest!==enrollment.baselineDigest)throw Error();
+   }
    else receipt={baselineDigest:'0'.repeat(64),contextDigest:digest,phase,checkedAt:now()};
    const finished=now();signal.throwIfAborted();if(!Number.isFinite(finished)||finished<started||finished-started>15000||prior&&(finished<prior.checkedAt||finished-prior.checkedAt>15000))throw Error();
    if(receipt.contextDigest!==digest||receipt.phase!==phase||!Number.isFinite(receipt.checkedAt))throw Error();issued.set(receipt,{digest,enrolled:enrollment.enrolled,receiptDigest:sha256ContentHash(receipt)});return receipt;
