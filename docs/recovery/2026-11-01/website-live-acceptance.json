@@ -1,0 +1,29 @@
+{
+  "deploymentId": "dpl_5h2XV1vRLbPFtGDwsMDGGUD2QEpJ",
+  "source": "7ea48aa8bd4e2e3b092e52d56ca6d1a1c8e1ba6f",
+  "apexStatus": 200,
+  "icons": [
+    {
+      "rel": "shortcut icon",
+      "href": "/axiom-favicon-1b77e225c532.png"
+    },
+    {
+      "rel": "icon",
+      "href": "/axiom-favicon-1b77e225c532.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "rel": "icon",
+      "href": "/axiom-icon-cedd8eb1034f.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "rel": "apple-touch-icon",
+      "href": "/axiom-apple-icon-497d44ea000e.png"
+    }
+  ],
+  "canonicalFaviconHashVerified": true,
+  "promotedSameDeployment": true
+}

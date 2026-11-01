@@ -1,6 +1,6 @@
 # Axiom master action plan
 
-Updated November 1, 2026. Two coordinated workstreams. User requested planning and then a stop; implementation is paused until resumed. This document and the persistent goal are the working target; add future requests here rather than losing them in chat.
+Updated November 1, 2026. Two coordinated workstreams. User explicitly resumed the persistent goal on November 1; execution is active. This document and the persistent goal are the working target; add future requests here rather than losing them in chat.
 
 ## Standing product requirements
 
@@ -10,7 +10,7 @@ Security, premium visual quality, and clarity/ease apply everywhere. Every flow 
 
 | Order | Work | Completion evidence |
 |---|---|---|
-| A1 | Reconcile the interrupted release. v0.1.22 source and narrow website/security batch are prepared. GitHub run 41224761240 failed before successful platform builds; inspect its actual startup/check failure and settled billing, restore temporary export switches, and obtain any required new attempt authorization. Vercel rollout has not been performed in this session. | Exact private source backup; one authorized successful cross-platform run within budget; authentic signing/notarization receipts; verified draft files; personal protected publication approval; exact public download version/hash checks. Preserve immutable v0.1.21. |
+| A1 | Reconcile the interrupted release. v0.1.22 source and narrow website/security batch are prepared. GitHub run 41224761240 failed before successful platform builds; inspect its actual startup/check failure and settled billing, restore temporary export switches, and obtain any required new attempt authorization. The one authorized narrow Vercel batch is now live and verified; this does not publish the installer. | Exact private source backup; one authorized successful cross-platform run within budget; authentic signing/notarization receipts; verified draft files; personal protected publication approval; exact public download version/hash checks. Preserve immutable v0.1.21. |
 | A2 | Complete Governance Intelligence: trusted current-authority admission from stored operations; real coordinator selection at claim and final transport; executor coverage and explicit refusals; transactional baseline enrollment; native source/proposal/independent-review/activation/drift workflow. | Positive and negative real-store end-to-end journeys, revocation/source/baseline changes rejected, no uncovered mutation bypass; independent code review. Separately authorized live acceptance before production enablement. Remains incomplete and disabled until then. |
 | A3 | Complete ServiceNow outcome reconciliation and closure. The exact CHG0030002 evidence note already exists; never resend its consumed unknown attempt. Observe it through fresh independently approved read-only reconciliation; then satisfy native Normal/New approval lifecycle, reviewed terminal policy and exact closure. | Saved observed link proof; genuine independent reviews; native lifecycle evidence; one authorized closure with confirmed provider state/readback and preserved history. |
 | A4 | Validate the guided customer journey and polish across Home, Agent, Bot, Releases, repositories, batches, Apps & skills and Settings. Make one next step obvious; keep technical detail available without clutter. | Actual native walkthroughs, keyboard/accessibility checks, clear light/dark modes, truthful status, recovery and saved-session behavior. Existing local polish is not a full usability acceptance. |
@@ -69,4 +69,12 @@ For each unit: define acceptance → implement/review → run proportionate veri
 
 ## Honest current stopping point
 
-Local website batch 7ea48aa8 passed 61 focused tests and its full production build/types; reviewed without important findings. Desktop v0.1.22 source 0f82571b passed frontend build/types and release alignment; workflow review passed. Installer run 41224761240 concluded failure; no successful v0.1.22 installer publication is claimed. New website has not been deployed. Governance, ServiceNow closure, Store/Windows acceptance and full website/documentation program remain unfinished. User requested this plan and then a stop; no new reference browsing or implementation starts now.
+Local website batch 7ea48aa8 passed 61 focused tests and its full production build/types; reviewed without important findings. Desktop v0.1.22 source 0f82571b passed frontend build/types and release alignment; workflow review passed. Installer run 41224761240 concluded failure; no successful v0.1.22 installer publication is claimed. The narrow website/security update is now deployed and live-verified; the broader website redesign/documentation work remains unfinished. Governance, ServiceNow closure, Store/Windows acceptance and full website/documentation program remain unfinished. The user has resumed execution; reference-site audit is in progress.
+
+## Resume evidence — November 1
+
+- A1: GitHub check annotation confirms Actions-budget startup refusal, not build/signing failure. No platform ran. Temporary export switches restored safely; no retry/cap increase. See ../recovery/2026-11-01/release-reconciliation.md.
+- B1: Visible Cursor homepage → Docs → Quickstart walkthrough started, including Product navigation, Windows disclosure and actual search results. Partial audit and remaining destination checklist: ../research/website-audit/cursor.md. Other sites remain pending.
+- Existing one-time Vercel authorization is now being used for verified narrow website/security candidate7ea48aa8; no promotion claimed before exact source and auth gates.
+
+- A1 website activation COMPLETE: READY dpl_5h2XV1vRLbPFtGDwsMDGGUD2QEpJ, source7ea48aa8;5509 uploaded file hashes match; auth401; same-deployment promotion once; liveapex canonicalfaviconbytes/metadata verified. See ../recovery/2026-11-01/website-live-acceptance.json. Installer still blocked.
