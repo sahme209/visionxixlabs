@@ -94,7 +94,7 @@ async function gh<T>(
       }, init.bounded.signal, init.bounded.maxBytes, init.bounded.budget);
       return { ok: true, data: JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)) as T };
     }
-    if (isWrite && init.beforeWrite !== undefined) {
+    if (isWrite) {
       if (typeof init.beforeWrite !== "function") throw Error("invalid_write_authority");
       await init.beforeWrite();
     }
@@ -296,7 +296,7 @@ export async function getFile(input: GetFileInput): Promise<GithubWriteResult<{ 
   return { ok: true, data: { path: result.data.path, sha: result.data.sha, content, htmlUrl: result.data.html_url } };
 }
 
-interface GithubMutationAuthority { /** Trusted server-only current authority. Never from serialized request/model data. */ beforeWrite?: () => Promise<void> }
+interface GithubMutationAuthority { /** Trusted server-only current authority. Never from serialized request/model data. */ beforeWrite: () => Promise<void> }
 
 export interface CreateBranchInput extends GithubMutationAuthority {
   owner: string;
@@ -308,6 +308,7 @@ export interface CreateBranchInput extends GithubMutationAuthority {
 
 /** Creates a new branch ref pointing at the current tip of `baseBranch`. */
 export async function createBranch(input: CreateBranchInput): Promise<GithubWriteResult<{ ref: string; sha: string }>> {
+  if(typeof input.beforeWrite!=="function")return{ok:false,error:"github_write_authority_unavailable"};
   const base = await gh<{ object: { sha: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/ref/heads/${encodeURIComponent(input.baseBranch)}`,
     input.installationToken,
@@ -337,6 +338,7 @@ export interface CommitFileInput extends GithubMutationAuthority {
 
 /** Creates or updates a single file on `branch` via the Contents API. */
 export async function commitFile(input: CommitFileInput): Promise<GithubWriteResult<{ sha: string; htmlUrl: string }>> {
+  if(typeof input.beforeWrite!=="function")return{ok:false,error:"github_write_authority_unavailable"};
   if (!isSafeRepositoryPath(input.path)) return { ok: false, error: "invalid_repository_path" };
   if (Buffer.byteLength(input.content, "utf8") > 200_000) return { ok: false, error: "github_file_too_large" };
   const encodedPath = input.path.split("/").map(encodeURIComponent).join("/");
@@ -381,6 +383,7 @@ export interface CommitFilesInput extends GithubMutationAuthority {
 
 /** Creates one atomic Git commit containing multiple reviewed UTF-8 files. */
 export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteResult<{ sha: string; htmlUrl: string; fileCount: number }>> {
+  if(typeof input.beforeWrite!=="function")return{ok:false,error:"github_write_authority_unavailable"};
   if (!input.branch || input.branch.length > 240 || /[\0\r\n]/.test(input.branch)) return { ok: false, error: "invalid_branch_name" };
   if (!input.message.trim() || input.files.length < 2 || input.files.length > 20) return { ok: false, error: "invalid_multi_file_commit" };
   const paths = new Set<string>();
@@ -465,6 +468,7 @@ export interface CreatePullRequestInput extends GithubMutationAuthority {
 export async function createPullRequest(
   input: CreatePullRequestInput,
 ): Promise<GithubWriteResult<{ number: number; htmlUrl: string }>> {
+  if(typeof input.beforeWrite!=="function")return{ok:false,error:"github_write_authority_unavailable"};
   const result = await gh<{ number: number; html_url: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/pulls`,
     input.installationToken,
@@ -621,6 +625,7 @@ export interface DispatchedWorkflowRun {
 }
 
 export async function dispatchWorkflow(input: DispatchWorkflowInput): Promise<GithubWriteResult<DispatchedWorkflowRun>> {
+  if(typeof input.beforeWrite!=="function")return{ok:false,error:"github_write_authority_unavailable"};
   const result = await gh<{ workflow_run_id?: number | string; run_url?: string; html_url?: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/actions/workflows/${encodeURIComponent(input.workflowFile)}/dispatches`,
     input.installationToken,

@@ -1,3 +1,4 @@
+// Synthetic transport guards below test protocol behavior only; they grant no production authority.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createBranch, commitFile, commitFiles, createPullRequest, dispatchWorkflow, getCommitCiStatus, getFile, getPullRequestGovernanceEvidence, getWorkflowRun, isSafeRepositoryPath, listBranches, listRepositoryFiles, resolveGitReference } from "../githubWriteClient";
 
@@ -21,7 +22,7 @@ describe("createBranch", () => {
       .mockResolvedValueOnce(jsonResponse(200, { object: { sha: "abc123" } }))
       .mockResolvedValueOnce(jsonResponse(201, { ref: "refs/heads/feature-x", object: { sha: "abc123" } }));
 
-    const result = await createBranch({
+    const result = await createBranch({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", baseBranch: "main", newBranchName: "feature-x", installationToken: "tok",
     });
 
@@ -33,7 +34,7 @@ describe("createBranch", () => {
 
   it("fails clearly when the base branch doesn't exist", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(404, { message: "Not Found" }));
-    const result = await createBranch({
+    const result = await createBranch({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", baseBranch: "does-not-exist", newBranchName: "feature-x", installationToken: "tok",
     });
     expect(result.ok).toBe(false);
@@ -72,7 +73,7 @@ describe("commitFile", () => {
       .mockResolvedValueOnce(jsonResponse(404, { message: "Not Found" }))
       .mockResolvedValueOnce(jsonResponse(201, { content: { sha: "newsha", html_url: "https://github.com/acme/widgets/blob/feature-x/a.txt" } }));
 
-    const result = await commitFile({
+    const result = await commitFile({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", branch: "feature-x", path: "a.txt", content: "hello", message: "add a.txt", installationToken: "tok",
     });
 
@@ -88,7 +89,7 @@ describe("commitFile", () => {
       .mockResolvedValueOnce(jsonResponse(200, { sha: "oldsha" }))
       .mockResolvedValueOnce(jsonResponse(200, { content: { sha: "newsha", html_url: "https://github.com/acme/widgets/blob/feature-x/a.txt" } }));
 
-    await commitFile({
+    await commitFile({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", branch: "feature-x", path: "a.txt", content: "updated", message: "update a.txt", installationToken: "tok",
     });
 
@@ -98,7 +99,7 @@ describe("commitFile", () => {
 
   it("refuses an update when the file changed after approval was proposed", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(200, { sha: "newer-sha" }));
-    const result = await commitFile({
+    const result = await commitFile({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", branch: "feature-x", path: "a.txt", content: "updated", message: "update a.txt",
       installationToken: "tok", expectedSha: "reviewed-sha",
     });
@@ -108,7 +109,7 @@ describe("commitFile", () => {
 
   it("refuses a create when the proposed path now exists", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(200, { sha: "someone-created-it" }));
-    const result = await commitFile({
+    const result = await commitFile({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", branch: "feature-x", path: "a.txt", content: "updated", message: "add a.txt",
       installationToken: "tok", expectedSha: null,
     });
@@ -117,7 +118,7 @@ describe("commitFile", () => {
   });
 
   it("rejects traversal paths before contacting GitHub", async () => {
-    const result = await commitFile({
+    const result = await commitFile({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", branch: "feature-x", path: "../secret", content: "no", message: "bad", installationToken: "tok",
     });
     expect(result).toEqual({ ok: false, error: "invalid_repository_path" });
@@ -149,7 +150,7 @@ describe("commitFiles", () => {
       throw Error("unexpected_fixture_request");
     });
     try {
-      const result = await commitFiles({ owner: "acme", repo: "widgets", branch: "axiom/change", message: "Reviewed change", installationToken: "synthetic-token", files: [{ path: "src/a.ts", content: "new a", expectedSha: "reviewed-blob" }, { path: "src/b.ts", content: "new b", expectedSha: null }] });
+      const result = await commitFiles({ beforeWrite:async()=>{}, owner: "acme", repo: "widgets", branch: "axiom/change", message: "Reviewed change", installationToken: "synthetic-token", files: [{ path: "src/a.ts", content: "new a", expectedSha: "reviewed-blob" }, { path: "src/b.ts", content: "new b", expectedSha: null }] });
       expect(result).toEqual({ ok: false, error: "github_file_changed_since_proposal" });
       expect(writes).toEqual([]);
     } finally { fetchMock.mockReset(); }
@@ -167,7 +168,7 @@ describe("commitFiles", () => {
       .mockResolvedValueOnce(jsonResponse(201, { sha: "new-commit", html_url: "https://github.test/commit" }))
       .mockResolvedValueOnce(jsonResponse(200, { ref: "refs/heads/axiom/change" }));
 
-    const result = await commitFiles({
+    const result = await commitFiles({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", branch: "axiom/change", message: "Update feature", installationToken: "tok",
       files: [
         { path: "src/a.ts", content: "new a", expectedSha: "a-old" },
@@ -186,7 +187,7 @@ describe("commitFiles", () => {
       .mockResolvedValueOnce(jsonResponse(200, { object: { type: "commit", sha: "parent" } }))
       .mockResolvedValueOnce(jsonResponse(200, { tree: { sha: "base-tree" } }))
       .mockResolvedValueOnce(jsonResponse(200, { type: "file", path: "src/a.ts", sha: "newer", encoding: "base64", content: Buffer.from("changed").toString("base64"), html_url: "https://github.test/a" }));
-    const result = await commitFiles({
+    const result = await commitFiles({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", branch: "axiom/change", message: "Update feature", installationToken: "tok",
       files: [{ path: "src/a.ts", content: "new a", expectedSha: "reviewed" }, { path: "src/b.ts", content: "new b", expectedSha: null }],
     });
@@ -205,7 +206,7 @@ describe("commitFiles", () => {
       .mockResolvedValueOnce(jsonResponse(201, { sha: "new-tree" }))
       .mockResolvedValueOnce(jsonResponse(201, { sha: "new-commit" }))
       .mockResolvedValueOnce(jsonResponse(422, { message: "Update is not a fast forward" }));
-    const result = await commitFiles({ owner: "acme", repo: "widgets", branch: "axiom/change", message: "Reviewed change", installationToken: "synthetic-token", files: [{ path: "src/a.ts", content: "new a", expectedSha: "a-old" }, { path: "src/b.ts", content: "new b", expectedSha: null }] });
+    const result = await commitFiles({ beforeWrite:async()=>{}, owner: "acme", repo: "widgets", branch: "axiom/change", message: "Reviewed change", installationToken: "synthetic-token", files: [{ path: "src/a.ts", content: "new a", expectedSha: "a-old" }, { path: "src/b.ts", content: "new b", expectedSha: null }] });
     expect(result).toMatchObject({ ok: false, error: expect.stringContaining("github_422:") });
     expect(fetchMock).toHaveBeenCalledTimes(9);
     expect(JSON.parse(fetchMock.mock.calls[8][1].body)).toEqual({ sha: "new-commit", force: false });
@@ -293,7 +294,7 @@ describe("createPullRequest", () => {
 
   it("opens a pull request and returns its number and URL", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(201, { number: 42, html_url: "https://github.com/acme/widgets/pull/42" }));
-    const result = await createPullRequest({
+    const result = await createPullRequest({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Add a.txt", installationToken: "tok",
     });
     expect(result).toEqual({ ok: true, data: { number: 42, htmlUrl: "https://github.com/acme/widgets/pull/42" } });
@@ -301,7 +302,7 @@ describe("createPullRequest", () => {
 
   it("surfaces a clear error when GitHub rejects the PR (e.g. one already exists)", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(422, { message: "A pull request already exists for acme:feature-x." }));
-    const result = await createPullRequest({
+    const result = await createPullRequest({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Add a.txt", installationToken: "tok",
     });
     expect(result.ok).toBe(false);
@@ -345,7 +346,7 @@ describe("dispatchWorkflow", () => {
 
   it("dispatches with the given ref and string inputs, and succeeds on GitHub's 204", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(204, {}));
-    const result = await dispatchWorkflow({
+    const result = await dispatchWorkflow({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", workflowFile: "axiom-deploy-aws-ecs.yml", ref: "abc1234",
       inputs: { role_arn: "arn:aws:iam::123456789012:role/deploy", region: "us-east-1", cluster: "prod", service: "web" },
       installationToken: "tok",
@@ -369,7 +370,7 @@ describe("dispatchWorkflow", () => {
       run_url: "https://api.github.com/repos/acme/widgets/actions/runs/123456789",
       html_url: "https://github.com/acme/widgets/actions/runs/123456789",
     }));
-    const result = await dispatchWorkflow({
+    const result = await dispatchWorkflow({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", workflowFile: "axiom-deploy-aws-ecs.yml", ref: "main",
       inputs: { role_arn: "arn", region: "us-east-1", cluster: "prod", service: "web" }, installationToken: "tok",
     });
@@ -384,7 +385,7 @@ describe("dispatchWorkflow", () => {
 
   it("surfaces a clear error when GitHub rejects the dispatch (e.g. workflow file not found)", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(404, { message: "Not Found" }));
-    const result = await dispatchWorkflow({
+    const result = await dispatchWorkflow({ beforeWrite:async()=>{},
       owner: "acme", repo: "widgets", workflowFile: "axiom-deploy-aws-ecs.yml", ref: "main",
       inputs: { role_arn: "arn", region: "us-east-1", cluster: "prod", service: "web" },
       installationToken: "tok",
@@ -487,43 +488,43 @@ describe("uncertain GitHub writes", () => {
   it("does not disclose transport details or retry a branch write after connection loss", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
       .mockRejectedValueOnce(new Error("connection lost with synthetic private detail"));
-    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(await createBranch({...input,beforeWrite:async()=>{}})).toEqual({ ok: false, error: "action_outcome_unknown" });
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
   it("treats a server error after a branch write as unconfirmed", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
       .mockResolvedValueOnce(jsonResponse(502, { message: "synthetic upstream detail" }));
-    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(await createBranch({...input,beforeWrite:async()=>{}})).toEqual({ ok: false, error: "action_outcome_unknown" });
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
   it("preserves uncertainty for pull requests without a misleading failure prefix", async () => {
     fetchMock.mockRejectedValueOnce(new Error("synthetic lost response"));
-    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+    expect(await createPullRequest({ beforeWrite:async()=>{}, owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
       .toEqual({ ok: false, error: "action_outcome_unknown" });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
   it("treats a timed-out write as unconfirmed", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
       .mockResolvedValueOnce(jsonResponse(408, { message: "request timeout" }));
-    expect(await createBranch(input)).toEqual({ ok: false, error: "action_outcome_unknown" });
+    expect(await createBranch({...input,beforeWrite:async()=>{}})).toEqual({ ok: false, error: "action_outcome_unknown" });
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
   it("does not claim a pull request exists when the successful response lacks its identity", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(201, {}));
-    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+    expect(await createPullRequest({ beforeWrite:async()=>{}, owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
       .toEqual({ ok: false, error: "action_outcome_unknown" });
   });
   it("retains a definite authorization rejection without retrying", async () => {
     fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "base" } }))
       .mockResolvedValueOnce(jsonResponse(403, { message: "Forbidden" }));
-    const result = await createBranch(input);
+    const result = await createBranch({...input,beforeWrite:async()=>{}});
     expect(result).toEqual({ ok: false, error: expect.stringMatching(/^github_403:/) });
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("does not treat an unreadable pull request response as confirmed success", async () => {
     fetchMock.mockResolvedValueOnce({ ok: true, status: 201, json: async () => { throw new Error("synthetic broken body"); } });
-    expect(await createPullRequest({ owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
+    expect(await createPullRequest({ beforeWrite:async()=>{}, owner: "acme", repo: "widgets", head: "feature-x", base: "main", title: "Reviewed change", installationToken: "synthetic-token" }))
       .toEqual({ ok: false, error: "action_outcome_unknown" });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });

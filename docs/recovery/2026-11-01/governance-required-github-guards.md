@@ -1,0 +1,11 @@
+# Mandatory guards at installation-token GitHub mutations
+
+Caller tracing found that the modern GitHub transport invoked beforeWrite only when one was supplied. A scoped token alone could therefore reach writes from an unbound helper call. All five mutation entry points now runtime-refuse a missing/nonfunction guard before any provider read: branch creation, single/multi-file commit, PR creation and workflow dispatch. The public mutation type requires the guard, and the shared write path always validates/invokes it before transport.
+
+Existing actual desktop/Agent/Airflow/dashboard/environment callers already supply server-created enrollment-refusal closures. Scoped TypeScript includes those actual callers and passed. Request/model fields are not forwarded as guard functions. Existing protocol-test fixtures now explicitly supply synthetic no-op guards so transport tests retain their intended preconditions; those fixtures are not production authority. Separate missing/serialized-guard regressions failed before the fix and now pass.
+
+Verification:48 transport checks plus15 actual-route composition checks passed (mock providers/paired authority). Independent source review found no important issues. Known enrolled/unavailable metadata still refuses the three desktop mutation routes; positive absence retains the existing legacy path and final callback. No new provider request, human approval, credential, grant, flag, schema, deployment or CI run occurred.
+
+This closes an optional-guard bypass, not complete caller authority. In particular, actor/session and installation revocation freshness at every caller's final boundary still need explicit tracing; source presence or a no-op function cannot become a coverage receipt. Full current production build is deliberately batched with subsequent core enforcement changes; the previous28d full build predates this increment. Enrollment/readExecutionCoverage remain refused/empty.
+
+The source inventory was refreshed for the changed transport. All entries remain review candidates; no source JSON is imported into runtime authority. Evidence: /private/tmp/axiom-modern-gh-required-{red,green,types}.log and /private/tmp/axiom-modern-gh-caller-tests.log.
