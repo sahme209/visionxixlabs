@@ -1,0 +1,12 @@
+{
+  "scope": "local supported-runtime whole project; database-dependent skipped tests are not acceptance",
+  "runtimeSource": "86a2e124de5578f28463cde90a4ec22527431174",
+  "nodeVersion": "v24.21.0",
+  "command": "node scripts/run-vitest.mjs",
+  "exitCode": 0,
+  "suitesPassed": 1365,
+  "suitesSkipped": 72,
+  "testsPassed": 15982,
+  "testsSkipped": 552,
+  "log": "/private/tmp/axiom-governance-claim-configuration-project-tests.log"
+}

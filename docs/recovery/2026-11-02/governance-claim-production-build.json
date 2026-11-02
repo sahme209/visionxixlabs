@@ -1,0 +1,10 @@
+{
+  "nodeVersion": "v24.21.0",
+  "source": "86a2e124de5578f28463cde90a4ec22527431174",
+  "stage": "/private/tmp/axiom-deployment-baseline-production-jrgup_v8",
+  "log": "/private/tmp/axiom-governance-claim-production-86a2e124.log",
+  "archiveSha256": "123ca265fd9db66cef8a4d0aea79744f636132d79898948d0cdd3c81d0165bc3",
+  "verifiedRegularFiles": 5858,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy"
+}
