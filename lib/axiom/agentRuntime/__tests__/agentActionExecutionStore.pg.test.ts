@@ -1,9 +1,12 @@
-import {afterAll,beforeAll,describe,it,expect,vi} from 'vitest';
+import {afterAll,afterEach,beforeAll,describe,it,expect,vi} from 'vitest';
 import {createRequire} from 'node:module';
+import {NextRequest} from 'next/server';
+import {createAgentActionExecutionHttp,createAgentActionEligibilityHttp} from '@/lib/desktop/agentActionExecutionHttp';
 import {randomUUID} from 'node:crypto';
 import {realpathSync,statSync} from 'node:fs';
-const f=vi.hoisted(()=>({db:null as any,principal:null as any,commercial:true}));
+const f=vi.hoisted(()=>({db:null as any,principal:null as any,commercial:true,token:vi.fn()}));
 vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:async()=>f.principal}));
+vi.mock('@/lib/connectors/github/resolveTenantScopedToken',async actual=>({...await actual<typeof import('@/lib/connectors/github/resolveTenantScopedToken')>(),resolveTenantScopedToken:f.token}));
 vi.mock('@/lib/desktop/desktopCommercialAccess',()=>({readDesktopCommercialAccess:async()=>({allowed:f.commercial})}));
 vi.mock('@/lib/billing/tenantBillingStore',()=>({readBillingPlanWithAvailability:async()=>({available:f.commercial,plan:{tier:'no_plan',status:'none'}})}));
 import {createAgentActionExecutionRequestService} from '@/lib/desktop/agentActionExecutionRequestService';
@@ -21,7 +24,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   const Client=createRequire(import.meta.url)(generated).PrismaClient;f.db=new Client({datasources:{db:{url:`postgresql://policy_fixture@localhost/policy_fixture?host=${encodeURIComponent(socket)}`}}});
   const [r]=await f.db.$queryRawUnsafe("SELECT current_database()='policy_fixture' AND current_user='policy_fixture' AND current_setting('listen_addresses')='' AS private");if(!r?.private)throw Error('owned_fixture_required');
  });
- afterAll(async()=>f.db?.$disconnect());
+ afterAll(async()=>f.db?.$disconnect());afterEach(()=>vi.unstubAllGlobals());
  async function fixture(lifetime=60000,toolName='open_github_pull_request',buildArgs?:(org:string)=>Record<string,unknown>){
   const org='agent-exec-'+randomUUID(),requester='requester',sessionId=org+'-session';
   for(const [userId,role]of [[requester,'operator'],['reviewer','security_reviewer'],['other','admin']])await f.db.orgMembership.create({data:{organizationId:org,userId,role,acceptedAt:new Date()}});
@@ -141,7 +144,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  });
 
  it('composed paired service preserves recovery and real current membership without provider calls',async()=>{
-  const t=await fixture();f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session'};f.commercial=true;
+  const t=await fixture(60000,'create_environment',()=>({slug:'qa',name:'QA',tier:'qa'}));await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:t.scope.actorUserId}},data:{role:'admin'}});f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session'};f.commercial=true;
   const previous=process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;
   try{
    process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED='true';
@@ -277,6 +280,74 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   expect(await t.store.readExecutionReadiness(next,t.proposal.id)).toMatchObject({operation:{id:op.id},sessionMatches:false});
   await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'read_only'}});
   await expect(t.store.readExecutionReadiness(t.scope,t.proposal.id)).rejects.toThrow();
+ });
+
+ it('composes paired eligibility prepare execute and recovery HTTP with real current database authority',async()=>{
+  const t=await fixture(60000,'create_environment',()=>({slug:'reviewed-qa',name:'Reviewed QA',tier:'qa'}));
+  await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:t.scope.actorUserId}},data:{role:'admin'}});
+  f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session'};f.commercial=true;const previous=process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;
+  const compose=(request:any,scope:any)=>createAgentActionExecutionRequestService(request,f.db,scope),handle=createAgentActionExecutionHttp(compose),eligibility=createAgentActionEligibilityHttp(compose);
+  const get=()=>new NextRequest('https://fixture.test/api/desktop/agent/action-executions/eligibility?proposalId='+t.proposal.id),post=(body:unknown)=>new NextRequest('https://fixture.test/api/desktop/agent/action-executions',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+  try{
+   process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED='true';
+   const first=await(await eligibility(get())).json();expect(first.data).toMatchObject({proposalId:t.proposal.id,canPrepare:true,canExecute:false});expect(first.data).not.toHaveProperty('source');
+   const prepared=await handle(post({operation:'prepare',proposalId:t.proposal.id}));expect(prepared.status).toBe(201);const id=(await prepared.json()).data.id;
+   expect((await(await eligibility(get())).json()).data).toMatchObject({operationId:id,canPrepare:false,canExecute:true});
+   expect((await handle(post({operation:'execute',id,approved:true}))).status).toBe(400);
+   const executed=await handle(post({operation:'execute',id}));expect(executed.status).toBe(200);expect((await executed.json()).data).toMatchObject({id,state:'confirmed',attemptCount:1});
+   expect(await f.db.environment.findMany({where:{organizationId:t.org}})).toMatchObject([{slug:'reviewed-qa',name:'Reviewed QA'}]);
+   expect((await(await eligibility(get())).json()).data).toMatchObject({canPrepare:false,canExecute:false,reason:'operation_consumed'});
+   await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:t.scope.actorUserId}},data:{role:'read_only'}});f.commercial=false;delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;
+   const read=await handle(new NextRequest('https://fixture.test/api/desktop/agent/action-executions?proposalId='+t.proposal.id));expect(read.status).toBe(200);expect((await read.json()).data).toMatchObject({id,state:'confirmed',attemptCount:1});
+  }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
+ });
+
+ it.each(['requester','reviewer'])('refuses paired HTTP execution after %s authority is revoked following displayed readiness',async revoked=>{
+  const t=await fixture(60000,'create_environment',()=>({slug:'qa',name:'QA',tier:'qa'}));
+  await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:t.scope.actorUserId}},data:{role:'admin'}});
+  f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session'};f.commercial=true;const previous=process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;
+  const compose=(request:any,scope:any)=>createAgentActionExecutionRequestService(request,f.db,scope),handle=createAgentActionExecutionHttp(compose),eligibility=createAgentActionEligibilityHttp(compose);
+  const post=(body:unknown)=>new NextRequest('https://fixture.test/operations',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+  try{
+   process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED='true';
+   const id=(await(await handle(post({operation:'prepare',proposalId:t.proposal.id}))).json()).data.id;
+   expect((await(await eligibility(new NextRequest('https://fixture.test/readiness?proposalId='+t.proposal.id))).json()).data.canExecute).toBe(true);
+   const before=await f.db.durableAgentWorkflow.findUnique({where:{id}});
+   await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:revoked==='requester'?t.scope.actorUserId:'reviewer'}},data:{role:'read_only'}});
+   expect((await handle(post({operation:'execute',id}))).status).toBe(409);
+   expect(await f.db.environment.count({where:{organizationId:t.org}})).toBe(0);expect(await f.db.durableAgentWorkflow.findUnique({where:{id}})).toEqual(before);
+  }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
+ });
+ it('does not let an independently reviewing administrator adopt the requester through HTTP',async()=>{
+  const t=await fixture(60000,'create_environment',()=>({slug:'qa',name:'QA',tier:'qa'}));
+  await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:t.scope.actorUserId}},data:{role:'admin'}});
+  f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session'};const previous=process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;
+  const compose=(request:any,scope:any)=>createAgentActionExecutionRequestService(request,f.db,scope),handle=createAgentActionExecutionHttp(compose),eligibility=createAgentActionEligibilityHttp(compose),post=(body:unknown)=>new NextRequest('https://fixture.test/operations',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+  try{
+   process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED='true';const id=(await(await handle(post({operation:'prepare',proposalId:t.proposal.id}))).json()).data.id;
+   await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'admin'}});
+   const session=t.org+'-reviewer';await f.db.desktopSessionRecord.create({data:{id:session,organizationId:t.org,userId:'reviewer',expiresAt:new Date(Date.now()+60000)}});f.principal={id:session,organizationId:t.org,userId:'reviewer',credentialKind:'desktop_session'};
+   expect((await(await eligibility(new NextRequest('https://fixture.test/readiness?proposalId='+t.proposal.id))).json()).data).toMatchObject({canPrepare:false,canExecute:false});
+   expect((await handle(post({operation:'execute',id}))).status).toBe(409);expect(await f.db.environment.count({where:{organizationId:t.org}})).toBe(0);
+   expect(await f.db.durableAgentWorkflow.findUnique({where:{id}})).toMatchObject({attemptCount:0,currentStep:'prepared'});
+  }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
+ });
+
+ it('composes the paired execute HTTP path with the real fixed file transport and pinned installation',async()=>{
+  const t=await fixture(60000,'commit_github_file',()=>({repositoryFullName:'fixture/repository',branch:'reviewed',path:'app.txt',content:'new',message:'Reviewed change',_review:{kind:'github_file',baseSha:'a'.repeat(40),baseContent:'old'}}));
+  const connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:new Date()};await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:new Date()}});
+  f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session',capabilities:['workspace:read','github:write']};f.commercial=true;f.token.mockReset();f.token.mockImplementation(async(org:string,repo:unknown,expected:any)=>{expect(org).toBe(t.org);expect(repo).toEqual({owner:'fixture',repo:'repository'});expect(expected).toMatchObject(connection);return{ok:true,token:'SIMULATED_PRIVATE_TOKEN'}});
+  const previous=process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED,compose=(request:any,scope:any)=>createAgentActionExecutionRequestService(request,f.db,scope),handle=createAgentActionExecutionHttp(compose),post=(body:unknown)=>new NextRequest('https://fixture.test/operations',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
+   expect(url.startsWith('https://api.github.com/repos/fixture/repository')).toBe(true);
+   if(init.method==='GET')return url.endsWith('/repository')?Response.json({default_branch:'main'}):Response.json({sha:'a'.repeat(40)});
+   expect(init.method).toBe('PUT');expect(JSON.parse(init.body)).toMatchObject({branch:'reviewed',sha:'a'.repeat(40),content:Buffer.from('new').toString('base64')});writes++;return Response.json({content:{sha:'b'.repeat(40),html_url:'https://github.com/fixture/repository/blob/reviewed/app.txt'}});
+  }));
+  try{
+   process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED='true';const prepared=await handle(post({operation:'prepare',proposalId:t.proposal.id}));expect(prepared.status).toBe(201);const id=(await prepared.json()).data.id;
+   const executed=await handle(post({operation:'execute',id}));expect(executed.status).toBe(200);expect((await executed.json()).data).toMatchObject({id,state:'confirmed',attemptCount:1});expect(writes).toBe(1);expect(f.token).toHaveBeenCalledOnce();
+   expect((await handle(post({operation:'execute',id}))).status).toBe(409);expect(writes).toBe(1);expect(JSON.stringify(await f.db.durableAgentWorkflow.findUnique({where:{id}}))).not.toContain('SIMULATED_PRIVATE_TOKEN');
+  }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
  });
 
 });

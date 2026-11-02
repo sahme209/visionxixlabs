@@ -45,6 +45,31 @@
       "path": "/private/tmp/axiom-agent-stop-commercial-green.log",
       "sha256": "e5b7a66d367a879f3d0bb2fc35fc0ba977a4dc19d04e5e08d850465efaf2d367",
       "bytes": 633
+    },
+    "requester-api-boundaries": {
+      "path": "/private/tmp/axiom-agent-requester-full-boundary-tests.log",
+      "sha256": "f3910b9121623b2ce0ff217d01d0b4a7acb48eba92fab9378ccb1bb35d5bf7b4",
+      "bytes": 641
+    },
+    "requester-api-server-types": {
+      "path": "/private/tmp/axiom-agent-requester-api-final-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "requester-api-postgres": {
+      "path": "/private/tmp/axiom-agent-requester-api-all-store-pg.log",
+      "sha256": "e9aa2468a1b160f7020db93ad1d817ae7ef403293d68dd6979cf1a39cd3d95b2",
+      "bytes": 982
+    },
+    "requester-api-desktop-types": {
+      "path": "/private/tmp/axiom-agent-requester-api-desktop-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "requester-api-desktop-build": {
+      "path": "/private/tmp/axiom-agent-requester-api-desktop-build.log",
+      "sha256": "2e58fc84508c688754510209139110e935246dd673fa14029bf2767ec47c9e53",
+      "bytes": 2867
     }
   },
   "fixed_tools_and_controls": {
