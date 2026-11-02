@@ -1,0 +1,10 @@
+{
+  "nodeVersion": "v24.21.0",
+  "source": "61a04494f3412b3f0002657a9fbe7e9b939f2165",
+  "stage": "/private/tmp/axiom-deployment-baseline-production-ke43v58s",
+  "log": "/private/tmp/axiom-deployment-mounted-production-61a04494.log",
+  "archiveSha256": "5cf5e635af77dacb81ab7abc227bfa9b65e367b94a8a9bef96d45b322a6e68e5",
+  "verifiedRegularFiles": 5847,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy"
+}
