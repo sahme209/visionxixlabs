@@ -1,0 +1,10 @@
+{
+  "nodeVersion": "v24.21.0",
+  "source": "3b26e4bbfc7f100f3d5bc8b8d781fe45edce5369",
+  "stage": "/private/tmp/axiom-deployment-baseline-production-0mdpozp6",
+  "log": "/private/tmp/axiom-native-git-lease-production-3b26e4bb.log",
+  "archiveSha256": "2a708c5c6e5ba4b62ad0f5b0094fb34a08bcee51d97cf0c84d03539db24f6523",
+  "verifiedRegularFiles": 5872,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy"
+}

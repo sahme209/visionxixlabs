@@ -1,0 +1,12 @@
+{
+  "scope": "local supported-runtime whole project; skipped database tests are not acceptance",
+  "runtimeSource": "3b26e4bbfc7f100f3d5bc8b8d781fe45edce5369",
+  "nodeVersion": "v24.21.0",
+  "command": "node scripts/run-vitest.mjs",
+  "exitCode": 0,
+  "suitesPassed": 1367,
+  "suitesSkipped": 75,
+  "testsPassed": 16077,
+  "testsSkipped": 582,
+  "log": "/private/tmp/axiom-native-git-lease-final-project-tests.log"
+}
