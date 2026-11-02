@@ -15,6 +15,9 @@ export interface ProviderMergeTransportPorts {
  /** A trusted server callback may retain private synchronous freshness until
   * the actual PUT. Legacy standalone void callbacks remain supported. */
  assertCurrent?:(operationId:string,plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<void|(()=>void)>;
+ /** Optional server-only drain intent. Called once for submission, never for reads.
+  * Presence requires an actual private freshness function; no marker grants permission. */
+ beforeSubmission?:(operationId:string,plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<()=>void>;
  readCredential?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<ProviderMergeCredential|null>;
  /** Trusted, fresh repository/PR policy verification; absent queue/stack evidence refuses. */
  readDirectMergeSupport?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal,credential:Readonly<ProviderMergeCredential>)=>Promise<DirectMergeSupport|null>;
@@ -48,8 +51,8 @@ export function createReleaseProviderMergeTransport(ports:ProviderMergeTransport
    stage('target');const read=await jsonRequest(url,{method:'GET',headers});if(read.status!==200)return refused();const before=prSchema.parse(read.body);
    const target=(v:z.infer<typeof prSchema>)=>v.number===plan.pullRequest.number&&v.head.sha===plan.pullRequest.headSha&&v.head.ref===plan.pullRequest.headRef&&v.head.repo?.full_name===plan.pullRequest.repositoryFullName&&v.base.ref===plan.pullRequest.baseRef&&v.base.repo.full_name===plan.pullRequest.repositoryFullName;
    if(!target(before)||before.state!=='open'||before.draft||before.merged||before.base.sha!==plan.pullRequest.baseSha)return refused();
-   stage('final_authority');const finalFresh=await current(plan);if(!credentialReady())return refused();budget();stage('write');
-   const merged=await jsonRequest(url+'/merge',{method:'PUT',headers,body:JSON.stringify({sha:plan.pullRequest.headSha,merge_method:plan.method})},()=>{finalFresh();if(!credentialReady())throw Error('merge_unavailable')});
+   stage('final_authority');const finalFresh=await current(plan);if(!credentialReady())return refused();budget();let intentFresh:(()=>void)|undefined;if(ports.beforeSubmission){intentFresh=await ports.beforeSubmission(input.operationId,structuredClone(plan),signal);if(typeof intentFresh!=='function')return refused()}budget();stage('write');
+   const merged=await jsonRequest(url+'/merge',{method:'PUT',headers,body:JSON.stringify({sha:plan.pullRequest.headSha,merge_method:plan.method})},()=>{if(!credentialReady())throw Error('merge_unavailable');intentFresh?.();finalFresh()});
    if([403,404,405,409,422].includes(merged.status))return refused();
    if(merged.status!==200)return unknown();const ack=z.object({sha,merged:z.literal(true)}).parse(merged.body);
    stage('confirmation');const reread=await jsonRequest(url,{method:'GET',headers});if(reread.status!==200)return unknown();const after=prSchema.parse(reread.body);

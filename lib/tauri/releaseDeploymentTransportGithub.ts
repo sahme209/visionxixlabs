@@ -10,6 +10,8 @@ export const verifiedDeploymentWorkflowSchema=z.object({kind:z.literal('verified
 export interface ReleaseDeploymentGithubDependencies{
  allowImmutableTagDispatch?:()=>boolean;
  isEnabled?:()=>boolean;
+ /** Optional trusted drain port, invoked exactly once for the real submission. */
+ beforeSubmission?:(operationId:string,plan:Readonly<DeploymentPlan>,signal:AbortSignal)=>Promise<()=>void>;
  readCredential?:(plan:Readonly<DeploymentPlan>,signal:AbortSignal)=>Promise<unknown>;
  /** Fresh server-read YAML/input validation, not metadata inferred from a filename. */
  readWorkflowContract?:(plan:Readonly<DeploymentPlan>,signal:AbortSignal)=>Promise<unknown>;
@@ -36,10 +38,10 @@ export function createReleaseDeploymentGithubTransport(deps:ReleaseDeploymentGit
    const workflow=verifiedDeploymentWorkflowSchema.parse(await bounded(()=>deps.readWorkflowContract!(structuredClone(plan),signal)));
    if(workflow.planDigest!==digest||workflow.workflowPath!==plan.workflowPath||workflow.workflowBlobSha!==plan.workflowBlobSha||workflow.sourceCommitSha!==plan.sourceCommitSha||workflow.inputsDigest!==sha256ContentHash(plan.inputs))return{state:'refused'};
    const policy=z.object({kind:z.literal('verified_release_deployment_source_policy_v1'),planDigest:hash,sourcePolicy:z.string()}).strict().parse(await bounded(()=>deps.verifySourcePolicy!(structuredClone(plan),signal)));if(policy.planDigest!==digest||policy.sourcePolicy!==plan.sourcePolicy)return{state:'refused'};
-   const finalFresh=await current();if(!credentialReady())return{state:'refused'};
+   const finalFresh=await current();if(!credentialReady())return{state:'refused'};let intentFresh:(()=>void)|undefined;if(deps.beforeSubmission){intentFresh=await bounded(()=>deps.beforeSubmission!(input.operationId,structuredClone(plan),signal));if(typeof intentFresh!=='function')return{state:'refused'}};
    const [owner,repo]=plan.repositoryFullName.split('/'),file=plan.workflowPath.split('/').at(-1)!,base=`https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`,url=`${base}/actions/workflows/${encodeURIComponent(file)}/dispatches`;
    const request:RequestInit={method:'POST',headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${credential.token}`,'Content-Type':'application/json','X-GitHub-Api-Version':'2026-03-10'},body:JSON.stringify({ref:plan.sourcePolicy===IMMUTABLE_RELEASE_POLICY?`refs/tags/${plan.ref}`:plan.ref,inputs:plan.inputs}),redirect:'error',credentials:'omit',cache:'no-store',signal};
-   const pending=Promise.resolve().then(()=>{if(plan.sourcePolicy===IMMUTABLE_RELEASE_POLICY&&!deps.allowImmutableTagDispatch?.())throw Error('immutable_dispatch_not_admitted');if(!credentialReady()||now()>=Date.parse(plan.expiresAt))throw Error('deployment_expired');finalFresh();dispatched=true;return deps.fetch!(url,request)});void pending.then(r=>{if(signal.aborted||now()>=deadline)void r.body?.cancel().catch(()=>{})},()=>{});
+   const pending=Promise.resolve().then(()=>{if(plan.sourcePolicy===IMMUTABLE_RELEASE_POLICY&&!deps.allowImmutableTagDispatch?.())throw Error('immutable_dispatch_not_admitted');if(!credentialReady()||now()>=Date.parse(plan.expiresAt))throw Error('deployment_expired');intentFresh?.();finalFresh();dispatched=true;return deps.fetch!(url,request)});void pending.then(r=>{if(signal.aborted||now()>=deadline)void r.body?.cancel().catch(()=>{})},()=>{});
    const response=await bounded(()=>pending);if(response.status!==200||response.redirected||response.url&&response.url!==url){void response.body?.cancel().catch(()=>{});return{state:'unknown'}};
    const bytes=await bounded(()=>readBoundedGithubBody(response,signal,16384));const ack=z.object({workflow_run_id:z.number().int().positive().max(Number.MAX_SAFE_INTEGER),run_url:z.string(),html_url:z.string()}).strict().parse(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes))),runId=String(ack.workflow_run_id);
    if(ack.run_url!==`${base}/actions/runs/${runId}`||ack.html_url!==`https://github.com/${plan.repositoryFullName}/actions/runs/${runId}`)return{state:'unknown'};
