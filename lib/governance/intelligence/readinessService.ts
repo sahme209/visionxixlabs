@@ -7,7 +7,9 @@ import type {RevisionScope} from './revisionStore';
 import {createGovernanceRequestAuthority} from './requestAuthority';
 import {readGovernanceEnrollmentMetadata} from './enrollmentMetadata';
 import {readNativeGitCredentialLeaseBlockers} from './nativeGitCredentialLeaseStore';
-const unavailable=()=>({status:'unavailable' as const,executionAuthorized:false as const,catalogQualification:'unavailable' as const,legacyQualification:'unavailable' as const});
+import {readReleaseCredentialExposureBlockers} from './releaseCredentialExposureStore';
+import {readEnrollmentDrainBlockersLocked} from './enrollmentDrainStore';
+const unavailable=()=>({status:'unavailable' as const,executionAuthorized:false as const,catalogQualification:'unavailable' as const,legacyQualification:'unavailable' as const,runtimeQualification:'unavailable' as const});
 /** Read-only prerequisite, never a coverage receipt. No reconstructable trusted
  * runtime catalog currently exists, so source classification stays unavailable.
  * Caller manifests, source paths and build hashes cannot qualify this result. */
@@ -26,9 +28,16 @@ export function createGovernanceReadinessService(request:NextRequest,repo:Releas
    ready();await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(scope.organizationId)}))`;
    let fresh=await current(tx,scope.organizationId);
    const anyEnrollment=await readGovernanceEnrollmentMetadata(tx,scope.organizationId,request.signal);fresh();
-   const {pendingCount,liveIssuedCount,expiredIssuedCount}=await readNativeGitCredentialLeaseBlockers(tx,scope.organizationId,{assertCurrent:current,signal:request.signal});
+   const reader={assertCurrent:current,signal:request.signal};
+   const native=await readNativeGitCredentialLeaseBlockers(tx,scope.organizationId,reader);
+   const release=await readReleaseCredentialExposureBlockers(tx,scope.organizationId,reader);
+   const drain=await readEnrollmentDrainBlockersLocked(tx,scope.organizationId,reader);
+   const counts=(value:{pendingCount:number;liveIssuedCount:number;expiredIssuedCount:number})=>({pendingCount:value.pendingCount,liveIssuedCount:value.liveIssuedCount,expiredIssuedCount:value.expiredIssuedCount});
+   const nativeGitCredentials=counts(native),releaseWriteCredentials=counts(release);
+   const outbound={blockingCount:drain.blockingCount,reservedCount:drain.reservedCount,submissionIntentCount:drain.submissionIntentCount,unknownCount:drain.unknownCount,quiescentCount:drain.quiescentCount,transition:drain.transition};
    fresh=await current(tx,scope.organizationId);fresh();finalFresh=fresh;
-   return{anyEnrollment,pendingCount,liveIssuedCount,expiredIssuedCount};
+   // Existing flat counts remain aliases for NATIVE Git credentials only.
+   return{anyEnrollment,...nativeGitCredentials,nativeGitCredentials,releaseWriteCredentials,outbound};
   },{maxWait:15000,timeout:15000});
   if(!finalFresh)throw Error('governance_readiness_unavailable');finalFresh();return{...unavailable(),metadata};
  }catch{return unavailable()}}};
