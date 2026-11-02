@@ -12,7 +12,7 @@ The response separates `nativeGitCredentials`, `releaseWriteCredentials`, and `o
 
 - Genuine RED: `/private/tmp/axiom-readiness-aggregate-red.log` — 6 failed, 4 passed against the former native-only behavior: bad release/outbound metadata and cancellation still exposed partial counts.
 - GREEN: `/private/tmp/axiom-readiness-aggregate-green.log` — 28 focused tests, including the existing drain tests affected by scan extraction.
-- Actual owned PostgreSQL: `/private/tmp/axiom-readiness-aggregate-pg.log` — 11 passed, none skipped. Reproduce with `python3 work/governance-deployment-baseline/run-readiness-pg.py`.
+- Actual owned PostgreSQL: `/private/tmp/axiom-readiness-aggregate-pg.log` — 11 passed, none skipped. Reproduce with `python3 scripts/run-governance-readiness-postgres.py`.
 - Scoped TypeScript: `/private/tmp/axiom-readiness-aggregate-types.log` — exit 0 using `tsc -p work/governance-deployment-baseline/tsconfig.readiness-aggregate.json` under Node 24.21.0.
 - Owned schema: `/private/tmp/axiom-provider-approval-pg-evidence-jss9uqi0/schema.prisma`.
 - Owned fixture **stopped**: `/private/tmp/axiom-ticket-governance-pg-23dn1oe4`.
