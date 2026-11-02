@@ -5,12 +5,14 @@ import {parseReleaseOperationPlan,type ReleaseOperationPlan} from './releaseOper
 import {parseRepositoryFullName} from '@/lib/connectors/github/resolveTenantScopedToken';
 import {readBoundedGithubBody,withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import type {DirectMergeSupport,ProviderMergeCredential} from './releaseProviderMergeTransport';
+export type ProviderMergeReadCredential=Omit<ProviderMergeCredential,'contentsWrite'>&{contentsRead:true;contentsWrite?:never};
+export type ProviderMergePolicyCredential=ProviderMergeCredential|ProviderMergeReadCredential;
 const sha=z.string().regex(/^[a-f0-9]{40}$/),id=z.string().min(1).max(240),instant=z.string().datetime();
 export const verifiedUnstackedTopologySchema=z.object({kind:z.literal('verified_unstacked_topology_v1'),organizationId:id,connectionId:id,connectionRevision:instant,repositoryFullName:z.string().max(201),pullRequestNumber:z.number().int().positive(),headSha:sha,baseSha:sha,evidenceDigest:z.string().regex(/^[a-f0-9]{64}$/),observedAt:instant,expiresAt:instant}).strict();
 export interface ReleaseDirectMergeSupportDependencies{
  onDiagnostic?:(event:{phase:'authority'|'repository'|'pull_request'|'effective_rules'|'topology'|'final_authority';outcome:'verified'|'refused'|'deadline_or_abort'})=>void;
  isEnabled?:()=>boolean;
- assertCurrent?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<void>;
+ assertCurrent?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<void|(()=>void)>;
  /** Mandatory trusted graph/topology verification, not caller metadata, labels or a default-branch inference.
   * No production verifier is installed by this module. Exact recorded evidence must be freshly revalidated. */
  readTopologyEvidence?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<unknown>;
@@ -23,7 +25,7 @@ const knownRules=new Set(['creation','update','deletion','required_linear_histor
 const verifiedSupportEvidence=new WeakMap<object,{planDigest:string;credentialDigest:string;supportDigest:string;sourceDigest:string;observedAt:string;expiresAt:string}>();
 /** Only results issued by this actual reader carry provenance. An optional
  * caller field, copied object or synthetic transport Boolean cannot supply it. */
-export function readVerifiedDirectMergeSupportEvidence(raw:unknown,plan:Readonly<ReleaseOperationPlan>,credential:Readonly<ProviderMergeCredential>){
+export function readVerifiedDirectMergeSupportEvidence(raw:unknown,plan:Readonly<ReleaseOperationPlan>,credential:Readonly<ProviderMergePolicyCredential>){
  if(!raw||typeof raw!=='object')throw Error('merge_support_evidence_unavailable');
  const proof=verifiedSupportEvidence.get(raw);
  if(!proof||proof.planDigest!==sha256ContentHash(plan)||proof.credentialDigest!==sha256ContentHash(credential)||proof.supportDigest!==sha256ContentHash(raw))throw Error('merge_support_evidence_unavailable');
@@ -33,16 +35,16 @@ export function readVerifiedDirectMergeSupportEvidence(raw:unknown,plan:Readonly
  * This is not proof that the installation actor lacks ruleset/protection bypass entitlement.
  * Production authority wiring must independently verify that policy; no such verifier is installed here. */
 export function createReleaseDirectMergeSupportReader(deps:ReleaseDirectMergeSupportDependencies={}){
- return async(rawPlan:Readonly<ReleaseOperationPlan>,inputSignal:AbortSignal,credential:Readonly<ProviderMergeCredential>):Promise<DirectMergeSupport|null>=>{
+ return async(rawPlan:Readonly<ReleaseOperationPlan>,inputSignal:AbortSignal,credential:Readonly<ProviderMergePolicyCredential>):Promise<DirectMergeSupport|null>=>{
   if(!deps.isEnabled?.()||!deps.assertCurrent||!deps.readTopologyEvidence||!deps.fetch||inputSignal.aborted)return null;
   const now=deps.now??Date.now,deadline=now()+12000,controller=new AbortController(),signal=AbortSignal.any([inputSignal,controller.signal]),timer=setTimeout(()=>controller.abort(),12000),budget={remainingBytes:256*1024};
-  const guard=()=>{signal.throwIfAborted();if(!deps.isEnabled?.()||!Number.isFinite(now())||now()>=deadline)throw Error('direct_merge_policy_unavailable')};
+  let currentFresh:(()=>void)|undefined;const guard=()=>{signal.throwIfAborted();currentFresh?.();if(!deps.isEnabled?.()||!Number.isFinite(now())||now()>=deadline)throw Error('direct_merge_policy_unavailable')};
   const bounded=async<T>(fn:()=>Promise<T>)=>{guard();const out=await withGithubAbort(Promise.resolve().then(()=>{guard();return fn()}),signal);guard();return out};
   let phase:Parameters<NonNullable<ReleaseDirectMergeSupportDependencies['onDiagnostic']>>[0]['phase']='authority',verified=false;
   try{
    const plan=parseReleaseOperationPlan(rawPlan),ref=parseRepositoryFullName(plan.pullRequest.repositoryFullName);if(!ref)return null;
-   const credentialReady=()=>credential&&credential.organizationId===plan.organizationId&&credential.connectionId===plan.connectionId&&credential.connectionRevision===plan.connectionRevision&&credential.repositoryFullName===plan.pullRequest.repositoryFullName&&/^[1-9][0-9]{0,19}$/.test(credential.installationId)&&typeof credential.token==='string'&&credential.token.length>0&&credential.token.length<=4096&&!/[\x00-\x20\x7f-\x9f]/.test(credential.token)&&credential.contentsWrite===true&&credential.pullRequestsRead===true&&Number.isFinite(credential.expiresAt)&&credential.expiresAt>now()+20000;
-   const current=async()=>{await bounded(()=>deps.assertCurrent!(structuredClone(plan),signal));if(!credentialReady())throw Error('direct_merge_credential_unavailable')};
+   const credentialReady=()=>credential&&credential.organizationId===plan.organizationId&&credential.connectionId===plan.connectionId&&credential.connectionRevision===plan.connectionRevision&&credential.repositoryFullName===plan.pullRequest.repositoryFullName&&/^[1-9][0-9]{0,19}$/.test(credential.installationId)&&typeof credential.token==='string'&&credential.token.length>0&&credential.token.length<=4096&&!/[\x00-\x20\x7f-\x9f]/.test(credential.token)&&((credential.contentsWrite===true&&!('contentsRead'in credential))||('contentsRead'in credential&&credential.contentsRead===true&&!('contentsWrite'in credential)))&&credential.pullRequestsRead===true&&Number.isFinite(credential.expiresAt)&&credential.expiresAt>now()+20000;
+   const current=async()=>{const fresh=await bounded(()=>deps.assertCurrent!(structuredClone(plan),signal));if(fresh!==undefined&&typeof fresh!=='function')throw Error('direct_merge_authority_unavailable');if(typeof fresh==='function'){const prior=currentFresh;currentFresh=()=>{prior?.();if(fresh()!==undefined)throw Error('direct_merge_authority_unavailable')}}guard();if(!credentialReady())throw Error('direct_merge_credential_unavailable')};
    await current();
    async function get(url:string){await current();const fetching=Promise.resolve().then(()=>{guard();if(!credentialReady())throw Error('direct_merge_credential_unavailable');return deps.fetch!(url,{method:'GET',headers:{Accept:'application/vnd.github+json',Authorization:`Bearer ${credential.token}`,'X-GitHub-Api-Version':'2022-11-28'},redirect:'error',credentials:'omit',cache:'no-store',signal})});void fetching.then(r=>{if(signal.aborted||now()>=deadline)void r.body?.cancel().catch(()=>{})},()=>{});const response=await bounded(()=>fetching);if(response.status!==200||response.redirected||response.url&&response.url!==url||response.headers.has('link')){void response.body?.cancel().catch(()=>{});throw Error('direct_merge_policy_incomplete')}const bytes=await bounded(()=>readBoundedGithubBody(response,signal,128*1024,budget));const data:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));await current();return data}
    phase='repository';const url=`https://api.github.com/repos/${encodeURIComponent(ref.owner)}/${encodeURIComponent(ref.repo)}`,r=repository.parse(await get(url));

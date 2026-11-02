@@ -107,7 +107,9 @@ export function clearOutboundDedupe(): number {
 // Public entry — send to every configured channel
 // ---------------------------------------------------------------------------
 
-export async function sendOutboundNotification(n: OutboundNotification): Promise<OutboundSendResult> {
+export async function sendOutboundNotification(n: OutboundNotification, beforeSend?:()=>Promise<()=>void>): Promise<OutboundSendResult> {
+  // Optional request-bound test authority; background safety producers retain
+  // their existing path. This callback is never serialized into retry content.
   const start = Date.now();
   const env = loadAppEnv();
 
@@ -171,7 +173,7 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
   // Slack
   if (slackUrl) {
     attempted.push("slack");
-    const ok = await postJson(slackUrl, buildSlackPayload(redacted));
+    const ok = await postJson(slackUrl, buildSlackPayload(redacted), beforeSend);
     if (ok) succeeded.push("slack");
     else skipped.push({ channel: "slack", reason: `post_failed(${slackSource})` });
   } else {
@@ -181,7 +183,7 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
   // Microsoft Teams
   if (env.teamsWebhookUrl) {
     attempted.push("microsoft_teams");
-    const ok = await postJson(env.teamsWebhookUrl, buildTeamsPayload(redacted));
+    const ok = await postJson(env.teamsWebhookUrl, buildTeamsPayload(redacted), beforeSend);
     if (ok) succeeded.push("microsoft_teams");
     else skipped.push({ channel: "microsoft_teams", reason: "post_failed" });
   } else {
@@ -191,7 +193,7 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
   // Generic webhook (signed HMAC if OUTBOUND_WEBHOOK_SECRET set)
   if (env.outboundWebhookUrl) {
     attempted.push("generic_webhook");
-    const ok = await postSignedJson(env.outboundWebhookUrl, redacted, env.outboundWebhookSecret);
+    const ok = await postSignedJson(env.outboundWebhookUrl, redacted, env.outboundWebhookSecret, beforeSend);
     if (ok) succeeded.push("generic_webhook");
     else skipped.push({ channel: "generic_webhook", reason: "post_failed" });
   } else {
@@ -222,7 +224,7 @@ export async function sendOutboundNotification(n: OutboundNotification): Promise
   // (at least one channel was attempted but none succeeded). Skipped
   // sends (no channels configured) get no retry because retrying
   // wouldn't fix the config gap.
-  if (outcome === "failed") {
+  if (outcome === "failed" && !beforeSend) {
     void enqueueRetry(n, result.reason);
   }
 
@@ -292,13 +294,16 @@ function buildTeamsPayload(n: OutboundNotification): unknown {
 
 const DEFAULT_TIMEOUT_MS = 8_000;
 
-async function postJson(url: string, body: unknown): Promise<boolean> {
+async function postJson(url: string, body: unknown, beforeSend?:()=>Promise<()=>void>): Promise<boolean> {
   try {
+    const raw=JSON.stringify(body);
+    const fresh=beforeSend?await beforeSend():undefined;
+    if(beforeSend&&typeof fresh!=='function')throw Error('notification_mutation_unavailable');fresh?.();
     const res = await withTimeout(
       fetch(url, {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify(body),
+        body: raw,
       }),
       DEFAULT_TIMEOUT_MS,
       "outbound.post",
@@ -309,7 +314,7 @@ async function postJson(url: string, body: unknown): Promise<boolean> {
   }
 }
 
-async function postSignedJson(url: string, body: unknown, secret: string | undefined): Promise<boolean> {
+async function postSignedJson(url: string, body: unknown, secret: string | undefined, beforeSend?:()=>Promise<()=>void>): Promise<boolean> {
   try {
     const raw = JSON.stringify(body);
     const headers: Record<string, string> = { "content-type": "application/json" };
@@ -318,6 +323,8 @@ async function postSignedJson(url: string, body: unknown, secret: string | undef
       const sig = createHmac("sha256", secret).update(raw).digest("hex");
       headers["x-axiom-signature"] = `sha256=${sig}`;
     }
+    const fresh=beforeSend?await beforeSend():undefined;
+    if(beforeSend&&typeof fresh!=='function')throw Error('notification_mutation_unavailable');fresh?.();
     const res = await withTimeout(
       fetch(url, { method: "POST", headers, body: raw }),
       DEFAULT_TIMEOUT_MS,

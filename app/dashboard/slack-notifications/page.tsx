@@ -212,12 +212,12 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+        body: JSON.stringify(enabled ? {
           webhookUrl,
           enabledSignalKinds,
           ...(defaultChannel ? { defaultChannel } : {}),
           enabled,
-        }),
+        } : {enabled:false}),
       });
       const j = await res.json();
       if (j.ok) {

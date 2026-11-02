@@ -11,7 +11,7 @@ const authorizationSchema=z.object({organizationId:key,connectionId:key,connecti
 const tokenResponseSchema=z.object({token:z.string().min(1).max(4096).refine(v=>!/[\x00-\x20\x7f-\x9f]/.test(v)),expires_at:instant,permissions:z.object({contents:z.literal('write'),pull_requests:z.literal('read'),metadata:z.literal('read')}).strict(),repository_selection:z.literal('selected'),repositories:z.array(z.object({name:z.string(),full_name:z.string(),owner:z.object({login:z.string()}).passthrough()}).passthrough()).length(1)}).passthrough();
 export interface ProviderMergeCredentialDependencies{
  isEnabled?:()=>boolean;
- assertCurrent?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<void>;
+ assertCurrent?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<void|(()=>void)>;
  /** Project exactly the active tenant GitHubInstallation fields; never select a host/default installation. */
  readInstallation?:(input:{organizationId:string;connectionId:string},signal:AbortSignal)=>Promise<unknown>;
  /** Trusted server JWT signer/config boundary. It must never accept client-supplied App material. */
@@ -24,11 +24,11 @@ export function createReleaseProviderMergeCredentialReader(deps:ProviderMergeCre
  return async(rawPlan:Readonly<ReleaseOperationPlan>,inputSignal:AbortSignal):Promise<ProviderMergeCredential|null>=>{
   if(!deps.isEnabled?.()||!deps.assertCurrent||!deps.readInstallation||!deps.readAppAuthorization||!deps.fetch||inputSignal.aborted)return null;
   const now=deps.now??Date.now,deadline=now()+8000,controller=new AbortController(),signal=AbortSignal.any([inputSignal,controller.signal]),timer=setTimeout(()=>controller.abort(),8000);
-  const guard=()=>{signal.throwIfAborted();const at=now();if(!Number.isFinite(at)||!Number.isFinite(deadline)||at>=deadline||!deps.isEnabled?.())throw Error('merge_credential_unavailable')};
+  let currentFresh:(()=>void)|undefined;const guard=()=>{signal.throwIfAborted();const at=now();if(!Number.isFinite(at)||!Number.isFinite(deadline)||at>=deadline||!deps.isEnabled?.())throw Error('merge_credential_unavailable');currentFresh?.()};
   const bounded=async<T>(fn:()=>Promise<T>)=>{guard();const value=await withGithubAbort(Promise.resolve().then(()=>{guard();return fn()}),signal);guard();return value};
   try{
    const plan=parseReleaseOperationPlan(rawPlan),repo=parseRepositoryFullName(plan.pullRequest.repositoryFullName);if(!repo)return null;
-   const authority=async()=>bounded(()=>deps.assertCurrent!(structuredClone(plan),signal));
+   const authority=async()=>{const fresh=await bounded(()=>deps.assertCurrent!(structuredClone(plan),signal));if(fresh!==undefined&&typeof fresh!=='function')throw Error('merge_credential_unavailable');if(typeof fresh==='function'){const prior=currentFresh;currentFresh=()=>{prior?.();if(fresh()!==undefined)throw Error('merge_credential_unavailable')}}guard()};
    const read=async()=>{const row=installationSchema.parse(await bounded(()=>deps.readInstallation!({organizationId:plan.organizationId,connectionId:plan.connectionId},signal)));if(row.id!==plan.connectionId||row.organizationId!==plan.organizationId||row.updatedAt.getTime()!==Date.parse(plan.connectionRevision)||row.accountLogin.toLowerCase()!==repo.owner.toLowerCase())throw Error('merge_installation_changed');return row};
    await authority();const before=await read(),binding={organizationId:plan.organizationId,connectionId:plan.connectionId,connectionRevision:plan.connectionRevision,installationId:before.githubInstallationId};
    const auth=authorizationSchema.parse(await bounded(()=>deps.readAppAuthorization!(binding,signal)));if(auth.organizationId!==binding.organizationId||auth.connectionId!==binding.connectionId||auth.connectionRevision!==binding.connectionRevision||auth.installationId!==binding.installationId||auth.expiresAt<=now()+8000)return null;

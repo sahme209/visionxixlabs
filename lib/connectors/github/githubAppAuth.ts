@@ -323,14 +323,14 @@ const releasePermissions = {
  * requires a separately installed current-actor verifier and activation gate. */
 export async function resolveReleaseInstallationToken(input:{
  installationId:string;repositoryFullName:string;purpose:ReleaseTokenPurpose;
- isEnabled?:()=>boolean;assertCurrent?:()=>Promise<void>;fetch?:typeof fetch;
+ isEnabled?:()=>boolean;assertCurrent?:()=>Promise<void|(()=>void)>;fetch?:typeof fetch;
 },callerSignal:AbortSignal):Promise<{token:string;expiresAt:number;permissions:Record<string,string>}|null>{
  if(!input.isEnabled?.()||!input.assertCurrent||!input.fetch||callerSignal.aborted)return null;
  const permissions=releasePermissions[input.purpose];
  if(!permissions||!Object.hasOwn(releasePermissions,input.purpose)||!/^[1-9]\d{0,14}$/.test(input.installationId)||!Number.isSafeInteger(Number(input.installationId))||Number(input.installationId)<1||!/^([A-Za-z0-9][A-Za-z0-9_.-]{0,99})\/([A-Za-z0-9][A-Za-z0-9_.-]{0,99})$/.test(input.repositoryFullName))return null;
- const deadline=Date.now()+8000,signal=AbortSignal.any([callerSignal,AbortSignal.timeout(8000)]);
- const guard=()=>{signal.throwIfAborted();if(!input.isEnabled?.()||Date.now()>=deadline)throw Error('release_token_unavailable')};
- const current=async()=>{guard();await withGithubAbort(input.assertCurrent!(),signal);guard()};
+ let sessionFresh:(()=>void)|undefined;const deadline=Date.now()+8000,signal=AbortSignal.any([callerSignal,AbortSignal.timeout(8000)]);
+ const guard=()=>{signal.throwIfAborted();if(!input.isEnabled?.()||Date.now()>=deadline)throw Error('release_token_unavailable');sessionFresh?.()};
+ const current=async()=>{guard();const fresh=await withGithubAbort(input.assertCurrent!(),signal);if(fresh!==undefined&&typeof fresh!=='function')throw Error('release_token_unavailable');if(typeof fresh==='function'){const prior=sessionFresh;sessionFresh=()=>{prior?.();if(fresh()!==undefined)throw Error('release_token_unavailable')}}guard()};
  let received:Response|undefined;
  try{
   await current();const cfg=await withGithubAbort(getGithubConfig(),signal);guard();
@@ -351,4 +351,63 @@ export async function resolveReleaseInstallationToken(input:{
   const expiresAt=Date.parse(v.expires_at);if(!Number.isFinite(expiresAt)||expiresAt<=Date.now()+20000||expiresAt>Date.now()+65*60000)return null;
   await current();guard();return{token:v.token,expiresAt,permissions:{...permissions}};
  }catch{return null}finally{void received?.body?.cancel().catch(()=>{})}
+}
+
+/** Server-only release eligibility. Metadata is NOT an issued write grant. */
+export interface ReleaseInstallationEligibilityBinding {
+ organizationId:string;connectionId:string;connectionRevision:string;installationId:string;
+ repositoryFullName:string;purpose:'merge'|'dispatch';planDigest:string;
+}
+export interface ReleaseInstallationEligibilityInput extends ReleaseInstallationEligibilityBinding {
+ isEnabled:()=>boolean;assertCurrent:()=>Promise<void|(()=>void)>;fetch:typeof fetch;
+}
+const releaseEligibilityProofs=new WeakMap<object,{binding:string;assertFresh:()=>void}>();
+function eligibilityBinding(raw:ReleaseInstallationEligibilityBinding):ReleaseInstallationEligibilityBinding{
+ const fields=['organizationId','connectionId','connectionRevision','installationId','repositoryFullName','purpose','planDigest'];
+ if(!raw||typeof raw!=='object'||Object.keys(raw).length!==fields.length||Object.keys(raw).some(k=>!fields.includes(k)))throw Error('release_eligibility_unavailable');
+ const b={organizationId:raw.organizationId,connectionId:raw.connectionId,connectionRevision:raw.connectionRevision,installationId:raw.installationId,repositoryFullName:raw.repositoryFullName,purpose:raw.purpose,planDigest:raw.planDigest};
+ if([b.organizationId,b.connectionId].some(v=>typeof v!=='string'||!v.trim()||v!==v.trim()||v.length>240||/[\x00-\x1f\x7f]/.test(v))||typeof b.connectionRevision!=='string'||!/^\d{4}-\d\d-\d\dT/.test(b.connectionRevision)||!Number.isFinite(Date.parse(b.connectionRevision))||typeof b.installationId!=='string'||!(/^[1-9]\d{0,14}$/.test(b.installationId))||!Number.isSafeInteger(Number(b.installationId))||typeof b.repositoryFullName!=='string'||!/^([A-Za-z0-9][A-Za-z0-9_.-]{0,99})\/([A-Za-z0-9][A-Za-z0-9_.-]{0,99})$/.test(b.repositoryFullName)||!['merge','dispatch'].includes(b.purpose)||!(/^[a-f0-9]{64}$/.test(b.planDigest)))throw Error('release_eligibility_unavailable');
+ return b;
+}
+export async function readReleaseInstallationEligibility(input:ReleaseInstallationEligibilityInput,parent:AbortSignal):Promise<object|null>{
+ let received:Response|undefined;
+ try{
+  // Snapshot every scope primitive and trusted callback before configuration IO.
+  const binding=eligibilityBinding({organizationId:input.organizationId,connectionId:input.connectionId,connectionRevision:input.connectionRevision,installationId:input.installationId,repositoryFullName:input.repositoryFullName,purpose:input.purpose,planDigest:input.planDigest});
+  const isEnabled=input.isEnabled,assertCurrent=input.assertCurrent,fetcher=input.fetch,started=Date.now();
+  const signal=AbortSignal.any([parent,AbortSignal.timeout(15000)]);let sessionFresh:(()=>void)|undefined,observedAt:number|undefined;
+  const guard=()=>{signal.throwIfAborted();const at=Date.now();if(typeof isEnabled!=='function'||typeof assertCurrent!=='function'||typeof fetcher!=='function'||!isEnabled()||!Number.isFinite(started)||!Number.isFinite(at)||at<started||at>=started+15000||observedAt!==undefined&&(at<observedAt||at>=observedAt+5000))throw Error('release_eligibility_unavailable');if(sessionFresh)sessionFresh()};
+  const current=async()=>{guard();const fresh=await withGithubAbort(assertCurrent(),signal);if(fresh!==undefined&&typeof fresh!=='function')throw Error('release_eligibility_unavailable');sessionFresh=fresh??undefined;guard()};
+  await current();const cfg=await withGithubAbort(getGithubConfig(),signal);guard();
+  if(!cfg.appConfigured||!Number.isSafeInteger(cfg.appId)||!cfg.appId||cfg.appId<1)return null;
+  const appId=cfg.appId,key=await withGithubAbort(resolveGithubAppPrivateKey(),signal);guard();if(!key)return null;
+  const jwt=signJwt(appId,key),[owner,repo]=binding.repositoryFullName.split('/');
+  // Installation metadata eligibility does not establish implicit metadata access.
+  // Actual read/write token responses still require their strict metadata grant.
+  const required=binding.purpose==='merge'?{contents:'write',pull_requests:'read'}:{actions:'write',contents:'read'};
+  async function metadata(url:string){
+   await current();guard();
+   const pending=Promise.resolve().then(()=>{guard();return fetcher(url,{method:'GET',redirect:'error',credentials:'omit',cache:'no-store',signal,headers:{Authorization:`Bearer ${jwt}`,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'}})});
+   void pending.then(r=>{if(signal.aborted||Date.now()>=started+15000)void r.body?.cancel().catch(()=>{})},()=>{});
+   const response=await withGithubAbort(pending,signal);received=response;guard();if(response.status!==200||response.redirected||response.url&&response.url!==url)throw Error('release_eligibility_unavailable');
+   const bytes=await readBoundedGithubBody(response,signal,65536);guard();const raw:unknown=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes));
+   if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('release_eligibility_unavailable');const v=raw as Record<string,unknown>,account=v.account,permissions=v.permissions;
+   if(v.id!==Number(binding.installationId)||v.app_id!==appId||v.suspended_at!==null||!['all','selected'].includes(v.repository_selection as string)||!account||typeof account!=='object'||Array.isArray(account)||!permissions||typeof permissions!=='object'||Array.isArray(permissions)||Object.keys(permissions).length>128)throw Error('release_eligibility_unavailable');
+   const a=account as Record<string,unknown>,p=permissions as Record<string,unknown>;
+   if(Object.hasOwn(p,'metadata')&&p.metadata!=='read')throw Error('release_eligibility_unavailable');
+   if(!Number.isSafeInteger(a.id)||Number(a.id)<1||typeof a.login!=='string'||a.login.toLowerCase()!==owner.toLowerCase()||!['User','Organization'].includes(a.type as string)||Object.entries(required).some(([k,level])=>level==='write'?p[k]!=='write':!['read','write'].includes(p[k] as string)))throw Error('release_eligibility_unavailable');
+   if(observedAt===undefined)observedAt=Date.now();guard();return {accountId:a.id,accountLogin:a.login.toLowerCase(),accountType:a.type};
+  }
+  const installation=await metadata(`${GITHUB_API}/app/installations/${binding.installationId}`),repository=await metadata(`${GITHUB_API}/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/installation`);
+  if(JSON.stringify(installation)!==JSON.stringify(repository))return null;
+  await current();guard();
+  const proof=Object.freeze({kind:'release_installation_eligibility_v1'});releaseEligibilityProofs.set(proof,{binding:JSON.stringify(binding),assertFresh:guard});return proof;
+ }catch{return null}finally{void received?.body?.cancel().catch(()=>{})}
+}
+/** Only original one-use metadata proof qualifies eligibility, never actual write
+ * access. Callers retain assertFresh through later claim/DB/transport awaits. */
+export function consumeReleaseInstallationEligibility(proof:object,raw:ReleaseInstallationEligibilityBinding):{providerEligibilityVerified:true;assertFresh:()=>void}{
+ const saved=releaseEligibilityProofs.get(proof);releaseEligibilityProofs.delete(proof);
+ const unavailable=()=>{throw Error('release_eligibility_unavailable')};
+ try{if(!saved||saved.binding!==JSON.stringify(eligibilityBinding(raw)))return unavailable();saved.assertFresh();return Object.freeze({providerEligibilityVerified:true as const,assertFresh:()=>{try{saved.assertFresh()}catch{return unavailable()}}})}catch{return unavailable()}
 }

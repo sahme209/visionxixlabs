@@ -161,16 +161,16 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
         /** Existing claim invariants plus admission in the same org-first locks.
          * No provider work may run in either mandatory private proof callback. */
         async claimWithAdmission(rawScope:ProviderMergeScope,execution:string,verifyLocked:(tx:ReleaseOperationPlanTransaction,plan:ReturnType<typeof planInput>['plan'])=>Promise<()=>void>){
-            const scope=scopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse('admission_unavailable');
-            return repo.$transaction(async tx=>{await organizationLock(tx,scope);const row=await load(tx,scope,execution),s=snapshot(row);await authority(tx,scope,s.binding);
+            let finalFresh:(()=>void)|undefined;const scope=scopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse('admission_unavailable');
+            const result=await repo.$transaction(async tx=>{await organizationLock(tx,scope);const row=await load(tx,scope,execution),s=snapshot(row);await authority(tx,scope,s.binding);
                 if(s.state!=='prepared')return{claimed:false as const,record:dto(row)};
                 await current(tx,scope,s.binding,false);const authorityFresh=await admissionAuthority(tx,scope,s.binding),plan=structuredClone(planInput(s.binding).plan),admissionFresh=await verifyLocked(tx,plan);
                 if(typeof admissionFresh!=='function')refuse('admission_unavailable');authorityFresh();admissionFresh();
                 if(typeof deps.consumeProviderApproval!=='function')refuse('approval_consumption_unavailable');await deps.consumeProviderApproval!(tx,scope,s.binding.approval.id,row.id);await current(tx,scope,s.binding);authorityFresh();admissionFresh();
                 const lease=new Date(Math.min(now().getTime()+30000,Date.parse(planInput(s.binding).deadlineAt),Date.parse(s.binding.approval.expiresAt))),updated=await change(tx,row,'dispatching',{attemptCount:1,leaseOwner:row.id,leaseExpiresAt:lease});
-                await current(tx,scope,s.binding);await live(tx,s.binding,lease);authorityFresh();admissionFresh();
+                await current(tx,scope,s.binding);await live(tx,s.binding,lease);const fresh=()=>{authorityFresh();admissionFresh();if(now().getTime()>=lease.getTime())refuse('admission_expired')};fresh();finalFresh=fresh;
                 return{claimed:true as const,record:dto(updated),plan,leaseExpiresAt:lease};
-            });
+            });if(result.claimed){if(!finalFresh)refuse('admission_unavailable');finalFresh!()}return result;
         },
         /** Final authority, policy and session proofs retain one coherent DB
          * boundary through the final original lease clock immediately before PUT.
@@ -189,6 +189,15 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
             // COMMIT/result delivery is another await. Keep proofs private and
             // recheck their original windows without resetting the consumed run.
             if(!finalFresh)refuse('admission_unavailable');finalFresh!();publishFreshness?.(finalFresh!);return plan;
+        },
+        /** DB-only existing claimed operation authority for its private write
+         * credential. No claim, approval consumption or provider call occurs. */
+        async assertClaimedCredentialAuthority(tx:ReleaseOperationPlanTransaction,rawScope:ProviderMergeScope,execution:string,rawPlan:unknown){
+            const scope=scopeSchema.parse(rawScope);await organizationLock(tx,scope);const row=await load(tx,scope,execution),s=snapshot(row),plan=planInput(s.binding).plan;
+            if(s.state!=='dispatching'||sha256ContentHash(plan)!==sha256ContentHash(rawPlan)||!row.leaseExpiresAt)refuse('claimed_credential_required');
+            const lease=row.leaseExpiresAt;if(!lease)throw Error('claimed_credential_required');const participantFresh=await admissionAuthority(tx,scope,s.binding);await current(tx,scope,s.binding);await live(tx,s.binding,lease);
+            const deadline=Math.min(lease.getTime(),Date.parse(planInput(s.binding).deadlineAt),Date.parse(s.binding.approval.expiresAt),Date.parse(plan.window.endUtc)),start=Date.parse(plan.window.startUtc);
+            const fresh=()=>{participantFresh();const at=now().getTime();if(at<start||at>=deadline)refuse('claimed_credential_expired')};fresh();return fresh;
         },
         async beforeDispatch(rawScope: ProviderMergeScope, execution: string) { const scope = scopeSchema.parse(rawScope); return repo.$transaction(async (tx) => { const row = await load(tx, scope, execution), s = snapshot(row); if (s.state !== 'dispatching')
             refuse(); await current(tx, scope, s.binding); await live(tx, s.binding, row.leaseExpiresAt!); return structuredClone(planInput(s.binding).plan); }); },

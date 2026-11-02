@@ -71,15 +71,27 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
   * approval consumption, attempt CAS and audit events back together. */
  async claimWithAdmission(rawScope:DeploymentScope,id:string,verifyLocked:(tx:Tx,plan:Readonly<DeploymentPlan>)=>Promise<()=>void>){
   const s=deploymentScopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse();
-  return repo.$transaction(async tx=>{
+  let finalFresh:(()=>void)|undefined;const claimed=await repo.$transaction(async tx=>{
    await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
    const r=await load(tx,s,id),{i,v}=unpack(r,s);await authority(tx,s,i.plan,i.approval);if(v.state!=='prepared')return{claimed:false as const};
    await current(tx,s,i.plan,i.approval);const authorityFresh=await admissionAuthority(tx,s,i.plan,i.approval);
    const assertFresh=await verifyLocked(tx,structuredClone(i.plan));if(typeof assertFresh!=='function')refuse();authorityFresh();assertFresh();
    await deps.consumeIndependentApproval!(tx,s,structuredClone(i.approval),id);await current(tx,s,i.plan,i.approval);authorityFresh();assertFresh();
-   const updated=await change(tx,r,'dispatching');await current(tx,s,i.plan,i.approval,updated.leaseExpiresAt!);authorityFresh();assertFresh();
+   const updated=await change(tx,r,'dispatching');await current(tx,s,i.plan,i.approval,updated.leaseExpiresAt!);const start=Date.parse(i.plan.windowStart),end=Math.min(Date.parse(i.plan.expiresAt),Date.parse(i.approval.expiresAt),updated.leaseExpiresAt!.getTime());finalFresh=()=>{authorityFresh();assertFresh();const at=now().getTime();if(at<start||at>=end)refuse()};finalFresh();
    return{claimed:true as const,leaseExpiresAt:updated.leaseExpiresAt!,plan:structuredClone(i.plan)};
-  });
+  });if(claimed.claimed){if(!finalFresh)refuse();finalFresh!()}return claimed;
+ },
+ /** DB-only credential boundary. Reuses canonical operation/history, original
+  * independent approval/current participants and live lease; never claims or
+  * consumes. Caller retains this private closure through issuer awaits. */
+ async assertClaimedCredentialAuthority(tx:Tx,rawScope:DeploymentScope,rawPlan:Readonly<DeploymentPlan>){
+  const s=deploymentScopeSchema.parse(rawScope),p=deploymentPlanSchema.parse(rawPlan);
+  await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
+  const r=await load(tx,s,releaseDeploymentExecutionId(p),true),{i,v}=unpack(r,s);
+  if(v.state!=='dispatching'||!same(i.plan,p)||i.planDigest!==sha256ContentHash(p))refuse();
+  const participantFresh=await admissionAuthority(tx,s,i.plan,i.approval);await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);
+  const start=Date.parse(p.windowStart),end=Math.min(Date.parse(p.expiresAt),Date.parse(i.approval.expiresAt),r.leaseExpiresAt!.getTime());
+  const fresh=()=>{participantFresh();const at=now().getTime();if(at<start||at>=end)refuse()};fresh();return fresh;
  },
  async beforeDispatch(rawScope:DeploymentScope,id:string){const s=deploymentScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const r=await load(tx,s,id),{i,v}=unpack(r,s);if(v.state!=='dispatching')refuse();await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);return structuredClone(i.plan)})},
  /** Internal final dispatch boundary. The verifier must fuse DB-only policy

@@ -56,3 +56,4 @@ it('retains the original private provider window after single-use consumption wi
  expect(consumed.facts).toEqual({providerAccessVerified:true,verifiedEvidence:true});expect(()=>consumed.assertFresh()).not.toThrow();
  f.setTime(now+5000);expect(()=>consumed.assertFresh()).toThrow('proof_unavailable');expect(()=>f.proof.consume({...proof},plan)).toThrow('proof_unavailable');
 });
+it('retains private caller freshness after the last awaited source authority callback',async()=>{const f=fixture();let calls=0;(f.ports as any).assertCurrent=async()=>{const n=++calls;return()=>{if(n===2)throw Error('original session expired')}};await expect(f.proof.read(plan,new AbortController().signal)).rejects.toThrow('original session expired')});

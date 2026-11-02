@@ -13,7 +13,10 @@ import type {createGovernanceRequestService} from '@/lib/governance/intelligence
 import {assertNoUncoveredGovernanceExecution} from '@/lib/governance/intelligence/uncoveredExecution';
 import {fenceUncoveredMutationStore} from '@/lib/governance/intelligence/uncoveredMutationStore';
 import {createGovernanceDeploymentBindingReader} from '@/lib/governance/intelligence/deploymentBindingReader';
-import {createDeploymentProviderPreflight,createGovernanceDeploymentRequestAdmission} from '@/lib/governance/intelligence/deploymentRequestAdmission';
+import {createDeploymentProviderPreflight} from '@/lib/governance/intelligence/deploymentRequestAdmission';
+import {createGovernanceDeploymentRequestAdmissionV2} from '@/lib/governance/intelligence/deploymentRequestAdmissionV2';
+import {createDeploymentProviderEligibility} from '@/lib/governance/intelligence/deploymentProviderEligibility';
+import {readReleaseInstallationEligibility} from '@/lib/connectors/github/githubAppAuth';
 import {createGovernedReleaseDeploymentExecutor} from '@/lib/governance/intelligence/governedReleaseDeployment';
 type Authority=ReturnType<typeof createReleaseDeploymentAuthority>;
 type Approvals=ReturnType<typeof createReleaseDeploymentApprovalStore>;
@@ -21,7 +24,7 @@ type Service=ReturnType<typeof createGovernanceRequestService>;
 /** Actual request-bound profile selection; none of these server ports or policy
  * facts are accepted from HTTP input. Positive organization absence retains the
  * existing custom-environment executor, with a fused final absence check. */
-export function createReleaseDeploymentGovernanceCoordinator(request:NextRequest,repo:ReleaseOperationPlanRepo,rawScope:DeploymentScope,ports:{enabled():boolean;authority:Pick<Authority,'assertCurrent'|'readCurrentPlan'>;approvals:Pick<Approvals,'readGovernanceDeploymentApproval'>;service:Service;transport:ReleaseDeploymentGithubDependencies;current(plan:Readonly<DeploymentPlan>,signal:AbortSignal):Promise<void>}){
+export function createReleaseDeploymentGovernanceCoordinator(request:NextRequest,repo:ReleaseOperationPlanRepo,rawScope:DeploymentScope,ports:{enabled():boolean;authority:Pick<Authority,'assertCurrent'|'readCurrentPlan'>;approvals:Pick<Approvals,'readGovernanceDeploymentApproval'>;service:Service;transport:ReleaseDeploymentGithubDependencies;current(plan:Readonly<DeploymentPlan>,signal:AbortSignal):Promise<void>;providerCurrent(plan:Readonly<DeploymentPlan>,signal:AbortSignal):Promise<()=>void>}){
  const scope=Object.freeze(deploymentScopeSchema.parse(rawScope));
  const ready=(signal:AbortSignal)=>{signal.throwIfAborted();if(!ports.enabled())throw Error('release_deployment_governance_unavailable')};
  async function any(signal:AbortSignal){ready(signal);const value=await withGithubAbort(ports.service.hasAnyEnrollment(),signal);ready(signal);if(value!==true&&value!==false)throw Error('governance_enrollment_unavailable');return value}
@@ -36,7 +39,8 @@ export function createReleaseDeploymentGovernanceCoordinator(request:NextRequest
    if(await any(signal)){
     const readBinding=createGovernanceDeploymentBindingReader(repo,store,{readCurrentPlan:ports.authority.readCurrentPlan,assertCurrent:async(s,sig)=>{ready(sig);if(sha256ContentHash(s)!==sha256ContentHash(scope))throw Error('governance_deployment_identity_changed');await withGithubAbort(repo.$transaction(tx=>ports.authority.assertCurrent(tx,s,undefined)),sig);ready(sig)}});
     const binding=await readBinding(scope,id,signal),provider=createDeploymentProviderPreflight({assertCurrent:ports.current,transport:ports.transport});
-    const guard=createGovernanceDeploymentRequestAdmission(scope,id,binding,repo,store,ports.approvals,ports.service,{readBinding,provider});
+    const eligibility=createDeploymentProviderEligibility({transport:ports.transport,assertCurrent:async(p,sig)=>{const fresh=await ports.providerCurrent(p,sig);fresh()},readEligibility:(p,sig)=>readReleaseInstallationEligibility({organizationId:p.organizationId,connectionId:p.connectionId,connectionRevision:p.connectionRevision,installationId:p.installationId,repositoryFullName:p.repositoryFullName,purpose:'dispatch',planDigest:sha256ContentHash(p),isEnabled:ports.enabled,assertCurrent:()=>ports.providerCurrent(p,sig),fetch:ports.transport.fetch??fetch},sig)});
+    const guard=createGovernanceDeploymentRequestAdmissionV2(scope,id,binding,repo,store,ports.approvals,ports.service,{readBinding,provider,eligibility});
     return withGithubAbort(createGovernedReleaseDeploymentExecutor(store,{guard,readBinding,transport:ports.transport}).run(scope,id,signal),signal);
    }
    const transport=createReleaseDeploymentGithubTransport(ports.transport);
