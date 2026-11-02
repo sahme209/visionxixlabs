@@ -10,6 +10,8 @@
  * this returns, for a complete audit trail even for read-only actions.
  */
 
+import {readAgentConversationExecutionContext} from "@/lib/desktop/agentConversationExecutionContext";
+import type {ReleaseOperationPlanRepo} from "@/lib/agent/workflows/releaseOperationPlanStore";
 import { randomUUID } from "node:crypto";
 import {CONVERSATION_PROMPT_LIMITS} from "@/lib/axiom/agentRuntime/conversationPromptBudget";
 import { resolveAgentProfile } from "@/lib/axiom/agentRuntime/agentProfiles";
@@ -245,6 +247,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
 
+    const executionContext = await readAgentConversationExecutionContext(request, prisma as unknown as ReleaseOperationPlanRepo, {organizationId,actorUserId:String(actor.userId),sessionId:actor.id}, conversationId);
+    streaming?.abortSignal.throwIfAborted();
+
     const memoryRepo = prisma as unknown as WorkspaceMemoryRepo;
     const workspaceContext = workspaceMemoryPrompt(await loadWorkspaceMemory(memoryRepo, organizationId));
     const repositoryGrounding = initialRepositoryGrounding({ message, mode, repositoryFullName, branch, filePath });
@@ -258,6 +263,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       earlierHistoryOmitted,
       workspaceContext,
       currentRequestContext,
+      executionHistoryContext: executionContext,
       skillContext,
       preferredProvider,
       preferredModel: selectedModel,

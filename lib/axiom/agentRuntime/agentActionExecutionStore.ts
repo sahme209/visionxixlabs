@@ -7,7 +7,7 @@ import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {hasDesktopCapability,isWorkspaceAdminRole,type DesktopCapability,type DesktopWorkspaceRole} from '@/lib/desktop/desktopAuthorization';
 import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction as Tx,ReleaseOperationPlanRow as Row} from '@/lib/agent/workflows/releaseOperationPlanStore';
-import {AGENT_ACTION_EXECUTION_KIND as KIND,AGENT_EXECUTION_TOOLS,agentExecutionScopeSchema,agentExecutionBindingSchema,agentExecutionStateSchema,agentExecutionReceiptSchema,agentActionExecutionId,readApprovedAgentReview,type AgentExecutionScope,type AgentExecutionBinding,type AgentExecutionReceipt} from './agentActionExecutionContract';
+import {agentExecutionConversationHistorySchema,AGENT_ACTION_EXECUTION_KIND as KIND,AGENT_EXECUTION_TOOLS,agentExecutionScopeSchema,agentExecutionBindingSchema,agentExecutionStateSchema,agentExecutionReceiptSchema,agentActionExecutionId,readApprovedAgentReview,type AgentExecutionScope,type AgentExecutionBinding,type AgentExecutionReceipt} from './agentActionExecutionContract';
 export interface AgentExecutionPorts {
  /** Trusted request/commercial authentication only; DB-only while locked.
   * Persisted role/session/review/policy checks below cannot be replaced by this port. */
@@ -94,6 +94,18 @@ export function createAgentActionExecutionStore(repo:ReleaseOperationPlanRepo,po
  }
  function privateClaim(proof:AgentExecutionClaim){const c=claims.get(proof);if(!c||proof.operationId!==c.id)return deny();return c}
  return{
+  async conversationHistory(raw:AgentExecutionScope,conversationId:string){
+   const s=agentExecutionScopeSchema.parse(raw),conversation=z.string().min(1).max(240).parse(conversationId);
+   return transaction(s,async tx=>{
+    const a=await actor(tx,s,'reader');await request(tx,s,'reader');
+    const owners=await tx.$queryRaw<Array<{id:string;organizationId:string;userId:string}>>`SELECT "id","organizationId","userId" FROM "AgentConversation" WHERE "id"=${conversation} AND "organizationId"=${s.organizationId} AND "userId"=${s.actorUserId} FOR SHARE`;
+    if(owners.length!==1||owners[0].id!==conversation||owners[0].organizationId!==s.organizationId||owners[0].userId!==s.actorUserId)deny();
+    const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:s.organizationId,workflowKind:KIND,requestedByUserId:s.actorUserId,inputJson:{path:['review','conversationId'],equals:conversation}},orderBy:[{createdAt:'desc'},{id:'desc'}],take:6});
+    const values=[];for(const row of rows.slice(0,5)){const value=await load(tx,s,row.id);if(value.binding.review.conversationId!==conversation||value.binding.review.requesterUserId!==s.actorUserId)deny();values.push(value)}
+    const now=await time(tx);if(a.expiresAt<=now)deny();
+    return agentExecutionConversationHistorySchema.parse({operations:values.map(value=>dto(value,now)),truncated:rows.length>5,observedAt:now.toISOString()});
+   });
+  },
   async lookup(raw:AgentExecutionScope,proposalId:string){const s=agentExecutionScopeSchema.parse(raw);z.string().min(1).max(240).parse(proposalId);return transaction(s,async tx=>{
    const a=await actor(tx,s,'reader');await request(tx,s,'reader');
    const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:s.organizationId,workflowKind:KIND,requestedByUserId:s.actorUserId,inputJson:{path:['review','proposalId'],equals:proposalId}},orderBy:[{createdAt:'desc'},{id:'desc'}],take:2});

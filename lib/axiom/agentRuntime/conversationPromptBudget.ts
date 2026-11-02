@@ -1,6 +1,6 @@
 import type {ConversationTurnInput} from './decisionLoop';
 /** Prompt-only bounds. Stored conversation history is never rewritten. */
-export const CONVERSATION_PROMPT_LIMITS=Object.freeze({historyTurns:32,currentRequestBytes:32768,transcriptBytes:65536,historicalBytes:32768,olderTurnBytes:4096,toolResultBytes:8192});
+export const CONVERSATION_PROMPT_LIMITS=Object.freeze({historyTurns:32,executionHistoryChars:2000,currentRequestBytes:32768,transcriptBytes:65536,historicalBytes:32768,olderTurnBytes:4096,toolResultBytes:8192});
 const omitted='[Earlier conversation omitted to fit the context budget; saved history is unchanged.]';
 const truncated='\n[Content truncated to fit the context budget; remaining content is not shown.]';
 function validText(value:string){return Buffer.from(value,'utf8').toString('utf8')}

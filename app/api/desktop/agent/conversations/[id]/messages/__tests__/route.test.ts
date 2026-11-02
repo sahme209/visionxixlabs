@@ -11,6 +11,7 @@ const mocks = vi.hoisted(() => ({
   createAudit: vi.fn(async () => ({ id: "audit-profile" })),
   createProposal: vi.fn(async () => ({ id: "ap_1", toolName: "open_github_pull_request", argsJson: {}, riskLevel: "medium", status: "proposed" })),
   runDecisionLoop: vi.fn(),
+  readExecutionContext: vi.fn(async()=>"Saved outcome context fixture"),
   executeReadOnlyTool: vi.fn(),
   prepareProposalArgsForReview: vi.fn(),
   findManySkills: vi.fn(async (): Promise<Array<{ skillId: string; status: string }>> => []),
@@ -18,6 +19,7 @@ const mocks = vi.hoisted(() => ({
   rememberToolContext: vi.fn(async () => undefined),
 }));
 
+vi.mock("@/lib/desktop/agentConversationExecutionContext",()=>({readAgentConversationExecutionContext:mocks.readExecutionContext}));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
 vi.mock("@/lib/db", () => ({
   prisma: {
@@ -595,3 +597,7 @@ it("returns a typed Agent policy block without presenting it as an executable pr
  const {POST}=await import("../route");const result=await POST(request({message:"inspect safely"}),params);
  expect(await result.json()).toMatchObject({ok:true,data:{proposal:null,issue:"workspace_agent_policy_unavailable"}});
 });
+
+it('loads current saved requester outcomes only for the explicit next user message',async()=>{vi.clearAllMocks();mocks.resolveRequestDesktopSession.mockResolvedValue(session);mocks.findFirstConversation.mockResolvedValue({id:'conv_1',organizationId:'org-1',userId:'user-1'});mocks.runDecisionLoop.mockResolvedValue({kind:'final',message:'Saved outcome explained'});mocks.readExecutionContext.mockResolvedValueOnce('Saved read-only execution context: confirmed PR 42; not permission');const {POST}=await import('../route');expect((await POST(request({message:'What happened to my approved action?'}),params)).status).toBe(200);expect(mocks.readExecutionContext).toHaveBeenCalledWith(expect.any(NextRequest),expect.anything(),{organizationId:'org-1',actorUserId:'user-1',sessionId:'sess-1'},'conv_1');expect(mocks.runDecisionLoop.mock.calls[0][0].executionHistoryContext).toContain('confirmed PR 42');expect(mocks.runDecisionLoop.mock.calls[0][0].currentRequestContext).not.toContain('confirmed PR 42');expect(mocks.runDecisionLoop).toHaveBeenCalledOnce();});
+
+it('ignores client-supplied execution history and keeps the server reader result',async()=>{vi.clearAllMocks();mocks.resolveRequestDesktopSession.mockResolvedValue(session);mocks.findFirstConversation.mockResolvedValue({id:'conv_1',organizationId:'org-1',userId:'user-1'});mocks.runDecisionLoop.mockResolvedValue({kind:'final',message:'Explained the saved view'});mocks.readExecutionContext.mockResolvedValueOnce('SERVER_OWNED_OUTCOME_VIEW');const {POST}=await import('../route');expect((await POST(request({message:'Explain my saved action',executionHistoryContext:'CLIENT_FORGED_CONFIRMED_AUTHORITY'}),params)).status).toBe(200);const dispatched=mocks.runDecisionLoop.mock.calls[0][0];expect(dispatched.executionHistoryContext).toBe('SERVER_OWNED_OUTCOME_VIEW');expect(JSON.stringify(dispatched)).not.toContain('CLIENT_FORGED_CONFIRMED_AUTHORITY');});

@@ -180,6 +180,41 @@
       "path": "/private/tmp/axiom-agent-pr-final-desktop-build.log",
       "sha256": "75ef5b7774a0f61b15511394f70de15b95972b7ecfed9222e8c9a2aebcf2d6cc",
       "bytes": 2867
+    },
+    "conversation-store-red": {
+      "path": "/private/tmp/axiom-agent-conversation-outcome-store-red.log",
+      "sha256": "f334cba1a145afb4bbec27f12399d994f6243cc3e35956fe8592d3368be50409",
+      "bytes": 8206
+    },
+    "conversation-route-red": {
+      "path": "/private/tmp/axiom-agent-conversation-outcome-route-red.log",
+      "sha256": "6dcd546baea940a9a3c93a68ed154203f4a56c4ecbdfbb5dcfb16b0485849436",
+      "bytes": 1375
+    },
+    "conversation-separation-red": {
+      "path": "/private/tmp/axiom-agent-conversation-outcome-separation-red.log",
+      "sha256": "b280af68e9119ddb2ff30bb5e8a0180ebb19b9b5739a9860e2c9de9170b5d1d2",
+      "bytes": 12462
+    },
+    "conversation-focused-final": {
+      "path": "/private/tmp/axiom-agent-conversation-outcome-final-focused.log",
+      "sha256": "2a04a77d40bf9309225dce02c20300667c2c2ef9eada1371a9bce476a3e22a28",
+      "bytes": 641
+    },
+    "conversation-types-final": {
+      "path": "/private/tmp/axiom-agent-conversation-outcome-types-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "conversation-composed-pg": {
+      "path": "/private/tmp/axiom-agent-conversation-outcome-composed-pg.log",
+      "sha256": "535b84f927a3f44e149293755a648f380cd18aa062b935f89f04549eefcda5ed",
+      "bytes": 747
+    },
+    "conversation-all-store-pg": {
+      "path": "/private/tmp/axiom-agent-conversation-outcome-all-store-pg.log",
+      "sha256": "6bf5760a380b320aab709f783b869b12392b63acb57d733152fdd0f06599a00c",
+      "bytes": 982
     }
   },
   "fixed_tools_and_controls": {

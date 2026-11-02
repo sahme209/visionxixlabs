@@ -396,4 +396,42 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
  });
 
+ it('reads bounded current requester conversation outcomes without altering history or claiming work',async()=>{
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claim=await t.store.claim(t.scope,op.id);if(!claim.claimed)throw Error('fixture_claim_required');
+  await t.store.complete(claim.claim,'confirmed',{code:'action_completed',references:[{kind:'github_pull_request',id:'42'}]});
+  const before=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}}),events=await f.db.durableAgentWorkflowEvent.count({where:{workflowRunId:op.id}});
+  const history=await t.store.conversationHistory(t.scope,t.proposal.conversationId);expect(history.truncated).toBe(false);expect(history.operations).toMatchObject([{id:op.id,state:'confirmed',receipt:{references:[{kind:'github_pull_request',id:'42'}]}}]);
+  expect(history.operations[0]).not.toHaveProperty('args');expect(history.operations[0].observedAt).toBe(history.observedAt);
+  expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);expect(await f.db.durableAgentWorkflowEvent.count({where:{workflowRunId:op.id}})).toBe(events);
+ });
+ it('does not let a reviewer or another conversation supply requester outcome context',async()=>{
+  const t=await fixture();await t.store.prepare(t.scope,t.proposal.id);
+  const other=await f.db.agentConversation.create({data:{organizationId:t.org,userId:'other'}});
+  await expect(t.store.conversationHistory(t.scope,other.id)).rejects.toThrow();
+  const next={...t.scope,actorUserId:'reviewer',sessionId:t.org+'-reviewer'};await f.db.desktopSessionRecord.create({data:{id:next.sessionId,organizationId:t.org,userId:'reviewer',expiresAt:new Date(Date.now()+60000)}});
+  await expect(t.store.conversationHistory(next,t.proposal.conversationId)).rejects.toThrow();
+  const empty=await f.db.agentConversation.create({data:{organizationId:t.org,userId:t.scope.actorUserId}});expect((await t.store.conversationHistory(t.scope,empty.id)).operations).toEqual([]);
+ });
+ it('refuses conversation outcome context after current session revocation',async()=>{
+  const t=await fixture();await t.store.prepare(t.scope,t.proposal.id);await f.db.desktopSessionRecord.update({where:{id:t.scope.sessionId},data:{revokedAt:new Date()}});await expect(t.store.conversationHistory(t.scope,t.proposal.conversationId)).rejects.toThrow();
+ });
+
+ it('composes read-only conversation context with actual rows and current paired identity',async()=>{
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claim=await t.store.claim(t.scope,op.id);if(!claim.claimed)throw Error('fixture_claim_required');await t.store.complete(claim.claim,'unknown',{code:'provider_outcome_unknown'});
+  const before=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}});f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session',capabilities:['workspace:read']};f.token.mockReset();const network=vi.fn(async()=>{throw Error('provider_call_forbidden')});vi.stubGlobal('fetch',network);
+  try{
+   const {readAgentConversationExecutionContext}=await import('@/lib/desktop/agentConversationExecutionContext');const text=await readAgentConversationExecutionContext(new NextRequest('https://fixture.test/messages'),f.db,t.scope,t.proposal.conversationId);expect(text).toContain(op.id);expect(text).toContain('unknown');expect(text).toContain('not permission');expect(text).not.toContain('argsJson');expect(network).not.toHaveBeenCalled();expect(f.token).not.toHaveBeenCalled();expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);
+  }finally{f.principal=null;}
+ });
+ it('marks a conversation outcome view partial and keeps recovery readable in a new paired session',async()=>{
+  const t=await fixture();await t.store.prepare(t.scope,t.proposal.id);
+  for(let i=0;i<5;i++){
+   const input={organizationId:t.org,conversationId:t.proposal.conversationId,proposedByUserId:t.scope.actorUserId,toolName:'open_github_pull_request',args:{repositoryFullName:'fixture/repository',head:'reviewed',base:'main',title:'Synthetic history '+i}};
+   const {args,...source}=input;const proposal=await f.db.agentActionProposal.create({data:{...source,argsJson:args,actionDigest:agentActionDigest(input),riskLevel:'medium',approvalExpiresAt:new Date(Date.now()+60000)}});
+   expect(await decideAgentAction({organizationId:t.org,proposalId:proposal.id,actorUserId:'reviewer',actorRole:'security_reviewer',decision:'approve'})).toEqual({ok:true,status:'approved'});await t.store.prepare(t.scope,proposal.id);
+  }
+  const next={...t.scope,sessionId:t.scope.sessionId+'-next'};await f.db.desktopSessionRecord.create({data:{id:next.sessionId,organizationId:t.org,userId:t.scope.actorUserId,expiresAt:new Date(Date.now()+60000)}});
+  const result=await t.store.conversationHistory(next,t.proposal.conversationId);expect(result.operations).toHaveLength(5);expect(result.truncated).toBe(true);expect(result.operations.every((v:any)=>v.attemptCount===0&&v.state==='prepared')).toBe(true);expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.org,workflowKind:'agent_action_execution_v1'}})).toBe(6);
+ });
+
 });

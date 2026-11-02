@@ -42,3 +42,7 @@ export const agentActionExecutionDtoSchema=z.object({
  return v.state==='confirmed'||v.state==='refused'||v.state==='unknown'?v.receipt?.code===expected[v.state]:v.receipt===undefined;
 },'invalid_execution_receipt');
 export type AgentActionExecutionDto=z.infer<typeof agentActionExecutionDtoSchema>;
+
+/** Bounded current-reader view, never complete provider history or permission. */
+export const agentExecutionConversationHistorySchema=z.object({operations:z.array(agentActionExecutionDtoSchema).max(5),truncated:z.boolean(),observedAt:instant}).strict().refine(v=>v.operations.every(operation=>operation.observedAt===v.observedAt),'mixed_history_observation');
+export type AgentExecutionConversationHistory=z.infer<typeof agentExecutionConversationHistorySchema>;
