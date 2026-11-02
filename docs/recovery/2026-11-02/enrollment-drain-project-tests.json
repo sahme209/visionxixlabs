@@ -1,0 +1,12 @@
+{
+  "scope": "local supported-runtime whole project; skipped cases not execution evidence",
+  "runtimeSource": "18c7cff926b16d251a25e8f68603b678916b28db",
+  "nodeVersion": "v24.21.0",
+  "command": "node scripts/run-vitest.mjs",
+  "exitCode": 0,
+  "suitesPassed": 1374,
+  "suitesSkipped": 79,
+  "testsPassed": 16205,
+  "testsSkipped": 631,
+  "log": "/private/tmp/axiom-enrollment-drain-project-tests.log"
+}

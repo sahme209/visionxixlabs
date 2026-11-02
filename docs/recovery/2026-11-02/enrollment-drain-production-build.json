@@ -1,0 +1,10 @@
+{
+  "nodeVersion": "v24.21.0",
+  "source": "18c7cff926b16d251a25e8f68603b678916b28db",
+  "stage": "/private/tmp/axiom-deployment-baseline-production-myv_tfwu",
+  "log": "/private/tmp/axiom-enrollment-drain-production.log",
+  "archiveSha256": "3da4d272781a3170b4c238f4f080abc9c8eeb53dba366ea4288d620d8e1ac9bb",
+  "verifiedRegularFiles": 5921,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy"
+}
