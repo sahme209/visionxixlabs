@@ -23,7 +23,7 @@ The homepage's interactive rendered UI is not the same thing as its “Request a
 
 Homepage demo controls/tasks/model menu; Models and Resources disclosure behavior; Product; Cloud; Mobile; Automations; CLI; Review; Marketplace; Enterprise; Pricing; Download and each platform choice; Request a demo/contact destination (view only); Sign-in landing (no account creation); Changelog and a detail; Blog and a detail; Learn; Help; Forum; Workshops; Status; Brand; legal/privacy/data-use/security pages; footer theme/language/privacy controls. External social links can be destination-checked without account activity. Documentation: image enlargement, Menu/sidebar sections, Agent overview/review, cloud-agent security, representative integration and troubleshooting/support paths.
 
-Other reference sites remain incomplete. ChatGPT public documentation has an initial audit in chatgpt.md; its full public marketing/interaction audit and Claude, Codex and Grok are still pending. Cursor was inspected first, as requested. Do not mark the whole reference audit complete from partial pages.
+Other reference sites have partial first-pass notes in chatgpt.md, claude.md, codex.md and grok.md. ChatGPT documentation has an additional November2 follow-up. Cursor was inspected first, as requested. Unique unvisited interactions and deeper responsive/accessibility checks remain; do not mark the whole reference audit complete from partial pages.
 
 ## Website and documentation acceptance decisions to carry forward
 
