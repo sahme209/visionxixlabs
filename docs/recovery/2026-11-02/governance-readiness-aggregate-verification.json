@@ -1,0 +1,33 @@
+{
+  "kind": "local-verification-source-snapshot",
+  "runtimeCommit": "40961f93",
+  "executionAuthorized": false,
+  "productionAcceptance": false,
+  "sourceFiles": {
+    "lib/governance/intelligence/readinessService.ts": "2d4bc32d006d651013f224b1b2d72f72b740f06baa9f3c5a68e7d0fcfa6d559e",
+    "lib/governance/intelligence/enrollmentDrainStore.ts": "32bbff4b1d2ad7a8bcd2fea19dd2844eae4bbdce51ed04519ef0203ea69de55c",
+    "lib/governance/intelligence/__tests__/readinessService.test.ts": "686b70145a7eb2123b76f4035bd1378bc5515016b17ebddac1454c9a35deeec0",
+    "lib/governance/intelligence/__tests__/readinessService.pg.test.ts": "846b4cc540759d0a9931ec946661b74279495a8e8d18c9430974d64d9f049ae3",
+    "lib/governance/intelligence/__tests__/enrollmentDrainStore.test.ts": "f68aeaaf96273a47d25838fb24560a23318003a32d3d95be551fa4f4242c3760",
+    "scripts/run-governance-readiness-postgres.py": "95e9ff78432ffeaf53c4881d25a050e3afcdb97faf5de8b3dd61217f79803bca"
+  },
+  "logs": {
+    "/private/tmp/axiom-readiness-aggregate-red.log": "2cc5ac89678f424c2ef4a0fff9e3437579899e4629e1f20e41a1f1323ad91744",
+    "/private/tmp/axiom-readiness-aggregate-green.log": "251e3fefe438bcccc13ca388cc79dcaf1c6b3a51dbf304fd8fddc111e15babf9",
+    "/private/tmp/axiom-readiness-aggregate-pg.log": "1d2687d04745f91b6ec0da6dddf0b87338853e0d39cc71d182de2df2542eb918",
+    "/private/tmp/axiom-readiness-aggregate-types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "focusedTests": 28,
+  "isolatedPostgresTests": 11,
+  "scopedTypes": "passed",
+  "fullBuild": "not_repeated_for_this_increment",
+  "qualifications": {
+    "pairing": "simulated",
+    "provider": "not_called",
+    "immutableHistory": "actual_database",
+    "lockOrdering": "actual_database",
+    "overflow": "adapter_boundary_in_real_transaction",
+    "fleet": "unavailable",
+    "legacy": "unavailable"
+  }
+}
