@@ -20,7 +20,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", async () => {
   return { ...actual, resolveTenantScopedToken: mocks.resolveTenantScopedToken };
 });
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ commitFile: mocks.commitFile, getRepositoryDefaultBranch: mocks.getRepositoryDefaultBranch }));
-vi.mock("@/lib/db",()=>({prisma:{$queryRaw:async()=>[{sessionId:session.id,userId:session.userId,organizationId:session.organizationId,sessionLive:true,role:"admin",acceptedAt:new Date(),connectionId:"fixture-installation",githubInstallationId:"123",connectionRevision:new Date("2026-11-01T00:00:00Z"),connectionRevokedAt:null,connectionSuspendedAt:null,connectionStatus:"active",enrolled:false}],durableAgentWorkflow:{findMany:async()=>[]},gitHubInstallation:{findFirst:async()=>({id:"fixture-installation",githubInstallationId:"123",updatedAt:new Date("2026-11-01T00:00:00Z"),revokedAt:null,suspendedAt:null})}}}));
+vi.mock("@/lib/db",()=>({prisma:{$queryRaw:async()=>[{sessionId:session.id,userId:session.userId,organizationId:session.organizationId,sessionLive:true,sessionExpiresAt:new Date(Date.now()+60000),role:"admin",acceptedAt:new Date(),connectionId:"fixture-installation",githubInstallationId:"123",connectionRevision:new Date("2026-11-01T00:00:00Z"),connectionRevokedAt:null,connectionSuspendedAt:null,connectionStatus:"active",enrolled:false}],durableAgentWorkflow:{findMany:async()=>[]},gitHubInstallation:{findFirst:async()=>({id:"fixture-installation",githubInstallationId:"123",updatedAt:new Date("2026-11-01T00:00:00Z"),revokedAt:null,suspendedAt:null})}}}));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 
 function request(body: object) {

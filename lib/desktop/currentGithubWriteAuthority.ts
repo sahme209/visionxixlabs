@@ -12,31 +12,35 @@ export function createCurrentGithubWriteGuard(request:NextRequest,initial:Deskto
  const required:readonly DesktopCapability[]|null=profile==='repository_write'?['github:write']:profile==='deployment_dispatch'?['deploy:execute']:profile==='production_bypass_dispatch'?['deploy:execute','deploy:production_bypass']:null;
  const bound={id:initial.id,userId:initial.userId,organizationId:initial.organizationId,credentialKind:initial.credentialKind};
  let bindingReady=false;
+ let snapshotExpiresAt:number|undefined;
+ const started=Date.now(),deadline=started+15000;
  let pinned:{id:string;githubInstallationId:string;updatedAt:Date}|undefined;
  const signal=AbortSignal.any([request.signal,AbortSignal.timeout(15000)]);
+ const ready=()=>{signal.throwIfAborted();const at=Date.now();if(!Number.isFinite(started)||!Number.isFinite(at)||at<started||at>=deadline)throw Error('github_write_authority_unavailable');return at};
+ const assertFresh=()=>{const at=ready();if(!bindingReady||!pinned||snapshotExpiresAt===undefined||!Number.isFinite(snapshotExpiresAt)||at>=snapshotExpiresAt)throw Error('github_write_authority_unavailable')};
  async function current(){
-  signal.throwIfAborted();if(!required)throw Error('github_write_authority_unavailable');
+  ready();if(!required)throw Error('github_write_authority_unavailable');
   const actor=await withGithubAbort(resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:required[0],requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,route:'github mutation current authority'}),signal);
   if(bound.credentialKind!=='desktop_session'||!bound.id||!bound.userId||!bound.organizationId||!actor||actor.credentialKind!=='desktop_session'||actor.id!==bound.id||actor.userId!==bound.userId||actor.organizationId!==bound.organizationId||!required.every(capability=>actor.capabilities?.includes(capability)))throw Error('github_write_authority_unavailable');
-  signal.throwIfAborted();
+  ready();
  }
  async function installation(){
-  signal.throwIfAborted();
+  ready();
   const row=await withGithubAbort(repo.gitHubInstallation.findFirst({where:{organizationId:bound.organizationId,status:'active'},orderBy:{installedAt:'desc'},select:{id:true,githubInstallationId:true,updatedAt:true,revokedAt:true,suspendedAt:true}}),signal);
   if(!row||typeof row.id!=='string'||!row.id||! /^[1-9][0-9]*$/.test(row.githubInstallationId)||!Number.isSafeInteger(Number(row.githubInstallationId))||!(row.updatedAt instanceof Date)||!Number.isFinite(row.updatedAt.getTime())||row.revokedAt!==null||row.suspendedAt!==null)throw Error('github_write_authority_unavailable');
   if(pinned&&(row.id!==pinned.id||row.githubInstallationId!==pinned.githubInstallationId||row.updatedAt.getTime()!==pinned.updatedAt.getTime()))throw Error('github_write_authority_unavailable');
   pinned??=Object.freeze({id:row.id,githubInstallationId:row.githubInstallationId,updatedAt:new Date(row.updatedAt.getTime())});
-  signal.throwIfAborted();
+  ready();
  }
  async function snapshot(){
   if(!pinned)throw Error('github_write_authority_unavailable');
   // One statement observes persisted actor, installation and enrollment at the
   // same MVCC snapshot. No provider traffic or subsequent authority await here.
   const rows=await withGithubAbort(repo.$queryRaw<Array<{
-   sessionId:string;userId:string;organizationId:string;sessionLive:boolean;role:string;acceptedAt:Date|null;
+   sessionId:string;userId:string;organizationId:string;sessionLive:boolean;sessionExpiresAt:Date;role:string;acceptedAt:Date|null;
    connectionId:string;githubInstallationId:string;connectionRevision:Date;connectionRevokedAt:Date|null;connectionSuspendedAt:Date|null;connectionStatus:string;enrolled:boolean;
   }>>`SELECT s."id" AS "sessionId", s."userId", s."organizationId",
-   (s."revokedAt" IS NULL AND s."expiresAt" > clock_timestamp()) AS "sessionLive", m."role", m."acceptedAt",
+   (s."revokedAt" IS NULL AND s."expiresAt" > clock_timestamp()) AS "sessionLive", s."expiresAt" AS "sessionExpiresAt", m."role", m."acceptedAt",
    i."id" AS "connectionId", i."githubInstallationId", i."updatedAt" AS "connectionRevision",
    i."revokedAt" AS "connectionRevokedAt", i."suspendedAt" AS "connectionSuspendedAt", i."status" AS "connectionStatus",
    EXISTS (SELECT 1 FROM "DurableAgentWorkflow" d WHERE d."organizationId"=s."organizationId" AND (d."workflowKind"='governance_baseline_active_v1' OR left(d."id",18)='governance_active_')) AS "enrolled"
@@ -45,23 +49,25 @@ export function createCurrentGithubWriteGuard(request:NextRequest,initial:Deskto
    WHERE s."id"=${bound.id} AND s."organizationId"=${bound.organizationId} AND s."userId"=${bound.userId}
    AND i."id"=(SELECT latest."id" FROM "GitHubInstallation" latest WHERE latest."organizationId"=${bound.organizationId} AND latest."status"='active' ORDER BY latest."installedAt" DESC LIMIT 1)`,signal);
   const row=rows[0];
-  if(rows.length!==1||!row||row.sessionId!==bound.id||row.userId!==bound.userId||row.organizationId!==bound.organizationId||row.sessionLive!==true||!(row.acceptedAt instanceof Date)||!Number.isFinite(row.acceptedAt.getTime())||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(row.role)||!required||!required.every(capability=>hasDesktopCapability(row.role as DesktopWorkspaceRole,capability))||row.connectionId!==pinned.id||row.githubInstallationId!==pinned.githubInstallationId||!(row.connectionRevision instanceof Date)||row.connectionRevision.getTime()!==pinned.updatedAt.getTime()||row.connectionRevokedAt!==null||row.connectionSuspendedAt!==null||row.connectionStatus!=='active'||row.enrolled!==false)throw Error('github_write_authority_unavailable');
-  signal.throwIfAborted();
+  if(rows.length!==1||!row||row.sessionId!==bound.id||row.userId!==bound.userId||row.organizationId!==bound.organizationId||row.sessionLive!==true||!(row.sessionExpiresAt instanceof Date)||!Number.isFinite(row.sessionExpiresAt.getTime())||Date.now()>=row.sessionExpiresAt.getTime()||!(row.acceptedAt instanceof Date)||!Number.isFinite(row.acceptedAt.getTime())||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(row.role)||!required||!required.every(capability=>hasDesktopCapability(row.role as DesktopWorkspaceRole,capability))||row.connectionId!==pinned.id||row.githubInstallationId!==pinned.githubInstallationId||!(row.connectionRevision instanceof Date)||row.connectionRevision.getTime()!==pinned.updatedAt.getTime()||row.connectionRevokedAt!==null||row.connectionSuspendedAt!==null||row.connectionStatus!=='active'||row.enrolled!==false)throw Error('github_write_authority_unavailable');
+  ready();snapshotExpiresAt=row.sessionExpiresAt.getTime();
  }
- const beforeWrite=async()=>{bindingReady=false;await current();await installation();await assertNoGovernanceEnrollmentForMutation(repo,bound.organizationId,signal);await current();await snapshot();bindingReady=true};
+ const beforeWrite=async()=>{bindingReady=false;snapshotExpiresAt=undefined;try{await current();await installation();await assertNoGovernanceEnrollmentForMutation(repo,bound.organizationId,signal);await current();await snapshot();bindingReady=true;assertFresh()}catch(error){bindingReady=false;snapshotExpiresAt=undefined;throw error}};
  return Object.freeze(Object.assign(beforeWrite,{
+  /** Internal retained freshness only; no serializable authority or new grant. */
+  assertFresh,
   /** Captured evidence only; final consumers must revalidate it against storage. */
   connectionBinding(){
-   signal.throwIfAborted();if(!bindingReady||!pinned)throw Error('github_write_authority_unavailable');
-   return Object.freeze({id:pinned.id,githubInstallationId:pinned.githubInstallationId,updatedAt:new Date(pinned.updatedAt.getTime())});
+   assertFresh();
+   return Object.freeze({id:pinned!.id,githubInstallationId:pinned!.githubInstallationId,updatedAt:new Date(pinned!.updatedAt.getTime())});
   },
   async resolveToken(repository:RepoRef){
    try{
-    signal.throwIfAborted();if(!pinned)throw Error('github_write_authority_unavailable');
+    ready();if(!pinned)throw Error('github_write_authority_unavailable');
     const target={owner:repository.owner,repo:repository.repo};
     const result=await withGithubAbort(resolveTenantScopedToken(bound.organizationId,target,{id:pinned.id,githubInstallationId:pinned.githubInstallationId,updatedAt:new Date(pinned.updatedAt.getTime()),signal},repo),signal);
     if(!result.ok)return result;
-    await beforeWrite();return result;
+    await beforeWrite();assertFresh();return result;
    }catch{return{ok:false as const,error:'github_write_authority_unavailable' as const}}
   },
  }));

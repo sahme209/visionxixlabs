@@ -74,7 +74,7 @@ describe("POST /api/desktop/environments/deploy", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.installation.mockReset().mockResolvedValue({id:"connection",githubInstallationId:"123",updatedAt:new Date("2026-11-01T00:00:00Z"),revokedAt:null,suspendedAt:null});
-    mocks.snapshot.mockReset().mockResolvedValue([{sessionId:session.id,userId:session.userId,organizationId:session.organizationId,sessionLive:true,role:"admin",acceptedAt:new Date(),connectionId:"connection",githubInstallationId:"123",connectionRevision:new Date("2026-11-01T00:00:00Z"),connectionRevokedAt:null,connectionSuspendedAt:null,connectionStatus:"active",enrolled:false}]);
+    mocks.snapshot.mockReset().mockResolvedValue([{sessionId:session.id,userId:session.userId,organizationId:session.organizationId,sessionLive:true,sessionExpiresAt:new Date(Date.now()+60000),role:"admin",acceptedAt:new Date(),connectionId:"connection",githubInstallationId:"123",connectionRevision:new Date("2026-11-01T00:00:00Z"),connectionRevokedAt:null,connectionSuspendedAt:null,connectionStatus:"active",enrolled:false}]);
     mocks.enrollment.mockReset().mockResolvedValue([]);
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.findRepositories.mockResolvedValue([]);

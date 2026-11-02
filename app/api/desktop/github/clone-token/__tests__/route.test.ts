@@ -4,11 +4,16 @@ import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({
   resolveRequestDesktopSession: vi.fn(),
   resolveTenantScopedToken: vi.fn(),
+  resolveWithExpiry: vi.fn(),
+  reserve: vi.fn(),
+  finalize: vi.fn(),
+  leaseAuthority: vi.fn(),
   recordAudit: vi.fn(async (input: import("@/lib/audit/secureAudit").RecordInput) => { void input; }),
   getRepositoryDefaultBranch: vi.fn(),
   installation: null as any,
   enrolled: false,
   sessionLive: true,
+  sessionExpiresAt: new Date(),
   role: "operator",
   installationRead: vi.fn(),
   snapshot: vi.fn(),
@@ -21,6 +26,7 @@ vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
 }));
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
   resolveTenantScopedToken: mocks.resolveTenantScopedToken,
+  resolveTenantScopedTokenWithExpiry: mocks.resolveWithExpiry,
   parseRepositoryFullName: (value: string) => {
     const [owner, repo, extra] = value.split("/");
     return owner && repo && !extra ? { owner, repo } : null;
@@ -28,6 +34,9 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
 }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: mocks.recordAudit }));
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ getRepositoryDefaultBranch: mocks.getRepositoryDefaultBranch }));
+
+vi.mock("@/lib/governance/intelligence/nativeGitCredentialLeaseStore",()=>({createNativeGitCredentialLeaseStore:()=>({reserve:mocks.reserve,finalize:mocks.finalize})}));
+vi.mock("@/lib/desktop/nativeGitCredentialLeaseAuthority",()=>({createNativeGitCredentialLeaseAuthority:()=>mocks.leaseAuthority}));
 
 function request(body: object,signal?:AbortSignal) {
   return new NextRequest("https://visionxixlabs.com/api/desktop/github/clone-token", {
@@ -43,11 +52,14 @@ const session = { id: "sess-1", userId: "user-1", organizationId: "org-1", crede
 describe("POST /api/desktop/github/clone-token", () => {
   beforeEach(() => {
     vi.resetAllMocks();
-    mocks.installation={id:"installation",githubInstallationId:"123",updatedAt:new Date("2026-11-01T00:00:00.000Z"),revokedAt:null,suspendedAt:null};mocks.enrolled=false;mocks.sessionLive=true;mocks.role="operator";
+    mocks.installation={id:"installation",githubInstallationId:"123",updatedAt:new Date("2026-11-01T00:00:00.000Z"),revokedAt:null,suspendedAt:null};mocks.enrolled=false;mocks.sessionLive=true;mocks.sessionExpiresAt=new Date(Date.now()+60000);mocks.role="operator";
     mocks.installationRead.mockImplementation(async()=>({...mocks.installation}));
     mocks.enrollmentRead.mockImplementation(async()=>mocks.enrolled?[{id:"governance_active_fixture",organizationId:session.organizationId,workflowKind:"governance_baseline_active_v1"}]:[]);
-    mocks.snapshot.mockImplementation(async()=>[{sessionId:session.id,userId:session.userId,organizationId:session.organizationId,sessionLive:mocks.sessionLive,role:mocks.role,acceptedAt:new Date("2026-11-01T00:00:00.000Z"),connectionId:mocks.installation.id,githubInstallationId:mocks.installation.githubInstallationId,connectionRevision:mocks.installation.updatedAt,connectionRevokedAt:mocks.installation.revokedAt,connectionSuspendedAt:mocks.installation.suspendedAt,connectionStatus:"active",enrolled:mocks.enrolled}]);
+    mocks.snapshot.mockImplementation(async()=>[{sessionId:session.id,userId:session.userId,organizationId:session.organizationId,sessionLive:mocks.sessionLive,expiresAt:mocks.sessionExpiresAt,sessionExpiresAt:mocks.sessionExpiresAt,role:mocks.role,acceptedAt:new Date("2026-11-01T00:00:00.000Z"),connectionId:mocks.installation.id,githubInstallationId:mocks.installation.githubInstallationId,connectionRevision:mocks.installation.updatedAt,connectionRevokedAt:mocks.installation.revokedAt,connectionSuspendedAt:mocks.installation.suspendedAt,connectionStatus:"active",enrolled:mocks.enrolled}]);
     mocks.recordAudit.mockResolvedValue(undefined);
+    mocks.reserve.mockResolvedValue({id:'native_git_credential_lease_'+ 'a'.repeat(64),version:0,status:'pending'});
+    mocks.finalize.mockResolvedValue({status:'issued',version:1});
+    mocks.resolveWithExpiry.mockImplementation(async(...args)=>{const result=await mocks.resolveTenantScopedToken(...args);return result?.ok?{...result,expiresAt:Date.now()+60000}:result});
     mocks.resolveRequestDesktopSession.mockResolvedValue(session);
     mocks.getRepositoryDefaultBranch.mockResolvedValue({ ok: true, data: "main" });
   });
@@ -157,5 +169,24 @@ it('refuses API keys even if a resolver returns an otherwise matching principal'
 it('keeps enrolled clone reads limited to contents_read without granting mutation admission',async()=>{
  mocks.enrolled=true;mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'READ_SECRET'});const {POST}=await import('../route');const r=await POST(request({repositoryFullName:'acme/widgets',purpose:'clone'}));expect(r.status).toBe(200);expect(mocks.resolveTenantScopedToken.mock.calls[0][2]).toMatchObject({permissionProfile:'contents_read'});expect(mocks.enrollmentRead).not.toHaveBeenCalled();
 });
+
+it('reserves a secret-free immutable lease before mint and records exact provider expiry before any credential response',async()=>{
+ mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'LEASE_SECRET'});const expiresAt=Date.now()+60000;mocks.resolveWithExpiry.mockResolvedValue({ok:true,token:'LEASE_SECRET',expiresAt});
+ const {POST}=await import('../route');const r=await POST(request({repositoryFullName:'acme/widgets',purpose:'push',branch:'feature'}));expect(r.status).toBe(200);
+ const scope={organizationId:session.organizationId,actorUserId:session.userId,sessionId:session.id};
+ expect(mocks.reserve).toHaveBeenCalledWith(scope,{repositoryFullName:'acme/widgets',branch:'feature',connectionId:'installation',githubInstallationId:'123',connectionRevision:mocks.installation.updatedAt.toISOString()},expect.stringMatching(/^[a-f0-9-]{36}$/));
+ expect(mocks.resolveWithExpiry).toHaveBeenCalledOnce();expect(mocks.finalize).toHaveBeenCalledWith(scope,'native_git_credential_lease_'+'a'.repeat(64),expiresAt);
+ expect(mocks.reserve.mock.invocationCallOrder[0]).toBeLessThan(mocks.resolveWithExpiry.mock.invocationCallOrder[0]);expect(mocks.resolveWithExpiry.mock.invocationCallOrder[0]).toBeLessThan(mocks.finalize.mock.invocationCallOrder[0]);
+ expect(JSON.stringify(mocks.reserve.mock.calls)+JSON.stringify(mocks.finalize.mock.calls)).not.toContain('LEASE_SECRET');expect((await r.json()).data.cloneUrl).toContain('LEASE_SECRET');
+});
+it('never mints a push credential after a refused reservation',async()=>{mocks.reserve.mockRejectedValue(Error('PRIVATE_LEASE_FAILURE'));mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'SECRET'});const {POST}=await import('../route');const r=await POST(request({repositoryFullName:'acme/widgets',purpose:'push',branch:'feature'}));expect(r.status).toBe(409);expect(mocks.resolveWithExpiry).not.toHaveBeenCalled();expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();expect(await r.text()).not.toContain('PRIVATE_LEASE_FAILURE');});
+it('withholds token and never retries or clears a lease after uncertain finalization',async()=>{mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'SECRET'});mocks.resolveWithExpiry.mockResolvedValue({ok:true,token:'SECRET',expiresAt:Date.now()+60000});mocks.finalize.mockRejectedValue(Error('private lost acknowledgment'));const {POST}=await import('../route');const r=await POST(request({repositoryFullName:'acme/widgets',purpose:'push',branch:'feature'}));expect(r.status).toBe(409);expect(mocks.reserve).toHaveBeenCalledOnce();expect(mocks.resolveWithExpiry).toHaveBeenCalledOnce();expect(mocks.finalize).toHaveBeenCalledOnce();expect(await r.text()).not.toContain('SECRET');expect(mocks.recordAudit).not.toHaveBeenCalled();});
+it('keeps unknown provider issuance pending rather than inventing an expiry',async()=>{mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'SECRET'});mocks.resolveWithExpiry.mockRejectedValue(Error('unknown provider reply'));const {POST}=await import('../route');const r=await POST(request({repositoryFullName:'acme/widgets',purpose:'push',branch:'feature'}));expect(r.status).toBe(409);expect(mocks.reserve).toHaveBeenCalledOnce();expect(mocks.finalize).not.toHaveBeenCalled();expect(mocks.resolveWithExpiry).toHaveBeenCalledOnce();});
+it('does not start issuance after cancellation at the completed reservation boundary',async()=>{const c=new AbortController();mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'SECRET'});mocks.reserve.mockImplementation(async()=>{c.abort();return{id:'native_git_credential_lease_'+'a'.repeat(64)}});const {POST}=await import('../route');const r=await POST(request({repositoryFullName:'acme/widgets',purpose:'push',branch:'feature'},c.signal));expect(r.status).toBe(409);expect(mocks.reserve).toHaveBeenCalledOnce();expect(mocks.resolveWithExpiry).not.toHaveBeenCalled();expect(mocks.finalize).not.toHaveBeenCalled();});
+it.each(['clone','pull'])('creates no write lease for %s read-only credentials',async purpose=>{mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'READ'});const {POST}=await import('../route');expect((await POST(request({repositoryFullName:'acme/widgets',purpose}))).status).toBe(200);expect(mocks.reserve).not.toHaveBeenCalled();expect(mocks.finalize).not.toHaveBeenCalled();expect(mocks.resolveWithExpiry).not.toHaveBeenCalled();});
+
+it.each(['session','installation','enrollment'])('rechecks %s after the reservation commit and before minting',async kind=>{mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'SECRET'});mocks.reserve.mockImplementation(async()=>{if(kind==='session')mocks.sessionLive=false;if(kind==='installation')mocks.installation={...mocks.installation,updatedAt:new Date('2026-11-02T00:00:00Z')};if(kind==='enrollment')mocks.enrolled=true;return{id:'native_git_credential_lease_'+'a'.repeat(64)}});const {POST}=await import('../route');const r=await POST(request({repositoryFullName:'acme/widgets',purpose:'push',branch:'feature'}));expect(r.status).toBe(409);expect(mocks.reserve).toHaveBeenCalledOnce();expect(mocks.resolveWithExpiry).not.toHaveBeenCalled();expect(mocks.finalize).not.toHaveBeenCalled();});
+
+it('withholds a read credential if session expiry crosses the final database result await',async()=>{mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:'FINAL_SECRET'});const snapshot=mocks.snapshot.getMockImplementation()!;mocks.recordAudit.mockImplementation(async()=>{mocks.snapshot.mockImplementation(async(...args)=>{const rows=await snapshot(...args);const expiry=new Date(Date.now()+10);await new Promise(r=>setTimeout(r,20));return rows.map((row:any)=>({...row,sessionLive:true,expiresAt:expiry}))})});const {POST}=await import('../route');const r=await POST(request({repositoryFullName:'acme/widgets'}));expect(r.status).toBe(409);expect(await r.text()).not.toContain('FINAL_SECRET');});
 
 });

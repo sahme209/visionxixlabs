@@ -44,40 +44,69 @@ export interface InstallationRepo {
  * prefix) — matching what resolveGithubInstallationToken's `repositories`
  * option expects.
  */
-export async function resolveTenantScopedToken(organizationId: string, repo: RepoRef,
-  expectedInstallation?: { id: string; githubInstallationId: string; updatedAt: Date; signal?: AbortSignal; permissionProfile?: GithubReadPermissionProfile },
-  installationRepo: InstallationRepo = prisma as unknown as InstallationRepo,
-): Promise<ResolveTenantScopedTokenResult> {
-  // Capture primitive revision values before the provider await. A mutable
-  // caller object cannot move the expected installation while minting.
-  const pinned = expectedInstallation ? {
-    id: expectedInstallation.id,
-    githubInstallationId: expectedInstallation.githubInstallationId,
-    updatedAt: expectedInstallation.updatedAt.getTime(),
-  } : null;
-  const signal = expectedInstallation?.signal;
-  if (signal?.aborted) return { ok: false, error: "github_token_unavailable" };
-  const readInstallation = () => installationRepo.gitHubInstallation.findFirst({
-    where: { organizationId, status: "active" },
-    orderBy: { installedAt: "desc" },
-    select: pinned ? { githubInstallationId: true, id: true, updatedAt: true, revokedAt: true, suspendedAt: true } : { githubInstallationId: true },
-  }).catch(() => null);
-  const matches = (row: Awaited<ReturnType<typeof readInstallation>>) => !!row && (!pinned || (
-    row.id === pinned.id && row.githubInstallationId === pinned.githubInstallationId
-    && row.updatedAt?.getTime() === pinned.updatedAt && !row.revokedAt && !row.suspendedAt
-  ));
-  const installation = await readInstallation();
-  if (!installation || !matches(installation)) return { ok: false, error: "github_not_connected" };
-  if (signal?.aborted) return { ok: false, error: "github_token_unavailable" };
+export interface ExpectedTenantInstallation {
+  id: string;
+  githubInstallationId: string;
+  updatedAt: Date;
+  signal?: AbortSignal;
+  permissionProfile?: GithubReadPermissionProfile;
+}
+export type ResolveTenantScopedTokenWithExpiryResult =
+  | { ok: true; token: string; expiresAt: number }
+  | Extract<ResolveTenantScopedTokenResult,{ok:false}>;
+type ValidatedTokenResult =
+  | { ok: true; token: string; expiresAt?: number }
+  | Extract<ResolveTenantScopedTokenResult,{ok:false}>;
 
-  const installationId = Number(installation.githubInstallationId);
-  const outcome = await resolveGithubInstallationToken({ installationId, repositories: [repo.repo], ...(expectedInstallation?.signal ? { signal: expectedInstallation.signal } : {}), ...(expectedInstallation?.permissionProfile ? { permissionProfile: expectedInstallation.permissionProfile } : {}) });
-  if (signal?.aborted) return { ok: false, error: "github_token_unavailable" };
-  if (!outcome.ok) return { ok: false, error: "github_token_unavailable" };
-  if (expectedInstallation && outcome.installationId !== installationId) return { ok: false, error: "github_token_unavailable" };
-  if (pinned && !matches(await readInstallation())) return { ok: false, error: "github_not_connected" };
-  if (signal?.aborted) return { ok: false, error: "github_token_unavailable" };
-  return { ok: true, token: outcome.token };
+/** Shared single issuance path. Capture caller-owned scope/profile primitives
+ * before the first database/provider await; never switch profiles after mint. */
+async function resolveValidatedTenantToken(organizationId:string,repo:RepoRef,expectedInstallation:ExpectedTenantInstallation|undefined,installationRepo:InstallationRepo,requireExpiry:boolean):Promise<ValidatedTokenResult>{
+  const unavailable=():ValidatedTokenResult=>({ok:false,error:'github_token_unavailable'});
+  const target={owner:repo.owner,repo:repo.repo};
+  const signal=expectedInstallation?.signal,permissionProfile=expectedInstallation?.permissionProfile;
+  const pinned=expectedInstallation?{id:expectedInstallation.id,githubInstallationId:expectedInstallation.githubInstallationId,updatedAt:expectedInstallation.updatedAt instanceof Date?expectedInstallation.updatedAt.getTime():NaN}:null;
+  if(signal?.aborted)return unavailable();
+  if(requireExpiry&&(!pinned||typeof pinned.id!=='string'||!pinned.id||!Number.isFinite(pinned.updatedAt)||!/^[1-9][0-9]*$/.test(pinned.githubInstallationId)||!Number.isSafeInteger(Number(pinned.githubInstallationId))||!parseRepositoryFullName(`${target.owner}/${target.repo}`)))return unavailable();
+  if(permissionProfile!==undefined&&!['provenance_read','contents_read','pull_requests_read'].includes(permissionProfile))return unavailable();
+  const readInstallation=()=>installationRepo.gitHubInstallation.findFirst({
+    where:{organizationId,status:'active'},orderBy:{installedAt:'desc'},
+    select:pinned?{githubInstallationId:true,id:true,updatedAt:true,revokedAt:true,suspendedAt:true}:{githubInstallationId:true},
+  }).catch(()=>null);
+  const matches=(row:Awaited<ReturnType<typeof readInstallation>>)=>!!row&&(!pinned||(
+    row.id===pinned.id&&row.githubInstallationId===pinned.githubInstallationId&&row.updatedAt?.getTime()===pinned.updatedAt&&!row.revokedAt&&!row.suspendedAt
+  ));
+  const installation=await readInstallation();
+  if(!installation||!matches(installation))return{ok:false,error:'github_not_connected'};
+  if(signal?.aborted)return unavailable();
+  const installationId=Number(installation.githubInstallationId);
+  const outcome=await resolveGithubInstallationToken({installationId,repositories:[target.repo],...(signal?{signal}:{}),...(permissionProfile?{permissionProfile}:{})});
+  if(signal?.aborted||!outcome.ok)return unavailable();
+  if(pinned&&outcome.installationId!==installationId)return unavailable();
+  // Only real provider/cache metadata can establish the lease. Legacy consumers
+  // retain their old response shape and do not acquire a guessed expiry.
+  const expiresAt=outcome.expiresAt;
+  const liveExpiry=()=>typeof expiresAt==='number'&&Number.isFinite(expiresAt)&&Number.isFinite(Date.now())&&expiresAt>Date.now();
+  if(requireExpiry&&!liveExpiry())return unavailable();
+  if(pinned&&!matches(await readInstallation()))return{ok:false,error:'github_not_connected'};
+  if(signal?.aborted||requireExpiry&&!liveExpiry())return unavailable();
+  return{ok:true,token:outcome.token,expiresAt};
+}
+
+/** Compatibility projection: no expiry field is added to existing results. */
+export async function resolveTenantScopedToken(organizationId:string,repo:RepoRef,expectedInstallation?:ExpectedTenantInstallation,installationRepo:InstallationRepo=prisma as unknown as InstallationRepo):Promise<ResolveTenantScopedTokenResult>{
+  const result=await resolveValidatedTenantToken(organizationId,repo,expectedInstallation,installationRepo,false);
+  return result.ok?{ok:true,token:result.token}:result;
+}
+
+/** Explicit lease metadata for trusted pinned issuance. Missing or stale provider
+ * expiry refuses; no second mint, ambient fallback or synthetic lifetime exists. */
+export async function resolveTenantScopedTokenWithExpiry(organizationId:string,repo:RepoRef,expectedInstallation:ExpectedTenantInstallation,installationRepo:InstallationRepo=prisma as unknown as InstallationRepo):Promise<ResolveTenantScopedTokenWithExpiryResult>{
+  try{
+    const result=await resolveValidatedTenantToken(organizationId,repo,expectedInstallation,installationRepo,true);
+    if(!result.ok)return result;
+    if(typeof result.expiresAt!=='number')return{ok:false,error:'github_token_unavailable'};
+    return{ok:true,token:result.token,expiresAt:result.expiresAt};
+  }catch{return{ok:false,error:'github_token_unavailable'}}
 }
 
 /** Splits "owner/repo" into its parts. Returns null for anything else. */
