@@ -61,3 +61,19 @@ it('rechecks lease and private proof expiry after the fused verifier awaits',asy
  const f=fixture(),p=await f.store.prepare(f.scope,f.plan);await f.store.claim(f.scope,p.id);
  await expect(f.store.beforeDispatchWithAdmission(f.scope,p.id,async()=>{f.advance();return()=>{}})).rejects.toThrow();
 });
+it('claim admission refuses atomically before consuming the independent approval',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);
+ await expect(f.store.claimWithAdmission(f.scope,p.id,async()=>{throw Error('policy_revoked')})).rejects.toThrow('policy_revoked');
+ expect(f.rows[0]).toMatchObject({currentStep:'prepared',attemptCount:0});expect(f.deps.consumeIndependentApproval).not.toHaveBeenCalled();
+});
+it('claim admission rolls consumption and transition back when the private proof expires during durable writes',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);let valid=true;const original=f.repo.durableAgentWorkflowEvent.create.getMockImplementation();
+ f.repo.durableAgentWorkflowEvent.create.mockImplementation(async(a:any)=>{await original(a);valid=false});
+ await expect(f.store.claimWithAdmission(f.scope,p.id,async()=>()=>{if(!valid)throw Error('source_expired')})).rejects.toThrow('source_expired');
+ expect(f.rows[0]).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});expect(f.events).toHaveLength(1);
+});
+it('claim admission preserves one consumed attempt and does not rerun admission for recovery',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan),verify=vi.fn(async()=>()=>{});
+ const claims=await Promise.all([f.store.claimWithAdmission(f.scope,p.id,verify),f.store.claimWithAdmission(f.scope,p.id,verify)]);
+ expect(claims.filter(c=>c.claimed)).toHaveLength(1);expect(verify).toHaveBeenCalledOnce();expect(f.rows[0].attemptCount).toBe(1);
+});

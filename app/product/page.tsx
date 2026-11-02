@@ -25,7 +25,7 @@ const BOUNDARIES = [
 
 const PILLARS = [
   ["AI", "The Agent grounds repository questions in the selected branch or file through audited read-only GitHub tools, then turns plain English into an answer or proposed action. It never executes a write by itself."],
-  ["Governance", "Every proposed action is risk-classified, requires a workspace admin's explicit approval before it runs, and lands in a permanent audit trail — approved or not."],
+  ["Governance", "Keep the exact proposal, authorized human review, separate requester execution, and recorded outcome in view. Current permissions and enabled workflow controls determine which actions are available."],
   ["Integrations", "GitHub, Airflow, and AWS workflows keep repository scope, dependency evidence, and approval context explicit. Available operations depend on the connected account and validated provider permissions; a preview is not proof of a completed deployment."],
 ];
 

@@ -15,12 +15,21 @@ const mocks = vi.hoisted(() => ({
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({
   resolveRequestDesktopSession: mocks.resolveRequestDesktopSession,
 }));
-vi.mock("@/lib/db", () => ({
-  prisma: {
+vi.mock("@/lib/db", () => {
+  // Explicit synthetic unenrolled/current persisted authority; actual refusal helper runs.
+  const tx = {
+    $queryRaw: async (sql: TemplateStringsArray) => sql.join('').includes('OrgMembership')
+      ? [{organizationId:'org-1',userId:'user-1',role:'admin',acceptedAt:new Date()}]
+      : sql.join('').includes('DesktopSessionRecord')
+      ? [{id:'sess-1',organizationId:'org-1',userId:'user-1',live:true,expiresAt:new Date(Date.now()+60000)}]
+      : [{live:true}],
+    durableAgentWorkflow:{findMany:async()=>[]},
     environment: { findUnique: mocks.findEnvironment },
     deploymentTarget: { findUnique: mocks.findTarget, upsert: mocks.upsertTarget },
-  },
-}));
+  };
+  return {prisma:{...tx,$transaction:async<T>(fn:(value:typeof tx)=>Promise<T>)=>fn(tx)}};
+});
+
 vi.mock("@/lib/releaseops/auditEventResponder", async () => {
   const actual = await vi.importActual<typeof import("@/lib/releaseops/auditEventResponder")>(
     "@/lib/releaseops/auditEventResponder",

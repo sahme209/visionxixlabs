@@ -1,3 +1,4 @@
+import {withUnenrolledConfigurationMutation} from '@/lib/desktop/configurationMutationRefusal';
 /**
  * GET  /api/desktop/identity-providers
  * POST /api/desktop/identity-providers
@@ -61,11 +62,17 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
 
-  const r = await buildIdentityProviderCreateResponse(prisma as unknown as IdentityProviderRepo, {
+  let r:Awaited<ReturnType<typeof buildIdentityProviderCreateResponse>>;
+  try{
+    r=await withUnenrolledConfigurationMutation(prisma,{organizationId:String(session.organizationId),userId:String(session.userId),sessionId:String(session.id)},request.signal,async()=>{
+      const current=await resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',allowApiKey:false,requireWorkspaceAdmin: true,recordHeartbeat:false,route:'configuration mutation current authority'});
+      if(!current||current.credentialKind!=='desktop_session'||current.id!==session.id||current.userId!==session.userId||current.organizationId!==session.organizationId)throw Error('configuration_identity_changed');
+    },tx=>buildIdentityProviderCreateResponse(tx as unknown as IdentityProviderRepo, {
     organizationId: String(session.organizationId),
     actorUserId: String(session.userId),
     protocol, issuerOrEntityId, metadataDocument, managedDomains, roleMapping, requireMfaClaim,
-  });
+  }));
+  }catch{return NextResponse.json({ok:false,error:'governance_configuration_mutation_unavailable'},{status:409})}
 
   if (r.body.ok) {
     try {

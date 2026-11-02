@@ -40,7 +40,12 @@ export function createReleaseDeploymentGovernanceCoordinator(request:NextRequest
     return withGithubAbort(createGovernedReleaseDeploymentExecutor(store,{guard,readBinding,transport:ports.transport}).run(scope,id,signal),signal);
    }
    const transport=createReleaseDeploymentGithubTransport(ports.transport);
-   const executor=createReleaseDeploymentExecutor(fence(store,signal),{kind:transport.kind,execute:input=>transport.execute({...input,signal:AbortSignal.any([signal,input.signal]),assertCurrent:async()=>{
+   const freshLegacy=()=>{ready(signal);const at=Date.now();if(!Number.isFinite(at)||at<started||at>=started+25000)throw Error('governance_deployment_deadline')};
+   const legacy={...fence(store,signal),claim:async(s:DeploymentScope,operationId:string)=>{
+    freshLegacy();if(sha256ContentHash(s)!==sha256ContentHash(scope)||operationId!==id)throw Error('governance_deployment_identity_changed');
+    return withGithubAbort(store.claimWithAdmission(scope,id,async tx=>{freshLegacy();if(await ports.service.readAnyEnrollmentLocked(tx)!==false)throw Error('governance_enrollment_changed');return freshLegacy}),signal);
+   }};
+   const executor=createReleaseDeploymentExecutor(legacy,{kind:transport.kind,execute:input=>transport.execute({...input,signal:AbortSignal.any([signal,input.signal]),assertCurrent:async()=>{
     const bounded=AbortSignal.any([signal,input.signal]);ready(bounded);await withGithubAbort(input.assertCurrent(),bounded);
     const checked=await withGithubAbort(store.beforeDispatchWithAdmission(scope,id,async(tx,p)=>{
      ready(bounded);if(sha256ContentHash(p)!==sha256ContentHash(input.plan)||await ports.service.readAnyEnrollmentLocked(tx)!==false)throw Error('governance_enrollment_changed');

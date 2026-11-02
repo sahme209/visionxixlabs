@@ -1,3 +1,4 @@
+import {withUnenrolledConfigurationMutation} from '@/lib/desktop/configurationMutationRefusal';
 /**
  * GET  /api/dashboard/deployment-target?environmentId=...
  * POST /api/dashboard/deployment-target
@@ -34,12 +35,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const ctx = await currentContext();
-  if (!ctx.isAuthenticated || !ctx.organizationId) {
+  if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
   if (!isAdminOrOwner({ email: ctx.email, roles: ctx.roles })) {
     return NextResponse.json({ ok: false, error: "forbidden_role" }, { status: 403 });
   }
+  const organizationId=ctx.organizationId,userId=ctx.userId;
 
   let body: { environmentId?: unknown; roleArn?: unknown; region?: unknown; ecsCluster?: unknown; ecsService?: unknown } = {};
   try { body = await req.json(); } catch { /* fall through */ }
@@ -56,13 +58,18 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const r = await buildDeploymentTargetUpsertResponse(prisma as unknown as DeploymentTargetRepo, {
-    organizationId: ctx.organizationId, environmentId, roleArn, region, ecsCluster, ecsService,
-  });
+  let r:Awaited<ReturnType<typeof buildDeploymentTargetUpsertResponse>>;
+  try{
+    r=await withUnenrolledConfigurationMutation(prisma,{organizationId:String(organizationId),userId:String(userId)},req.signal,async()=>{
+      const current=await currentContext();if(!current.isAuthenticated||current.organizationId!==organizationId||current.userId!==userId||!isAdminOrOwner({email:current.email,roles:current.roles}))throw Error('configuration_identity_changed');
+    },tx=>buildDeploymentTargetUpsertResponse(tx as unknown as DeploymentTargetRepo, {
+    organizationId, environmentId, roleArn, region, ecsCluster, ecsService,
+  }));
+  }catch{return NextResponse.json({ok:false,error:'governance_configuration_mutation_unavailable'},{status:409})}
 
   if (r.body.ok) {
     await appendAuditEvent(prisma as unknown as AuditEventRepo, {
-      organizationId: ctx.organizationId,
+      organizationId,
       kind: "environment.deployment_target_set",
       subjectKind: "environment",
       subjectId: environmentId,
@@ -70,7 +77,7 @@ export async function POST(req: NextRequest) {
       // keep the audit trail to identifiers only, consistent with every
       // other audit entry in this codebase.
       summary: `Set AWS deploy target for environment ${environmentId}: ${ecsCluster}/${ecsService} (${region})`,
-      actorUserId: ctx.userId ?? null,
+      actorUserId:userId,
     });
   }
   return NextResponse.json(r.body, { status: r.status });

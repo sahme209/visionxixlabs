@@ -1,0 +1,255 @@
+{
+  "schema": 1,
+  "id": "axiom.help.release.deployment-reviewed-action",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Review a deployment baseline and execute the separately approved release once",
+  "productVersion": "local-source-preview:b0e1ba3c40fc877b8969c56dec7b66f627f79a80; base commit plus worktree snapshot; exact files bound by SHA-256",
+  "screenIds": [
+    "axiom.screen.desktop.releases"
+  ],
+  "controlIds": [
+    "axiom.control.release.deployment.load-review",
+    "axiom.control.release.deployment.review-exact-approval",
+    "axiom.control.release.deployment.approve-exact-action",
+    "axiom.control.release.deployment.load-execution",
+    "axiom.control.release.deployment.recover-record",
+    "axiom.control.release.deployment.open-acknowledged-run",
+    "axiom.control.release.deployment.confirm-execution",
+    "axiom.control.release.deployment.execute-reviewed",
+    "axiom.control.release.deployment.cancel-prepared",
+    "axiom.control.release.deployment.prepare-provider"
+  ],
+  "goal": "Distinguish the independent exact deployment/baseline review from the designated requester execution and safely reconcile saved outcomes without treating history as permission.",
+  "prerequisites": [
+    "Internal source-only draft for a local preview. The mounted source path is not evidence of shipped availability, a real human decision, customer acceptance or production activation.",
+    "An existing submitted release and exact reviewed release operation plan, bound repository, current connection revision, supported protected or immutable release-tag/workflow source, exact inputs, executor and unexpired window. This guide does not create or complete those prerequisites.",
+    "The independent reviewer needs a current accepted paired workspace session and current approval/read permissions; creator, requester and executor cannot approve their own action. The designated executor needs its exact bound session and current deployment/read/commercial access.",
+    "Source/provider verification and server-side activation must be available. For enrolled scopes, a current approved baseline, independently approved numeric execution policy, fresh source evidence, exact baseline-bound deployment approval and authoritative execution coverage are separate requirements. A digest or numeric level alone grants no permission."
+  ],
+  "permissions": [
+    "Load verified deployment review reads source proof and current policy; it neither issues an approval nor dispatches a workflow.",
+    "The exact approval checkbox includes the displayed Governance baseline policy when a baseline digest is present. Approve exact deployment action saves a separate human decision only.",
+    "The server recomputes the applicable optional baseline digest. Submitted absence, addition, removal or substitution must match exactly; it never silently attaches the current digest to an older human decision.",
+    "For a positively verified unenrolled scope, the optional baseline may be absent and must remain absent in the submitted decision. This is different from missing required baseline evidence or an unavailable enrollment lookup; no failure grants the legacy path.",
+    "The designated requester separately prepares and executes the stored operation. The approval is consumed by its original operation only; it cannot be transferred or reused for another deployment. Historical accepted records are not fresh execution authority."
+  ],
+  "steps": [
+    {
+      "instruction": "In Releases, open the exact saved release/plan and the Review deployment access panel. Select Load verified deployment review.",
+      "effect": "read",
+      "expectedState": "A verified plan or an explicit unavailable/recovery message. No approval is issued or workflow dispatched."
+    },
+    {
+      "instruction": "Inspect repository/workflow, protected or immutable tag, source commit, workflow blob, executor, time window, Exact plan and workflow inputs. When Governance baseline is displayed, include that exact digest in the review.",
+      "effect": "read",
+      "expectedState": "Source facts and optional baseline are visible before consent. They are review targets, not permission or application-health proof."
+    },
+    {
+      "instruction": "Only an authorized independent human who intends this exact action selects Review exact deployment approval, then Approve exact deployment action.",
+      "effect": "human-review",
+      "expectedState": "Independent deployment approval saved. No workflow was dispatched. Missing required or stale baseline or mismatched consent refuses instead of silently attaching policy."
+    },
+    {
+      "instruction": "The designated requester opens Run the reviewed deployment and selects Load deployment execution. Read the saved state and availability before another action.",
+      "effect": "read",
+      "expectedState": "A current available/unavailable result and any original saved operation. A history read cannot create a new provider attempt."
+    },
+    {
+      "instruction": "When offered and intended, select Prepare provider deployment. Inspect the resulting exact saved release/plan, target, source, inputs, policy and window.",
+      "effect": "propose",
+      "expectedState": "A prepared operation with no workflow dispatch. Preparation is separate from execution."
+    },
+    {
+      "instruction": "Only after inspecting that prepared record, select Confirm exact deployment execution and deliberately select Execute reviewed deployment.",
+      "effect": "execute",
+      "expectedState": "One consumed provider attempt with accepted, refused or unknown history. Current authority, baseline, numeric policy, source/provider evidence and lease are independently rechecked; no automatic retry occurs."
+    },
+    {
+      "instruction": "To stop an unused prepared operation, select Cancel prepared deployment when available. To inspect uncertainty, use Load deployment execution; Recover saved deployment record updates/reconciles the saved record when offered, then load again.",
+      "effect": "recover",
+      "expectedState": "Saved history is retained. Recovery does not resend the workflow, renew an approval or reclaim an attempt. Cancellation is limited to unused prepared work."
+    },
+    {
+      "instruction": "When an acknowledged workflow run is recorded, Open acknowledged GitHub run may be used to inspect that exact recorded run.",
+      "effect": "read",
+      "expectedState": "Navigation to recorded evidence only. An acknowledged run is not deployment success, artifact provenance, application health or rollback verification."
+    }
+  ],
+  "expectedOutcome": "The reviewer can identify the exact optional baseline being approved, the requester can distinguish preparation from deliberate execution, and both can retain and reconcile one-attempt history safely.",
+  "limitations": [
+    "This revision maps ten named controls only. Proposed help IDs and historical inventory candidates are matching aids; dynamic inputs, all states and other release/app/website controls still need runtime inventory and review.",
+    "This snapshot mounts server-owned Governance selection: known absence retains the existing fenced custom-environment path; enrollment uses current trusted admission. Metadata failure never means absence. Production execution coverage remains empty and enrollment activation refuses; this draft does not claim complete Governance, live enforcement or a complete MVP.",
+    "Supported source policies are separate protected-tag and immutable-release profiles. Source/workflow verification does not establish built-artifact provenance, deployed image identity, service/application health, successful rollback or end-to-end delivery. Never substitute an arbitrary branch, workflow filename or client boolean for trusted source proof.",
+    "The final execution boundary combines stored operation/participant/reviewer/session/installation authority with current enrollment, baseline and numeric policy under database locks. Provider reads occur outside locks and private provider freshness is rechecked after the final database clock. This is not atomic control over an external provider.",
+    "A consumed approval remains readable only for its original operation at the applicable execution boundary. Accepted historical observation is separate from new approval/execution authority and must not be described as baseline renewal.",
+    "The default service factory does not enable execution from this documentation. No production flags, deployment, real human approval, native app acceptance, authentic media or customer editorial approval are established by these source records.",
+    "Offline validation verifies record schemas, byte hashes and evaluation-fixture format only. No ingestion pipeline, support assistant or retrieval evaluation is implemented or claimed here."
+  ],
+  "recovery": [
+    "Missing required, changed or mismatched Governance baseline: stop and load a current verified review. Obtain a genuinely new exact independent decision when required. Do not auto-attach a digest, reuse an older decision, delete consumed history or substitute another actor to bypass refusal. A new exact reviewed plan may be needed.",
+    "Self-review, wrong requester/session, revoked participant/connection, unavailable source/provider proof, insufficient current permission, missing coverage or numeric policy: do not execute. Preserve the release/plan/operation identifiers and ask an authorized administrator/support to investigate without sharing credentials.",
+    "Expired window, approval or freshness receipt: stop; elapsed time does not renew evidence or permit retry. Do not extend a local deadline or fabricate a verification marker.",
+    "Lost approval acknowledgment: the panel holds the submission and does not resend automatically. Reopen/reload the release to inspect saved evidence before requesting another decision; do not assume approval was absent.",
+    "Lost execution reply, dispatching or unknown outcome: Load deployment execution and retain history. Do not prepare a replacement or send another deployment request. Recover saved deployment record is reconciliation only; load again afterward and escalate unresolved uncertainty.",
+    "Refused is a consumed attempt even when dispatch was prevented. Cancelled prepared work cannot execute. Neither result grants reuse of its approval or attempt.",
+    "Accepted means the exact workflow request/run attempt was acknowledged and matched to recorded source evidence. Use separately supported observation/validation workflows for later results; never tell the user the application is healthy or rollback-ready from acceptance alone.",
+    "Workspace change clears the review and aborts pending UI work. Reopen the release in the intended workspace; a late response cannot authorize action in a different scope."
+  ],
+  "searchTerms": [
+    "Load verified deployment review",
+    "Review exact deployment approval",
+    "Approve exact deployment action",
+    "Load deployment execution",
+    "Recover saved deployment record",
+    "Open acknowledged GitHub run",
+    "Confirm exact deployment execution",
+    "Execute reviewed deployment",
+    "Cancel prepared deployment",
+    "Prepare provider deployment",
+    "Governance baseline",
+    "missing baseline",
+    "independent deployment approval",
+    "baseline review required",
+    "one attempt",
+    "unknown deployment",
+    "lost acknowledgment",
+    "read-only history"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/components/ReleaseDeploymentApproval.tsx",
+      "sha256": "b784746e5e21fd78efe184d6f31f5ad45225a2b07e2ad0899fd5e742c1c4bd38"
+    },
+    {
+      "path": "desktop/src/components/ReleaseDeploymentExecution.tsx",
+      "sha256": "67af41937f2c00519e276b3d1e0e4feb61bbafaa36dfa3f2e89b79402a96d5f4"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "lib/tauri/releaseDeploymentApprovalContract.ts",
+      "sha256": "9416914e6f1593775774a4997afaee343c5ef90e44548cb1edb3a3d2a78c6112"
+    },
+    {
+      "path": "lib/tauri/releaseDeploymentExecutionContract.ts",
+      "sha256": "0d7e8cf655236df4bc809c19ec5d615f14aff19c186e7448b4fb2e660ae098e1"
+    },
+    {
+      "path": "lib/desktop/releaseDeploymentApprovalHttp.ts",
+      "sha256": "a932d0c8efc45dc0f6642eed2919937552029441dec67d2aaa5fe636cd4d72de"
+    },
+    {
+      "path": "lib/desktop/releaseDeploymentExecutionHttp.ts",
+      "sha256": "2684d88171ba02b38cfaca34c19e0d5a0d882d97acde31cd9f8cc944ed12a7b7"
+    },
+    {
+      "path": "lib/desktop/releaseDeploymentServices.ts",
+      "sha256": "0ea366e823569ed5ff899beb49254d197bddc7d3f9450baff49e6ed6e4e4b8c5"
+    },
+    {
+      "path": "lib/desktop/releaseDeploymentGovernanceCoordinator.ts",
+      "sha256": "3eb7712735cc801aff6fcc3149481ff7e832106c101e4cac6454d0a84d38027f"
+    },
+    {
+      "path": "lib/desktop/releaseDeploymentAuthority.ts",
+      "sha256": "b23da761d19f8c71d5618d613783905d0849cf965041dc924d52d63d3c0abe6c"
+    },
+    {
+      "path": "lib/governance/intelligence/deploymentApprovalComposition.ts",
+      "sha256": "fddd8da8ae4718c33f155092e5ab1d91500bc6102cef382f0d0372a8398dbee7"
+    },
+    {
+      "path": "lib/governance/intelligence/deploymentBindingReader.ts",
+      "sha256": "78e8911724cef7365a0233be452507ddfec12d3a0fe51429e596fb7d0456b619"
+    },
+    {
+      "path": "lib/governance/intelligence/deploymentRequestAdmission.ts",
+      "sha256": "030f493bc9e390c5c0da6e4824fa34014119006a70ad3bfdd90d44ea1ff24bc5"
+    },
+    {
+      "path": "lib/governance/intelligence/governedReleaseDeployment.ts",
+      "sha256": "a49ac03c24107fa9b12a053756833d146e9c3175c61932818f553ffc4477fc5b"
+    },
+    {
+      "path": "lib/governance/intelligence/requestService.ts",
+      "sha256": "1360311802f6f2a0214bb29f4db3ca40c9da360ffa8f787c95c62de904b693a8"
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyStore.ts",
+      "sha256": "78bab2e5335738bac8ffab7ee232de72483d32641cfcbc648abcbef2c09b5f97"
+    },
+    {
+      "path": "lib/tauri/releaseDeploymentApprovalStore.ts",
+      "sha256": "a2bcb5f5b87679430ea83a6a43c920b0d5fbdac118a5486bb3508861b2da3551"
+    },
+    {
+      "path": "lib/tauri/releaseDeploymentExecutionStore.ts",
+      "sha256": "0ad7b07dfe08090508bca9e4a6e2819113d5aead47f98981d61e0282cf079ff8"
+    },
+    {
+      "path": "lib/tauri/releaseDeploymentExecutionExecutor.ts",
+      "sha256": "ffa6693477399bfdb4b9e86745db5febf9e057fc2b996ae3fe680afc8fe77d6c"
+    },
+    {
+      "path": "lib/tauri/releaseDeploymentTransportGithub.ts",
+      "sha256": "7fc668d0ff5087ed8a6402a1e2f501b235422eb3d3a68b09cc2461246d502b7d"
+    },
+    {
+      "path": "lib/tauri/releaseDeploymentGithubReaders.ts",
+      "sha256": "0745e02aec7c30456162c58bb2326ec7c25a77339690edc1af6e790f1f4cad0b"
+    },
+    {
+      "path": "lib/tauri/releaseImmutableReleasePolicy.ts",
+      "sha256": "166d357b3116433f10d1788ed9203965732ccab07c179fa088f1f7550b3e9ff7"
+    },
+    {
+      "path": "docs/product/documentation-coverage/release-deployment-reviewed-action.inventory.r1.md",
+      "sha256": "e5e0d0fe80513f8b3170a431c2dbe65bd89f4b61c20cacc1bd0fbf54fd85d2ae"
+    },
+    {
+      "path": "docs/product/documentation-coverage/source-control-candidates.json",
+      "sha256": "8ee9e8e4c2e5d1fe2f4f0cf0636fd876831ac8ff2f81ea3b6c0414a2a82fdb7e"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "desktop/src/components/ReleaseDeploymentApproval.tsx",
+      "desktop/src/components/ReleaseDeploymentExecution.tsx",
+      "desktop/src/lib/desktopClient.ts",
+      "lib/tauri/releaseDeploymentApprovalContract.ts",
+      "lib/tauri/releaseDeploymentExecutionContract.ts",
+      "lib/desktop/releaseDeploymentApprovalHttp.ts",
+      "lib/desktop/releaseDeploymentExecutionHttp.ts",
+      "lib/desktop/releaseDeploymentServices.ts",
+      "lib/desktop/releaseDeploymentGovernanceCoordinator.ts",
+      "lib/desktop/releaseDeploymentAuthority.ts",
+      "lib/governance/intelligence/deploymentApprovalComposition.ts",
+      "lib/governance/intelligence/deploymentBindingReader.ts",
+      "lib/governance/intelligence/deploymentRequestAdmission.ts",
+      "lib/governance/intelligence/governedReleaseDeployment.ts",
+      "lib/governance/intelligence/requestService.ts",
+      "lib/governance/intelligence/executionPolicyStore.ts",
+      "lib/tauri/releaseDeploymentApprovalStore.ts",
+      "lib/tauri/releaseDeploymentExecutionStore.ts",
+      "lib/tauri/releaseDeploymentExecutionExecutor.ts",
+      "lib/tauri/releaseDeploymentTransportGithub.ts",
+      "lib/tauri/releaseDeploymentGithubReaders.ts",
+      "lib/tauri/releaseImmutableReleasePolicy.ts",
+      "docs/product/documentation-coverage/release-deployment-reviewed-action.inventory.r1.md",
+      "docs/product/documentation-coverage/source-control-candidates.json"
+    ],
+    "verifiedVersion": "local-source-preview:b0e1ba3c40fc877b8969c56dec7b66f627f79a80; base commit plus worktree snapshot; exact files bound by SHA-256",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

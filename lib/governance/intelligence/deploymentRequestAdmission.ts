@@ -76,11 +76,7 @@ export function createGovernanceDeploymentRequestAdmission(scope:DeploymentScope
  });
  const scoped=createScopeAwareGovernanceAdmission(scope,{guard,readEnrollment:(c,signal)=>{signal.throwIfAborted();return service.readScopeEnrollment(c.scope)}});
  const issued=new WeakMap<object,{digest:string;receiptDigest:string;policyDigest:string|undefined}>();
- return{
-  async assert(...args:Parameters<typeof scoped.assert>){const receipt=await scoped.assert(...args);if(args[1]==='before_claim')issued.set(receipt,{digest:receipt.baselineDigest,receiptDigest:sha256ContentHash(receipt),policyDigest});return receipt},
-  /** Final DB-only fusion with original deployment participant/installation locks.
-   * Only this guard's genuine private preclaim receipt can reach this check. */
-  async assertFinal(tx:ReleaseOperationPlanTransaction,rawPlan:Readonly<DeploymentPlan>,receipt:import('./admissionGuard').GovernanceAdmissionReceipt){
+ async function assertLocked(tx:ReleaseOperationPlanTransaction,rawPlan:Readonly<DeploymentPlan>,receipt:import('./admissionGuard').GovernanceAdmissionReceipt,phase:'claim'|'dispatch'){
    const saved=issued.get(receipt),actual=deploymentPlanSchema.parse(rawPlan),started=Date.now(),providerFresh=latestProviderFresh;
    const fresh=()=>{const at=Date.now();if(!saved||!Number.isFinite(at)||at<receipt.checkedAt||at-receipt.checkedAt>15000||saved.receiptDigest!==sha256ContentHash(receipt)||receipt.contextDigest!==sha256ContentHash(context)||sha256ContentHash(actual)!==context.planDigest)throw Error('governance_deployment_final_unavailable');if(saved.digest!=='0'.repeat(64)){if(!providerFresh)throw Error('governance_deployment_provider_proof_unavailable');providerFresh()}};fresh();
    const enrollment=await service.readScopeEnrollmentLocked(tx,context.scope);
@@ -88,9 +84,15 @@ export function createGovernanceDeploymentRequestAdmission(scope:DeploymentScope
    if(enrollment.enrolled!==true||enrollment.baselineDigest!==saved!.digest||!saved!.policyDigest||saved!.policyDigest!==policyDigest)throw Error('governance_deployment_enrollment_changed');
    const limits=await service.executionPolicies.readAuthority(context.scope,context.action,saved!.policyDigest,tx);
    if(limits.policyDigest!==saved!.policyDigest||limits.autonomyLevel<4)throw Error('governance_execution_policy_changed');
-   const approval=await approvals.readGovernanceDeploymentApproval(tx,scope,actual,saved!.digest,operationId);
+   const approval=await approvals.readGovernanceDeploymentApproval(tx,scope,actual,saved!.digest,phase==='dispatch'?operationId:undefined);
    if(approval.baselineDigest!==saved!.digest||approval.planDigest!==context.planDigest)throw Error('governance_deployment_authority_changed');
    return()=>{fresh();const at=Date.now();if(at<started||at>=enrollment.evidenceExpiresAt||at>=Date.parse(approval.expiresAt))throw Error('governance_deployment_final_expired')};
-  },
+ }
+ return{
+  async assert(...args:Parameters<typeof scoped.assert>){const receipt=await scoped.assert(...args);if(args[1]==='before_claim')issued.set(receipt,{digest:receipt.baselineDigest,receiptDigest:sha256ContentHash(receipt),policyDigest});return receipt},
+  /** Mandatory DB-only pre-consumption check with this run's private receipt. */
+  assertClaim:(tx:ReleaseOperationPlanTransaction,plan:Readonly<DeploymentPlan>,receipt:import('./admissionGuard').GovernanceAdmissionReceipt)=>assertLocked(tx,plan,receipt,'claim'),
+  /** Final dispatch check permits only the same operation's consumed decision. */
+  assertFinal:(tx:ReleaseOperationPlanTransaction,plan:Readonly<DeploymentPlan>,receipt:import('./admissionGuard').GovernanceAdmissionReceipt)=>assertLocked(tx,plan,receipt,'dispatch'),
  };
 }

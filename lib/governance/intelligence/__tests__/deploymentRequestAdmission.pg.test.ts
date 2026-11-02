@@ -1,3 +1,4 @@
+import {createGovernanceExecutionPolicyRequestService} from '../executionPolicyRequestService';
 import {createHash} from 'node:crypto';
 import {createReleaseDeploymentExecutionStore} from '@/lib/tauri/releaseDeploymentExecutionStore';
 import {createReleaseDeploymentGithubReaders} from '@/lib/tauri/releaseDeploymentGithubReaders';
@@ -22,7 +23,7 @@ const socket=process.env.AXIOM_TICKET_GOVERNANCE_PG_SOCKET;
 /** Actual artifact/revision/audit stores and locked source rows. Request-session
  * verification and provider responses are explicit simulations, never live. */
 describe.skipIf(!socket)('actual deployment admission stores with simulated GitHub',()=>{let db:any,locker:any;
- beforeAll(async()=>{const generated=process.env.AXIOM_TICKET_GOVERNANCE_PG_CLIENT;if(!socket||!/^\/private\/tmp\/axiom-ticket-governance-pg-[^/]+\/socket$/.test(socket)||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0||!generated||!/^\/private\/tmp\/axiom-provider-approval-pg-evidence-[^/]+\/generated\/index\.js$/.test(generated))throw Error('owned_fixture_required');const Client=createRequire(import.meta.url)(generated).PrismaClient;db=new Client({datasources:{db:{url:`postgresql://recovery_fixture@localhost/neondb?host=${encodeURIComponent(socket)}&connection_limit=1`}}});locker=new Client({datasources:{db:{url:`postgresql://recovery_fixture@localhost/neondb?host=${encodeURIComponent(socket)}&connection_limit=1`}}});const[r]=await db.$queryRawUnsafe("SELECT current_database()='neondb' AND current_user='recovery_fixture' AND current_setting('listen_addresses')='' AS private");if(!r?.private)throw Error('owned_fixture_required');await db.$executeRawUnsafe('CREATE TEMP TABLE \"TauriDeploymentRequest\" (\"id\" TEXT PRIMARY KEY, \"organizationId\" TEXT NOT NULL, \"requesterUserId\" TEXT NOT NULL DEFAULT \'owner\', \"version\" INTEGER NOT NULL, \"status\" TEXT NOT NULL, \"intakeJson\" JSONB NOT NULL)');await db.$executeRawUnsafe('CREATE TEMP TABLE \"GitHubInstallation\" (\"id\" TEXT PRIMARY KEY, \"organizationId\" TEXT NOT NULL, \"githubInstallationId\" TEXT NOT NULL, \"accountLogin\" TEXT NOT NULL DEFAULT \'synthetic-company\', \"status\" TEXT NOT NULL, \"updatedAt\" TIMESTAMPTZ NOT NULL, \"revokedAt\" TIMESTAMPTZ, \"suspendedAt\" TIMESTAMPTZ)');await db.$executeRawUnsafe('CREATE TEMP TABLE \"CloudAccount\" (\"id\" TEXT PRIMARY KEY, \"organizationId\" TEXT NOT NULL, \"provider\" TEXT NOT NULL, \"externalAccountId\" TEXT NOT NULL, \"regions\" TEXT[] NOT NULL, \"updatedAt\" TIMESTAMPTZ NOT NULL, \"credentialRef\" TEXT, \"enabled\" BOOLEAN NOT NULL)');await db.$executeRawUnsafe('CREATE TEMP TABLE \"CloudAccountCredential\" (\"id\" TEXT PRIMARY KEY, \"organizationId\" TEXT NOT NULL, \"requesterUserId\" TEXT NOT NULL DEFAULT \'owner\', \"version\" INTEGER NOT NULL, \"revokedAt\" TIMESTAMPTZ)')});afterAll(async()=>{vi.restoreAllMocks();await locker?.$disconnect();await db?.$disconnect()});
+ beforeAll(async()=>{const generated=process.env.AXIOM_TICKET_GOVERNANCE_PG_CLIENT;if(!socket||!/^\/private\/tmp\/axiom-ticket-governance-pg-[^/]+\/socket$/.test(socket)||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0||!generated||!/^\/private\/tmp\/axiom-provider-approval-pg-evidence-[^/]+\/generated\/index\.js$/.test(generated))throw Error('owned_fixture_required');const Client=createRequire(import.meta.url)(generated).PrismaClient;db=new Client({transactionOptions:{timeout:15000},datasources:{db:{url:`postgresql://recovery_fixture@localhost/neondb?host=${encodeURIComponent(socket)}&connection_limit=1`}}});locker=new Client({datasources:{db:{url:`postgresql://recovery_fixture@localhost/neondb?host=${encodeURIComponent(socket)}&connection_limit=1`}}});const[r]=await db.$queryRawUnsafe("SELECT current_database()='neondb' AND current_user='recovery_fixture' AND current_setting('listen_addresses')='' AS private");if(!r?.private)throw Error('owned_fixture_required');await db.$executeRawUnsafe('CREATE TEMP TABLE \"TauriDeploymentRequest\" (\"id\" TEXT PRIMARY KEY, \"organizationId\" TEXT NOT NULL, \"requesterUserId\" TEXT NOT NULL DEFAULT \'owner\', \"version\" INTEGER NOT NULL, \"status\" TEXT NOT NULL, \"intakeJson\" JSONB NOT NULL)');await db.$executeRawUnsafe('CREATE TEMP TABLE \"GitHubInstallation\" (\"id\" TEXT PRIMARY KEY, \"organizationId\" TEXT NOT NULL, \"githubInstallationId\" TEXT NOT NULL, \"accountLogin\" TEXT NOT NULL DEFAULT \'synthetic-company\', \"status\" TEXT NOT NULL, \"updatedAt\" TIMESTAMPTZ NOT NULL, \"revokedAt\" TIMESTAMPTZ, \"suspendedAt\" TIMESTAMPTZ)');await db.$executeRawUnsafe('CREATE TEMP TABLE \"CloudAccount\" (\"id\" TEXT PRIMARY KEY, \"organizationId\" TEXT NOT NULL, \"provider\" TEXT NOT NULL, \"externalAccountId\" TEXT NOT NULL, \"regions\" TEXT[] NOT NULL, \"updatedAt\" TIMESTAMPTZ NOT NULL, \"credentialRef\" TEXT, \"enabled\" BOOLEAN NOT NULL)');await db.$executeRawUnsafe('CREATE TEMP TABLE \"CloudAccountCredential\" (\"id\" TEXT PRIMARY KEY, \"organizationId\" TEXT NOT NULL, \"requesterUserId\" TEXT NOT NULL DEFAULT \'owner\', \"version\" INTEGER NOT NULL, \"revokedAt\" TIMESTAMPTZ)')});afterAll(async()=>{vi.restoreAllMocks();await locker?.$disconnect();await db?.$disconnect()});
 
  async function fixture(legacy=false){
   const yaml='name: Synthetic dispatch\non:\n  workflow_dispatch:\n    inputs:\n      branch:\n        type: string\n      environment:\n        type: string\n      client:\n        type: string\njobs:\n  test:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo synthetic\n';
@@ -55,7 +56,8 @@ describe.skipIf(!socket)('actual deployment admission stores with simulated GitH
   const numeric=await requester.executionPolicies.propose({organizationId:org,scope:selected,parentDigest:null,autonomyLevel:4,actions:['deployment.dispatch'],executorUserIds:['owner'],expiresAt:new Date(Date.now()+600000).toISOString()},randomUUID());
   await independent.executionPolicies.approve(numeric.id,0,numeric.policy.digest,randomUUID());await requester.executionPolicies.activate(numeric.id,null,null,randomUUID());
   let proofExpires=0,proof:any;
-  const store=createReleaseDeploymentExecutionStore(db,{...authority,readIndependentApproval:approvals.readIndependentApproval,consumeIndependentApproval:approvals.consumeIndependentApproval,verifySupportedSourcePolicy:async()=>{if(!proof||proofExpires<=Date.now())throw Error('fixture_policy_preflight_required');return proof}});
+  let pauseConsumption=false,onConsumption:(()=>void)|undefined;
+  const store=createReleaseDeploymentExecutionStore(db,{...authority,readIndependentApproval:approvals.readIndependentApproval,consumeIndependentApproval:async(tx,s,a,id)=>{await approvals.consumeIndependentApproval(tx,s,a,id);onConsumption?.();if(pauseConsumption)await tx.$queryRaw`SELECT true AS delayed FROM pg_sleep(5.1)`},verifySupportedSourcePolicy:async()=>{if(!proof||proofExpires<=Date.now())throw Error('fixture_policy_preflight_required');return proof}});
   const current=async(p:any,s:AbortSignal)=>{s.throwIfAborted();await db.$transaction(async(tx:any)=>{if(sha256ContentHash(await authority.readCurrentPlan(tx,owner,p))!==sha256ContentHash(plan))throw Error('plan_changed')});s.throwIfAborted()};
   const calls:Array<{method:string;attempt:number}>=[];let unknownPost=false;let operationId='',afterPolicy:(()=>Promise<void>)|undefined;
   const fetcher=vi.fn(async(url:any,init:any)=>{
@@ -84,8 +86,25 @@ describe.skipIf(!socket)('actual deployment admission stores with simulated GitH
   const originalLimits=requester.executionPolicies.readAuthority;
   const coveredService={...requester,executionPolicies:{...requester.executionPolicies,readAuthority:async(...args:Parameters<typeof originalLimits>)=>{const result=await originalLimits(...args);if(!args[3]&&++outsideLimits===6&&mutationPhase==='policy'&&finalMutation){const mutate=finalMutation;finalMutation=undefined;await mutate()}return result}},readScopeEnrollment:async(selection:any)=>{const result=await requester.readScopeEnrollment(selection);if(++enrollmentReads===(legacy?3:6)&&mutationPhase==='enrollment'&&finalMutation){const mutate=finalMutation;finalMutation=undefined;await mutate()}return result},readExecutionCoverage:async()=>({enrolled:true,coveredActions})};
   const guard=createGovernanceDeploymentRequestAdmission(owner,operationId,binding,db,store,approvals,coveredService,{readBinding,provider});
-  const run=()=>createGovernedReleaseDeploymentExecutor(store,{guard,readBinding,transport}).run(owner,operationId);
-  return{run,calls,store,owner,operation,approved,guard,context:binding.context,requester,proposal,activateBaseline:()=>fixtureActivation.activate(owner,proposal.id,null,randomUUID()),setEnrollmentMutation(mutate:()=>Promise<void>){mutationPhase='enrollment';finalMutation=mutate},mutateFinal(kind:string,phase:string){mutationPhase=phase;finalMutation=async()=>{if(kind==='reviewer')await db.orgMembership.updateMany({where:{organizationId:org,userId:'reviewer'},data:{role:'read_only'}});else await db.$executeRaw`UPDATE "GitHubInstallation" SET "status"='revoked' WHERE "id"=${connection}`}},loseAcknowledgement(){unknownPost=true},withoutCoverage(){coveredActions=[]},revokeAfterClaim(){afterPolicy=()=>requester.revoke(proposal.id,1,randomUUID()).then(()=>{})},network};
+  const run=(parent?:AbortSignal)=>createGovernedReleaseDeploymentExecutor(store,{guard,readBinding,transport}).run(owner,operationId,parent);
+  return{run,calls,store,owner,operation,approved,guard,context:binding.context,requester,proposal,onConsume(action:()=>void){onConsumption=action},pauseClaimConsumption(){pauseConsumption=true},duringClaim(kind:string){
+   for(const method of ['claim','claimWithAdmission']as const){const original=(store as any)[method];if(typeof original!=='function')continue;
+    (store as any)[method]=async(...args:any[])=>{
+     let continueMutation!:()=>void,locked!:()=>void;const ready=new Promise<void>(resolve=>{locked=resolve}),hold=new Promise<void>(resolve=>{continueMutation=resolve});
+     const holder=locker.$transaction(async(tx:any)=>{
+      await tx.$executeRawUnsafe("SET LOCAL lock_timeout = '500ms'");
+      await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(org)}))`;
+      await tx.$queryRaw`SELECT "id" FROM "DurableAgentWorkflow" WHERE "id"=${operationId} FOR UPDATE`;locked();await hold;
+      // Actual current stores run in this existing independent transaction.
+      const nestedRepo=new Proxy(db,{get(target,key){return key==='$transaction'?async(fn:any)=>fn(tx):Reflect.get(target,key)}});
+      if(kind==='policy')await createGovernanceExecutionPolicyRequestService(request,nestedRepo,owner,()=>true).revoke(numeric.id,1,randomUUID());
+      else if(kind==='enrollment')await createGovernanceRevisionStore(nestedRepo,{assertCurrent:async()=>{},verifyEvidence:async()=>true,verifyCoverage:async()=>true}).activate(owner,proposal.id,null,randomUUID());
+      else await tx.orgMembership.updateMany({where:{organizationId:org,userId:'reviewer'},data:{role:'read_only'}});
+     });
+     await ready;const claim=original.apply(store,args);await new Promise(resolve=>setTimeout(resolve,25));continueMutation();await holder;return claim;
+    };
+   }
+  },activateBaseline:()=>fixtureActivation.activate(owner,proposal.id,null,randomUUID()),setEnrollmentMutation(mutate:()=>Promise<void>){mutationPhase='enrollment';finalMutation=mutate},mutateFinal(kind:string,phase:string){mutationPhase=phase;finalMutation=async()=>{if(kind==='reviewer')await db.orgMembership.updateMany({where:{organizationId:org,userId:'reviewer'},data:{role:'read_only'}});else await db.$executeRaw`UPDATE "GitHubInstallation" SET "status"='revoked' WHERE "id"=${connection}`}},loseAcknowledgement(){unknownPost=true},withoutCoverage(){coveredActions=[]},revokeAfterClaim(){afterPolicy=()=>requester.revoke(proposal.id,1,randomUUID()).then(()=>{})},network};
  }
  it('uses actual baseline/numeric/approval/claim stores and fixed provider readers before one dispatch',async()=>{
   const f=await fixture();expect(await f.run()).toMatchObject({state:'accepted',attemptCount:1,deploymentSucceeded:false});
@@ -138,5 +157,30 @@ describe.skipIf(!socket)('actual deployment admission stores with simulated GitH
   expect((await f.store.claim(f.owner,f.operation.id)).claimed).toBe(false);
   expect(await db.durableAgentWorkflow.findUnique({where:{id:f.approved.id}})).toMatchObject({currentStep:'consumed'});
  },20000);
+
+ it.each(['policy','enrollment','reviewer'])('claim boundary refuses %s changed while waiting for real operation locks, without consuming approval or attempt',async kind=>{
+  const f=await fixture(kind==='enrollment');f.duringClaim(kind);
+  await f.run().catch(error=>{expect(error).toBeInstanceOf(Error)});
+  expect(f.calls.filter(c=>c.method==='POST')).toHaveLength(0);
+  expect(await db.durableAgentWorkflow.findUnique({where:{id:f.operation.id}})).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});
+  expect(await db.durableAgentWorkflow.findUnique({where:{id:f.approved.id}})).toMatchObject({currentStep:'approved',version:0});
+  expect(await db.durableAgentWorkflowEvent.count({where:{workflowRunId:f.approved.id}})).toBe(1);
+ });
+
+ it('claim boundary rolls real approval consumption back when the private provider proof expires during durable transaction work',async()=>{
+  const f=await fixture();f.pauseClaimConsumption();await expect(f.run()).rejects.toThrow('governance_deployment_provider_proof_unavailable');
+  expect(f.calls.filter(c=>c.method==='POST')).toHaveLength(0);
+  expect(await db.durableAgentWorkflow.findUnique({where:{id:f.operation.id}})).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});
+  expect(await db.durableAgentWorkflow.findUnique({where:{id:f.approved.id}})).toMatchObject({currentStep:'approved',version:0});
+  expect(await db.durableAgentWorkflowEvent.count({where:{workflowRunId:f.approved.id}})).toBe(1);
+ },20000);
+
+ it('claim cancellation during actual approval consumption rolls the decision and attempt back together',async()=>{
+  const f=await fixture(),parent=new AbortController();f.onConsume(()=>parent.abort(Error('claim_cancelled')));
+  await expect(f.run(parent.signal)).rejects.toThrow('claim_cancelled');expect(f.calls.filter(c=>c.method==='POST')).toHaveLength(0);
+  expect(await db.durableAgentWorkflow.findUnique({where:{id:f.operation.id}})).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});
+  expect(await db.durableAgentWorkflow.findUnique({where:{id:f.approved.id}})).toMatchObject({currentStep:'approved',version:0});
+  expect(await db.durableAgentWorkflowEvent.count({where:{workflowRunId:f.approved.id}})).toBe(1);
+ });
 
 });

@@ -56,6 +56,21 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
  return{
  async prepare(rawScope:DeploymentScope,rawPlan:DeploymentPlan){ready();const s=deploymentScopeSchema.parse(rawScope),p=deploymentPlanSchema.parse(structuredClone(rawPlan));return repo.$transaction(async tx=>{const a=deploymentApprovalSchema.parse(await deps.readIndependentApproval!(tx,s,structuredClone(p)));await current(tx,s,p,a);const id=releaseDeploymentExecutionId(p),rows=await tx.$queryRaw<Row[]>`SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${id} AND "organizationId"=${s.organizationId} FOR UPDATE`;if(rows.length){const r=await load(tx,s,id);if(!same(inputSchema.parse(r.inputJson),{format:1,scope:s,plan:p,planDigest:sha256ContentHash(p),approval:a}))refuse();await current(tx,s,p,a);return dto(r,s)}const at=now();const r=await tx.durableAgentWorkflow.create({data:{id,organizationId:s.organizationId,workflowKind:RELEASE_DEPLOYMENT_EXECUTION_KIND,objective:'Execute one exact independently approved deployment',autonomyLevel:'observe',requestedByUserId:s.actorUserId,status:'paused_for_input',currentStep:'prepared',inputJson:{format:1,scope:s,plan:p,planDigest:sha256ContentHash(p),approval:a},stateJson:{state:'prepared'},attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,createdAt:at,updatedAt:at} satisfies Prisma.DurableAgentWorkflowUncheckedCreateInput});await event(tx,r);await current(tx,s,p,a);return dto(r,s)})},
  async claim(rawScope:DeploymentScope,id:string){const s=deploymentScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const r=await load(tx,s,id),{i,v}=unpack(r,s);await authority(tx,s,i.plan,i.approval);if(v.state!=='prepared')return{claimed:false as const};await current(tx,s,i.plan,i.approval);await deps.consumeIndependentApproval!(tx,s,structuredClone(i.approval),id);await current(tx,s,i.plan,i.approval);const updated=await change(tx,r,'dispatching');await current(tx,s,i.plan,i.approval,updated.leaseExpiresAt!);return{claimed:true as const,leaseExpiresAt:updated.leaseExpiresAt!,plan:structuredClone(i.plan)}})},
+ /** Internal governed claim. Admission and the original independent decision
+  * share these actual transaction locks; a later source/receipt expiry rolls
+  * approval consumption, attempt CAS and audit events back together. */
+ async claimWithAdmission(rawScope:DeploymentScope,id:string,verifyLocked:(tx:Tx,plan:Readonly<DeploymentPlan>)=>Promise<()=>void>){
+  const s=deploymentScopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse();
+  return repo.$transaction(async tx=>{
+   await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
+   const r=await load(tx,s,id),{i,v}=unpack(r,s);await authority(tx,s,i.plan,i.approval);if(v.state!=='prepared')return{claimed:false as const};
+   await current(tx,s,i.plan,i.approval);
+   const assertFresh=await verifyLocked(tx,structuredClone(i.plan));if(typeof assertFresh!=='function')refuse();assertFresh();
+   await deps.consumeIndependentApproval!(tx,s,structuredClone(i.approval),id);await current(tx,s,i.plan,i.approval);assertFresh();
+   const updated=await change(tx,r,'dispatching');await current(tx,s,i.plan,i.approval,updated.leaseExpiresAt!);assertFresh();
+   return{claimed:true as const,leaseExpiresAt:updated.leaseExpiresAt!,plan:structuredClone(i.plan)};
+  });
+ },
  async beforeDispatch(rawScope:DeploymentScope,id:string){const s=deploymentScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const r=await load(tx,s,id),{i,v}=unpack(r,s);if(v.state!=='dispatching')refuse();await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);return structuredClone(i.plan)})},
  /** Internal final dispatch boundary. The verifier must fuse DB-only policy
   * checks into these SAME participant/installation/operation locks, returning

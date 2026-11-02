@@ -19,3 +19,9 @@ it('rechecks the retained provider window in the synchronous post-clock final cl
  const final=await f.guard.assertFinal(f.tx as never,f.plan as never,receipt);
  expect(()=>final()).not.toThrow();live=false;expect(()=>final()).toThrow('expired_private_provider_window');
 });
+it('claim fusion accepts only its private receipt and requires a still-approved decision',async()=>{
+ const f=fixture(),receipt=await f.guard.assert(f.context,'before_claim');
+ await expect(f.guard.assertClaim(f.tx as never,f.plan as never,{...receipt})).rejects.toThrow('governance_deployment_final_unavailable');
+ const fresh=await f.guard.assertClaim(f.tx as never,f.plan as never,receipt);expect(()=>fresh()).not.toThrow();
+ expect(f.approvals.readGovernanceDeploymentApproval.mock.calls.at(-1)?.[4]).toBeUndefined();
+});

@@ -26,7 +26,10 @@ export function createGovernedReleaseDeploymentExecutor(store:ReleaseDeploymentE
   let receipt:GovernanceAdmissionReceipt|undefined;
   const transport=createReleaseDeploymentGithubTransport(ports.transport);
   const executor=createReleaseDeploymentExecutor({...store,
-   claim:async(s,operationId)=>{if(sha256ContentHash(s)!==sha256ContentHash(scope)||operationId!==id)throw Error('governance_deployment_binding_changed');receipt=await ports.guard.assert(context,'before_claim',undefined,signal);signal.throwIfAborted();return store.claim(s,operationId)},
+   claim:async(s,operationId)=>{if(sha256ContentHash(s)!==sha256ContentHash(scope)||operationId!==id)throw Error('governance_deployment_binding_changed');receipt=await ports.guard.assert(context,'before_claim',undefined,signal);signal.throwIfAborted();return store.claimWithAdmission(s,operationId,async(tx,currentPlan)=>{
+    signal.throwIfAborted();const freshness=await ports.guard.assertClaim(tx,currentPlan,receipt!);signal.throwIfAborted();
+    return()=>{signal.throwIfAborted();freshness();signal.throwIfAborted()};
+   })},
    beforeDispatch:async(s,operationId)=>{const current=await store.beforeDispatch(s,operationId);if(operationId!==id||sha256ContentHash(current)!==context.planDigest)throw Error('governance_deployment_binding_changed');return current},
   },{kind:transport.kind,execute:input=>transport.execute({...input,signal:AbortSignal.any([signal,input.signal]),assertCurrent:async()=>{
    if(!receipt||input.operationId!==id||sha256ContentHash(input.plan)!==context.planDigest)throw Error('governance_deployment_binding_changed');

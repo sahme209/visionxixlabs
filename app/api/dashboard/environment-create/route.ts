@@ -1,3 +1,4 @@
+import {withUnenrolledConfigurationMutation} from '@/lib/desktop/configurationMutationRefusal';
 /**
  * POST /api/dashboard/environment-create
  * Body: { slug, name, tier, displayOrder? }
@@ -18,12 +19,13 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   const ctx = await currentContext();
-  if (!ctx.isAuthenticated || !ctx.organizationId) {
+  if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.userId) {
     return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
   if (!isAdminOrOwner({ email: ctx.email, roles: ctx.roles })) {
     return NextResponse.json({ ok: false, error: "forbidden_role" }, { status: 403 });
   }
+  const organizationId=ctx.organizationId,userId=ctx.userId;
 
   let body: { slug?: unknown; name?: unknown; tier?: unknown; displayOrder?: unknown } = {};
   try { body = await req.json(); } catch { /* fall through */ }
@@ -38,23 +40,28 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const r = await buildEnvironmentCreateResponse(
-    prisma as unknown as EnvironmentCreateRepo,
+  let r:Awaited<ReturnType<typeof buildEnvironmentCreateResponse>>;
+  try{
+    r=await withUnenrolledConfigurationMutation(prisma,{organizationId:String(organizationId),userId:String(userId)},req.signal,async()=>{
+      const current=await currentContext();if(!current.isAuthenticated||current.organizationId!==organizationId||current.userId!==userId||!isAdminOrOwner({email:current.email,roles:current.roles}))throw Error('configuration_identity_changed');
+    },tx=>buildEnvironmentCreateResponse(
+    tx as unknown as EnvironmentCreateRepo,
     {
-      organizationId: ctx.organizationId,
+      organizationId,
       slug, name, tier,
       ...(typeof body.displayOrder === "number" ? { displayOrder: body.displayOrder } : {}),
     },
-  );
+  ));
+  }catch{return NextResponse.json({ok:false,error:'governance_configuration_mutation_unavailable'},{status:409})}
 
   if (r.body.ok && r.body.data.created) {
     await appendAuditEvent(prisma as unknown as AuditEventRepo, {
-      organizationId: ctx.organizationId,
+      organizationId,
       kind: "environment.create",
       subjectKind: "environment",
       subjectId: r.body.data.id,
       summary: `Created environment ${r.body.data.name} (${r.body.data.tier})`,
-      actorUserId: ctx.userId ?? null,
+      actorUserId:userId,
     });
   }
   return NextResponse.json(r.body, { status: r.status });

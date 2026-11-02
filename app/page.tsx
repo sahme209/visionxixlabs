@@ -27,7 +27,7 @@ const pillars = [
     icon: ShieldCheckIcon,
     eyebrow: "Governance",
     title: "Authority stays explicit.",
-    copy: "Read-only steps run immediately. Anything that touches GitHub or a live environment is classified by risk — higher for anything aimed at production — and sits pending until a workspace admin explicitly approves it. Every step, approved or not, is in the audit trail.",
+    copy: "Keep the proposed change, required human review, requester execution, and recorded outcome distinct. Available actions depend on current permissions and the enabled workflow.",
   },
   {
     icon: LinkIcon,
@@ -51,7 +51,7 @@ export default function Home() {
               Engineering work.<br /><span className="text-zinc-400">With you in control.</span>
             </h1>
             <p className="mt-6 max-w-[650px] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-              Bring repository context, AI assistance, and release review into one workspace. Keep the change, the decision, and the evidence in view.
+              A governed workspace for deployments and connected operational changes. Bring repository context, AI assistance, human review, and recorded outcomes into one clear flow.
             </p>
             <div className="mt-7 flex flex-col gap-3 sm:flex-row">
               <Link href="/product" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] hover:bg-white">

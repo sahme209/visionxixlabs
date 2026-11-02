@@ -1,3 +1,4 @@
+import {withUnenrolledConfigurationMutation} from '@/lib/desktop/configurationMutationRefusal';
 /**
  * GET  /api/desktop/environments/deployment-target?environmentId=...
  * POST /api/desktop/environments/deployment-target
@@ -60,9 +61,15 @@ export async function POST(request: NextRequest): Promise<Response> {
     return NextResponse.json({ ok: false, error: "invalid_payload" }, { status: 400 });
   }
 
-  const r = await buildDeploymentTargetUpsertResponse(prisma as unknown as DeploymentTargetRepo, {
+  let r:Awaited<ReturnType<typeof buildDeploymentTargetUpsertResponse>>;
+  try{
+    r=await withUnenrolledConfigurationMutation(prisma,{organizationId:String(session.organizationId),userId:String(session.userId),sessionId:String(session.id)},request.signal,async()=>{
+      const current=await resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',allowApiKey:false,requiredCapability: "policy:manage",recordHeartbeat:false,route:'configuration mutation current authority'});
+      if(!current||current.credentialKind!=='desktop_session'||current.id!==session.id||current.userId!==session.userId||current.organizationId!==session.organizationId)throw Error('configuration_identity_changed');
+    },tx=>buildDeploymentTargetUpsertResponse(tx as unknown as DeploymentTargetRepo, {
     organizationId: String(session.organizationId), environmentId, roleArn, region, ecsCluster, ecsService,
-  });
+  }));
+  }catch{return NextResponse.json({ok:false,error:'governance_configuration_mutation_unavailable'},{status:409})}
 
   if (r.body.ok) {
     try {

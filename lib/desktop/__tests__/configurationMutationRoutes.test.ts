@@ -1,0 +1,28 @@
+import {beforeEach,expect,it,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const f=vi.hoisted(()=>({enrolled:false,metadataError:false,metadataUnknown:false,writes:[] as unknown[],inside:false,locked:false,queries:[] as string[],role:'admin',sessionLive:true,authChanged:false,authReads:0,changeAfterAuth:false}));
+const session={id:'session',userId:'user',organizationId:'org',credentialKind:'desktop_session'};
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:async()=>{f.authReads++;return f.authChanged||f.changeAfterAuth&&f.authReads>1?{...session,organizationId:'foreign'}:session}}));
+vi.mock('@/lib/auth/currentContext',()=>({currentContext:async()=>{f.authReads++;return{isAuthenticated:true,userId:'user',organizationId:f.authChanged||f.changeAfterAuth&&f.authReads>1?'foreign':'org',email:'fixture@example.invalid',roles:[f.role]}}}));
+vi.mock('@/lib/auth/platformAdmin',()=>({isAdminOrOwner:({roles}:any)=>roles.includes('admin')||roles.includes('owner')}));
+vi.mock('@/lib/releaseops/auditEventResponder',()=>({appendAuditEvent:async()=>true}));
+vi.mock('@/lib/db',()=>{const write=async({data,create}:any)=>{if(!f.inside||!f.locked)throw Error('mutation must run inside locked transaction');f.writes.push(data??create);return{id:'created',...data,...create,status:'pending',created:true}};const tx:any={$queryRaw:async(sql:TemplateStringsArray)=>{const q=sql.join('');f.queries.push(q);if(q.includes('pg_advisory_xact_lock')){f.locked=true;return[{locked:1}]};if(q.includes('OrgMembership'))return[{organizationId:'org',userId:'user',role:f.role,acceptedAt:new Date()}];if(q.includes('DesktopSessionRecord'))return[{id:'session',organizationId:'org',userId:'user',live:f.sessionLive,expiresAt:new Date(Date.now()+60000)}];return[{live:true}]},durableAgentWorkflow:{findMany:async()=>{if(f.metadataError)throw Error('SIMULATED metadata unavailable');if(f.metadataUnknown)return null;return f.enrolled?[{id:'governance_active_fixture',organizationId:'org',workflowKind:'governance_baseline_active_v1'}]:[]}},environment:{findUnique:async({where}:any)=>where.id?{id:'env',organizationId:'org'}:null,create:write},deploymentTarget:{upsert:write},tenantIdentityProvider:{findUnique:async()=>null,create:write}};return{prisma:{...tx,$transaction:async(fn:any)=>{f.inside=true;try{return await fn(tx)}finally{f.inside=false}}}}});
+const routes=[
+ ['desktop environment',()=>import('../../../app/api/desktop/environments/route'),{slug:'dev',name:'Development',tier:'dev'}],
+ ['desktop target',()=>import('../../../app/api/desktop/environments/deployment-target/route'),{environmentId:'env',roleArn:'arn:aws:iam::123456789012:role/restart',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}],
+ ['desktop identity',()=>import('../../../app/api/desktop/identity-providers/route'),{protocol:'oidc',issuerOrEntityId:'https://idp.example.invalid',metadataDocument:'{}',managedDomains:['example.invalid'],roleMapping:[{claimKey:'groups',claimValue:'admins',role:'admin'}],requireMfaClaim:true}],
+ ['dashboard environment',()=>import('../../../app/api/dashboard/environment-create/route'),{slug:'dev',name:'Development',tier:'dev'}],
+ ['dashboard target',()=>import('../../../app/api/dashboard/deployment-target/route'),{environmentId:'env',roleArn:'arn:aws:iam::123456789012:role/restart',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}],
+] as const;
+function request(body:unknown){return new NextRequest('https://fixture.invalid/configuration',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)})}
+beforeEach(()=>{f.enrolled=false;f.metadataError=false;f.metadataUnknown=false;f.writes=[];f.inside=false;f.locked=false;f.queries=[];f.role='admin';f.sessionLive=true;f.authChanged=false;f.authReads=0;f.changeAfterAuth=false});
+// Removing a real route's transaction/refusal wrapper must turn these into writes.
+it.each(routes)('%s refuses enrolled configuration before any mutation',async(_name,load,body)=>{f.enrolled=true;const response=await(await load()).POST(request(body));expect(response.status).toBe(409);expect(f.writes).toEqual([])});
+it.each(routes)('%s refuses unreadable enrollment metadata',async(_name,load,body)=>{f.metadataError=true;const response=await(await load()).POST(request(body));expect(response.status).toBe(409);expect(f.writes).toEqual([])});
+it.each(routes)('%s retains positively unenrolled configuration in one locked transaction',async(_name,load,body)=>{const response=await(await load()).POST(request(body));expect(response.status).toBeLessThan(300);expect(f.writes).toHaveLength(1);expect(f.locked).toBe(true)});
+
+it.each(routes)('%s refuses a changed authenticated organization before configuration',async(_name,load,body)=>{f.changeAfterAuth=true;const response=await(await load()).POST(request(body));expect(response.status).toBe(409);expect(f.writes).toEqual([])});
+it.each(routes.slice(0,3))('%s refuses a revoked persisted desktop session',async(_name,load,body)=>{f.sessionLive=false;const response=await(await load()).POST(request(body));expect(response.status).toBe(409);expect(f.writes).toEqual([])});
+it.each(routes)('%s refuses a nonadministrative persisted role without writing',async(_name,load,body)=>{f.role='read_only';const response=await(await load()).POST(request(body));expect(response.status).toBeGreaterThanOrEqual(400);expect(f.writes).toEqual([])});
+
+it.each(routes)('%s refuses malformed metadata rather than interpreting absence',async(_name,load,body)=>{f.metadataUnknown=true;const response=await(await load()).POST(request(body));expect(response.status).toBe(409);expect(f.writes).toEqual([])});
