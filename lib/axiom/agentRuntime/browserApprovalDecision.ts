@@ -20,7 +20,6 @@ export async function decideAgentAction(input: {
   correlationId?: string;
   now?: Date;
 }): Promise<BrowserApprovalResult> {
-  const now = input.now ?? new Date();
   const correlationId = input.correlationId ?? `approval_${randomUUID()}`;
   const proposal = await prisma.agentActionProposal.findFirst({ where: { id: input.proposalId, organizationId: input.organizationId } });
   if (!proposal) return { ok: false, error: "not_found" };
@@ -29,10 +28,8 @@ export async function decideAgentAction(input: {
   if (input.decision === "approve" && proposal.proposedByUserId === input.actorUserId) return { ok: false, error: "self_approval_forbidden" };
 
   const expiresAt = proposal.approvalExpiresAt ?? new Date(proposal.createdAt.getTime() + 24 * 60 * 60 * 1000);
-  if (expiresAt <= now) {
-    await prisma.agentActionProposal.updateMany({ where: { id: proposal.id, organizationId: input.organizationId, status: "proposed" }, data: { status: "expired", decidedAt: now } });
-    return { ok: false, error: "approval_expired" };
-  }
+  // Expiry is handled only after current membership and source locks below.
+  // A removed caller must not mutate even an elapsed proposal by requesting stop.
 
   const digest = agentActionDigest({
     organizationId: proposal.organizationId,

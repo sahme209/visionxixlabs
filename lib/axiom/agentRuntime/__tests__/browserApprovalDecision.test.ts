@@ -106,6 +106,7 @@ describe("browser agent approval decision", () => {
   });
 
   it("expires stale approval authority without executing", async () => {
+    mocks.clock.mockResolvedValue([{checkedAt:new Date("2026-10-15T10:00:00Z")}]);
     const { decideAgentAction } = await import("../browserApprovalDecision");
     expect(await decideAgentAction({ organizationId: "org-1", proposalId: base.id, actorUserId: "reviewer-1", actorRole: "admin", decision: "approve", now: new Date("2026-10-15T10:00:00Z") }))
       .toEqual({ ok: false, error: "approval_expired" });

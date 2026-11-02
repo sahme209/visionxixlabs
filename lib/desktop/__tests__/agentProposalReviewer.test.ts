@@ -9,7 +9,7 @@ it('explains an independent reviewer requirement while allowing proposal cancell
  const approve=vi.fn(),reject=vi.fn();
  render(createElement(ProposalCard,{proposal:{id:'proposal',toolName:'create_github_branch',argsJson:{repositoryFullName:'fixture/repository',baseBranch:'main',newBranchName:'scratch'},riskLevel:'medium',status:'proposed',requiresIndependentReviewer:true},deciding:false,onApprove:approve,onReject:reject}));
  expect(screen.getByText(/Another authorized reviewer must approve/)).toBeTruthy();
- const run=screen.getByRole('button',{name:'Approve & run'});
+ const run=screen.getByRole('button',{name:'Record approval'});
  expect((run as HTMLButtonElement).disabled).toBe(true);fireEvent.click(run);expect(approve).not.toHaveBeenCalled();
  fireEvent.click(screen.getByRole('button',{name:'Cancel proposal'}));expect(reject).toHaveBeenCalledOnce();
 });

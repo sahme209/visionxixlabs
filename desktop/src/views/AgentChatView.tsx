@@ -1,3 +1,4 @@
+import {AgentApprovedActions} from "../components/AgentApprovedActions";
 import { aiUsageText } from "../lib/aiUsageText";
 import {useDismissibleDetails} from "../lib/useDismissibleDetails";
 import { Disclosure } from "../components/Disclosure";
@@ -26,7 +27,7 @@ import { FileDiff } from "../components/FileDiff";
  * approval-gated, auditable action. The agent (lib/axiom/agentRuntime/**
  * server-side) never executes a write action itself — it only ever
  * proposes one here, and this view is where a human approves or rejects
- * it before anything in GitHub or AWS actually changes.
+ * it. Approval records the review only; requester execution is separate.
  */
 
 interface QueuedAgentMessage {
@@ -250,6 +251,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const [restartActions, setRestartActions] = useState<Proposal[]>([]);
   const [githubActions, setGithubActions] = useState<Proposal[]>([]);
+  const [approvedActions, setApprovedActions] = useState<Proposal[]>([]);
   const decisionEpoch = useRef(0);
   const conversationEpoch = useRef(0);
   const activeConversation = useRef<string | null>(null);
@@ -430,6 +432,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
               setEvidenceActions(conversation.data.actions.filter((action) => action.riskLevel === "low"));
               setRestartActions(conversation.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
               setGithubActions(conversation.data.actions.filter(isGithubReceiptAction));
+              setApprovedActions(conversation.data.actions.filter(action => action.status === "approved"));
             } else {
               setError("The most recent Agent conversation could not be reopened.");
             }
@@ -758,6 +761,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
       setEvidenceActions(result.data.actions.filter((action) => action.riskLevel === "low"));
       setRestartActions(result.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
       setGithubActions(result.data.actions.filter(isGithubReceiptAction));
+      setApprovedActions(result.data.actions.filter(action => action.status === "approved"));
       setLatestUsage(null); setLatestIssue(null);
       setStreamingDraft("");
     } catch {
@@ -791,7 +795,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           return;
         }
         const reviewed = result.data.actions.find(action => action.id === proposalId);
-        if (!reviewed || !["executed", "failed", "rejected", "cancelled"].includes(reviewed.status)) {
+        if (!reviewed || !["approved", "executed", "failed", "rejected", "cancelled"].includes(reviewed.status)) {
           if (manual) setDecisionRefreshNote(reviewed?.status === "proposed" ? "The service is still awaiting a review decision." : "The decision could not be verified. Try refreshing again.");
           return;
         }
@@ -802,6 +806,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
         setEvidenceActions(result.data.actions.filter(action => action.riskLevel === "low"));
         setRestartActions(result.data.actions.filter(action => action.toolName === "trigger_aws_deploy"));
         setGithubActions(result.data.actions.filter(isGithubReceiptAction));
+        setApprovedActions(result.data.actions.filter(action => action.status === "approved"));
       } catch {
         if (manual && owned()) setDecisionRefreshNote("The decision could not be verified. Try refreshing again.");
       } finally {
@@ -847,7 +852,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
       setConversations((current) => [summary, ...current]);
       activeConversation.current = result.data.id;
       setConversationId(result.data.id); setTurns([]); setPendingProposal(null);
-      setEvidenceActions([]); setRestartActions([]); setGithubActions([]); setLatestUsage(null); setLatestIssue(null); setInput("");
+      setEvidenceActions([]); setRestartActions([]); setGithubActions([]); setApprovedActions([]); setLatestUsage(null); setLatestIssue(null); setInput("");
     } catch {
       if (generation === conversationEpoch.current && context === desktopClient.config) { activeConversation.current = conversationId; setError("A new conversation could not be started."); }
     } finally { if (generation === conversationEpoch.current && context === desktopClient.config) setLoadingConversation(false); }
@@ -978,6 +983,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
         setEvidenceActions(refreshed.data.actions.filter((action) => action.riskLevel === "low"));
         setRestartActions(refreshed.data.actions.filter((action) => action.toolName === "trigger_aws_deploy"));
         setGithubActions(refreshed.data.actions.filter(isGithubReceiptAction));
+        setApprovedActions(refreshed.data.actions.filter(action => action.status === "approved"));
       }
       setConversations((current) => {
         const selected = current.find((conversation) => conversation.id === conversationId);
@@ -1021,13 +1027,16 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
         return;
       }
       decisionSaved = true;
+      setQueuePaused(true);
       const decisionData = result.data as { status: string; errorMessage?: string | null };
       setTurns((prev) => [...prev, {
         id: `local_${Date.now()}_d`,
         role: "tool_result",
         actionProposalId: proposal.id,
         content: approve
-          ? decisionData.status === "executed"
+          ? decisionData.status === "approved"
+            ? "Approval recorded. Waiting for the original requester to execute separately; no action was run by this decision."
+          : decisionData.status === "executed"
             ? pendingProposal.toolName === "trigger_aws_deploy"
               ? "ECS restart workflow request accepted. Service outcome and application health remain unverified."
               : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — done.`
@@ -1039,12 +1048,14 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           : `${TOOL_LABELS[pendingProposal.toolName] ?? pendingProposal.toolName} — rejected.`,
       }]);
       setPendingProposal(null);
-      if (approve && (proposal.toolName === "trigger_aws_deploy" || isGithubReceiptAction(proposal)) && conversationId) {
+      if (approve && decisionData.status === "approved") setApprovedActions(current => [...current.filter(action => action.id !== proposal.id), {...proposal, status: "approved"}]);
+      if (approve && decisionData.status !== "approved" && (proposal.toolName === "trigger_aws_deploy" || isGithubReceiptAction(proposal)) && conversationId) {
         const refreshed = await desktopClient.getAgentConversation(conversationId);
         if (generation !== decisionEpoch.current || context !== desktopClient.config || activeConversation.current !== ownerConversation) return;
         if (refreshed.ok && refreshed.data.id === conversationId) {
           setRestartActions(refreshed.data.actions.filter(action => action.toolName === "trigger_aws_deploy"));
           setGithubActions(refreshed.data.actions.filter(isGithubReceiptAction));
+          setApprovedActions(refreshed.data.actions.filter(action => action.status === "approved"));
         }
         else setError("The decision is saved, but its workflow receipt could not be read. Reopen the conversation; do not approve again.");
       }
@@ -1234,6 +1245,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             {streamingDraft && <p className="mt-3 whitespace-pre-wrap break-words text-sm text-zinc-300">{streamingDraft}</p>}
             <p className="mt-2 text-[11px] text-zinc-500">Draft text does not approve or execute changes. Completed work remains recorded if you stop.</p>
           </div>}
+          <AgentApprovedActions key={`approved-${conversationId}`} actions={approvedActions} read={(proposalId,signal) => desktopClient.readAgentActionExecution(proposalId,signal)} />
           <AgentGithubReceipts key={`github-${conversationId}`} actions={githubActions} />
           <AgentRestartReceipts key={conversationId} conversationId={conversationId} actions={restartActions} />
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}
@@ -1597,6 +1609,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
         <p className="mt-1">Local draft only. This does not approve the GitHub proposal, save files or run checks.</p>
       </div>}
       {proposal.requiresIndependentReviewer && <p className="mb-3 text-xs text-amber-200">Another authorized reviewer must approve this action. You can cancel your proposal without running it.</p>}
+      <p className="mb-3 text-xs text-zinc-400">Approval records this exact review only. The original requester executes separately with current access.</p>
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -1612,7 +1625,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
           disabled={deciding || proposal.requiresIndependentReviewer || (proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target")}
           className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50"
         >
-          {deciding ? "Working…" : "Approve & run"}
+          {deciding ? "Working…" : "Record approval"}
         </button>
       </div>
     </div>

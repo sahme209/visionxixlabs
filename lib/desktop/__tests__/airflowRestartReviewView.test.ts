@@ -65,7 +65,7 @@ it("ignores a review after selection changes and rejects mismatched execution ev
 it("the actual Batch automation approvals panel reaches the digest-bound restart card", async () => {
   render(createElement(AirflowAutomationView)); await screen.findByText("Connect Airflow first");
   fireEvent.click(screen.getByRole("button", { name: "approvals" })); await screen.findByText("Synthetic restart");
-  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Review restart destination" })); await screen.findByText("service-A");
   fireEvent.click(screen.getByRole("button", { name: "Approve service restart" })); expect(mock.approve).toHaveBeenCalledWith("execution", data.digest);
 });

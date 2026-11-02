@@ -4,6 +4,8 @@ Updated November 1, 2026. Two coordinated workstreams. User explicitly resumed t
 
 ## Standing product requirements
 
+Backend and frontend work proceed in parallel when file ownership and dependencies allow; integrate and verify the complete flow before acceptance. Show meaningful intermediate changes to the user, distinguishing local source/build previews from live production.
+
 Security, premium visual quality, and clarity/ease apply everywhere. Every flow must explain readiness, the next action and owner, required approvals, the verified outcome, and recovery. Use original Axiom branding and interaction principles inspired by Cursor, Claude, ChatGPT, Codex, Grok and Apple. Never substitute marketing language for tested capabilities. Preserve tenant boundaries, spending limits, genuine human approvals, uncertain outcomes and historical attempts.
 
 ## Workstream A — application completion
@@ -131,3 +133,11 @@ Direct environment dispatch now binds the current paired actor and captured inst
 User approved docs/recovery/2026-11-01/agent-review-execution-separation-proposal.md. Task1 now records exact current human review without invoking execution;20 service+8 route checks,6 actual isolated database journeys, scoped types and source review pass. A real lock-wait expiry race was reproduced and fixed. Native waiting controls and separate requester execution remain unfinished, so this intermediate backend must not ship. Existing consumed history and current reject-entry limitations are preserved. Follow docs/superpowers/plans/2026-11-01-agent-review-execution-separation.md Tasks2–5 without another routine checkpoint; local authorization covers this plan only, not live actions or activation.
 
 Agent separation Task2 is now locally verified: exact new-review eligibility and one-attempt requester storage, cross-session duplicate prevention, current persisted authority and immutable history, consumed unknown outcomes and read-only real elapsed-lease recovery.14 contract+20 review checks,16 actual isolated database tests, scoped types and resolved independent review pass. No provider or human decision was performed. The execution endpoint/transport composition and native controls remain Tasks3–4, so this partial source is not shipping-ready. See ../recovery/2026-11-01/agent-requester-store-local-progress.md.
+
+### Agent separation — parallel backend/frontend increment
+
+Backend recovery/preparation HTTP is locally mounted with strict paired scope, default-OFF preparation, bounded private metadata and no execute operation. Original-operation lookup never creates or claims work.27 actual isolated PostgreSQL store journeys now pass, including private-proof replay refusal, atomic database mutation/outcome rollback, real elapsed-lease recovery and final pinned-installation/current-review checks. Identity/commercial/provider boundaries remain simulated.25 HTTP/service checks and scoped server types pass. See ../recovery/2026-11-01/agent-requester-http-local-progress.md.
+
+In parallel, frontend review buttons now say Record approval, approval pauses queued work, and reopened approved actions offer only deliberate read-only saved-outcome recovery. No eligibility is inferred from old approved rows.287 affected regressions, additional focused copy/focus checks, desktop types and frontend build pass; source review found no important issue. This is not a signed/native visual or live identity acceptance. See ../recovery/2026-11-01/agent-approved-waiting-local-progress.md.
+
+Requester self-stop entry alignment and its locked expiry-order fix are locally tested; approval remains independent and other-user rejection requires current persisted reviewer authority. The partial fixed execution coordinator is unmounted; deployment dispatch, complete exact source/admission coverage, real-store/transport integration, trusted requester execution UI and full workflow/build acceptance remain unfinished. Tasks3–5 stay open; no rollout, provider action or broad Governance completion is authorized or claimed.

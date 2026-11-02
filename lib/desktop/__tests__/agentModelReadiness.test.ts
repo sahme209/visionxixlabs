@@ -99,10 +99,10 @@ it("shows an uncertain approved action without offering to execute that approval
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [{ id: "proposal", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } }] } });
   m.client.approveAgentAction.mockResolvedValue({ ok: true, data: { status: "failed", errorMessage: "action_outcome_unknown" } });
   render(createElement(AgentChatView));
-  fireEvent.click(await screen.findByRole("button", { name: "Approve & run" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Record approval" }));
   await screen.findByText(/Action outcome unconfirmed/);
   expect(screen.getByText(/this approval cannot execute again/)).toBeTruthy();
-  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   expect(m.client.approveAgentAction).toHaveBeenCalledTimes(1);
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
@@ -156,12 +156,12 @@ it.each(["chat", "code"])("shows real-time %s drafts without granting approval a
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText("Reviewing the selected code");
   expect(screen.getByText(/verification pending/)).toBeTruthy();
-  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   expect(m.client.sendAgentMessage.mock.calls[0][3]).toMatchObject({ mode, ...(mode === "code" ? { filePath: "src/app.ts" } : {}) });
   await act(async () => { completion.resolve({ ok: true, data: { reply: "Reviewed change ready", proposal: { id: "p", toolName: "commit_github_file", argsJson: { repositoryFullName: "fixture/repository", branch: "main", path: "src/app.ts", content: "new code" }, riskLevel: "medium", status: "proposed" }, usage: null } }); });
   await screen.findByText("Reviewed change ready");
   expect(screen.queryByText("Reviewing the selected code")).toBeNull();
-  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Record approval" })).toBeTruthy();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
 });
 it("stops an in-flight draft and ignores later text without retrying or presenting success", async () => {
@@ -194,7 +194,7 @@ it("reloads the saved conversation after interruption without resending or appro
   await screen.findByText("Saved server explanation");
   expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep my unsent follow-up");
   expect(screen.queryByText("Response interrupted. Reload the conversation.")).toBeNull();
-  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Record approval" })).toBeTruthy();
   expect(m.client.getAgentConversation).toHaveBeenCalledTimes(2);
   expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled(); expect(m.client.createAgentConversation).not.toHaveBeenCalled();
@@ -237,7 +237,7 @@ it("deactivation aborts streaming and never accepts a late success while retaini
   await act(async () => { completion.resolve({ ok: true, data: { reply: "Late success", proposal: { id: "late", toolName: "commit_github_file", argsJson: {}, riskLevel: "medium", status: "proposed" } } }); });
   view.rerender(createElement(AgentChatView, { active: true }));
   await waitFor(() => expect(m.client.aiProviderStatus.mock.calls.length).toBeGreaterThan(1));
-  expect(screen.queryByText("Late success")).toBeNull(); expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByText("Late success")).toBeNull(); expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Unsent follow-up");
   expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
 });
@@ -927,7 +927,7 @@ it("unblocks the composer after cancelling an own proposal without a model call"
  m.client.rejectAgentAction.mockResolvedValue({ok:true,data:{status:"rejected"}});
  render(createElement(AgentChatView));
  const cancel=await screen.findByRole("button",{name:"Cancel proposal"});
- expect((screen.getByRole("button",{name:"Approve & run"})as HTMLButtonElement).disabled).toBe(true);
+ expect((screen.getByRole("button",{name:"Record approval"})as HTMLButtonElement).disabled).toBe(true);
  fireEvent.click(cancel);await screen.findByText(/Create a branch — rejected/);
  fireEvent.change(screen.getByRole("textbox",{name:"Agent request"}),{target:{value:"Unsent next request"}});
  await waitFor(()=>expect((screen.getByRole("button",{name:"Send"})as HTMLButtonElement).disabled).toBe(false));
@@ -963,11 +963,11 @@ it("retains an approved but budget-blocked model and draft until the user explic
 it("refreshes a web-reviewed pending action on focus without executing or sending again", async () => {
   const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
-  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Record approval" });
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "external-result", role: "tool_result", actionProposalId: proposal.id, content: "External reviewer executed this branch change." }], actions: [{ ...proposal, status: "executed" }] } });
   fireEvent(window, new Event("focus"));
   await screen.findByText("External reviewer executed this branch change.");
-  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).disabled).toBe(false);
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
 });
@@ -978,7 +978,7 @@ it("observes focus immediately when a pending approval first enters the document
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "mount-result", role: "tool_result", content: "Independent execution observed on initial focus." }], actions: [{ ...proposal, status: "executed" }] } });
   let focused = false;
   const observer = new MutationObserver(() => {
-    if (!focused && screen.queryByRole("button", { name: "Approve & run" })) {
+    if (!focused && screen.queryByRole("button", { name: "Record approval" })) {
       focused = true;
       fireEvent(window, new Event("focus"));
     }
@@ -989,7 +989,7 @@ it("observes focus immediately when a pending approval first enters the document
     await screen.findByText("Independent execution observed on initial focus.");
     expect(focused).toBe(true);
     expect(m.client.getAgentConversation).toHaveBeenCalledTimes(2);
-    expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+    expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
     expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
     expect(m.client.approveAgentAction).not.toHaveBeenCalled();
     expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
@@ -1001,7 +1001,7 @@ it("rechecks an external decision when focus returns during a stale pending read
   const pending = { ok: true, data: { ...summary, turns: [], actions: [proposal] } };
   m.client.getAgentConversation.mockResolvedValue(pending);
   render(createElement(AgentChatView));
-  await screen.findByRole("button", { name: "Approve & run" });
+  await screen.findByRole("button", { name: "Record approval" });
   await act(async () => {});
   const stale = deferred<unknown>();
   m.client.getAgentConversation.mockReturnValueOnce(stale.promise);
@@ -1014,7 +1014,7 @@ it("rechecks an external decision when focus returns during a stale pending read
   await act(async () => { stale.resolve(pending); });
   await screen.findByText("Independent execution observed after overlapping focus.");
   expect(m.client.getAgentConversation).toHaveBeenCalledTimes(before + 2);
-  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
   expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
@@ -1023,12 +1023,12 @@ it("rechecks an external decision when focus returns during a stale pending read
 it("retains pending approval when a focus refresh cannot verify the conversation", async () => {
   const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
-  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Record approval" });
   const before = m.client.getAgentConversation.mock.calls.length;
   m.client.getAgentConversation.mockResolvedValue({ ok: false, error: "unavailable" });
   fireEvent(window, new Event("focus"));
   await waitFor(() => expect(m.client.getAgentConversation.mock.calls.length).toBeGreaterThan(before));
-  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Record approval" })).toBeTruthy();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
 });
 
@@ -1036,7 +1036,7 @@ it("observes an external rejection by polling without requiring a focus event", 
   const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
   const interval = vi.spyOn(window, "setInterval");
-  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Record approval" });
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "external-rejection", role: "tool_result", content: "External reviewer rejected this proposal." }], actions: [{ ...proposal, status: "rejected" }] } });
   // The button renders before React is required to flush the polling effect.
   await waitFor(() => expect(typeof interval.mock.calls.find(([, delay]) => delay === 15_000)?.[0]).toBe("function"));
@@ -1051,7 +1051,7 @@ it("ignores an external-decision read that finishes after the desktop credential
   const proposal = { id: "external-review", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
   const listening = vi.spyOn(window, "addEventListener");
-  const view = render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Approve & run" });
+  const view = render(createElement(AgentChatView)); await screen.findByRole("button", { name: "Record approval" });
   await waitFor(() => expect(listening.mock.calls.some(([event]) => event === "focus")).toBe(true));
   const old = deferred<unknown>(); m.client.getAgentConversation.mockReturnValueOnce(old.promise);
   const before = m.client.getAgentConversation.mock.calls.length;
@@ -1076,11 +1076,11 @@ it("recovers a web-approved commit receipt on focus without a second execution",
   const sha="b".repeat(40);
   const proposal={id:"external-commit",status:"proposed",toolName:"commit_github_files",riskLevel:"medium",argsJson:{repositoryFullName:"fixture/repository",branch:"feature",files:[{path:"a.ts",content:"a"},{path:"b.ts",content:"b"}]}};
   m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[proposal]}});
-  render(createElement(AgentChatView)); await screen.findByRole("button",{name:"Approve & run"});
+  render(createElement(AgentChatView)); await screen.findByRole("button",{name:"Record approval"});
   m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[{...proposal,status:"executed",resultJson:{sha,htmlUrl:`https://github.com/fixture/repository/commit/${sha}`,fileCount:2}}]}});
   fireEvent(window,new Event("focus"));
   expect(await screen.findByRole("link",{name:"View recorded commit"})).toBeTruthy();
-  expect(screen.queryByRole("button",{name:"Approve & run"})).toBeNull();
+  expect(screen.queryByRole("button",{name:"Record approval"})).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();expect(m.client.approveAgentAction).not.toHaveBeenCalled();
   m.client.createAgentConversation.mockResolvedValue({ok:true,data:{...summary,id:"new-empty",turns:[],actions:[]}});
   fireEvent.click(screen.getByRole("button",{name:"New chat"}));
@@ -1101,12 +1101,12 @@ it("reconciles a second external decision after cancelling and replacing a propo
   await draft();
   fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText("Replacement for review");
-  await waitFor(() => expect((screen.getByRole("button", { name: "Approve & run" }) as HTMLButtonElement).disabled).toBe(false));
+  await waitFor(() => expect((screen.getByRole("button", { name: "Record approval" }) as HTMLButtonElement).disabled).toBe(false));
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "second-result", role: "tool_result", content: "Second independent decision executed." }], actions: [{ ...first, status: "rejected" }, { ...second, status: "executed" }] } });
   const polling = interval.mock.calls.filter(([, delay]) => delay === 15_000).at(-1)?.[0];
   await act(async () => { (polling as () => void)(); });
   await screen.findByText("Second independent decision executed.");
-  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   expect(m.client.sendAgentMessage).toHaveBeenCalledOnce();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
   expect(m.client.rejectAgentAction).toHaveBeenCalledOnce();
@@ -1119,12 +1119,12 @@ it.each(["visible", "hidden"] as const)("immediately reconciles an external deci
   const proposal = { id: "reviewed-away", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
   const view = render(createElement(AgentChatView, { active: true }));
-  await screen.findByRole("button", { name: "Approve & run" });
+  await screen.findByRole("button", { name: "Record approval" });
   view.rerender(createElement(AgentChatView, { active: false }));
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "reviewed-away-result", role: "tool_result", content: "Independent reviewer decided while Settings was open." }], actions: [{ ...proposal, status: "rejected" }] } });
   view.rerender(createElement(AgentChatView, { active: true }));
   await screen.findByText("Independent reviewer decided while Settings was open.");
-  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
   expect(m.client.approveAgentAction).not.toHaveBeenCalled();
   expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
@@ -1143,7 +1143,7 @@ it("keeps background decision polling suppressed while the native document is hi
     const proposal = { id: "hidden-poll", status: "proposed", toolName: "create_github_branch", riskLevel: "medium", argsJson: { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "change" } };
     m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [], actions: [proposal] } });
     render(createElement(AgentChatView));
-    await screen.findByRole("button", { name: "Approve & run" });
+    await screen.findByRole("button", { name: "Record approval" });
     await waitFor(() => expect(poll).toBeTypeOf("function"));
     const reads = m.client.getAgentConversation.mock.calls.length;
     await act(async () => { poll?.(); fireEvent(window, new Event("focus")); });
@@ -1160,7 +1160,7 @@ it("manually refreshes an independently reviewed decision without another send o
   m.client.getAgentConversation.mockResolvedValue({ ok: true, data: { ...summary, turns: [{ id: "manual-result", role: "tool_result", content: "Independent decision read from service." }], actions: [{ ...proposal, status: "executed" }] } });
   fireEvent.click(refresh);
   await screen.findByText("Independent decision read from service.");
-  expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled(); expect(m.client.rejectAgentAction).not.toHaveBeenCalled();
 });
 
@@ -1172,7 +1172,7 @@ it("keeps a pending decision and offers retry when manual refresh cannot verify 
   m.client.getAgentConversation.mockResolvedValue({ ok: false, error: "unavailable" });
   fireEvent.click(refresh);
   await screen.findByText("The decision could not be verified. Try refreshing again.");
-  expect(screen.getByRole("button", { name: "Approve & run" })).toBeTruthy();
+  expect(screen.getByRole("button", { name: "Record approval" })).toBeTruthy();
   expect((screen.getByRole("button", { name: "Refresh decision" }) as HTMLButtonElement).disabled).toBe(false);
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled(); expect(m.client.approveAgentAction).not.toHaveBeenCalled();
 });
@@ -1296,4 +1296,19 @@ it("keeps model checking inside the existing selector rather than inserting a co
   expect(selector.className).toBe(width);
   expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
+
+it("records approval as waiting without resuming the model and restores it after reopen", async () => {
+ const proposed={id:"separate",status:"proposed",toolName:"create_github_branch",riskLevel:"medium",argsJson:{repositoryFullName:"fixture/repository",baseBranch:"main",newBranchName:"change"}};
+ m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[proposed]}});
+ m.client.approveAgentAction.mockResolvedValue({ok:true,data:{id:"separate",status:"approved",errorMessage:null}});
+ const view=render(createElement(AgentChatView));fireEvent.click(await screen.findByRole("button",{name:"Record approval"}));
+ await screen.findByText("Approval recorded");expect(screen.queryByText(/failed: unknown error/)).toBeNull();expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+ view.unmount();m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[{...proposed,status:"approved"}]}});render(createElement(AgentChatView));await screen.findByText("Approval recorded");expect(screen.getByRole("button",{name:"Check saved action outcome"})).toBeTruthy();expect(m.client.approveAgentAction).toHaveBeenCalledOnce();
+});
+it("observes review-only approval on focus without model continuation or an execute control",async()=>{
+ const proposed={id:"external-separate",status:"proposed",toolName:"create_github_branch",riskLevel:"medium",argsJson:{repositoryFullName:"fixture/repository",baseBranch:"main",newBranchName:"change"}};
+ m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[proposed]}});render(createElement(AgentChatView));await screen.findByRole("button",{name:"Record approval"});
+ m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...summary,turns:[],actions:[{...proposed,status:"approved"}]}});fireEvent(window,new Event("focus"));
+ await screen.findByText("Approval recorded");expect(screen.queryByRole("button",{name:"Record approval"})).toBeNull();expect(screen.queryByRole("button",{name:/execute approved/i})).toBeNull();expect(m.client.sendAgentMessage).not.toHaveBeenCalled();expect(m.client.approveAgentAction).not.toHaveBeenCalled();
 });

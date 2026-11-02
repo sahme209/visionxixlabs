@@ -38,7 +38,7 @@ it("actual approval click refreshes durable conversation and restores truthful r
   const executed = { ...proposal, status: "executed", resultJson: { dispatched: true, execution } };
   m.client.getAgentConversation.mockResolvedValueOnce(conversation([proposal])).mockResolvedValue(conversation([executed], [{ id: "turn", role: "tool_result", actionProposalId: proposal.id, content: "trigger_aws_deploy approved and executed." }]));
   m.client.approveAgentAction.mockResolvedValue({ ok: true, data: { id: proposal.id, status: "executed", errorMessage: null } });
-  const view = render(createElement(AgentChatView)); fireEvent.click(await screen.findByRole("button", { name: "Approve & run" }));
+  const view = render(createElement(AgentChatView)); fireEvent.click(await screen.findByRole("button", { name: "Record approval" }));
   await screen.findByText("ECS restart workflow request recorded"); expect(screen.queryByText(/Restart AWS ECS service — done/)).toBeNull();
   expect(screen.getByText(/GitHub workflow: tracking unavailable/)).toBeTruthy(); expect(m.client.observeDeploymentExecution).not.toHaveBeenCalled();
   view.unmount(); render(createElement(AgentChatView)); await screen.findByText("ECS restart workflow request recorded");
@@ -48,8 +48,8 @@ it("actual approval click refreshes durable conversation and restores truthful r
 it("does not reapprove if the saved decision's receipt read fails", async () => {
   m.client.getAgentConversation.mockResolvedValueOnce(conversation([proposal])).mockRejectedValue(new Error("synthetic transport failure"));
   m.client.approveAgentAction.mockResolvedValue({ ok: true, data: { id: proposal.id, status: "executed", errorMessage: null } });
-  render(createElement(AgentChatView)); fireEvent.click(await screen.findByRole("button", { name: "Approve & run" }));
-  await screen.findByText(/decision is saved.*receipt could not be read/); await waitFor(() => expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull()); expect(m.client.approveAgentAction).toHaveBeenCalledOnce();
+  render(createElement(AgentChatView)); fireEvent.click(await screen.findByRole("button", { name: "Record approval" }));
+  await screen.findByText(/decision is saved.*receipt could not be read/); await waitFor(() => expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull()); expect(m.client.approveAgentAction).toHaveBeenCalledOnce();
 });
 
 function deferred<T>() { let resolve!: (value: T) => void; const promise = new Promise<T>(done => { resolve = done; }); return { promise, resolve }; }
@@ -60,10 +60,10 @@ it("navigation during a pending decision drops old UI callbacks and recovers the
   m.client.listAgentConversations.mockResolvedValue(summaries(["conversation-1", "conversation-2"]));
   m.client.getAgentConversation.mockImplementation(async id => id === "conversation-2" ? loaded(id, "Second conversation") : conversation(approved ? [{ ...proposal, status: "executed", resultJson: { execution } }] : [proposal]));
   m.client.approveAgentAction.mockReturnValue(pending.promise);
-  render(createElement(AgentChatView)); fireEvent.click(await screen.findByRole("button", { name: "Approve & run" }));
+  render(createElement(AgentChatView)); fireEvent.click(await screen.findByRole("button", { name: "Record approval" }));
   fireEvent.change(screen.getByRole("combobox", { name: "Agent conversation" }), { target: { value: "conversation-2" } }); await screen.findByText("Second conversation");
   await act(async () => { approved = true; pending.resolve({ ok: true, data: { id: proposal.id, status: "executed", errorMessage: null } }); });
-  expect(screen.queryByText(/ECS restart workflow request accepted/)).toBeNull(); expect(screen.queryByLabelText("ECS restart workflow receipt")).toBeNull(); expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByText(/ECS restart workflow request accepted/)).toBeNull(); expect(screen.queryByLabelText("ECS restart workflow receipt")).toBeNull(); expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   fireEvent.change(screen.getByRole("combobox", { name: "Agent conversation" }), { target: { value: "conversation-1" } }); await screen.findByLabelText("ECS restart workflow receipt"); expect(m.client.approveAgentAction).toHaveBeenCalledOnce();
 });
 it("never publishes an old startup restore after credential change", async () => {
@@ -111,7 +111,7 @@ it("clears populated old state and pending-send locks, then loads and sends in t
   expect(screen.queryByText("PRIVATE OLD CONTENT")).toBeNull(); expect(screen.queryByLabelText("ECS restart workflow receipt")).toBeNull();
   await screen.findByText("Fresh tenant loaded");
   await act(async () => { oldSend.resolve({ ok: true, data: { reply: "STALE OLD REPLY", proposal, usage: null } }); });
-  expect(screen.queryByText("STALE OLD REPLY")).toBeNull(); expect(screen.queryByRole("button", { name: "Approve & run" })).toBeNull();
+  expect(screen.queryByText("STALE OLD REPLY")).toBeNull(); expect(screen.queryByRole("button", { name: "Record approval" })).toBeNull();
   fireEvent.change(screen.getByRole("textbox"), { target: { value: "Fresh request" } }); fireEvent.click(screen.getByRole("button", { name: "Send" }));
   await screen.findByText("Fresh tenant reply"); expect(m.client.sendAgentMessage.mock.calls.at(-1)?.[0]).toBe("fresh-conversation");
 });

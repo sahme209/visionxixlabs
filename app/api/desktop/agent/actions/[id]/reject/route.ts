@@ -1,9 +1,9 @@
 /**
  * POST /api/desktop/agent/actions/[id]/reject
  *
- * Admin/owner-only, same bar as approve — a non-admin shouldn't be able
- * to silently dismiss another user's pending action either, since that
- * decision is itself part of the audit trail.
+ * Paired workspace readers may request stopping their own pending proposal.
+ * The locked decision service requires current approver authority for any
+ * other user's proposal; this entry never grants review permissions.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -18,9 +18,12 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     requiredScope: "pipeline:read",
     route: "POST /api/desktop/agent/actions/[id]/reject",
     allowApiKey: false,
-    requiredCapability: "agent:approve",
+    requiredCapability: "workspace:read",
+    requireWorkspaceMembership: true,
+    recordHeartbeat: false,
+    requireActiveAccess: false,
   });
-  if (!session) {
+  if (!session || session.credentialKind !== "desktop_session" || !session.userId || !session.organizationId) {
     return NextResponse.json({ ok: false, error: "desktop_session_required" }, { status: 401 });
   }
 

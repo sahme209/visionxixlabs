@@ -365,7 +365,7 @@ it("reviews unsaved changes against the loaded baseline without saving or approv
   expect(screen.getByText("original line")).toBeTruthy();
   expect(within(screen.getByLabelText("Local unsaved file diff")).getByText("edited line")).toBeTruthy();
   expect(m.invoke.mock.calls.filter(([name]) => name === "write_repository_file")).toHaveLength(0);
-  expect(screen.queryByRole("button", {name: "Approve & run"})).toBeNull();
+  expect(screen.queryByRole("button", {name: "Record approval"})).toBeNull();
   fireEvent.click(screen.getByRole("button", {name: "Undo edit"}));
   expect(screen.getByText("No unsaved content changes.")).toBeTruthy();
 });

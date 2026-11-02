@@ -14,12 +14,14 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (!context.isAuthenticated || !context.userId || !context.organizationId || !context.email) {
     return NextResponse.json({ ok: false, error: "authentication_required" }, { status: 401 });
   }
-  if (!canDecideApprovals({ email: context.email, roles: context.roles })) {
-    return NextResponse.json({ ok: false, error: "approver_role_required" }, { status: 403 });
-  }
   const body = await request.json().catch(() => null) as { decision?: unknown } | null;
   if (body?.decision !== "approve" && body?.decision !== "reject") {
     return NextResponse.json({ ok: false, error: "invalid_decision" }, { status: 400 });
+  }
+  // Reject is not an approval grant: the transaction checks current accepted
+  // membership and requires either exact proposer identity or approver capability.
+  if (body.decision === "approve" && !canDecideApprovals({ email: context.email, roles: context.roles })) {
+    return NextResponse.json({ ok: false, error: "approver_role_required" }, { status: 403 });
   }
   const { id } = await params;
   const result = await decideAgentAction({

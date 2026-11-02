@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type Outcome = { status: "executed" | "rejected" | "failed" | "unconfirmed"; message: string };
+type Outcome = { status: "approved" | "executed" | "rejected" | "failed" | "unconfirmed"; message: string };
 
 export function ApprovalDecisionButtons({ proposalId, disabledReason, approveDisabledReason, ownProposal = false }: { proposalId: string; disabledReason?: string; approveDisabledReason?: string; ownProposal?: boolean }) {
   const approvalRestriction = ownProposal ? "Another authorized reviewer must approve this proposal." : approveDisabledReason;
@@ -19,9 +19,11 @@ export function ApprovalDecisionButtons({ proposalId, disabledReason, approveDis
         method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ decision }),
       });
       const body = await response.json().catch(() => null) as { ok?: boolean; status?: string; error?: string; errorMessage?: string } | null;
-      const validStatus = decision === "reject" ? body?.status === "rejected" : body?.status === "executed" || body?.status === "failed";
+      const validStatus = decision === "reject" ? body?.status === "rejected" : body?.status === "approved" || body?.status === "executed" || body?.status === "failed";
       if (!response.ok || body?.ok !== true || !validStatus) throw new Error(body?.error ?? "decision_unconfirmed");
-      if (body.status === "failed") {
+      if (body.status === "approved") {
+        setOutcome({status:"approved",message:"Approved — waiting for requester execution. This decision did not run the action. The original requester must execute separately in Axiom."});
+      } else if (body.status === "failed") {
         setOutcome({ status: "failed", message: body.errorMessage === "action_outcome_unknown"
           ? "Action approved; provider outcome is unconfirmed. Review the provider result and audit before taking further action."
           : body.errorMessage === "deployment_outcome_unknown"
@@ -54,7 +56,7 @@ export function ApprovalDecisionButtons({ proposalId, disabledReason, approveDis
   return <div className="text-right">
     <div className="flex gap-2">
       <button type="button" disabled={pending !== null} onClick={() => void decide("reject")} className="h-8 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/[0.05] disabled:opacity-50">{pending === "reject" ? "Rejecting…" : ownProposal ? "Cancel proposal" : "Reject"}</button>
-      <button type="button" disabled={pending !== null || Boolean(approvalRestriction)} aria-describedby={approvalRestriction ? `${proposalId}-approve-reason` : undefined} onClick={() => void decide("approve")} className="h-8 rounded-lg bg-[#f54e00] px-3 text-xs font-semibold text-white hover:bg-[#ff6424] disabled:opacity-50">{pending === "approve" ? "Approving…" : "Approve & execute"}</button>
+      <button type="button" disabled={pending !== null || Boolean(approvalRestriction)} aria-describedby={approvalRestriction ? `${proposalId}-approve-reason` : undefined} onClick={() => void decide("approve")} className="h-8 rounded-lg bg-[#f54e00] px-3 text-xs font-semibold text-white hover:bg-[#ff6424] disabled:opacity-50">{pending === "approve" ? "Approving…" : "Record approval"}</button>
     </div>
     {approvalRestriction && <p id={`${proposalId}-approve-reason`} className="mt-2 max-w-xs text-xs text-zinc-500">{approvalRestriction}</p>}
   </div>;

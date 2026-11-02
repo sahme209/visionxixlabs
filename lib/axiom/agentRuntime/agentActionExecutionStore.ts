@@ -108,6 +108,12 @@ export function createAgentActionExecutionStore(repo:ReleaseOperationPlanRepo,po
    await event(tx,row,null);return dto(unpack(row),authority.now);
   })},
   async get(raw:AgentExecutionScope,id:string){const s=agentExecutionScopeSchema.parse(raw);return transaction(s,async tx=>{const v=await load(tx,s,id),a=await actor(tx,s,'reader');await request(tx,s,'reader');const now=await time(tx);if(a.expiresAt<=now)deny();return dto(v,now)})},
+  async inspectForExecution(raw:AgentExecutionScope,id:string){const s=agentExecutionScopeSchema.parse(raw);return transaction(s,async tx=>{
+   const v=await load(tx,s,id);if(v.state.state!=='prepared'||v.binding.scope.sessionId!==s.sessionId)deny();
+   const current=await readAuthority(tx,s,v.binding.review.proposalId);
+   if(sha256ContentHash(current.review)!==sha256ContentHash(v.binding.review))deny();
+   return Object.freeze({toolName:current.review.toolName,args:structuredClone(current.args),proposalDigest:current.review.proposalDigest,reviewId:current.review.reviewId});
+  })},
   async claim(raw:AgentExecutionScope,id:string){const s=agentExecutionScopeSchema.parse(raw);return transaction(s,async tx=>{
    const v=await load(tx,s,id);if(v.binding.scope.sessionId!==s.sessionId)deny();
    if(v.state.state!=='prepared'){const a=await actor(tx,s,'reader');await request(tx,s,'reader');const now=await time(tx);if(a.expiresAt<=now)deny();return{claimed:false as const,operation:dto(v,now)}}
@@ -120,6 +126,48 @@ export function createAgentActionExecutionStore(repo:ReleaseOperationPlanRepo,po
    if(sha256ContentHash(current.review)!==sha256ContentHash(v.binding.review)||!v.row.leaseExpiresAt||v.row.leaseExpiresAt<=current.now)deny();
    return{toolName:current.review.toolName,args:current.args,proposalDigest:current.review.proposalDigest,reviewId:current.review.reviewId};
   })},
+  /** Last server authority await before a GitHub mutation. Source/reviewer/
+   * requester/policy rows remain locked while the pinned installation is checked.
+   * The external provider write is necessarily outside this transaction. */
+  async beforeGithubDispatch(raw:AgentExecutionScope,proof:AgentExecutionClaim,rawConnection:{id:string;githubInstallationId:string;updatedAt:Date}){
+   const s=agentExecutionScopeSchema.parse(raw),c=privateClaim(proof);
+   const connection=z.object({id:z.string().min(1).max(240),githubInstallationId:z.string().regex(/^[1-9][0-9]*$/),updatedAt:z.date()}).strict().parse(rawConnection);
+   if(sha256ContentHash(s)!==sha256ContentHash(c.scope))deny();
+   return transaction(s,async tx=>{
+    const v=await load(tx,s,c.id);
+    if(v.state.state!=='dispatching'||v.row.leaseOwner!==c.lease||!['create_github_branch','commit_github_file','commit_github_files','open_github_pull_request'].includes(v.binding.review.toolName))deny();
+    const current=await readAuthority(tx,s,v.binding.review.proposalId);
+    if(sha256ContentHash(current.review)!==sha256ContentHash(v.binding.review))deny();
+    const rows=await tx.$queryRaw<Array<{id:string;githubInstallationId:string;updatedAt:Date;revokedAt:Date|null;suspendedAt:Date|null;status:string;now:Date;sessionLive:boolean}>>`SELECT i."id",i."githubInstallationId",i."updatedAt",i."revokedAt",i."suspendedAt",i."status",clock_timestamp() AS "now",(s."revokedAt" IS NULL AND s."expiresAt">clock_timestamp()) AS "sessionLive"
+     FROM "GitHubInstallation" i JOIN "DesktopSessionRecord" s ON s."organizationId"=i."organizationId"
+     WHERE i."organizationId"=${s.organizationId} AND i."id"=${connection.id} AND s."id"=${s.sessionId} AND s."userId"=${s.actorUserId}
+     AND i."id"=(SELECT latest."id" FROM "GitHubInstallation" latest WHERE latest."organizationId"=${s.organizationId} AND latest."status"='active' ORDER BY latest."installedAt" DESC LIMIT 1) FOR SHARE OF i,s`;
+    const row=rows[0];
+    if(rows.length!==1||row.id!==connection.id||row.githubInstallationId!==connection.githubInstallationId||!(row.updatedAt instanceof Date)||row.updatedAt.getTime()!==connection.updatedAt.getTime()||row.status!=='active'||row.revokedAt!==null||row.suspendedAt!==null||row.sessionLive!==true||!(row.now instanceof Date)||!Number.isFinite(row.now.getTime())||!v.row.leaseExpiresAt||v.row.leaseExpiresAt<=row.now||Date.parse(current.review.expiresAt)<=row.now.getTime())deny();
+    return{toolName:current.review.toolName,args:current.args,proposalDigest:current.review.proposalDigest,reviewId:current.review.reviewId};
+   });
+  },
+  /** Trusted DB-only fixed mutator. Never use a provider adapter in this callback.
+   * Mutation and recorded outcome commit together; ambiguous transaction failures
+   * leave the claimed operation consumed for read-only recovery, never retry. */
+  async applyDatabase(proof:AgentExecutionClaim,write:(tx:Tx,source:{toolName:string;args:Record<string,unknown>})=>Promise<AgentExecutionReceipt>){
+   const c=privateClaim(proof);
+   // A database apply is itself single-use, including rollback or lost commit
+   // responses. Do not let the worker replay a still-live in-memory proof.
+   claims.delete(proof);
+   const result=await transaction(c.scope,async tx=>{
+    const v=await load(tx,c.scope,c.id);
+    if(v.state.state!=='dispatching'||v.row.leaseOwner!==c.lease||!['create_environment','configure_deployment_target','connect_identity_provider'].includes(v.binding.review.toolName)||typeof write!=='function')deny();
+    const current=await readAuthority(tx,c.scope,v.binding.review.proposalId);
+    if(sha256ContentHash(current.review)!==sha256ContentHash(v.binding.review)||!v.row.leaseExpiresAt||v.row.leaseExpiresAt<=current.now)deny();
+    const receipt=agentExecutionReceiptSchema.parse(await write(tx,{toolName:current.review.toolName,args:z.record(z.string(),z.unknown()).parse(structuredClone(current.args))}));
+    if(receipt.code!=='action_completed')deny();
+    const final=await readAuthority(tx,c.scope,v.binding.review.proposalId);
+    if(sha256ContentHash(final.review)!==sha256ContentHash(v.binding.review)||!v.row.leaseExpiresAt||v.row.leaseExpiresAt<=final.now)deny();
+    return dto(await update(tx,v,{state:'confirmed',receipt},final.now),final.now);
+   });
+   claims.delete(proof);return result;
+  },
   async complete(proof:AgentExecutionClaim,outcome:'confirmed'|'refused'|'unknown',rawReceipt:AgentExecutionReceipt){
    const c=privateClaim(proof),receipt=agentExecutionReceiptSchema.parse(rawReceipt);if(!['confirmed','refused','unknown'].includes(outcome)||receipt.code!==({confirmed:'action_completed',refused:'pre_dispatch_refused',unknown:'provider_outcome_unknown'}as const)[outcome])deny();
    const result=await transaction(c.scope,async tx=>{const v=await load(tx,c.scope,c.id);if(v.state.state!=='dispatching'||v.row.leaseOwner!==c.lease)deny();const now=await time(tx);return dto(await update(tx,v,{state:outcome,receipt},now),now)});claims.delete(proof);return result;

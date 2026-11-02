@@ -1,0 +1,10 @@
+/** @vitest-environment jsdom */
+import {createElement} from 'react';
+import {cleanup,fireEvent,render,screen} from '@testing-library/react';
+import {afterEach,expect,it,vi} from 'vitest';
+import {AgentApprovedActions} from '../../../desktop/src/components/AgentApprovedActions';
+afterEach(cleanup);
+const proposal={id:'p',toolName:'create_github_branch'};
+it('shows waiting review without execute or preparation and only reads on a deliberate click',async()=>{const read=vi.fn().mockResolvedValue({ok:true,data:null});render(createElement(AgentApprovedActions,{actions:[proposal],read}));expect(screen.getByText('Approval recorded')).toBeTruthy();expect(screen.queryByRole('button',{name:/execute|prepare/i})).toBeNull();expect(read).not.toHaveBeenCalled();fireEvent.click(screen.getByRole('button',{name:'Check saved action outcome'}));await screen.findByText(/No saved execution record/);expect(read).toHaveBeenCalledOnce();});
+it('keeps unknown history consumed and offers only another read',async()=>{const read=vi.fn().mockResolvedValue({ok:true,data:{state:'unknown',recoveryState:'unknown',attemptCount:1,id:'operation',expiresAt:'2030-01-01T00:01:00.000Z',observedAt:'2030-01-01T00:02:00.000Z'}});render(createElement(AgentApprovedActions,{actions:[proposal],read}));fireEvent.click(screen.getByRole('button',{name:'Check saved action outcome'}));await screen.findByText(/Outcome unconfirmed/);expect(screen.getByText(/Do not resend/)).toBeTruthy();expect(screen.queryByRole('button',{name:/retry|execute/i})).toBeNull();});
+it('discards a late lookup when conversation actions change',async()=>{let done!:(v:any)=>void;const read=vi.fn(()=>new Promise<any>(r=>done=r));const view=render(createElement(AgentApprovedActions,{actions:[proposal],read}));fireEvent.click(screen.getByRole('button',{name:'Check saved action outcome'}));view.rerender(createElement(AgentApprovedActions,{actions:[{id:'other',toolName:'commit_github_file'}],read}));done({ok:true,data:{state:'confirmed',recoveryState:'confirmed'}});expect(screen.queryByText('Action completed')).toBeNull();});

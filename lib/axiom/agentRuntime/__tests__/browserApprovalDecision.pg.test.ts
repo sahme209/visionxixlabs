@@ -58,4 +58,27 @@ describe.skipIf(!socket)('actual review-only Agent decision transaction',()=>{
   expect(await decision).toEqual({ok:false,error:'approval_expired'});expect(await f.db.secureAuditRecord.count({where:{organizationId:t.org}})).toBe(0);expect(f.execute).not.toHaveBeenCalled();
  });
 
+ it('allows a current read-only proposer to stop only their own pending proposal',async()=>{
+  const t=await fixture();await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'requester'}},data:{role:'read_only'}});
+  expect(await decideAgentAction({organizationId:t.org,proposalId:t.proposal.id,actorUserId:'requester',actorRole:'admin',decision:'reject'})).toEqual({ok:true,status:'rejected'});
+  const saved=await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}});expect(saved).toMatchObject({status:'rejected',decidedByUserId:'requester',executedAt:null,resultJson:null});
+  expect(await f.db.secureAuditRecord.count({where:{organizationId:t.org,action:'approval.deny'}})).toBe(1);expect(f.execute).not.toHaveBeenCalled();
+ });
+ it('refuses another read-only member stopping someone else proposal even with stale admin label',async()=>{
+  const t=await fixture();await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'read_only'}});
+  expect(await decideAgentAction({organizationId:t.org,proposalId:t.proposal.id,actorUserId:'reviewer',actorRole:'admin',decision:'reject'})).toEqual({ok:false,error:'approval_authority_required'});
+  expect((await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}})).status).toBe('proposed');expect(await f.db.secureAuditRecord.count({where:{organizationId:t.org}})).toBe(0);
+ });
+ it('refuses a removed proposer without changing their now-expired proposal or history',async()=>{
+  const t=await fixture(200);await f.db.orgMembership.delete({where:{organizationId_userId:{organizationId:t.org,userId:'requester'}}});await f.db.$queryRawUnsafe('SELECT 1 FROM pg_sleep(0.25)');
+  const before=await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}});
+  expect(await decideAgentAction({organizationId:t.org,proposalId:t.proposal.id,actorUserId:'requester',actorRole:'owner',decision:'reject'})).toEqual({ok:false,error:'approval_authority_required'});
+  expect(await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}})).toEqual(before);expect(await f.db.secureAuditRecord.count({where:{organizationId:t.org}})).toBe(0);expect(f.execute).not.toHaveBeenCalled();
+ });
+ it('expires a naturally elapsed self-stop only after current membership validation',async()=>{
+  const t=await fixture(200);await f.db.$queryRawUnsafe('SELECT 1 FROM pg_sleep(0.25)');
+  expect(await decideAgentAction({organizationId:t.org,proposalId:t.proposal.id,actorUserId:'requester',actorRole:'owner',decision:'reject'})).toEqual({ok:false,error:'approval_expired'});
+  expect((await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}})).status).toBe('expired');expect(await f.db.secureAuditRecord.count({where:{organizationId:t.org}})).toBe(0);expect(f.execute).not.toHaveBeenCalled();
+ });
+
 });

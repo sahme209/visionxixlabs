@@ -4,7 +4,8 @@ import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperat
 import {createAgentActionExecutionStore} from '@/lib/axiom/agentRuntime/agentActionExecutionStore';
 import {agentExecutionScopeSchema,type AgentExecutionScope} from '@/lib/axiom/agentRuntime/agentActionExecutionContract';
 import {resolveRequestDesktopSession} from './resolveRequestDesktopSession';
-import {readDesktopCommercialAccess} from './desktopCommercialAccess';
+import {readBillingPlanWithAvailability} from '@/lib/billing/tenantBillingStore';
+import {decideDesktopCommercialAccess} from './desktopCommercialAccessPolicy';
 /** Paired request composition only. No provider transport or execute entry point.
  * The store independently validates persisted actor, review and Agent policy. */
 export function createAgentActionExecutionRequestService(request:NextRequest,repo:ReleaseOperationPlanRepo,rawScope:AgentExecutionScope){
@@ -18,8 +19,8 @@ export function createAgentActionExecutionRequestService(request:NextRequest,rep
   const actor=await resolveRequestDesktopSession(request,{requiredScope:'pipeline:read',requiredCapability:'workspace:read',requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,requireActiveAccess:purpose==='executor',route:'Agent requester execution'});
   if(!actor||actor.credentialKind!=='desktop_session'||actor.organizationId!==scope.organizationId||actor.userId!==scope.actorUserId||actor.id!==scope.sessionId)throw Error('desktop_session_required');
   if(purpose==='executor'){
-   const commercial=await readDesktopCommercialAccess(scope.organizationId);
-   if(commercial.allowed!==true)throw Error('agent_execution_access_required');
+   const billing=await readBillingPlanWithAvailability(scope.organizationId);
+   if(billing.available!==true||decideDesktopCommercialAccess(billing.plan).allowed!==true)throw Error('agent_execution_access_required');
    available();
   }
   request.signal.throwIfAborted();

@@ -24,3 +24,6 @@ describe("desktop agent rejection route", () => {
     expect(mocks.decide).toHaveBeenCalledWith(expect.objectContaining({ organizationId: "org-1", proposalId: "ap-1", actorUserId: "reviewer-1", actorRole: "security_reviewer", decision: "reject" }));
   });
 });
+
+it("lets an ordinary paired requester reach the authoritative self-stop transaction",async()=>{vi.clearAllMocks();mocks.resolve.mockResolvedValue({...session,userId:"requester",role:"read_only"});mocks.decide.mockResolvedValue({ok:true,status:"rejected"});const {POST}=await import("../route");expect((await POST(request(),params)).status).toBe(200);expect(mocks.resolve).toHaveBeenCalledWith(expect.anything(),expect.objectContaining({requiredCapability:"workspace:read",requireWorkspaceMembership:true,allowApiKey:false,recordHeartbeat:false,requireActiveAccess:false}));expect(mocks.decide).toHaveBeenCalledWith(expect.objectContaining({actorUserId:"requester",decision:"reject"}));});
+it("retains the authoritative refusal for another user's proposal",async()=>{vi.clearAllMocks();mocks.resolve.mockResolvedValue({...session,userId:"reader",role:"read_only"});mocks.decide.mockResolvedValue({ok:false,error:"approval_authority_required"});const {POST}=await import("../route");expect((await POST(request(),params)).status).toBe(403);});

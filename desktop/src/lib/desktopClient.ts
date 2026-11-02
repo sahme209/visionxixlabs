@@ -1,3 +1,4 @@
+import {readAgentActionExecution} from './agentActionExecutionRecovery';
 import {createExecutionPolicyClient} from './governanceExecutionPolicy';
 import {decodePolicyUploadBytes} from '../../../lib/governance/intelligence/documentText';
 import {governanceSourceDirectorySchema,type GovernanceSourceDirectory,governanceCollectionSchema,governanceDocumentLookupSchema,type GovernanceDocumentLookup,governanceDocumentUploadSchema,governanceDocumentReceiptSchema,type GovernanceDocumentReceipt,governanceEvidenceArtifactSchema,type GovernanceEvidenceArtifact,governanceProposalSchema,governanceRevisionListSchema,type GovernanceRevisionList,governanceEvidenceListSchema,governanceRevisionSchema,governanceDriftSchema,governanceRevisionId,type GovernanceEvidenceList,type GovernanceRevision,type GovernanceDrift} from './governanceIntelligence';
@@ -1411,6 +1412,10 @@ export class DesktopClient {
     } catch {
       return { ok: false as const, error: signal.aborted ? "Request stopped. Any completed work remains recorded; reload the conversation before trying again." : "The response was interrupted. No success was assumed. Reload the conversation before trying again." };
     } finally { unsubscribe(); streaming.signal.removeEventListener("abort", onAbort); controller.abort(); }
+  }
+
+  readAgentActionExecution(proposalId: string, signal?: AbortSignal) {
+    return readAgentActionExecution(this.savedTaskContext(), proposalId, signal);
   }
 
   approveAgentAction(actionId: string): Promise<ApiResult<{ id: string; status: string; errorMessage: string | null }>> {
