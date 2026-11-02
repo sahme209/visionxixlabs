@@ -1,0 +1,50 @@
+{
+  "scope": "local partial Agent separation; auth and provider boundaries simulated; not deployment or full workflow acceptance",
+  "logs": {
+    "coordinator-focused": {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/governance-intelligence/agent-coordinator-focused.log",
+      "sha256": "3e862692b0e11040674f4d9705d6c7d3fddbc84cc746045dd3b7b2a35ccceb5b",
+      "bytes": 638
+    },
+    "coordinator-types": {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/governance-intelligence/agent-coordinator-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "coordinator-postgres": {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/governance-intelligence/agent-coordinator-postgres.log",
+      "sha256": "c4a79d30057b7c03320ae16496926a3224a05d26b348067a32c463c725c7719d",
+      "bytes": 686
+    },
+    "coordinator-shared-guard-postgres": {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/governance-intelligence/agent-coordinator-shared-guard-postgres.log",
+      "sha256": "3c0251f1e2c769faae03b0b01a3a5906943e524237ec7fee0978ab2686988395",
+      "bytes": 671
+    },
+    "complete-store-postgres": {
+      "path": "/private/tmp/axiom-agent-requester-complete-store-pg.log",
+      "sha256": "82ad003859a29690f26ef414eb903af5f1846729ee2dc6b486a045968f89ea3f",
+      "bytes": 980
+    },
+    "http-service": {
+      "path": "/private/tmp/axiom-agent-request-boundary-final.log",
+      "sha256": "a6b76b1082a46edea355e26498e022ac54ce3b6dc7864b566fc0f78448fcf776",
+      "bytes": 637
+    },
+    "frontend-regressions": {
+      "path": "/private/tmp/axiom-agent-separation-frontend-regressions.log",
+      "sha256": "7a8ac667b774b3b83d741c0e1d8f3eb1f13dc058fe08114d21667d6293e67c68",
+      "bytes": 645
+    },
+    "frontend-build": {
+      "path": "/private/tmp/axiom-agent-separation-frontend-final-build.log",
+      "sha256": "074a4af03459b2d5f13ad9067d618cdd1c7b774dcd3ff646dbd887388eb7158d",
+      "bytes": 2867
+    },
+    "self-stop-commercial": {
+      "path": "/private/tmp/axiom-agent-stop-commercial-green.log",
+      "sha256": "e5b7a66d367a879f3d0bb2fc35fc0ba977a4dc19d04e5e08d850465efaf2d367",
+      "bytes": 633
+    }
+  }
+}

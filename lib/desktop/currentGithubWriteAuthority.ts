@@ -11,6 +11,7 @@ import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 export function createCurrentGithubWriteGuard(request:NextRequest,initial:DesktopRequestPrincipal,repo:GovernanceEnrollmentMetadataRepo&InstallationRepo&Pick<ReleaseOperationPlanTransaction,'$queryRaw'>,profile:'repository_write'|'deployment_dispatch'|'production_bypass_dispatch'='repository_write'){
  const required:readonly DesktopCapability[]|null=profile==='repository_write'?['github:write']:profile==='deployment_dispatch'?['deploy:execute']:profile==='production_bypass_dispatch'?['deploy:execute','deploy:production_bypass']:null;
  const bound={id:initial.id,userId:initial.userId,organizationId:initial.organizationId,credentialKind:initial.credentialKind};
+ let bindingReady=false;
  let pinned:{id:string;githubInstallationId:string;updatedAt:Date}|undefined;
  const signal=AbortSignal.any([request.signal,AbortSignal.timeout(15000)]);
  async function current(){
@@ -47,8 +48,13 @@ export function createCurrentGithubWriteGuard(request:NextRequest,initial:Deskto
   if(rows.length!==1||!row||row.sessionId!==bound.id||row.userId!==bound.userId||row.organizationId!==bound.organizationId||row.sessionLive!==true||!(row.acceptedAt instanceof Date)||!Number.isFinite(row.acceptedAt.getTime())||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(row.role)||!required||!required.every(capability=>hasDesktopCapability(row.role as DesktopWorkspaceRole,capability))||row.connectionId!==pinned.id||row.githubInstallationId!==pinned.githubInstallationId||!(row.connectionRevision instanceof Date)||row.connectionRevision.getTime()!==pinned.updatedAt.getTime()||row.connectionRevokedAt!==null||row.connectionSuspendedAt!==null||row.connectionStatus!=='active'||row.enrolled!==false)throw Error('github_write_authority_unavailable');
   signal.throwIfAborted();
  }
- const beforeWrite=async()=>{await current();await installation();await assertNoGovernanceEnrollmentForMutation(repo,bound.organizationId,signal);await current();await snapshot()};
+ const beforeWrite=async()=>{bindingReady=false;await current();await installation();await assertNoGovernanceEnrollmentForMutation(repo,bound.organizationId,signal);await current();await snapshot();bindingReady=true};
  return Object.freeze(Object.assign(beforeWrite,{
+  /** Captured evidence only; final consumers must revalidate it against storage. */
+  connectionBinding(){
+   signal.throwIfAborted();if(!bindingReady||!pinned)throw Error('github_write_authority_unavailable');
+   return Object.freeze({id:pinned.id,githubInstallationId:pinned.githubInstallationId,updatedAt:new Date(pinned.updatedAt.getTime())});
+  },
   async resolveToken(repository:RepoRef){
    try{
     signal.throwIfAborted();if(!pinned)throw Error('github_write_authority_unavailable');

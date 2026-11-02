@@ -50,8 +50,12 @@ model GitHubInstallation {
  run(['node','node_modules/prisma/build/index.js','generate','--schema',schema])
  run(['node','node_modules/prisma/build/index.js','db','push','--schema',schema,'--skip-generate'])
  env['AXIOM_EXECUTION_POLICY_PG_SOCKET']=str(socket);env['AXIOM_EXECUTION_POLICY_PG_CLIENT']=str(root/'generated/index.js')
- args=['node','node_modules/vitest/vitest.mjs','run','lib/axiom/agentRuntime/__tests__/agentActionExecutionStore.pg.test.ts']
- if len(sys.argv)>1: args+=['-t',sys.argv[1]]
+ selectors={'--coordinator':'lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts','--github-guard':'lib/desktop/__tests__/currentGithubWriteAuthority.pg.test.ts'}
+ remaining=sys.argv[1:]
+ test=selectors.get(remaining[0]) if remaining else None
+ if test: remaining=remaining[1:]
+ args=['node','node_modules/vitest/vitest.mjs','run',test or 'lib/axiom/agentRuntime/__tests__/agentActionExecutionStore.pg.test.ts']
+ if remaining: args+=['-t',remaining[0]]
  output=run(args)
  print(output)
 finally:

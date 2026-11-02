@@ -1,0 +1,14 @@
+import {beforeEach,it,expect,vi} from 'vitest';
+const mocks=vi.hoisted(()=>({actor:vi.fn(),enrollment:vi.fn(),token:vi.fn()}));
+vi.mock('../resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:mocks.actor}));
+vi.mock('@/lib/governance/intelligence/enrollmentMetadata',()=>({assertNoGovernanceEnrollmentForMutation:mocks.enrollment}));
+vi.mock('@/lib/connectors/github/resolveTenantScopedToken',()=>({resolveTenantScopedToken:mocks.token}));
+import {createCurrentGithubWriteGuard} from '../currentGithubWriteAuthority';
+const principal={id:'session',userId:'user',organizationId:'org',credentialKind:'desktop_session',capabilities:['github:write']};
+const revision=new Date('2026-11-01T00:00:00.000Z');
+let repo:any;
+beforeEach(()=>{vi.clearAllMocks();mocks.actor.mockResolvedValue(principal);mocks.enrollment.mockResolvedValue(undefined);repo={gitHubInstallation:{findFirst:vi.fn().mockResolvedValue({id:'connection',githubInstallationId:'123',updatedAt:revision,revokedAt:null,suspendedAt:null})},$queryRaw:vi.fn().mockResolvedValue([{sessionId:'session',userId:'user',organizationId:'org',sessionLive:true,role:'admin',acceptedAt:revision,connectionId:'connection',githubInstallationId:'123',connectionRevision:revision,connectionRevokedAt:null,connectionSuspendedAt:null,connectionStatus:'active',enrolled:false}])};});
+const create=()=>createCurrentGithubWriteGuard(new Request('https://fixture.test') as any,principal as any,repo);
+it('does not expose a connection descriptor before a complete successful guard',async()=>{const guard=create();expect(()=>guard.connectionBinding()).toThrow();repo.$queryRaw.mockRejectedValue(Error('snapshot unavailable'));await expect(guard()).rejects.toThrow();expect(()=>guard.connectionBinding()).toThrow();});
+it('exposes cloned connection evidence without token and cannot move the pinned revision',async()=>{const guard=create();await guard();const first=guard.connectionBinding();expect(first).toEqual({id:'connection',githubInstallationId:'123',updatedAt:revision});first.updatedAt.setUTCFullYear(2030);expect(guard.connectionBinding().updatedAt).toEqual(revision);expect(guard.connectionBinding()).not.toBe(first);expect(Object.keys(first).sort()).toEqual(['githubInstallationId','id','updatedAt']);expect(mocks.token).not.toHaveBeenCalled();});
+it('does not expose stale evidence after a later guard fails',async()=>{const guard=create();await guard();mocks.actor.mockResolvedValue(null);await expect(guard()).rejects.toThrow();expect(()=>guard.connectionBinding()).toThrow();});
