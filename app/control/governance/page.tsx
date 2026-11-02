@@ -59,7 +59,7 @@ export default async function GovernancePage() {
                     <summary className="cursor-pointer text-zinc-200">Review file changes</summary>
                     <p className="mt-3 break-all">Repository: {fileReview.repository} · Branch: {fileReview.branch}</p>
                     <p className="mt-2 text-zinc-300">{fileReview.message}</p>
-                    <p className="mt-2">Approval executes this exact proposal. Tests have not been run by this review screen.</p>
+                    <p className="mt-2">Approval records your decision only. The requester must execute this exact proposal separately. Tests have not been run by this review screen.</p>
                     <div className="mt-4 space-y-5">{fileReview.files.map(file => <section key={file.path} className="min-w-0">
                       <h3 className="mb-2 break-all font-mono text-zinc-200">{file.path}</h3>
                       <p className="mb-2 break-all text-[10px] text-zinc-500">Reviewed base: {file.baseSha ?? "New file"}</p>
@@ -72,7 +72,7 @@ export default async function GovernancePage() {
                     <p className="mt-1 break-all">Head: {pullReview.head}</p><p className="mt-1 break-all">Base: {pullReview.base}</p>
                     <p className="mt-2 break-words text-zinc-200">{pullReview.title}</p>
                     <p className="mt-2 whitespace-pre-wrap break-words">{pullReview.body || "No description provided."}</p>
-                    <p className="mt-2">Approval opens this pull request. It does not merge, deploy or verify tests. Branch contents can change; inspect the current changes on GitHub before approving.</p>
+                    <p className="mt-2">Approval records your decision only; it does not open, merge or deploy this pull request. The requester must execute separately after current access and source checks. Branch contents can change; inspect the current changes on GitHub before approving.</p>
                   </details> : <p role="alert" className="mt-3 text-amber-300">Pull request review is unavailable. Request a new proposal before approval.</p>)}
                   {proposal.toolName === "trigger_aws_deploy" && <div className="mt-3 space-y-1 break-all text-xs text-zinc-400">
                     <p className="text-amber-300">Restart existing task definition only; no source release or artifact promotion.</p>

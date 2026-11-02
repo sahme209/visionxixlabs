@@ -561,3 +561,26 @@ describe('multi-object mutation authority',()=>{
  it('checks current authority before every blob, tree, commit and reference mutation',async()=>{provider();const beforeWrite=vi.fn(async()=>{});expect((await commitFiles({...input,beforeWrite})).ok).toBe(true);expect(beforeWrite).toHaveBeenCalledTimes(5);expect(fetchMock.mock.calls.filter(c=>['POST','PATCH'].includes(c[1]?.method))).toHaveLength(5)});
  it('keeps partial object creation unknown when later authority is refused and never advances the branch',async()=>{provider();let checks=0;const beforeWrite=vi.fn(async()=>{if(++checks>1)throw Error('enrolled')});expect(await commitFiles({...input,beforeWrite})).toEqual({ok:false,error:'action_outcome_unknown'});expect(fetchMock.mock.calls.filter(c=>c[1]?.method==='POST')).toHaveLength(1);expect(fetchMock.mock.calls.some(c=>c[1]?.method==='PATCH')).toBe(false)});
 });
+
+
+describe("reviewed immutable branch creation", () => {
+  beforeEach(() => vi.clearAllMocks());
+  const input = { owner: "acme", repo: "widgets", baseBranch: "main", newBranchName: "reviewed", installationToken: "fixture", expectedBaseSha: "a".repeat(40) };
+  it("refuses changed source without invoking write authority or POST", async () => {
+    const beforeWrite = vi.fn(async () => {});
+    fetchMock.mockResolvedValueOnce(jsonResponse(200, { object: { sha: "b".repeat(40) } }));
+    expect(await createBranch({ ...input, beforeWrite })).toEqual({ ok: false, error: "branch_source_changed" });
+    expect(beforeWrite).not.toHaveBeenCalled(); expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+  it("rejects malformed reviewed SHA before any provider call", async () => {
+    expect(await createBranch({ ...input, expectedBaseSha: "short", beforeWrite: async () => {} })).toEqual({ ok: false, error: "invalid_reviewed_branch_source" });
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+  it("sends exactly the approved SHA even when the symbolic base moves during authority validation", async () => {
+    let currentSha = input.expectedBaseSha;
+    fetchMock.mockImplementation(async (_url, init) => init.method === "POST" ? jsonResponse(201, { ref: "refs/heads/reviewed", object: { sha: JSON.parse(init.body).sha } }) : jsonResponse(200, { object: { sha: currentSha } }));
+    const result = await createBranch({ ...input, beforeWrite: async () => { currentSha = "b".repeat(40); } });
+    expect(result).toEqual({ ok: true, data: { ref: "refs/heads/reviewed", sha: input.expectedBaseSha } });
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ ref: "refs/heads/reviewed", sha: input.expectedBaseSha });
+  });
+});

@@ -4,7 +4,7 @@ vi.mock('@/lib/desktop/currentGithubWriteAuthority',()=>({createCurrentGithubWri
 import {createAgentActionExecutionCoordinator} from '../agentActionExecutionCoordinator';
 const scope={organizationId:'org',actorUserId:'requester',sessionId:'session'};
 const principal={id:'session',userId:'requester',organizationId:'org',credentialKind:'desktop_session'};
-const args={repositoryFullName:'owner/repo',baseBranch:'main',newBranchName:'work'};
+const args={repositoryFullName:'owner/repo',baseBranch:'main',newBranchName:'work',_review:{kind:'github_branch',baseBranch:'main',newBranchName:'work',baseSha:'a'.repeat(40)}};
 const saved=()=>({toolName:'create_github_branch',args:structuredClone(args),proposalDigest:'d'.repeat(64),reviewId:'review'});
 let store:any,guard:any,writes:number;
 beforeEach(()=>{
@@ -51,3 +51,7 @@ describe('unmounted fixed requester GitHub execution core (simulated authority/p
  });
 
 });
+
+it('refuses branch execution without captured trusted source before claim',async()=>{const source=saved();delete (source.args as any)._review;store.inspectForExecution.mockResolvedValue(source);await expect(create().execute('operation')).rejects.toThrow('agent_execution_review_unavailable');expect(store.claim).not.toHaveBeenCalled();expect(writes).toBe(0)});
+it('consumes a stale base refusal without sending a branch write',async()=>{vi.stubGlobal('fetch',vi.fn(async()=>Response.json({object:{sha:'b'.repeat(40)}})));expect(await create().execute('operation')).toEqual({state:'refused',receipt:{code:'pre_dispatch_refused'}});expect(store.complete).toHaveBeenCalledOnce();expect(writes).toBe(0)});
+it('does not confirm a different commit returned for the reviewed branch',async()=>{vi.stubGlobal('fetch',vi.fn(async(_url:string,init:any)=>{if(init.method!=='GET'){writes++;return Response.json({ref:'refs/heads/work',object:{sha:'b'.repeat(40)}})}return Response.json({object:{sha:'a'.repeat(40)}})}));expect(await create().execute('operation')).toEqual({state:'unknown',receipt:{code:'provider_outcome_unknown'}});expect(writes).toBe(1)});

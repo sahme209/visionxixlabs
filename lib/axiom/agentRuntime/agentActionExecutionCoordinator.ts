@@ -10,7 +10,7 @@ import {createCurrentGithubWriteGuard} from '@/lib/desktop/currentGithubWriteAut
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createBranch,commitFile,commitFiles,createPullRequest,getRepositoryDefaultBranch,isSafeRepositoryPath} from '@/lib/connectors/github/githubWriteClient';
 import {parseRepositoryFullName} from '@/lib/connectors/github/resolveTenantScopedToken';
-import {githubFileReviewFromArgs,githubFilesReviewFromArgs} from './proposalReview';
+import {githubBranchReviewFromArgs,githubFileReviewFromArgs,githubFilesReviewFromArgs} from './proposalReview';
 import {isSensitiveRepositoryEvidencePath} from './repositoryEvidencePolicy';
 import {agentExecutionScopeSchema,type AgentExecutionScope} from './agentActionExecutionContract';
 import type {createAgentActionExecutionStore} from './agentActionExecutionStore';
@@ -42,6 +42,7 @@ export function validateAgentActionExecutionInput(saved:Awaited<ReturnType<Store
  if(!Object.hasOwn(schemas,saved.toolName))throw Error('agent_execution_tool_unavailable');
  const schema=schemas[saved.toolName as keyof typeof schemas];schema.parse(args);
  if(!parseRepositoryFullName(args.repositoryFullName as string))throw Error('agent_execution_source_unavailable');
+ if(saved.toolName==='create_github_branch'&&!githubBranchReviewFromArgs(args))throw Error('agent_execution_review_unavailable');
  if(saved.toolName==='commit_github_file'&&!githubFileReviewFromArgs(args))throw Error('agent_execution_review_unavailable');
  if(saved.toolName==='commit_github_files'){
   const review=githubFilesReviewFromArgs(args),files=args.files as Array<{path:string}>;
@@ -49,10 +50,11 @@ export function validateAgentActionExecutionInput(saved:Awaited<ReturnType<Store
  }
  return args;
 }
-/** Unmounted, partial fixed-transport core. It deliberately has no HTTP entry.
+/** Partial fixed-transport core. Public entry separately qualifies source support.
  * Only stored operation input is executable; scope/principal come from paired
  * server authentication. Deployment uses fixed policy/reservation/dispatch. Source
- * references currently bind symbolic names, not proposal-time immutable SHAs;
+ * branch creation binds a proposal-time immutable SHA. PR/workflow references
+ * still bind symbolic names;
  * this module does not complete the activation contract or enable execution. */
 export function createAgentActionExecutionCoordinator(request:NextRequest,principal:DesktopRequestPrincipal,repo:GuardRepo&AgentDeploymentExecutionRepo,store:Store,rawScope:AgentExecutionScope){
  const scope=Object.freeze(agentExecutionScopeSchema.parse(rawScope));
@@ -125,7 +127,7 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
    await checkDefault();await assertExact();await guard();
    const authority={...parsed,installationToken:token.token,beforeWrite};
    let result:{ok:boolean;data?:unknown};
-   if(saved.toolName==='create_github_branch')result=await createBranch({...authority,baseBranch:args.baseBranch as string,newBranchName:args.newBranchName as string});
+   if(saved.toolName==='create_github_branch')result=await createBranch({...authority,baseBranch:args.baseBranch as string,newBranchName:args.newBranchName as string,expectedBaseSha:githubBranchReviewFromArgs(args)!.baseSha});
    else if(saved.toolName==='commit_github_file')result=await commitFile({...authority,branch:args.branch as string,path:args.path as string,content:args.content as string,message:args.message as string,expectedSha:githubFileReviewFromArgs(args)!.baseSha});
    else if(saved.toolName==='commit_github_files'){
     const review=githubFilesReviewFromArgs(args)!;
@@ -135,7 +137,7 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
    if(result.ok){
     const data=result.data as Record<string,unknown>|undefined;
     const sha=typeof data?.sha==='string'&&/^[a-f0-9]{40}$/.test(data.sha);
-    const valid=saved.toolName==='create_github_branch'?sha&&data?.ref===`refs/heads/${args.newBranchName}`:saved.toolName==='open_github_pull_request'?Number.isSafeInteger(data?.number)&&Number(data?.number)>0:sha;
+    const valid=saved.toolName==='create_github_branch'?sha&&data?.sha===githubBranchReviewFromArgs(args)!.baseSha&&data?.ref===`refs/heads/${args.newBranchName}`:saved.toolName==='open_github_pull_request'?Number.isSafeInteger(data?.number)&&Number(data?.number)>0:sha;
     if(!valid)throw Error('agent_execution_provider_evidence_unavailable');
    }
    outcome=result.ok?'confirmed':dispatchPossible?'unknown':'refused';

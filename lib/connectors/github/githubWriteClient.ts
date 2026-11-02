@@ -304,21 +304,26 @@ export interface CreateBranchInput extends GithubMutationAuthority {
   baseBranch: string;
   newBranchName: string;
   installationToken: string;
+  /** Proposal-time immutable source; omitted only by existing non-Agent callers. */
+  expectedBaseSha?: string;
 }
 
 /** Creates a new branch ref pointing at the current tip of `baseBranch`. */
 export async function createBranch(input: CreateBranchInput): Promise<GithubWriteResult<{ ref: string; sha: string }>> {
   if(typeof input.beforeWrite!=="function")return{ok:false,error:"github_write_authority_unavailable"};
+  if (input.expectedBaseSha !== undefined && !/^[a-f0-9]{40}$/.test(input.expectedBaseSha)) return { ok: false, error: "invalid_reviewed_branch_source" };
   const base = await gh<{ object: { sha: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/ref/heads/${encodeURIComponent(input.baseBranch)}`,
     input.installationToken,
   );
   if (!base.ok) return { ok: false, error: `base_branch_not_found: ${base.error}` };
 
+  if (input.expectedBaseSha !== undefined && base.data.object.sha !== input.expectedBaseSha) return { ok: false, error: "branch_source_changed" };
+  const reviewedSha = input.expectedBaseSha ?? base.data.object.sha;
   const created = await gh<{ ref: string; object: { sha: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/refs`,
     input.installationToken,
-    { method: "POST", beforeWrite: input.beforeWrite, body: { ref: `refs/heads/${input.newBranchName}`, sha: base.data.object.sha } },
+    { method: "POST", beforeWrite: input.beforeWrite, body: { ref: `refs/heads/${input.newBranchName}`, sha: reviewedSha } },
   );
   if (!created.ok) return { ok: false, error: created.error };
   return { ok: true, data: { ref: created.data.ref, sha: created.data.object.sha } };

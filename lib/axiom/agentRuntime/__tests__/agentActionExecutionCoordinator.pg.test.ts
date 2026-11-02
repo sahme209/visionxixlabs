@@ -36,7 +36,7 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   const connection={id:organizationId+'-installation',githubInstallationId:'123',updatedAt:now};
   await f.db.gitHubInstallation.create({data:{...connection,organizationId,accountLogin:'fixture',status:'active',installedAt:now}});
   const conversation=await f.db.agentConversation.create({data:{organizationId,userId:'requester'}});
-  const input={organizationId,conversationId:conversation.id,proposedByUserId:'requester',toolName,args:buildArgs?.(organizationId)??{repositoryFullName:'fixture/repository',baseBranch:'main',newBranchName:'reviewed'}};
+  const input={organizationId,conversationId:conversation.id,proposedByUserId:'requester',toolName,args:buildArgs?.(organizationId)??{repositoryFullName:'fixture/repository',baseBranch:'main',newBranchName:'reviewed',_review:{kind:'github_branch',baseBranch:'main',newBranchName:'reviewed',baseSha:'a'.repeat(40)}}};
   const {args,...source}=input;
   const proposal=await f.db.agentActionProposal.create({data:{...source,argsJson:args,actionDigest:agentActionDigest(input),riskLevel:'medium',approvalExpiresAt:new Date(Date.now()+60000)}});
   expect(await decideAgentAction({organizationId,proposalId:proposal.id,actorUserId:'reviewer',actorRole:'security_reviewer',decision:'approve'})).toEqual({ok:true,status:'approved'});
@@ -62,6 +62,13 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   }));
   return{store,scope,proposal,operation,coordinator,connection,writes:()=>writes,loseResponse(){lost=true}};
  }
+ it('records a changed reviewed branch as a consumed refusal with no provider POST',async()=>{
+  const v=await fixture();const original=globalThis.fetch;
+  vi.stubGlobal('fetch',vi.fn(async(input:any,init:any)=>init.method==='GET'?Response.json({object:{type:'commit',sha:'b'.repeat(40)}}):original(input,init)));
+  const result=await v.coordinator.execute(v.operation.id);expect(result.state).toBe('refused');expect(result.attemptCount).toBe(1);expect(v.writes()).toBe(0);
+  await expect(v.coordinator.execute(v.operation.id)).rejects.toThrow();expect(v.writes()).toBe(0);
+  expect((await v.store.get(v.scope,v.operation.id))?.state).toBe('refused');
+ });
  it('completes one saved branch using pinned credentials and immutable original review',async()=>{
   const t=await fixture(),before=await f.db.agentActionProposal.findMany({where:{organizationId:t.scope.organizationId}});
   expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'confirmed',attemptCount:1,receipt:{code:'action_completed'}});expect(t.writes()).toBe(1);expect(f.token).toHaveBeenCalledOnce();

@@ -2,7 +2,7 @@ import "server-only";
 import { captureRestartTarget, type RestartTargetRepo } from "./restartTargetReview";
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
 
-import { getFile } from "@/lib/connectors/github/githubWriteClient";
+import { getFile, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
 import { parseRepositoryFullName, resolveTenantScopedToken } from "@/lib/connectors/github/resolveTenantScopedToken";
 
 export interface GithubFileReviewSnapshot {
@@ -40,6 +40,18 @@ export async function prepareProposalArgsForReview(
       const review = await captureRestartTarget(targetRepo, organizationId, args.environmentId);
       return review ? { ok: true, args: { ...sanitizedArgs, _review: review } } : { ok: false, error: "deployment_target_review_unavailable" };
     } catch { return { ok: false, error: "deployment_target_review_unavailable" }; }
+  }
+  if (toolName === "create_github_branch") {
+    const parsed = typeof args.repositoryFullName === "string" ? parseRepositoryFullName(args.repositoryFullName) : null;
+    const validRef = (value: unknown): value is string => typeof value === "string" && value.length > 0 && value.length <= 240 && !value.startsWith("-") && !value.includes("..") && !/[\x00-\x20\x7f~^:?*\[\\]/.test(value) && !value.endsWith("/") && !value.endsWith(".lock");
+    if (!parsed || !validRef(args.baseBranch) || !validRef(args.newBranchName) || args.baseBranch === args.newBranchName) return { ok: false, error: "invalid_branch_proposal" };
+    try {
+      const token = await resolveTenantScopedToken(organizationId, parsed);
+      if (!token.ok) return { ok: false, error: "branch_review_unavailable" };
+      const base = await resolveGitReference({ ...parsed, ref: args.baseBranch, kind: "branch", installationToken: token.token });
+      if (!base.ok || base.data.kind !== "branch" || base.data.ref !== args.baseBranch || !/^[a-f0-9]{40}$/.test(base.data.commitSha)) return { ok: false, error: "branch_review_unavailable" };
+      return { ok: true, args: { ...sanitizedArgs, _review: { kind: "github_branch", baseBranch: args.baseBranch, newBranchName: args.newBranchName, baseSha: base.data.commitSha } } };
+    } catch { return { ok: false, error: "branch_review_unavailable" }; }
   }
   if (toolName !== "commit_github_file" && toolName !== "commit_github_files") return { ok: true, args: sanitizedArgs };
 
@@ -122,4 +134,14 @@ export function githubFileReviewFromArgs(args: Record<string, unknown>): GithubF
     baseContent: candidate.baseContent,
     htmlUrl: typeof candidate.htmlUrl === "string" ? candidate.htmlUrl : null,
   };
+}
+
+/** Source evidence is part of the server-created proposal digest, never supplied
+ * as authority by an execution request. Old symbolic proposals are ineligible. */
+export function githubBranchReviewFromArgs(args: Record<string, unknown>): { kind: "github_branch"; baseBranch: string; newBranchName: string; baseSha: string } | null {
+  const value = args._review;
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const review = value as Record<string, unknown>;
+  if (review.kind !== "github_branch" || review.baseBranch !== args.baseBranch || review.newBranchName !== args.newBranchName || typeof review.baseBranch !== "string" || typeof review.newBranchName !== "string" || typeof review.baseSha !== "string" || !/^[a-f0-9]{40}$/.test(review.baseSha)) return null;
+  return { kind: "github_branch", baseBranch: review.baseBranch, newBranchName: review.newBranchName, baseSha: review.baseSha };
 }

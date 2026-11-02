@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   resolveTenantScopedToken: vi.fn(),
   getFile: vi.fn(),
+  resolveGitReference: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
@@ -12,7 +13,7 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
     return match ? { owner: match[1], repo: match[2] } : null;
   },
 }));
-vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ getFile: mocks.getFile }));
+vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ getFile: mocks.getFile, resolveGitReference: mocks.resolveGitReference }));
 
 import { agentActionDigest } from "../proposalIntegrity";
 import { prepareProposalArgsForReview } from "../proposalReview";
@@ -98,5 +99,29 @@ describe("ECS restart proposal server target evidence", () => {
   });
   it("does not capture another tenant target", async () => {
     expect(await prepareProposalArgsForReview("other-org", "trigger_aws_deploy", { environmentId: "env" }, targetRepo)).toEqual({ ok: false, error: "deployment_target_review_unavailable" });
+  });
+});
+
+
+describe("branch review source binding", () => {
+  const args = { repositoryFullName: "acme/widgets", baseBranch: "main", newBranchName: "reviewed" };
+  beforeEach(() => { vi.clearAllMocks(); mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "scoped-token" }); });
+  it("replaces model branch evidence with the actual tenant commit before human review", async () => {
+    mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: "a".repeat(40) } });
+    const result = await prepareProposalArgsForReview("org-1", "create_github_branch", { ...args, _review: { kind: "github_branch", baseSha: "b".repeat(40) } });
+    expect(result).toEqual({ ok: true, args: { ...args, _review: { kind: "github_branch", baseBranch: "main", newBranchName: "reviewed", baseSha: "a".repeat(40) } } });
+    expect(mocks.resolveGitReference).toHaveBeenCalledWith({ owner: "acme", repo: "widgets", ref: "main", kind: "branch", installationToken: "scoped-token" });
+  });
+  it.each([null, "short", "A".repeat(40)])("refuses malformed provider branch SHA %s", async sha => {
+    mocks.resolveGitReference.mockResolvedValue({ ok: true, data: { kind: "branch", ref: "main", commitSha: sha } });
+    expect(await prepareProposalArgsForReview("org-1", "create_github_branch", args)).toEqual({ ok: false, error: "branch_review_unavailable" });
+  });
+  it("refuses unavailable branch source rather than approving symbolic input", async () => {
+    mocks.resolveGitReference.mockResolvedValue({ ok: false, error: "unavailable" });
+    expect(await prepareProposalArgsForReview("org-1", "create_github_branch", args)).toEqual({ ok: false, error: "branch_review_unavailable" });
+  });
+  it("refuses an invalid branch target before requesting a token or provider read", async () => {
+    expect(await prepareProposalArgsForReview("org-1", "create_github_branch", { ...args, baseBranch: "../other" })).toEqual({ ok: false, error: "invalid_branch_proposal" });
+    expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
   });
 });

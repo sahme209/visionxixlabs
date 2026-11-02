@@ -70,6 +70,31 @@
       "path": "/private/tmp/axiom-agent-requester-api-desktop-build.log",
       "sha256": "2e58fc84508c688754510209139110e935246dd673fa14029bf2767ec47c9e53",
       "bytes": 2867
+    },
+    "branch-source-red": {
+      "path": "/private/tmp/axiom-agent-branch-binding-red.log",
+      "sha256": "8ed8e19641912fab7a9f6cc0ce000eb5dac4f12a15b6f0f34905fcccb1ab4e14",
+      "bytes": 7663
+    },
+    "branch-coordinator-red": {
+      "path": "/private/tmp/axiom-agent-branch-coordinator-red.log",
+      "sha256": "d01e32fb22a10050b97ebcda928baa0e695ab186aaf3cb846775d9d015b0aee4",
+      "bytes": 2815
+    },
+    "branch-source-green": {
+      "path": "/private/tmp/axiom-agent-branch-source-green.log",
+      "sha256": "909885d25a036d1bae3958492e37763aa3286e8268593c3b01918dd51a2dacc2",
+      "bytes": 638
+    },
+    "branch-source-types": {
+      "path": "/private/tmp/axiom-agent-branch-source-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "branch-source-pg-final": {
+      "path": "/private/tmp/axiom-agent-branch-source-pg-final.log",
+      "sha256": "f8b9b2db99fd1d38c7042c66f4ddf5e3a0e21410d03e84626c1d8f2ef28241ce",
+      "bytes": 751
     }
   },
   "fixed_tools_and_controls": {
