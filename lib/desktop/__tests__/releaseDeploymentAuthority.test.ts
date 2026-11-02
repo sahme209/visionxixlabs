@@ -64,3 +64,10 @@ it('reuses only locked read-only plan reconstruction within one transaction and 
  f.release.version++;await expect(authority.readCurrentPlan({...f.tx},scope,f.plan)).rejects.toThrow();
  resolve.mockResolvedValue({...identity,id:'revoked'});await expect(authority.readCurrentPlan(f.tx,scope,f.plan)).rejects.toThrow();
 });
+it('retains actual original executor and reviewer session expiry after all later awaits',async()=>{
+ const f=fullFixture(),expiresAt=Date.now()+60000,original=f.tx.$queryRaw.getMockImplementation();
+ f.tx.$queryRaw.mockImplementation(async(q:TemplateStringsArray,...v:any[])=>{const rows=await original(q,...v);return q.join('').includes('DesktopSessionRecord')?rows.map((row:any)=>({...row,expiresAt:new Date(expiresAt)})):rows});
+ const approval:any={kind:'verified_release_deployment_approval_v1',purpose:'release_deployment',id:'approval',organizationId:'org',planDigest:sha256ContentHash(f.plan),executorUserId:'executor',approverUserId:'reviewer',approverSessionId:'reviewer-session',sourcePolicy:f.plan.sourcePolicy,expiresAt:f.plan.expiresAt};
+ const fresh=await f.authority.assertCurrentForAdmission(f.tx,scope,f.plan,approval),clock=vi.spyOn(Date,'now').mockReturnValue(expiresAt+1);
+ try{expect(()=>fresh()).toThrow('release_deployment_authority_unavailable')}finally{clock.mockRestore()}
+});

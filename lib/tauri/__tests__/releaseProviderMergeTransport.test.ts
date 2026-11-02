@@ -28,3 +28,6 @@ it.each(['write-status','confirmation'] as const)('records terminal uncertainty 
  const result=await createReleaseProviderMergeTransport({...f.ports,onDiagnostic:e=>events.push(e)}).execute({operationId:id,plan,signal:new AbortController().signal});
  expect(result.state).toBe('unknown');expect(events).toContainEqual({phase:kind==='write-status'?'write':'confirmation',outcome:'unknown'});expect((f.fetcher.mock.calls as unknown as [string,RequestInit][]).filter(c=>c[1].method==='PUT')).toHaveLength(1);
 });
+
+it('consumes private synchronous freshness inside the final PUT boundary after diagnostics',async()=>{const f=fixture();let live=true;f.ports.assertCurrent.mockImplementation(async()=>()=>{if(!live)throw Error('provider_expired')});const r=await createReleaseProviderMergeTransport({...f.ports,onDiagnostic:e=>{if(e.phase==='write')live=false}}).execute({operationId:id,plan,signal:new AbortController().signal});expect(r.state).toBe('refused');expect((f.fetcher.mock.calls as unknown as [string,RequestInit][]).map(c=>c[1].method)).toEqual(['GET'])});
+it('refuses a serialized truth marker instead of a private freshness closure',async()=>{const f=fixture();f.ports.assertCurrent.mockResolvedValue({fresh:true} as never);expect((await f.run()).state).toBe('refused');expect(f.fetcher).not.toHaveBeenCalled()});

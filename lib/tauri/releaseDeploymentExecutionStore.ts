@@ -17,6 +17,9 @@ export interface ReleaseDeploymentDependencies{
  /** Trusted server authority must check current paired executor AND original independent
   * approver/session/capabilities under transaction locks; no client booleans. */
  assertCurrent?:(tx:Tx,scope:DeploymentScope,plan?:Readonly<DeploymentPlan>,approval?:Readonly<DeploymentApproval>)=>Promise<void>;
+ /** Mandatory only for coherent claim/final methods: actual current paired
+  * executor, original audited approver and their locked session expiry window. */
+ assertCurrentForAdmission?:(tx:Tx,scope:DeploymentScope,plan:Readonly<DeploymentPlan>,approval:Readonly<DeploymentApproval>)=>Promise<()=>void>;
  /** Must lock/rebuild the current submitted release, intake and installation revision. */
  readCurrentPlan?:(tx:Tx,scope:DeploymentScope,plan:Readonly<DeploymentPlan>)=>Promise<unknown>;
  /** Mandatory independently supported source guarantee. A preflight GET or a
@@ -32,6 +35,13 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
  const now=()=>{const n=new Date((deps.now?.()??new Date()).getTime());if(!Number.isFinite(n.getTime()))refuse();return n};
  const ready=()=>{if(!deps.assertCurrent||!deps.readCurrentPlan||!deps.verifySupportedSourcePolicy||!deps.readIndependentApproval||!deps.consumeIndependentApproval)refuse()};
  async function authority(tx:Tx,s:DeploymentScope,p?:DeploymentPlan,a?:DeploymentApproval){if(!deps.assertCurrent)refuse();await deps.assertCurrent!(tx,structuredClone(s),p&&structuredClone(p),a&&structuredClone(a))}
+ async function admissionAuthority(tx:Tx,s:DeploymentScope,p:DeploymentPlan,a:DeploymentApproval){
+  ready();if(typeof deps.assertCurrentForAdmission!=='function')refuse();
+  // Never adopt a session identifier from unvalidated execution JSON: the real
+  // approval reader verifies its original immutable decision/history first.
+  const original=deploymentApprovalSchema.parse(await deps.readIndependentApproval!(tx,s,structuredClone(p)));if(!same(original,a))refuse();
+  const fresh=await deps.assertCurrentForAdmission!(tx,structuredClone(s),structuredClone(p),structuredClone(original));if(typeof fresh!=='function')refuse();fresh();return fresh;
+ }
  function approvalBinding(s:DeploymentScope,p:DeploymentPlan,a:DeploymentApproval){if(p.organizationId!==s.organizationId||p.executorUserId!==s.actorUserId||a.organizationId!==s.organizationId||a.planDigest!==sha256ContentHash(p)||a.executorUserId!==s.actorUserId||a.sourcePolicy!==p.sourcePolicy||[p.creatorUserId,p.requesterUserId,p.executorUserId].includes(a.approverUserId))refuse()}
  async function live(tx:Tx,p:DeploymentPlan,a:DeploymentApproval,lease?:Date){const end=new Date(Math.min(Date.parse(p.expiresAt),Date.parse(a.expiresAt),lease?.getTime()??Infinity)),start=new Date(p.windowStart);if(now()<start||now()>=end)refuse();const rows=await tx.$queryRaw<Array<{live:boolean}>>`SELECT clock_timestamp() < ${end} AND clock_timestamp() >= ${start} AS "live"`;if(rows.length!==1||rows[0].live!==true)refuse()}
  async function current(tx:Tx,s:DeploymentScope,p:DeploymentPlan,a:DeploymentApproval,lease?:Date){ready();approvalBinding(s,p,a);await authority(tx,s,p,a);if(!same(deploymentPlanSchema.parse(await deps.readCurrentPlan!(tx,s,structuredClone(p))),p))refuse();const policy=z.object({kind:z.literal('verified_release_deployment_source_policy_v1'),planDigest:z.string(),sourcePolicy:z.string()}).strict().parse(await deps.verifySupportedSourcePolicy!(tx,s,structuredClone(p)));if(policy.planDigest!==sha256ContentHash(p)||policy.sourcePolicy!==p.sourcePolicy)refuse();await authority(tx,s,p,a);await live(tx,p,a,lease)}
@@ -64,10 +74,10 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
   return repo.$transaction(async tx=>{
    await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
    const r=await load(tx,s,id),{i,v}=unpack(r,s);await authority(tx,s,i.plan,i.approval);if(v.state!=='prepared')return{claimed:false as const};
-   await current(tx,s,i.plan,i.approval);
-   const assertFresh=await verifyLocked(tx,structuredClone(i.plan));if(typeof assertFresh!=='function')refuse();assertFresh();
-   await deps.consumeIndependentApproval!(tx,s,structuredClone(i.approval),id);await current(tx,s,i.plan,i.approval);assertFresh();
-   const updated=await change(tx,r,'dispatching');await current(tx,s,i.plan,i.approval,updated.leaseExpiresAt!);assertFresh();
+   await current(tx,s,i.plan,i.approval);const authorityFresh=await admissionAuthority(tx,s,i.plan,i.approval);
+   const assertFresh=await verifyLocked(tx,structuredClone(i.plan));if(typeof assertFresh!=='function')refuse();authorityFresh();assertFresh();
+   await deps.consumeIndependentApproval!(tx,s,structuredClone(i.approval),id);await current(tx,s,i.plan,i.approval);authorityFresh();assertFresh();
+   const updated=await change(tx,r,'dispatching');await current(tx,s,i.plan,i.approval,updated.leaseExpiresAt!);authorityFresh();assertFresh();
    return{claimed:true as const,leaseExpiresAt:updated.leaseExpiresAt!,plan:structuredClone(i.plan)};
   });
  },
@@ -76,7 +86,7 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
   * checks into these SAME participant/installation/operation locks, returning
   * a synchronous private proof/receipt expiry check for after the lease clock.
   * No provider I/O is allowed in this callback. */
- async beforeDispatchWithAdmission(rawScope:DeploymentScope,id:string,verifyLocked:(tx:Tx,plan:Readonly<DeploymentPlan>)=>Promise<()=>void>){
+ async beforeDispatchWithAdmission(rawScope:DeploymentScope,id:string,verifyLocked:(tx:Tx,plan:Readonly<DeploymentPlan>)=>Promise<()=>void>,publishFreshness?:(assertFresh:()=>void)=>void){
   const s=deploymentScopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse();
   let finalFresh:(()=>void)|undefined;
   const plan=await repo.$transaction(async tx=>{
@@ -84,14 +94,14 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
    // lock can be acquired by existing current-authority composition.
    await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
    const r=await load(tx,s,id),{i,v}=unpack(r,s);if(v.state!=='dispatching')refuse();
-   await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);
+   await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);const authorityFresh=await admissionAuthority(tx,s,i.plan,i.approval);
    const assertFresh=await verifyLocked(tx,structuredClone(i.plan));if(typeof assertFresh!=='function')refuse();
    const start=Date.parse(i.plan.windowStart),end=Math.min(Date.parse(i.plan.expiresAt),Date.parse(i.approval.expiresAt),r.leaseExpiresAt!.getTime());
-   finalFresh=()=>{assertFresh();const at=now().getTime();if(at<start||at>=end)refuse()};
+   finalFresh=()=>{authorityFresh();assertFresh();const at=now().getTime();if(at<start||at>=end)refuse()};
    await live(tx,i.plan,i.approval,r.leaseExpiresAt!);finalFresh();return structuredClone(i.plan);
   });
   // A delayed COMMIT/result must not renew the original private proof window.
-  if(!finalFresh)refuse();finalFresh!();return plan;
+  if(!finalFresh)refuse();finalFresh!();publishFreshness?.(finalFresh!);return plan;
  },
  async finish(rawScope:DeploymentScope,id:string,rawResult:DeploymentResult){const s=deploymentScopeSchema.parse(rawScope),result=deploymentResultSchema.parse(rawResult);return repo.$transaction(async tx=>{const r=await load(tx,s,id),{i,v}=unpack(r,s);await authority(tx,s,i.plan,i.approval);if(v.state!=='dispatching')return dto(r,s);if(result.state==='accepted')receiptBinding(i.plan,result.receipt);if(result.state!=='unknown')await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);const updated=await change(tx,r,result.state,result.state==='accepted'?result.receipt:undefined);if(result.state!=='unknown')await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);else await authority(tx,s,i.plan,i.approval);return dto(updated,s)})},
  /** Server-only provenance reader. Never claims, consumes approval or dispatches. */

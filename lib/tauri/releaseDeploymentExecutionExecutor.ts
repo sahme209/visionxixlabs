@@ -1,7 +1,7 @@
 import 'server-only';
 import {ReleaseDeploymentUnavailable,type ReleaseDeploymentExecutionStore} from './releaseDeploymentExecutionStore';
 import type {DeploymentScope,DeploymentPlan,DeploymentResult} from './releaseDeploymentExecutionContract';
-export interface ReleaseDeploymentTransport{kind:'release_deployment_transport_v1';execute(input:{operationId:string;plan:DeploymentPlan;signal:AbortSignal;assertCurrent:()=>Promise<void>}):Promise<DeploymentResult>}
+export interface ReleaseDeploymentTransport{kind:'release_deployment_transport_v1';execute(input:{operationId:string;plan:DeploymentPlan;signal:AbortSignal;assertCurrent:()=>Promise<void|(()=>void)>}):Promise<DeploymentResult>}
 /** No installed transport or route. A successful acknowledgement is not deployment success. */
 export function createReleaseDeploymentExecutor(store:ReleaseDeploymentExecutionStore,transport?:ReleaseDeploymentTransport,now:()=>Date=()=>new Date()) {return{async run(scope:DeploymentScope,id:string){
  if(!transport||transport.kind!=='release_deployment_transport_v1')throw new ReleaseDeploymentUnavailable();

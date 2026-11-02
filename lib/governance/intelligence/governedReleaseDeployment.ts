@@ -33,9 +33,11 @@ export function createGovernedReleaseDeploymentExecutor(store:ReleaseDeploymentE
    beforeDispatch:async(s,operationId)=>{const current=await store.beforeDispatch(s,operationId);if(operationId!==id||sha256ContentHash(current)!==context.planDigest)throw Error('governance_deployment_binding_changed');return current},
   },{kind:transport.kind,execute:input=>transport.execute({...input,signal:AbortSignal.any([signal,input.signal]),assertCurrent:async()=>{
    if(!receipt||input.operationId!==id||sha256ContentHash(input.plan)!==context.planDigest)throw Error('governance_deployment_binding_changed');
-   const authoritySignal=AbortSignal.any([signal,input.signal]);authoritySignal.throwIfAborted();await withGithubAbort(input.assertCurrent(),authoritySignal);await ports.guard.assert(context,'before_write',receipt,authoritySignal);
-   const exact=await withGithubAbort(store.beforeDispatchWithAdmission(scope,id,(tx,currentPlan)=>ports.guard.assertFinal(tx,currentPlan,receipt!)),authoritySignal);
-   if(sha256ContentHash(exact)!==context.planDigest)throw Error('governance_deployment_binding_changed');
+   const authoritySignal=AbortSignal.any([signal,input.signal]);authoritySignal.throwIfAborted();const underlyingFresh=await withGithubAbort(input.assertCurrent(),authoritySignal);if(underlyingFresh!==undefined&&typeof underlyingFresh!=='function')throw Error('governance_deployment_authority_unavailable');await ports.guard.assert(context,'before_write',receipt,authoritySignal);
+   let privateFresh:(()=>void)|undefined;
+   const exact=await withGithubAbort(store.beforeDispatchWithAdmission(scope,id,(tx,currentPlan)=>ports.guard.assertFinal(tx,currentPlan,receipt!),proof=>{privateFresh=proof}),authoritySignal);
+   if(typeof privateFresh!=='function')throw Error('governance_deployment_authority_unavailable');
+   const assertFresh=()=>{authoritySignal.throwIfAborted();if(typeof underlyingFresh==='function')underlyingFresh();privateFresh!();if(sha256ContentHash(exact)!==context.planDigest||sha256ContentHash(input.plan)!==context.planDigest)throw Error('governance_deployment_binding_changed')};assertFresh();return assertFresh;
   }})});
   return executor.run(scope,id);
  }

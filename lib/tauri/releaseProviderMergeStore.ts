@@ -173,9 +173,11 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
             });
         },
         /** Final authority, policy and session proofs retain one coherent DB
-         * boundary through the final original lease clock immediately before PUT. */
-        async beforeDispatchWithAdmission(rawScope:ProviderMergeScope,execution:string,verifyLocked:(tx:ReleaseOperationPlanTransaction,plan:ReturnType<typeof planInput>['plan'])=>Promise<()=>void>){
-            const scope=scopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse('admission_unavailable');
+         * boundary through the final original lease clock immediately before PUT.
+         * The optional server-only publisher retains the original private checks
+         * across caller awaits; it never adds a field to the returned plan. */
+        async beforeDispatchWithAdmission(rawScope:ProviderMergeScope,execution:string,verifyLocked:(tx:ReleaseOperationPlanTransaction,plan:ReturnType<typeof planInput>['plan'])=>Promise<()=>void>,publishFreshness?:(assertFresh:()=>void)=>void){
+            const scope=scopeSchema.parse(rawScope);if(typeof verifyLocked!=='function'||publishFreshness!==undefined&&typeof publishFreshness!=='function')refuse('admission_unavailable');
             let finalFresh:(()=>void)|undefined;
             const plan=await repo.$transaction(async tx=>{await organizationLock(tx,scope);const row=await load(tx,scope,execution),s=snapshot(row);if(s.state!=='dispatching'||row.leaseOwner!==row.id)refuse();
                 await current(tx,scope,s.binding);const authorityFresh=await admissionAuthority(tx,scope,s.binding),plan=structuredClone(planInput(s.binding).plan),admissionFresh=await verifyLocked(tx,plan);
@@ -186,7 +188,7 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
             });
             // COMMIT/result delivery is another await. Keep proofs private and
             // recheck their original windows without resetting the consumed run.
-            if(!finalFresh)refuse('admission_unavailable');finalFresh!();return plan;
+            if(!finalFresh)refuse('admission_unavailable');finalFresh!();publishFreshness?.(finalFresh!);return plan;
         },
         async beforeDispatch(rawScope: ProviderMergeScope, execution: string) { const scope = scopeSchema.parse(rawScope); return repo.$transaction(async (tx) => { const row = await load(tx, scope, execution), s = snapshot(row); if (s.state !== 'dispatching')
             refuse(); await current(tx, scope, s.binding); await live(tx, s.binding, row.leaseExpiresAt!); return structuredClone(planInput(s.binding).plan); }); },

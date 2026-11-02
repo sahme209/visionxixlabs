@@ -8,7 +8,7 @@ function fixture(){let at=new Date();const now=()=>new Date(at);const scope={org
  const approval={kind:'verified_release_deployment_approval_v1',purpose:'release_deployment',id:'approval',organizationId:'org',planDigest:sha256ContentHash(plan),executorUserId:'executor',approverUserId:'reviewer',approverSessionId:'review-session',sourcePolicy:plan.sourcePolicy,expiresAt:plan.expiresAt};
  const rows:any[]=[],events:any[]=[];let serial=Promise.resolve();const repo:any={$queryRaw:vi.fn(async(q:TemplateStringsArray,...v:any[])=>q.join('').includes('clock_timestamp')?[{live:at.getTime()<new Date(v[0]).getTime()&&at.getTime()>=new Date(v[1]).getTime()}]:structuredClone(rows.filter(r=>v.includes(r.id)))),durableAgentWorkflow:{create:vi.fn(async({data}:any)=>{if(rows.some(r=>r.id===data.id))throw Error('duplicate');rows.push(structuredClone(data));return structuredClone(data)}),updateMany:vi.fn(async({where,data}:any)=>{const r=rows.find(r=>r.id===where.id&&r.organizationId===where.organizationId&&r.version===where.version);if(!r)return{count:0};Object.assign(r,structuredClone(data),{version:r.version+1});return{count:1}})},durableAgentWorkflowEvent:{create:vi.fn(async({data}:any)=>events.push(structuredClone(data))),findMany:vi.fn(async()=>structuredClone(events))}};
  repo.$transaction=(fn:any)=>{const p=serial.then(async()=>{const before=structuredClone({rows,events});try{return await fn(repo)}catch(e){rows.splice(0,rows.length,...before.rows);events.splice(0,events.length,...before.events);throw e}});serial=p.catch(()=>{});return p};
- const deps={now,assertCurrent:vi.fn(async()=>{}),readCurrentPlan:vi.fn(async()=>structuredClone(plan)),verifySupportedSourcePolicy:vi.fn(async()=>({kind:'verified_release_deployment_source_policy_v1',planDigest:sha256ContentHash(plan),sourcePolicy:plan.sourcePolicy})),readIndependentApproval:vi.fn(async()=>structuredClone(approval)),consumeIndependentApproval:vi.fn(async()=>{})};const store=createReleaseDeploymentExecutionStore(repo,deps);
+ const deps={now,assertCurrent:vi.fn(async()=>{}),assertCurrentForAdmission:vi.fn(async()=>()=>{}),readCurrentPlan:vi.fn(async()=>structuredClone(plan)),verifySupportedSourcePolicy:vi.fn(async()=>({kind:'verified_release_deployment_source_policy_v1',planDigest:sha256ContentHash(plan),sourcePolicy:plan.sourcePolicy})),readIndependentApproval:vi.fn(async()=>structuredClone(approval)),consumeIndependentApproval:vi.fn(async()=>{})};const store=createReleaseDeploymentExecutionStore(repo,deps);
  const receipt={repositoryFullName:plan.repositoryFullName,workflowPath:plan.workflowPath,headSha:plan.sourceCommitSha,ref:plan.ref,runId:'123',runAttempt:1};return{scope,plan,approval,repo,rows,events,deps,store,receipt,advance:()=>{at=new Date(at.getTime()+31000)}}}
 it('defaults unavailable with no persistence',async()=>{const f=fixture();await expect(createReleaseDeploymentExecutionStore(f.repo).prepare(f.scope,f.plan)).rejects.toThrow();expect(f.rows).toHaveLength(0)});
 it.each(['organizationId','sourcePolicy','planDigest','purpose','approverUserId'])('refuses mismatched approval %s',async key=>{const f=fixture();(f.approval as any)[key]=key==='approverUserId'?'executor':'other';await expect(f.store.prepare(f.scope,f.plan)).rejects.toThrow();expect(f.rows).toHaveLength(0)});
@@ -81,4 +81,19 @@ it('deployment postcommit result delivery retains the original private admission
  const f=fixture(),p=await f.store.prepare(f.scope,f.plan);await f.store.claim(f.scope,p.id);let live=true;
  const original=f.repo.$transaction;f.repo.$transaction=async(fn:any)=>{const result=await original(fn);live=false;return result};
  await expect(f.store.beforeDispatchWithAdmission(f.scope,p.id,async()=>()=>{if(!live)throw Error('postcommit_provider_expired')})).rejects.toThrow('postcommit_provider_expired');expect(f.rows[0].attemptCount).toBe(1);
+});
+it('refuses a substituted original approval session before the coherent authority port can adopt it',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);f.rows[0].inputJson.approval.approverSessionId='substituted-session';
+ await expect(f.store.claimWithAdmission(f.scope,p.id,async()=>()=>{})).rejects.toThrow();expect(f.deps.assertCurrentForAdmission).not.toHaveBeenCalled();expect(f.deps.consumeIndependentApproval).not.toHaveBeenCalled();
+});
+it('requires the private current authority port only for coherent execution methods',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);f.deps.assertCurrentForAdmission=undefined as never;
+ await expect(f.store.claimWithAdmission(f.scope,p.id,async()=>()=>{})).rejects.toThrow();expect(f.rows[0].attemptCount).toBe(0);
+ expect((await f.store.claim(f.scope,p.id)).claimed).toBe(true);
+});
+it('publishes only the same postcommit-validated private freshness function without adding it to the plan DTO',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);await f.store.claim(f.scope,p.id);let committed=false,published:(()=>void)|undefined;
+ const original=f.repo.$transaction;f.repo.$transaction=async(fn:any)=>{const result=await original(fn);committed=true;return result};
+ const plan=await f.store.beforeDispatchWithAdmission(f.scope,p.id,async()=>()=>{},fresh=>{expect(committed).toBe(true);published=fresh});
+ expect(plan).not.toHaveProperty('assertFresh');expect(published).toBeTypeOf('function');expect(()=>published!()).not.toThrow();f.advance();expect(()=>published!()).toThrow();
 });

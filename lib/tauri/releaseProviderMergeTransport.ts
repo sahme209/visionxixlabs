@@ -12,7 +12,9 @@ export interface ProviderMergeTransportPorts {
  /** Static stage/outcome only. Never pass provider bodies, credentials or errors. */
  onDiagnostic?:(event:{phase:ProviderMergePhase;outcome:'started'|'refused'|'unknown'|'confirmed'})=>void;
  isEnabled?:()=>boolean;
- assertCurrent?:(operationId:string,plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<void>;
+ /** A trusted server callback may retain private synchronous freshness until
+  * the actual PUT. Legacy standalone void callbacks remain supported. */
+ assertCurrent?:(operationId:string,plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<void|(()=>void)>;
  readCredential?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal)=>Promise<ProviderMergeCredential|null>;
  /** Trusted, fresh repository/PR policy verification; absent queue/stack evidence refuses. */
  readDirectMergeSupport?:(plan:Readonly<ReleaseOperationPlan>,signal:AbortSignal,credential:Readonly<ProviderMergeCredential>)=>Promise<DirectMergeSupport|null>;
@@ -30,8 +32,8 @@ export function createReleaseProviderMergeTransport(ports:ProviderMergeTransport
   const timer=setTimeout(stop,20000),signal=controller.signal;let activeReader:ReadableStreamDefaultReader<Uint8Array>|undefined;
   const now=ports.now??Date.now,deadlineAt=now()+20000;
   function budget(){signal.throwIfAborted();const at=now();if(!Number.isFinite(deadlineAt)||!Number.isFinite(at)||at>=deadlineAt)throw Error('merge_deadline_elapsed')}
-  async function current(plan:ReleaseOperationPlan){budget();if(!ports.isEnabled?.()||!ports.assertCurrent||now()>=Date.parse(plan.window.endUtc)||now()<Date.parse(plan.window.startUtc))throw Error('merge_unavailable');await ports.assertCurrent(input.operationId,structuredClone(plan),signal);budget();if(!ports.isEnabled?.()||now()>=Date.parse(plan.window.endUtc))throw Error('merge_unavailable')}
-  async function jsonRequest(url:string,init:RequestInit){budget();const response=await (ports.fetch??fetch)(url,{...init,signal,redirect:'error',cache:'no-store'});try{budget()}catch(error){void response.body?.cancel().catch(()=>{});throw error}if(response.url&&response.url!==url||response.redirected)throw Error('redirect');if(!response.body)throw Error('missing_body');const reader=response.body.getReader();activeReader=reader;let bytes=0;const chunks:Uint8Array[]=[];try{for(;;){budget();const part=await reader.read();budget();if(part.done)break;bytes+=part.value.byteLength;if(bytes>65536)throw Error('large_reply');chunks.push(part.value)}const all=new Uint8Array(bytes);let at=0;for(const chunk of chunks){all.set(chunk,at);at+=chunk.byteLength}const body=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(all)) as unknown;budget();return {status:response.status,body}}finally{activeReader=undefined;void reader.cancel().catch(()=>{})}}
+  async function current(plan:ReleaseOperationPlan){const ready=()=>{budget();if(!ports.isEnabled?.()||now()>=Date.parse(plan.window.endUtc)||now()<Date.parse(plan.window.startUtc))throw Error('merge_unavailable')};ready();if(!ports.assertCurrent)throw Error('merge_unavailable');const fresh=await ports.assertCurrent(input.operationId,structuredClone(plan),signal);if(fresh!==undefined&&typeof fresh!=='function')throw Error('merge_unavailable');const assertFresh=()=>{ready();if(typeof fresh==='function')fresh();ready()};assertFresh();return assertFresh}
+  async function jsonRequest(url:string,init:RequestInit,assertFresh?:()=>void){budget();const request={...init,signal,redirect:'error' as const,cache:'no-store' as const};if(init.method==='PUT'){if(typeof assertFresh!=='function')throw Error('merge_unavailable');assertFresh();writeStarted=true}const response=await (ports.fetch??fetch)(url,request);try{budget()}catch(error){void response.body?.cancel().catch(()=>{});throw error}if(response.url&&response.url!==url||response.redirected)throw Error('redirect');if(!response.body)throw Error('missing_body');const reader=response.body.getReader();activeReader=reader;let bytes=0;const chunks:Uint8Array[]=[];try{for(;;){budget();const part=await reader.read();budget();if(part.done)break;bytes+=part.value.byteLength;if(bytes>65536)throw Error('large_reply');chunks.push(part.value)}const all=new Uint8Array(bytes);let at=0;for(const chunk of chunks){all.set(chunk,at);at+=chunk.byteLength}const body=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(all)) as unknown;budget();return {status:response.status,body}}finally{activeReader=undefined;void reader.cancel().catch(()=>{})}}
   const work=(async():Promise<ProviderMergeTransportResult>=>{try{
    const plan=parseReleaseOperationPlan(input.plan);if(!/^release_merge_provider_[a-f0-9]{64}$/.test(input.operationId))return refused();
    stage('authority');await current(plan);if(!ports.readCredential||!ports.readDirectMergeSupport)return refused();
@@ -46,8 +48,8 @@ export function createReleaseProviderMergeTransport(ports:ProviderMergeTransport
    stage('target');const read=await jsonRequest(url,{method:'GET',headers});if(read.status!==200)return refused();const before=prSchema.parse(read.body);
    const target=(v:z.infer<typeof prSchema>)=>v.number===plan.pullRequest.number&&v.head.sha===plan.pullRequest.headSha&&v.head.ref===plan.pullRequest.headRef&&v.head.repo?.full_name===plan.pullRequest.repositoryFullName&&v.base.ref===plan.pullRequest.baseRef&&v.base.repo.full_name===plan.pullRequest.repositoryFullName;
    if(!target(before)||before.state!=='open'||before.draft||before.merged||before.base.sha!==plan.pullRequest.baseSha)return refused();
-   stage('final_authority');await current(plan);if(!credentialReady())return refused();budget();stage('write');writeStarted=true;
-   const merged=await jsonRequest(url+'/merge',{method:'PUT',headers,body:JSON.stringify({sha:plan.pullRequest.headSha,merge_method:plan.method})});
+   stage('final_authority');const finalFresh=await current(plan);if(!credentialReady())return refused();budget();stage('write');
+   const merged=await jsonRequest(url+'/merge',{method:'PUT',headers,body:JSON.stringify({sha:plan.pullRequest.headSha,merge_method:plan.method})},()=>{finalFresh();if(!credentialReady())throw Error('merge_unavailable')});
    if([403,404,405,409,422].includes(merged.status))return refused();
    if(merged.status!==200)return unknown();const ack=z.object({sha,merged:z.literal(true)}).parse(merged.body);
    stage('confirmation');const reread=await jsonRequest(url,{method:'GET',headers});if(reread.status!==200)return unknown();const after=prSchema.parse(reread.body);

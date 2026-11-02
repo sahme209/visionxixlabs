@@ -31,10 +31,14 @@ export function createGovernedProviderMergeExecutor(store:ReleaseProviderMergeSt
   const transport=createReleaseProviderMergeTransport({...ports.transport,assertCurrent:async(operationId,currentPlan,providerSignal)=>{
    if(!current||!receipt||operationId!==id||sha256ContentHash(currentPlan)!==context.planDigest)throw Error('governance_merge_binding_unavailable');
    const boundedSignal=AbortSignal.any([signal,providerSignal]);boundedSignal.throwIfAborted();
-   await current(operationId,currentPlan,boundedSignal);
+   const currentFresh=await current(operationId,currentPlan,boundedSignal);
+   if(currentFresh!==undefined&&typeof currentFresh!=='function')throw Error('governance_merge_binding_unavailable');
    await ports.guard.assert(context,'before_write',receipt,boundedSignal);
-   const exact=await withGithubAbort(store.beforeDispatchWithAdmission(exactScope,id,async(tx,p)=>{boundedSignal.throwIfAborted();const freshness=await ports.guard.assertFinal(tx,p,receipt!);boundedSignal.throwIfAborted();return()=>{boundedSignal.throwIfAborted();freshness();boundedSignal.throwIfAborted()}}),boundedSignal);
+   let finalFresh:(()=>void)|undefined;
+   const exact=await withGithubAbort(store.beforeDispatchWithAdmission(exactScope,id,async(tx,p)=>{boundedSignal.throwIfAborted();const freshness=await ports.guard.assertFinal(tx,p,receipt!);boundedSignal.throwIfAborted();return()=>{boundedSignal.throwIfAborted();freshness();boundedSignal.throwIfAborted()}},fresh=>{if(typeof fresh!=='function')throw Error('governance_merge_binding_unavailable');finalFresh=fresh}),boundedSignal);
    if(sha256ContentHash(exact)!==context.planDigest)throw Error('governance_merge_binding_changed');
+   if(typeof finalFresh!=='function')throw Error('governance_merge_binding_unavailable');
+   return()=>{boundedSignal.throwIfAborted();if(typeof currentFresh==='function')currentFresh();finalFresh!();boundedSignal.throwIfAborted()};
   }});
   const executor=createReleaseProviderMergeExecutor({...store,
    claim:async(s,executionId)=>{if(executionId!==id||sha256ContentHash(s)!==sha256ContentHash(exactScope))throw Error('governance_merge_binding_changed');receipt=await ports.guard.assert(context,'before_claim',undefined,signal);signal.throwIfAborted();return store.claimWithAdmission(s,executionId,async(tx,p)=>{signal.throwIfAborted();const freshness=await ports.guard.assertClaim(tx,p,receipt!);signal.throwIfAborted();return()=>{signal.throwIfAborted();freshness();signal.throwIfAborted()}})},

@@ -22,9 +22,11 @@ export function createUncoveredProviderMergeExecutor(store:ReleaseProviderMergeS
  const transport=createReleaseProviderMergeTransport({...ports.transport,assertCurrent:async(operation,plan,providerSignal)=>{
   const bounded=AbortSignal.any([signal,providerSignal]);fresh(bounded);
   if(operation!==id||!current)throw Error('governance_execution_coverage_unavailable');
-  await current(operation,plan,bounded);await check(bounded);
-  const actual=await withGithubAbort(store.beforeDispatchWithAdmission(scope,id,tx=>locked(tx,bounded)),bounded);
-  fresh(bounded);if(sha256ContentHash(actual)!==sha256ContentHash(plan))throw Error('governance_execution_coverage_unavailable');
+  const underlyingFresh=await current(operation,plan,bounded);if(underlyingFresh!==undefined&&typeof underlyingFresh!=='function')throw Error('governance_execution_coverage_unavailable');await check(bounded);
+  let privateFresh:(()=>void)|undefined;
+  const actual=await withGithubAbort(store.beforeDispatchWithAdmission(scope,id,tx=>locked(tx,bounded),proof=>{privateFresh=proof}),bounded);
+  if(typeof privateFresh!=='function')throw Error('governance_execution_coverage_unavailable');
+  const digest=sha256ContentHash(plan),assertFresh=()=>{fresh(bounded);if(typeof underlyingFresh==='function')underlyingFresh();privateFresh!();if(sha256ContentHash(actual)!==digest||sha256ContentHash(plan)!==digest)throw Error('governance_execution_coverage_unavailable')};assertFresh();return assertFresh;
  }});
  const executor=createReleaseProviderMergeExecutor({...store,claim:async(s,operation)=>{await check(signal);if(operation!==id||sha256ContentHash(s)!==sha256ContentHash(scope))throw Error('governance_execution_coverage_unavailable');return store.claimWithAdmission(s,operation,tx=>locked(tx,signal))}},{kind:transport.kind,execute:input=>transport.execute({...input,signal:AbortSignal.any([signal,input.signal])})});
  return executor.run(scope,id);

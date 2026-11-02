@@ -46,12 +46,12 @@ export function createReleaseDeploymentGovernanceCoordinator(request:NextRequest
     return withGithubAbort(store.claimWithAdmission(scope,id,async tx=>{freshLegacy();if(await ports.service.readAnyEnrollmentLocked(tx)!==false)throw Error('governance_enrollment_changed');return freshLegacy}),signal);
    }};
    const executor=createReleaseDeploymentExecutor(legacy,{kind:transport.kind,execute:input=>transport.execute({...input,signal:AbortSignal.any([signal,input.signal]),assertCurrent:async()=>{
-    const bounded=AbortSignal.any([signal,input.signal]);ready(bounded);await withGithubAbort(input.assertCurrent(),bounded);
+    const bounded=AbortSignal.any([signal,input.signal]);ready(bounded);const underlyingFresh=await withGithubAbort(input.assertCurrent(),bounded);if(underlyingFresh!==undefined&&typeof underlyingFresh!=='function')throw Error('governance_deployment_authority_unavailable');let privateFresh:(()=>void)|undefined;
     const checked=await withGithubAbort(store.beforeDispatchWithAdmission(scope,id,async(tx,p)=>{
      ready(bounded);if(sha256ContentHash(p)!==sha256ContentHash(input.plan)||await ports.service.readAnyEnrollmentLocked(tx)!==false)throw Error('governance_enrollment_changed');
      return()=>{ready(bounded);const now=Date.now();if(!Number.isFinite(now)||now<started||now>=started+25000)throw Error('governance_deployment_deadline')};
-    }),bounded);
-    if(sha256ContentHash(checked)!==sha256ContentHash(input.plan))throw Error('governance_deployment_binding_changed');
+    },proof=>{privateFresh=proof}),bounded);
+    if(typeof privateFresh!=='function')throw Error('governance_deployment_authority_unavailable');const digest=sha256ContentHash(input.plan);const assertFresh=()=>{ready(bounded);freshLegacy();if(typeof underlyingFresh==='function')underlyingFresh();privateFresh!();if(sha256ContentHash(checked)!==digest||sha256ContentHash(input.plan)!==digest)throw Error('governance_deployment_binding_changed')};assertFresh();return assertFresh;
    }})});
    return withGithubAbort(executor.run(scope,id),signal);
   },

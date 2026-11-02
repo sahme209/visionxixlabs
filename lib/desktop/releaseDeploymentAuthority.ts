@@ -8,7 +8,7 @@ import {validateIntake} from '@/lib/tauri/deploymentOperations';
 import {buildReleaseMergePlan} from '@/lib/tauri/releaseMergePlan';
 import {parseReleaseOperationPlanInput,RELEASE_OPERATION_PLAN_KIND} from '@/lib/tauri/releaseOperationPlanContract';
 import {releaseOperationPlanId,type ReleaseOperationPlanTransaction as Tx,type ReleaseOperationPlanRow as Row} from '@/lib/agent/workflows/releaseOperationPlanStore';
-import {deploymentPlanSchema,type DeploymentPlan,type DeploymentScope,type DeploymentApproval} from '@/lib/tauri/releaseDeploymentExecutionContract';
+import {deploymentPlanSchema,deploymentScopeSchema,deploymentApprovalSchema,type DeploymentPlan,type DeploymentScope,type DeploymentApproval} from '@/lib/tauri/releaseDeploymentExecutionContract';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {PROTECTED_TAG_POLICY} from '@/lib/tauri/releaseProtectedTagPolicy';
 const refuse=():never=>{throw Error('release_deployment_authority_unavailable')};
@@ -59,6 +59,22 @@ export function createReleaseDeploymentAuthority(request:NextRequest,options:{so
   if(!source||source.repositoryFullName!==p.repositoryFullName||source.ref!==p.ref||source.path!==p.workflowPath||source.blobSha!==p.workflowBlobSha||!sameInputs(intake.workflowInputs,p.inputs)||p.sourcePolicy!==(options.sourcePolicy??PROTECTED_TAG_POLICY)||p.refKind!=='tag'||Date.parse(p.windowStart)<Date.parse(intake.windowStartUtc)||Date.parse(p.expiresAt)>Date.parse(intake.windowEndUtc))refuse();
   await actor(tx,s,p.creatorUserId,undefined,'reader');await actor(tx,s,p.requesterUserId,undefined,'reader');await assertCurrent(tx,s,p);if(options.memoizeReadOnlyTransactionPlans){let entries=readPlans.get(tx);if(!entries){entries=new Map();readPlans.set(tx,entries)}entries.set(cacheKey,structuredClone(p))}return structuredClone(p);
  };
- return{assertCurrent,readCurrentPlan};
+ /** Private current-session window for an already verified original decision.
+  * The coherent store independently reloads the audited approval before calling
+  * this method; a copied execution JSON/session identifier is not its authority. */
+ const assertCurrentForAdmission=async(tx:Tx,rawScope:DeploymentScope,rawPlan:Readonly<DeploymentPlan>,rawApproval:Readonly<DeploymentApproval>)=>{
+  const s=deploymentScopeSchema.parse(rawScope),p=deploymentPlanSchema.parse(rawPlan),a=deploymentApprovalSchema.parse(rawApproval);
+  if(options.actorPurpose==='approver'||options.memoizeReadOnlyTransactionPlans||s.actorUserId!==p.executorUserId)refuse();
+  await readCurrentPlan(tx,s,p);await assertCurrent(tx,s,p,a,'executor');
+  async function sessionFresh(userId:string,sessionId:string,purpose:'executor'|'approver'){
+   await actor(tx,s,userId,sessionId,purpose);
+   const rows=await tx.$queryRaw<Array<{id:string;organizationId:string;userId:string;expiresAt:Date;live:boolean}>>`SELECT "id","organizationId","userId","expiresAt",("revokedAt" IS NULL AND "expiresAt">clock_timestamp()) AS "live" FROM "DesktopSessionRecord" WHERE "id"=${sessionId} AND "organizationId"=${s.organizationId} AND "userId"=${userId} FOR SHARE`;
+   const row=rows[0];if(rows.length!==1||row.id!==sessionId||row.organizationId!==s.organizationId||row.userId!==userId||row.live!==true||!(row.expiresAt instanceof Date)||!Number.isFinite(row.expiresAt.getTime()))refuse();const expiresAt=row.expiresAt.getTime();
+   const fresh=()=>{guard();const at=Date.now();if(!Number.isFinite(at)||at>=expiresAt)refuse();guard()};fresh();return fresh;
+  }
+  const executorFresh=await sessionFresh(s.actorUserId,s.sessionId,'executor'),reviewerFresh=await sessionFresh(a.approverUserId,a.approverSessionId,'approver');
+  await principal(s,'executor');const fresh=()=>{guard();executorFresh();reviewerFresh();guard()};fresh();return fresh;
+ };
+ return{assertCurrent,readCurrentPlan,assertCurrentForAdmission};
 }
 function sameInputs(a:unknown,b:unknown){return sha256ContentHash(a)===sha256ContentHash(b)}

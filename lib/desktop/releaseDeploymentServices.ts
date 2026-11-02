@@ -57,6 +57,11 @@ export function createReleaseDeploymentServices(request:NextRequest,repo:Release
  const executionGovernance=options.observationOnly||options.actorPurpose==='approver'?undefined:createReleaseDeploymentGovernanceCoordinator(request,repo,scope,{enabled,authority,approvals,service:governance.service,transport:transportDependencies,current});
  const ports:ReleaseDeploymentServicePorts={enabled,...(executionGovernance?{governance:executionGovernance}:{}),transport:options.observationOnly||sourcePolicy===IMMUTABLE_RELEASE_POLICY&&!options.allowImmutableTagDispatch?.()?undefined:transport,preflight:async(p,signal)=>{await current(p,signal);await verifyPolicy(p,signal);if(!options.observationOnly)await governance.readBaseline(p,signal)},dependencies:{
   assertCurrent:authority.assertCurrent,
+  assertCurrentForAdmission:async(tx,s,p,a)=>{
+   if(!enabled()||options.observationOnly||options.actorPurpose==='approver'||options.isPlanAllowed&&!options.isPlanAllowed(p))throw Error('release_deployment_services_unavailable');
+   const fresh=await authority.assertCurrentForAdmission(tx,s,p,a);
+   return()=>{if(!enabled()||options.isPlanAllowed&&!options.isPlanAllowed(p))throw Error('release_deployment_services_unavailable');fresh()};
+  },
   readCurrentPlan:authority.readCurrentPlan,
   // The observation store already checks authority and the exact locked plan
   // before/after this pure proof lookup. Repeating both here recursively
