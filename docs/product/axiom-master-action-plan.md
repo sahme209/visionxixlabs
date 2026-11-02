@@ -1,10 +1,10 @@
 # Axiom master action plan
 
-Updated November 2, 2026. Two coordinated workstreams. Latest target retains planning-then-stop: implementation is paused pending explicit resumption. Existing authorized local work and evidence are preserved. This document and the persistent goal are the working target; add future requests here rather than losing them in chat.
+Updated November 2, 2026. Two coordinated workstreams. The user explicitly resumed after plan finalization; authorized local execution is active. Existing authorized local work and evidence are preserved. This document and the persistent goal are the working target; add future requests here rather than losing them in chat.
 
 ## Current control panel — November 2 planning reconciliation
 
-**State: planning finalized; STOP pending explicit resumption.** This follows the latest user instruction. Historical progress entries below are evidence history, not permission to resume or completion claims. Parallel source review, documentation and research have stopped. Security, visual quality, clarity and spending remain acceptance gates throughout.
+**State: plan finalized and explicitly resumed November 2; local execution active.** Historical pause entries below are evidence history, not current stopping instructions. Parallel source review, documentation and research resumed within the existing boundaries. Security, visual quality, clarity and spending remain acceptance gates throughout.
 
 | Requirement | Verified progress | Remaining acceptance / next evidence |
 |---|---|---|
@@ -216,3 +216,9 @@ Exactd6dccf0d production build and Next TypeScript now pass for the saved-outcom
 Local73a785e8 adds bounded immutable workflow-source observation and digest-bound proposal capture with pinned current tenant read access, current target/installation rechecks and cancellation.61 focused checks and independent source review pass with simulated external boundaries. TypeScript was interrupted while reading SDK declarations at the planning pause; no pass or failure is inferred. Public AWS dispatch remains closed; final execution source/authority binding and composed validation remain open. No production/provider action or app restart occurred. Receipt: ../recovery/2026-11-02/agent-restart-source-local-progress.md.
 
 Resume order: finish Agent source-bound execution and actual Governance coverage/enrollment (A2), reconcile already-written ServiceNow note through genuine human/native lifecycle (A3), batch release and guided acceptance (A1/A4), then deferred Windows/Store and connector/security backlog (A5–A8). B1–B6 website audit/design/authentic demos/control documentation/support knowledge/testing remain in parallel scope after resumption. Never omit a master-plan section or treat this increment as full completion.
+
+## November2 resumed — source-qualified requester HTTP
+
+The explicit resumption continues the complete master plan. A2 now qualifies only stored immutable restart source matching the current reviewed workflow template at the public requester facade; flag remains default OFF/unset. Nine eligibility checks and four actual isolated PostgreSQL public HTTP journeys pass: exact full-tag dispatch, altered workflow zero POST, historical source zero claim, and revoked reviewer zero POST. Provider/auth/token/human boundaries are simulated; original proposal preserved and one-attempt recovery enforced. Earlier expected HTTP RED is resolved for this source. This does not complete real Governance baseline admission/coverage/enrollment, native/live acceptance or activate production. Final source review/builds remain gates for this increment.
+
+B1 visible Cursor security overview→Secrets & Network→Network access anchor was inspected in a visible root browser, not merely source research. B4/B5 offline standards schema/hash validator and draft revision work advance separately; no customer documentation/support AI or all-control coverage is claimed. All A1–A8/B1–B6 requirements remain tracked above.
