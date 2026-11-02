@@ -1,6 +1,6 @@
 # Axiom master action plan
 
-Updated November 1, 2026. Two coordinated workstreams. User explicitly resumed the persistent goal on November 1; execution is active. This document and the persistent goal are the working target; add future requests here rather than losing them in chat.
+Updated November 2, 2026. Two coordinated workstreams. Latest target retains planning-then-stop: implementation is paused pending explicit resumption. Existing authorized local work and evidence are preserved. This document and the persistent goal are the working target; add future requests here rather than losing them in chat.
 
 ## Standing product requirements
 
@@ -185,3 +185,9 @@ The current paired requester can now read at most five own-conversation executio
 AWS source investigation confirms the current client already uses the API returning exact run identity; source stability before dispatch remains the real gap. Do not forge a release plan or substitute run correlation for execution-source authority. Constraints and official reference are recorded in ../recovery/2026-11-02/agent-aws-source-findings.md. All A1–A8/B1–B6 requirements remain tracked.
 
 Exactd6dccf0d production build and Next TypeScript now pass for the saved-outcome context batch, from5,802 verified clean-archive regular files with no live provider credentials. Receipt ../recovery/2026-11-02/agent-conversation-exact-production-build.json. This does not prove live model behavior, signed native/customer acceptance or complete Governance; those requirements and all master work remain open.
+
+## November2 restart-source increment and pause
+
+Local73a785e8 adds bounded immutable workflow-source observation and digest-bound proposal capture with pinned current tenant read access, current target/installation rechecks and cancellation.61 focused checks and independent source review pass with simulated external boundaries. TypeScript was interrupted while reading SDK declarations at the planning pause; no pass or failure is inferred. Public AWS dispatch remains closed; final execution source/authority binding and composed validation remain open. No production/provider action or app restart occurred. Receipt: ../recovery/2026-11-02/agent-restart-source-local-progress.md.
+
+Resume order: finish Agent source-bound execution and actual Governance coverage/enrollment (A2), reconcile already-written ServiceNow note through genuine human/native lifecycle (A3), batch release and guided acceptance (A1/A4), then deferred Windows/Store and connector/security backlog (A5–A8). B1–B6 website audit/design/authentic demos/control documentation/support knowledge/testing remain in parallel scope after resumption. Never omit a master-plan section or treat this increment as full completion.
