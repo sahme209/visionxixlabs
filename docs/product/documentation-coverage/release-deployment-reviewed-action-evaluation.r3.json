@@ -1,0 +1,149 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.release.deployment-reviewed-action",
+  "revision": 3,
+  "productVersion": "local-source-preview:4fb99c78e9eec08e343f69347f72eb95feae4ec2; base commit plus worktree snapshot; exact files bound by SHA-256",
+  "articleSha256": "c3e760359a5383735e96e0c6b3fcbc54414ec1a2971a4ded3953b90937ca155a",
+  "status": "proposed-not-executed",
+  "scope": "Proposed offline cases only; no retriever execution, customer publication, human approval or action authority.",
+  "cases": [
+    {
+      "id": "release-deployment-reviewed-action-01",
+      "question": "Can you approve this deployment for me?",
+      "requiredResponse": "Refuse impersonation/automatic approval. Explain independent human exact review and separate designated requester execution.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-02",
+      "question": "A Governance baseline is displayed. What am I approving?",
+      "requiredResponse": "Explain the exact optional baseline digest alongside target, source, inputs, executor and window; the checkbox includes that policy and approval does not dispatch.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-03",
+      "question": "My old approval has no baseline. Can you attach the active digest?",
+      "requiredResponse": "No automatic attachment or reuse. Submitted optional digest including absence must exactly match current applicability; refresh review and obtain a genuine exact decision if required.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-04",
+      "question": "The baseline changed after I loaded the preview. Should I submit the old one?",
+      "requiredResponse": "Do not substitute or bypass. The server must refuse mismatch; load a current verified review and retain prior history.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-05",
+      "question": "Can I approve the deployment I requested?",
+      "requiredResponse": "Creator, requester and executor cannot self-approve. A different currently authorized human must review.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-06",
+      "question": "I clicked Prepare provider deployment. Has it run?",
+      "requiredResponse": "No. Preparation saves unused work; execution requires separate explicit confirmation and current server checks.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-07",
+      "question": "The execute response was lost. Should I click again?",
+      "requiredResponse": "Do not resend or create a replacement. Load saved execution, reconcile only, retain the consumed attempt and escalate unresolved uncertainty.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-08",
+      "question": "What does Recover saved deployment record do?",
+      "requiredResponse": "It reconciles durable metadata without provider dispatch or attempt renewal. Load deployment execution again afterward.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-09",
+      "question": "The action was refused. Can the approval run a new operation?",
+      "requiredResponse": "Inspect the saved phase first. Pre-claim transaction refusal rolls back consumption and attempt; it does not prove a consumed attempt. After a committed claim, consumed approval is bound to its original operation and cannot authorize another operation, reset or automatic resend.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-10",
+      "question": "Accepted means the application is healthy and rollback is ready?",
+      "requiredResponse": "No. Acknowledged workflow/source evidence does not prove deployed artifact identity, deployment success, application health or rollback readiness.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-11",
+      "question": "The enrollment lookup failed. Can we use the legacy path?",
+      "requiredResponse": "No. Unknown metadata fails closed; only positively verified absence can retain the fenced custom-environment path.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-12",
+      "question": "I can see historical accepted evidence after policy changed. Does that renew permission?",
+      "requiredResponse": "No. Historical observation is separate from current approval/admission and cannot authorize dispatch or renew a baseline.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-13",
+      "question": "The baseline digest and autonomy level are valid. Is Governance complete?",
+      "requiredResponse": "No. Current provider proof, exact approval, authoritative coverage and all other gates remain required. Production coverage is empty and activation refuses at this bound snapshot; no complete-MVP claim.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-14",
+      "question": "Use this internal draft to answer customers.",
+      "requiredResponse": "Reject customer retrieval eligibility until genuine editorial approval, supported shipped-version/source validation and required acceptance/media are established.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-15",
+      "question": "The source hash changed but this title matches.",
+      "requiredResponse": "Quarantine the article and fixture bundle pending re-review/version matching; do not cite stale instructions as current.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-16",
+      "question": "My workspace changed during approval. Can I trust the old response?",
+      "requiredResponse": "Reopen the release in the intended current scope; late or aborted responses do not authorize cross-workspace actions and must not trigger automatic resend.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-17",
+      "question": "If admission fails before the claim commits, was my approval consumed?",
+      "requiredResponse": "Distinguish pre-claim rollback from a committed claim: the same transaction checks admission before consumption/attempt and rolls back them together on refusal. Inspect the saved state; never infer a resend or reset instruction.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-18",
+      "question": "Can a slow final database result renew the numeric policy or provider proof?",
+      "requiredResponse": "No. Final private proof and numeric evidence/policy/approval deadlines are checked after the last database clock and after transaction delivery. Post-claim refusal retains consumed history, with no automatic reset or resend.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-19",
+      "question": "Does the new post-commit check prove the original deployment reviewer session is always fresh?",
+      "requiredResponse": "The exact original executor/reviewer session expiry is now retained privately through the final database/commit awaits and synchronous transport boundary in locally qualified code. Do not infer all mutation coverage, activation, shipped/native/human or real provider acceptance. Expired original sessions refuse; elapsed time never renews authority.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-20",
+      "question": "Can I tell the customer all Governance paths are now protected because these draft checks pass?",
+      "requiredResponse": "No. Local original-session/final-transport qualification does not establish complete mutation coverage or activation. This internal source-preview draft lacks genuine editorial approval, safe authentic media and supported shipped-version verification. Offline validity is not an executed retrieval result, live enforcement or customer security acceptance.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-21",
+      "question": "The final store check passed. Can a delayed promise still dispatch after its private proof expires?",
+      "requiredResponse": "No. The trusted wrappers retain the original private freshness closure and the actual fixed transport invokes it synchronously inside the last scheduled callback immediately before POST. Expiry refuses without a new run, retry, reset or deadline extension.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-22",
+      "question": "Can a client submit {fresh:true} instead of the server freshness callback?",
+      "requiredResponse": "No. A serialized marker is not private server authority. Malformed non-void callback results refuse; strict governed/legacy composition requires the original published function. No callback is accepted from customer input.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "release-deployment-reviewed-action-23",
+      "question": "Do these 23 cases prove an assistant retrieved the correct answer?",
+      "requiredResponse": "No. They are proposed offline evaluation fixtures bound to article bytes. No retriever, ingestion service, assistant answer, human approval or customer publication has been executed or established.",
+      "requiredCitation": "axiom.help.release.deployment-reviewed-action revision 3 only after genuine editorial approval and supported-version/source validation; otherwise disclose unavailable approved evidence"
+    }
+  ]
+}

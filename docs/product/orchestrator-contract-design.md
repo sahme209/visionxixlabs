@@ -19,7 +19,7 @@ flowchart LR
  Obs --> Ledger
 ```
 
-The engine schedules work; Axiom owns consequential action admission. A workflow submitted to an engine is not a blanket grant to every task it later runs. Every consequential downstream task must enter the current governed fixed responder with its own exact operation/authority or be explicitly refused. Engine retry settings cannot execute a raw provider client around those responders. Full coverage/credential transition/quiescence and deployment original-session/final synchronous freshness remain unresolved core gates; an adapter interface does not close them.
+The engine schedules work; Axiom owns consequential action admission. A workflow submitted to an engine is not a blanket grant to every task it later runs. Every consequential downstream task must enter the current governed fixed responder with its own exact operation/authority or be explicitly refused. Engine retry settings cannot execute a raw provider client around those responders. Full coverage, credential transition and quiescence remain unresolved core gates; deployment original-session/final synchronous freshness is locally qualified for selected paths at runtime4fb99c78, not live or universal coverage. An adapter interface does not close the remaining gates.
 
 ## 2. Identity and envelope (proposed schema `axiom.orchestrator/1`)
 

@@ -1,0 +1,9 @@
+# Read-only readiness prerequisite — local only
+
+New `lib/governance/intelligence/readinessService.ts` uses the actual current paired workspace-reader composition and the existing organization lock to read enrollment presence and validated native credential lease counts. It retains private current-session expiry and cancellation checks through final transaction result delivery. Metadata failures withhold all counts. It does not read provider sources, mint credentials, mutate records or expose an HTTP route.
+
+No trustworthy complete current-runtime coverage artifact exists yet. Therefore every result has `status: unavailable`, `catalogQualification: unavailable`, `legacyQualification: unavailable`, and `executionAuthorized: false`, even with no known blockers. Metadata presence does not validate an active baseline or prove older tokens absent. Activation/readExecutionCoverage remain unchanged and refused/empty.
+
+Evidence:5 unit tests pass;4 actual isolated PostgreSQL journeys pass for coherent pending/live/expired counts, organization-lock wait, original session expiry after commit delivery, malformed history and revoked membership. Pairing/external authority is simulated; real SQL/current membership/session/history are exercised. Red was a missing-module import before new implementation, not behavioral PG RED. Scoped production types and independent source review pass. All owned PG fixtures stopped. Reproduce scripts/run-governance-readiness-postgres.py; raw logs /private/tmp/axiom-readiness-{red,green,pg,types}.log. The earlier whole-suite/production-build receipt binds4fb99c78 before this new file; no newer full-build claim is inferred.
+
+Next substantial boundary: the separately user-approved enrollment-drain implementation. Readiness metadata must never be consumed as activation permission. Full mutation classification, provider effect and legacy/runtime qualification, native workflow and live/human acceptance remain gates.
