@@ -1568,7 +1568,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
       </div>}
       {proposal.toolName === "trigger_aws_deploy" && (
         <div className="mb-4 rounded-lg border border-amber-500/20 p-3 text-xs text-zinc-300">
-          <p className="font-medium">Restart existing task definition only — no source release or image promotion.</p>
+          <p className="font-medium">Restart the current task definition. Mutable image tags and application health are not verified.</p>
           {review?.kind === "ecs_restart_target" ? <dl className="mt-2 space-y-1 break-all">
             {[["Environment", review.environmentId], ["Tier", review.environmentTier], ["Role", review.roleArn], ["Region", review.region], ["Cluster", review.ecsCluster], ["Service", review.ecsService], ["Target revision", review.targetUpdatedAt]].map(([label, value]) => <div key={String(label)}><dt className="inline text-zinc-500">{String(label)}: </dt><dd className="inline">{typeof value === "string" ? value : "Unavailable"}</dd></div>)}
           </dl> : <p className="mt-2 text-amber-300">No bound target review. Create a new proposal; this historical proposal cannot execute.</p>}

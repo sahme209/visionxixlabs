@@ -13,14 +13,14 @@
  * short-lived AWS credentials, scoped to whatever the role's own trust
  * policy allows.
  *
- * Automatic validation + rollback: the workflow captures the task
+ * Service-stability check + attempted task-definition rollback: the workflow captures the task
  * definition the service was running *before* the deploy, forces the
  * new deployment, then waits on ECS's own steady-state check
  * (`aws ecs wait services-stable`) as the health signal. If that wait
  * fails — the new tasks never reach a stable running state — it
  * redeploys the previous task definition and waits for that to
- * stabilize too, so a bad deploy self-heals without a human needing to
- * notice and intervene. This all runs inside the same OIDC-authenticated
+ * stabilize too. This is not proof that a previous image digest was restored:
+ * mutable image tags can resolve differently during restart or rollback. This all runs inside the same OIDC-authenticated
  * job; no AWS credential is ever held outside GitHub Actions, including
  * for the rollback path.
  */
@@ -60,11 +60,14 @@ jobs:
     runs-on: ubuntu-latest
     env:
       ECS_CLUSTER: \${{ inputs.cluster }}
+      AWS_MAX_ATTEMPTS: "1"
       ECS_SERVICE: \${{ inputs.service }}
     steps:
       - name: Configure AWS credentials (OIDC — no stored keys)
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0; reviewed full commit
         with:
+          disable-retry: true
+          translate-env-variables: false
           role-to-assume: \${{ inputs.role_arn }}
           aws-region: \${{ inputs.region }}
 

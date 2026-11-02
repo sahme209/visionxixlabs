@@ -4,6 +4,7 @@ const mocks = vi.hoisted(() => ({
   resolveTenantScopedToken: vi.fn(),
   getFile: vi.fn(),
   resolveGitReference: vi.fn(),
+  observeRestartSource: vi.fn(),
 }));
 
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
@@ -15,6 +16,8 @@ vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({
 }));
 vi.mock("@/lib/connectors/github/githubWriteClient", () => ({ getFile: mocks.getFile, resolveGitReference: mocks.resolveGitReference }));
 
+vi.mock("../agentRestartWorkflowSource",async original=>({...await original<typeof import("../agentRestartWorkflowSource")>(),observeAgentRestartWorkflowSource:mocks.observeRestartSource}));
+import {AGENT_RESTART_WORKFLOW_CONTENT_SHA256} from "../agentRestartWorkflowSource";
 import { agentActionDigest } from "../proposalIntegrity";
 import { prepareProposalArgsForReview } from "../proposalReview";
 
@@ -83,13 +86,17 @@ describe("prepareProposalArgsForReview", () => {
 
 describe("ECS restart proposal server target evidence", () => {
   const row = { id: "target", organizationId: "org-1", provider: "aws", updatedAt: new Date("2026-10-16T00:00:00Z"), roleArn: "arn:aws:iam::123456789012:role/restart", region: "us-east-1", ecsCluster: "cluster", ecsService: "service" };
-  const targetRepo = { environment: { findUnique: vi.fn(async () => ({ id: "env", organizationId: "org-1", tier: "dev" })) }, deploymentTarget: { findUnique: vi.fn(async () => row) } };
+  const deploymentArgs = {repositoryFullName:"acme/widgets",environmentId:"env",sourceKind:"tag",sourceRef:"v1"};
+  const source = {kind:"github_immutable_restart_source_v1",repositoryFullName:"acme/widgets",repositoryId:"1",tagName:"v1",ref:"refs/tags/v1",tagObjectSha:"a".repeat(40),tagObjectType:"commit",sourceCommitSha:"a".repeat(40),releaseId:"2",publishedAt:"2026-10-01T00:00:00.000Z",workflowFile:"axiom-deploy-aws-ecs.yml",workflowBlobSha:"b".repeat(40),workflowContentSha256:AGENT_RESTART_WORKFLOW_CONTENT_SHA256};
+  const installation={id:"connection",githubInstallationId:"123",updatedAt:new Date("2026-10-16T00:00:00.000Z"),revokedAt:null,suspendedAt:null};
+  beforeEach(()=>{vi.clearAllMocks();mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:"scoped-read-token"});mocks.observeRestartSource.mockImplementation(async()=>({source,observedAt:Date.now(),expiresAt:Date.now()+10000}));});
+  const targetRepo = { gitHubInstallation:{findFirst:vi.fn(async()=>installation)},environment: { findUnique: vi.fn(async () => ({ id: "env", organizationId: "org-1", tier: "dev" })) }, deploymentTarget: { findUnique: vi.fn(async () => row) } };
   it("discards forged caller review and captures exact current tenant target", async () => {
-    const result = await prepareProposalArgsForReview("org-1", "trigger_aws_deploy", { environmentId: "env", _review: { kind: "ecs_restart_target", roleArn: "attacker" } }, targetRepo);
-    expect(result).toEqual({ ok: true, args: { environmentId: "env", _review: { kind: "ecs_restart_target", organizationId: "org-1", environmentId: "env", environmentTier: "dev", targetId: "target", provider: "aws", targetUpdatedAt: row.updatedAt.toISOString(), roleArn: row.roleArn, region: row.region, ecsCluster: row.ecsCluster, ecsService: row.ecsService } } });
+    const result = await prepareProposalArgsForReview("org-1", "trigger_aws_deploy", { ...deploymentArgs, _review: { kind: "ecs_restart_target", roleArn: "attacker" } }, targetRepo);
+    expect(result).toEqual({ ok: true, args: { ...deploymentArgs, _restartSource: source, _review: { kind: "ecs_restart_target", organizationId: "org-1", environmentId: "env", environmentTier: "dev", targetId: "target", provider: "aws", targetUpdatedAt: row.updatedAt.toISOString(), roleArn: row.roleArn, region: row.region, ecsCluster: row.ecsCluster, ecsService: row.ecsService } } });
   });
   it("binds captured target data into the existing approval digest", async () => {
-    const prepared = await prepareProposalArgsForReview("org-1", "trigger_aws_deploy", { environmentId: "env" }, targetRepo);
+    const prepared = await prepareProposalArgsForReview("org-1", "trigger_aws_deploy", deploymentArgs, targetRepo);
     if (!prepared.ok) throw new Error("expected server review");
     const digest = (args: Record<string, unknown>) => agentActionDigest({ organizationId: "org-1", conversationId: "conversation", proposedByUserId: "author", toolName: "trigger_aws_deploy", args });
     expect(digest(prepared.args)).not.toBe(digest({ ...prepared.args, _review: { ...(prepared.args._review as object), ecsService: "different" } }));
@@ -100,6 +107,21 @@ describe("ECS restart proposal server target evidence", () => {
   it("does not capture another tenant target", async () => {
     expect(await prepareProposalArgsForReview("other-org", "trigger_aws_deploy", { environmentId: "env" }, targetRepo)).toEqual({ ok: false, error: "deployment_target_review_unavailable" });
   });
+  it("captures source with a pinned contents-only credential and discards model source",async()=>{
+    const controller=new AbortController();const result=await prepareProposalArgsForReview("org-1","trigger_aws_deploy",{...deploymentArgs,_restartSource:{kind:"forged"}},targetRepo,controller.signal);
+    expect(result).toMatchObject({ok:true,args:{_restartSource:source}});expect(mocks.resolveTenantScopedToken).toHaveBeenCalledWith("org-1",{owner:"acme",repo:"widgets"},expect.objectContaining({id:"connection",signal:controller.signal,permissionProfile:"contents_read"}),expect.objectContaining({gitHubInstallation:targetRepo.gitHubInstallation}));
+  });
+  it("refuses installation revocation during the source observation",async()=>{
+    targetRepo.gitHubInstallation.findFirst.mockResolvedValueOnce(installation).mockResolvedValueOnce({...installation,revokedAt:new Date()});
+    expect(await prepareProposalArgsForReview("org-1","trigger_aws_deploy",deploymentArgs,targetRepo)).toEqual({ok:false,error:"deployment_source_review_unavailable"});
+  });
+  it("passes only the scoped token and bounded signal to the fixed observer",async()=>{
+    await prepareProposalArgsForReview("org-1","trigger_aws_deploy",deploymentArgs,targetRepo);
+    expect(mocks.observeRestartSource).toHaveBeenCalledWith({repositoryFullName:"acme/widgets",sourceKind:"tag",sourceRef:"v1",installationToken:"scoped-read-token",signal:expect.any(AbortSignal)});
+  });
+  it("does not create a review with unavailable immutable source",async()=>{mocks.observeRestartSource.mockResolvedValue(null);expect(await prepareProposalArgsForReview("org-1","trigger_aws_deploy",deploymentArgs,targetRepo)).toEqual({ok:false,error:"deployment_source_review_unavailable"});});
+  it("refuses a mutable branch before credentials or provider source reads",async()=>{expect(await prepareProposalArgsForReview("org-1","trigger_aws_deploy",{...deploymentArgs,sourceKind:"branch",sourceRef:"main"},targetRepo)).toEqual({ok:false,error:"deployment_source_review_unavailable"});expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();expect(mocks.observeRestartSource).not.toHaveBeenCalled();});
+
 });
 
 

@@ -83,7 +83,7 @@ export default async function GovernancePage() {
                     <p className="mt-2">Approval records your decision only; it does not open, merge or deploy this pull request. The requester must execute separately after current access and source checks. Branch contents can change; inspect the current changes on GitHub before approving.</p>
                   </details> : <p role="alert" className="mt-3 text-amber-300">No bound pull-request source or valid metadata. Request a new proposal before approval.</p>)}
                   {proposal.toolName === "trigger_aws_deploy" && <div className="mt-3 space-y-1 break-all text-xs text-zinc-400">
-                    <p className="text-amber-300">Restart existing task definition only; no source release or artifact promotion.</p>
+                    <p className="text-amber-300">Restart the current task definition. Mutable image tags and application health are not verified.</p>
                     <p>Repository: {typeof args.repositoryFullName === "string" ? args.repositoryFullName : "Unavailable"} · Workflow ref: {typeof args.sourceRef === "string" ? args.sourceRef : "main"}</p>
                     {review?.kind === "ecs_restart_target" ? [["Environment", review.environmentId], ["Tier", review.environmentTier], ["Role", review.roleArn], ["Region", review.region], ["Cluster", review.ecsCluster], ["Service", review.ecsService], ["Target revision", review.targetUpdatedAt]].map(([label, value]) => <p key={String(label)}>{String(label)}: {typeof value === "string" ? value : "Unavailable"}</p>) : <p>No target review is bound. Request a new proposal.</p>}
                   </div>}

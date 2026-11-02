@@ -2,6 +2,9 @@ import "server-only";
 import {pullRequestProposalReview} from "@/lib/cockpit/pullRequestProposalReview";
 import { isAgentGithubBranchReference } from "@/lib/tauri/agentGithubBranchReview";
 import { captureRestartTarget, type RestartTargetRepo } from "./restartTargetReview";
+import { agentRestartTagSchema, restartWorkflowSourceFromArgs } from "@/lib/tauri/agentRestartWorkflowSource";
+import { observeAgentRestartWorkflowSource, AGENT_RESTART_WORKFLOW_CONTENT_SHA256 } from "./agentRestartWorkflowSource";
+import type { InstallationRepo } from "@/lib/connectors/github/resolveTenantScopedToken";
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
 
 import { getFile, resolveGitReference } from "@/lib/connectors/github/githubWriteClient";
@@ -32,15 +35,35 @@ export async function prepareProposalArgsForReview(
   organizationId: string,
   toolName: string,
   args: Record<string, unknown>,
-  targetRepo?: RestartTargetRepo,
+  targetRepo?: RestartTargetRepo & Partial<InstallationRepo>,
+  signal?: AbortSignal,
 ): Promise<ProposalReviewResult> {
-  const { _review: _untrustedReview, ...sanitizedArgs } = args;
+  const { _review: _untrustedReview, _restartSource: _untrustedSource, ...sanitizedArgs } = args;
+  void _untrustedSource;
   void _untrustedReview;
   if (toolName === "trigger_aws_deploy") {
     if (!targetRepo || typeof args.environmentId !== "string") return { ok: false, error: "deployment_target_review_unavailable" };
     try {
       const review = await captureRestartTarget(targetRepo, organizationId, args.environmentId);
-      return review ? { ok: true, args: { ...sanitizedArgs, _review: review } } : { ok: false, error: "deployment_target_review_unavailable" };
+      if (!review) return { ok: false, error: "deployment_target_review_unavailable" };
+      const unavailable = { ok: false as const, error: "deployment_source_review_unavailable" };
+      const parsed = typeof args.repositoryFullName === "string" ? parseRepositoryFullName(args.repositoryFullName) : null;
+      if (!parsed || args.sourceKind !== "tag" || !agentRestartTagSchema.safeParse(args.sourceRef).success || !targetRepo.gitHubInstallation || signal?.aborted) return unavailable;
+      const installationRepo = { gitHubInstallation: targetRepo.gitHubInstallation };
+      const readInstallation = () => installationRepo.gitHubInstallation.findFirst({ where: { organizationId, status: "active" }, orderBy: { installedAt: "desc" }, select: { id: true, githubInstallationId: true, updatedAt: true, revokedAt: true, suspendedAt: true } });
+      const installation = await readInstallation();
+      if (!installation?.id || !(installation.updatedAt instanceof Date) || !Number.isFinite(installation.updatedAt.getTime()) || installation.revokedAt || installation.suspendedAt) return unavailable;
+      const revision = installation.updatedAt.getTime();
+      const token = await resolveTenantScopedToken(organizationId, parsed, { id: installation.id, githubInstallationId: installation.githubInstallationId, updatedAt: installation.updatedAt, signal, permissionProfile: "contents_read" }, installationRepo);
+      if (!token.ok) return unavailable;
+      const observed = await observeAgentRestartWorkflowSource({ repositoryFullName: args.repositoryFullName as string, sourceKind: "tag", sourceRef: args.sourceRef as string, installationToken: token.token, signal: signal ?? new AbortController().signal });
+      if (!observed || signal?.aborted || observed.expiresAt <= Date.now()) return unavailable;
+      const source = restartWorkflowSourceFromArgs({ ...sanitizedArgs, _restartSource: observed.source });
+      if (!source || source.workflowContentSha256 !== AGENT_RESTART_WORKFLOW_CONTENT_SHA256) return unavailable;
+      const current = await readInstallation();
+      const currentTarget = await captureRestartTarget(targetRepo, organizationId, args.environmentId);
+      if (!current || current.id !== installation.id || current.githubInstallationId !== installation.githubInstallationId || current.updatedAt?.getTime() !== revision || current.revokedAt || current.suspendedAt || JSON.stringify(currentTarget) !== JSON.stringify(review) || signal?.aborted || observed.expiresAt <= Date.now()) return unavailable;
+      return { ok: true, args: { ...sanitizedArgs, _review: review, _restartSource: source } };
     } catch { return { ok: false, error: "deployment_target_review_unavailable" }; }
   }
   if (toolName === "create_github_branch") {

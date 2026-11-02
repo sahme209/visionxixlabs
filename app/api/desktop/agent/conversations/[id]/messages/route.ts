@@ -320,7 +320,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
         return NextResponse.json({ ok: true, data: { reply, proposal: null, usage: outcome.usage ?? null, issue: "request_failed" } });
       }
-      const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma);
+      const reviewed = await prepareProposalArgsForReview(organizationId, outcome.toolName, outcome.args, prisma, streaming?.abortSignal ?? request.signal);
       if (!reviewed.ok) {
         streaming?.abortSignal.throwIfAborted();
         const reply = `I couldn't prepare a trustworthy approval preview, so no action was proposed. ${reviewed.error}`;

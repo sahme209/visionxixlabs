@@ -12,7 +12,7 @@ const proposal = { id: "proposal", toolName: "trigger_aws_deploy", argsJson: { e
 describe("real ECS approval target previews", () => {
   it("desktop displays bound target before expanding details and distinguishes restart", () => {
     const html = renderToStaticMarkup(createElement(ProposalCard, { proposal: { ...proposal, createdAt: proposal.createdAt.toISOString() }, deciding: false, onApprove() {}, onReject() {} }));
-    for (const value of ["actual-cluster", "actual-service", "us-east-1", review.roleArn, "no source release or image promotion"]) expect(html).toContain(value);
+    for (const value of ["actual-cluster", "actual-service", "us-east-1", review.roleArn, "Mutable image tags and application health are not verified"]) expect(html).toContain(value);
   });
   it("desktop identifies historical proposals lacking reviewed target", () => {
     const html = renderToStaticMarkup(createElement(ProposalCard, { proposal: { ...proposal, createdAt: proposal.createdAt.toISOString(), argsJson: { environmentId: "env-prod" } }, deciding: false, onApprove() {}, onReject() {} }));
@@ -22,7 +22,7 @@ describe("real ECS approval target previews", () => {
     mocks.proposals.mockResolvedValue([proposal]);
     const html = renderToStaticMarkup(await GovernancePage());
     expect(mocks.proposals).toHaveBeenCalledWith(expect.objectContaining({ select: expect.objectContaining({ argsJson: true }) }));
-    for (const value of ["actual-cluster", "actual-service", "us-east-1", review.roleArn, "no source release or artifact promotion"]) expect(html).toContain(value);
+    for (const value of ["actual-cluster", "actual-service", "us-east-1", review.roleArn, "Mutable image tags and application health are not verified"]) expect(html).toContain(value);
   });
   it("browser missing target evidence disables approval while keeping rejection available", async () => {
     mocks.proposals.mockResolvedValue([{ ...proposal, argsJson: { environmentId: "env-prod" } }]);

@@ -1,0 +1,13 @@
+# Agent restart source capture — local increment
+
+The approved review/execution separation now has a GET-only workflow-source observer and server proposal capture. This is not execution readiness or full Governance completion.
+
+The observer requires an explicitly named immutable published release/tag, exact repository identity, stable tag/release readback, exact reviewed workflow bytes and recomputed Git blob/content hashes. Reads have fixed endpoints, redirect refusal, cancellation, 8-second overall timeout and bounded bodies; no dispatch, credential issuer or permission callback. Annotated tags are limited to one layer ending in a commit. Proposal capture discards model-supplied source/target evidence, requests a pinned current installation contents-read credential, and rechecks installation and target after observation before saving the approval digest. The actual message request cancellation is propagated.
+
+The workflow template pins configure-aws-credentials v6.3.0 to e1253824e5c10ff9df46874f81ed3ec929e19cfd, disables action retries and CLI retries, and disables legacy environment-variable translation. These workflow changes have only simulated shell/unit validation, not an executed GitHub/vendor action or AWS run. Restart copy now states that mutable image tags and application health are not verified; restarting a task definition does not prove an old image digest or rollback.
+
+Verification: initial source/proposal tests failed as expected; 61 focused checks across proposal capture, source observer, template and displayed preview pass. Earlier workflow shell harness with fake AWS also passed. Current provider, installation/token, human and request boundaries in these tests are simulated. No live GitHub/AWS observation or mutation occurred. Type-check result is recorded separately after completion; do not infer a full build or native acceptance.
+
+Remaining: bind this exact captured source to the final AWS execution policy/lease/dispatch path, use the full tag ref, verify current source and authority immediately before the one POST, add composed PostgreSQL/public HTTP and native review journeys, and perform exact final build/review. The public AWS execution gate remains closed. IAM tag trust/permissions are not expanded. Existing source facts are never execution authority. Broader baseline coverage/enrollment remains incomplete and refuses activation.
+
+Primary sources: https://github.com/aws-actions/configure-aws-credentials/releases/tag/v6.3.0 and https://github.com/aws-actions/configure-aws-credentials/commit/e1253824e5c10ff9df46874f81ed3ec929e19cfd; https://docs.github.com/en/actions/reference/security/secure-use; https://docs.aws.amazon.com/boto3/latest/reference/services/ecs/client/update_service.html.
