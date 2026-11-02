@@ -1,0 +1,10 @@
+{
+  "nodeVersion": "v24.21.0",
+  "source": "eae00077ee130731d7721bc9dd5b544054867b05",
+  "stage": "/private/tmp/axiom-deployment-baseline-production-vpje2mso",
+  "log": "/private/tmp/axiom-merge-enrolled-aggregate-production.log",
+  "archiveSha256": "2ed0870862beb9441224aa176c5c12657a8d8f3e83c767dabdb70f94969c9db6",
+  "verifiedRegularFiles": 5970,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy"
+}
