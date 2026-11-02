@@ -1,8 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 const io = vi.hoisted(() => ({ load: vi.fn(), audit: vi.fn(), execute: vi.fn(), propose: vi.fn(), rules: vi.fn(), update: vi.fn() }));
 vi.mock("../connection", () => ({ loadAirflowClient: io.load }));
-vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: async () => ({ organizationId: "tenant", userId: "owner" }) }));
+vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: async () => ({id:"fixture-session",credentialKind:"desktop_session",capabilities:["deploy:execute"],organizationId:"tenant",userId:"owner"}) }));
 vi.mock("@/lib/db", () => ({ prisma: {
+  desktopSessionRecord:{findUnique:async()=>({id:"fixture-session",userId:"owner",organizationId:"tenant",revokedAt:null,expiresAt:new Date(Date.now()+60000)})},
   airflowAutomation: { groupBy: async () => [{ organizationId: "tenant" }], findMany: io.rules, findFirst: async () => ({ id: "rule" }), update: io.update, updateMany: async (args: unknown) => { await io.update(args); return { count: 1 }; } },
   tenantIntegrationConnection: { findFirst: async () => ({ id: "fixture" }) },
   airflowDagRunSnapshot: { upsert: vi.fn() },
@@ -16,9 +17,11 @@ import { GET, POST } from "@/app/api/desktop/airflow/dags/[dagId]/runs/route";
 import { runAirflowAutomationTick } from "../automationTick";
 import { NextRequest } from "next/server";
 const params = { params: Promise.resolve({ dagId: "daily" }) };
-const client = () => new AirflowClient("https://airflow.example.test", { authMode: "token", token: "synthetic-token" });
+// Explicit transport-only synthetic authority; actual composition has separate tests.
+const FIXTURE_MUTATION={beforeWrite:async()=>{}};
+const client = (mutation=FIXTURE_MUTATION) => new AirflowClient("https://airflow.example.test", { authMode: "token", token: "synthetic-token" },mutation);
 const run = (dag_id = "daily", dag_run_id = "source") => ({ dag_id, dag_run_id, state: "success", logical_date: "2026-10-15T10:00:00Z" });
-beforeEach(() => { vi.resetAllMocks(); vi.unstubAllGlobals(); io.load.mockResolvedValue({ client: client(), connectionId: "fixture", connectionUpdatedAt: new Date(0) }); });
+beforeEach(() => { vi.resetAllMocks(); vi.unstubAllGlobals(); io.load.mockImplementation(async(_org,mutation)=>({client:client(mutation??FIXTURE_MUTATION),connectionId:"fixture",connectionUpdatedAt:new Date(0)})); });
 describe("provider run identity at real client/consumer boundaries", () => {
   it("does not return another DAG's runs through the desktop route", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(Response.json({ dag_runs: [run("other")] })));

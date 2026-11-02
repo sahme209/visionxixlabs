@@ -14,7 +14,10 @@ describe.skipIf(!fixtureFile)("AirflowClient actual owned Airflow engine", () =>
     if (url.protocol !== "http:" || url.hostname !== "127.0.0.1" || !url.port || url.pathname !== "/"
         || !/^axiom_owned_noop_[a-f0-9]{16}$/.test(fixture.dagId)
         || fixture.username !== "axiom_fixture" || fixture.version !== "3.3.2") throw new Error("owned_airflow_binding_required");
-    client = new AirflowClient(fixture.baseUrl, { authMode: "username_password", username: fixture.username, password: fixture.password });
+    client = new AirflowClient(fixture.baseUrl, { authMode: "username_password", username: fixture.username, password: fixture.password }, { beforeWrite: async () => {
+      // Synthetic authority only for the verified private owned no-op fixture.
+      if (!fixture || !/^axiom_owned_noop_[a-f0-9]{16}$/.test(fixture.dagId)) throw Error("owned_airflow_binding_required");
+    } });
     expect(await client.validate()).toMatchObject({ version: fixture.version });
     const dag = (await client.listDags()).find(d => d.dagId === fixture.dagId);
     expect(dag?.tags).toContain("axiom_owned_fixture");

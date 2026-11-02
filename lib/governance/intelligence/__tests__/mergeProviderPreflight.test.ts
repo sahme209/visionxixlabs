@@ -50,3 +50,9 @@ it('refuses issuance when original topology age crosses thirty seconds during fi
  f.ports.assertCurrent.mockResolvedValueOnce(undefined).mockImplementationOnce(async()=>{f.setTime(now+1000);});
  await expect(f.proof.read(plan,new AbortController().signal)).rejects.toThrow('provider_unavailable');
 });
+
+it('retains the original private provider window after single-use consumption without renewing copied metadata',async()=>{
+ const f=fixture(),proof=await f.proof.read(plan,new AbortController().signal),consumed=f.proof.consume(proof,plan);
+ expect(consumed.facts).toEqual({providerAccessVerified:true,verifiedEvidence:true});expect(()=>consumed.assertFresh()).not.toThrow();
+ f.setTime(now+5000);expect(()=>consumed.assertFresh()).toThrow('proof_unavailable');expect(()=>f.proof.consume({...proof},plan)).toThrow('proof_unavailable');
+});

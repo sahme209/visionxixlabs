@@ -86,7 +86,8 @@ export function createGovernanceDeploymentRequestAdmission(scope:DeploymentScope
    if(limits.policyDigest!==saved!.policyDigest||limits.autonomyLevel<4)throw Error('governance_execution_policy_changed');
    const approval=await approvals.readGovernanceDeploymentApproval(tx,scope,actual,saved!.digest,phase==='dispatch'?operationId:undefined);
    if(approval.baselineDigest!==saved!.digest||approval.planDigest!==context.planDigest)throw Error('governance_deployment_authority_changed');
-   return()=>{fresh();const at=Date.now();if(at<started||at>=enrollment.evidenceExpiresAt||at>=Date.parse(approval.expiresAt))throw Error('governance_deployment_final_expired')};
+   const policyExpiresAt=Date.parse(limits.expiresAt),approvalExpiresAt=Date.parse(approval.expiresAt);if(!Number.isFinite(policyExpiresAt)||!Number.isFinite(approvalExpiresAt)||!Number.isFinite(enrollment.evidenceExpiresAt))throw Error('governance_deployment_final_unavailable');
+   return()=>{fresh();const at=Date.now();if(at<started||at>=enrollment.evidenceExpiresAt||at>=policyExpiresAt||at>=approvalExpiresAt)throw Error('governance_deployment_final_expired')};
  }
  return{
   async assert(...args:Parameters<typeof scoped.assert>){const receipt=await scoped.assert(...args);if(args[1]==='before_claim')issued.set(receipt,{digest:receipt.baselineDigest,receiptDigest:sha256ContentHash(receipt),policyDigest});return receipt},

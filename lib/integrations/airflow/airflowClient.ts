@@ -2,6 +2,7 @@ import "server-only";
 
 import { lookup } from "node:dns/promises";
 import { isIP } from "node:net";
+import {withGithubAbort} from "@/lib/connectors/github/boundedGithubRead";
 
 export type AirflowCredential =
   | { authMode: "username_password"; username: string; password: string }
@@ -63,8 +64,12 @@ export async function validateAirflowBaseUrl(value: string): Promise<string> {
   return `${url.origin}${rawPath.replace(/\/$/, "")}`;
 }
 
+export interface AirflowMutationAuthority { beforeWrite(signal:AbortSignal):Promise<void|(()=>void)>;signal?:AbortSignal }
 export class AirflowClient {
-  constructor(private readonly baseUrl: string, private readonly credential: AirflowCredential) {}
+  private readonly mutation?:AirflowMutationAuthority;
+  constructor(private readonly baseUrl: string, private readonly credential: AirflowCredential, mutation?:AirflowMutationAuthority) {
+    this.mutation=mutation?Object.freeze({beforeWrite:mutation.beforeWrite,signal:mutation.signal}):undefined;
+  }
 
   private async authorization(signal?: AbortSignal): Promise<string> {
     signal?.throwIfAborted();
@@ -84,9 +89,14 @@ export class AirflowClient {
   }
 
   private async request(path: string, init: RequestInit = {}): Promise<unknown> {
-    const signal = init.signal ? AbortSignal.any([init.signal, AbortSignal.timeout(20_000)]) : AbortSignal.timeout(20_000);
+    const writing=!['GET','HEAD'].includes((init.method??'GET').toUpperCase());
+    const signal=AbortSignal.any([...(init.signal?[init.signal]:[]),...(this.mutation?.signal?[this.mutation.signal]:[]),AbortSignal.timeout(20_000)]);
+    const beforeWrite=async()=>{signal.throwIfAborted();if(typeof this.mutation?.beforeWrite!=='function')throw Error('airflow_mutation_authority_unavailable');const assertFresh=await withGithubAbort(this.mutation.beforeWrite(signal),signal);signal.throwIfAborted();if(typeof assertFresh==='function')assertFresh()};
     signal.throwIfAborted();
+    if(writing)await beforeWrite();
     const authorization = await this.authorization(signal);
+    signal.throwIfAborted();
+    if(writing)await beforeWrite();
     signal.throwIfAborted();
     const response = await fetch(`${this.baseUrl}/api/v2${path}`, {
       ...init,

@@ -25,6 +25,10 @@ export interface ProviderMergeDependencies {
     assertCurrent?: (tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, binding?: Readonly<Binding>) => Promise<void>;
     readProviderApproval?: (tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, planId: string, executionId?: string) => Promise<unknown>;
     consumeProviderApproval?: (tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, approvalId: string, executionId: string) => Promise<void>;
+    /** DB-only current executor and original independent reviewer/session proof.
+     * Required only by coherent admission methods. Must retain genuine locked
+     * session-expiry/cancellation bounds, never caller flags or copied metadata. */
+    assertCurrentForAdmission?: (tx:ReleaseOperationPlanTransaction,scope:ProviderMergeScope,binding:Readonly<Binding>)=>Promise<()=>void>;
     now?: () => Date;
 }
 export class ProviderMergeUnavailable extends Error {
@@ -41,7 +45,8 @@ function snapshot(row: ReleaseOperationPlanRow) {
         refuse();
     if((state.state==='confirmed')!==(state.receipt!==undefined)||state.receipt&&(state.receipt.repositoryFullName!==p.plan.pullRequest.repositoryFullName||state.receipt.pullRequestNumber!==p.plan.pullRequest.number||state.receipt.headSha!==p.plan.pullRequest.headSha))refuse('provider_receipt_mismatch');return { binding, state: state.state, receipt: state.receipt };
 }
-function executionId(binding: Binding) { return 'release_merge_provider_' + sha256ContentHash({ organizationId: binding.scope.organizationId, planId: binding.planId }); }
+export function releaseProviderMergeExecutionId(organizationId:string,planId:string){return 'release_merge_provider_'+sha256ContentHash({organizationId:id.parse(organizationId),planId:z.string().regex(/^release_plan_[a-f0-9]{64}$/).parse(planId)})}
+function executionId(binding: Binding) { return releaseProviderMergeExecutionId(binding.scope.organizationId,binding.planId); }
 function dto(row:ReleaseOperationPlanRow){const s=snapshot(row);return parseReleaseProviderMergeDto({id:row.id,state:s.state,attemptCount:row.attemptCount,version:row.version,mode:'provider',providerWritePerformed:s.state==='confirmed'?true:['dispatching','unknown'].includes(s.state)?null:false,...(s.receipt?{receipt:s.receipt}:{})})}
 export type ProviderMergeDto = ReturnType<typeof dto>;
 export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, deps: ProviderMergeDependencies) {
@@ -49,6 +54,11 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
         refuse(); return d; };
     async function authority(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, binding?: Binding) { const verify = deps.assertCurrent; if (typeof verify !== 'function')
         return refuse('authority_unavailable'); await verify(tx, scope, binding ? structuredClone(binding) : undefined); }
+    async function admissionAuthority(tx:ReleaseOperationPlanTransaction,scope:ProviderMergeScope,binding:Binding){
+        if(typeof deps.assertCurrentForAdmission!=='function')refuse('admission_authority_unavailable');
+        const fresh=await deps.assertCurrentForAdmission!(tx,structuredClone(scope),structuredClone(binding));if(typeof fresh!=='function')refuse('admission_authority_unavailable');fresh();return fresh;
+    }
+    async function organizationLock(tx:ReleaseOperationPlanTransaction,scope:ProviderMergeScope){await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(scope.organizationId)}))`}
     async function approval(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, planId: string, executionId?: string) { const read = deps.readProviderApproval; if (typeof read !== 'function')
         return refuse('approval_unavailable'); return approvalSchema.parse(await read(tx, scope, planId, executionId)); }
     async function load(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, execution: string) {
@@ -69,7 +79,7 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
     async function live(tx: ReleaseOperationPlanTransaction, binding: Binding, lease?: Date) { const p = planInput(binding), deadline = new Date(Math.min(Date.parse(p.deadlineAt), Date.parse(binding.approval.expiresAt), lease?.getTime() ?? Infinity)); const start = new Date(p.plan.window.startUtc); if (now() < start || now() >= deadline)
         refuse(); const rows = await tx.$queryRaw<Array<{
         live: boolean;
-    }>> `SELECT clock_timestamp() < ${deadline} AND clock_timestamp() >= ${start} AS "live"`; if (rows.length !== 1 || rows[0].live !== true)
+    }>> `SELECT clock_timestamp() < ${deadline} AND clock_timestamp() >= ${start} AS "live"`; if (rows.length !== 1 || rows[0].live !== true || now() < start || now() >= deadline)
         refuse(); }
     async function current(tx: ReleaseOperationPlanTransaction, scope: ProviderMergeScope, binding: Binding, allowConsumed = true) {
         const p = planInput(binding), plan = p.plan;
@@ -148,6 +158,36 @@ export function createReleaseProviderMergeStore(repo: ReleaseOperationPlanRepo, 
         },
         async claim(rawScope: ProviderMergeScope, execution: string) { const scope = scopeSchema.parse(rawScope); return repo.$transaction(async (tx) => { const row = await load(tx, scope, execution), s = snapshot(row); await authority(tx, scope, s.binding); if (s.state !== 'prepared')
             return { claimed: false as const, record: dto(row) }; await current(tx, scope, s.binding); if (typeof deps.consumeProviderApproval !== 'function') refuse('approval_consumption_unavailable'); await deps.consumeProviderApproval!(tx, scope, s.binding.approval.id, row.id); const lease = new Date(Math.min(now().getTime() + 30000, Date.parse(planInput(s.binding).deadlineAt), Date.parse(s.binding.approval.expiresAt))); const updated = await change(tx, row, 'dispatching', { attemptCount: 1, leaseOwner: row.id, leaseExpiresAt: lease }); await current(tx,scope,s.binding); await live(tx,s.binding,lease); return { claimed: true as const, record: dto(updated), plan:structuredClone(planInput(s.binding).plan),leaseExpiresAt: lease }; }); },
+        /** Existing claim invariants plus admission in the same org-first locks.
+         * No provider work may run in either mandatory private proof callback. */
+        async claimWithAdmission(rawScope:ProviderMergeScope,execution:string,verifyLocked:(tx:ReleaseOperationPlanTransaction,plan:ReturnType<typeof planInput>['plan'])=>Promise<()=>void>){
+            const scope=scopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse('admission_unavailable');
+            return repo.$transaction(async tx=>{await organizationLock(tx,scope);const row=await load(tx,scope,execution),s=snapshot(row);await authority(tx,scope,s.binding);
+                if(s.state!=='prepared')return{claimed:false as const,record:dto(row)};
+                await current(tx,scope,s.binding,false);const authorityFresh=await admissionAuthority(tx,scope,s.binding),plan=structuredClone(planInput(s.binding).plan),admissionFresh=await verifyLocked(tx,plan);
+                if(typeof admissionFresh!=='function')refuse('admission_unavailable');authorityFresh();admissionFresh();
+                if(typeof deps.consumeProviderApproval!=='function')refuse('approval_consumption_unavailable');await deps.consumeProviderApproval!(tx,scope,s.binding.approval.id,row.id);await current(tx,scope,s.binding);authorityFresh();admissionFresh();
+                const lease=new Date(Math.min(now().getTime()+30000,Date.parse(planInput(s.binding).deadlineAt),Date.parse(s.binding.approval.expiresAt))),updated=await change(tx,row,'dispatching',{attemptCount:1,leaseOwner:row.id,leaseExpiresAt:lease});
+                await current(tx,scope,s.binding);await live(tx,s.binding,lease);authorityFresh();admissionFresh();
+                return{claimed:true as const,record:dto(updated),plan,leaseExpiresAt:lease};
+            });
+        },
+        /** Final authority, policy and session proofs retain one coherent DB
+         * boundary through the final original lease clock immediately before PUT. */
+        async beforeDispatchWithAdmission(rawScope:ProviderMergeScope,execution:string,verifyLocked:(tx:ReleaseOperationPlanTransaction,plan:ReturnType<typeof planInput>['plan'])=>Promise<()=>void>){
+            const scope=scopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse('admission_unavailable');
+            let finalFresh:(()=>void)|undefined;
+            const plan=await repo.$transaction(async tx=>{await organizationLock(tx,scope);const row=await load(tx,scope,execution),s=snapshot(row);if(s.state!=='dispatching'||row.leaseOwner!==row.id)refuse();
+                await current(tx,scope,s.binding);const authorityFresh=await admissionAuthority(tx,scope,s.binding),plan=structuredClone(planInput(s.binding).plan),admissionFresh=await verifyLocked(tx,plan);
+                if(typeof admissionFresh!=='function')refuse('admission_unavailable');
+                const start=Date.parse(plan.window.startUtc),end=Math.min(Date.parse(planInput(s.binding).deadlineAt),Date.parse(s.binding.approval.expiresAt),row.leaseExpiresAt!.getTime());
+                finalFresh=()=>{authorityFresh();admissionFresh();const at=now().getTime();if(at<start||at>=end)refuse()};
+                await live(tx,s.binding,row.leaseExpiresAt!);finalFresh();return plan;
+            });
+            // COMMIT/result delivery is another await. Keep proofs private and
+            // recheck their original windows without resetting the consumed run.
+            if(!finalFresh)refuse('admission_unavailable');finalFresh!();return plan;
+        },
         async beforeDispatch(rawScope: ProviderMergeScope, execution: string) { const scope = scopeSchema.parse(rawScope); return repo.$transaction(async (tx) => { const row = await load(tx, scope, execution), s = snapshot(row); if (s.state !== 'dispatching')
             refuse(); await current(tx, scope, s.binding); await live(tx, s.binding, row.leaseExpiresAt!); return structuredClone(planInput(s.binding).plan); }); },
         async finish(rawScope: ProviderMergeScope, execution: string, result: {

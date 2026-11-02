@@ -26,6 +26,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
+import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
 import {
   readIntegrationConfig,
   resolveCredentialReferenceAsync,
@@ -86,6 +87,7 @@ function buildIssueBody(payload: ActionPayload): string {
 async function executeGithubIssue(
   integration: GitHubIntegration,
   payload: ActionPayload,
+  assertUnenrolled: () => Promise<void>,
 ): Promise<ExecutionResult> {
   if (!integration.enabled) {
     return { status: "skipped", externalRef: null, detail: "github integration paused", errorCode: "integration_paused" };
@@ -93,6 +95,7 @@ async function executeGithubIssue(
   if (!integration.repo || !integration.repo.includes("/")) {
     return { status: "failed", externalRef: null, detail: "github repo not configured", errorCode: "repo_missing" };
   }
+  await assertUnenrolled();
   const resolved = await resolveCredentialReferenceAsync(integration.patReference);
   if (!resolved.ok) {
     return {
@@ -107,6 +110,7 @@ async function executeGithubIssue(
   const labels = [integration.issueLabel, ...(payload.extraLabels ?? [])].filter(Boolean).slice(0, 10);
   const url = `https://api.github.com/repos/${integration.repo}/issues`;
 
+  await assertUnenrolled();
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -154,6 +158,7 @@ async function executeGithubIssue(
 async function executeLinearTicket(
   integration: LinearIntegration,
   payload: ActionPayload,
+  assertUnenrolled: () => Promise<void>,
 ): Promise<ExecutionResult> {
   if (!integration.enabled) {
     return { status: "skipped", externalRef: null, detail: "linear integration paused", errorCode: "integration_paused" };
@@ -161,6 +166,7 @@ async function executeLinearTicket(
   if (!integration.teamId) {
     return { status: "failed", externalRef: null, detail: "linear teamId not configured", errorCode: "team_missing" };
   }
+  await assertUnenrolled();
   const resolved = await resolveCredentialReferenceAsync(integration.apiKeyReference);
   if (!resolved.ok) {
     return {
@@ -185,6 +191,7 @@ async function executeLinearTicket(
       issue { id identifier url }
     }
   }`;
+  await assertUnenrolled();
   try {
     const res = await fetch("https://api.linear.app/graphql", {
       method: "POST",
@@ -245,6 +252,7 @@ async function executeLinearTicket(
 async function executeSlackPost(
   integration: SlackActionIntegration,
   payload: ActionPayload,
+  assertUnenrolled: () => Promise<void>,
 ): Promise<ExecutionResult> {
   if (!integration.enabled) {
     return { status: "skipped", externalRef: null, detail: "slack actions paused", errorCode: "integration_paused" };
@@ -252,6 +260,7 @@ async function executeSlackPost(
   if (!integration.webhookUrl || !integration.webhookUrl.startsWith("https://hooks.slack.com/")) {
     return { status: "failed", externalRef: null, detail: "slack webhook url invalid", errorCode: "webhook_invalid" };
   }
+  await assertUnenrolled();
   try {
     const res = await fetch(integration.webhookUrl, {
       method: "POST",
@@ -346,85 +355,27 @@ async function persistExecution(
   return slug;
 }
 
-/**
- * Decide whether a signed approval packet should fan out to the
- * action executor. Pure rule, so the gate is testable without DB.
- *
- * Rule: only dispatch when the packet was actually signed (decision=
- * "approve") AND it's high-stakes — broader than workspace OR not
- * fully reversible. Fully-reversible workspace-only auto-approvals
- * would flood the channel.
- */
-export function shouldDispatchApproval(p: {
+/** Model recommendations are proposal data, never a signed human decision.
+ * This legacy packet-only interface has no trusted approval/execution issuer. */
+export function shouldDispatchApproval(_packet: {
   recommendedDecision: string;
   impactRadius: string;
   reversibility: string;
 }): { dispatch: boolean; reason: string } {
-  if (p.recommendedDecision !== "approve") {
-    return { dispatch: false, reason: `decision=${p.recommendedDecision}` };
-  }
-  const broaderThanWorkspace = p.impactRadius === "tenant" || p.impactRadius === "org" || p.impactRadius === "global";
-  const notFullyReversible = p.reversibility !== "fully";
-  if (!broaderThanWorkspace && !notFullyReversible) {
-    return { dispatch: false, reason: "low_stakes_workspace_reversible" };
-  }
-  return { dispatch: true, reason: "high_stakes_signed" };
+  return { dispatch: false, reason: "human_execution_authority_required" };
 }
 
-/**
- * Fan out an approval packet to every configured integration.
- * Each leg is best-effort — a Slack 500 must not block the GitHub
- * issue from opening, and a missing integration must not be an error.
- */
+/** Kept fail-closed for legacy callers: packet generation must not fan out writes.
+ * Explicit authorized integration routes use dispatchAction independently. */
 export async function dispatchApprovalActions(
-  organizationId: string,
-  packet: {
-    slug: string;
-    title: string;
-    executiveSummary: string;
-    proposalSummary: string;
-    impactRadius: string;
-    decisionAuthority: string;
-    reversibility: string;
-    recommendedDecision: string;
-    approvalChecklist: ReadonlyArray<string>;
+  _organizationId: string,
+  _packet: {
+    slug: string; title: string; executiveSummary: string; proposalSummary: string;
+    impactRadius: string; decisionAuthority: string; reversibility: string;
+    recommendedDecision: string; approvalChecklist: ReadonlyArray<string>;
   },
 ): Promise<ReadonlyArray<{ kind: ActionKind; result: ExecutionResult; executionSlug: string }>> {
-  const gate = shouldDispatchApproval(packet);
-  if (!gate.dispatch) return [];
-
-  const upstreamRef = `${ACTION_EXECUTION_TARGET_KIND}:${packet.slug}`;
-  const checklist = packet.approvalChecklist.length === 0
-    ? ""
-    : ["", "Approval checklist:", ...packet.approvalChecklist.map((c) => `- [ ] ${c}`)].join("\n");
-  const body = [
-    `**Decision:** ${packet.recommendedDecision} (authority: ${packet.decisionAuthority})`,
-    `**Impact:** ${packet.impactRadius} · **Reversibility:** ${packet.reversibility}`,
-    "",
-    "**Executive summary:**",
-    packet.executiveSummary,
-    "",
-    "**Proposal:**",
-    packet.proposalSummary,
-    checklist,
-  ].filter(Boolean).join("\n");
-
-  const sharedPayload: ActionPayload = {
-    title: `[approver] ${packet.title}`,
-    body,
-    upstreamRef,
-  };
-
-  const results: Array<{ kind: ActionKind; result: ExecutionResult; executionSlug: string }> = [];
-  const [github, slack, linear] = await Promise.all([
-    dispatchAction(organizationId, "github_issue", sharedPayload),
-    dispatchAction(organizationId, "slack_action_post", sharedPayload),
-    dispatchAction(organizationId, "linear_ticket", sharedPayload),
-  ]);
-  results.push({ kind: "github_issue", ...github });
-  results.push({ kind: "slack_action_post", ...slack });
-  results.push({ kind: "linear_ticket", ...linear });
-  return results;
+  return [];
 }
 
 /**
@@ -436,33 +387,40 @@ export async function dispatchAction(
   kind: ActionKind,
   payload: ActionPayload,
 ): Promise<{ result: ExecutionResult; executionSlug: string }> {
-  const config = await readIntegrationConfig(organizationId);
+  // Refusal only: absence does not supply caller identity or human approval.
+  // Existing explicit routes retain their current integrationMutationContext.
+  const assertUnenrolled = () => assertNoGovernanceEnrollmentForMutation(prisma, organizationId);
+  const refused: ExecutionResult = { status: "failed", externalRef: null, detail: "governance execution coverage unavailable", errorCode: "governance_execution_coverage_unavailable" };
+  try { await assertUnenrolled(); } catch { return { result: refused, executionSlug: "" }; }
   let result: ExecutionResult;
-  switch (kind) {
-    case "github_issue":
-      if (!config.github) {
-        result = { status: "skipped", externalRef: null, detail: "github integration not configured", errorCode: "not_configured" };
-      } else {
-        result = await executeGithubIssue(config.github, payload);
-      }
-      break;
-    case "slack_action_post":
-      if (!config.slackActions) {
-        result = { status: "skipped", externalRef: null, detail: "slack actions integration not configured", errorCode: "not_configured" };
-      } else {
-        result = await executeSlackPost(config.slackActions, payload);
-      }
-      break;
-    case "linear_ticket":
-      if (!config.linear) {
-        result = { status: "skipped", externalRef: null, detail: "linear integration not configured", errorCode: "not_configured" };
-      } else {
-        result = await executeLinearTicket(config.linear, payload);
-      }
-      break;
-    default:
-      result = { status: "failed", externalRef: null, detail: `unknown action kind: ${String(kind)}`, errorCode: "unknown_kind" };
-  }
+  try {
+    const config = await readIntegrationConfig(organizationId);
+    switch (kind) {
+      case "github_issue":
+        if (!config.github) {
+          result = { status: "skipped", externalRef: null, detail: "github integration not configured", errorCode: "not_configured" };
+        } else {
+          result = await executeGithubIssue(config.github, payload, assertUnenrolled);
+        }
+        break;
+      case "slack_action_post":
+        if (!config.slackActions) {
+          result = { status: "skipped", externalRef: null, detail: "slack actions integration not configured", errorCode: "not_configured" };
+        } else {
+          result = await executeSlackPost(config.slackActions, payload, assertUnenrolled);
+        }
+        break;
+      case "linear_ticket":
+        if (!config.linear) {
+          result = { status: "skipped", externalRef: null, detail: "linear integration not configured", errorCode: "not_configured" };
+        } else {
+          result = await executeLinearTicket(config.linear, payload, assertUnenrolled);
+        }
+        break;
+      default:
+        result = { status: "failed", externalRef: null, detail: `unknown action kind: ${String(kind)}`, errorCode: "unknown_kind" };
+    }
+  } catch { result = refused; }
   const executionSlug = await persistExecution(organizationId, kind, payload, result);
   return { result, executionSlug };
 }

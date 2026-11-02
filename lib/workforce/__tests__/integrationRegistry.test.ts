@@ -328,52 +328,11 @@ describe("resolveCredentialReferenceAsync :: env + scheme dispatch", () => {
 });
 
 describe("shouldDispatchApproval", () => {
-  const base = {
-    recommendedDecision: "approve",
-    impactRadius: "org",
-    reversibility: "irreversible",
-  };
-
-  it("dispatches when signed + org impact + irreversible", () => {
-    const r = shouldDispatchApproval(base);
-    expect(r.dispatch).toBe(true);
-    expect(r.reason).toBe("high_stakes_signed");
-  });
-  it("dispatches when signed + tenant impact (even if fully reversible)", () => {
-    const r = shouldDispatchApproval({ ...base, impactRadius: "tenant", reversibility: "fully" });
-    expect(r.dispatch).toBe(true);
-  });
-  it("dispatches when signed + workspace impact but irreversible", () => {
-    const r = shouldDispatchApproval({ ...base, impactRadius: "workspace", reversibility: "irreversible" });
-    expect(r.dispatch).toBe(true);
-  });
-  it("does not dispatch when decision is not approve", () => {
-    expect(shouldDispatchApproval({ ...base, recommendedDecision: "reject" }).dispatch).toBe(false);
-    expect(shouldDispatchApproval({ ...base, recommendedDecision: "revise" }).dispatch).toBe(false);
-    expect(shouldDispatchApproval({ ...base, recommendedDecision: "escalate" }).dispatch).toBe(false);
-  });
-  it("does not dispatch on workspace + fully-reversible (low stakes)", () => {
-    const r = shouldDispatchApproval({
-      recommendedDecision: "approve",
-      impactRadius: "workspace",
-      reversibility: "fully",
-    });
-    expect(r.dispatch).toBe(false);
-    expect(r.reason).toBe("low_stakes_workspace_reversible");
-  });
-  it("dispatches on workspace + partially-reversible (partial == not fully)", () => {
-    const r = shouldDispatchApproval({
-      recommendedDecision: "approve",
-      impactRadius: "workspace",
-      reversibility: "partially",
-    });
-    expect(r.dispatch).toBe(true);
-  });
-  it("dispatches on global impact regardless of reversibility", () => {
-    expect(shouldDispatchApproval({
-      recommendedDecision: "approve",
-      impactRadius: "global",
-      reversibility: "fully",
-    }).dispatch).toBe(true);
+  it.each(["workspace", "tenant", "org", "global"])("never treats a model recommendation for %s as human execution authority", impactRadius => {
+    for (const recommendedDecision of ["approve", "reject", "revise", "escalate"]) {
+      for (const reversibility of ["fully", "partially", "irreversible"]) {
+        expect(shouldDispatchApproval({recommendedDecision,impactRadius,reversibility})).toEqual({dispatch:false,reason:"human_execution_authority_required"});
+      }
+    }
   });
 });

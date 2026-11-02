@@ -7,7 +7,6 @@ import {
   persistApprovalPacket,
   APPROVER_TARGET_KIND,
 } from "@/lib/workforce/domains/approverEngineer";
-import { dispatchApprovalActions } from "@/lib/workforce/domains/actionExecutor";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
@@ -66,48 +65,8 @@ export async function POST(req: Request) {
     },
   });
 
-  // Phase 646: signed high-stakes packets fan out to configured
-  // integrations (GitHub issue, Slack post). The gate inside
-  // dispatchApprovalActions skips when stakes are low or the packet
-  // wasn't signed. Each integration leg is best-effort; failures audit
-  // but do not block the operator redirect.
-  if (packet.outcome !== "error") {
-    try {
-      const dispatched = await dispatchApprovalActions(org, packet);
-      for (const d of dispatched) {
-        void auditRecord({
-          organizationId: ids.organization(org),
-          actorUserId: ctx.userId ? ids.user(String(ctx.userId)) : undefined,
-          action: d.result.status === "executed"
-            ? "engineer.action_executed"
-            : d.result.status === "skipped"
-              ? "engineer.action_attempted"
-              : "engineer.action_execution_failed",
-          outcome: d.result.status === "executed"
-            ? "success"
-            : d.result.status === "skipped"
-              ? "success"
-              : "failure",
-          entityRef: `engineer:approver_engineer:dispatch:${d.kind}`,
-          correlationId,
-          detail: {
-            action: "engineer.approver_engineer.dispatch",
-            kind: d.kind,
-            packetSlug: packet.slug,
-            executionSlug: d.executionSlug,
-            status: d.result.status,
-            externalRef: d.result.externalRef,
-            errorCode: d.result.errorCode,
-          },
-        });
-      }
-    } catch (err) {
-      console.warn(
-        "[approver/run-domain] dispatch failure:",
-        err instanceof Error ? err.message : err,
-      );
-    }
-  }
+  // Generating a recommendation is not a human approval or execution request.
+  // Preserve the packet for review without dispatching integration writes.
 
   if (packet.slug) {
     return NextResponse.redirect(new URL(`/dashboard/agi-memory/${encodeURIComponent(`${APPROVER_TARGET_KIND}:${packet.slug}`)}`, req.url), 303);

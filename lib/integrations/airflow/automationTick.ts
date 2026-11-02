@@ -46,15 +46,19 @@ export async function runAirflowAutomationTick(now = new Date()): Promise<{ orga
               id: rule.id, organizationId: group.organizationId, enabled: true,
               connectionId, updatedAt: rule.updatedAt, nextScheduledAt: rule.nextScheduledAt,
             };
-            const currentRule = await prisma.airflowAutomation.findFirst({ where: ruleBinding, select: { id: true } });
-            if (!currentRule) { totals.errors += 1; continue; }
-            const currentConnection = await prisma.tenantIntegrationConnection.findFirst({ where: {
-              id: connectionId, organizationId: group.organizationId, provider: "airflow",
-              status: "active", updatedAt: connectionUpdatedAt,
-            }, select: { id: true } });
-            if (!currentConnection) { totals.errors += 1; continue; }
+            const beforeWrite=async(signal:AbortSignal)=>{
+              signal.throwIfAborted();
+              const currentRule=await prisma.airflowAutomation.findFirst({where:ruleBinding,select:{id:true}});
+              if(!currentRule||currentRule.id!==rule.id)throw Error('airflow_automation_changed');
+              const currentConnection=await prisma.tenantIntegrationConnection.findFirst({where:{id:connectionId,organizationId:group.organizationId,provider:'airflow',status:'active',updatedAt:connectionUpdatedAt},select:{id:true}});
+              if(!currentConnection||currentConnection.id!==connectionId)throw Error('airflow_connection_changed');signal.throwIfAborted();
+            };
+            const mutationSignal=AbortSignal.timeout(25000);
+            await beforeWrite(mutationSignal);
+            const writer=await loadAirflowClient(group.organizationId,{beforeWrite,signal:mutationSignal});
+            if(writer.connectionId!==connectionId||writer.connectionUpdatedAt.getTime()!==connectionUpdatedAt.getTime())throw Error('airflow_connection_changed');
             const runId = scheduledDagRunId({ organizationId: group.organizationId, automationId: rule.id, dagId: rule.dagId, scheduledAt: rule.nextScheduledAt ?? rule.createdAt });
-            const triggered = await client.triggerDag(rule.dagId, { axiom_automation_id: rule.id }, runId);
+            const triggered = await writer.client.triggerDag(rule.dagId, { axiom_automation_id: rule.id }, runId);
             await persistRun(group.organizationId, connectionId, triggered);
             const advanced = await prisma.airflowAutomation.updateMany({ where: ruleBinding, data: { nextScheduledAt: nextCronOccurrence(rule.scheduleCron, now), lastEvaluatedAt: now } });
             // The provider may already have accepted this deterministic run.

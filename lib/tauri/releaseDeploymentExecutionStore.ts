@@ -78,15 +78,20 @@ export function createReleaseDeploymentExecutionStore(repo:ReleaseOperationPlanR
   * No provider I/O is allowed in this callback. */
  async beforeDispatchWithAdmission(rawScope:DeploymentScope,id:string,verifyLocked:(tx:Tx,plan:Readonly<DeploymentPlan>)=>Promise<()=>void>){
   const s=deploymentScopeSchema.parse(rawScope);if(typeof verifyLocked!=='function')refuse();
-  return repo.$transaction(async tx=>{
+  let finalFresh:(()=>void)|undefined;
+  const plan=await repo.$transaction(async tx=>{
    // Match baseline activation's lock order before any participant/source/pointer
    // lock can be acquired by existing current-authority composition.
    await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
    const r=await load(tx,s,id),{i,v}=unpack(r,s);if(v.state!=='dispatching')refuse();
    await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);
    const assertFresh=await verifyLocked(tx,structuredClone(i.plan));if(typeof assertFresh!=='function')refuse();
-   await live(tx,i.plan,i.approval,r.leaseExpiresAt!);assertFresh();return structuredClone(i.plan);
+   const start=Date.parse(i.plan.windowStart),end=Math.min(Date.parse(i.plan.expiresAt),Date.parse(i.approval.expiresAt),r.leaseExpiresAt!.getTime());
+   finalFresh=()=>{assertFresh();const at=now().getTime();if(at<start||at>=end)refuse()};
+   await live(tx,i.plan,i.approval,r.leaseExpiresAt!);finalFresh();return structuredClone(i.plan);
   });
+  // A delayed COMMIT/result must not renew the original private proof window.
+  if(!finalFresh)refuse();finalFresh!();return plan;
  },
  async finish(rawScope:DeploymentScope,id:string,rawResult:DeploymentResult){const s=deploymentScopeSchema.parse(rawScope),result=deploymentResultSchema.parse(rawResult);return repo.$transaction(async tx=>{const r=await load(tx,s,id),{i,v}=unpack(r,s);await authority(tx,s,i.plan,i.approval);if(v.state!=='dispatching')return dto(r,s);if(result.state==='accepted')receiptBinding(i.plan,result.receipt);if(result.state!=='unknown')await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);const updated=await change(tx,r,result.state,result.state==='accepted'?result.receipt:undefined);if(result.state!=='unknown')await current(tx,s,i.plan,i.approval,r.leaseExpiresAt!);else await authority(tx,s,i.plan,i.approval);return dto(updated,s)})},
  /** Server-only provenance reader. Never claims, consumes approval or dispatches. */

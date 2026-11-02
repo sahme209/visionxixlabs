@@ -33,6 +33,11 @@ export function createMergeProviderPreflight(ports:{
  function bound(plan:ReleaseOperationPlan,v:{organizationId:string;connectionId:string;connectionRevision:string;repositoryFullName:string}){
   return v.organizationId===plan.organizationId&&v.connectionId===plan.connectionId&&v.connectionRevision===plan.connectionRevision&&v.repositoryFullName===plan.pullRequest.repositoryFullName;
  }
+ function consume(proof:object,raw:Readonly<ReleaseOperationPlan>){
+  const saved=proofs.get(proof),plan=parseReleaseOperationPlan(raw);proofs.delete(proof);
+  const assertFresh=()=>{const at=now();if(!saved||!Number.isFinite(at)||at<saved.observedAt||at>=saved.expiresAt||saved.planDigest!==sha256ContentHash(plan)||!bound(plan,saved.credential)||saved.credential.expiresAt<=at+20000)throw Error('governance_merge_provider_proof_unavailable')};
+  assertFresh();return Object.freeze({facts:Object.freeze({providerAccessVerified:true as const,verifiedEvidence:bound(plan,saved!.support)&&saved!.support.pullRequestNumber===plan.pullRequest.number&&saved!.support.headSha===plan.pullRequest.headSha&&saved!.support.baseSha===plan.pullRequest.baseSha}),assertFresh});
+ }
  return{
   async read(raw:Readonly<ReleaseOperationPlan>,parent:AbortSignal){
    const plan=parseReleaseOperationPlan(raw),signal=AbortSignal.any([parent,AbortSignal.timeout(15000)]);
@@ -50,13 +55,7 @@ export function createMergeProviderPreflight(ports:{
    proofs.set(proof,{planDigest:proof.planDigest,observedAt:at,expiresAt:proof.expiresAt,credential,support});
    return proof;
   },
-  facts(proof:object,raw:Readonly<ReleaseOperationPlan>){
-   const saved=proofs.get(proof),plan=parseReleaseOperationPlan(raw),at=now();proofs.delete(proof);
-   if(!saved||!Number.isFinite(at)||at<saved.observedAt||at>=saved.expiresAt||saved.planDigest!==sha256ContentHash(plan))throw Error('governance_merge_provider_proof_unavailable');
-   return{
-    providerAccessVerified:bound(plan,saved.credential)&&saved.credential.contentsWrite&&saved.credential.pullRequestsRead&&saved.credential.expiresAt>at+20000,
-    verifiedEvidence:bound(plan,saved.support)&&saved.support.pullRequestNumber===plan.pullRequest.number&&saved.support.headSha===plan.pullRequest.headSha&&saved.support.baseSha===plan.pullRequest.baseSha,
-   };
-  },
+  facts:(proof:object,raw:Readonly<ReleaseOperationPlan>)=>consume(proof,raw).facts,
+  consume,
  };
 }

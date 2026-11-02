@@ -20,7 +20,7 @@ function fixture() {
     const repo: any = { durableAgentWorkflow: { findFirst: vi.fn(async ({ where }: any) => structuredClone(rows.find(r => r.id === where.id && r.organizationId === where.organizationId) ?? null)), create: vi.fn(async ({ data }: any) => { if (rows.some(r => r.id === data.id))
                 throw Error('duplicate'); rows.push(structuredClone(data)); return structuredClone(data); }), updateMany: vi.fn(async ({ where, data }: any) => { const row = rows.find(r => Object.entries(where).every(([k, v]: any) => k === 'inputJson' ? sha256ContentHash(r[k]) === sha256ContentHash(v.equals) : v instanceof Date ? r[k]?.getTime() === v.getTime() : r[k] === v)); if (!row)
                 return { count: 0 }; for (const [k, v] of Object.entries(data) as any)
-                row[k] = v && typeof v === 'object' && 'increment' in v ? row[k] + v.increment : structuredClone(v); return { count: 1 }; }) }, durableAgentWorkflowEvent: { findMany: vi.fn(async ({ where }: any) => structuredClone(where.workflowRunId === planId ? planEvents : events.filter(e => e.workflowRunId === where.workflowRunId))), create: vi.fn(async ({ data }: any) => { events.push(structuredClone(data)); return data; }) }, $queryRaw: vi.fn(async (sql: TemplateStringsArray, ...values: any[]) => { const q = sql.join(''); if (q.includes('clock_timestamp'))
+                row[k] = v && typeof v === 'object' && 'increment' in v ? row[k] + v.increment : structuredClone(v); return { count: 1 }; }) }, durableAgentWorkflowEvent: { findMany: vi.fn(async ({ where }: any) => structuredClone(where.workflowRunId === planId ? planEvents : events.filter(e => e.workflowRunId === where.workflowRunId))), create: vi.fn(async ({ data }: any) => { events.push(structuredClone(data)); return data; }) }, $queryRaw: vi.fn(async (sql: TemplateStringsArray, ...values: any[]) => { const q = sql.join(''); if(q.includes('pg_advisory'))return[{locked:1}]; if (q.includes('clock_timestamp'))
             return [{ live: now.getTime() >= Date.parse(intake.windowStartUtc) && now.getTime() < new Date(values[0]).getTime() }]; if (q.includes('TauriDeploymentRequest'))
             return structuredClone([release]); if (q.includes('GitHubInstallation'))
             return structuredClone([connection]); if (q.includes('OrgMembership'))
@@ -70,4 +70,28 @@ it('prepared validation refuses changed identity and every consumed operation',a
  await expect(f.store.validatePrepared({...f.scope,sessionId:'other'},p.id)).rejects.toThrow();
  await f.store.claim(f.scope,p.id);await expect(f.store.validatePrepared(f.scope,p.id)).rejects.toThrow();
  await f.store.finish(f.scope,p.id,{state:'unknown'});await expect(f.store.validatePrepared(f.scope,p.id)).rejects.toThrow();
+});
+it('coherent merge claim refuses changed admission before consuming approval or attempt',async()=>{
+ const f=fixture(),prepared=await f.store.prepare(f.scope,f.planId);f.deps.assertCurrentForAdmission=vi.fn(async()=>()=>{});
+ await expect(f.store.claimWithAdmission(f.scope,prepared.id,async()=>{throw Error('numeric_changed')})).rejects.toThrow('numeric_changed');
+ expect(f.rows[0]).toMatchObject({currentStep:'prepared',attemptCount:0});expect(f.deps.consumeProviderApproval).not.toHaveBeenCalled();
+});
+it('coherent merge requires a private current session closure and rolls all durable work back on late expiry',async()=>{
+ const f=fixture(),prepared=await f.store.prepare(f.scope,f.planId);let valid=true;f.deps.assertCurrentForAdmission=vi.fn(async()=>()=>{if(!valid)throw Error('session_expired')});
+ const original=f.repo.durableAgentWorkflowEvent.create.getMockImplementation();f.repo.durableAgentWorkflowEvent.create.mockImplementation(async(a:any)=>{const result=await original(a);valid=false;return result});
+ await expect(f.store.claimWithAdmission(f.scope,prepared.id,async()=>()=>{})).rejects.toThrow('session_expired');expect(f.rows[0]).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});
+});
+it('coherent merge final dispatch holds original authority and policy in one transaction through the final clock',async()=>{
+ const f=fixture(),prepared=await f.store.prepare(f.scope,f.planId);await f.store.claim(f.scope,prepared.id);f.deps.assertCurrentForAdmission=vi.fn(async()=>()=>{});
+ let checked=false;expect(await f.store.beforeDispatchWithAdmission(f.scope,prepared.id,async(tx,p)=>{expect(tx).toBe(f.repo);expect(p).toEqual(f.plan.inputJson.plan);return()=>{checked=true}})).toEqual(f.plan.inputJson.plan);expect(checked).toBe(true);
+ await expect(f.store.beforeDispatchWithAdmission(f.scope,prepared.id,async()=>{throw Error('source_changed')})).rejects.toThrow('source_changed');expect(f.rows[0].attemptCount).toBe(1);
+});
+it('coherent merge does not treat a legacy void authority callback as current session proof',async()=>{
+ const f=fixture(),prepared=await f.store.prepare(f.scope,f.planId);await expect(f.store.claimWithAdmission(f.scope,prepared.id,async()=>()=>{})).rejects.toThrow();expect(f.rows[0].attemptCount).toBe(0);
+});
+it.each(['authority','admission'])('merge postcommit result delivery cannot outlive its private %s proof',async kind=>{
+ const f=fixture(),prepared=await f.store.prepare(f.scope,f.planId);await f.store.claim(f.scope,prepared.id);let live=true;
+ f.deps.assertCurrentForAdmission=vi.fn(async()=>()=>{if(!live&&kind==='authority')throw Error('postcommit_session_expired')});
+ const original=f.repo.$transaction;f.repo.$transaction=async(fn:any)=>{const result=await original(fn);live=false;return result};
+ await expect(f.store.beforeDispatchWithAdmission(f.scope,prepared.id,async()=>()=>{if(!live&&kind==='admission')throw Error('postcommit_provider_expired')})).rejects.toThrow(kind==='authority'?'postcommit_session_expired':'postcommit_provider_expired');expect(f.rows[0].attemptCount).toBe(1);
 });

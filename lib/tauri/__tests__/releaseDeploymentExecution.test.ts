@@ -77,3 +77,8 @@ it('claim admission preserves one consumed attempt and does not rerun admission 
  const claims=await Promise.all([f.store.claimWithAdmission(f.scope,p.id,verify),f.store.claimWithAdmission(f.scope,p.id,verify)]);
  expect(claims.filter(c=>c.claimed)).toHaveLength(1);expect(verify).toHaveBeenCalledOnce();expect(f.rows[0].attemptCount).toBe(1);
 });
+it('deployment postcommit result delivery retains the original private admission proof',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);await f.store.claim(f.scope,p.id);let live=true;
+ const original=f.repo.$transaction;f.repo.$transaction=async(fn:any)=>{const result=await original(fn);live=false;return result};
+ await expect(f.store.beforeDispatchWithAdmission(f.scope,p.id,async()=>()=>{if(!live)throw Error('postcommit_provider_expired')})).rejects.toThrow('postcommit_provider_expired');expect(f.rows[0].attemptCount).toBe(1);
+});

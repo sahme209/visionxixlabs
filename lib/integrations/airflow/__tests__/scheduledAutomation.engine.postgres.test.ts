@@ -2,13 +2,13 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { PrismaClient } from "@prisma/client";
 import { randomUUID } from "node:crypto";
 import { readFileSync, realpathSync, statSync } from "node:fs";
-import { AirflowClient, validateAirflowBaseUrl } from "../airflowClient";
+import { AirflowClient, validateAirflowBaseUrl, type AirflowMutationAuthority } from "../airflowClient";
 import { scheduledDagRunId } from "../scheduledRunId";
-const f = vi.hoisted(() => ({ db: undefined as unknown as PrismaClient, client: undefined as unknown as AirflowClient, connectionId: "", connectionVersion: new Date(0) }));
+const f = vi.hoisted(() => ({ db: undefined as unknown as PrismaClient, client: undefined as unknown as AirflowClient, connectionId: "", connectionVersion: new Date(0), makeClient: undefined as unknown as (authority?: AirflowMutationAuthority) => AirflowClient }));
 vi.mock("@/lib/db", () => ({ get prisma() { return f.db; } }));
 // Only the verified private fixture's connection loader is substituted. The
 // scheduler, provider client, execution claim, completion and audit are real.
-vi.mock("../connection", () => ({ loadAirflowClient: async () => ({ client: f.client, connectionId: f.connectionId, connectionUpdatedAt: f.connectionVersion }) }));
+vi.mock("../connection", () => ({ loadAirflowClient: async (_organizationId: string, authority?: AirflowMutationAuthority) => ({ client: authority ? f.makeClient(authority) : f.client, connectionId: f.connectionId, connectionUpdatedAt: f.connectionVersion }) }));
 import { runAirflowAutomationTick } from "../automationTick";
 const socket = process.env.AXIOM_OWNED_AGENT_PG_SOCKET;
 const file = process.env.AXIOM_OWNED_AIRFLOW_FIXTURE;
@@ -23,7 +23,10 @@ describe.skipIf(!socket || !file)("actual scheduler → local Airflow → durabl
     f.db = new PrismaClient({ datasources: { db: { url: `postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}` } } });
     const [binding] = await f.db.$queryRawUnsafe<Array<{ private: boolean }>>("SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private");
     if (!binding?.private) throw Error("owned_fixture_binding_required");
-    f.client = new AirflowClient(fixture.baseUrl, { authMode: "username_password", username: fixture.username, password: fixture.password });
+    // Private fixture loader substitutes tenant credential/metadata resolution only;
+    // preserve the actual scheduler current-rule callback for every mutation.
+    f.makeClient = authority => new AirflowClient(fixture.baseUrl, { authMode: "username_password", username: fixture.username, password: fixture.password }, authority);
+    f.client = f.makeClient();
     expect(await f.client.validate()).toMatchObject({ version: "3.3.2" });
     expect((await f.client.listDags()).find(dag => dag.dagId === fixture.dagId)?.tags).toContain("axiom_owned_fixture");
     await expect(validateAirflowBaseUrl(fixture.baseUrl)).rejects.toThrow("airflow_https_url_required");
