@@ -1,0 +1,17 @@
+{
+  "source": "d6dccf0ddf892ca9a8ed23eba56a87b46ca4c2ee",
+  "stage": "/private/tmp/axiom-agent-conversation-production-02bdztd6",
+  "log": "/private/tmp/axiom-agent-conversation-production-d6dccf0d.log",
+  "archiveSha256": "96be22f3d04d5e8477961fe4a0cc32435f395f13a3ca6218c6474048ec89fada",
+  "verifiedRegularFiles": 5802,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy",
+  "logSha256": "41e1c13e6d4fe8e5733903894e8eb4626995b23788294cd6427dff7524a3d941",
+  "logBytes": 42710,
+  "notValidated": [
+    "live model response or genuine human/provider acceptance",
+    "signed native/current visual journey",
+    "full repository suite or complete Governance coverage",
+    "production activation"
+  ]
+}

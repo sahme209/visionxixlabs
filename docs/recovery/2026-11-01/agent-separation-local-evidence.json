@@ -215,6 +215,11 @@
       "path": "/private/tmp/axiom-agent-conversation-outcome-all-store-pg.log",
       "sha256": "6bf5760a380b320aab709f783b869b12392b63acb57d733152fdd0f06599a00c",
       "bytes": 982
+    },
+    "conversation-initial-scope-next-types": {
+      "path": "/private/tmp/axiom-agent-conversation-outcome-types.log",
+      "sha256": "14464a6b1fd4605dc914d7fe299a1366e8d2debdfef814247ed20be6fdacae7d",
+      "bytes": 849
     }
   },
   "fixed_tools_and_controls": {
