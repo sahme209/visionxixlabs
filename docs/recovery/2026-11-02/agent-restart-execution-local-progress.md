@@ -1,0 +1,13 @@
+# Agent restart execution — preserved incomplete local increment
+
+Parent6a65a675. Approved local review/execution separation only; no activation, cloud action or human decision.
+
+Runtime requires captured immutable workflow source and current reviewed template digest before claim, then observes source with the tenant token after claim and again before dispatch. Deployment policy must resolve the reviewed commit. The final coherent database authority check remains the last authority await; source lease and request cancellation are checked synchronously afterward. Dispatch sends fully qualified refs/tags/v1 rather than an ambiguous symbolic name. Mutable container images and application health remain unverified. Existing reservation, one-attempt, unknown-outcome and no-replay behavior remain intact.
+
+Browser/native proposal views display tag, commit and workflow content digest before approval details. Historical target-only proposals have approval disabled and rejection remains available. No native app was rebuilt/reopened or visually accepted.
+
+Evidence: four new execution regressions RED then21 execution checks GREEN; four preview regressions RED then16 preview checks GREEN. Combined110 focused checks6files PASS. Four actual isolated PostgreSQL coordinator cases PASS (12 filtered skips), with real observer/transport/store/database composition and simulated provider/token/request/human responses; owned fixturemreyhxx8 stopped. Server scoped TypeScript and desktop TypeScript completed exit0. No full root suite or current exact frontend/production/native build was run; no broad green claim.
+
+Next public HTTP acceptance tests: confirmed/workflow_changed/reviewer_revoked currently fail at the deliberately closed source gate (expected readiness true vs false); legacy source refusal passes. Owned fixture1o9ep5ri stopped. This RED is preserved as an unfinished acceptance task. Do not bypass or treat it as execution-ready. Next resume: qualify the exact immutable source contract at the public HTTP boundary, retain unsupported/old source refusal, complete real-store positive/negative HTTP journeys, final review and builds before any public availability claim. Default flag remains OFF/unset and production unchanged. Full Governance baseline coverage/enrollment remains incomplete/refused.
+
+Independent source review found no important concrete issues in runtime/UI increment (not a human provider approval). The latest user instruction explicitly requested plan finalization then STOP until resumed; no further implementation or visible audit was performed after that instruction. Parallel docs/research results are draft/source-only and separately labeled.

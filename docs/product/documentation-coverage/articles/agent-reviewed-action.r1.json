@@ -1,0 +1,148 @@
+{
+  "schema": 1,
+  "id": "axiom.help.agent.reviewed-action",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Review an Agent proposal, prepare a requester action, and check its saved outcome",
+  "productVersion": "local-source-preview:6a65a675bd38ee80cd1ec0cc96e3cc897394df8e; exact files bound by SHA-256",
+  "screenIds": [
+    "axiom.screen.desktop.agent"
+  ],
+  "controlIds": [
+    "axiom.control.agent.record-approval",
+    "axiom.control.agent.cancel-proposal",
+    "axiom.control.agent.check-saved-outcome",
+    "axiom.control.agent.check-readiness",
+    "axiom.control.agent.prepare-reviewed-action",
+    "axiom.control.agent.execute-once",
+    "axiom.control.agent.cancel-unused-action"
+  ],
+  "goal": "Understand the separate human review and original-requester execution steps without mistaking approval, saved history, or an uncertain reply for a completed provider action.",
+  "prerequisites": [
+    "This is an internal source-only draft for the local preview; installation, release availability and live behavior have not been verified.",
+    "An existing Agent proposal with exact bound source, and an authorized independent human reviewer.",
+    "For execution: the original requester, original paired desktop session, current workspace/tool access, current commercial access, enabled requester execution, and unexpired exact review. Availability must be checked in the app."
+  ],
+  "permissions": [
+    "Record approval records an exact human review; it does not execute the action or transfer reviewer authority to the assistant.",
+    "The requester cannot self-approve an independent-review proposal. Only the original requester can prepare or execute its saved action.",
+    "Readiness is display metadata, not permission. The server rechecks persisted review, current actor and applicable policy at execution."
+  ],
+  "steps": [
+    {
+      "instruction": "In Agent, inspect the proposal arguments and exact source. If source binding is missing or changed, request a fresh proposal before review. Use Cancel proposal when the requester must stop their proposal; another authorized human performs independent review.",
+      "effect": "human-review",
+      "expectedState": "Record approval records review only; no provider action runs from that decision."
+    },
+    {
+      "instruction": "In Approved Agent actions, select Check saved action outcome for the proposal before deciding what to do.",
+      "effect": "read",
+      "expectedState": "A saved record or an explicit no-record/read-failure message; this check does not prepare, claim, execute or retry."
+    },
+    {
+      "instruction": "Select Check execution readiness. Read the reason and, when offered, Exact reviewed change and review expiry. If blocked, follow the recovery guidance below.",
+      "effect": "read",
+      "expectedState": "Fresh readiness may offer preparation or execution; approval alone is insufficient."
+    },
+    {
+      "instruction": "When offered, select Prepare reviewed action.",
+      "effect": "propose",
+      "expectedState": "A prepared saved action. Preparation does not dispatch the provider action."
+    },
+    {
+      "instruction": "Check execution readiness again after preparation. Verify the saved record and exact effect, then deliberately select Execute approved action once only when offered and intended.",
+      "effect": "execute",
+      "expectedState": "A saved confirmed, refused or unconfirmed outcome; completion does not establish deployment/application health."
+    },
+    {
+      "instruction": "To stop an unused prepared action, select Cancel unused action when offered.",
+      "effect": "recover",
+      "expectedState": "Cancelled saved history remains readable; it cannot be reused."
+    }
+  ],
+  "expectedOutcome": "The user can distinguish review, prepared action and recorded execution outcome, and safely read history when an outcome cannot be confirmed.",
+  "limitations": [
+    "This draft covers the named Agent controls only, not every Agent, Governance, app or website control. Stable help IDs are proposed documentation identifiers, not runtime bindings.",
+    "Source contract includes GitHub branch creation, single/multiple file commits, pull-request opening, environment creation, deployment-target configuration and pending identity-provider configuration. Their actual eligibility depends on current server checks and exact input/source binding.",
+    "trigger_aws_deploy is present in the execution contract but explicitly blocked by assertAgentActionHttpSourceSupported in the mounted HTTP workflow (workflow_incomplete). Do not describe deployment/restart as available from this panel.",
+    "Confirmed means the saved execution record confirms that action. It does not prove application health, deployment health, immutable artifact promotion, rollback readiness or baseline admission.",
+    "A failed or empty history read is not proof of complete provider history or permission to retry. No automatic retry, screenshots, demo, shipped-version acceptance, approval or support retrieval activation is evidenced here."
+  ],
+  "recovery": [
+    "Readiness expired: check readiness again. Expired or missing exact review requires a genuinely new independent review; never fabricate approval or reuse expired evidence.",
+    "Requester/session/access mismatch, execution disabled, unsupported tool or unavailable Governance: stop execution. Read available history and ask the workspace administrator/support to investigate the recorded reason; do not bypass controls or substitute another actor.",
+    "Unknown, dispatching, lease_elapsed_unconfirmed, lost/malformed mutation reply or outcome-unconfirmed warning: use Check saved action outcome only. Do not resend, reprepare, repeat execution, clear history or infer success/failure from elapsed time. Escalate unresolved outcomes with non-secret proposal/operation identifiers and observed state.",
+    "Refused or operation_consumed: the attempt is consumed even when refused before dispatch; inspect its refusal and retain history. This panel cannot repeat it. Do not create a replacement merely to work around an uncertain/consumed result.",
+    "Cancelled: the unused saved action was stopped and its history remains. A cancelled action cannot execute.",
+    "No saved record/read failure: this read did not run an action. Do not treat absence or a failed read as proof that an earlier uncertain provider action did not happen."
+  ],
+  "searchTerms": [
+    "Record approval",
+    "Prepare reviewed action",
+    "Execute approved action once",
+    "Cancel unused action",
+    "Check saved action outcome",
+    "Check execution readiness",
+    "review only",
+    "original requester",
+    "outcome unconfirmed",
+    "operation consumed",
+    "workflow incomplete"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/views/AgentChatView.tsx",
+      "sha256": "2927dc0cda60a73092e408fff8974295987faa3534dc0a051bb37be48e09074f"
+    },
+    {
+      "path": "desktop/src/components/AgentApprovedActions.tsx",
+      "sha256": "0e4484a9507baf5f7ef2743b38e101355800b02b863880a80f77a827f818e51f"
+    },
+    {
+      "path": "desktop/src/lib/agentActionExecutionRecovery.ts",
+      "sha256": "9284e52c612eb00552c9171078633bae1f455506c1a28032ccdc665e30fe0037"
+    },
+    {
+      "path": "lib/desktop/agentActionExecutionRequestService.ts",
+      "sha256": "d5d10dd4c0e8a1933b23d11fb6c0a062a02ef744e7f60ed38bbde5cd92e5355c"
+    },
+    {
+      "path": "lib/desktop/agentActionEligibility.ts",
+      "sha256": "9eaadc27acc1c856446240f19d42defc1a66cb62aacc56ba6625e664a2c65645"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/agentActionExecutionContract.ts",
+      "sha256": "36006b1a95a7fd69305a546d0f0ea1aa0971b417164e1c9d302ed90b7fddac90"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/agentActionExecutionStore.ts",
+      "sha256": "54f245f64c435bd3a26214ce349c069c0ca88714fa2088020899f8ca079543d2"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/agentActionExecutionCoordinator.ts",
+      "sha256": "e68b6b745a9440181f11fb6ae17a847db4c60176adb91811bd787560be4a7942"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "desktop/src/views/AgentChatView.tsx",
+      "desktop/src/components/AgentApprovedActions.tsx",
+      "desktop/src/lib/agentActionExecutionRecovery.ts",
+      "lib/desktop/agentActionExecutionRequestService.ts",
+      "lib/desktop/agentActionEligibility.ts",
+      "lib/axiom/agentRuntime/agentActionExecutionContract.ts",
+      "lib/axiom/agentRuntime/agentActionExecutionStore.ts",
+      "lib/axiom/agentRuntime/agentActionExecutionCoordinator.ts"
+    ],
+    "verifiedVersion": "local-source-preview:6a65a675bd38ee80cd1ec0cc96e3cc897394df8e; exact files bound by SHA-256",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

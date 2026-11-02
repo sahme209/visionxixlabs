@@ -2,6 +2,31 @@
 
 Updated November 2, 2026. Two coordinated workstreams. Latest target retains planning-then-stop: implementation is paused pending explicit resumption. Existing authorized local work and evidence are preserved. This document and the persistent goal are the working target; add future requests here rather than losing them in chat.
 
+## Current control panel — November 2 planning reconciliation
+
+**State: planning finalized; STOP pending explicit resumption.** This follows the latest user instruction. Historical progress entries below are evidence history, not permission to resume or completion claims. Parallel source review, documentation and research have stopped. Security, visual quality, clarity and spending remain acceptance gates throughout.
+
+| Requirement | Verified progress | Remaining acceptance / next evidence |
+|---|---|---|
+| A1 Release | Public v0.1.21 and narrow website activation preserved; v0.1.22 partial artifacts and local Mac correction recorded. | Reconcile settled CI/budget; separately authorized complete signed/notarized build, human publication approval and exact downloads. No new CI authorized here. |
+| A2 Governance | Local durable policies, current-authority guards, separate Agent review/requester execution, branch/PR source checks and bounded outcome recovery. New AWS immutable workflow observer and coordinator tests pass locally. | Actual mounted AWS HTTP qualification still deliberately refuses; full baseline admission/registered coverage/enrollment/native workflow and complete end-to-end acceptance remain open. No enablement. |
+| A3 ServiceNow | Exact evidence note exists; narrow read-only presence proof and local reconciliation wiring exist. | Fresh genuine observation review, native Normal/New lifecycle, terminal policy, exact closure authorization and confirmed readback. Never resend unknown note. |
+| A4 Usability | Shared/local app polish, light/dark refinements and automated Agent source previews exist. | Whole-app native walkthrough, keyboard/accessibility, session/recovery and clear next-step acceptance, including current source build. |
+| A5 Store/Windows | Company identity and unsigned MSIX preparation. | Submission/certification/signing and clean-host install/sign-in/update/session. Deferred; website MSI warning unresolved. |
+| A6 Outlook/GitLab | Outlook live read acceptance historically recorded and local discoverability restored; GitLab design retained. | Ship/test discoverability; separately reviewed safe GitLab connector, consent and account linking/sign-in. |
+| A7 Security/efficiency | Current boundary fixes and cost restrictions retained. | Full threat model, independent assessment/remediation, supply-chain/recovery exercises and measured quality-adjusted AI cost evidence. No absolute security/savings claims. |
+| A8 Ecosystem | Full integration and batch/observability backlog retained below and remaining-work.md. | Prioritize with customers; provider-specific least privilege, implementation, docs and separately authorized live acceptance. |
+| B1 Research | Partial notes for all five sites; Cursor security/lifecycle gap now supplemented from official sources only. | Visible interactions/page checklist, blocked destinations, responsive/keyboard audit and comparative decisions. New delegated pass was not visible. |
+| B2 Website | Existing positioning/navigation source and initial references. | Approved original architecture and complete premium responsive design, truthful implemented/preview/planned distinctions. |
+| B3 Demos | Historical product evidence preserved. | Authentic current-source screenshots/video, redaction, captions/transcripts/posters and source/version binding. No fabricated execution. |
+| B4 Documentation | Existing candidate inventory/schema; new internal draft Agent article with seven proposed control IDs and eight source hashes. | Every supported screen/control documented with actual media, prerequisites, outcomes and recovery; complete schema validation and editorial approval. Draft is not customer documentation. |
+| B5 Support knowledge | Versioned draft format and ten proposed Agent retrieval cases added. | Reviewed ingestion/version matching/citation pipeline, executed retrieval evaluations and safe uncertainty/escalation architecture. No support AI implementation claim. |
+| B6 Website delivery | Existing narrow live favicon/security batch accepted. | Original pages/docs/demos, complete links/responsive/accessibility/performance/media/claims tests, independent review and separately authorized publishing/live acceptance. |
+
+**Resume sequence:** A2 exact Agent AWS source-bound public flow and real Governance coverage first, with B1/B2 and B4/B5 parallel under disjoint ownership; then A3 and A4 acceptance to supply authentic B3 media; A1/B6 reviewed release batches under specific authorization; deferred A5 and A6–A8 retained, never silently dropped. Future requests extend this plan.
+
+**Current local checkpoint:** 110 focused checks, four isolated PostgreSQL AWS coordinator journeys, server scoped TypeScript and desktop TypeScript pass. External identities, token issuance, human decisions and provider responses are simulated. New mounted HTTP tests have three expected failures because the AWS source gate remains closed, one legacy-refusal case passes; they are an unfinished acceptance task, not a green release. Frontend/full production/native builds and current visual acceptance for this increment remain pending. See ../recovery/2026-11-02/agent-restart-execution-local-progress.md. No live action, deployment or new privilege occurred.
+
 ## Standing product requirements
 
 Backend and frontend work proceed in parallel when file ownership and dependencies allow; integrate and verify the complete flow before acceptance. Show meaningful intermediate changes to the user, distinguishing local source/build previews from live production.
@@ -71,7 +96,7 @@ For each unit: define acceptance → implement/review → run proportionate veri
 
 ## Honest current stopping point
 
-Local website batch 7ea48aa8 passed 61 focused tests and its full production build/types; reviewed without important findings. Desktop v0.1.22 source 0f82571b passed frontend build/types and release alignment; workflow review passed. Installer run 41224761240 concluded failure; no successful v0.1.22 installer publication is claimed. The narrow website/security update is now deployed and live-verified; the broader website redesign/documentation work remains unfinished. Governance, ServiceNow closure, Store/Windows acceptance and full website/documentation program remain unfinished. The user has resumed execution; reference-site audit is in progress.
+Local website batch 7ea48aa8 passed 61 focused tests and its full production build/types; reviewed without important findings. Desktop v0.1.22 source 0f82571b passed frontend build/types and release alignment; workflow review passed. Installer run 41224761240 concluded failure; no successful v0.1.22 installer publication is claimed. The narrow website/security update is now deployed and live-verified; the broader website redesign/documentation work remains unfinished. Governance, ServiceNow closure, Store/Windows acceptance and full website/documentation program remain unfinished. That was an earlier execution state; the current planning pause above controls.
 
 ## Resume evidence — November 1
 

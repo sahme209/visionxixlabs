@@ -1,6 +1,7 @@
 import {afterAll,afterEach,beforeAll,describe,it,expect,vi} from 'vitest';
 import {createRequire} from 'node:module';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
+import {AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE} from '@/lib/releaseops/awsEcsDeployWorkflowTemplate';
 import {realpathSync,statSync} from 'node:fs';
 import {NextRequest} from 'next/server';
 const f=vi.hoisted(()=>({db:null as any,principal:null as any,authCalls:0,revokeAt:0,token:vi.fn()}));
@@ -108,26 +109,33 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({attemptCount:1,status:'completed'});
  });
 
- it.each(['confirmed','lost','rejected'])('actual AWS coordinator policy/quota/store/fixed dispatch %s is one attempt',async mode=>{
+ it.each(['confirmed','lost','rejected','workflow_changed'])('actual AWS coordinator policy/quota/store/fixed dispatch %s is one attempt',async mode=>{
   const revision=new Date();
-  const args=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'main',sourceKind:'branch',_review:{kind:'ecs_restart_target',organizationId:org,environmentId:org+'-env',environmentTier:'qa',targetId:org+'-target',provider:'aws',targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/deploy',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
+  const workflow=Buffer.from(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE),blob=createHash('sha1').update(`blob ${workflow.length}\0`).update(workflow).digest('hex');
+  const source={kind:'github_immutable_restart_source_v1',repositoryFullName:'fixture/repository',repositoryId:'1',tagName:'v1',ref:'refs/tags/v1',tagObjectSha:'a'.repeat(40),tagObjectType:'commit',sourceCommitSha:'a'.repeat(40),releaseId:'2',publishedAt:'2026-10-01T00:00:00.000Z',workflowFile:'axiom-deploy-aws-ecs.yml',workflowBlobSha:blob,workflowContentSha256:createHash('sha256').update(workflow).digest('hex')};
+  const args=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'v1',sourceKind:'tag',_restartSource:source,_review:{kind:'ecs_restart_target',organizationId:org,environmentId:org+'-env',environmentTier:'qa',targetId:org+'-target',provider:'aws',targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/deploy',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
   const t=await fixture('trigger_aws_deploy',args),input=args(t.scope.organizationId),target=input._review;
   await f.db.environment.create({data:{id:input.environmentId,organizationId:t.scope.organizationId,tier:'qa',slug:'qa',name:'QA'}});
   await f.db.deploymentTarget.create({data:{id:target.targetId,environmentId:input.environmentId,organizationId:t.scope.organizationId,provider:'aws',updatedAt:revision,roleArn:target.roleArn,region:target.region,ecsCluster:target.ecsCluster,ecsService:target.ecsService}});
   await f.db.tenantBillingPlan.create({data:{organizationId:t.scope.organizationId,tier:'pro',status:'active'}});
   let posts=0;
   vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
-   expect(url.startsWith('https://api.github.com/repos/fixture/repository/')).toBe(true);
-   if(init.method==='GET')return Response.json({object:{type:'commit',sha:'a'.repeat(40)}});
-   expect(init.method).toBe('POST');expect(JSON.parse(init.body)).toMatchObject({ref:'main',inputs:{role_arn:target.roleArn,region:target.region,cluster:target.ecsCluster,service:target.ecsService}});posts++;
+   expect(url==='https://api.github.com/repos/fixture/repository'||url.startsWith('https://api.github.com/repos/fixture/repository/')).toBe(true);
+   if(init.method==='GET'){
+    if(url.endsWith('/repository'))return Response.json({id:1,full_name:'fixture/repository',archived:false,disabled:false});
+    if(url.includes('/releases/tags/'))return Response.json({id:2,tag_name:'v1',draft:false,immutable:true,published_at:source.publishedAt});
+    if(url.includes('/contents/'))return Response.json({type:'file',path:'.github/workflows/axiom-deploy-aws-ecs.yml',encoding:'base64',sha:blob,size:workflow.length,content:(mode==='workflow_changed'?Buffer.from('changed'):workflow).toString('base64')});
+    return Response.json({ref:'refs/tags/v1',object:{type:'commit',sha:'a'.repeat(40)}});
+   }
+   expect(init.method).toBe('POST');expect(JSON.parse(init.body)).toMatchObject({ref:'refs/tags/v1',inputs:{role_arn:target.roleArn,region:target.region,cluster:target.ecsCluster,service:target.ecsService}});posts++;
    if(mode==='lost')throw Error('simulated response lost');if(mode==='rejected')return new Response('refused',{status:403});
    return Response.json({workflow_run_id:42,html_url:'https://github.com/fixture/repository/actions/runs/42'});
   }));
   const result=await t.coordinator.execute(t.operation.id);
-  expect(result).toMatchObject({state:mode==='confirmed'?'confirmed':mode==='lost'?'unknown':'refused',attemptCount:1});expect(posts).toBe(1);
+  expect(result).toMatchObject({state:mode==='confirmed'?'confirmed':mode==='lost'?'unknown':'refused',attemptCount:1});expect(posts).toBe(mode==='workflow_changed'?0:1);
   const reservations=await f.db.deploymentExecution.findMany({where:{organizationId:t.scope.organizationId}});
-  if(mode==='rejected')expect(reservations).toHaveLength(0);else expect(reservations).toMatchObject([{idempotencyKey:t.operation.id,triggeredByUserId:t.scope.actorUserId,sourceCommitSha:'a'.repeat(40),status:mode==='lost'?'reserved':'queued'}]);
-  await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(posts).toBe(1);
+  if(mode==='rejected'||mode==='workflow_changed')expect(reservations).toHaveLength(0);else expect(reservations).toMatchObject([{idempotencyKey:t.operation.id,triggeredByUserId:t.scope.actorUserId,sourceCommitSha:'a'.repeat(40),status:mode==='lost'?'reserved':'queued'}]);
+  await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(posts).toBe(mode==='workflow_changed'?0:1);
   expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({attemptCount:1});
  });
 

@@ -67,3 +67,17 @@ Original Axiom implications: keep a short outcome-led introduction, group real p
 Screenshot of the visible expanded FAQ, not an Axiom product demonstration: /Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/outputs/cursor-teams-faq-audit-2026-11-02.jpg. This extends the partial Cursor audit only. Remaining unique interactions and other reference sites are not accepted as complete.
 
 The usage FAQ link was subsequently followed into https://cursor.com/help/models-and-usage/token-rate, then its related API-keys guide at https://cursor.com/help/models-and-usage/api-keys. Inspected their distinct setup, cost-applicability, privacy-boundary and failure/recovery sections plus related-document navigation. These are presentation observations/vendor assertions, not validation of vendor billing or security. Axiom should separate model-provider charges from application charges and document which data/credential boundaries apply under each configuration, using only its own tested implementation. No key was entered, model request submitted or billing action taken.
+
+## November2: cloud-agent security reference — non-visible source research
+
+Narrow gap: the earlier destination checklist left cloud-agent security documentation uninspected. Read the official [Cloud Agents security overview](https://cursor.com/docs/cloud-agent/security) on November2, 2026 using the web reader. This closes source-content discovery only. The supported browser inventory was available, but this delegated thread's attempt to open a user-visible tab returned `IAB visibility is not supported in a subagent thread`. No successful visible walkthrough, screenshot, responsive layout, disclosure activation or keyboard behavior is claimed here. No unlock or alternate visibility bypass was attempted.
+
+The source separates the explanatory security model from configuration references. Its lifecycle sequence connects initiation, environment creation, execution, retained records, review handoff and cleanup. Distinct sections describe organization installation versus per-user access. Its retention table separates workspace, snapshots, conversations and credentials; its deletion table distinguishes hiding an item from removing particular data. Related links point to configuration and deeper retention guidance. These are vendor statements, not independently tested security controls.
+
+Original Axiom decisions:
+
+- Give Security/Trust a plain-language workflow explanation, then link each configurable control to its actual task guide and verification evidence.
+- Explain connection scope, requester authority and independent approval separately; only describe enforcement that current Axiom acceptance proves.
+- Document each data class and the exact effect of archive, delete and recovery controls. Never imply that hiding a run deletes its evidence or credentials.
+
+Remaining: visually open this page and follow its configuration destination; inspect rendered hierarchy, navigation and keyboard/mobile behavior. This addition does not complete B1 or transfer any vendor security, retention or isolation claim to Axiom.

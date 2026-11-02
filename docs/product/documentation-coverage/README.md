@@ -26,3 +26,11 @@ The initial extraction set includes buttons, fields, links and common Axiom wrap
 - Real screenshots/demos and accessible alternatives are linked, with current version evidence.
 - Search/retrieval evaluations cover normal help, revoked access, expired approval, uncertain result and unsupported functionality.
 - No unreviewed source candidate is counted as documented, tested, customer-ready or supported by an AI answer.
+
+## First source-grounded draft (2026-11-02)
+
+[Agent reviewed action, revision 1](articles/agent-reviewed-action.r1.json) maps seven proposed stable control IDs to the actual review, requester preparation/execution and recovery controls. It binds each inspected source file by SHA-256 against base commit `6a65a675bd38ee80cd1ec0cc96e3cc897394df8e`. The worktree may differ from that commit; hashes, rather than the base name alone, determine applicability. This is **internal, draft, source-only local-preview knowledge**, ineligible for customer/support answers. No human approval, shipped version, authentic media or live acceptance is asserted. The original inventory remains unreviewed and unchanged; this draft does not promote any candidate to completed coverage.
+
+Before ingestion, validate the record against the existing schema, verify every source hash, review factual claims against the supported release, capture relevant real screens/states with safe fixtures and accessible alternatives, and obtain a genuine review. Record its date and actual version only after verification. Retain immutable revisions; append a new revision with explicit supersession instead of silently rewriting approved history. A source/hash mismatch quarantines the record until re-review. Unknown and consumed execution history must remain intact.
+
+[Representative retrieval cases](agent-reviewed-action-evaluation.json) specify required evidence and safe responses. These are evaluation fixtures, not evidence of a running retriever or passing retrieval tests. An eventual evaluator must reject this draft for customer answers, require an approved current version, return article/revision citations, test source/version/supersession failures, and disclose missing evidence. Do not ingest tenant content, credentials or approval material as public help. Future local/cloud assistant architecture and cloud data-boundary review remain separate open gates.

@@ -1,3 +1,4 @@
+import { restartWorkflowSourceFromArgs } from "@/lib/tauri/agentRestartWorkflowSource";
 import { githubPullRequestReviewFromArgs } from "@/lib/tauri/agentGithubPullRequestReview";
 import { githubBranchReviewFromArgs } from "@/lib/tauri/agentGithubBranchReview";
 import { redirect } from "next/navigation";
@@ -55,6 +56,7 @@ export default async function GovernancePage() {
               const fileReview = fileProposalReview(proposal.toolName, args);
               const isPullRequest = proposal.toolName === "open_github_pull_request";
               const pullSource = isPullRequest ? githubPullRequestReviewFromArgs(args) : null;
+              const restartSource = proposal.toolName === "trigger_aws_deploy" ? restartWorkflowSourceFromArgs(args) : null;
               const pullReview = isPullRequest ? pullRequestProposalReview(args) : null;
               return (
               <div key={proposal.id} className="grid gap-4 py-4 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
@@ -85,11 +87,12 @@ export default async function GovernancePage() {
                   {proposal.toolName === "trigger_aws_deploy" && <div className="mt-3 space-y-1 break-all text-xs text-zinc-400">
                     <p className="text-amber-300">Restart the current task definition. Mutable image tags and application health are not verified.</p>
                     <p>Repository: {typeof args.repositoryFullName === "string" ? args.repositoryFullName : "Unavailable"} · Workflow ref: {typeof args.sourceRef === "string" ? args.sourceRef : "main"}</p>
+                    {restartSource ? <div className="my-2 space-y-1 break-all"><p>Reviewed workflow tag: {restartSource.ref}</p><p>Reviewed source commit: <span className="font-mono">{restartSource.sourceCommitSha}</span></p><p>Workflow content digest: <span className="font-mono">{restartSource.workflowContentSha256}</span></p><p>Review only; the requester executes separately after fresh source and authority checks.</p></div> : <p role="alert">No bound workflow source. Request a new proposal before approval; rejection remains available.</p>}
                     {review?.kind === "ecs_restart_target" ? [["Environment", review.environmentId], ["Tier", review.environmentTier], ["Role", review.roleArn], ["Region", review.region], ["Cluster", review.ecsCluster], ["Service", review.ecsService], ["Target revision", review.targetUpdatedAt]].map(([label, value]) => <p key={String(label)}>{String(label)}: {typeof value === "string" ? value : "Unavailable"}</p>) : <p>No target review is bound. Request a new proposal.</p>}
                   </div>}
                 </div>
                 <div className="text-left sm:text-right"><p className="text-xs uppercase tracking-[0.12em] text-[#ff783d]">{proposal.riskLevel} risk</p><time className="mt-1 block text-xs text-zinc-600">{proposal.createdAt.toLocaleString()}</time></div>
-                <ApprovalDecisionButtons proposalId={proposal.id} ownProposal={proposal.proposedByUserId === String(context.userId)} approveDisabledReason={proposal.toolName === "create_github_branch" && !branchReview ? "No bound branch source. Request a new proposal before approval." : isPullRequest && (!pullReview || !pullSource) ? "No bound pull-request source or valid metadata. Request a new proposal before approval." : isFileWrite && !fileReview ? "File review is unavailable. Request a new proposal before approval." : proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target" ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
+                <ApprovalDecisionButtons proposalId={proposal.id} ownProposal={proposal.proposedByUserId === String(context.userId)} approveDisabledReason={proposal.toolName === "create_github_branch" && !branchReview ? "No bound branch source. Request a new proposal before approval." : isPullRequest && (!pullReview || !pullSource) ? "No bound pull-request source or valid metadata. Request a new proposal before approval." : isFileWrite && !fileReview ? "File review is unavailable. Request a new proposal before approval." : proposal.toolName === "trigger_aws_deploy" && (review?.kind !== "ecs_restart_target" || !restartSource) ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
               </div>
             ); })}
           </div>

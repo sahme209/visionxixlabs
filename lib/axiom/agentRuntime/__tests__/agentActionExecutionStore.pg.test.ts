@@ -2,7 +2,8 @@ import {afterAll,afterEach,beforeAll,describe,it,expect,vi} from 'vitest';
 import {createRequire} from 'node:module';
 import {NextRequest} from 'next/server';
 import {createAgentActionExecutionHttp,createAgentActionEligibilityHttp} from '@/lib/desktop/agentActionExecutionHttp';
-import {randomUUID} from 'node:crypto';
+import {randomUUID,createHash} from 'node:crypto';
+import {AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE} from '@/lib/releaseops/awsEcsDeployWorkflowTemplate';
 import {realpathSync,statSync} from 'node:fs';
 const f=vi.hoisted(()=>({db:null as any,principal:null as any,commercial:true,token:vi.fn()}));
 vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:async()=>f.principal}));
@@ -393,6 +394,41 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
    const recovery=await(await handle(new NextRequest('https://fixture.test/operations?id='+id))).json();expect(recovery.data.receipt.references).toEqual(mode==='confirmed'?[{kind:'github_pull_request',id:'42'}]:undefined);
    expect((await handle(post({operation:'execute',id}))).status).toBe(409);expect(writes).toBe(mode==='head_changed'?0:1);expect(await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}})).toEqual(original);
    expect((await(await eligibility(get())).json()).data).toMatchObject({canPrepare:false,canExecute:false,reason:'operation_consumed'});
+  }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
+ });
+
+ it.each(['confirmed','workflow_changed','legacy','reviewer_revoked'])('composes immutable restart requester HTTP source binding: %s',async mode=>{
+  const revision=new Date(),workflow=Buffer.from(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE),blob=createHash('sha1').update(`blob ${workflow.length}\0`).update(workflow).digest('hex');
+  const source={kind:'github_immutable_restart_source_v1',repositoryFullName:'fixture/repository',repositoryId:'1',tagName:'v1',ref:'refs/tags/v1',tagObjectSha:'a'.repeat(40),tagObjectType:'commit',sourceCommitSha:'a'.repeat(40),releaseId:'2',publishedAt:'2026-10-01T00:00:00.000Z',workflowFile:'axiom-deploy-aws-ecs.yml',workflowBlobSha:blob,workflowContentSha256:createHash('sha256').update(workflow).digest('hex')};
+  const args=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'v1',sourceKind:'tag',...(mode==='legacy'?{}:{_restartSource:source}),_review:{kind:'ecs_restart_target',organizationId:org,environmentId:org+'-env',environmentTier:'qa',targetId:org+'-target',provider:'aws',targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/deploy',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
+  const t=await fixture(60000,'trigger_aws_deploy',args),input=args(t.org),target=input._review,original=await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}});
+  await f.db.environment.create({data:{id:input.environmentId,organizationId:t.org,tier:'qa',slug:'qa',name:'QA'}});
+  await f.db.deploymentTarget.create({data:{id:target.targetId,environmentId:input.environmentId,organizationId:t.org,provider:'aws',updatedAt:revision,roleArn:target.roleArn,region:target.region,ecsCluster:target.ecsCluster,ecsService:target.ecsService}});
+  await f.db.tenantBillingPlan.create({data:{organizationId:t.org,tier:'pro',status:'active'}});
+  const connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:new Date()};await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:new Date()}});
+  f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session',capabilities:['workspace:read','deploy:execute']};f.commercial=true;f.token.mockReset();f.token.mockResolvedValue({ok:true,token:'SIMULATED_PRIVATE_TOKEN'});
+  const previous=process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED,compose=(request:any,scope:any)=>createAgentActionExecutionRequestService(request,f.db,scope),handle=createAgentActionExecutionHttp(compose),eligibility=createAgentActionEligibilityHttp(compose),get=()=>new NextRequest('https://fixture.test/readiness?proposalId='+t.proposal.id),post=(body:unknown)=>new NextRequest('https://fixture.test/operations',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
+   expect(url==='https://api.github.com/repos/fixture/repository'||url.startsWith('https://api.github.com/repos/fixture/repository/')).toBe(true);
+   if(init.method==='GET'){
+    if(url.endsWith('/repository'))return Response.json({id:1,full_name:'fixture/repository',archived:false,disabled:false});
+    if(url.includes('/releases/tags/'))return Response.json({id:2,tag_name:'v1',draft:false,immutable:true,published_at:source.publishedAt});
+    if(url.includes('/contents/'))return Response.json({type:'file',path:'.github/workflows/axiom-deploy-aws-ecs.yml',encoding:'base64',sha:blob,size:workflow.length,content:(mode==='workflow_changed'?Buffer.from('changed'):workflow).toString('base64')});
+    return Response.json({ref:'refs/tags/v1',object:{type:'commit',sha:'a'.repeat(40)}});
+   }
+   expect(init.method).toBe('POST');expect(JSON.parse(init.body)).toMatchObject({ref:'refs/tags/v1',inputs:{role_arn:target.roleArn,region:target.region,cluster:target.ecsCluster,service:target.ecsService}});writes++;return Response.json({workflow_run_id:42,html_url:'https://github.com/fixture/repository/actions/runs/42'});
+  }));
+  try{
+   process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED='true';expect((await(await eligibility(get())).json()).data.canPrepare).toBe(mode!=='legacy');
+   const prepared=await handle(post({operation:'prepare',proposalId:t.proposal.id}));
+   if(mode==='legacy'){expect(prepared.status).toBe(409);expect(writes).toBe(0);expect(f.token).not.toHaveBeenCalled();return;}
+   expect(prepared.status).toBe(201);const id=(await prepared.json()).data.id;
+   if(mode==='reviewer_revoked')await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'read_only'}});
+   const executed=await handle(post({operation:'execute',id}));
+   if(mode==='reviewer_revoked'){expect(executed.status).toBe(409);expect(writes).toBe(0);expect(await t.store.get(t.scope,id)).toMatchObject({state:'prepared',attemptCount:0});return;}
+   expect(executed.status).toBe(200);expect((await executed.json()).data).toMatchObject({id,state:mode==='confirmed'?'confirmed':'refused',attemptCount:1});expect(writes).toBe(mode==='confirmed'?1:0);
+   expect((await handle(post({operation:'execute',id}))).status).toBe(409);expect(writes).toBe(mode==='confirmed'?1:0);expect(await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}})).toEqual(original);
+   expect(JSON.stringify(await t.store.get(t.scope,id))).not.toContain('SIMULATED_PRIVATE_TOKEN');
   }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
  });
 

@@ -1,3 +1,4 @@
+import { restartWorkflowSourceFromArgs } from "../../../lib/tauri/agentRestartWorkflowSource";
 import {githubPullRequestReviewFromArgs} from "../../../lib/tauri/agentGithubPullRequestReview";
 import {githubBranchReviewFromArgs} from "../../../lib/tauri/agentGithubBranchReview";
 import {AgentApprovedActions} from "../components/AgentApprovedActions";
@@ -1543,6 +1544,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
     : {};
   const pullSource = proposal.toolName === "open_github_pull_request" ? githubPullRequestReviewFromArgs(args) : null;
   const branchReview = proposal.toolName === "create_github_branch" ? githubBranchReviewFromArgs(args) : null;
+  const restartSource = proposal.toolName === "trigger_aws_deploy" ? restartWorkflowSourceFromArgs(args) : null;
   const proposedContent = proposal.toolName === "commit_github_file" && typeof args.content === "string" ? args.content : null;
   const review = typeof args._review === "object" && args._review !== null ? args._review as Record<string, unknown> : null;
   const baseContent = review?.kind === "github_file" && typeof review.baseContent === "string" ? review.baseContent : null;
@@ -1569,6 +1571,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
       {proposal.toolName === "trigger_aws_deploy" && (
         <div className="mb-4 rounded-lg border border-amber-500/20 p-3 text-xs text-zinc-300">
           <p className="font-medium">Restart the current task definition. Mutable image tags and application health are not verified.</p>
+          {restartSource ? <div className="mt-2 space-y-1 break-all"><p>Reviewed workflow tag: {restartSource.ref}</p><p>Reviewed source commit: <span className="font-mono">{restartSource.sourceCommitSha}</span></p><p>Workflow content digest: <span className="font-mono">{restartSource.workflowContentSha256}</span></p><p>Review only; the requester executes separately after fresh source and authority checks.</p></div> : <p role="alert" className="mt-2 text-amber-300">No bound workflow source. Request a new proposal before approval.</p>}
           {review?.kind === "ecs_restart_target" ? <dl className="mt-2 space-y-1 break-all">
             {[["Environment", review.environmentId], ["Tier", review.environmentTier], ["Role", review.roleArn], ["Region", review.region], ["Cluster", review.ecsCluster], ["Service", review.ecsService], ["Target revision", review.targetUpdatedAt]].map(([label, value]) => <div key={String(label)}><dt className="inline text-zinc-500">{String(label)}: </dt><dd className="inline">{typeof value === "string" ? value : "Unavailable"}</dd></div>)}
           </dl> : <p className="mt-2 text-amber-300">No bound target review. Create a new proposal; this historical proposal cannot execute.</p>}
@@ -1632,7 +1635,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
         <button
           type="button"
           onClick={onApprove}
-          disabled={deciding || proposal.requiresIndependentReviewer || (proposal.toolName === "create_github_branch" && !branchReview) || (proposal.toolName === "open_github_pull_request" && !pullSource) || (proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target")}
+          disabled={deciding || proposal.requiresIndependentReviewer || (proposal.toolName === "create_github_branch" && !branchReview) || (proposal.toolName === "open_github_pull_request" && !pullSource) || (proposal.toolName === "trigger_aws_deploy" && (review?.kind !== "ecs_restart_target" || !restartSource))}
           className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50"
         >
           {deciding ? "Working…" : "Record approval"}
