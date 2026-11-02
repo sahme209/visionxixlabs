@@ -278,7 +278,8 @@
                 "type": "string",
                 "format": "date-time"
               }
-            }
+            },
+            "type": "object"
           },
           "verification": {
             "properties": {
@@ -299,9 +300,11 @@
                 "format": "date-time"
               },
               "evidencePaths": {
-                "minItems": 1
+                "minItems": 1,
+                "type": "array"
               }
-            }
+            },
+            "type": "object"
           }
         }
       }

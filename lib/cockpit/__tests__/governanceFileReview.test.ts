@@ -16,24 +16,34 @@ it("shows exact repository, branch and bound before/after contents to the indepe
  expect(screen.getByText("export const add = (a, b) => a + b;")).toBeTruthy();
  expect(screen.getByText("export const subtract = (a, b) => a - b;")).toBeTruthy();
  expect(screen.getByText("assert.equal(subtract(2, 5), -3);")).toBeTruthy();
- expect(screen.getByRole("button",{name:"Approve & execute"}).hasAttribute("disabled")).toBe(false);
+ expect(screen.getByRole("button",{name:"Record approval"}).hasAttribute("disabled")).toBe(false);
 });
 it("withholds approval when a proposed file has no matching trusted review snapshot",async()=>{
  (state.args._review as {files:unknown[]}).files.pop();
  render(await Page());
- expect(screen.getByRole("button",{name:"Approve & execute"}).hasAttribute("disabled")).toBe(true);
+ expect(screen.getByRole("button",{name:"Record approval"}).hasAttribute("disabled")).toBe(true);
  expect(screen.getByRole("alert").textContent).toContain("File review is unavailable");
 });
 
 it("shows the exact PR repository, head, base, title and body before independent approval",async()=>{
- state.tool="open_github_pull_request";state.args={repositoryFullName:"owner/acceptance",head:"acceptance/test",base:"main",title:"Review subtract",body:"Temporary acceptance pull request."};
+ state.tool="open_github_pull_request";state.args={repositoryFullName:"owner/acceptance",head:"acceptance/test",base:"main",title:"Review subtract",body:"Temporary acceptance pull request.",_review:{kind:"github_pull_request",head:"acceptance/test",base:"main",headSha:"a".repeat(40),baseSha:"b".repeat(40)}};
  render(await Page());
  expect(screen.getByText("Review pull request")).toBeTruthy();expect(screen.getByText(/Repository: owner\/acceptance/)).toBeTruthy();
  expect(screen.getByText(/Head: acceptance\/test/)).toBeTruthy();expect(screen.getByText(/Base: main/)).toBeTruthy();
  expect(screen.getByText("Review subtract")).toBeTruthy();expect(screen.getByText("Temporary acceptance pull request.")).toBeTruthy();
- expect(screen.getByRole("button",{name:"Approve & execute"}).hasAttribute("disabled")).toBe(false);
+ expect(screen.getByText("a".repeat(40))).toBeTruthy();expect(screen.getByText("b".repeat(40))).toBeTruthy();
+ expect(screen.getByRole("button",{name:"Record approval"}).hasAttribute("disabled")).toBe(false);
 });
 it("withholds PR approval when target or title cannot be reviewed",async()=>{
  state.tool="open_github_pull_request";state.args={repositoryFullName:"owner/acceptance",head:"acceptance/test",base:"main"};
- render(await Page());expect(screen.getByRole("button",{name:"Approve & execute"}).hasAttribute("disabled")).toBe(true);
+ render(await Page());expect(screen.getByRole("button",{name:"Record approval"}).hasAttribute("disabled")).toBe(true);
+});
+
+it("withholds legacy PR approval without bound source while keeping rejection available",async()=>{
+ state.tool="open_github_pull_request";state.args={repositoryFullName:"owner/acceptance",head:"acceptance/test",base:"main",title:"Legacy change",body:"No captured source."};
+ render(await Page());
+ expect(screen.getByRole("button",{name:"Record approval"}).hasAttribute("disabled")).toBe(true);
+ expect(screen.getByRole("button",{name:"Reject"}).hasAttribute("disabled")).toBe(false);
+ expect(screen.queryByText("Review pull request")).toBeNull();
+ expect(screen.getByRole("alert").textContent).toContain("No bound pull-request source");
 });

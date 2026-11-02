@@ -27,4 +27,47 @@ describe.skipIf(!socket)('deployment-purpose approval on owned local PostgreSQL'
   }finally{release();await reader}
  });
 
+ it('persists an exact baseline binding and rolls back the attempt when locked current baseline changes',async()=>{
+  const f=fixture(),digest='c'.repeat(64),policyId='test-only-baseline-'+randomUUID();
+  // Fixture-only current-head authority in the same durable tables. This is not
+  // a production baseline verifier, coverage receipt or enrolled scope.
+  await client.durableAgentWorkflow.create({data:{id:policyId,organizationId:f.scope.organizationId,workflowKind:'test_only_current_baseline',objective:'Fixture baseline head',requestedByUserId:'reviewer',status:'completed',autonomyLevel:'observe',inputJson:{digest},stateJson:{},maxAttempts:1}});
+  let rejectConsumed=false;
+  const assertGovernanceBaseline=async(tx:any,scope:any,expected:string)=>{
+   const rows=await tx.$queryRaw`SELECT "inputJson" FROM "DurableAgentWorkflow" WHERE "id"=${policyId} AND "organizationId"=${scope.organizationId} FOR SHARE`;
+   if(rows.length!==1||rows[0].inputJson.digest!==expected)throw Error('baseline_changed');
+   if(rejectConsumed&&await tx.durableAgentWorkflow.findFirst({where:{organizationId:scope.organizationId,workflowKind:'release_deployment_approval_v1',currentStep:'consumed'}}))throw Error('baseline_changed_after_consumption');
+  };
+  const dependencies={assertCurrent:async()=>{},readCurrentPlan:async()=>f.plan,assertGovernanceBaseline};
+  const approval=createReleaseDeploymentApprovalStore(client,dependencies),a=await approval.issue(f.reviewer,f.plan,randomUUID(),digest);
+  const fresh=createReleaseDeploymentApprovalStore(client,dependencies);
+  expect((await fresh.readIndependentApproval(client,f.scope,f.plan)).governanceBaselineDigest).toBe(digest);
+  const execution=createReleaseDeploymentExecutionStore(client,{assertCurrent:async()=>{},readCurrentPlan:async()=>f.plan,verifySupportedSourcePolicy:async()=>({kind:'verified_release_deployment_source_policy_v1',planDigest:sha256ContentHash(f.plan),sourcePolicy:f.plan.sourcePolicy}),readIndependentApproval:fresh.readIndependentApproval,consumeIndependentApproval:fresh.consumeIndependentApproval});
+  const prepared=await execution.prepare(f.scope,f.plan);rejectConsumed=true;
+  await expect(execution.claim(f.scope,prepared.id)).rejects.toThrow('baseline_changed_after_consumption');
+  expect(await client.durableAgentWorkflow.findUnique({where:{id:a.id}})).toMatchObject({version:0,currentStep:'approved'});
+  expect(await client.durableAgentWorkflow.findUnique({where:{id:prepared.id}})).toMatchObject({attemptCount:0,currentStep:'prepared'});
+  expect(await client.durableAgentWorkflowEvent.count({where:{workflowRunId:a.id}})).toBe(1);
+  rejectConsumed=false;await client.durableAgentWorkflow.update({where:{id:policyId},data:{inputJson:{digest:'d'.repeat(64)}}});
+  await expect(execution.claim(f.scope,prepared.id)).rejects.toThrow('baseline_changed');
+  await client.durableAgentWorkflow.update({where:{id:policyId},data:{inputJson:{digest}}});
+  const claims=await Promise.all([execution.claim(f.scope,prepared.id),execution.claim(f.scope,prepared.id)]);
+  expect(claims.filter(c=>c.claimed)).toHaveLength(1);
+  const events=await client.durableAgentWorkflowEvent.findMany({where:{workflowRunId:a.id},orderBy:{sequence:'asc'}});
+  expect(events).toHaveLength(2);expect(events[0].detailJson.bindingDigest).toBe(events[1].detailJson.bindingDigest);
+ });
+
+ it('refuses a live approval when its final baseline callback waits past actual database expiry',async()=>{
+  const f=fixture(),digest='c'.repeat(64);f.plan.expiresAt=new Date(Date.now()+1200).toISOString();
+  let checks=0,wait=false;
+  const store=createReleaseDeploymentApprovalStore(client,{assertCurrent:async()=>{},readCurrentPlan:async()=>f.plan,assertGovernanceBaseline:async(tx:any)=>{
+   if(wait&&++checks===2)await tx.$queryRaw`SELECT 1 AS done FROM pg_sleep(GREATEST(0,EXTRACT(EPOCH FROM (${new Date(f.plan.expiresAt)}::timestamptz-clock_timestamp())))+0.02)`;
+  }});
+  const a=await store.issue(f.reviewer,f.plan,randomUUID(),digest);
+  expect(Date.now()).toBeLessThan(Date.parse(a.expiresAt));wait=true;
+  await expect(client.$transaction((tx:any)=>store.readIndependentApproval(tx,f.scope,f.plan))).rejects.toThrow();
+  expect(await client.durableAgentWorkflow.findUnique({where:{id:a.id}})).toMatchObject({currentStep:'approved',version:0});
+  expect(await client.durableAgentWorkflowEvent.count({where:{workflowRunId:a.id}})).toBe(1);
+ });
+
 });

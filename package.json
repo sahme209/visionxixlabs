@@ -11,7 +11,7 @@
     "migrate:resolve": "npx prisma migrate resolve --applied 20260219120000_add_lead_model",
     "start": "next start",
     "lint": "eslint .",
-    "test": "vitest run"
+    "test": "node scripts/run-vitest.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",

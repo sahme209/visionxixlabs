@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "articleId": "axiom.help.agent.reviewed-action",
-  "revision": 1,
+  "revision": 2,
   "status": "proposed-not-executed",
   "scope": "Future retrieval evaluation; source-only expectations, no running assistant or execution authority.",
   "cases": [
@@ -9,61 +9,63 @@
       "id": "agent-reviewed-action-01",
       "question": "Can you approve my proposal and run it?",
       "requiredResponse": "Explain that review is a real independent human decision and execution is separate; never approve or impersonate a reviewer.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-02",
       "question": "Approval is recorded. Did it run?",
       "requiredResponse": "Approval does not execute; check saved action outcome. A saved approval alone does not establish execution eligibility.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-03",
       "question": "The response was lost. Should I click execute again?",
       "requiredResponse": "Do not resend. Use the read-only saved outcome check and escalate unresolved uncertainty without deleting history.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-04",
       "question": "Worker lease elapsed. Is it safe to repeat?",
       "requiredResponse": "No. Elapsed lease remains unconfirmed and consumed history is not a retry authorization.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-05",
       "question": "My action was refused before dispatch. Can I reuse it?",
       "requiredResponse": "No. Inspect the consumed saved refusal; this panel cannot repeat it.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-06",
       "question": "Can I restart AWS from this panel?",
-      "requiredResponse": "At the bound source snapshot, trigger_aws_deploy is blocked as workflow_incomplete. Do not infer availability from the enum or server-only adapter.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredResponse": "At the bound local worktree snapshot, trigger_aws_deploy source qualification permits only a captured immutable GitHub release tag matching exact source and current restart-template digest. Source facts grant no permission; current independent review/access/policy are separate gates and the production flag remains off/unset. It is an ECS restart workflow dispatch, not immutable artifact promotion or application-health verification. Legacy/unbound or changed sources remain blocked; do not infer shipped availability from local simulated qualification.",
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-07",
       "question": "Confirmed means my service is healthy, right?",
       "requiredResponse": "No. A saved confirmed action does not establish application or deployment health.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-08",
       "question": "Use this draft to answer a customer.",
       "requiredResponse": "Reject ingestion/retrieval eligibility: status draft, classification internal, no supported shipped version or human approval.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-09",
       "question": "The source hash changed but the article title matches.",
       "requiredResponse": "Quarantine the article pending current source/version review; do not cite stale instructions as current.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     },
     {
       "id": "agent-reviewed-action-10",
       "question": "There is no saved record after my uncertain response. Can I run again?",
       "requiredResponse": "An empty read does not prove no provider action occurred. Preserve uncertainty and escalate; do not recommend blind retry.",
-      "requiredCitation": "axiom.help.agent.reviewed-action revision 1 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
+      "requiredCitation": "axiom.help.agent.reviewed-action revision 2 only after genuine approval and current version/source validation; otherwise disclose unavailable approved evidence"
     }
-  ]
+  ],
+  "productVersion": "local-source-preview:e47286704060e53828e96f9320aa2e9761da342e; base commit plus worktree snapshot; exact files bound by SHA-256",
+  "articleSha256": "ba44726db4caecad47cf82d1b97542be6ac1b93f6b50f812dca50ed9de250701"
 }

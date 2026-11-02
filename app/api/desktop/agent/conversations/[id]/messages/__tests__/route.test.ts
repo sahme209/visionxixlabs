@@ -473,9 +473,10 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     mocks.runDecisionLoop.mockResolvedValue({kind: "proposal", toolName, args, message: "Proposed change", riskLevel: "medium"});
     mocks.prepareProposalArgsForReview.mockResolvedValue({ok: true, args});
     const {POST} = await import("../route");
-    const response = await POST(request({message: "Prepare requested change", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode}}), params);
+    const req=request({message: "Prepare requested change", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode}});
+    const response = await POST(req, params);
     expect((await response.json()).data.proposal).not.toBeNull();
-    expect(mocks.prepareProposalArgsForReview).toHaveBeenCalledWith("org-1", toolName, args, expect.anything());
+    expect(mocks.prepareProposalArgsForReview).toHaveBeenCalledWith("org-1", toolName, args, expect.anything(), req.signal);
     expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({data: expect.objectContaining({status: "proposed", toolName})}));
   });
   it.each([true, false])("keeps coordinated file snapshots and proposal approval mandatory (snapshot=%s)", async snapshotReady => {
@@ -484,9 +485,10 @@ describe("POST /api/desktop/agent/conversations/[id]/messages", () => {
     mocks.prepareProposalArgsForReview.mockResolvedValue(snapshotReady ? {ok: true, args} : {ok: false, error: "file_review_unavailable"});
     mocks.createProposal.mockResolvedValue({id: "mixed", toolName: "commit_github_files", argsJson: args, riskLevel: "medium", status: "proposed"});
     const {POST} = await import("../route");
-    const response = await POST(request({message: "Update source and tests", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode: "code"}}), params);
+    const req=request({message: "Update source and tests", workspaceContext: {repositoryFullName: "acme/widgets", branch: "feature", filePath: "src/app.ts", mode: "code"}});
+    const response = await POST(req, params);
     const body = await response.json();
-    expect(mocks.prepareProposalArgsForReview).toHaveBeenCalledWith("org-1", "commit_github_files", args, expect.anything());
+    expect(mocks.prepareProposalArgsForReview).toHaveBeenCalledWith("org-1", "commit_github_files", args, expect.anything(), req.signal);
     if(snapshotReady) {
       expect(body.data.proposal.status).toBe("proposed");
       expect(mocks.createProposal).toHaveBeenCalledWith(expect.objectContaining({data: expect.objectContaining({toolName: "commit_github_files", status: "proposed"})}));

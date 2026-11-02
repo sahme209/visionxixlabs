@@ -36,3 +36,59 @@ it('rolls back issuance if authority changes after persistence',async()=>{const 
 it('connects to the existing execution store without simulation approvals',async()=>{const f=fixture();await f.issue();const execution=createReleaseDeploymentExecutionStore(f.repo,{now:f.deps.now,assertCurrent:async()=>{},readCurrentPlan:async()=>f.plan,verifySupportedSourcePolicy:async()=>({kind:'verified_release_deployment_source_policy_v1',planDigest:sha256ContentHash(f.plan),sourcePolicy:f.plan.sourcePolicy}),readIndependentApproval:f.store.readIndependentApproval,consumeIndependentApproval:f.store.consumeIndependentApproval});const prepared=await execution.prepare(f.executor,f.plan);expect(prepared.state).toBe('prepared');const claims=await Promise.all([execution.claim(f.executor,prepared.id),execution.claim(f.executor,prepared.id)]);expect(claims.filter(v=>v.claimed)).toHaveLength(1);expect(f.rows().find(r=>r.id===prepared.id).attemptCount).toBe(1)});
 
 it('refuses approval that would expire before the deployment window opens',async()=>{const f=fixture();f.plan.windowStart='2026-10-28T22:40:00.000Z';f.plan.expiresAt='2026-10-28T23:00:00.000Z';await expect(f.issue()).rejects.toThrow();expect(f.rows()).toHaveLength(0)});
+
+const baselineDigest='c'.repeat(64);
+it('records a newly reviewed exact baseline binding and checks it again for execution',async()=>{
+ const f=fixture(),assertGovernanceBaseline=vi.fn(async()=>{}),store=createReleaseDeploymentApprovalStore(f.repo,{...f.deps,assertGovernanceBaseline});
+ const a=await store.issue(f.reviewer,f.plan,f.nonce,baselineDigest);
+ expect(a.governanceBaselineDigest).toBe(baselineDigest);
+ expect(f.events()[0].detailJson.bindingDigest).toBe(sha256ContentHash(f.rows()[0].inputJson));
+ expect(await store.readIndependentApproval(f.repo,f.executor,f.plan)).toEqual(a);
+ assertGovernanceBaseline.mockRejectedValue(Error('baseline_changed'));
+ await expect(store.readIndependentApproval(f.repo,f.executor,f.plan)).rejects.toThrow('baseline_changed');
+ expect(f.rows()[0].currentStep).toBe('approved');
+});
+it('refuses a bound decision without a current locked baseline verifier',async()=>{
+ const f=fixture();await expect(f.store.issue(f.reviewer,f.plan,f.nonce,baselineDigest)).rejects.toThrow();expect(f.rows()).toHaveLength(0);
+});
+it('never retrofits a historical approval or silently removes its baseline on replay',async()=>{
+ const f=fixture(),store=createReleaseDeploymentApprovalStore(f.repo,{...f.deps,assertGovernanceBaseline:async()=>{}});
+ const legacy=await f.issue();expect(legacy).not.toHaveProperty('governanceBaselineDigest');
+ await expect(store.issue(f.reviewer,f.plan,f.nonce,baselineDigest)).rejects.toThrow();expect(f.rows()[0].inputJson.approval).not.toHaveProperty('governanceBaselineDigest');
+ const g=fixture(),bound=createReleaseDeploymentApprovalStore(g.repo,{...g.deps,assertGovernanceBaseline:async()=>{}});await bound.issue(g.reviewer,g.plan,g.nonce,baselineDigest);
+ await expect(bound.issue(g.reviewer,g.plan,g.nonce)).rejects.toThrow();
+ await expect(bound.issue(g.reviewer,g.plan,g.nonce,'d'.repeat(64))).rejects.toThrow();
+});
+it.each(['remove','replace'])('refuses %s of a saved baseline binding despite current verifier acceptance',async change=>{
+ const f=fixture(),store=createReleaseDeploymentApprovalStore(f.repo,{...f.deps,assertGovernanceBaseline:async()=>{}});await store.issue(f.reviewer,f.plan,f.nonce,baselineDigest);
+ if(change==='remove')delete f.rows()[0].inputJson.approval.governanceBaselineDigest;else f.rows()[0].inputJson.approval.governanceBaselineDigest='d'.repeat(64);
+ await expect(store.readIndependentApproval(f.repo,f.executor,f.plan)).rejects.toThrow();
+});
+it('rolls back approval consumption when the baseline changes after consumption',async()=>{
+ const f=fixture();let valid=true;const store=createReleaseDeploymentApprovalStore(f.repo,{...f.deps,assertGovernanceBaseline:async()=>{if(!valid)throw Error('baseline_changed');if(f.rows()[0]?.currentStep==='consumed'){valid=false;throw Error('baseline_changed')}}});
+ const a=await store.issue(f.reviewer,f.plan,f.nonce,baselineDigest),id=f.operation(a);
+ await expect(f.repo.$transaction((tx:any)=>store.consumeIndependentApproval(tx,f.executor,a,id))).rejects.toThrow('baseline_changed');
+ expect(f.rows()[0]).toMatchObject({currentStep:'approved',version:0});expect(f.events()).toHaveLength(1);
+});
+
+it('refuses saved bound approval through an unconfigured store and preserves revocation',async()=>{
+ const f=fixture(),store=createReleaseDeploymentApprovalStore(f.repo,{...f.deps,assertGovernanceBaseline:async()=>{}}),a=await store.issue(f.reviewer,f.plan,f.nonce,baselineDigest);
+ await expect(f.store.readIndependentApproval(f.repo,f.executor,f.plan)).rejects.toThrow();
+ await f.store.revoke(f.reviewer,a.id,0);expect(f.rows()[0].currentStep).toBe('revoked');
+ expect(f.events()[1].detailJson.bindingDigest).toBe(f.events()[0].detailJson.bindingDigest);
+});
+it('rechecks a baseline changed by the final awaited authority check before persisting',async()=>{
+ const f=fixture();let valid=true;f.deps.assertCurrent.mockImplementation(async()=>{if(f.deps.assertCurrent.mock.calls.length===3)valid=false});
+ const store=createReleaseDeploymentApprovalStore(f.repo,{...f.deps,assertGovernanceBaseline:async()=>{if(!valid)throw Error('baseline_changed')}});
+ await expect(store.issue(f.reviewer,f.plan,f.nonce,baselineDigest)).rejects.toThrow('baseline_changed');expect(f.rows()).toHaveLength(0);
+});
+it.each(['','x'.repeat(64),'c'.repeat(63)])('rejects malformed baseline digest before recording a decision',async digest=>{
+ const f=fixture();await expect(f.store.issue(f.reviewer,f.plan,f.nonce,digest)).rejects.toThrow();expect(f.rows()).toHaveLength(0);
+});
+
+it('refuses when the final awaited baseline proof crosses approval expiry',async()=>{
+ const f=fixture();let checks=0,crossExpiry=false;const store=createReleaseDeploymentApprovalStore(f.repo,{...f.deps,assertGovernanceBaseline:async()=>{if(crossExpiry&&++checks===2)f.advance()}});
+ await store.issue(f.reviewer,f.plan,f.nonce,baselineDigest);crossExpiry=true;
+ await expect(store.readIndependentApproval(f.repo,f.executor,f.plan)).rejects.toThrow();
+ expect(f.rows()[0].currentStep).toBe('approved');expect(f.events()).toHaveLength(1);
+});

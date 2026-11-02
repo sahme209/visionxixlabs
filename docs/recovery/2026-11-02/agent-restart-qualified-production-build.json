@@ -1,0 +1,9 @@
+{
+  "source": "9be0abbab5137da307ec4e9fe59e8886593c804d",
+  "stage": "/private/tmp/axiom-agent-restart-qualified-production-zgbfnije",
+  "log": "/private/tmp/axiom-agent-restart-qualified-production-9be0abba.log",
+  "archiveSha256": "daa0d95449eb3ff70a0b38c0d619ae8271fc5de688b052b1665606287ecdac26",
+  "verifiedRegularFiles": 5810,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy"
+}

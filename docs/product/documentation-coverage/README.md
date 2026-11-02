@@ -34,3 +34,24 @@ The initial extraction set includes buttons, fields, links and common Axiom wrap
 Before ingestion, validate the record against the existing schema, verify every source hash, review factual claims against the supported release, capture relevant real screens/states with safe fixtures and accessible alternatives, and obtain a genuine review. Record its date and actual version only after verification. Retain immutable revisions; append a new revision with explicit supersession instead of silently rewriting approved history. A source/hash mismatch quarantines the record until re-review. Unknown and consumed execution history must remain intact.
 
 [Representative retrieval cases](agent-reviewed-action-evaluation.json) specify required evidence and safe responses. These are evaluation fixtures, not evidence of a running retriever or passing retrieval tests. An eventual evaluator must reject this draft for customer answers, require an approved current version, return article/revision citations, test source/version/supersession failures, and disclose missing evidence. Do not ingest tenant content, credentials or approval material as public help. Future local/cloud assistant architecture and cloud data-boundary review remain separate open gates.
+
+## Current source draft, revision 2
+
+[Revision 2](articles/agent-reviewed-action.r2.json) replaces revision 1 for the local source-review queue through `supersedes: axiom.help.agent.reviewed-action@1`. It binds 13 exact source hashes to base commit `e47286704060e53828e96f9320aa2e9761da342e` plus the worktree snapshot. Its AWS wording is limited to the exact immutable release-tag/current-template source profile now qualified locally; source qualification grants no permission. Production activation, genuine human review and live acceptance are not evidenced. The article remains internal/draft/source-only with no media.
+
+Revision 1 bytes remain unchanged (`40a20b6f51440b366e164b37023010e8cd0ca770db7b71419832096246f9f157` SHA-256). Its [historical fixtures](agent-reviewed-action-evaluation.r1.json) remain bound to those bytes and the old version. Current source validation of that historical bundle is expected to fail on the changed eligibility source: quarantine it rather than rebinding the historical record. The main evaluation fixture file now targets revision 2 and its exact bytes; the AWS case has been reviewed against the newly qualified source limitations. These ten cases remain proposed, not executed retrieval evaluations. The local validator defaults to revision 2.
+
+## Offline schema and integrity checks
+
+The local validator uses the installed `ajv-formats` dependency's Ajv 8 draft-2020-12 engine and date/time formats; it never installs dependencies or contacts a provider. `article-record.schema.json` remains the article contract; `retrieval-evaluation.schema.json` now defines the proposed fixture contract. Fixtures bind the exact article bytes, article ID/revision and product version. Changing an article requires deliberate fixture re-review and rebinding; changing a source fails validation until the article is re-reviewed. The validator does not update hashes automatically.
+
+From the repository root, run:
+
+```sh
+node --test docs/product/documentation-coverage/validate-support-knowledge.test.cjs
+node docs/product/documentation-coverage/validate-support-knowledge.cjs --version 'local-source-preview:e47286704060e53828e96f9320aa2e9761da342e; base commit plus worktree snapshot; exact files bound by SHA-256'
+```
+
+Use `--article`, `--evaluation`, `--root` and an explicit `--version` for another bundle. Unknown CLI arguments fail. The validator checks full schemas, formats, target-version equality, fixture/article integrity, unique question IDs, source/media hashes, and readable evidence/transcript paths contained within the repository (including resolved symlinks). It reads files only and preserves execution and article history. Unavailable dependencies, files, mismatched versions and stale hashes fail closed.
+
+`--customer` additionally fails on a draft, superseded/withdrawn record, internal classification, local-preview version or media lacking public review. For the current article, this **must fail** with `article_not_approved`, `article_not_public` and `local_preview_not_shipped`. A normal-mode pass means a well-formed and hash-matching draft, not approved customer content. These metadata checks cannot authenticate a human reviewer, establish release availability, detect a newer article absent from the supplied bundle, prove semantic accuracy or execute retrieval. A future ingestion/catalog process must enforce genuine editorial approval, the actual supported-version catalog and supersession across all revisions; proposed answer text is not a passing retrieval result. No assistant or ingestion service is activated by these files.

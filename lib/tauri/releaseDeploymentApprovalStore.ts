@@ -14,6 +14,9 @@ export interface ReleaseDeploymentApprovalDependencies {
   * No client role flags or substitution of simulation/merge approvals. */
  assertCurrent?:(tx:Tx,scope:DeploymentScope,plan:Readonly<DeploymentPlan>,approval:Readonly<DeploymentApproval>|undefined,role:'approver'|'executor')=>Promise<void>;
  readCurrentPlan?:(tx:Tx,scope:DeploymentScope,plan:Readonly<DeploymentPlan>)=>Promise<unknown>;
+ /** DB-only current baseline/source proof using this transaction; sources must
+  * be warmed outside locks. A digest is never authority without this verifier. */
+ assertGovernanceBaseline?:(tx:Tx,scope:DeploymentScope,baselineDigest:string,plan:Readonly<DeploymentPlan>)=>Promise<void>;
  now?:()=>Date;
 }
 export const releaseDeploymentApprovalId=(p:DeploymentPlan)=>'release_deploy_approval_'+sha256ContentHash({organizationId:p.organizationId,planDigest:sha256ContentHash(p),executorUserId:p.executorUserId});
@@ -26,12 +29,19 @@ export function createReleaseDeploymentApprovalStore(repo:ReleaseOperationPlanRe
   ready();if(s.organizationId!==p.organizationId||role==='executor'&&s.actorUserId!==p.executorUserId||role==='approver'&&[p.creatorUserId,p.requesterUserId,p.executorUserId].includes(s.actorUserId))refuse();
   await deps.assertCurrent!(tx,structuredClone(s),structuredClone(p),a&&structuredClone(a),role);
  }
+ async function baseline(tx:Tx,s:DeploymentScope,p:DeploymentPlan,a:DeploymentApproval){
+  if(a.governanceBaselineDigest){if(!deps.assertGovernanceBaseline)refuse();await deps.assertGovernanceBaseline!(tx,structuredClone(s),a.governanceBaselineDigest,structuredClone(p))}
+ }
+ const auditDetail=(b:z.infer<typeof bindingSchema>)=>({planDigest:b.approval.planDigest,purpose:'release_deployment',...(b.approval.governanceBaselineDigest?{bindingDigest:sha256ContentHash(b)}:{})});
  async function current(tx:Tx,s:DeploymentScope,p:DeploymentPlan,a:DeploymentApproval,role:'approver'|'executor'){
-  independent(p,a);await authority(tx,s,p,a,role);
+  independent(p,a);await authority(tx,s,p,a,role);await baseline(tx,s,p,a);
   if(!same(deploymentPlanSchema.parse(await deps.readCurrentPlan!(tx,s,structuredClone(p))),p))refuse();
   const end=new Date(a.expiresAt);if(now()>=end)refuse();
+  await authority(tx,s,p,a,role);await baseline(tx,s,p,a);
+  // Authority/source locks can wait beyond expiry. The database clock must be
+  // the final awaited check, with the application clock checked again after it.
   const clock=await tx.$queryRaw<Array<{live:boolean}>>`SELECT clock_timestamp() < ${end} AS "live"`;
-  if(clock.length!==1||clock[0].live!==true)refuse();await authority(tx,s,p,a,role);
+  if(clock.length!==1||clock[0].live!==true||now()>=end)refuse();
  }
  function unpack(row:Row,s:DeploymentScope){
   const b=bindingSchema.parse(row.inputJson),state=stateSchema.parse(row.stateJson);independent(b.plan,b.approval);
@@ -43,24 +53,24 @@ export function createReleaseDeploymentApprovalStore(repo:ReleaseOperationPlanRe
   const rows=await tx.$queryRaw<Row[]>`SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${id} AND "organizationId"=${s.organizationId} AND "workflowKind"=${RELEASE_DEPLOYMENT_APPROVAL_KIND} FOR UPDATE`;
   if(rows.length!==1)refuse();const row=rows[0],{b,state}=unpack(row,s);
   const events=await tx.durableAgentWorkflowEvent.findMany({where:{workflowRunId:id,organizationId:s.organizationId},orderBy:{sequence:'asc'},take:3});
-  if(events.length!==row.version+1||events.some((e,n)=>e.workflowRunId!==id||e.organizationId!==s.organizationId||e.sequence!==n||e.actorKind!=='user'||e.actorId!==(n&&state.status==='consumed'?b.plan.executorUserId:b.approval.approverUserId)||e.eventType!=='release_deployment_approval.'+(n?state.status:'approved')||!same(e.detailJson,{planDigest:b.approval.planDigest,purpose:'release_deployment'})||!Number.isFinite(e.occurredAt.getTime())))refuse();
+  if(events.length!==row.version+1||events.some((e,n)=>e.workflowRunId!==id||e.organizationId!==s.organizationId||e.sequence!==n||e.actorKind!=='user'||e.actorId!==(n&&state.status==='consumed'?b.plan.executorUserId:b.approval.approverUserId)||e.eventType!=='release_deployment_approval.'+(n?state.status:'approved')||!same(e.detailJson,auditDetail(b))||!Number.isFinite(e.occurredAt.getTime())))refuse();
   return row;
  }
- async function event(tx:Tx,row:Row,actor:string){const {b}=unpack(row,{organizationId:row.organizationId,actorUserId:actor,sessionId:'event'});await tx.durableAgentWorkflowEvent.create({data:{workflowRunId:row.id,organizationId:row.organizationId,sequence:row.version,eventType:'release_deployment_approval.'+row.currentStep,actorKind:'user',actorId:actor,detailJson:{planDigest:b.approval.planDigest,purpose:'release_deployment'},occurredAt:now()}})}
+ async function event(tx:Tx,row:Row,actor:string){const {b}=unpack(row,{organizationId:row.organizationId,actorUserId:actor,sessionId:'event'});await tx.durableAgentWorkflowEvent.create({data:{workflowRunId:row.id,organizationId:row.organizationId,sequence:row.version,eventType:'release_deployment_approval.'+row.currentStep,actorKind:'user',actorId:actor,detailJson:auditDetail(b),occurredAt:now()}})}
  async function change(tx:Tx,row:Row,state:z.infer<typeof stateSchema>,actor:string){
   const data={version:{increment:1},status:state.status==='revoked'?'cancelled':'completed',currentStep:state.status,stateJson:state,updatedAt:now()};
   const result=await tx.durableAgentWorkflow.updateMany({where:{id:row.id,organizationId:row.organizationId,workflowKind:RELEASE_DEPLOYMENT_APPROVAL_KIND,version:0,status:'paused_for_input',currentStep:'approved',attemptCount:0,maxAttempts:1,inputJson:{equals:row.inputJson},leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null},data});if(result.count!==1)refuse();
   const next={...row,...data,version:1};await event(tx,next,actor);return next;
  }
  return{
-  async issue(rawScope:DeploymentScope,rawPlan:DeploymentPlan,clientRequestId:string){
-   ready();const s=deploymentScopeSchema.parse(rawScope),p=deploymentPlanSchema.parse(rawPlan);z.string().uuid().parse(clientRequestId);
+  async issue(rawScope:DeploymentScope,rawPlan:DeploymentPlan,clientRequestId:string,governanceBaselineDigest?:string){
+   ready();const s=deploymentScopeSchema.parse(rawScope),p=deploymentPlanSchema.parse(rawPlan);z.string().uuid().parse(clientRequestId);if(governanceBaselineDigest!==undefined)z.string().regex(/^[a-f0-9]{64}$/).parse(governanceBaselineDigest);
    return repo.$transaction(async tx=>{
     await authority(tx,s,p,undefined,'approver');const at=now();
-    const approval=deploymentApprovalSchema.parse({kind:'verified_release_deployment_approval_v1',purpose:'release_deployment',id:releaseDeploymentApprovalId(p),organizationId:s.organizationId,planDigest:sha256ContentHash(p),executorUserId:p.executorUserId,approverUserId:s.actorUserId,approverSessionId:s.sessionId,sourcePolicy:p.sourcePolicy,expiresAt:new Date(Math.min(Date.parse(p.expiresAt),at.getTime()+30*60000)).toISOString()});
+    const approval=deploymentApprovalSchema.parse({kind:'verified_release_deployment_approval_v1',purpose:'release_deployment',id:releaseDeploymentApprovalId(p),organizationId:s.organizationId,planDigest:sha256ContentHash(p),executorUserId:p.executorUserId,approverUserId:s.actorUserId,approverSessionId:s.sessionId,sourcePolicy:p.sourcePolicy,...(governanceBaselineDigest!==undefined?{governanceBaselineDigest}:{}),expiresAt:new Date(Math.min(Date.parse(p.expiresAt),at.getTime()+30*60000)).toISOString()});
     if(Date.parse(approval.expiresAt)<=Date.parse(p.windowStart))refuse();
     const existing=await tx.durableAgentWorkflow.findFirst({where:{id:approval.id,organizationId:s.organizationId,workflowKind:RELEASE_DEPLOYMENT_APPROVAL_KIND}});
-    if(existing){const row=await load(tx,s,approval.id),{b,state}=unpack(row,s);if(b.clientRequestId!==clientRequestId||b.approval.approverUserId!==s.actorUserId||b.approval.approverSessionId!==s.sessionId||!same(b.plan,p)||state.status!=='approved')refuse();await current(tx,s,p,b.approval,'approver');return structuredClone(b.approval)}
+    if(existing){const row=await load(tx,s,approval.id),{b,state}=unpack(row,s);if(b.approval.governanceBaselineDigest!==governanceBaselineDigest||b.clientRequestId!==clientRequestId||b.approval.approverUserId!==s.actorUserId||b.approval.approverSessionId!==s.sessionId||!same(b.plan,p)||state.status!=='approved')refuse();await current(tx,s,p,b.approval,'approver');return structuredClone(b.approval)}
     await current(tx,s,p,approval,'approver');const row=await tx.durableAgentWorkflow.create({data:{id:approval.id,organizationId:s.organizationId,workflowKind:RELEASE_DEPLOYMENT_APPROVAL_KIND,objective:'Independent exact deployment approval',requestedByUserId:s.actorUserId,status:'paused_for_input',autonomyLevel:'observe',currentStep:'approved',inputJson:{format:1,plan:p,approval,clientRequestId,createdAt:at.toISOString()},stateJson:{status:'approved'},attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,createdAt:at,updatedAt:at}});
     await event(tx,row,s.actorUserId);await current(tx,s,p,approval,'approver');return structuredClone(approval);
    });

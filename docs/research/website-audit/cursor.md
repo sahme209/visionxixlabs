@@ -81,3 +81,23 @@ Original Axiom decisions:
 - Document each data class and the exact effect of archive, delete and recovery controls. Never imply that hiding a run deletes its evidence or credentials.
 
 Remaining: visually open this page and follow its configuration destination; inspect rendered hierarchy, navigation and keyboard/mobile behavior. This addition does not complete B1 or transfer any vendor security, retention or isolation claim to Axiom.
+
+## November2 resumed: visible security-to-configuration journey
+
+This later observation closes the earlier non-visible section's page/navigation gap only. The coordinating main thread opened https://cursor.com/docs/cloud-agent/security in a user-visible in-app browser, followed the actual main-content **Secrets & Network** link, and verified the destination https://cursor.com/docs/cloud-agent/security-network and matching title/H1. Selecting the **Network access** contents link changed the URL to `#network-access`. The emitted 1280×720 screenshot showed the active left navigation, main Network access/private-network section and selected right-hand contents entry. The screenshot was displayed, not saved as an archival image. No keyboard, mobile or exhaustive-control acceptance is implied.
+
+The official [configuration reference](https://cursor.com/docs/cloud-agent/security-network) and the visible page's accessibility text distinguish network modes, essential-domain exceptions, user/environment/team precedence and the limits of an Enterprise lock. The document explicitly distinguishes hosted runs from machines governed by their own network controls. This is documentation evidence, not a test of those controls. No dashboard setting, authentication, form, connection or provider action occurred.
+
+Original B2 information-architecture decision: **Security/Trust → control explanation → versioned configuration task → verification/recovery**. Each Axiom control guide should identify the effective value, where it came from, who can change it, scope and exceptions, prerequisites, expected evidence and safe recovery. Place scope limitations alongside the control explanation. A label such as “locked” must not imply coverage of an unsupported executor. Link only implemented controls to executable steps; label preview/planned material explicitly. This proposes original Axiom content organization, not copied vendor settings or a claim those Axiom pages already exist.
+
+### Cross-site continuation checklist
+
+| Reference | Current evidence boundary | Next distinct gap retained |
+|---|---|---|
+| Cursor | Partial visible marketing/docs and this security-to-configuration link/anchor journey; source assertions remain untested. | Remaining demo/submenu controls, secondary destinations and keyboard/mobile checks. |
+| ChatGPT | Partial marketing/plugin/business/pricing plus quickstart setup/example interactions in chatgpt.md. | Docs search and a security/admin task destination. |
+| Claude | Partial public pages, documentation tabs/search and support article in claude.md. | Deeper catalog/detail interactions and secondary destinations. |
+| Codex | Partial public entry, Learn redirect and illustrative permissions selection in codex.md. | Dedicated CLI/IDE/cloud detail and search journey. |
+| Grok | Signed-out composer/menu inspection only in grok.md. | Public company/product/documentation destinations. |
+
+The checklist preserves the requested Cursor → ChatGPT → Claude → Codex → Grok sequence of initial passes. It does not count earlier observations as reverified today. All five retain responsive/accessibility and unique-control gaps; B1 remains incomplete.
