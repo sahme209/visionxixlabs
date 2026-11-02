@@ -95,6 +95,36 @@
       "path": "/private/tmp/axiom-agent-branch-source-pg-final.log",
       "sha256": "f8b9b2db99fd1d38c7042c66f4ddf5e3a0e21410d03e84626c1d8f2ef28241ce",
       "bytes": 751
+    },
+    "branch-review-red": {
+      "path": "/private/tmp/axiom-agent-branch-review-flow-red.log",
+      "sha256": "c25dbf7eceb38410084244070b6589f1916343cca3f0c5c47baa4fb0d33def7d",
+      "bytes": 8496
+    },
+    "branch-review-green": {
+      "path": "/private/tmp/axiom-agent-branch-review-flow-green.log",
+      "sha256": "65b82aee13128a40623ffb017887824f1f783f43c18df11cf5dbf9ad65d509c9",
+      "bytes": 638
+    },
+    "branch-review-http-pg": {
+      "path": "/private/tmp/axiom-agent-branch-review-http-pg.log",
+      "sha256": "536e945fa4faeb1c23ed7b8bca4408f052bc2a36d7f28a67cbe554cf8ecfa274",
+      "bytes": 747
+    },
+    "branch-review-server-types": {
+      "path": "/private/tmp/axiom-agent-branch-review-server-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "branch-review-desktop-types": {
+      "path": "/private/tmp/axiom-agent-branch-review-desktop-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "branch-review-desktop-build": {
+      "path": "/private/tmp/axiom-agent-branch-review-desktop-build.log",
+      "sha256": "d412aa14f814d47fe58b5d802e41e4086a13d88f202b6148e202275e1d82f3c1",
+      "bytes": 2867
     }
   },
   "fixed_tools_and_controls": {

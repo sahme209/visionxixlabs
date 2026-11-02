@@ -159,3 +159,9 @@ Five source-qualified tools can use this local API when its test flag is enabled
 ### Local branch proposal source binding
 
 Proposal creation now captures the actual tenant-scoped base commit, discards model evidence, and binds it into the original review digest. The fixed transport sends only that SHA, refuses observed drift, and confirms only the exact response.82 focused checks, five actual isolated PostgreSQL coordinator journeys and scoped types pass with simulated provider/human/auth boundaries. Public branch controls remain blocked until complete review display/customer composition; PR/AWS source gates and full original scope remain open. Browser approval copy now reflects review-only behavior. See ../recovery/2026-11-02/agent-branch-source-local-progress.md.
+
+### Local branch customer composition and parallel website audit
+
+Shared pure source parsing now renders the exact reviewed commit in native/browser cards, blocks approval for missing/mismatched historical snapshots, and qualifies branch-only requester preparation/execution through the current store.61 focused checks, two actual isolated PostgreSQL HTTP/provider-composition journeys, server/desktop types and frontend build pass; identities/provider replies remain simulated. PR/AWS source binding, full Governance and native/live acceptance remain open. See ../recovery/2026-11-02/agent-branch-review-flow-local-progress.md.
+
+B1 visible Cursor Teams follow-up inspected page hierarchy and all five FAQ expansions. Saved the public screenshot and original Axiom implications in ../research/website-audit/cursor.md. This is partial research, not completion of Cursor or other reference sites. No account, billing or contact action occurred.

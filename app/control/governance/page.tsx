@@ -1,3 +1,4 @@
+import { githubBranchReviewFromArgs } from "@/lib/tauri/agentGithubBranchReview";
 import { redirect } from "next/navigation";
 
 import { currentContext } from "@/lib/auth/currentContext";
@@ -48,6 +49,7 @@ export default async function GovernancePage() {
             {proposals.map((proposal) => {
               const args = proposal.argsJson && typeof proposal.argsJson === "object" && !Array.isArray(proposal.argsJson) ? proposal.argsJson as Record<string, unknown> : {};
               const review = args._review && typeof args._review === "object" && !Array.isArray(args._review) ? args._review as Record<string, unknown> : null;
+              const branchReview = proposal.toolName === "create_github_branch" ? githubBranchReviewFromArgs(args) : null;
               const isFileWrite = proposal.toolName === "commit_github_file" || proposal.toolName === "commit_github_files";
               const fileReview = fileProposalReview(proposal.toolName, args);
               const isPullRequest = proposal.toolName === "open_github_pull_request";
@@ -55,6 +57,9 @@ export default async function GovernancePage() {
               return (
               <div key={proposal.id} className="grid gap-4 py-4 md:grid-cols-[minmax(0,1fr)_auto_auto] md:items-center">
                 <div className={isFileWrite || isPullRequest ? "min-w-0 md:col-span-3" : "min-w-0"}><p className="text-sm text-zinc-200">{proposal.toolName.replaceAll("_", " ")}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{proposal.id}</p>
+                  {proposal.toolName === "create_github_branch" && <div className="mt-3 space-y-1 break-all text-xs text-zinc-400">
+                    {branchReview ? <><p>Repository: {String(args.repositoryFullName)}</p><p>Create {branchReview.newBranchName} from {branchReview.baseBranch}.</p><p>Reviewed base commit: <span className="font-mono">{branchReview.baseSha}</span></p><p>Approval records your decision only; it does not create a branch. The requester executes separately at this exact commit; a changed base needs a fresh proposal.</p></> : <p role="alert" className="text-amber-300">No bound branch source. Request a new proposal before approval.</p>}
+                  </div>}
                   {isFileWrite && (fileReview ? <details className="mt-3 min-w-0 text-xs text-zinc-400">
                     <summary className="cursor-pointer text-zinc-200">Review file changes</summary>
                     <p className="mt-3 break-all">Repository: {fileReview.repository} · Branch: {fileReview.branch}</p>
@@ -81,7 +86,7 @@ export default async function GovernancePage() {
                   </div>}
                 </div>
                 <div className="text-left sm:text-right"><p className="text-xs uppercase tracking-[0.12em] text-[#ff783d]">{proposal.riskLevel} risk</p><time className="mt-1 block text-xs text-zinc-600">{proposal.createdAt.toLocaleString()}</time></div>
-                <ApprovalDecisionButtons proposalId={proposal.id} ownProposal={proposal.proposedByUserId === String(context.userId)} approveDisabledReason={isPullRequest && !pullReview ? "Pull request review is unavailable. Request a new proposal before approval." : isFileWrite && !fileReview ? "File review is unavailable. Request a new proposal before approval." : proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target" ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
+                <ApprovalDecisionButtons proposalId={proposal.id} ownProposal={proposal.proposedByUserId === String(context.userId)} approveDisabledReason={proposal.toolName === "create_github_branch" && !branchReview ? "No bound branch source. Request a new proposal before approval." : isPullRequest && !pullReview ? "Pull request review is unavailable. Request a new proposal before approval." : isFileWrite && !fileReview ? "File review is unavailable. Request a new proposal before approval." : proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target" ? "No bound target review. Request a new proposal before approval; rejection remains available." : undefined} disabledReason={!canDecide ? "An authorized approver role is required." : !proposal.actionDigest ? "This legacy proposal has no integrity binding and cannot be decided in the browser." : proposal.approvalExpiresAt && proposal.approvalExpiresAt <= new Date() ? "This proposal has expired." : undefined} />
               </div>
             ); })}
           </div>

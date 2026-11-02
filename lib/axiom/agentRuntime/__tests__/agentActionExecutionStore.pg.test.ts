@@ -350,4 +350,26 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
  });
 
+ it.each([false,true])('composes branch requester HTTP with exact commit and changed-source refusal=%s',async changed=>{
+  const t=await fixture(60000,'create_github_branch',()=>({repositoryFullName:'fixture/repository',baseBranch:'main',newBranchName:'reviewed',_review:{kind:'github_branch',baseBranch:'main',newBranchName:'reviewed',baseSha:'a'.repeat(40)}}));
+  const original=await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}});
+  const connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:new Date()};await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:new Date()}});
+  f.principal={id:t.scope.sessionId,userId:t.scope.actorUserId,organizationId:t.org,credentialKind:'desktop_session',capabilities:['workspace:read','github:write']};f.commercial=true;f.token.mockReset();f.token.mockImplementation(async(org:string,repo:unknown,expected:any)=>{expect(org).toBe(t.org);expect(repo).toEqual({owner:'fixture',repo:'repository'});expect(expected).toMatchObject(connection);return{ok:true,token:'SIMULATED_PRIVATE_TOKEN'}});
+  const previous=process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED,compose=(request:any,scope:any)=>createAgentActionExecutionRequestService(request,f.db,scope),handle=createAgentActionExecutionHttp(compose),eligibility=createAgentActionEligibilityHttp(compose),get=()=>new NextRequest('https://fixture.test/readiness?proposalId='+t.proposal.id),post=(body:unknown)=>new NextRequest('https://fixture.test/operations',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
+   expect(url.startsWith('https://api.github.com/repos/fixture/repository/')).toBe(true);
+   if(init.method==='GET')return Response.json({object:{type:'commit',sha:(changed?'b':'a').repeat(40)}});
+   expect(init.method).toBe('POST');expect(JSON.parse(init.body)).toEqual({ref:'refs/heads/reviewed',sha:'a'.repeat(40)});writes++;return Response.json({ref:'refs/heads/reviewed',object:{sha:'a'.repeat(40)}});
+  }));
+  try{
+   process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED='true';
+   const initial=await(await eligibility(get())).json();expect(initial.data).toMatchObject({canPrepare:true,canExecute:false,reason:'ready_to_prepare'});expect(initial.data).not.toHaveProperty('args');expect(initial.data).not.toHaveProperty('source');
+   const prepared=await handle(post({operation:'prepare',proposalId:t.proposal.id}));expect(prepared.status).toBe(201);const id=(await prepared.json()).data.id;
+   expect((await(await eligibility(get())).json()).data).toMatchObject({operationId:id,canExecute:true,canPrepare:false});
+   const executed=await handle(post({operation:'execute',id}));expect(executed.status).toBe(200);expect((await executed.json()).data).toMatchObject({id,state:changed?'refused':'confirmed',attemptCount:1});expect(writes).toBe(changed?0:1);
+   expect((await handle(post({operation:'execute',id}))).status).toBe(409);expect(writes).toBe(changed?0:1);expect(await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}})).toEqual(original);
+   expect((await(await eligibility(get())).json()).data).toMatchObject({canPrepare:false,canExecute:false,reason:'operation_consumed'});
+  }finally{if(previous===undefined)delete process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED;else process.env.AXIOM_AGENT_REQUESTER_EXECUTION_ENABLED=previous;f.principal=null;f.commercial=true;}
+ });
+
 });

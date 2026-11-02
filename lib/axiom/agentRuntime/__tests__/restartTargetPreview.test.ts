@@ -28,9 +28,29 @@ describe("real ECS approval target previews", () => {
     mocks.proposals.mockResolvedValue([{ ...proposal, argsJson: { environmentId: "env-prod" } }]);
     const html = renderToStaticMarkup(await GovernancePage());
     const reject = html.match(/<button[^>]*>Reject<\/button>/)?.[0];
-    const approve = html.match(/<button[^>]*>Approve &amp; execute<\/button>/)?.[0];
+    const approve = html.match(/<button[^>]*>Record approval<\/button>/)?.[0];
     expect(reject).toBeDefined(); expect(reject).not.toContain('disabled=""');
     expect(approve).toContain('disabled=""'); expect(html).toContain("rejection remains available");
   });
 
+});
+
+
+describe("reviewed branch source previews", () => {
+  const args = { repositoryFullName: "fixture/repository", baseBranch: "main", newBranchName: "reviewed", _review: { kind: "github_branch", baseBranch: "main", newBranchName: "reviewed", baseSha: "a".repeat(40) } };
+  const branch = { ...proposal, toolName: "create_github_branch", argsJson: args };
+  it("native shows the exact captured commit before expanding details", () => {
+    const html=renderToStaticMarkup(createElement(ProposalCard,{proposal:{...branch,createdAt:branch.createdAt.toISOString()},deciding:false,onApprove(){},onReject(){}}));
+    expect(html).toContain(args._review.baseSha);expect(html).toContain("Reviewed base commit");expect(html).toContain("records this exact review only");
+  });
+  it("native refuses a historical branch with no source binding but preserves rejection", () => {
+    const html=renderToStaticMarkup(createElement(ProposalCard,{proposal:{...branch,createdAt:branch.createdAt.toISOString(),argsJson:{...args,_review:null}},deciding:false,onApprove(){},onReject(){}}));
+    expect(html.match(/<button[^>]*>Record approval<\/button>/)?.[0]).toContain('disabled=""');expect(html.match(/<button[^>]*>Reject<\/button>/)?.[0]).not.toContain('disabled=""');expect(html).toContain("No bound branch source");
+  });
+  it("browser shows the same exact captured commit and review-only semantics", async () => {
+    mocks.proposals.mockResolvedValue([branch]);const html=renderToStaticMarkup(await GovernancePage());expect(html).toContain(args._review.baseSha);expect(html).toContain("Reviewed base commit");expect(html).toContain("does not create a branch");
+  });
+  it("browser refuses mismatched captured branch names", async () => {
+    mocks.proposals.mockResolvedValue([{...branch,argsJson:{...args,_review:{...args._review,newBranchName:'another'}}}]);const html=renderToStaticMarkup(await GovernancePage());expect(html.match(/<button[^>]*>Record approval<\/button>/)?.[0]).toContain('disabled=""');expect(html).toContain("No bound branch source");
+  });
 });

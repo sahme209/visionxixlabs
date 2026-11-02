@@ -1,4 +1,5 @@
 import "server-only";
+import { isAgentGithubBranchReference } from "@/lib/tauri/agentGithubBranchReview";
 import { captureRestartTarget, type RestartTargetRepo } from "./restartTargetReview";
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
 
@@ -43,8 +44,7 @@ export async function prepareProposalArgsForReview(
   }
   if (toolName === "create_github_branch") {
     const parsed = typeof args.repositoryFullName === "string" ? parseRepositoryFullName(args.repositoryFullName) : null;
-    const validRef = (value: unknown): value is string => typeof value === "string" && value.length > 0 && value.length <= 240 && !value.startsWith("-") && !value.includes("..") && !/[\x00-\x20\x7f~^:?*\[\\]/.test(value) && !value.endsWith("/") && !value.endsWith(".lock");
-    if (!parsed || !validRef(args.baseBranch) || !validRef(args.newBranchName) || args.baseBranch === args.newBranchName) return { ok: false, error: "invalid_branch_proposal" };
+    if (!parsed || !isAgentGithubBranchReference(args.baseBranch) || !isAgentGithubBranchReference(args.newBranchName) || args.baseBranch === args.newBranchName) return { ok: false, error: "invalid_branch_proposal" };
     try {
       const token = await resolveTenantScopedToken(organizationId, parsed);
       if (!token.ok) return { ok: false, error: "branch_review_unavailable" };
@@ -136,12 +136,4 @@ export function githubFileReviewFromArgs(args: Record<string, unknown>): GithubF
   };
 }
 
-/** Source evidence is part of the server-created proposal digest, never supplied
- * as authority by an execution request. Old symbolic proposals are ineligible. */
-export function githubBranchReviewFromArgs(args: Record<string, unknown>): { kind: "github_branch"; baseBranch: string; newBranchName: string; baseSha: string } | null {
-  const value = args._review;
-  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
-  const review = value as Record<string, unknown>;
-  if (review.kind !== "github_branch" || review.baseBranch !== args.baseBranch || review.newBranchName !== args.newBranchName || typeof review.baseBranch !== "string" || typeof review.newBranchName !== "string" || typeof review.baseSha !== "string" || !/^[a-f0-9]{40}$/.test(review.baseSha)) return null;
-  return { kind: "github_branch", baseBranch: review.baseBranch, newBranchName: review.newBranchName, baseSha: review.baseSha };
-}
+export { githubBranchReviewFromArgs } from "@/lib/tauri/agentGithubBranchReview";
