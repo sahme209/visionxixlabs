@@ -108,7 +108,8 @@ describe("inactive original Stripe TEST proof adapter", () => {
 describe("original proof composed with existing intent CAS", () => {
   function composed(failConfirmation = false) {
     const f = fixture(); let row: Intent | null = null; let consumed = false; let ownContract: Contract | null = null; let bindOnCapture = false; let legacyBound = false; let authorized = true; let failOnce = failConfirmation; let coverage: Awaited<ReturnType<Transaction["coverage"]>> = null;
-    const tx: Transaction = { invalidateCoverage: async () => { throw new Error("unexpected"); }, currentTime: async () => new Date(), coverage: async () => structuredClone(coverage),
+    const tx: Transaction = { invalidateCoverage: async () => { throw new Error("unexpected"); }, // Pin the ledger clock inside the fixed paidFixture invoice period; wall time must not silently expire this success fixture.
+      currentTime: async () => new Date("2026-10-15T12:00:00.000Z"), coverage: async () => structuredClone(coverage),
       eligible: async () => authorized, acceptedSeats: async () => 1, intent: async () => row,
       activeIntent: async () => row, insertIntent: async i => { row = structuredClone(i); },
       saveIntent: async (i, revision) => {

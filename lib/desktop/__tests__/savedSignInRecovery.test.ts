@@ -47,7 +47,7 @@ it("recovers a transient saved sign-in failure through the mounted App without w
   expect(fetchMock).toHaveBeenCalledTimes(1);
   fireEvent.click(screen.getByRole("button", { name: "Retry saved sign-in" }));
   expect(screen.queryByText(/private transport payload/)).toBeNull();
-  await screen.findByRole("heading", {name: "What would you like to accomplish today?"});
+  await screen.findByRole("heading", {name: "What are we working on?"});
   fireEvent.click(screen.getByRole("button", {name: /Build with AI/}));
   await screen.findByText("Verified operational workspace");
   expect(desktopClient.config.sessionToken).toBe(key);

@@ -14,8 +14,10 @@ interface Job { if?: string; environment?: string; steps: Step[]; outputs?: Reco
 const workflow = parse(readFileSync(join(process.cwd(), ".github/workflows/desktop-release.yml"), "utf8")) as { permissions: Record<string, string>; on: { workflow_dispatch: { inputs: { publish: { default: boolean } } } }; jobs: Record<string, Job> };
 function step(job: string, name: string): Step { const found = workflow.jobs[job].steps.find(item => item.name === name); if (!found?.run) throw Error(`Missing actual workflow step: ${name}`); return found; }
 function nodeBlock(job: string, name: string) { const match = step(job, name).run!.match(/node <<'NODE'\n([\s\S]*?)\nNODE/); if (!match) throw Error("Node boundary missing"); return match[1]; }
+// macOS TMPDIR paths can exceed the Unix socket limit used by gpg-agent.
+const fixtureTempRoot = process.platform === "darwin" ? "/tmp" : tmpdir();
 const temporary: string[] = [];
-function directory() { const value = mkdtempSync(join(tmpdir(), "axiom-native-release-")); temporary.push(value); return value; }
+function directory() { const value = mkdtempSync(join(fixtureTempRoot, "ax-native-")); temporary.push(value); return value; }
 function put(root: string, name: string, content: string | Buffer) { const file = join(root, name); mkdirSync(join(file, ".."), { recursive: true }); writeFileSync(file, content); }
 function json(root: string, name: string, value: unknown) { put(root, name, JSON.stringify(value)); }
 function hash(bytes: string | Buffer) { return createHash("sha256").update(bytes).digest("hex"); }
@@ -226,7 +228,7 @@ let keyDirectory: string; let publicKey: Buffer; let privateKey: string; let fin
 beforeAll(() => {
   // Synthetic test-only keys in an explicit temporary homedir, never personal
   // or configured release credentials. No provider/network request occurs.
-  keyDirectory = mkdtempSync(join(tmpdir(), "axiom-synthetic-release-key-"));
+  keyDirectory = mkdtempSync(join(fixtureTempRoot, "ax-key-"));
   const generated = spawnSync("gpg", ["--homedir", keyDirectory, "--batch", "--pinentry-mode", "loopback", "--passphrase", "", "--quick-generate-key", "Axiom isolated release test <fixture@example.invalid>", "ed25519", "sign", "0"], { encoding: "utf8", timeout: 20_000 });
   expect(generated.status, generated.stderr).toBe(0);
   const listed = spawnSync("gpg", ["--homedir", keyDirectory, "--batch", "--with-colons", "--fingerprint"], { encoding: "utf8" });

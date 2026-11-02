@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { buildCodingArtifact } from "../codingArtifact";
-const f = vi.hoisted(() => ({ read: vi.fn(), prior: vi.fn(), file: vi.fn(), open: vi.fn(), scope: vi.fn(), approved: vi.fn() }));
+const f = vi.hoisted(() => ({ read: vi.fn(), prior: vi.fn(), file: vi.fn(), open: vi.fn(), scope: vi.fn(), approved: vi.fn(), enrollment: vi.fn() }));
 vi.mock("../approvedCodingArtifact",()=>({loadApprovedCodingArtifact:f.approved}));
 vi.mock("@/lib/connectors/github/resolveTenantScopedToken", () => ({ resolveTenantScopedToken: f.scope }));
 vi.mock("@/lib/workforce/pipelines/repoContextFetcher", () => ({ fetchRepoContext: f.read }));
 vi.mock("@/lib/workforce/pipelines/githubWriteClient", () => ({ fetchFileContent: f.file, openPullRequest: f.open }));
-vi.mock("@/lib/db", () => ({ prisma: { gitHubInstallation:{findFirst:async()=>({id:"installation",githubInstallationId:"123",updatedAt:new Date("2026-10-23T00:00:00Z"),revokedAt:null,suspendedAt:null})}, pipelineStageRun: { findFirst: f.prior } } }));
+vi.mock("@/lib/db", () => ({ prisma: { durableAgentWorkflow:{findMany:f.enrollment}, gitHubInstallation:{findFirst:async()=>({id:"installation",githubInstallationId:"123",updatedAt:new Date("2026-10-23T00:00:00Z"),revokedAt:null,suspendedAt:null})}, pipelineStageRun: { findFirst: f.prior } } }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: vi.fn() }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: vi.fn() }));
 import { codeReadRealExecutor } from "../codeReadRealExecutor";
@@ -13,7 +13,7 @@ import { codePrOpenRealExecutor } from "../codePrOpenRealExecutor";
 const ctx = { organizationId: "org", runId: "run", stageRunId: "stage_run", pipelineId: "pipeline", stageId: "stage", stageKind: "code_read" as const, correlationId: "corr", triggeredBy: "member", runMetadata: { repoRef: "owned/repo", instruction: "Prepare a patch" } };
 const patch = "--- a/file.txt\n+++ b/file.txt\n@@ -1 +1 @@\n-old\n+new\n";
 function approved(branch="main", patchText=patch, content:string|null="old\n"){return buildCodingArtifact({organizationId:"org",runId:"run",proposalStageRunId:"proposal",readStageRunId:"read",repositoryFullName:"owned/repo",baseBranch:branch,baseCommitSha:"a".repeat(40),patchText,baseFiles:[{path:"file.txt",content}]});}
-beforeEach(() => { vi.resetAllMocks(); f.approved.mockResolvedValue(approved()); vi.stubEnv("GITHUB_TOKEN", "synthetic-token"); f.scope.mockResolvedValue({ ok: true, token: "synthetic_tenant_token" }); f.prior.mockImplementation(async ({where}) => ({ outputDetail: where.stageKind === "code_read" ? {owner:"owned",repo:"repo",branch:"main",headSha:"a".repeat(40)} : {proposedPatchText:patch} })); f.file.mockResolvedValue({ ok: true, content: "old\n" }); });
+beforeEach(() => { vi.resetAllMocks(); f.enrollment.mockResolvedValue([]); f.approved.mockResolvedValue(approved()); vi.stubEnv("GITHUB_TOKEN", "synthetic-token"); f.scope.mockResolvedValue({ ok: true, token: "synthetic_tenant_token" }); f.prior.mockImplementation(async ({where}) => ({ outputDetail: where.stageKind === "code_read" ? {owner:"owned",repo:"repo",branch:"main",headSha:"a".repeat(40)} : {proposedPatchText:patch} })); f.file.mockResolvedValue({ ok: true, content: "old\n" }); });
 afterEach(() => vi.unstubAllEnvs());
 it("fails the read stage when GitHub context cannot be fetched", async () => {
  f.read.mockResolvedValue({ ok: false, reason: "forbidden", detail: "synthetic unavailable repository" });
@@ -102,4 +102,13 @@ it("rechecks approved artifact authority inside each writer authorization callba
  f.approved.mockResolvedValueOnce(approved()).mockResolvedValue({ok:false,error:"coding_artifact_approval_unavailable"});
  f.open.mockImplementation(async(input)=>{const current=await input.resolveToken();return current.ok?{ok:true,prNumber:12,prUrl:"https://github.com/owned/repo/pull/12",headSha:"b".repeat(40)}:{ok:false,reason:"authority_changed",writeMayHaveOccurred:false,detail:"synthetic revoked review"};});
  expect(await codePrOpenRealExecutor({...ctx,stageKind:"code_pr_open"})).toMatchObject({ok:false,detail:{repositoryWriteOutcome:"not_attempted"}});expect(f.approved).toHaveBeenCalledTimes(2);
+});
+
+// Empty metadata proves only that this synthetic workspace is not enrolled;
+// neither that fixture nor a token can bypass a present/unavailable safety fence.
+it.each(['enrolled','unavailable'])('refuses coding writes when Governance metadata is %s',async state=>{
+ if(state==='enrolled')f.enrollment.mockResolvedValue([{id:'governance_active_fixture',organizationId:'org',workflowKind:'governance_baseline_active_v1'}]);
+ else f.enrollment.mockRejectedValue(Error('synthetic metadata unavailable'));
+ expect(await codePrOpenRealExecutor({...ctx,stageKind:'code_pr_open'})).toMatchObject({ok:false,detail:{repositoryWriteOutcome:'not_attempted'}});
+ expect(f.enrollment).toHaveBeenCalledOnce();expect(f.scope).not.toHaveBeenCalled();expect(f.open).not.toHaveBeenCalled();
 });

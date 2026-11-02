@@ -1,3 +1,7 @@
+import {createReleaseDeploymentAuthority} from '@/lib/desktop/releaseDeploymentAuthority';
+import {deploymentPlanSchema,type DeploymentScope} from '@/lib/tauri/releaseDeploymentExecutionContract';
+import {parseReleaseOperationPlanInput,RELEASE_OPERATION_PLAN_KIND} from '@/lib/tauri/releaseOperationPlanContract';
+import {governanceContextFromReviewedDeployment} from './deploymentScope';
 import {createGovernanceExecutionPolicyRequestService} from './executionPolicyRequestService';
 import {readGovernanceEnrollmentMetadata} from './enrollmentMetadata';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -118,6 +122,26 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
    const rows=await tx.$queryRaw<Array<{id:string;organizationId:string;version:number;status:string;intakeJson:unknown}>>`SELECT "id","organizationId","version","status","intakeJson" FROM "TauriDeploymentRequest" WHERE "id"=${plan.requestId} AND "organizationId"=${scope.organizationId} FOR SHARE`;
    if(rows.length!==1)throw Error('governance_merge_baseline_unavailable');const context=governanceContextFromReviewedRelease({scope,row:rows[0],plan}),baseline=await store.readActive(scope,context.scope,tx);
    if(baseline.digest!==expectedDigest)throw new GovernanceBaselineStale('baseline_changed');bound(rawScope);
+  },
+  /** DB-only exact deployment approval baseline verification. The same request
+   * must first warm readActiveEvidence outside locks. Existing deployment
+   * authority independently rechecks the actual reviewed parent and participants. */
+  async assertDeploymentApprovalBaseline(tx:ReleaseOperationPlanTransaction,rawScope:DeploymentScope,expectedDigest:string,rawPlan:unknown){
+   bound(rawScope);const plan=deploymentPlanSchema.parse(rawPlan);
+   if(!/^[a-f0-9]{64}$/.test(expectedDigest)||plan.organizationId!==scope.organizationId||!['github_protected_tag_v1','github_immutable_release_v1'].includes(plan.sourcePolicy))throw Error('governance_deployment_baseline_unavailable');
+   const deploymentAuthority=createReleaseDeploymentAuthority(request,{isEnabled,sourcePolicy:plan.sourcePolicy as 'github_protected_tag_v1'|'github_immutable_release_v1',actorPurpose:scope.actorUserId===plan.executorUserId?'executor':'approver'});
+   await deploymentAuthority.readCurrentPlan(tx,rawScope,plan);
+   const rows=await tx.$queryRaw<Array<{id:string;organizationId:string;version:number;status:string;intakeJson:unknown}>>`SELECT "id","organizationId","version","status","intakeJson" FROM "TauriDeploymentRequest" WHERE "id"=${plan.releaseId} AND "organizationId"=${scope.organizationId} FOR SHARE`;
+   const parents=await tx.durableAgentWorkflow.findFirst({where:{id:plan.planId,organizationId:scope.organizationId,workflowKind:RELEASE_OPERATION_PLAN_KIND}});
+   if(rows.length!==1||!parents)throw Error('governance_deployment_baseline_unavailable');
+   const context=governanceContextFromReviewedDeployment({scope:rawScope,row:rows[0],plan,reviewedPlan:parseReleaseOperationPlanInput(parents.inputJson).plan});
+   const baseline=await store.readActive(scope,context.scope,tx);
+   if(baseline.digest!==expectedDigest)throw new GovernanceBaselineStale('baseline_changed');
+   // The final awaited clock check also bounds authority/source lock waits.
+   const clock=await tx.$queryRaw<Array<{live:boolean}>>`SELECT clock_timestamp() < ${new Date(plan.expiresAt)} AS "live"`;
+   const proof=activeProofs.get(baseline.digest),now=Date.now();
+   if(clock.length!==1||clock[0].live!==true||!Number.isFinite(now)||now>=Date.parse(plan.expiresAt))throw Error('governance_deployment_baseline_unavailable');
+   if(!proof||proof.expiresAt<=now)throw new GovernanceBaselineStale('source_receipt_unavailable');bound(rawScope);
   },
   async activate(){enabled();throw Error('governance_execution_coverage_unavailable')},
  };

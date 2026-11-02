@@ -36,3 +36,7 @@ We help you:
 * Stripe
 * Multi-cloud connectors (AWS, Azure, GCP)
 * AI orchestration
+
+## Local test runtime
+
+Run `nvm use` before `npm test`. See [test runtime and verifier compatibility](docs/development/test-runtime.md) for the supported runtime and browser-storage isolation requirements.

@@ -21,7 +21,7 @@ it("searches actual capabilities and never invents MCP or installed state",()=>{
  expect(screen.getByText("AWS Scan")).toBeTruthy();
  fireEvent.change(screen.getByRole("textbox",{name:"Search catalog"}),{target:{value:"nonexistent"}});
  expect(screen.queryByText("AWS Scan")).toBeNull();
- fireEvent.click(screen.getByRole("button",{name:"MCP"}));
+ fireEvent.click(screen.getByRole("button",{name:"Developer tools (MCP)"}));
  expect(screen.getByRole("status").textContent).toContain("No browser-managed MCP");
  expect(screen.queryByRole("button",{name:/install|connect/i})).toBeNull();
 });

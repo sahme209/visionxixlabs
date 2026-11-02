@@ -1,0 +1,18 @@
+import {expect,it} from 'vitest';
+import {completeReleaseIntake} from '@/lib/tauri/__tests__/fixtures/completeReleaseIntake';
+import {buildReleaseMergePlan} from '@/lib/tauri/releaseMergePlan';
+import {releaseOperationPlanId} from '@/lib/agent/workflows/releaseOperationPlanStore';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+import {governanceContextFromReviewedDeployment} from '../deploymentScope';
+function fixture(environment='production'){
+ const intake={...completeReleaseIntake(),targetEnvironment:environment,repositoryUrls:['https://github.com/team/service'],productionPrUrls:['https://github.com/team/service/pull/42'],sourceBranch:'release/demo',targetBranch:'main',workflowSource:{repositoryFullName:'team/service',ref:'release-1',path:'.github/workflows/deploy.yml',blobSha:'c'.repeat(40)}};
+ const row={id:intake.id,organizationId:intake.tenantId,version:3,status:'submitted',intakeJson:intake};
+ const built=buildReleaseMergePlan(row,{organizationId:row.organizationId,requestId:row.id,expectedVersion:3,expectedDigest:sha256ContentHash({requestVersion:3,intake}),method:'squash',observation:{connectionId:'github-1',connectionRevision:'2026-10-24T00:00:00.000Z',repositoryFullName:'team/service',number:42,headRepositoryFullName:'team/service',headRef:'release/demo',headSha:'a'.repeat(40),baseRef:'main',baseSha:'b'.repeat(40),state:'open',draft:false,merged:false}});if(!built.ok)throw Error('fixture');
+ const plan={purpose:'release_deployment',organizationId:row.organizationId,releaseId:row.id,releaseVersion:3,intakeDigest:built.plan.intakeDigest,planId:releaseOperationPlanId(row.organizationId,row.id,3,built.digest),creatorUserId:'creator',requesterUserId:'requester',executorUserId:'executor',repositoryFullName:'team/service',connectionId:'github-1',connectionRevision:'2026-10-24T00:00:00.000Z',installationId:'123',workflowPath:intake.workflowSource.path,workflowBlobSha:intake.workflowSource.blobSha,sourceCommitSha:'d'.repeat(40),refKind:'tag',ref:intake.workflowSource.ref,inputs:intake.workflowInputs,sourcePolicy:'github_immutable_release_v1',windowStart:intake.windowStartUtc,expiresAt:intake.windowEndUtc};
+ return{scope:{organizationId:row.organizationId,actorUserId:'executor',sessionId:'session'},row,reviewedPlan:built.plan,plan};
+}
+it.each(['production','staging','development','qa'])('derives canonical %s deployment scope from exact stored release and reviewed parent',environment=>{const f=fixture(environment);expect(governanceContextFromReviewedDeployment(f)).toEqual({...f.scope,action:'deployment.dispatch',scope:{repositoryId:'team/service',resourceId:'github:repository:team/service',environment},planDigest:sha256ContentHash(f.plan)})});
+it.each(['prod','Production','custom'])('refuses ambiguous target %s',environment=>expect(()=>governanceContextFromReviewedDeployment(fixture(environment))).toThrow('governance_deployment_scope_unavailable'));
+it('refuses altered release, tenant, reviewed parent, workflow, connection, inputs and window bindings',()=>{
+ const f=fixture();for(const patch of [{scope:{...f.scope,organizationId:'foreign'}},{row:{...f.row,version:4}},{row:{...f.row,status:'draft'}},{reviewedPlan:{...f.reviewedPlan,connectionId:'other'}},{plan:{...f.plan,planId:'other'}},{plan:{...f.plan,repositoryFullName:'other/repo'}},{plan:{...f.plan,workflowBlobSha:'e'.repeat(40)}},{plan:{...f.plan,ref:'other'}},{plan:{...f.plan,inputs:{}}},{plan:{...f.plan,connectionRevision:'2026-10-25T00:00:00.000Z'}},{plan:{...f.plan,expiresAt:'2030-01-01T00:00:00Z'}},{plan:{...f.plan,windowStart:'2020-01-01T00:00:00Z'}},{plan:{...f.plan,sourcePolicy:'invented'}}])expect(()=>governanceContextFromReviewedDeployment({...f,...patch})).toThrow('governance_deployment_scope_unavailable');
+});
