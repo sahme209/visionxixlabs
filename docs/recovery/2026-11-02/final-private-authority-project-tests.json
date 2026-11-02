@@ -1,0 +1,12 @@
+{
+  "scope": "local supported-runtime whole project; skipped cases are not execution evidence",
+  "runtimeSource": "4fb99c78e9eec08e343f69347f72eb95feae4ec2",
+  "nodeVersion": "v24.21.0",
+  "command": "node scripts/run-vitest.mjs",
+  "exitCode": 0,
+  "suitesPassed": 1371,
+  "suitesSkipped": 76,
+  "testsPassed": 16164,
+  "testsSkipped": 611,
+  "log": "/private/tmp/axiom-final-private-authority-project-tests.log"
+}
