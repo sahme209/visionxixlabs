@@ -1,0 +1,10 @@
+{
+  "nodeVersion": "v24.21.0",
+  "source": "b9011c472f26c26d679cca5dcf6b519a9a952fa1",
+  "stage": "/private/tmp/axiom-deployment-baseline-production-v2stnuyo",
+  "log": "/private/tmp/axiom-merge-airflow-production-b9011c47.log",
+  "archiveSha256": "be520a7718d6a914456bb9db88569d5a01a0a5282ac2c8da40877376dc6cc6e4",
+  "verifiedRegularFiles": 5887,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy"
+}

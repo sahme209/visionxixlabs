@@ -1,0 +1,12 @@
+{
+  "scope": "local supported-runtime whole project; skipped cases are not execution evidence",
+  "runtimeSource": "b9011c472f26c26d679cca5dcf6b519a9a952fa1",
+  "nodeVersion": "v24.21.0",
+  "command": "node scripts/run-vitest.mjs",
+  "exitCode": 0,
+  "suitesPassed": 1371,
+  "suitesSkipped": 76,
+  "testsPassed": 16145,
+  "testsSkipped": 604,
+  "log": "/private/tmp/axiom-merge-airflow-workforce-project-tests.log"
+}
