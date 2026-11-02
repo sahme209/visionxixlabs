@@ -79,6 +79,15 @@ export function createReleaseDeploymentApprovalStore(repo:ReleaseOperationPlanRe
    const s=deploymentScopeSchema.parse(rawScope),p=deploymentPlanSchema.parse(rawPlan),row=await load(tx,s,releaseDeploymentApprovalId(p)),{b,state}=unpack(row,s);
    if(!same(b.plan,p)||state.status==='revoked')refuse();await current(tx,s,p,b.approval,'executor');return structuredClone(b.approval);
   },
+  /** Exact baseline-bound human decision; a consumed decision is readable only
+   * by its original operation. This does not renew or consume the decision. */
+  async readGovernanceDeploymentApproval(tx:Tx,rawScope:DeploymentScope,rawPlan:Readonly<DeploymentPlan>,baselineDigest:string,operationId?:string){
+   const s=deploymentScopeSchema.parse(rawScope),p=deploymentPlanSchema.parse(rawPlan);z.string().regex(/^[a-f0-9]{64}$/).parse(baselineDigest);
+   const row=await load(tx,s,releaseDeploymentApprovalId(p)),{b,state}=unpack(row,s);
+   if(!same(b.plan,p)||b.approval.governanceBaselineDigest!==baselineDigest||state.status==='revoked'||state.status==='consumed'&&(!operationId||state.operationId!==operationId||operationId!==releaseDeploymentExecutionId(p)))refuse();
+   await current(tx,s,p,b.approval,'executor');
+   return{organizationId:s.organizationId,baselineDigest,planDigest:b.approval.planDigest,requesterUserId:s.actorUserId,approverUserId:b.approval.approverUserId,currentAuthorityVerified:true as const,expiresAt:b.approval.expiresAt};
+  },
   async consumeIndependentApproval(tx:Tx,rawScope:DeploymentScope,rawApproval:Readonly<DeploymentApproval>,operationId:string){
    const s=deploymentScopeSchema.parse(rawScope),a=deploymentApprovalSchema.parse(rawApproval),row=await load(tx,s,a.id),{b,state}=unpack(row,s);
    if(!same(a,b.approval)||operationId!==releaseDeploymentExecutionId(b.plan)||state.status==='revoked')refuse();await current(tx,s,b.plan,a,'executor');

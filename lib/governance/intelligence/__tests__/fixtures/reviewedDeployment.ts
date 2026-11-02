@@ -1,0 +1,11 @@
+import {completeReleaseIntake} from '@/lib/tauri/__tests__/fixtures/completeReleaseIntake';
+import {buildReleaseMergePlan} from '@/lib/tauri/releaseMergePlan';
+import {releaseOperationPlanId} from '@/lib/agent/workflows/releaseOperationPlanStore';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+export function reviewedDeploymentFixture(environment='production'){
+ const intake={...completeReleaseIntake(),targetEnvironment:environment,windowStartUtc:new Date(Date.now()-1000).toISOString(),windowEndUtc:new Date(Date.now()+60000).toISOString(),repositoryUrls:['https://github.com/team/service'],productionPrUrls:['https://github.com/team/service/pull/42'],sourceBranch:'release/demo',targetBranch:'main',workflowSource:{repositoryFullName:'team/service',ref:'axiom-release-fixture',path:'.github/workflows/deploy.yml',blobSha:'c'.repeat(40)}};
+ const row={id:intake.id,organizationId:intake.tenantId,version:3,status:'submitted',intakeJson:intake};
+ const built=buildReleaseMergePlan(row,{organizationId:row.organizationId,requestId:row.id,expectedVersion:3,expectedDigest:sha256ContentHash({requestVersion:3,intake}),method:'squash',observation:{connectionId:'github-1',connectionRevision:'2026-10-24T00:00:00.000Z',repositoryFullName:'team/service',number:42,headRepositoryFullName:'team/service',headRef:'release/demo',headSha:'a'.repeat(40),baseRef:'main',baseSha:'b'.repeat(40),state:'open',draft:false,merged:false}});if(!built.ok)throw Error('fixture');
+ const plan={purpose:'release_deployment',organizationId:row.organizationId,releaseId:row.id,releaseVersion:3,intakeDigest:built.plan.intakeDigest,planId:releaseOperationPlanId(row.organizationId,row.id,3,built.digest),creatorUserId:'creator',requesterUserId:'requester',executorUserId:'executor',repositoryFullName:'team/service',connectionId:'github-1',connectionRevision:'2026-10-24T00:00:00.000Z',installationId:'123',workflowPath:intake.workflowSource.path,workflowBlobSha:intake.workflowSource.blobSha,sourceCommitSha:'d'.repeat(40),refKind:'tag',ref:intake.workflowSource.ref,inputs:intake.workflowInputs,sourcePolicy:'github_immutable_release_v1',windowStart:intake.windowStartUtc,expiresAt:intake.windowEndUtc};
+ return{scope:{organizationId:row.organizationId,actorUserId:'executor',sessionId:'session'},row,reviewedPlan:built.plan,plan};
+}

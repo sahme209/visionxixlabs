@@ -1,3 +1,4 @@
+import {releaseDeploymentApprovalPreviewSchema,type ReleaseDeploymentApprovalPreview} from '../../../lib/tauri/releaseDeploymentApprovalContract';
 import {readAgentActionEligibility,mutateAgentActionExecution,type AgentActionMutation} from './agentActionExecutionControls';
 import {readAgentActionExecution} from './agentActionExecutionRecovery';
 import {createExecutionPolicyClient} from './governanceExecutionPolicy';
@@ -1724,25 +1725,33 @@ export class DesktopClient {
     if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||!/^[a-f0-9]{64}$/.test(digest))return Promise.resolve({ok:false,error:'Reload release workflow evidence.',outcomeUnconfirmed:false});
     return releaseOperationPlanRequest(this.savedTaskContext(),body?'POST':'GET',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/workflow-evidence`,body,(v):v is ReleaseWorkflowEvidenceResponse=>isReleaseWorkflowEvidenceResponse(v,requestId,planId,digest)&&(!body||v.evidence.length===1&&((body as {action:string}).action==='collect'?v.evidence[0].state!=='cancelled':v.evidence[0].id===(body as {id:string}).id&&((body as {action:string}).action==='cancel'?v.evidence[0].state==='cancelled':['observed','unknown'].includes(v.evidence[0].state))&&v.evidence[0].version>(body as {expectedVersion:number}).expectedVersion)),signal);
   }
-  deploymentApprovalPreview(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<{plan:DeploymentPlan;planDigest:string;canApprove:boolean;executionAvailable:false}>> {
-    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId))return Promise.resolve({ok:false,error:'Reload the release before reviewing deployment.',outcomeUnconfirmed:false});
-    return releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/deployment-approval`,undefined,(value):value is {plan:DeploymentPlan;planDigest:string;canApprove:boolean;executionAvailable:false}=>{
-      if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['plan','planDigest','canApprove','executionAvailable'].includes(k)))return false;
-      const v=value as {plan?:unknown;planDigest?:unknown;canApprove?:unknown;executionAvailable?:unknown},p=deploymentPlanSchema.safeParse(v.plan);
-      return p.success&&p.data.releaseId===requestId&&p.data.planId===planId&&typeof v.planDigest==='string'&&/^[a-f0-9]{64}$/.test(v.planDigest)&&typeof v.canApprove==='boolean'&&v.executionAvailable===false;
+  async deploymentApprovalPreview(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ReleaseDeploymentApprovalPreview>> {
+    const revision=this.getContextRevision(),config=this.config;
+    const fail={ok:false as const,error:'Reload the release before reviewing deployment.',outcomeUnconfirmed:false};
+    if(!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId))return fail;
+    const result=await releaseOperationPlanRequest(this.savedTaskContext(),'GET',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/deployment-approval`,undefined,(value):value is ReleaseDeploymentApprovalPreview=>{
+      const parsed=releaseDeploymentApprovalPreviewSchema.safeParse(value);
+      return parsed.success&&parsed.data.plan.releaseId===requestId&&parsed.data.plan.planId===planId;
     },signal);
+    if(!result.ok)return result;
+    const normalize=(v:unknown):unknown=>Array.isArray(v)?v.map(normalize):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b)).map(([k,value])=>[k,normalize(value)])):v;
+    try{
+      const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(normalize(result.data.plan))))),b=>b.toString(16).padStart(2,'0')).join('');
+      if(digest!==result.data.planDigest||this.config!==config||this.getContextRevision()!==revision||signal?.aborted)return fail;
+      return result;
+    }catch{return fail}
   }
-  async approveDeploymentAction(requestId:string,planId:string,plan:DeploymentPlan,clientRequestId:string,reviewedExactAction:true,signal?:AbortSignal):Promise<ReleasePlanResult<{approval:DeploymentApproval;executionAvailable:false}>> {
+  async approveDeploymentAction(requestId:string,planId:string,plan:DeploymentPlan,clientRequestId:string,reviewedExactAction:true,signal?:AbortSignal,governanceBaselineDigest?:string):Promise<ReleasePlanResult<{approval:DeploymentApproval;executionAvailable:false}>> {
     const revision=this.getContextRevision(),parsed=deploymentPlanSchema.safeParse(plan);
     const fail={ok:false as const,error:'Review the exact deployment action again.',outcomeUnconfirmed:false};
-    if(!parsed.success||reviewedExactAction!==true||!validOperationUuid(clientRequestId)||!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||parsed.data.releaseId!==requestId||parsed.data.planId!==planId||signal?.aborted)return fail;
+    if(governanceBaselineDigest!==undefined&&!/^[a-f0-9]{64}$/.test(governanceBaselineDigest)||!parsed.success||reviewedExactAction!==true||!validOperationUuid(clientRequestId)||!/^[A-Za-z0-9_-]{1,160}$/.test(requestId)||!/^release_plan_[a-f0-9]{64}$/.test(planId)||parsed.data.releaseId!==requestId||parsed.data.planId!==planId||signal?.aborted)return fail;
     const normalize=(v:unknown):unknown=>Array.isArray(v)?v.map(normalize):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b)).map(([k,value])=>[k,normalize(value)])):v;
     let digest:string;try{digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(normalize(parsed.data))))),b=>b.toString(16).padStart(2,'0')).join('')}catch{return fail}
     if(this.getContextRevision()!==revision||signal?.aborted)return fail;
-    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/deployment-approval`,{plan:parsed.data,clientRequestId,reviewedExactAction},(value):value is {approval:DeploymentApproval;executionAvailable:false}=>{
+    return releaseOperationPlanRequest(this.savedTaskContext(),'POST',`/api/desktop/deployments/${requestId}/operation-plans/${planId}/deployment-approval`,{plan:parsed.data,clientRequestId,reviewedExactAction,...(governanceBaselineDigest!==undefined?{governanceBaselineDigest}:{})},(value):value is {approval:DeploymentApproval;executionAvailable:false}=>{
       if(!value||typeof value!=='object'||Array.isArray(value)||Object.keys(value).some(k=>!['approval','executionAvailable'].includes(k)))return false;
       const data=value as {approval?:unknown;executionAvailable?:unknown},a=deploymentApprovalSchema.safeParse(data.approval);
-      return data.executionAvailable===false&&a.success&&a.data.planDigest===digest&&a.data.organizationId===parsed.data.organizationId&&a.data.executorUserId===parsed.data.executorUserId&&a.data.sourcePolicy===parsed.data.sourcePolicy&&![parsed.data.creatorUserId,parsed.data.requesterUserId,parsed.data.executorUserId].includes(a.data.approverUserId)&&Date.parse(a.data.expiresAt)<=Date.parse(parsed.data.expiresAt);
+      return data.executionAvailable===false&&a.success&&a.data.governanceBaselineDigest===governanceBaselineDigest&&a.data.planDigest===digest&&a.data.organizationId===parsed.data.organizationId&&a.data.executorUserId===parsed.data.executorUserId&&a.data.sourcePolicy===parsed.data.sourcePolicy&&![parsed.data.creatorUserId,parsed.data.requesterUserId,parsed.data.executorUserId].includes(a.data.approverUserId)&&Date.parse(a.data.expiresAt)<=Date.parse(parsed.data.expiresAt);
     },signal);
   }
   deploymentExecution(requestId:string,planId:string,signal?:AbortSignal):Promise<ReleasePlanResult<DeploymentExecutionState>> {return this.deploymentExecutionRequest(requestId,planId,undefined,signal)}

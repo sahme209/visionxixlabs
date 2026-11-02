@@ -1,3 +1,4 @@
+import type {createReleaseDeploymentGovernanceCoordinator} from './releaseDeploymentGovernanceCoordinator';
 import {assertNoUncoveredGovernanceExecution} from '@/lib/governance/intelligence/uncoveredExecution';
 import {fenceUncoveredMutationStore} from '@/lib/governance/intelligence/uncoveredMutationStore';
 import 'server-only';
@@ -13,7 +14,7 @@ import {createReleaseDeploymentExecutionStore,type ReleaseDeploymentDependencies
 import {createReleaseDeploymentExecutor,type ReleaseDeploymentTransport} from '@/lib/tauri/releaseDeploymentExecutionExecutor';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
-export interface ReleaseDeploymentServicePorts{enabled?:()=>boolean;preflight?:(plan:Readonly<import('@/lib/tauri/releaseDeploymentExecutionContract').DeploymentPlan>,signal:AbortSignal)=>Promise<void>;readPlan?:(scope:DeploymentScope,reviewedPlan:ReleaseOperationPlan,signal:AbortSignal)=>Promise<unknown>;dependencies?:ReleaseDeploymentDependencies;transport?:ReleaseDeploymentTransport}
+export interface ReleaseDeploymentServicePorts{governance?:ReturnType<typeof createReleaseDeploymentGovernanceCoordinator>;enabled?:()=>boolean;preflight?:(plan:Readonly<import('@/lib/tauri/releaseDeploymentExecutionContract').DeploymentPlan>,signal:AbortSignal)=>Promise<void>;readPlan?:(scope:DeploymentScope,reviewedPlan:ReleaseOperationPlan,signal:AbortSignal)=>Promise<unknown>;dependencies?:ReleaseDeploymentDependencies;transport?:ReleaseDeploymentTransport}
 export type ReleaseDeploymentServiceFactory=(request:NextRequest,repo:ReleaseOperationPlanRepo,scope:DeploymentScope)=>ReleaseDeploymentServicePorts;
 const actionSchema=z.object({action:z.enum(['prepare','execute','cancel','recover']),expectedVersion:z.number().int().min(0).max(2),clientRequestId:z.string().uuid()}).strict();
 class Refusal extends Error{constructor(readonly code:string,readonly status:number){super(code)}}
@@ -48,8 +49,8 @@ export async function handleReleaseDeploymentExecution(request:NextRequest,reque
    const ready=()=>{signal.throwIfAborted();if(!ports.enabled?.())throw new Refusal('release_deployment_adapters_unavailable',503)};
    const rawExecution=createReleaseDeploymentExecutionStore(repo,{...dependencies,assertCurrent:async(tx,s,p,a)=>{ready();await assertCurrent(tx,s);await dependencies.assertCurrent!(tx,s,p,a);await assertCurrent(tx,s);ready()}});
    const execution=fenceUncoveredMutationStore(rawExecution,()=>assertNoUncoveredGovernanceExecution(request,repo,scope,signal));
-   if(action.action==='prepare'){ready();const current=deploymentPlanSchema.parse(await withGithubAbort(ports.readPlan!(scope,plan,signal),signal));if(!bindingMatches(current))throw new Refusal('release_deployment_refresh_required',409);operation=await execution.prepare(scope,current)}
-   else{if(!operation||!saved||!saved.inputJson||typeof saved.inputJson!=='object'||!('plan' in saved.inputJson))throw new Refusal('release_deployment_refresh_required',409);if(ports.preflight)await withGithubAbort(ports.preflight(deploymentPlanSchema.parse(saved.inputJson.plan),signal),signal);operation=await createReleaseDeploymentExecutor(execution,ports.transport).run(scope,operationId)}
+   if(action.action==='prepare'){ready();const current=deploymentPlanSchema.parse(await withGithubAbort(ports.readPlan!(scope,plan,signal),signal));if(!bindingMatches(current))throw new Refusal('release_deployment_refresh_required',409);operation=ports.governance?await ports.governance.prepare(rawExecution,current,signal):await execution.prepare(scope,current)}
+   else{if(!operation||!saved||!saved.inputJson||typeof saved.inputJson!=='object'||!('plan' in saved.inputJson))throw new Refusal('release_deployment_refresh_required',409);if(ports.preflight)await withGithubAbort(ports.preflight(deploymentPlanSchema.parse(saved.inputJson.plan),signal),signal);operation=ports.governance?await ports.governance.run(rawExecution,operationId,signal):await createReleaseDeploymentExecutor(execution,ports.transport).run(scope,operationId)}
   }
  }
  await assertCurrent(undefined,scope);return reply({ok:true,data:parseDeploymentExecutionState({available,operation})});

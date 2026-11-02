@@ -51,3 +51,13 @@ it('expiry still blocks an unexecuted operation before consuming approval or sen
  const f=fixture();f.approval.expiresAt=new Date(f.deps.now().getTime()+1000).toISOString();const prepared=await f.store.prepare(f.scope,f.plan);f.advance();await expect(f.store.claim(f.scope,prepared.id)).rejects.toThrow();expect(f.rows[0].attemptCount).toBe(0);expect(f.deps.consumeIndependentApproval).not.toHaveBeenCalled();
 });
 it('projects accepted deployment history under current reader authority without reviving an old execution session',async()=>{const f=fixture(),p=await f.store.prepare(f.scope,f.plan);await f.store.claim(f.scope,p.id);await f.store.finish(f.scope,p.id,{state:'accepted',receipt:f.receipt});const reader={...f.scope,actorUserId:'reviewer',sessionId:'fresh-reader'},assertHistoricalReader=vi.fn(async()=>{}),store=createReleaseDeploymentExecutionStore(f.repo,{...f.deps,assertHistoricalReader});f.deps.assertCurrent.mockRejectedValue(Error('old session unavailable'));const source=await store.readHistoricalAcceptedSource(reader,p.id);expect(source.receipt).toEqual(f.receipt);expect(assertHistoricalReader.mock.calls.every(c=>JSON.stringify(c).includes('fresh-reader'))).toBe(true);expect(f.deps.consumeIndependentApproval).toHaveBeenCalledTimes(1);await expect(f.store.readHistoricalAcceptedSource(reader,p.id)).rejects.toThrow();await expect(store.readHistoricalAcceptedSource({...reader,organizationId:'foreign'},p.id)).rejects.toThrow()});
+
+it('fuses mandatory internal admission with current deployment authority in one transaction',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);await f.store.claim(f.scope,p.id);let observed=false,final=false;
+ expect(await f.store.beforeDispatchWithAdmission(f.scope,p.id,async(tx,plan)=>{expect(tx).toBe(f.repo);expect(plan).toEqual(f.plan);observed=true;return()=>{final=true}})).toEqual(f.plan);expect(observed&&final).toBe(true);
+ await expect(f.store.beforeDispatchWithAdmission(f.scope,p.id,async()=>{throw Error('policy_changed')})).rejects.toThrow('policy_changed');expect(f.rows[0].attemptCount).toBe(1);
+});
+it('rechecks lease and private proof expiry after the fused verifier awaits',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);await f.store.claim(f.scope,p.id);
+ await expect(f.store.beforeDispatchWithAdmission(f.scope,p.id,async()=>{f.advance();return()=>{}})).rejects.toThrow();
+});

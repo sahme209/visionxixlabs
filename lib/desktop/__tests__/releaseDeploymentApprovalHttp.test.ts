@@ -32,3 +32,7 @@ it('reports a proven mutable release separately from unavailable policy evidence
  const r=await handle(new NextRequest(request().url),'release',planId);
  expect(r.status).toBe(409);expect(await r.json()).toEqual({ok:false,error:'release_immutable_required'});
 });
+
+it('forwards only the exact separately reviewed baseline digest to issuance',async()=>{m.enabled.mockReturnValue(true);const digest='c'.repeat(64);const r=await handle(request({...body,governanceBaselineDigest:digest}),'release',planId);expect(r.status).toBe(201);expect(m.issue).toHaveBeenCalledWith(plan,body.clientRequestId,digest);});
+it.each(['BAD','C'.repeat(64)])('refuses malformed baseline %s before persistence',async governanceBaselineDigest=>{m.enabled.mockReturnValue(true);expect((await handle(request({...body,governanceBaselineDigest}),'release',planId)).status).toBe(400);expect(m.issue).not.toHaveBeenCalled();});
+it.each([{governanceBaselineDigest:'bad'},{secretToken:'never-project-private-authority'}])('refuses malformed or private preview fields %#',async extra=>{m.enabled.mockReturnValue(true);m.preview.mockResolvedValue({plan,planDigest:'a'.repeat(64),canApprove:true,executionAvailable:false,...extra});const r=await handle(new NextRequest(request().url),'release',planId);expect(r.status).toBe(409);expect(JSON.stringify(await r.json())).not.toContain('never-project-private-authority');expect(m.issue).not.toHaveBeenCalled();});

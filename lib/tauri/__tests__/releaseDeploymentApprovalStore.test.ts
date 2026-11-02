@@ -92,3 +92,16 @@ it('refuses when the final awaited baseline proof crosses approval expiry',async
  await expect(store.readIndependentApproval(f.repo,f.executor,f.plan)).rejects.toThrow();
  expect(f.rows()[0].currentStep).toBe('approved');expect(f.events()).toHaveLength(1);
 });
+
+it('reads exact Governance approval only for its baseline and consumed operation',async()=>{
+ const f=fixture(),store=createReleaseDeploymentApprovalStore(f.repo,{...f.deps,assertGovernanceBaseline:async()=>{}}),a=await store.issue(f.reviewer,f.plan,f.nonce,baselineDigest);
+ expect(await store.readGovernanceDeploymentApproval(f.repo,f.executor,f.plan,baselineDigest)).toMatchObject({organizationId:'org',baselineDigest,planDigest:a.planDigest,requesterUserId:'executor',approverUserId:'reviewer',currentAuthorityVerified:true});
+ await expect(store.readGovernanceDeploymentApproval(f.repo,f.executor,f.plan,'d'.repeat(64))).rejects.toThrow();
+ const id=f.operation(a);await f.repo.$transaction((tx:any)=>store.consumeIndependentApproval(tx,f.executor,a,id));
+ await expect(store.readGovernanceDeploymentApproval(f.repo,f.executor,f.plan,baselineDigest)).rejects.toThrow();
+ await expect(store.readGovernanceDeploymentApproval(f.repo,f.executor,f.plan,baselineDigest,'other')).rejects.toThrow();
+ expect(await store.readGovernanceDeploymentApproval(f.repo,f.executor,f.plan,baselineDigest,id)).toMatchObject({baselineDigest});
+});
+it('never reinterprets an older unbound deployment decision as Governance review',async()=>{
+ const f=fixture();await f.issue();await expect(f.store.readGovernanceDeploymentApproval(f.repo,f.executor,f.plan,baselineDigest)).rejects.toThrow();
+});

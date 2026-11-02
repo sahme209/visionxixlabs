@@ -84,6 +84,27 @@ export function createGovernanceRequestService(request:NextRequest,repo:ReleaseO
    if(!row){await enrollmentReader();return{enrolled:false as const}}
    if(row.id!==id||row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1')throw Error('governance_enrollment_unavailable');enabled();const candidate=await store.readActiveCandidate(scope,selection);await current(scope,request.signal);return{enrolled:true as const,baselineDigest:candidate.baseline.digest};
   },
+  /** DB-only organization-wide absence for legacy scopes with no canonical
+   * environment mapping. Shares activation's organization lock; no feature
+   * enablement, source reads or policy authority is granted by this metadata. */
+  async readAnyEnrollmentLocked(tx:ReleaseOperationPlanTransaction){
+   request.signal.throwIfAborted();await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(scope.organizationId)}))`;
+   await authority(tx,scope,'reader');const present=await readGovernanceEnrollmentMetadata(tx,scope.organizationId,request.signal);await authority(tx,scope,'reader');request.signal.throwIfAborted();return present;
+  },
+  /** Internal DB-only dispatch check. The organization advisory lock is the
+   * same lock used by activation/revocation, so positive absence cannot race a
+   * newly created pointer inside this transaction. No source warm-up occurs. */
+  async readScopeEnrollmentLocked(tx:ReleaseOperationPlanTransaction,rawSelection:unknown){
+   const selection=scopeSchema.parse(rawSelection);request.signal.throwIfAborted();
+   await tx.$queryRaw`SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(scope.organizationId)}))`;
+   await authority(tx,scope,'reader');const id='governance_active_'+sha256ContentHash({organizationId:scope.organizationId,scope:selection});
+   const row=await tx.durableAgentWorkflow.findFirst({where:{id}});
+   if(!row){await authority(tx,scope,'reader');request.signal.throwIfAborted();return{enrolled:false as const}}
+   if(row.id!==id||row.organizationId!==scope.organizationId||row.workflowKind!=='governance_baseline_active_v1')throw Error('governance_enrollment_unavailable');
+   enabled();const baseline=await store.readActive(scope,selection,tx),proof=activeProofs.get(baseline.digest),at=Date.now();
+   if(!proof||!Number.isFinite(at)||proof.expiresAt<=at)throw new GovernanceBaselineStale('source_receipt_unavailable');
+   request.signal.throwIfAborted();return{enrolled:true as const,baselineDigest:baseline.digest,evidenceExpiresAt:proof.expiresAt};
+  },
   /** No complete executor manifest is registered. Limits and exact approval
    * cannot turn an uncovered scope into execution coverage. */
   async readExecutionCoverage(selection:unknown){

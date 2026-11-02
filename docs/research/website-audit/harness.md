@@ -47,3 +47,13 @@ Harness extends the existing Cursor, ChatGPT, Claude, Codex and Grok reference s
 | Harness | Visible home→delivery-product→CD path; docs/security source discovery above. | Visible docs/security and one specific governance task guide. |
 
 Earlier-site evidence is retained, not reverified by this Harness visit. All six remain incomplete for unique controls, mobile and accessibility acceptance.
+
+## November2: governance task-guide discovery — source-only follow-up
+
+The delegated browser inventory returned `Browser is not available: iab`; no parent tab, local Axiom app or account was touched. Official-source reading followed the Developer Hub's [Platform destination](https://developer.harness.io/harness-platform/3.0/) to its linked [Policy As Code quickstart](https://developer.harness.io/harness-platform/3.0/harness-platform-resources/governance/policy-as-code/harness-governance-quickstart). This is source discovery, pending a separate visible navigation record.
+
+The guide states prerequisites and availability before its numbered instructions, warns that policy sets can affect existing matching resources, and distinguishes a policy test from enforcement through an event-bound policy set. It includes both failing and passing evaluations with review of the reason. Instructions to create resources or run pipelines were read as reference only; none was executed. Vendor enforcement is not independently verified here.
+
+Original Axiom Security/Trust → task-guide decision: each control guide needs explicit **availability/status**, **supported executor and tenant scope**, **authorized actor**, **evaluation event**, **test-only versus active enforcement**, **expected refusal/success evidence**, and **revocation/recovery**. A saved or passing policy must not be presented as active coverage. Axiom's current incomplete coverage/enrollment should remain plainly labeled; omit an activation CTA until the real path and its genuine review/authority prerequisites are accepted. The guide should use safe synthetic examples, with the operational consequences visible before any real next action.
+
+Remaining: visible Developer Hub→Platform→governance-guide navigation and contents behavior. Security page and trust-evidence destinations also remain source-only; mobile/keyboard acceptance and the broader six-reference checklist remain open.
