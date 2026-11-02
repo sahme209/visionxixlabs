@@ -1,0 +1,19 @@
+{
+  "source": "3aff01090f6c4c08d5e69fe7d5f85673111b7d6d",
+  "runtime": "v24.21.0",
+  "command": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node scripts/run-vitest.mjs",
+  "exit": 0,
+  "suites": {
+    "passed": 1358,
+    "skipped": 69,
+    "total": 1427
+  },
+  "tests": {
+    "passed": 15850,
+    "skipped": 528,
+    "total": 16378
+  },
+  "asyncErrors": 0,
+  "log": "/private/tmp/axiom-supported-runtime-project-tests.log",
+  "scope": "Default Vitest project suite; skipped and separate native-node/owned-PG checks not counted as executed here. Not live provider/human or full-product acceptance."
+}
