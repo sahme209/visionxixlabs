@@ -11,6 +11,7 @@ vi.mock('@/lib/db',()=>({prisma:new Proxy({}, {get(_t,key){const v=f.db[key];ret
 vi.mock('../agentIdentityPolicy',()=>({readWorkspaceAgentIdentity:(org:string)=>f.db.workspaceAgentIdentity.findUnique({where:{organizationId:org}})}));
 import {decideAgentAction} from '../browserApprovalDecision';
 import {agentActionDigest} from '../proposalIntegrity';
+import {readAgentDeploymentAuthoritySnapshot} from '../agentDeploymentAuthoritySnapshot';
 import {createAgentActionExecutionStore} from '../agentActionExecutionStore';
 const socket=process.env.AXIOM_EXECUTION_POLICY_PG_SOCKET;
 describe.skipIf(!socket)('actual new-review requester execution store; no provider transport',()=>{
@@ -21,12 +22,12 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   const [r]=await f.db.$queryRawUnsafe("SELECT current_database()='policy_fixture' AND current_user='policy_fixture' AND current_setting('listen_addresses')='' AS private");if(!r?.private)throw Error('owned_fixture_required');
  });
  afterAll(async()=>f.db?.$disconnect());
- async function fixture(lifetime=60000,toolName='open_github_pull_request'){
+ async function fixture(lifetime=60000,toolName='open_github_pull_request',buildArgs?:(org:string)=>Record<string,unknown>){
   const org='agent-exec-'+randomUUID(),requester='requester',sessionId=org+'-session';
   for(const [userId,role]of [[requester,'operator'],['reviewer','security_reviewer'],['other','admin']])await f.db.orgMembership.create({data:{organizationId:org,userId,role,acceptedAt:new Date()}});
   await f.db.desktopSessionRecord.create({data:{id:sessionId,organizationId:org,userId:requester,expiresAt:new Date(Date.now()+60000)}});
   await f.db.workspaceAgentIdentity.create({data:{organizationId:org,enabled:true,allowedTools:[toolName],updatedBy:'reviewer'}});
-  const conversation=await f.db.agentConversation.create({data:{organizationId:org,userId:requester}}),input={organizationId:org,conversationId:conversation.id,proposedByUserId:requester,toolName,args:{repositoryFullName:'fixture/repository',head:'reviewed',base:'main',title:'One exact action'}};
+  const conversation=await f.db.agentConversation.create({data:{organizationId:org,userId:requester}}),input={organizationId:org,conversationId:conversation.id,proposedByUserId:requester,toolName,args:buildArgs?.(org)??{repositoryFullName:'fixture/repository',head:'reviewed',base:'main',title:'One exact action'}};
   const {args,...proposalInput}=input;
   const proposal=await f.db.agentActionProposal.create({data:{...proposalInput,argsJson:args,actionDigest:agentActionDigest(input),riskLevel:'medium',approvalExpiresAt:new Date(Date.now()+lifetime)}});
   expect(await decideAgentAction({organizationId:org,proposalId:proposal.id,actorUserId:'reviewer',actorRole:'security_reviewer',decision:'approve'})).toEqual({ok:true,status:'approved'});
@@ -231,6 +232,51 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
   await f.db.gitHubInstallation.create({data:{id:t.org+'-new',organizationId:t.org,status:'active',accountLogin:'fixture',githubInstallationId:'456',updatedAt:revision,installedAt:new Date(revision.getTime()+1)}});
   await expect(t.store.beforeGithubDispatch(t.scope,claimed.claim,connection)).rejects.toThrow();
+ });
+
+ it('binds deployment to the reviewed target, actual reservation and unchanged policy snapshot',async()=>{
+  const revision=new Date(),sha='a'.repeat(40);
+  const buildArgs=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'main',sourceKind:'branch',_review:{kind:'ecs_restart_target',organizationId:org,environmentId:org+'-env',environmentTier:'dev',targetId:org+'-target',provider:'aws',targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/fixture',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
+  const t=await fixture(60000,'trigger_aws_deploy',buildArgs),args=buildArgs(t.org),target=args._review,connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:revision};
+  let insertLate=false;
+  const hooked={$transaction:(fn:any,options:any)=>f.db.$transaction(async(tx:any)=>fn(new Proxy(tx,{get(object,key){
+   if(key==='$queryRaw')return async(...query:any[])=>{const rows=await object.$queryRaw(...query);if(insertLate&&String(query[0]).startsWith('SELECT "environmentId","repositoryFullName"')){insertLate=false;await f.db.branchEnvironmentPolicy.create({data:{id:t.org+'-late-policy',organizationId:t.org,repositoryId:t.org+'-repo',environmentId:args.environmentId,enabled:true,branchPattern:'main',requireReleaseTag:false,requireCodeowners:false,requirePrLink:false,requireChangeTicket:false,requirePromotionFromEnvironmentId:null,requireTestsPassing:true,priority:1}})}return rows};
+   const value=object[key];return typeof value==='function'?value.bind(object):value;
+  }})),options)};
+  t.store=createAgentActionExecutionStore(hooked as any,{assertCurrent:async()=>{}});
+  await f.db.environment.create({data:{id:args.environmentId,organizationId:t.org,tier:'dev'}});
+  await f.db.deploymentTarget.create({data:{id:target.targetId,environmentId:args.environmentId,organizationId:t.org,provider:'aws',updatedAt:revision,roleArn:target.roleArn,region:target.region,ecsCluster:target.ecsCluster,ecsService:target.ecsService}});
+  await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:revision}});
+  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const policySnapshotDigest=await readAgentDeploymentAuthoritySnapshot(f.db,t.org,args.environmentId);
+  const input={target,policySnapshotDigest,sourceCommitSha:sha};
+  await expect(t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,input)).rejects.toThrow();
+  await f.db.deploymentExecution.create({data:{id:t.org+'-reservation',organizationId:t.org,idempotencyKey:op.id,environmentId:args.environmentId,repositoryFullName:args.repositoryFullName,sourceRef:'main',sourceKind:'branch',sourceCommitSha:sha,source:'agent',triggeredByUserId:t.scope.actorUserId,status:'reserved'}});
+  expect(await t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,input)).toMatchObject({toolName:'trigger_aws_deploy'});
+  await f.db.repository.create({data:{id:t.org+'-repo',organizationId:t.org,provider:'github',remoteOwner:'fixture',remoteName:'repository'}});
+  await expect(t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,input)).rejects.toThrow();
+  const fresh={...input,policySnapshotDigest:await readAgentDeploymentAuthoritySnapshot(f.db,t.org,args.environmentId)};
+  expect(await t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,fresh)).toMatchObject({toolName:'trigger_aws_deploy'});
+  await f.db.deploymentExecution.update({where:{id:t.org+'-reservation'},data:{sourceCommitSha:'b'.repeat(40)}});
+  await expect(t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,fresh)).rejects.toThrow();
+  await f.db.deploymentExecution.update({where:{id:t.org+'-reservation'},data:{sourceCommitSha:sha}});
+  insertLate=true;await expect(t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,fresh)).rejects.toThrow();
+  const afterLate={...input,policySnapshotDigest:await readAgentDeploymentAuthoritySnapshot(f.db,t.org,args.environmentId)};
+  expect(await t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,afterLate)).toMatchObject({toolName:'trigger_aws_deploy'});
+  await f.db.deploymentTarget.update({where:{id:target.targetId},data:{ecsService:'changed'}});
+  await expect(t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,afterLate)).rejects.toThrow();
+ });
+
+ it('reads current requester readiness without preparing or claiming an action',async()=>{
+  const t=await fixture(),ready=await t.store.readExecutionReadiness(t.scope,t.proposal.id);
+  expect(ready).toMatchObject({source:{toolName:'open_github_pull_request'},operation:null,sessionMatches:true});
+  expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.org}})).toBe(0);
+  const op=await t.store.prepare(t.scope,t.proposal.id);
+  expect(await t.store.readExecutionReadiness(t.scope,t.proposal.id)).toMatchObject({operation:{id:op.id,state:'prepared',attemptCount:0},sessionMatches:true});
+  const next={...t.scope,sessionId:t.scope.sessionId+'-next'};await f.db.desktopSessionRecord.create({data:{id:next.sessionId,organizationId:t.org,userId:t.scope.actorUserId,expiresAt:new Date(Date.now()+60000)}});
+  expect(await t.store.readExecutionReadiness(next,t.proposal.id)).toMatchObject({operation:{id:op.id},sessionMatches:false});
+  await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'read_only'}});
+  await expect(t.store.readExecutionReadiness(t.scope,t.proposal.id)).rejects.toThrow();
  });
 
 });

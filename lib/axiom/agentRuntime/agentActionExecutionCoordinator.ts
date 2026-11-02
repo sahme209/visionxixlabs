@@ -1,4 +1,5 @@
 import 'server-only';
+import {executeStoredAgentDeployment,agentDeploymentArgsSchema,type AgentDeploymentExecutionRepo} from './agentActionDeploymentExecution';
 import {z} from 'zod';
 import {buildEnvironmentCreateResponse,type EnvironmentCreateRepo,ALL_ENVIRONMENT_TIERS} from '@/lib/releaseops/environmentCreateResponder';
 import {buildDeploymentTargetUpsertResponse,type DeploymentTargetRepo} from '@/lib/releaseops/deploymentTargetResponder';
@@ -34,8 +35,9 @@ const schemas={
  commit_github_files:z.object({...common,branch:reference,files:z.array(z.object({path,content})).min(2).max(20),message}),
  open_github_pull_request:z.object({...common,head:reference,base:reference,title:message,body:z.string().max(100000).optional()}),
 };
-function validate(saved:Awaited<ReturnType<Store['inspectForExecution']>>){
+export function validateAgentActionExecutionInput(saved:Awaited<ReturnType<Store['inspectForExecution']>>){
  const args=z.record(z.string(),z.unknown()).parse(saved.args);
+ if(saved.toolName==='trigger_aws_deploy'){agentDeploymentArgsSchema.parse(args);return args}
  if(Object.hasOwn(databaseSchemas,saved.toolName)){databaseSchemas[saved.toolName as keyof typeof databaseSchemas].parse(args);return args}
  if(!Object.hasOwn(schemas,saved.toolName))throw Error('agent_execution_tool_unavailable');
  const schema=schemas[saved.toolName as keyof typeof schemas];schema.parse(args);
@@ -49,16 +51,18 @@ function validate(saved:Awaited<ReturnType<Store['inspectForExecution']>>){
 }
 /** Unmounted, partial fixed-transport core. It deliberately has no HTTP entry.
  * Only stored operation input is executable; scope/principal come from paired
- * server authentication. Deployment dispatch refuses before claim. Branch/PR reviews currently bind symbolic names, not immutable SHAs;
+ * server authentication. Deployment uses fixed policy/reservation/dispatch. Source
+ * references currently bind symbolic names, not proposal-time immutable SHAs;
  * this module does not complete the activation contract or enable execution. */
-export function createAgentActionExecutionCoordinator(request:NextRequest,principal:DesktopRequestPrincipal,repo:GuardRepo,store:Store,rawScope:AgentExecutionScope){
+export function createAgentActionExecutionCoordinator(request:NextRequest,principal:DesktopRequestPrincipal,repo:GuardRepo&AgentDeploymentExecutionRepo,store:Store,rawScope:AgentExecutionScope){
  const scope=Object.freeze(agentExecutionScopeSchema.parse(rawScope));
  if(principal.credentialKind!=='desktop_session'||principal.id!==scope.sessionId||principal.userId!==scope.actorUserId||principal.organizationId!==scope.organizationId)throw Error('agent_execution_scope_unavailable');
  // No configurable responder/token resolver/transport or caller-provided guard.
  return Object.freeze({async execute(id:string){
   request.signal.throwIfAborted();
   const saved=await store.inspectForExecution(scope,id);
-  const args=structuredClone(validate(saved));
+  const args=structuredClone(validateAgentActionExecutionInput(saved));
+  if(saved.toolName==='trigger_aws_deploy')return executeStoredAgentDeployment(request,principal,repo,store,scope,id,saved);
   if(Object.hasOwn(databaseSchemas,saved.toolName)){
    const claimed=await store.claim(scope,id);if(!claimed.claimed)return claimed.operation;
    return store.applyDatabase(claimed.claim,async(tx,current)=>{

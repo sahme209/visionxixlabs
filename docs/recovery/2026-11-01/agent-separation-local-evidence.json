@@ -46,5 +46,62 @@
       "sha256": "e5b7a66d367a879f3d0bb2fc35fc0ba977a4dc19d04e5e08d850465efaf2d367",
       "bytes": 633
     }
+  },
+  "fixed_tools_and_controls": {
+    "fixed-tools-backend": {
+      "path": "/private/tmp/axiom-agent-deployment-reviewed-final.log",
+      "sha256": "e0baacffaa8a9ab5c4b251b0fc67c87328f1d585a88543fcb70002511975cc9e",
+      "bytes": 638
+    },
+    "fixed-tools-server-types": {
+      "path": "/private/tmp/axiom-agent-all-tools-final-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "fixed-tools-store-postgres": {
+      "path": "/private/tmp/axiom-agent-all-tools-store-final-pg.log",
+      "sha256": "89977b6dcaab14e5d390184e204c9166a2a27170da5779ab62710b55b3e5a25a",
+      "bytes": 980
+    },
+    "fixed-tools-coordinator-postgres": {
+      "path": "/private/tmp/axiom-agent-all-tools-coordinator-pg.log",
+      "sha256": "2145f40c7b5c80cc0cc16555076d3a679f0e804f2f91dfe4ecc0e6738e0bf981",
+      "bytes": 690
+    },
+    "controls-client-panel": {
+      "path": "/private/tmp/axiom-agent-controls-reviewed-final.log",
+      "sha256": "5f35367c1ec87cda6ca79100317a616c70f674405efb6858cf42cfbc4811236c",
+      "bytes": 640
+    },
+    "controls-desktop-types": {
+      "path": "/private/tmp/axiom-agent-controls-desktop-toolchain-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "controls-desktop-build": {
+      "path": "/private/tmp/axiom-agent-controls-desktop-toolchain-build.log",
+      "sha256": "bd47ec7c8b02f12df0df49b91118cc9e964994aed435636732eadcaa96ff2d8d",
+      "bytes": 2867
+    },
+    "controls-view-regressions": {
+      "path": "/private/tmp/axiom-agent-controls-view-regressions.log",
+      "sha256": "001c0d2c2a67b189e9fcb51407526b43c6b34bf6ac06a5e3d0f4251274fa59bd",
+      "bytes": 645
+    },
+    "late-policy-race-red": {
+      "path": "/private/tmp/axiom-agent-deployment-policy-race-red.log",
+      "sha256": "10368481188b1f3aea735a4658f6edd14db0390f88e281d6861e7033d469bee7",
+      "bytes": 7248
+    },
+    "late-policy-race-green": {
+      "path": "/private/tmp/axiom-agent-deployment-policy-race-green.log",
+      "sha256": "2eb5e11abc4c433dc7d6464539e4a4e32e95e992b01a94204d113297c4113d55",
+      "bytes": 745
+    },
+    "lost-prepare-red": {
+      "path": "/private/tmp/axiom-agent-lost-prepare-red.log",
+      "sha256": "05cd94d553110453eb43ac6087841794cc399ed1709d90aa764065b56196420f",
+      "bytes": 5864
+    }
   }
 }

@@ -21,7 +21,7 @@ try:
  run([bins/'createdb','-w','policy_fixture'])
  source=(repo/'prisma/schema.prisma').read_text()
  models=[]
- for name in ['DurableAgentWorkflow','DurableAgentWorkflowEvent','AgentConversation','AgentConversationTurn','AgentActionProposal','SecureAuditRecord','WorkspaceAgentIdentity']:
+ for name in ['DurableAgentWorkflow','DurableAgentWorkflowEvent','AgentConversation','AgentConversationTurn','AgentActionProposal','SecureAuditRecord','WorkspaceAgentIdentity','TenantBillingPlan','DeploymentExecution']:
   models.append(re.search(r'^model '+name+r' \{.*?^\}',source,re.S|re.M).group())
  header='''generator client {\n provider = "prisma-client-js"\n output = "./generated"\n}\ndatasource db {\n provider = "postgresql"\n url = env("DATABASE_URL")\n}\n'''
  models.append('''model OrgMembership {\n id String @unique @default(cuid())\n organizationId String\n userId String\n role String\n acceptedAt DateTime?\n @@id([organizationId,userId])\n}\nmodel DesktopSessionRecord {\n id String @id\n organizationId String\n userId String\n revokedAt DateTime?\n expiresAt DateTime\n}\n''')
@@ -45,6 +45,66 @@ model GitHubInstallation {
  suspendedAt DateTime?
 }
 ''')
+ models.append("""model Environment {
+ id String @id @default(cuid())
+ organizationId String
+ tier String
+ slug String @default("")
+ name String @default("")
+ displayOrder Int @default(0)
+ @@unique([organizationId,slug])
+}
+model DeploymentTarget {
+ id String @id @default(cuid())
+ environmentId String @unique
+ organizationId String
+ provider String @default("aws")
+ updatedAt DateTime @updatedAt
+ roleArn String
+ region String
+ ecsCluster String
+ ecsService String
+}
+model Repository {
+ id String @id
+ organizationId String
+ provider String
+ remoteOwner String
+ remoteName String
+}
+model BranchEnvironmentPolicy {
+ id String @id
+ organizationId String
+ repositoryId String
+ environmentId String
+ enabled Boolean
+ branchPattern String
+ requireReleaseTag Boolean
+ requireCodeowners Boolean
+ requirePrLink Boolean
+ requireChangeTicket Boolean
+ requirePromotionFromEnvironmentId String?
+ requireTestsPassing Boolean
+ priority Int
+}
+model TenantIdentityProvider {
+ id String @id @default(cuid())
+ organizationId String
+ protocol String
+ status String @default("pending")
+ issuerOrEntityId String
+ metadataDocument String
+ managedDomains String[] @default([])
+ roleMappingJson Json
+ requireMfaClaim Boolean @default(true)
+ lastTestAssertionAt DateTime?
+ configuredByUserId String
+ revokedAt DateTime?
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ @@unique([organizationId,protocol])
+}
+""")
  schema=root/'schema.prisma';schema.write_text(header+'\n'.join(models))
  env['DATABASE_URL']='postgresql://policy_fixture@localhost/policy_fixture?host='+str(socket).replace('/','%2F')
  run(['node','node_modules/prisma/build/index.js','generate','--schema',schema])

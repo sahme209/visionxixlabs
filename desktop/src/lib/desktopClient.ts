@@ -1,3 +1,4 @@
+import {readAgentActionEligibility,mutateAgentActionExecution,type AgentActionMutation} from './agentActionExecutionControls';
 import {readAgentActionExecution} from './agentActionExecutionRecovery';
 import {createExecutionPolicyClient} from './governanceExecutionPolicy';
 import {decodePolicyUploadBytes} from '../../../lib/governance/intelligence/documentText';
@@ -1412,6 +1413,14 @@ export class DesktopClient {
     } catch {
       return { ok: false as const, error: signal.aborted ? "Request stopped. Any completed work remains recorded; reload the conversation before trying again." : "The response was interrupted. No success was assumed. Reload the conversation before trying again." };
     } finally { unsubscribe(); streaming.signal.removeEventListener("abort", onAbort); controller.abort(); }
+  }
+
+  readAgentActionEligibility(proposalId: string, signal?: AbortSignal) {
+    return readAgentActionEligibility(this.savedTaskContext(), proposalId, signal);
+  }
+
+  mutateAgentActionExecution(input: AgentActionMutation, signal?: AbortSignal) {
+    return mutateAgentActionExecution(this.savedTaskContext(), input, signal);
   }
 
   readAgentActionExecution(proposalId: string, signal?: AbortSignal) {
