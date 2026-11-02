@@ -1,0 +1,18 @@
+{
+  "source": "97a690bd03b783634071dd8b7720d881ba69285d",
+  "stage": "/private/tmp/axiom-agent-pr-production-u4t0jwsy",
+  "log": "/private/tmp/axiom-agent-pr-production-97a690bd.log",
+  "archiveSha256": "8e0705dcb956aa9b766a80fc392ec88790a8e185d45556907d0ceb9e6a88527a",
+  "verifiedRegularFiles": 5797,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy",
+  "logSha256": "5ea65adba3ff7bc9de0a667dd912b67cec374653a3d9fba566626a3a542c14e3",
+  "logBytes": 42717,
+  "notValidated": [
+    "signed native app and current visual flow",
+    "genuine independent human approval",
+    "live provider acceptance",
+    "full repository test suite",
+    "complete Governance coverage or activation"
+  ]
+}
