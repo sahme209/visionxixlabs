@@ -125,4 +125,14 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   expect(await t.store.cancel(next,op.id)).toMatchObject({state:'cancelled',attemptCount:0});
  });
 
+ it('recovers the original preparation from its proposal without adopting changed source authority',async()=>{
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id);
+  await f.db.agentActionProposal.update({where:{id:t.proposal.id},data:{argsJson:{repositoryFullName:'changed/repository'}}});
+  expect(await t.store.lookup(t.scope,t.proposal.id)).toMatchObject({id:op.id,attemptCount:0});
+  await expect(t.store.claim(t.scope,op.id)).rejects.toThrow();
+ });
+ it('returns a validated absent lookup without creating or claiming work',async()=>{
+  const t=await fixture();expect(await t.store.lookup(t.scope,t.proposal.id)).toBeNull();expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.org}})).toBe(0);
+ });
+
 });

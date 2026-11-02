@@ -32,3 +32,13 @@ export type AgentExecutionBinding=z.infer<typeof agentExecutionBindingSchema>;
 export const agentExecutionReceiptSchema=z.object({code:z.enum(['action_completed','pre_dispatch_refused','provider_outcome_unknown']),references:z.array(z.object({kind:z.enum(['github_branch','github_commit','github_pull_request','github_workflow','environment','deployment_target','identity_provider']),id}).strict()).max(16).optional()}).strict();
 export type AgentExecutionReceipt=z.infer<typeof agentExecutionReceiptSchema>;
 export const agentExecutionStateSchema=z.object({state:z.enum(['prepared','dispatching','confirmed','refused','unknown','cancelled']),receipt:agentExecutionReceiptSchema.optional()}).strict();
+
+/** Public metadata only. Never serialize source arguments, claims or leases. */
+export const agentActionExecutionDtoSchema=z.object({
+ id:z.string().regex(/^agent_execution_[a-f0-9]{64}$/),proposalId:id,toolName:z.enum(AGENT_EXECUTION_TOOLS),state:agentExecutionStateSchema.shape.state,version:z.number().int().min(0).max(2),attemptCount:z.number().int().min(0).max(1),createdAt:instant,expiresAt:instant,observedAt:instant,
+ recoveryState:z.enum(['not_started','dispatch_unconfirmed','lease_elapsed_unconfirmed','confirmed','refused','unknown','cancelled']),receipt:agentExecutionReceiptSchema.optional(),
+}).strict().refine(v=>Date.parse(v.observedAt)>=Date.parse(v.createdAt)&&Date.parse(v.expiresAt)>Date.parse(v.createdAt)&&v.version===(v.state==='prepared'?0:v.state==='cancelled'||v.state==='dispatching'?1:2)&&v.attemptCount===(v.state==='prepared'||v.state==='cancelled'?0:1)&&v.recoveryState===(v.state==='prepared'?'not_started':v.state==='dispatching'?v.recoveryState:v.state)&&(v.state!=='dispatching'||['dispatch_unconfirmed','lease_elapsed_unconfirmed'].includes(v.recoveryState)),'invalid_execution_projection').refine(v=>{
+ const expected={confirmed:'action_completed',refused:'pre_dispatch_refused',unknown:'provider_outcome_unknown'} as const;
+ return v.state==='confirmed'||v.state==='refused'||v.state==='unknown'?v.receipt?.code===expected[v.state]:v.receipt===undefined;
+},'invalid_execution_receipt');
+export type AgentActionExecutionDto=z.infer<typeof agentActionExecutionDtoSchema>;

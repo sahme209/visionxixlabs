@@ -91,6 +91,14 @@ export function createAgentActionExecutionStore(repo:ReleaseOperationPlanRepo,po
  }
  function privateClaim(proof:AgentExecutionClaim){const c=claims.get(proof);if(!c||proof.operationId!==c.id)return deny();return c}
  return{
+  async lookup(raw:AgentExecutionScope,proposalId:string){const s=agentExecutionScopeSchema.parse(raw);z.string().min(1).max(240).parse(proposalId);return transaction(s,async tx=>{
+   const a=await actor(tx,s,'reader');await request(tx,s,'reader');
+   const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:s.organizationId,workflowKind:KIND,requestedByUserId:s.actorUserId,inputJson:{path:['review','proposalId'],equals:proposalId}},orderBy:[{createdAt:'desc'},{id:'desc'}],take:2});
+   if(rows.length>1)deny();
+   const value=rows.length?await load(tx,s,rows[0].id):null;
+   if(value&&value.binding.review.proposalId!==proposalId)deny();
+   const now=await time(tx);if(a.expiresAt<=now)deny();return value?dto(value,now):null;
+  })},
   async prepare(raw:AgentExecutionScope,proposalId:string){const s=agentExecutionScopeSchema.parse(raw);return transaction(s,async tx=>{
    const authority=await readAuthority(tx,s,z.string().min(1).max(240).parse(proposalId)),id=agentActionExecutionId(s.organizationId,proposalId,authority.review.proposalDigest);
    const existing=await tx.durableAgentWorkflow.findFirst({where:{id,organizationId:s.organizationId,workflowKind:KIND}});
