@@ -165,3 +165,9 @@ Proposal creation now captures the actual tenant-scoped base commit, discards mo
 Shared pure source parsing now renders the exact reviewed commit in native/browser cards, blocks approval for missing/mismatched historical snapshots, and qualifies branch-only requester preparation/execution through the current store.61 focused checks, two actual isolated PostgreSQL HTTP/provider-composition journeys, server/desktop types and frontend build pass; identities/provider replies remain simulated. PR/AWS source binding, full Governance and native/live acceptance remain open. See ../recovery/2026-11-02/agent-branch-review-flow-local-progress.md.
 
 B1 visible Cursor Teams follow-up inspected page hierarchy and all five FAQ expansions. Saved the public screenshot and original Axiom implications in ../research/website-audit/cursor.md. This is partial research, not completion of Cursor or other reference sites. No account, billing or contact action occurred.
+
+### Exact branch-flow build and second reference site
+
+Exact2880c6a6 clean-archive production build and Next TypeScript pass;5,794 regular source files verified. This covers current local requester API, fixed branch binding and review displays; it is not native/live Governance acceptance. Receipt ../recovery/2026-11-02/agent-branch-exact-production-build.json.
+
+B1 public ChatGPT documentation overview → Quickstart → Web setup → labeled illustration/example choices were visibly inspected and saved in ../research/website-audit/chatgpt.md. No prompt or agent generation was submitted. Broader ChatGPT marketing/navigation, remaining Cursor interactions, Claude/Codex/Grok, authentic Axiom demos and full B2–B6 remain open. Native visual acceptance is unavailable while the Mac is locked; no unlock attempt was made.

@@ -1,0 +1,11 @@
+{
+  "source": "2880c6a66b3f5419689ead6a9e6b6fea27072294",
+  "stage": "/private/tmp/axiom-agent-branch-production-tgb5utol",
+  "log": "/private/tmp/axiom-agent-branch-production-2880c6a6.log",
+  "archiveSha256": "30dc5563aa3398864adec307e171235c92901c267683f00a93682fde9f29178f",
+  "verifiedRegularFiles": 5794,
+  "exit": 0,
+  "scope": "local archive build; no live provider credentials or deploy",
+  "logSha256": "f428d762b25638aef95e420b1b135cd1270265e235af6dc02631990e94649c54",
+  "logBytes": 42719
+}
