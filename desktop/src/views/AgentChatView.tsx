@@ -1,3 +1,4 @@
+import {githubPullRequestReviewFromArgs} from "../../../lib/tauri/agentGithubPullRequestReview";
 import {githubBranchReviewFromArgs} from "../../../lib/tauri/agentGithubBranchReview";
 import {AgentApprovedActions} from "../components/AgentApprovedActions";
 import { aiUsageText } from "../lib/aiUsageText";
@@ -1540,6 +1541,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
   const args = typeof proposal.argsJson === "object" && proposal.argsJson !== null
     ? proposal.argsJson as Record<string, unknown>
     : {};
+  const pullSource = proposal.toolName === "open_github_pull_request" ? githubPullRequestReviewFromArgs(args) : null;
   const branchReview = proposal.toolName === "create_github_branch" ? githubBranchReviewFromArgs(args) : null;
   const proposedContent = proposal.toolName === "commit_github_file" && typeof args.content === "string" ? args.content : null;
   const review = typeof args._review === "object" && args._review !== null ? args._review as Record<string, unknown> : null;
@@ -1560,6 +1562,9 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
       <p className="text-xs text-zinc-400 font-mono mb-4">{describeArgs(proposal.toolName, proposal.argsJson)}</p>
       {proposal.toolName === "create_github_branch" && <div className="mb-4 break-all rounded-lg border border-white/10 p-3 text-xs text-zinc-300">
         {branchReview ? <><p>Reviewed base commit: <span className="font-mono">{branchReview.baseSha}</span></p><p className="mt-1">Create {branchReview.newBranchName} from {branchReview.baseBranch} at this exact commit.</p><p className="mt-1 text-zinc-400">Review only; the requester executes separately. A changed base requires a fresh proposal.</p></> : <p role="alert" className="text-amber-200">No bound branch source. Request a new proposal before approval.</p>}
+      </div>}
+      {proposal.toolName === "open_github_pull_request" && <div className="mb-4 break-all rounded-lg border border-white/10 p-3 text-xs text-zinc-300">
+        {pullSource ? <><p>Reviewed head commit: <span className="font-mono">{pullSource.headSha}</span></p><p className="mt-1">Reviewed base commit: <span className="font-mono">{pullSource.baseSha}</span></p><p className="mt-1 text-zinc-400">Creation checks this pair but does not freeze the branches. A changed or unconfirmed result needs review; it is never automatically retried. This does not merge or deploy.</p></> : <p role="alert" className="text-amber-200">No bound pull-request source. Request a new proposal before approval.</p>}
       </div>}
       {proposal.toolName === "trigger_aws_deploy" && (
         <div className="mb-4 rounded-lg border border-amber-500/20 p-3 text-xs text-zinc-300">
@@ -1627,7 +1632,7 @@ export function ProposalCard({ proposal, deciding, onApprove, onReject, onReview
         <button
           type="button"
           onClick={onApprove}
-          disabled={deciding || proposal.requiresIndependentReviewer || (proposal.toolName === "create_github_branch" && !branchReview) || (proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target")}
+          disabled={deciding || proposal.requiresIndependentReviewer || (proposal.toolName === "create_github_branch" && !branchReview) || (proposal.toolName === "open_github_pull_request" && !pullSource) || (proposal.toolName === "trigger_aws_deploy" && review?.kind !== "ecs_restart_target")}
           className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50"
         >
           {deciding ? "Working…" : "Record approval"}

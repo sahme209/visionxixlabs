@@ -54,3 +54,13 @@ describe("reviewed branch source previews", () => {
     mocks.proposals.mockResolvedValue([{...branch,argsJson:{...args,_review:{...args._review,newBranchName:'another'}}}]);const html=renderToStaticMarkup(await GovernancePage());expect(html.match(/<button[^>]*>Record approval<\/button>/)?.[0]).toContain('disabled=""');expect(html).toContain("No bound branch source");
   });
 });
+
+
+describe('reviewed pull-request source previews',()=>{
+ const args={repositoryFullName:'fixture/repository',head:'reviewed',base:'main',title:'Reviewed change',_review:{kind:'github_pull_request',head:'reviewed',base:'main',headSha:'a'.repeat(40),baseSha:'b'.repeat(40)}};
+ const pull={...proposal,toolName:'open_github_pull_request',argsJson:args};
+ it('native shows both commits and explicitly does not promise to freeze branch names',()=>{const html=renderToStaticMarkup(createElement(ProposalCard,{proposal:{...pull,createdAt:pull.createdAt.toISOString()},deciding:false,onApprove(){},onReject(){}}));expect(html).toContain(args._review.headSha);expect(html).toContain(args._review.baseSha);expect(html.indexOf(args._review.headSha)).toBeLessThan(html.indexOf('Review approval details'));expect(html).toContain('does not freeze the branches');});
+ it('native blocks approval for an old PR without source evidence',()=>{const html=renderToStaticMarkup(createElement(ProposalCard,{proposal:{...pull,createdAt:pull.createdAt.toISOString(),argsJson:{...args,_review:null}},deciding:false,onApprove(){},onReject(){}}));expect(html.match(/<button[^>]*>Record approval<\/button>/)?.[0]).toContain('disabled=""');expect(html.match(/<button[^>]*>Reject<\/button>/)?.[0]).not.toContain('disabled=""');});
+ it('browser displays captured pair outside the collapsed metadata review',async()=>{mocks.proposals.mockResolvedValue([pull]);const html=renderToStaticMarkup(await GovernancePage());expect(html).toContain(args._review.headSha);expect(html).toContain(args._review.baseSha);expect(html.indexOf(args._review.headSha)).toBeLessThan(html.indexOf('Review pull request'));expect(html).toContain('does not freeze the branches');});
+ it('browser blocks mismatched source evidence while keeping rejection',async()=>{mocks.proposals.mockResolvedValue([{...pull,argsJson:{...args,_review:{...args._review,head:'another'}}}]);const html=renderToStaticMarkup(await GovernancePage());expect(html.match(/<button[^>]*>Record approval<\/button>/)?.[0]).toContain('disabled=""');expect(html).toContain('No bound pull-request source');});
+});

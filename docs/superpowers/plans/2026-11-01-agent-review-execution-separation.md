@@ -47,3 +47,7 @@ All8 existing fixed tools now compose through the separate coordinator locally.5
 ## Requester HTTP composition increment (Tasks3–5 remain unchecked)
 
 Current local API now projects shared strict readiness metadata and executes only a saved operation through current paired requester authority.34 actual isolated store/API journeys,70 boundary/client checks and scoped server/desktop types/frontend build pass; identity/provider boundaries remain simulated. No private readiness source is serialized, no client permission field is accepted, and the deadline reaches the worker. Branch/PR/AWS immutable source paths remain hard-blocked at the public service; completing them is required for the original full scope. Native/current actor discovery, complete conversation/outcome presentation, broad Governance admission/coverage and exact whole-project/native verification remain open. See ../../recovery/2026-11-01/agent-requester-api-local-progress.md.
+
+## Local PR source increment — Tasks3–5 still open
+
+Captured head/base commits are now displayed, rechecked before fixed PR creation and verified against its response. Current HTTP/database journeys and receipt readback pass; legacy sources refuse. Symbolic refs are not frozen, and mismatch/loss stays consumed unknown. AWS source binding, conversation/restart presentation, native/full customer acceptance and true Governance admission/coverage/enrollment remain incomplete. No activation or provider action is implied. Exact receipt: ../../recovery/2026-11-02/agent-pull-request-source-local-progress.md.

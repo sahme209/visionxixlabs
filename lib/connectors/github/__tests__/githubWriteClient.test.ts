@@ -584,3 +584,29 @@ describe("reviewed immutable branch creation", () => {
     expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ ref: "refs/heads/reviewed", sha: input.expectedBaseSha });
   });
 });
+
+
+describe("reviewed pull-request source checks",()=>{
+  const input={owner:"acme",repo:"widgets",head:"reviewed",base:"main",title:"Reviewed change",installationToken:"fixture",expectedHeadSha:"a".repeat(40),expectedBaseSha:"b".repeat(40)};
+  beforeEach(()=>{fetchMock.mockReset();});
+  function respond(changed?:"head"|"base"|"response") { fetchMock.mockImplementation(async(url:string,init:any)=>{
+    if(init.method === "POST") return jsonResponse(201,{number:42,html_url:"https://github.com/acme/widgets/pull/42",head:{ref:"reviewed",sha:(changed==="response"?"c":"a").repeat(40),repo:{full_name:"acme/widgets"}},base:{ref:"main",sha:"b".repeat(40),repo:{full_name:"acme/widgets"}}});
+    const head=url.endsWith("/reviewed");return jsonResponse(200,{object:{type:"commit",sha:((head&&changed==="head")||(!head&&changed==="base")?"c":head?"a":"b").repeat(40)}});
+  }); }
+  it.each(["head","base"] as const)("refuses changed %s without POST or final write authority",async changed=>{respond(changed);const beforeWrite=vi.fn(async()=>{});expect(await createPullRequest({...input,beforeWrite})).toEqual({ok:false,error:"pull_request_source_changed"});expect(beforeWrite).not.toHaveBeenCalled();expect(fetchMock.mock.calls.some(([,init])=>init.method==='POST')).toBe(false);});
+  it("confirms only the source pair returned by the creation response",async()=>{respond();const beforeWrite=vi.fn(async()=>{});expect(await createPullRequest({...input,beforeWrite})).toEqual({ok:true,data:{number:42,htmlUrl:"https://github.com/acme/widgets/pull/42"}});expect(beforeWrite).toHaveBeenCalledOnce();expect(fetchMock.mock.calls.filter(([,init])=>init.method==='POST')).toHaveLength(1);});
+  it("does not confirm or retry a possibly created PR with changed response source",async()=>{respond("response");expect(await createPullRequest({...input,beforeWrite:async()=>{}})).toEqual({ok:false,error:"action_outcome_unknown"});expect(fetchMock.mock.calls.filter(([,init])=>init.method==='POST')).toHaveLength(1);});
+  it("rejects incomplete reviewed source before reading or writing",async()=>{expect(await createPullRequest({...input,expectedBaseSha:undefined,beforeWrite:async()=>{}})).toEqual({ok:false,error:"invalid_reviewed_pull_request_source"});expect(fetchMock).not.toHaveBeenCalled();});
+  it.each(['missing_base','wrong_head_ref','foreign_repository','nonstring_repository'])('keeps malformed or mismatched %s creation evidence unknown',async kind=>{
+    respond();const original=fetchMock.getMockImplementation()!;
+    fetchMock.mockImplementation(async(url:string,init:any)=>{const response=await original(url,init);if(init.method!=='POST')return response;const data=await response.json();if(kind==='missing_base')delete data.base;else if(kind==='wrong_head_ref')data.head.ref='another';else data.head.repo.full_name=kind==='foreign_repository'?'other/widgets':123;return jsonResponse(201,data)});
+    expect(await createPullRequest({...input,beforeWrite:async()=>{}})).toEqual({ok:false,error:'action_outcome_unknown'});expect(fetchMock.mock.calls.filter(([,init])=>init.method==='POST')).toHaveLength(1);
+  });
+
+});
+
+
+describe('branch commit provenance parsing',()=>{
+ beforeEach(()=>{fetchMock.mockReset();});
+ it.each(['tree','tag',undefined])('refuses branch reference object type %s',async type=>{fetchMock.mockResolvedValueOnce(jsonResponse(200,{object:{type,sha:'a'.repeat(40)}}));expect(await resolveGitReference({owner:'acme',repo:'widgets',ref:'reviewed',kind:'branch',installationToken:'fixture'})).toEqual({ok:false,error:'branch_commit_unavailable'});});
+});

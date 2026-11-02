@@ -131,4 +131,21 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({attemptCount:1});
  });
 
+ it.each(['confirmed','head_changed','response_changed','response_lost'])('composes reviewed pull-request source with durable outcome %s',async mode=>{
+  const v=await fixture('open_github_pull_request',()=>({repositoryFullName:'fixture/repository',head:'reviewed',base:'main',title:'Reviewed change',_review:{kind:'github_pull_request',head:'reviewed',base:'main',headSha:'a'.repeat(40),baseSha:'b'.repeat(40)}}));
+  const original=await f.db.agentActionProposal.findUnique({where:{id:v.proposal.id}});let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
+   expect(url.startsWith('https://api.github.com/repos/fixture/repository/')).toBe(true);
+   if(init.method==='GET')return Response.json({object:{type:'commit',sha:(url.endsWith('/reviewed')?(mode==='head_changed'?'c':'a'):'b').repeat(40)}});
+   expect(init.method).toBe('POST');expect(JSON.parse(init.body)).toEqual({head:'reviewed',base:'main',title:'Reviewed change',body:''});writes++;
+   if(mode==='response_lost')throw Error('SIMULATED_PRIVATE_TOKEN response loss');
+   return Response.json({number:42,html_url:'https://github.com/fixture/repository/pull/42',head:{ref:'reviewed',sha:(mode==='response_changed'?'c':'a').repeat(40),repo:{full_name:'fixture/repository'}},base:{ref:'main',sha:'b'.repeat(40),repo:{full_name:'fixture/repository'}}});
+  }));
+  const expected=mode==='confirmed'?'confirmed':mode==='head_changed'?'refused':'unknown';
+  expect(await v.coordinator.execute(v.operation.id)).toMatchObject({state:expected,attemptCount:1});expect(writes).toBe(mode==='head_changed'?0:1);
+  const recovered=await v.store.get(v.scope,v.operation.id);if(mode==='confirmed')expect(recovered?.receipt?.references).toEqual([{kind:'github_pull_request',id:'42'}]);else expect(recovered?.receipt?.references).toBeUndefined();
+  await expect(v.coordinator.execute(v.operation.id)).rejects.toThrow();expect(writes).toBe(mode==='head_changed'?0:1);
+  expect(await f.db.agentActionProposal.findUnique({where:{id:v.proposal.id}})).toEqual(original);expect(JSON.stringify(await v.store.get(v.scope,v.operation.id))).not.toContain('SIMULATED_PRIVATE_TOKEN');
+ });
+
 });

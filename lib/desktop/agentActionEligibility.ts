@@ -8,10 +8,10 @@ type Source=Readiness['source'];
 /** Symbolic-reference adapters remain unmounted until their source binding is
  * complete. Client booleans or a feature flag cannot override this closure. */
 export function assertAgentActionHttpSourceSupported(source:Source){
- if(['open_github_pull_request','trigger_aws_deploy'].includes(source.toolName))throw Error('agent_execution_workflow_incomplete');
+ if(['trigger_aws_deploy'].includes(source.toolName))throw Error('agent_execution_workflow_incomplete');
  validateAgentActionExecutionInput(source);
 }
-const effects:Record<string,string>={create_github_branch:"Create the reviewed branch at its exact approved base commit.",create_environment:'Create the reviewed environment configuration.',configure_deployment_target:'Apply the reviewed AWS deployment target configuration.',connect_identity_provider:'Create the reviewed pending identity-provider configuration.',commit_github_file:'Commit the exact reviewed file change on its reviewed branch.',commit_github_files:'Commit the exact reviewed file changes on their reviewed branch.'};
+const effects:Record<string,string>={open_github_pull_request:"Open the reviewed pull request after checking its captured head and base commits.",create_github_branch:"Create the reviewed branch at its exact approved base commit.",create_environment:'Create the reviewed environment configuration.',configure_deployment_target:'Apply the reviewed AWS deployment target configuration.',connect_identity_provider:'Create the reviewed pending identity-provider configuration.',commit_github_file:'Commit the exact reviewed file change on its reviewed branch.',commit_github_files:'Commit the exact reviewed file changes on their reviewed branch.'};
 /** Project actual stored authority to display metadata only. Raw source, roles,
  * approval proofs and provider credentials never enter this public object. */
 export function projectAgentActionEligibility(proposalId:string,ready:Readiness):AgentActionEligibilityDto{

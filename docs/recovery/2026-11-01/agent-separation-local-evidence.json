@@ -125,6 +125,61 @@
       "path": "/private/tmp/axiom-agent-branch-review-desktop-build.log",
       "sha256": "d412aa14f814d47fe58b5d802e41e4086a13d88f202b6148e202275e1d82f3c1",
       "bytes": 2867
+    },
+    "pr-source-red": {
+      "path": "/private/tmp/axiom-agent-pr-source-red.log",
+      "sha256": "5fad873c30c62593b3766caa09ab8aec395050299e2262e1ccc65e17f562b748",
+      "bytes": 9052
+    },
+    "pr-provenance-red": {
+      "path": "/private/tmp/axiom-agent-pr-response-red.log",
+      "sha256": "11ee101848d2ff53642647b8e711e21b17b9690f12c16a0c4249d50231fc4cfa",
+      "bytes": 2455
+    },
+    "pr-coordinator-red": {
+      "path": "/private/tmp/axiom-agent-pr-coordinator-red.log",
+      "sha256": "a7c25aa56cda62eacbb2de6be7494b9be039ca9fe502d8ad00143fe4fa891d6d",
+      "bytes": 2815
+    },
+    "pr-review-red": {
+      "path": "/private/tmp/axiom-agent-pr-review-flow-red.log",
+      "sha256": "4d0a240a23d15958a4df0ff84eb112902cb2897d2df41853890352e25270e935",
+      "bytes": 8877
+    },
+    "pr-receipt-red": {
+      "path": "/private/tmp/axiom-agent-pr-receipt-red.log",
+      "sha256": "d33ae1f0049c580c82b0d089a4bc63963093d891856516f6cdfc7780fbe9d718",
+      "bytes": 6240
+    },
+    "pr-focused-final": {
+      "path": "/private/tmp/axiom-agent-pr-final-focused.log",
+      "sha256": "b14b33a829018e0ec297078ef710958b28d17e3270603a25046e0aa6ee7701d5",
+      "bytes": 645
+    },
+    "pr-coordinator-pg-final": {
+      "path": "/private/tmp/axiom-agent-pr-source-pg-final.log",
+      "sha256": "4352fa720cb5a2fd2ab93a4c98038f19d68ccf071edf392b4e7e29c5c475c3e3",
+      "bytes": 753
+    },
+    "pr-http-pg-final": {
+      "path": "/private/tmp/axiom-agent-pr-requester-http-pg-final.log",
+      "sha256": "8951930fec9fa2a6774fd6b60e3a4c93184277091b19d9b3536ee2b27da5e027",
+      "bytes": 747
+    },
+    "pr-server-types": {
+      "path": "/private/tmp/axiom-agent-pr-final-server-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "pr-desktop-types": {
+      "path": "/private/tmp/axiom-agent-pr-final-desktop-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "pr-desktop-build": {
+      "path": "/private/tmp/axiom-agent-pr-final-desktop-build.log",
+      "sha256": "75ef5b7774a0f61b15511394f70de15b95972b7ecfed9222e8c9a2aebcf2d6cc",
+      "bytes": 2867
     }
   },
   "fixed_tools_and_controls": {

@@ -125,3 +125,19 @@ describe("branch review source binding", () => {
     expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();
   });
 });
+
+
+describe("pull-request review source capture", () => {
+  const args = { repositoryFullName: "acme/widgets", head: "reviewed", base: "main", title: "Reviewed change" };
+  beforeEach(() => { vi.clearAllMocks(); mocks.resolveTenantScopedToken.mockResolvedValue({ ok: true, token: "scoped-token" }); mocks.resolveGitReference.mockImplementation(async (input: {ref:string}) => ({ok:true,data:{kind:"branch",ref:input.ref,commitSha:(input.ref === "main" ? "b" : "a").repeat(40)}})); });
+  it("replaces untrusted evidence with both actual branch commits", async () => {
+    expect(await prepareProposalArgsForReview("org-1", "open_github_pull_request", {...args,_review:{kind:"forged"}})).toEqual({ok:true,args:{...args,_review:{kind:"github_pull_request",head:"reviewed",base:"main",headSha:"a".repeat(40),baseSha:"b".repeat(40)}}});
+    expect(mocks.resolveTenantScopedToken).toHaveBeenCalledExactlyOnceWith("org-1",{owner:"acme",repo:"widgets"});expect(mocks.resolveGitReference).toHaveBeenCalledTimes(2);
+  });
+  it.each(["head", "base"])("refuses unreadable %s source rather than a symbolic fallback", async ref => {
+    mocks.resolveGitReference.mockImplementation(async(input:{ref:string})=> input.ref === args[ref as "head"|"base"] ? {ok:false,error:"private provider detail"} : {ok:true,data:{kind:"branch",ref:input.ref,commitSha:"a".repeat(40)}});
+    expect(await prepareProposalArgsForReview("org-1","open_github_pull_request",args)).toEqual({ok:false,error:"pull_request_review_unavailable"});
+  });
+  it("refuses mismatched provider reference evidence",async()=>{mocks.resolveGitReference.mockResolvedValue({ok:true,data:{kind:"branch",ref:"another",commitSha:"a".repeat(40)}});expect(await prepareProposalArgsForReview("org-1","open_github_pull_request",args)).toEqual({ok:false,error:"pull_request_review_unavailable"});});
+  it.each([{head:"owner:branch"},{base:"../main"},{head:"main"}])("rejects invalid or same branch pair before credentials: %s",async invalid=>{expect(await prepareProposalArgsForReview("org-1","open_github_pull_request",{...args,...invalid})).toEqual({ok:false,error:"invalid_pull_request_proposal"});expect(mocks.resolveTenantScopedToken).not.toHaveBeenCalled();});
+});

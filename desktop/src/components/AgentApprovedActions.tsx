@@ -1,6 +1,7 @@
 import {useEffect,useRef,useState} from 'react';
 import type {AgentActionRecoveryResult} from '../lib/agentActionExecutionRecovery';
 import {agentActionEligibilitySchema,type AgentActionEligibility,type AgentActionEligibilityResult,type AgentActionMutation,type AgentActionMutationResult} from '../lib/agentActionExecutionControls';
+const REFERENCE_LABELS={github_branch:'Branch',github_commit:'Commit',github_pull_request:'Pull request',github_workflow:'Workflow reference',environment:'Environment',deployment_target:'Deployment target',identity_provider:'Identity provider'};
 interface Action{id:string;toolName:string}
 interface Props{actions:Action[];read:(proposalId:string,signal?:AbortSignal)=>Promise<AgentActionRecoveryResult>;eligibility?:(proposalId:string,signal?:AbortSignal)=>Promise<AgentActionEligibilityResult>;mutate?:(input:AgentActionMutation,signal?:AbortSignal)=>Promise<AgentActionMutationResult>}
 const REASONS:Record<AgentActionEligibility['reason'],string>={
@@ -39,6 +40,7 @@ function ApprovedAction({action,read,eligibility,mutate}:Omit<Props,'actions'>&{
  return <article className="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3">
   <p className="text-xs font-medium text-zinc-200">{heading}</p>
   <p className="mt-1 text-xs text-zinc-400">{(saved?.toolName??action.toolName).replaceAll('_',' ')} · proposal <span className="font-mono">{action.id}</span></p>
+  {saved?.receipt?.references?.length ? <ul aria-label="Recorded action references" className="mt-2 space-y-1 break-all text-xs text-zinc-300">{saved.receipt.references.map((reference,index)=><li key={`${reference.kind}:${reference.id}:${index}`}>{REFERENCE_LABELS[reference.kind]}: {reference.id}</li>)}</ul> : null}
   <p className="mt-2 text-xs leading-5 text-zinc-400">{uncertain?'The provider outcome is not confirmed. Do not resend. This read cannot claim or repeat the action.':saved?.state==='confirmed'?'The saved execution record confirms completion. This does not establish deployment health.':saved?.state==='refused'?'The saved attempt is consumed. Review its recorded refusal; this panel cannot repeat it.':saved?.state==='cancelled'?'The unused saved execution was stopped. Its history remains available.':'No new action runs automatically. Check saved action history to verify its outcome. A saved approval alone does not establish execution eligibility.'}</p>
   {result?.ok&&result.data===null&&<p role="status" className="mt-2 text-xs text-zinc-400">No saved execution record was found for this requester. No action was prepared or run.</p>}
   {result&&!result.ok&&<p role="alert" className="mt-2 text-xs text-amber-200">{result.error}</p>}

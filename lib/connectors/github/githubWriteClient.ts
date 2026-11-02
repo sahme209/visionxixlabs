@@ -468,13 +468,26 @@ export interface CreatePullRequestInput extends GithubMutationAuthority {
   title: string;
   body?: string;
   installationToken: string;
+  /** Reviewed pair is checked before POST and against its creation response. */
+  expectedHeadSha?: string;
+  expectedBaseSha?: string;
 }
 
 export async function createPullRequest(
   input: CreatePullRequestInput,
 ): Promise<GithubWriteResult<{ number: number; htmlUrl: string }>> {
   if(typeof input.beforeWrite!=="function")return{ok:false,error:"github_write_authority_unavailable"};
-  const result = await gh<{ number: number; html_url: string }>(
+  const reviewed = input.expectedHeadSha !== undefined || input.expectedBaseSha !== undefined;
+  if (reviewed) {
+    if (typeof input.expectedHeadSha !== "string" || typeof input.expectedBaseSha !== "string" || !/^[a-f0-9]{40}$/.test(input.expectedHeadSha) || !/^[a-f0-9]{40}$/.test(input.expectedBaseSha)) return { ok: false, error: "invalid_reviewed_pull_request_source" };
+    const head = await resolveGitReference({ owner: input.owner, repo: input.repo, ref: input.head, kind: "branch", installationToken: input.installationToken });
+    const base = await resolveGitReference({ owner: input.owner, repo: input.repo, ref: input.base, kind: "branch", installationToken: input.installationToken });
+    if (!head.ok || !base.ok || head.data.commitSha !== input.expectedHeadSha || base.data.commitSha !== input.expectedBaseSha) return { ok: false, error: "pull_request_source_changed" };
+  }
+  // GitHub creation accepts symbolic refs, not an atomic SHA precondition.
+  // Ref movement after these reads can only be reconciled from the response;
+  // a mismatch remains consumed/unknown in the caller, never retried here.
+  const result = await gh<{ number: number; html_url: string; head?: {ref?:string;sha?:string;repo?:{full_name?:string}}; base?: {ref?:string;sha?:string;repo?:{full_name?:string}} }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/pulls`,
     input.installationToken,
     { method: "POST", beforeWrite: input.beforeWrite, body: { title: input.title, head: input.head, base: input.base, body: input.body ?? "" } },
@@ -482,6 +495,10 @@ export async function createPullRequest(
   if (!result.ok) return { ok: false, error: (result.error === "action_outcome_unknown" || result.error === "github_write_authority_unavailable") ? result.error : `pull_request_create_failed: ${result.error}` };
   if (!result.data || !Number.isSafeInteger(result.data.number) || result.data.number < 1 || typeof result.data.html_url !== "string" || !result.data.html_url) {
     return { ok: false, error: "action_outcome_unknown" };
+  }
+  if (reviewed) {
+    const repository = `${input.owner}/${input.repo}`.toLowerCase();
+    if (typeof result.data.head?.repo?.full_name !== "string" || typeof result.data.base?.repo?.full_name !== "string" || result.data.head?.ref !== input.head || result.data.base?.ref !== input.base || result.data.head?.sha !== input.expectedHeadSha || result.data.base?.sha !== input.expectedBaseSha || result.data.head?.repo?.full_name?.toLowerCase() !== repository || result.data.base?.repo?.full_name?.toLowerCase() !== repository) return { ok: false, error: "action_outcome_unknown" };
   }
   return { ok: true, data: { number: result.data.number, htmlUrl: result.data.html_url } };
 }
@@ -503,6 +520,7 @@ export async function resolveGitReference(input: {
   );
   if (!result.ok) return { ok: false, error: `${input.kind}_ref_not_found: ${result.error}` };
 
+  if (input.kind === "branch" && (result.data?.object?.type !== "commit" || typeof result.data.object.sha !== "string" || !/^[a-f0-9]{40}$/.test(result.data.object.sha))) return { ok: false, error: "branch_commit_unavailable" };
   let commitSha = result.data.object.sha;
   if (input.kind === "tag" && result.data.object.type === "tag") {
     const annotated = await gh<{ object: { type: string; sha: string } }>(

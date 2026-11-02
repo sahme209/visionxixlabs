@@ -55,3 +55,19 @@ describe('unmounted fixed requester GitHub execution core (simulated authority/p
 it('refuses branch execution without captured trusted source before claim',async()=>{const source=saved();delete (source.args as any)._review;store.inspectForExecution.mockResolvedValue(source);await expect(create().execute('operation')).rejects.toThrow('agent_execution_review_unavailable');expect(store.claim).not.toHaveBeenCalled();expect(writes).toBe(0)});
 it('consumes a stale base refusal without sending a branch write',async()=>{vi.stubGlobal('fetch',vi.fn(async()=>Response.json({object:{sha:'b'.repeat(40)}})));expect(await create().execute('operation')).toEqual({state:'refused',receipt:{code:'pre_dispatch_refused'}});expect(store.complete).toHaveBeenCalledOnce();expect(writes).toBe(0)});
 it('does not confirm a different commit returned for the reviewed branch',async()=>{vi.stubGlobal('fetch',vi.fn(async(_url:string,init:any)=>{if(init.method!=='GET'){writes++;return Response.json({ref:'refs/heads/work',object:{sha:'b'.repeat(40)}})}return Response.json({object:{sha:'a'.repeat(40)}})}));expect(await create().execute('operation')).toEqual({state:'unknown',receipt:{code:'provider_outcome_unknown'}});expect(writes).toBe(1)});
+
+
+function usePullRequestSource(){
+ const source={...saved(),toolName:'open_github_pull_request',args:{repositoryFullName:'owner/repo',head:'reviewed',base:'main',title:'Reviewed change',_review:{kind:'github_pull_request',head:'reviewed',base:'main',headSha:'a'.repeat(40),baseSha:'b'.repeat(40)}}};
+ store.inspectForExecution.mockResolvedValue(source);store.beforeDispatch.mockResolvedValue(source);store.beforeGithubDispatch.mockResolvedValue(source);return source;
+}
+function pullRequestProvider(changed?:'head'|'response'){
+ vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
+  if(init.method==='GET')return Response.json({object:{type:'commit',sha:((url.endsWith('/reviewed')?(changed==='head'?'c':'a'):'b')).repeat(40)}});
+  writes++;return Response.json({number:42,html_url:'https://github.com/owner/repo/pull/42',head:{ref:'reviewed',sha:(changed==='response'?'c':'a').repeat(40),repo:{full_name:'owner/repo'}},base:{ref:'main',sha:'b'.repeat(40),repo:{full_name:'owner/repo'}}});
+ }));
+}
+it('requires captured pull-request commits before claiming the operation',async()=>{const source=usePullRequestSource();delete (source.args as any)._review;await expect(create().execute('operation')).rejects.toThrow('agent_execution_review_unavailable');expect(store.claim).not.toHaveBeenCalled();expect(writes).toBe(0)});
+it('refuses changed pull-request head with no provider POST',async()=>{usePullRequestSource();pullRequestProvider('head');expect(await create().execute('operation')).toEqual({state:'refused',receipt:{code:'pre_dispatch_refused'}});expect(writes).toBe(0)});
+it('confirms one pull request only after checking both returned reviewed commits',async()=>{usePullRequestSource();pullRequestProvider();expect(await create().execute('operation')).toEqual({state:'confirmed',receipt:{code:'action_completed',references:[{kind:'github_pull_request',id:'42'}]}});expect(writes).toBe(1);expect(store.beforeGithubDispatch).toHaveBeenCalledOnce()});
+it('keeps a created pull request with changed response source consumed unknown',async()=>{usePullRequestSource();pullRequestProvider('response');expect(await create().execute('operation')).toEqual({state:'unknown',receipt:{code:'provider_outcome_unknown'}});expect(writes).toBe(1);expect(store.complete).toHaveBeenCalledOnce()});

@@ -1,0 +1,24 @@
+# Agent pull-request source checks and durable outcome — local increment
+
+Proposal creation discards untrusted review metadata and reads both tenant-scoped head/base commit identities before storing the exact proposal digest. Shared pure source parsing requires matching branch names, different head/base and valid commit SHAs. The native and browser review surfaces display both commits before collapsed details and block old/mismatched source evidence. Review remains separate from requester execution.
+
+The fixed coordinator requires this new captured source plus current exact reviewed proposal/requester/connection authority. Before one PR creation request, the fixed client checks both current refs. It confirms success only when the creation response identifies the exact repository, branch names and captured commit pair. Malformed/mismatched/lost post-dispatch responses remain unknown and consumed, not retried or automatically closed. Pre-dispatch source refusal makes zero POST. The confirmed PR number is stored through the existing closed receipt.references contract and shown as plain text by the saved-action recovery panel. Unknown/refused outcomes do not receive a confirmed PR reference.
+
+## Provider limitation — not an atomic source freeze
+
+GitHub's create-PR API accepts symbolic head/base names, not a SHA precondition. This implementation observes them before creation and verifies the response; it cannot freeze those branches or promise atomic conditional creation. A branch movement during the final authority/network window can produce an unconfirmed consumed action. That distinction is explicit on both review surfaces. Creating a PR does not merge, deploy, prove tests or authorize later execution. Reference: https://docs.github.com/en/rest/pulls/pulls#create-a-pull-request .
+
+Public readiness/prepare/execute now qualifies captured PR sources through the real current-authority store and coordinator. The default production flag stays OFF/unset; no activation. Legacy symbolic proposals still refuse, even with the test flag enabled. AWS dispatch remains blocked at this entry until workflow source binding is finished; the original eight-tool completion scope remains unchanged. Enrollment continues to refuse without real coverage/admission.
+
+## Verification
+
+- Source/transport RED12, malformed-provenance RED4, coordinator RED3, review/readiness RED5 and receipt/display RED2 demonstrated missing behavior. A test fixture mistakenly returned its mock as a cleanup callback; corrected the hook without changing runtime semantics.
+- Current combined10 focused suites:190 checks pass. Includes actual proposal capture/fixed transport/coordinator, rendered native/browser source previews, strict readiness, service/HTTP boundaries, client receipt validation and recovery display. Authority/provider boundaries are simulated in these unit suites.
+- Four actual isolated PostgreSQL coordinator journeys pass: confirmed, changed head/zero POST, changed response/unknown and lost response/unknown. Original proposal/review history remains unchanged; repeat execution refuses; confirmed PR reference survives durable readback. Eleven unrelated cases filtered/skipped. Owned fixture identity is recorded in the final log and stopped.
+- Four actual isolated PostgreSQL paired HTTP journeys pass: confirmed, changed head, changed response and old symbolic source. Confirmed result has one POST/recorded PR number; refusal has zero POST; unknown stays consumed; old source creates no operation or token. Readiness never emits private args/source.36 unrelated cases filtered/skipped. Owned fixture stopped.
+- Scoped server types, actual desktop types and Vite6.4.2 build pass. Existing bundle warning remains. Exact full production build is pending for this runtime; prior2880 build is not evidence for these new changes. No signed native rebuild/relaunch or actual visual/human/provider acceptance.
+- Automated independent source review found no important source-binding issue, then separately reviewed confirmed-reference persistence/rendering with no important regression. This is not human provider approval.
+
+Real fixtures exercise source/review/role/session/installation rows, locks/CAS, store, current connection guard, service/HTTP and fixed transport. Request authentication, human identity/approval, billing availability, token issuance and GitHub HTTP responses are explicitly simulated. No live PR or other provider write occurred.
+
+Remaining: AWS source binding, conversation/outcome context and native/restart acceptance, real registered Governance admission/catalog/complete mutation coverage/enrollment, and every open application/website master-plan item. No production/settings/schema/grant/purchase/paid CI/AI action occurred. Never adopt old approvals, reset unknown history or impersonate an independent reviewer.

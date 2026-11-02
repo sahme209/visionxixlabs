@@ -1,4 +1,6 @@
 import 'server-only';
+import {githubPullRequestReviewFromArgs} from '@/lib/tauri/agentGithubPullRequestReview';
+import {pullRequestProposalReview} from '@/lib/cockpit/pullRequestProposalReview';
 import {executeStoredAgentDeployment,agentDeploymentArgsSchema,type AgentDeploymentExecutionRepo} from './agentActionDeploymentExecution';
 import {z} from 'zod';
 import {buildEnvironmentCreateResponse,type EnvironmentCreateRepo,ALL_ENVIRONMENT_TIERS} from '@/lib/releaseops/environmentCreateResponder';
@@ -42,6 +44,7 @@ export function validateAgentActionExecutionInput(saved:Awaited<ReturnType<Store
  if(!Object.hasOwn(schemas,saved.toolName))throw Error('agent_execution_tool_unavailable');
  const schema=schemas[saved.toolName as keyof typeof schemas];schema.parse(args);
  if(!parseRepositoryFullName(args.repositoryFullName as string))throw Error('agent_execution_source_unavailable');
+ if(saved.toolName==='open_github_pull_request'&&(!githubPullRequestReviewFromArgs(args)||!pullRequestProposalReview(args)))throw Error('agent_execution_review_unavailable');
  if(saved.toolName==='create_github_branch'&&!githubBranchReviewFromArgs(args))throw Error('agent_execution_review_unavailable');
  if(saved.toolName==='commit_github_file'&&!githubFileReviewFromArgs(args))throw Error('agent_execution_review_unavailable');
  if(saved.toolName==='commit_github_files'){
@@ -53,8 +56,9 @@ export function validateAgentActionExecutionInput(saved:Awaited<ReturnType<Store
 /** Partial fixed-transport core. Public entry separately qualifies source support.
  * Only stored operation input is executable; scope/principal come from paired
  * server authentication. Deployment uses fixed policy/reservation/dispatch. Source
- * branch creation binds a proposal-time immutable SHA. PR/workflow references
- * still bind symbolic names;
+ * Branch creation pins an immutable SHA; PR creation checks captured commits
+ * before POST and in its response without claiming to freeze symbolic refs.
+ * Workflow source binding remains incomplete;
  * this module does not complete the activation contract or enable execution. */
 export function createAgentActionExecutionCoordinator(request:NextRequest,principal:DesktopRequestPrincipal,repo:GuardRepo&AgentDeploymentExecutionRepo,store:Store,rawScope:AgentExecutionScope){
  const scope=Object.freeze(agentExecutionScopeSchema.parse(rawScope));
@@ -100,6 +104,7 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
   const claimed=await store.claim(scope,id);if(!claimed.claimed)return claimed.operation;
   let dispatchPossible=false;
   let outcome:'confirmed'|'refused'|'unknown'='refused';
+  let references:Array<{kind:'github_pull_request';id:string}>|undefined;
   try{
    const token=await guard.resolveToken(parsed);if(!token.ok)throw Error('agent_execution_credentials_unavailable');
    const assertExact=async()=>{
@@ -133,17 +138,18 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
     const review=githubFilesReviewFromArgs(args)!;
     const files=(args.files as Array<{path:string;content:string}>).map((f,i)=>({...f,expectedSha:review.files[i].baseSha}));
     result=await commitFiles({...authority,branch:args.branch as string,files,message:args.message as string});
-   }else result=await createPullRequest({...authority,head:args.head as string,base:args.base as string,title:args.title as string,...(typeof args.body==='string'?{body:args.body}:{})});
+   }else result=await createPullRequest({...authority,head:args.head as string,base:args.base as string,title:args.title as string,expectedHeadSha:githubPullRequestReviewFromArgs(args)!.headSha,expectedBaseSha:githubPullRequestReviewFromArgs(args)!.baseSha,...(typeof args.body==='string'?{body:args.body}:{})});
    if(result.ok){
     const data=result.data as Record<string,unknown>|undefined;
     const sha=typeof data?.sha==='string'&&/^[a-f0-9]{40}$/.test(data.sha);
     const valid=saved.toolName==='create_github_branch'?sha&&data?.sha===githubBranchReviewFromArgs(args)!.baseSha&&data?.ref===`refs/heads/${args.newBranchName}`:saved.toolName==='open_github_pull_request'?Number.isSafeInteger(data?.number)&&Number(data?.number)>0:sha;
     if(!valid)throw Error('agent_execution_provider_evidence_unavailable');
+    if(saved.toolName==='open_github_pull_request')references=[{kind:'github_pull_request',id:String(data!.number)}];
    }
    outcome=result.ok?'confirmed':dispatchPossible?'unknown':'refused';
   }catch{outcome=dispatchPossible?'unknown':'refused'}
   // Outside the dispatch catch: never write a second outcome or resend after a
   // DB response loss. Recovery reads the consumed durable operation only.
-  return store.complete(claimed.claim,outcome,{code:outcome==='confirmed'?'action_completed':outcome==='unknown'?'provider_outcome_unknown':'pre_dispatch_refused'});
+  return store.complete(claimed.claim,outcome,{code:outcome==='confirmed'?'action_completed':outcome==='unknown'?'provider_outcome_unknown':'pre_dispatch_refused',...(outcome==='confirmed'&&references?{references}:{})});
  }});
 }

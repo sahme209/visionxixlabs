@@ -1,4 +1,5 @@
 import "server-only";
+import {pullRequestProposalReview} from "@/lib/cockpit/pullRequestProposalReview";
 import { isAgentGithubBranchReference } from "@/lib/tauri/agentGithubBranchReview";
 import { captureRestartTarget, type RestartTargetRepo } from "./restartTargetReview";
 import { isSensitiveRepositoryEvidencePath } from "./repositoryEvidencePolicy";
@@ -52,6 +53,18 @@ export async function prepareProposalArgsForReview(
       if (!base.ok || base.data.kind !== "branch" || base.data.ref !== args.baseBranch || !/^[a-f0-9]{40}$/.test(base.data.commitSha)) return { ok: false, error: "branch_review_unavailable" };
       return { ok: true, args: { ...sanitizedArgs, _review: { kind: "github_branch", baseBranch: args.baseBranch, newBranchName: args.newBranchName, baseSha: base.data.commitSha } } };
     } catch { return { ok: false, error: "branch_review_unavailable" }; }
+  }
+  if (toolName === "open_github_pull_request") {
+    const parsed = typeof args.repositoryFullName === "string" ? parseRepositoryFullName(args.repositoryFullName) : null;
+    if (!parsed || !pullRequestProposalReview(sanitizedArgs) || !isAgentGithubBranchReference(args.head) || !isAgentGithubBranchReference(args.base) || args.head === args.base) return { ok: false, error: "invalid_pull_request_proposal" };
+    try {
+      const token = await resolveTenantScopedToken(organizationId, parsed);
+      if (!token.ok) return { ok: false, error: "pull_request_review_unavailable" };
+      const head = await resolveGitReference({ ...parsed, ref: args.head, kind: "branch", installationToken: token.token });
+      const base = await resolveGitReference({ ...parsed, ref: args.base, kind: "branch", installationToken: token.token });
+      if (!head.ok || !base.ok || head.data.kind !== "branch" || base.data.kind !== "branch" || head.data.ref !== args.head || base.data.ref !== args.base || !/^[a-f0-9]{40}$/.test(head.data.commitSha) || !/^[a-f0-9]{40}$/.test(base.data.commitSha)) return { ok: false, error: "pull_request_review_unavailable" };
+      return { ok: true, args: { ...sanitizedArgs, _review: { kind: "github_pull_request", head: args.head, base: args.base, headSha: head.data.commitSha, baseSha: base.data.commitSha } } };
+    } catch { return { ok: false, error: "pull_request_review_unavailable" }; }
   }
   if (toolName !== "commit_github_file" && toolName !== "commit_github_files") return { ok: true, args: sanitizedArgs };
 
