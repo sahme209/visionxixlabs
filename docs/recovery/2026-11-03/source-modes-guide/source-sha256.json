@@ -1,0 +1,8 @@
+{
+  "app/docs/source-modes/page.tsx": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456",
+  "app/docs/__tests__/source-modes.test.ts": "10759291aa040cc25968e682260967481dd9aa929b8a23d3f87203ff14d19632",
+  "desktop/src/views/RepositoryWorkspaceView.tsx": "30706b3e71ef47c3ad333b710f15b802203f5c90102cfd6b4caa0cba646dc8fd",
+  "desktop/src/lib/localCodeContext.ts": "a5cc9fd6d95c2c5e58eda24c53603744f7da5d9c001706a3331276359cb0132e",
+  "desktop/src/lib/localWorkspaceSelection.ts": "d7d8e9c196bf64525d930f283d93c2b9cc6ec388638cfded6a3267b1b543c06e",
+  "lib/desktop/desktopStateModel.ts": "926546687af78ecf0c80b49eb1453a91034ce5736c1e3bb3700d32390883a339"
+}

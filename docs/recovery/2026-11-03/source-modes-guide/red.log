@@ -1,0 +1,42 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-source-modes-9d72546e
+
+ ❯ app/docs/__tests__/source-modes.test.ts (3 tests | 3 failed) 8ms
+   × renders its own source guide and distinguishes local, connected and preview evidence 6ms
+   × explains exact repository controls and the separate AI send boundary 1ms
+   × gives the next safe action for unavailable access and avoids readiness or provider claims 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/docs/__tests__/source-modes.test.ts > renders its own source guide and distinguishes local, connected and preview evidence
+ FAIL  app/docs/__tests__/source-modes.test.ts > explains exact repository controls and the separate AI send boundary
+ FAIL  app/docs/__tests__/source-modes.test.ts > gives the next safe action for unavailable access and avoids readiness or provider claims
+Error: source guide must render instead of redirecting
+ ❯ redirect app/docs/__tests__/source-modes.test.ts:5:53
+      3| import {cleanup,render,screen,within} from '@testing-library/react';
+      4| import {createElement} from 'react';
+      5| vi.mock('next/navigation',()=>({redirect:()=>{throw Error('source guid…
+       |                                                     ^
+      6| import Page from '../source-modes/page';
+      7| afterEach(cleanup);
+ ❯ SourceModesPage app/docs/source-modes/page.tsx:4:3
+ ❯ Object.react_stack_bottom_frame ../../../Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/react-dom/cjs/react-dom-client.development.js:25904:20
+ ❯ renderWithHooks ../../../Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/react-dom/cjs/react-dom-client.development.js:7662:22
+ ❯ updateFunctionComponent ../../../Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/react-dom/cjs/react-dom-client.development.js:10166:19
+ ❯ beginWork ../../../Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/react-dom/cjs/react-dom-client.development.js:11778:18
+ ❯ runWithFiberInDEV ../../../Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/react-dom/cjs/react-dom-client.development.js:874:13
+ ❯ performUnitOfWork ../../../Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/react-dom/cjs/react-dom-client.development.js:17641:22
+ ❯ workLoopSync ../../../Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/react-dom/cjs/react-dom-client.development.js:17469:41
+ ❯ renderRootSync ../../../Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/react-dom/cjs/react-dom-client.development.js:17450:11
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  15:19:49
+   Duration  354ms (transform 15ms, setup 0ms, import 47ms, tests 8ms, environment 197ms)
+

@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.next.json",
+  "include": [
+    "../../next-env.d.ts",
+    "../../app/docs/source-modes/page.tsx",
+    "../../components/docs/DocPrimitives.tsx"
+  ],
+  "exclude": [
+    "../../node_modules",
+    "../../desktop",
+    "../../**/__tests__/**"
+  ]
+}
