@@ -1,0 +1,25 @@
+{
+  "argv": [
+    "/private/tmp/axiom-preexec-prepared-wj0eyl6j/bootstrap",
+    "control",
+    "/private/tmp/axiom-preexec-owned-c21ee8c4"
+  ],
+  "manifest_sha256": "0d5ec0c4bcfa0fb2c3d770d32adf0be9b123c9a5a29fb36f996f0ce4e42b665f",
+  "returncode": 0,
+  "stdout": "{\"mode\":\"control\",\"nodeStarted\":true,\"pathWrite\":true,\"shared_write\":1,\"upgrade_write\":1,\"shm_write\":1,\"shm_created\":1,\"cleanup_error\":0,\"identity\":\"unavailable\",\"qualification\":\"feasibility_only\"}\n",
+  "stderr": "",
+  "overflow": false,
+  "timed_out": false,
+  "root": "/private/tmp/axiom-preexec-owned-c21ee8c4",
+  "before": {
+    "mapping": "11ec8ff5d35f04eaedefcd02ffc5391c5e9d43299ebd739316d3c303ad6f3672",
+    "path-write": "11ec8ff5d35f04eaedefcd02ffc5391c5e9d43299ebd739316d3c303ad6f3672"
+  },
+  "after": {
+    "mapping": "9d2440bdfd8755308e42ef832bb7f6f629169051db65b4327e2126bc9bff21e9",
+    "path-write": "b8af5a19646cd4d7de31982018240041f95719976cadf109948a9902d2714caa"
+  },
+  "profile_calls": 0,
+  "paired_claim_created": false,
+  "bootstrap_mode": "0o600"
+}

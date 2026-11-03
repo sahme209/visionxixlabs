@@ -1,0 +1,6 @@
+{
+  "mapping_first_two_expected_WU": true,
+  "path_first_expected_P": true,
+  "owned_files_only": true,
+  "root_mode": "0o700"
+}
