@@ -1,0 +1,7 @@
+# Canonical compiled-consumer validation: current limitation
+
+The approved integrated design requires the actual compiled consumer to refuse substituted dependency/cache authority outside the qualified main. The current production readers still refuse unconditionally; no positive DTO adapter has been enabled. Source review identified that accepting only a named-import result with strict fields/frozen shape would not establish the private native origin. This is a design concern, not a reproduced production defect.
+
+A specialized agent attempted to prepare a finite local compiled-consumer negative test with isolated storage and simulated external ports. Its turn was stopped by automatic safety review with the message “This content was flagged for possible cybersecurity risk.” No passing or failing behavioral result is claimed. The same generation must not be reassigned or rephrased to bypass that review. Owned-process/fixture cleanup status is being reconciled separately.
+
+The original validation requirement remains **unverified**, not waived or replaced by source inspection, a regex check, a fabricated verified object, another negative-only wrapper test or the successful diagnostic component exchange. Ordinary native resource/liveness implementation may continue, but this reader/consumer qualification and full Governance activation remain unavailable until an appropriately permitted validation route satisfies the original evidence gate. No new provider, deployment, credentials, grants or spending are authorized by this note.
