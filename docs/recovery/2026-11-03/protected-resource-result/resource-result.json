@@ -1,0 +1,111 @@
+{
+  "scope": "resource_feasibility_only",
+  "executingIssuerIdentity": "unavailable",
+  "status": "resource_unit_observations_only",
+  "claimConsumed": true,
+  "phases": [
+    {
+      "argv": [
+        "/usr/bin/hdiutil",
+        "create",
+        "-srcfolder",
+        "/private/tmp/axiom-private-package-fat-066d821a-u0zyrd12/package",
+        "-volname",
+        "axiom-protected-package",
+        "-format",
+        "UDRO",
+        "-fs",
+        "HFS+",
+        "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg"
+      ],
+      "exit": 0,
+      "stdout": "created: /private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg\n",
+      "stderr": "hdiutil: WARNING: 'hdiutil create -volname -format ...' is deprecated. Please use 'diskutil image create from/blank --volumeName --format ...' instead.\n",
+      "timeout": false,
+      "overflow": false
+    },
+    {
+      "argv": [
+        "/usr/bin/hdiutil",
+        "attach",
+        "-readonly",
+        "-nobrowse",
+        "-noautoopen",
+        "-mountpoint",
+        "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount",
+        "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg"
+      ],
+      "exit": 0,
+      "stdout": "Checksumming Protective Master Boot Record (MBR : 0)\u2026\nProtective Master Boot Record (MBR :: verified   CRC32 $90187EDA\nChecksumming GPT Header (Primary GPT Header : 1)\u2026\n GPT Header (Primary GPT Header : 1): verified   CRC32 $83B4D9BC\nChecksumming GPT Partition Data (Primary GPT Table : 2)\u2026\nGPT Partition Data (Primary GPT Tabl: verified   CRC32 $12593F29\nChecksumming  (Apple_Free : 3)\u2026\n                    (Apple_Free : 3): verified   CRC32 $00000000\nChecksumming EFI System Partition (C12A7328-F81F-11D2-BA4B-00A0C93EC93B : 4)\u2026\nEFI System Partition (C12A7328-F81F-: verified   CRC32 $B54B659C\nChecksumming disk image (Apple_HFS : 5)\u2026\n          disk image (Apple_HFS : 5): verified   CRC32 $EA35ADCC\nChecksumming  (Apple_Free : 6)\u2026\n                    (Apple_Free : 6): verified   CRC32 $00000000\nChecksumming GPT Partition Data (Backup GPT Table : 7)\u2026\nGPT Partition Data (Backup GPT Table: verified   CRC32 $12593F29\nChecksumming GPT Header (Backup GPT Header : 8)\u2026\n  GPT Header (Backup GPT Header : 8): verified   CRC32 $33E77666\nverified   CRC32 $BF984B4E\n/dev/disk5          \tGUID_partition_scheme          \t\n/dev/disk5s1        \tEFI                            \t\n/dev/disk5s2        \tApple_HFS                      \t/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount\n",
+      "stderr": "hdiutil: WARNING: 'hdiutil attach -readonly -nobrowse -mountpoint ...' is deprecated. Please use 'diskutil image attach --readOnly --mountOptions nobrowse --mountPoint ...' instead.\n",
+      "timeout": false,
+      "overflow": false
+    },
+    {
+      "argv": [
+        "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/resource-launcher",
+        "--resource-restriction-once"
+      ],
+      "exit": 0,
+      "stdout": "operation=write effect=0 scope=actual_owned_image identity=unavailable\noperation=truncate effect=0 scope=actual_owned_image identity=unavailable\noperation=closed_fd_shared_upgrade effect=0 scope=actual_owned_image identity=unavailable\noperation=metadata effect=0 scope=actual_owned_image identity=unavailable\noperation=rename effect=0 scope=actual_owned_image identity=unavailable\noperation=unlink effect=0 scope=actual_owned_image identity=unavailable\noperation=mounted_package_write effect=0 scope=actual_mounted_package identity=unavailable\nresource_identity=unavailable qualification=feasibility_only\n",
+      "stderr": "",
+      "timeout": false,
+      "overflow": false
+    }
+  ],
+  "before": {
+    "alias": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package-hardlink.dmg",
+    "backing": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg",
+    "executingIssuerIdentity": "unavailable",
+    "file": {
+      "dev": 16777233,
+      "ino": 10734316,
+      "mode": 420,
+      "sha256": "bc1e17695649155af7ad90a7a0aef9a24b76f903d9530c29b4ff0fd10693e710",
+      "size": 3872827727
+    },
+    "format": "axiom.actual-owned-alias-observation/1",
+    "qualification": "resource_observation_only"
+  },
+  "after": {
+    "alias": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package-hardlink.dmg",
+    "backing": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg",
+    "executingIssuerIdentity": "unavailable",
+    "file": {
+      "dev": 16777233,
+      "ino": 10734316,
+      "mode": 420,
+      "sha256": "bc1e17695649155af7ad90a7a0aef9a24b76f903d9530c29b4ff0fd10693e710",
+      "size": 3872827727
+    },
+    "format": "axiom.actual-owned-alias-observation/1",
+    "qualification": "resource_observation_only"
+  },
+  "detach": {
+    "argv": [
+      "/usr/bin/hdiutil",
+      "detach",
+      "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount"
+    ],
+    "exit": 0,
+    "stdout": "\"disk5\" ejected.\n",
+    "stderr": "hdiutil: WARNING: 'hdiutil detach ...' is deprecated. Please use 'diskutil eject ...' instead.\n",
+    "timeout": false,
+    "overflow": false
+  },
+  "mountStillAttached": false,
+  "afterCleanup": {
+    "alias": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package-hardlink.dmg",
+    "backing": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg",
+    "executingIssuerIdentity": "unavailable",
+    "file": {
+      "dev": 16777233,
+      "ino": 10734316,
+      "mode": 420,
+      "sha256": "bc1e17695649155af7ad90a7a0aef9a24b76f903d9530c29b4ff0fd10693e710",
+      "size": 3872827727
+    },
+    "format": "axiom.actual-owned-alias-observation/1",
+    "qualification": "resource_observation_only"
+  }
+}

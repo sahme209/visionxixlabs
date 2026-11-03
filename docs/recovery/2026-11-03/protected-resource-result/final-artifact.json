@@ -1,0 +1,149 @@
+{
+  "format": "axiom.protected-resource-preparation/1",
+  "sourcePackage": "/private/tmp/axiom-private-package-fat-066d821a-u0zyrd12/package",
+  "packageDigest": "2a377866179b4096a5c809a847ac861770aebdecdff0f459fc4b0f9a8a335685",
+  "manifestSha256": "f589e6e48a7c374d9d9edf7e50aea83e6bfbbaef9ffecce6352ea92fc40991a9",
+  "fileCount": 95306,
+  "symlinkCount": 53,
+  "fixedCanonicalLaunch": {
+    "argv": [
+      "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount/__axiom_runtime__/node",
+      "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount/node_modules/@axiom/verified-issuer-runtime/index.cjs"
+    ],
+    "cwd": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "stdin": "readonly_devnull",
+    "stdout": "owned_anonymous_pipe",
+    "stderr": "owned_anonymous_pipe",
+    "close_fds": true,
+    "shell": false,
+    "pass_fds": [],
+    "expected": "canonical_refuses_no_identity"
+  },
+  "futureImageCreate": [
+    "/usr/bin/hdiutil",
+    "create",
+    "-srcfolder",
+    "/private/tmp/axiom-private-package-fat-066d821a-u0zyrd12/package",
+    "-volname",
+    "axiom-protected-package",
+    "-format",
+    "UDRO",
+    "-fs",
+    "HFS+",
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg"
+  ],
+  "futureAttach": [
+    "/usr/bin/hdiutil",
+    "attach",
+    "-readonly",
+    "-nobrowse",
+    "-noautoopen",
+    "-mountpoint",
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount",
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg"
+  ],
+  "futureDetach": [
+    "/usr/bin/hdiutil",
+    "detach",
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount"
+  ],
+  "inspection": {
+    "backing": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg",
+    "hardlink": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package-hardlink.dmg",
+    "requireSameInode": true,
+    "requireMountedRootReadonly": true,
+    "requireFullMountedPackageReverification": true,
+    "beforeAfter": [
+      "sha256",
+      "device",
+      "inode",
+      "mode",
+      "size"
+    ],
+    "aliasCreation": "host creates exact owned hardlink before launch; never copies as substitute"
+  },
+  "resourceUnit": "image/backing-alias mutation feasibility only; future test-only attacker is separate from canonical main and cannot qualify its identity",
+  "executionAuthorized": false,
+  "imageCreationAuthorized": false,
+  "restrictionRunAuthorized": false,
+  "executingIssuerIdentity": "unavailable",
+  "blockers": [
+    "new_image_mount_and_restriction_run_require_exact_approval",
+    "canonical_main_deliberately_refuses",
+    "kernel_authenticated_launch_origin_unimplemented",
+    "same_artifact_compiled_consumer_not_exercisable_through_current_main"
+  ],
+  "noFullQualificationRunProposed": true,
+  "resourceAttackPrepared": {
+    "binary": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/resource-attack",
+    "sha256": "9ac82648ae74035976475fd19db178fcefbbb40d465b21b3fbee5aec7dc3205d",
+    "argv": [
+      "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/resource-attack",
+      "--resource"
+    ],
+    "ordinaryControl": "six_effects_verified_exit0"
+  },
+  "restrictionLauncherPrepared": {
+    "binary": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/resource-launcher",
+    "sha256": "cea73524fd22c20f1cd0b4d2274c79c60c79832b7de50779132d8a248a396a65",
+    "argv": [
+      "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/resource-launcher",
+      "--resource-restriction-once"
+    ],
+    "executed": false,
+    "requiresReadonlyMount": true,
+    "claim": "restriction-claim.json: native exclusive/fsynced once guard, additional to host experiment-claim covering entire lifecycle"
+  },
+  "qualification": "resource_feasibility_preparation_only",
+  "hostOrchestrator": {
+    "module": "governance_local_issuer.protected_fixture_run",
+    "argv": [
+      "python3",
+      "-m",
+      "governance_local_issuer.protected_fixture_run",
+      "--run-exact-reviewed-resource-experiment",
+      "<THIS_FINAL_ARTIFACT_SHA256_FROM_REVIEW>"
+    ],
+    "cwd": "exact reviewed source checkout",
+    "environment": "PYTHONPATH=scripts; fixed child env",
+    "claimBeforeAnySideEffect": "experiment-claim.json exclusive/fsynced",
+    "timeoutsSeconds": {
+      "create": 120,
+      "attach": 30,
+      "attack": 15,
+      "detach": 30,
+      "perChildCleanupMaximum": 6
+    },
+    "outputLimitPerPipeBytes": 16384,
+    "retryAllowed": false,
+    "executed": false,
+    "afterCleanupObservation": "same-inode alias/hash/mode/size after detach as well as immediately after attack; unknown cleanup cannot be positive",
+    "inspectionChildren": {
+      "fixedScriptRelative": "scripts/governance_local_issuer/protected_fixture_inspect.py",
+      "fixedModes": [
+        "mounted",
+        "aliases"
+      ],
+      "mountedFullVerificationTimeoutSeconds": 90,
+      "aliasHashTimeoutSeconds": 60,
+      "childOutputLimitPerPipeBytes": 16384,
+      "inputPaths": "none; fixed owned root only",
+      "unknown": "timeout/overflow/nonzero/invalid private result refuses; parent finally cleanup still runs"
+    },
+    "sourcePackagePreflight": "synchronous full verification before claim or any image/mount; not claimed wall-clock bounded"
+  },
+  "sourceHashes": {
+    "scripts/governance_local_issuer/protected_fixture.py": "76d50c1011074e69dd4dda13246b77b4aa03a3e847401b15b96a574588fceb65",
+    "scripts/governance_local_issuer/protected_fixture_run.py": "76881e77ecb04172bdbd2ef691404a7e378daccb840f1658229b0dee13a8e378",
+    "scripts/governance_local_issuer/tests/test_protected_fixture.py": "b1444d98d409c1b8d62b579efe573e298f5518de5ad2521a01ccc0c1d6f8c38c",
+    "scripts/governance_local_issuer/tests/test_protected_fixture_run.py": "ff908ebb5a60fcf211a19e172668338dcb9c477272205a7aa0517e71679e27d1",
+    "scripts/governance_local_issuer/native_tests/protected_resource_attack.c": "c5b2b6e6b18637b666dc52379479467d80d81f469dc6d4a5c163ed85eddcdefb",
+    "scripts/governance_local_issuer/native_tests/protected_resource_launcher.c": "ba8e20e6c136172a50de57ee878afa4a9920602c0b50d7627e755c959ff32a6f",
+    "scripts/governance_local_issuer/protected_fixture_inspect.py": "76dca69c42d7374c8e91aa0998ffbf131f4f588bdcbf1a0eba37c4efc40c1028"
+  }
+}
