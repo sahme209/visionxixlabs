@@ -48,3 +48,64 @@ while checking the actual local close handler. Additional destination/outside-cl
 coverage followed implementation; the receipt does not claim every final assertion
 preceded the code. No full build was run; the parent owns the batched build and
 visible preview. Independent whole-batch review is requested separately.
+
+## Actual mobile accessibility finding and correction
+
+The parent's real compiled `ed0ddcd6` preview exposed a Close icon visually in the
+outside header, but its native accessibility modal subtree contained only Product
+through Download. The focus trap likewise excluded Close. This is an actual browser
+finding, not inferred from the rendered tests above.
+
+The corrected source uses a full-viewport mobile dialog with its own header and
+visible **Close** button (minimum 44px target) inside the modal. Close receives
+initial focus and participates in both directions of the Tab loop. Clicking Close
+or pressing Escape returns focus to the opener. The outside header is inert and
+aria-hidden while the dialog is open, so it supplies no duplicate accessible Close
+or background toggle. Resize, outside-pointer, route and link closure and both
+scroll locks retain their cleanup. The prior offset-to-bar geometry check was
+purposefully replaced with a full-viewport modal/header check.
+
+Local layering inspection found privacy controls at z90/100 and the AI widget at
+z9998/9999. Only while this modal is open, its navigation layer is z10000, covering
+those background controls; their consent, storage and interaction logic was not
+changed. This source observation still requires the parent's actual browser check.
+
+- Proper old-source RED: temporarily rendered exact HEAD `ed0ddcd6` Navigation with
+  the new regression, then restored corrected source. **2 Close-missing failures,
+  4 passing controls**, exit 1:
+  `/private/tmp/axiom-mobile-navigation-modal-close-red.log`.
+- Final corrected rendered tests: **12 passed across 3 files**, exit 0:
+  `/private/tmp/axiom-mobile-navigation-modal-close-green.log`.
+- Initial attempts stalled reading the workspace Heroicons barrel, with an owned
+  worker descriptor open on `ArrowLongRightIcon.js` and no semantic result. The
+  owned wrappers/workers were identified, terminated and confirmed absent. Those
+  blocked attempts are not the claimed RED. Focused rendered fixtures now simulate
+  decorative icon components only; actual navigation markup/state/focus handlers
+  remain under test. The parent compiler/browser will use actual icons.
+- Ordinary narrow types stalled on an actual workspace
+  `ChatBubbleLeftRightIcon.d.ts` read (owned PID36917/FD11); it was stopped rather
+  than declared passing. Exact actual Heroicons declarations from the already
+  verified source066d offline dependency stage were mapped for type resolution,
+  with no fake declaration, changed source import or production configuration.
+  That narrow type check **exited 0**:
+  `/private/tmp/axiom-mobile-navigation-modal-close-stage-icon-types.log`, config
+  `work/website-navigation-ia/tsconfig.stage-icon-types.json`. All other type inputs
+  retain their existing resolution.
+
+No full build, preview restart, native action or provider request was performed.
+The existing `ed0ddcd6` browser preview does **not** contain this correction. The
+parent owns the next batched compiler and real mobile accessibility validation.
+
+Read-only type-input revalidation also compared the actual completed ed0 stage at
+`/private/tmp/axiom-website-ed0ddcd6-q9wwqa72/stage`: **all 2,584 Heroicons `.d.ts`
+files match source066d stage byte hashes, sizes and modes**. Root/066d/ed0 package
+locks are identical, SHA-256
+`472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775`;
+the same pinned Heroicons 2.2.0 integrity remains. The full declaration-set metadata
+hash is `defb8b703cf22d78d75309be30500c9eaa3e3f6e9a7a1cc0fd3079ca20ac6049`.
+No type rerun or build was needed for this equivalent-input confirmation.
+`work/website-navigation-ia/type-inputs.json` records exact paths, input hashes,
+alias configuration and final Navigation hash
+`3473fb0356ac40fb04bd58528fa89e51188040f488f556f3468d3f1f134b1baf`.
+Independent final source review of this Close correction is **clear**; actual fixed
+browser acceptance remains for the parent batch.

@@ -124,7 +124,7 @@ export function Navigation() {
     onResize();
     document.addEventListener("keydown", onKeyDown);
     document.addEventListener("pointerdown", onOutside);
-    requestAnimationFrame(() => menuRef.current?.querySelector<HTMLElement>("a[href]")?.focus());
+    requestAnimationFrame(() => menuRef.current?.querySelector<HTMLButtonElement>("button")?.focus());
     return () => {
       document.body.style.overflow = previousOverflow;
       document.documentElement.style.overflow = previousRootOverflow;
@@ -134,12 +134,17 @@ export function Navigation() {
     };
   }, [mobileMenuOpen]);
 
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+    requestAnimationFrame(() => menuButtonRef.current?.focus());
+  };
+
   const closeMenu = () => { setMobileMenuOpen(false); setMoreOpen(false); };
 
   return (
     <nav
       aria-label="Primary navigation"
-      className={`site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 ${
+      className={`site-navigation fixed inset-x-0 top-0 ${mobileMenuOpen ? "z-[10000]" : "z-50"} transition-[background-color,border-color] duration-300 ${
         scrolled
           ? "border-b border-white/[0.09] bg-[#090a08]/88"
           : "border-b border-transparent bg-[#090a08]/62"
@@ -148,6 +153,8 @@ export function Navigation() {
       {/* Blur only the bar: a backdrop filter on nav would constrain the fixed
           mobile dialog to the bar height instead of the viewport. */}
       <div
+        aria-hidden={mobileMenuOpen || undefined}
+        inert={mobileMenuOpen}
         className={`mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 ${
           scrolled ? "h-14 xl:h-16" : "h-16 xl:h-[72px]"
         }`}
@@ -193,11 +200,11 @@ export function Navigation() {
           type="button"
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"
-          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-label="Open navigation menu"
           onClick={() => { setMoreOpen(false); setMobileMenuOpen((open) => !open); }}
           className="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"
         >
-          {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}
+          <Bars3Icon className="h-6 w-6" />
         </button>
       </div>
 
@@ -208,14 +215,16 @@ export function Navigation() {
           role="dialog"
           aria-modal="true"
           aria-label="Site navigation"
-          // The bar's own height shrinks (h-16 -> h-14) once scrolled, for
-          // the "docked chrome" effect above — this must track that exactly,
-          // or the overlay starts a few pixels below the bar's real bottom
-          // edge and leaves a sliver of page content visible at the top.
-          className={`fixed inset-x-0 bottom-0 overflow-y-auto border-t border-white/[0.06] bg-[#090a08]/[0.98] px-5 py-6 xl:hidden ${scrolled ? "top-14" : "top-16"}`}
+          className="fixed inset-0 overflow-y-auto bg-[#090a08] px-5 pb-6 xl:hidden"
         >
           <div className="mx-auto flex max-w-lg flex-col">
-            <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">Explore Axiom</p>
+            <div className="flex min-h-16 items-center justify-between gap-4 border-b border-white/[0.07]">
+              <p className="text-sm font-semibold tracking-[-0.02em] text-zinc-100">Explore Axiom</p>
+              <button type="button" aria-label="Close navigation menu" onClick={closeMobileMenu}
+                className="flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg px-2 text-sm text-zinc-300 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">
+                Close <XMarkIcon aria-hidden="true" className="h-5 w-5" />
+              </button>
+            </div>
             <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]" aria-label="Primary links">
               {mobileLinks.map((item) => (
                 <Link key={item.href} href={item.href} onClick={closeMenu} className="flex min-h-12 items-center px-1 text-base font-medium text-zinc-200 transition hover:text-orange-200">

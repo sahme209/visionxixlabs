@@ -1,138 +1,41 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  ArrowRightIcon,
-  FingerPrintIcon,
-  KeyIcon,
-  LockClosedIcon,
-  ShieldCheckIcon,
-  UserGroupIcon,
-} from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Security and governance",
-  description: "Review Axiom Agent security boundaries, permissions, credential handling and current verification limits.",
+  description: "Understand Axiom's access, review, credential and outcome boundaries, with explicit verification limits.",
   alternates: { canonical: "/security" },
 };
-
-const CONTROLS = [
-  {
-    icon: KeyIcon,
-    title: "Authentication and credentials",
-    body: "The desktop flow uses a browser approval handoff and a scoped application session. Source uses the operating-system credential vault for session persistence; the exact packaged keychain journey remains unverified. Provider credentials remain connector-specific, and no privileged shared secret belongs in a distributed installer.",
-    status: "Implemented with documented gap",
-  },
-  {
-    icon: UserGroupIcon,
-    title: "Permissions and approval separation",
-    body: "The domain model separates review, approval, merge, workflow dispatch, environment approval, and change management. UI visibility alone is not treated as authorization; each consequential service path still requires server-side enforcement and release verification.",
-    status: "Implemented in product model · verification ongoing",
-  },
-  {
-    icon: LockClosedIcon,
-    title: "Secret handling",
-    body: "Contact and operational text passes through secret-redaction utilities before durable storage or notification. Live connector credential custody, revocation, and recovery are verified provider by provider—not inferred from a generic security claim.",
-    status: "Application controls implemented",
-  },
-  {
-    icon: FingerPrintIcon,
-    title: "Audit attribution and evidence",
-    body: "Audit and evidence models record actors, actions, timestamps, rationale, and outcomes where the selected workflow is wired. Export availability and retention vary by workflow and are not evidence of an external certification.",
-    status: "Implemented in supported workflows",
-  },
+const SEQUENCE = [
+  ["Current access", "Check the actor, workspace, provider connection and exact target. A connected label is not permission for every action."],
+  ["Exact proposal", "Inspect what would change, its source and scope, and the proposed validation and recovery steps."],
+  ["Independent review", "Check which review the selected workflow requires, who may decide and whether the exact decision is still valid."],
+  ["Deliberate execution", "Confirm the requester and current authority again. A saved plan or approval alone is not a provider outcome."],
+  ["Outcome and recovery", "Distinguish confirmed, refused and unknown results. Inspect history before recovery; do not resend an uncertain action."],
 ] as const;
-
-const LIMITATIONS = [
-  "Installer trust status is release-specific. The download page reports only the per-platform attestations emitted by the release pipeline.",
-  "AWS live validation requires broker configuration and customer IAM setup. Current inventory and security analysis are preview-grade.",
-  "Azure and GCP live SDK validation and provider-specific execution are not released.",
-  "Local Terraform apply is disabled; generated artifacts remain review-only.",
-  "No independent SOC 2, ISO 27001, HIPAA, or other certification is claimed on this site.",
-  "Backup/restore, retention, tenant isolation, and permission paths require deployment-specific verification before production use.",
+const AREAS = [
+  {title:"Identity and current permissions",detail:"The desktop uses a browser handoff and scoped session. Role and action checks belong in the service; interface visibility does not grant authority.",href:"/docs/permissions-model",label:"Read the permissions model"},
+  {title:"Credentials and stored content",detail:"Credential custody differs by connector. Native session-vault and server redaction code exist, but packaged persistence, provider scopes, revocation and recovery need their own verification.",href:"/docs/security-model",label:"Read the security model"},
+  {title:"Review and execution boundaries",detail:"Exact review, requester execution and platform checks depend on the operation and installed version. Full Governance Intelligence coverage and activation are not complete.",href:"/docs/approval-workflow",label:"Understand the approval workflow"},
+  {title:"Recorded outcomes and audit context",detail:"Supported paths record actors, decisions and outcomes. A saved record, green workflow or rollback instruction does not by itself prove application health or successful recovery.",href:"/docs/audit-logs",label:"Understand recorded activity"},
 ] as const;
-
-const SECURITY_PRINCIPLES = [
-  ["Least authority", "Connections and service paths are scoped to the smallest authority the supported workflow needs. A recorded connection is not treated as live until it is validated."],
-  ["Human authority", "Approval, execution, validation, and closure remain distinct decisions. A convenient interface state is never used as proof that production authority exists."],
-  ["Credential boundaries", "Secrets stay server- or operating-system-bound where the supported path requires them. Browser and desktop surfaces do not expose provider credentials as product data."],
-  ["Evidence before claims", "Axiom keeps version, actor, decision, and validation context close to the release record so teams can review what happened instead of relying on a status label."],
-] as const;
-
-export default function SecurityPage() {
-  return (
-    <div className="axiom-canvas axiom-product-canvas relative min-h-screen overflow-hidden text-white">
-      <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute -top-40 right-0 h-[480px] w-[480px] rounded-full bg-brand-orange/[0.08] blur-[130px] pointer-events-none" aria-hidden />
-      <div className="ambient-drift absolute top-1/4 left-1/4 h-[340px] w-[420px] rounded-full bg-brand-coral/[0.06] blur-[120px] pointer-events-none" aria-hidden />
-      <Navigation />
-
-      <main className="relative mx-auto max-w-[1400px] px-4 pb-20 pt-28 sm:px-6 md:px-10 md:pt-36">
-        <header className="max-w-3xl">
-          <p className="mono-label inline-flex items-center gap-3">
-            <span className="text-brand-coral/90">Security</span>
-            <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-            Product controls and current limits
-          </p>
-          <h1 className="mt-6 text-4xl font-bold tracking-[-0.04em] md:text-6xl">
-            Inspect the control. <span className="text-zinc-500">Then verify the path.</span>
-          </h1>
-          <p className="mt-5 text-base leading-relaxed text-zinc-400 md:text-lg">
-            Security claims below describe controls visible in the current code and release process. They do not represent an independent certification, a guarantee about every deployment, or a substitute for customer configuration and review.
-          </p>
-        </header>
-
-        <section className="mt-12 grid gap-4 md:grid-cols-2" aria-label="Implemented security controls">
-          {CONTROLS.map((control) => {
-            const Icon = control.icon;
-            return (
-              <article key={control.title} className="surface-glass rounded-2xl p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/[0.07]">
-                  <Icon className="h-5 w-5 text-emerald-300" />
-                </div>
-                <h2 className="mt-5 text-lg font-semibold">{control.title}</h2>
-                <p className="mt-2 text-sm leading-relaxed text-zinc-400">{control.body}</p>
-                <p className="mt-4 text-[10px] font-mono uppercase tracking-[0.16em] text-zinc-200">{control.status}</p>
-              </article>
-            );
-          })}
-        </section>
-
-        <section className="surface-glass mt-12 rounded-2xl p-6 md:p-8" aria-labelledby="security-principles-heading">
-          <p className="text-[10px] font-mono uppercase tracking-[0.2em] text-orange-200">Security posture</p>
-          <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <h2 id="security-principles-heading" className="max-w-2xl text-2xl font-semibold tracking-[-0.035em] text-zinc-100">Designed for regulated work. Verified one control path at a time.</h2>
-            <p className="max-w-md text-sm leading-6 text-zinc-400">These are product design principles, not a claim of military certification, HIPAA compliance, CMMC compliance, FedRAMP authorization, or a customer&apos;s completed risk assessment.</p>
-          </div>
-          <div className="mt-7 grid gap-3 md:grid-cols-2">
-            {SECURITY_PRINCIPLES.map(([title, body]) => <article key={title} className="rounded-xl border border-white/[0.07] bg-black/15 p-5"><h3 className="text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{body}</p></article>)}
-          </div>
-          <p className="mt-6 border-t border-white/[0.07] pt-5 text-sm leading-6 text-zinc-400">For healthcare and other regulated environments, Axiom must be deployed with the customer&apos;s required agreements, vendor review, identity controls, retention rules, incident process, and independent compliance evidence. Product controls can support that work; they do not replace it.</p>
-        </section>
-
-        <section className="mt-12 rounded-2xl border border-white/20 bg-white/[0.04] p-6 md:p-8">
-          <div className="flex items-center gap-3">
-            <ShieldCheckIcon className="h-5 w-5 text-zinc-300" />
-            <h2 className="text-xl font-semibold">Current limitations</h2>
-          </div>
-          <ul className="mt-5 grid gap-3 text-sm leading-relaxed text-zinc-300 md:grid-cols-2">
-            {LIMITATIONS.map((item) => <li key={item} className="flex gap-2"><span className="text-zinc-300">—</span><span>{item}</span></li>)}
-          </ul>
-        </section>
-
-        <section className="surface-glass mt-12 flex flex-col gap-4 rounded-2xl p-6 sm:flex-row sm:items-center sm:justify-between md:p-8">
-          <div>
-            <h2 className="text-xl font-semibold">Need a control explained?</h2>
-            <p className="mt-2 text-sm text-zinc-400">Use the verified support address or review the detailed security documentation.</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/docs/security-model" className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm text-zinc-200 hover:bg-white/[0.05]">Security model</Link>
-            <a href="mailto:support@visionxixlabs.com" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-zinc-950">Contact support <ArrowRightIcon className="h-4 w-4" /></a>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
-  );
+const LIMITS = [
+  "Signing, installation, saved sessions and update trust are release- and platform-specific. Check the actual download and installation facts.",
+  "AWS validation needs the configured broker and customer IAM setup; inventory/security analysis remains preview-grade. Azure and GCP provider-specific live paths have their own unfinished verification.",
+  "Local Terraform apply remains disabled. A generated artifact is for review, not evidence that a change ran.",
+  "Tenant isolation, retention, backup/restore, incident response and every relevant permission path need deployment-specific security assessment.",
+];
+export default function SecurityPage(){
+ return <div className="axiom-canvas min-h-screen text-zinc-100"><Navigation/>
+  <main className="mx-auto max-w-[1280px] space-y-14 px-5 pb-20 pt-28 sm:px-8 lg:px-10 lg:pt-36">
+   <header className="max-w-3xl space-y-5"><p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">Axiom · Security</p><h1 className="text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.05em]">Know the boundary.<br/><span className="text-zinc-500">Verify the workflow.</span></h1><p className="text-base leading-7 text-zinc-400 sm:text-lg">Understand the access, decision and evidence behind an action. Assess the exact workflow and version instead of relying on a badge or a broad promise.</p><p className="text-sm leading-6 text-zinc-500">This page describes source-level controls and known limits. It is not a completed security assessment or proof that every deployment path is qualified.</p></header>
+   <section aria-labelledby="action-assessment"><h2 id="action-assessment" className="text-xl font-medium tracking-tight">How to assess an action</h2><ol aria-label="How to assess an action" className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-5">{SEQUENCE.map(([title,detail],i)=><li key={title} className="rounded-2xl border border-white/10 bg-white/[0.025] p-5"><p className="text-xs tabular-nums text-zinc-500">{String(i+1).padStart(2,"0")}</p><h3 className="mt-4 text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></li>)}</ol></section>
+   <section aria-labelledby="control-areas"><div className="max-w-2xl"><h2 id="control-areas" className="text-2xl font-medium tracking-tight">Inspect a specific control.</h2><p className="mt-3 text-sm leading-6 text-zinc-400">Implementation notes are not independent assurance. Follow the relevant guide, then verify the configured operation.</p></div><div className="mt-6 grid gap-3 md:grid-cols-2">{AREAS.map(area=><article key={area.title} className="flex flex-col rounded-2xl border border-white/10 p-6"><h3 className="text-base font-medium">{area.title}</h3><p className="mb-4 mt-3 text-sm leading-6 text-zinc-400">{area.detail}</p><Link href={area.href} className="mt-auto inline-flex min-h-11 items-center text-sm text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">{area.label} →</Link></article>)}</div></section>
+   <section aria-labelledby="ai-data-boundary" className="max-w-3xl border-t border-white/10 pt-7"><h2 id="ai-data-boundary" className="text-xl font-medium">Data and AI boundaries</h2><p className="mt-3 text-sm leading-7 text-zinc-400">Before sharing context with an AI provider, verify the selected provider, data sent and applicable policy. This page makes no guarantee about provider retention or model training, and does not establish an offline or no-egress deployment. Local-AI and enterprise offline work remain separate acceptance requirements.</p><p className="mt-3 text-sm leading-7 text-zinc-400">Redaction utilities on selected paths are not proof that arbitrary input is free of secrets. Do not include credentials or sensitive execution data in a support request.</p></section>
+   <section aria-labelledby="current-security-limits" className="rounded-2xl border border-white/15 bg-white/[0.025] p-6"><h2 id="current-security-limits" className="text-xl font-medium">Current limits</h2><ul className="mt-5 space-y-3 text-sm leading-7 text-zinc-400">{LIMITS.map(x=><li key={x} className="flex gap-3"><span aria-hidden="true">—</span><span>{x}</span></li>)}</ul><p className="mt-5 border-t border-white/10 pt-5 text-sm leading-7 text-zinc-400">No independent certification is claimed. Product design principles are not SOC 2, ISO 27001, HIPAA, CMMC or FedRAMP assurance, a customer risk assessment, or a guarantee against vulnerabilities. Required agreements, vendor review and independent evidence remain deployment-specific.</p></section>
+   <section className="flex flex-col items-start justify-between gap-5 border-t border-white/10 pt-7 sm:flex-row"><div><h2 className="text-xl font-medium">Need a boundary explained?</h2><p className="mt-2 max-w-xl text-sm leading-6 text-zinc-400">Read the security guide or use the published contact route. Share the affected surface and version without sending secrets.</p></div><Link href="/contact" className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-white/20 px-4 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">Contact the team →</Link></section>
+  </main><Footer/>
+ </div>;
 }

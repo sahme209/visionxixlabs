@@ -3,6 +3,7 @@ import { createElement } from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, expect, it, vi } from "vitest";
 import { Navigation } from "../Navigation";
+vi.mock("@heroicons/react/24/outline", () => ({ Bars3Icon: () => null, XMarkIcon: () => null }));
 const originalWidth = window.innerWidth;
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); Object.defineProperty(window, "innerWidth", { configurable: true, value: originalWidth }); document.body.style.overflow = ""; document.documentElement.style.overflow = ""; });
 it("closes the mobile dialog and releases both scroll locks when desktop navigation takes over", () => {
