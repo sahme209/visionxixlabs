@@ -1,7 +1,7 @@
 {
   "lib/governance/intelligence/mergeOutboundDrain.ts": "c744366368b71af45070b03a232e879ec061fcbb8a041b15c5726069f8e2e2fd",
   "lib/governance/intelligence/mergeOutboundIssuer.ts": "3e0d39538b925a443788a075e5d4a2114d1f4ffba11abd5caddeb2ef5ab7535f",
-  "lib/governance/intelligence/enrollmentDrainStore.ts": "51e4b994973148488e73bffba9e49a743f27050b24d8033390379a5cbd2749e0",
+  "lib/governance/intelligence/enrollmentDrainStore.ts": "7360a875cd3e597120b154afadef995dd595eb2c650054e0cf6cc631db0e8935",
   "lib/desktop/releaseProviderMergeCoordinator.ts": "c5c39961ba3e1ba17efb516ae8797c7dc0c1cc69ea6520dc1ec35e43a4210bf5",
   "lib/tauri/releaseProviderMergeStore.ts": "5a72178233f2d4300830192f8d11ac21a591ca30e1de4c9754f54ef84fd20033",
   "lib/governance/intelligence/__tests__/mergeOutboundDrain.test.ts": "891322f030f9da984657f565b4944d287d58afaa6d407571ca0cc8dab769d96b",

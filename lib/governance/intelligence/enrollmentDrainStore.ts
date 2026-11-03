@@ -87,7 +87,7 @@ export function createEnrollmentDrainStore(repo:ReleaseOperationPlanRepo,deps:En
   * canonical slot itself persists its server nonce; query under the org lock,
   * never a process cache, recovers that immutable association after lost ack. */
  async function findAttempt(tx:Tx,s:RevisionScope,operationId:string){
-  const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:s.organizationId,workflowKind:SLOT,inputJson:{path:['binding','operationId'],equals:operationId}},orderBy:{id:'asc'},take:2});
+  const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:s.organizationId,workflowKind:SLOT,inputJson:{path:['binding','operationId'],equals:operationId}},orderBy:[{id:'asc'}],take:2});
   if(rows.length>1)fail();
   if(!rows.length)return null;
   const x=await history(tx,rows[0]),input=slotInput.parse(x.input);

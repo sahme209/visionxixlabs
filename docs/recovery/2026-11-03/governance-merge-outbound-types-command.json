@@ -37,12 +37,20 @@
     ]
   },
   "stdout": "scoped-types.log",
-  "status": "live_current_process_cold_declaration_reads_not_passed",
+  "status": "corrected_terminal_exit0_passed",
   "pid": 71912,
   "lastObservedAtEpoch": 1793715378.71239,
   "process": "PID ELAPSED      TIME STAT\n71912   08:59   0:02.47 Ss",
   "lastOpenInput": "n/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@aws-sdk/client-ec2/dist-types/commands/DescribeVerifiedAccessInstancesCommand.d.ts",
   "configSha256": "0eed992bdb45612a5ff041056d0fbeba13673549e9e0e93f8296f789a5b979a3",
   "stdoutBytes": 0,
-  "notes": "Existing config already skipLibCheck:true; TypeScript still resolves actual imported AWS SDK declarations. Current read path progressed across distinct EC2 commands. No restart/no success or terminal failure asserted."
+  "notes": "Existing config already skipLibCheck:true; TypeScript still resolves actual imported AWS SDK declarations. Current read path progressed across distinct EC2 commands. No restart/no success or terminal failure asserted.",
+  "initialStatus": "terminal_exit2",
+  "initialOnlyError": "enrollmentDrainStore.ts90 orderBy:{id:'asc'} not assignable to Record<string,string>[]",
+  "correction": "orderBy:[{id:'asc'}], same Prisma query semantics",
+  "initialLog": "scoped-types-initial-failure.log",
+  "correctedLog": "scoped-types-corrected.log",
+  "correctedSession": 15165,
+  "correctedExitCode": 0,
+  "correctedStdoutBytes": 0
 }
