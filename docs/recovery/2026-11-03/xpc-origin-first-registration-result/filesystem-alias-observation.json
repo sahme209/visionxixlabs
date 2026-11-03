@@ -1,0 +1,21 @@
+{
+  "expected": {
+    "path": "/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app",
+    "realpath": "/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app",
+    "device": 16777233,
+    "inode": 10954900,
+    "mode": 16877,
+    "uid": 501
+  },
+  "foundationAlias": {
+    "path": "/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app",
+    "realpath": "/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app",
+    "device": 16777233,
+    "inode": 10954900,
+    "mode": 16877,
+    "uid": 501
+  },
+  "samefile": true,
+  "exclusiveResultJournalExists": true,
+  "registrationClaimExists": false
+}
