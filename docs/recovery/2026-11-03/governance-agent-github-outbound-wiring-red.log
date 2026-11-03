@@ -1,0 +1,113 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-agent-github-outbound-ddf48e1a
+
+ ❯ lib/connectors/github/__tests__/singleWriteFreshness.test.ts (4 tests | 4 failed) 15ms
+   × checks sync intent before the sole branch POST 12ms
+   × checks sync intent before the sole pull_request POST 0ms
+   × refuses expired branch intent without POST 1ms
+   × refuses expired pull_request intent without POST 1ms
+ ❯ lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.test.ts (24 tests | 3 failed | 21 skipped) 23ms
+   × unavailable single-write identity keeps the original approval unclaimed 21ms
+   × reserves a branch attempt before token and consumes intent after final original authority 1ms
+   × a failed synchronous branch intent leaves no physical POST 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.test.ts > unavailable single-write identity keeps the original approval unclaimed
+AssertionError: promise resolved "{ state: 'confirmed', …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "receipt": {
++     "code": "action_completed",
++   },
++   "state": "confirmed",
+  }
+
+ ❯ lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.test.ts:76:229
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.test.ts > reserves a branch attempt before token and consumes intent after final original authority
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.test.ts:77:215
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.test.ts > a failed synchronous branch intent leaves no physical POST
+AssertionError: expected { state: 'confirmed', …(1) } to match object { state: 'refused' }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "state": "refused",
++   "state": "confirmed",
+  }
+
+ ❯ lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.test.ts:78:197
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  lib/connectors/github/__tests__/singleWriteFreshness.test.ts > checks sync intent before the sole branch POST
+ FAIL  lib/connectors/github/__tests__/singleWriteFreshness.test.ts > checks sync intent before the sole pull_request POST
+AssertionError: expected [ 'authority', 'POST' ] to deeply equal [ 'authority', 'intent', 'POST' ]
+
+- Expected
++ Received
+
+  [
+    "authority",
+-   "intent",
+    "POST",
+  ]
+
+ ❯ lib/connectors/github/__tests__/singleWriteFreshness.test.ts:9:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  lib/connectors/github/__tests__/singleWriteFreshness.test.ts > refuses expired branch intent without POST
+TypeError: Cannot read properties of undefined (reading 'sha')
+ ❯ createBranch lib/connectors/github/githubWriteClient.ts:342:78
+    340|   );
+    341|   if (!created.ok) return { ok: false, error: created.error };
+    342|   return { ok: true, data: { ref: created.data.ref, sha: created.data.…
+       |                                                                              ^
+    343| }
+    344|
+ ❯ lib/connectors/github/__tests__/singleWriteFreshness.test.ts:14:31
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  lib/connectors/github/__tests__/singleWriteFreshness.test.ts > refuses expired pull_request intent without POST
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ lib/connectors/github/__tests__/singleWriteFreshness.test.ts:14:230
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  7 failed | 21 skipped (28)
+   Start at  10:33:57
+   Duration  377ms (transform 214ms, setup 0ms, import 326ms, tests 38ms, environment 0ms)
+

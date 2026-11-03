@@ -312,6 +312,8 @@ export async function getFile(input: GetFileInput): Promise<GithubWriteResult<{ 
 interface GithubMutationAuthority { /** Trusted server-only current authority. Never from serialized request/model data. */ beforeWrite: () => Promise<void> }
 
 export interface CreateBranchInput extends GithubMutationAuthority {
+  beforeFetch?:()=>void;
+  signal?:AbortSignal;
   owner: string;
   repo: string;
   baseBranch: string;
@@ -328,6 +330,7 @@ export async function createBranch(input: CreateBranchInput): Promise<GithubWrit
   const base = await gh<{ object: { sha: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/ref/heads/${encodeURIComponent(input.baseBranch)}`,
     input.installationToken,
+    {signal:input.signal},
   );
   if (!base.ok) return { ok: false, error: `base_branch_not_found: ${base.error}` };
 
@@ -336,7 +339,7 @@ export async function createBranch(input: CreateBranchInput): Promise<GithubWrit
   const created = await gh<{ ref: string; object: { sha: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/refs`,
     input.installationToken,
-    { method: "POST", beforeWrite: input.beforeWrite, body: { ref: `refs/heads/${input.newBranchName}`, sha: reviewedSha } },
+    { method: "POST", beforeWrite: input.beforeWrite, beforeFetch:input.beforeFetch, signal:input.signal, body: { ref: `refs/heads/${input.newBranchName}`, sha: reviewedSha } },
   );
   if (!created.ok) return { ok: false, error: created.error };
   return { ok: true, data: { ref: created.data.ref, sha: created.data.object.sha } };
@@ -474,6 +477,8 @@ export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteR
 }
 
 export interface CreatePullRequestInput extends GithubMutationAuthority {
+  beforeFetch?:()=>void;
+  signal?:AbortSignal;
   owner: string;
   repo: string;
   head: string;
@@ -493,8 +498,8 @@ export async function createPullRequest(
   const reviewed = input.expectedHeadSha !== undefined || input.expectedBaseSha !== undefined;
   if (reviewed) {
     if (typeof input.expectedHeadSha !== "string" || typeof input.expectedBaseSha !== "string" || !/^[a-f0-9]{40}$/.test(input.expectedHeadSha) || !/^[a-f0-9]{40}$/.test(input.expectedBaseSha)) return { ok: false, error: "invalid_reviewed_pull_request_source" };
-    const head = await resolveGitReference({ owner: input.owner, repo: input.repo, ref: input.head, kind: "branch", installationToken: input.installationToken });
-    const base = await resolveGitReference({ owner: input.owner, repo: input.repo, ref: input.base, kind: "branch", installationToken: input.installationToken });
+    const head = await resolveGitReference({ owner: input.owner, repo: input.repo, ref: input.head, kind: "branch", signal:input.signal, installationToken: input.installationToken });
+    const base = await resolveGitReference({ owner: input.owner, repo: input.repo, ref: input.base, kind: "branch", signal:input.signal, installationToken: input.installationToken });
     if (!head.ok || !base.ok || head.data.commitSha !== input.expectedHeadSha || base.data.commitSha !== input.expectedBaseSha) return { ok: false, error: "pull_request_source_changed" };
   }
   // GitHub creation accepts symbolic refs, not an atomic SHA precondition.
@@ -503,7 +508,7 @@ export async function createPullRequest(
   const result = await gh<{ number: number; html_url: string; head?: {ref?:string;sha?:string;repo?:{full_name?:string}}; base?: {ref?:string;sha?:string;repo?:{full_name?:string}} }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/pulls`,
     input.installationToken,
-    { method: "POST", beforeWrite: input.beforeWrite, body: { title: input.title, head: input.head, base: input.base, body: input.body ?? "" } },
+    { method: "POST", beforeWrite: input.beforeWrite, beforeFetch:input.beforeFetch, signal:input.signal, body: { title: input.title, head: input.head, base: input.base, body: input.body ?? "" } },
   );
   if (!result.ok) return { ok: false, error: (result.error === "action_outcome_unknown" || result.error === "github_write_authority_unavailable") ? result.error : `pull_request_create_failed: ${result.error}` };
   if (!result.data || !Number.isSafeInteger(result.data.number) || result.data.number < 1 || typeof result.data.html_url !== "string" || !result.data.html_url) {
@@ -525,11 +530,13 @@ export async function resolveGitReference(input: {
   ref: string;
   kind: GitReferenceKind;
   installationToken: string;
+  signal?:AbortSignal;
 }): Promise<GithubWriteResult<{ kind: GitReferenceKind; ref: string; commitSha: string }>> {
   const namespace = input.kind === "tag" ? "tags" : "heads";
   const result = await gh<{ object: { type: string; sha: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/ref/${namespace}/${encodeURIComponent(input.ref)}`,
     input.installationToken,
+    {signal:input.signal},
   );
   if (!result.ok) return { ok: false, error: `${input.kind}_ref_not_found: ${result.error}` };
 
@@ -539,6 +546,7 @@ export async function resolveGitReference(input: {
     const annotated = await gh<{ object: { type: string; sha: string } }>(
       `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/git/tags/${encodeURIComponent(commitSha)}`,
       input.installationToken,
+      {signal:input.signal},
     );
     if (!annotated.ok || annotated.data.object.type !== "commit") {
       return { ok: false, error: `tag_commit_unavailable: ${annotated.ok ? annotated.data.object.type : annotated.error}` };

@@ -1,0 +1,4 @@
+lib/connectors/github/githubWriteClient.ts(501,117): error TS2353: Object literal may only specify known properties, and 'signal' does not exist in type '{ owner: string; repo: string; ref: string; kind: GitReferenceKind; installationToken: string; }'.
+lib/connectors/github/githubWriteClient.ts(502,117): error TS2353: Object literal may only specify known properties, and 'signal' does not exist in type '{ owner: string; repo: string; ref: string; kind: GitReferenceKind; installationToken: string; }'.
+lib/connectors/github/githubWriteClient.ts(538,19): error TS2339: Property 'signal' does not exist on type '{ owner: string; repo: string; ref: string; kind: GitReferenceKind; installationToken: string; }'.
+lib/connectors/github/githubWriteClient.ts(548,21): error TS2339: Property 'signal' does not exist on type '{ owner: string; repo: string; ref: string; kind: GitReferenceKind; installationToken: string; }'.

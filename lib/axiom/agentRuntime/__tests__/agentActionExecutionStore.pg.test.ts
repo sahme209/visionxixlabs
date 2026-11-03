@@ -488,4 +488,15 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'read_only'}});await expect(read()).rejects.toThrow();
  });
 
+ it.each(['create_github_branch','open_github_pull_request'])('[github-outbound] actual private %s claim binds original review/connection and query-time deadline',async tool=>{
+  const build=()=>tool==='create_github_branch'?{repositoryFullName:'fixture/repository',baseBranch:'main',newBranchName:'work',_review:{kind:'github_branch',baseBranch:'main',newBranchName:'work',baseSha:'a'.repeat(40)}}:{repositoryFullName:'fixture/repository',head:'work',base:'main',title:'One reviewed PR',_review:{kind:'github_pull_request',head:'work',base:'main',headSha:'a'.repeat(40),baseSha:'b'.repeat(40)}};
+  const t=await fixture(60000,tool,build),revision=new Date(),connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:revision};await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:revision}});
+  const op=await t.store.prepare(t.scope,t.proposal.id),source=await t.store.inspectForExecution(t.scope,op.id),claimed=await t.store.claim(t.scope,op.id),input={source,connection};
+  const read=(proof:any=claimed.claim,override:any=input)=>f.db.$transaction((tx:any)=>t.store.readClaimedGithubOutboundLocked(tx,t.scope,proof,override));
+  const before=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}}),metadata=await read();expect(metadata.profile).toBe(tool==='create_github_branch'?'agent.github_create_branch.v1':'agent.github_open_pull_request.v1');expect(metadata.fresh()).toBeUndefined();expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);
+  await expect(read({operationId:op.id})).rejects.toThrow();await expect(read(claimed.claim,{...input,source:{...source,reviewId:'other'}})).rejects.toThrow();await expect(read(claimed.claim,{...input,connection:{...connection,id:'other'}})).rejects.toThrow();
+  const base=Date.now(),clock=vi.spyOn(Date,'now').mockReturnValue(base);try{await expect(f.db.$transaction(async(tx:any)=>t.store.readClaimedGithubOutboundLocked(new Proxy(tx,{get(object,key){if(key==='$queryRaw')return async(...query:any[])=>{const rows=await object.$queryRaw(...query);if(String(query[0]).includes('AS "sessionLive"'))clock.mockReturnValue(base+60000);return rows};const value=object[key];return typeof value==='function'?value.bind(object):value}}),t.scope,claimed.claim,input))).rejects.toThrow();clock.mockReturnValue(Number.NaN);await expect(read()).rejects.toThrow()}finally{clock.mockRestore()}
+  await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'read_only'}});await expect(read()).rejects.toThrow();expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);
+ });
+
 });

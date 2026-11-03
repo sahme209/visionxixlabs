@@ -1,0 +1,33 @@
+{
+  "command": [
+    "node24.21.0",
+    "tsc",
+    "-p",
+    "work/agent-github-outbound/tsconfig.json",
+    "--noEmit",
+    "--incremental",
+    "false"
+  ],
+  "config": {
+    "extends": "../../tsconfig.next.json",
+    "compilerOptions": {
+      "incremental": false
+    },
+    "include": [
+      "../../next-env.d.ts",
+      "../../lib/governance/intelligence/agentGithubOutboundDrain.ts",
+      "../../lib/governance/intelligence/agentGithubOutboundIssuer.ts",
+      "../../lib/axiom/agentRuntime/agentActionExecutionStore.ts",
+      "../../lib/axiom/agentRuntime/agentActionExecutionCoordinator.ts",
+      "../../lib/connectors/github/githubWriteClient.ts"
+    ],
+    "exclude": [
+      "../../node_modules",
+      "../../lib/**/__tests__/**"
+    ]
+  },
+  "exit": 0,
+  "session": 79224,
+  "productionBuild": false,
+  "providerOperations": false
+}

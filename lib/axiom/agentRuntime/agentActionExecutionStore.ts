@@ -1,5 +1,7 @@
 import 'server-only';
 import {randomUUID} from 'node:crypto';
+import {githubBranchReviewFromArgs} from '@/lib/tauri/agentGithubBranchReview';
+import {githubPullRequestReviewFromArgs} from '@/lib/tauri/agentGithubPullRequestReview';
 import {restartWorkflowSourceFromArgs} from '@/lib/tauri/agentRestartWorkflowSource';
 import {AWS_ECS_DEPLOY_WORKFLOW_FILENAME} from '@/lib/releaseops/awsEcsDeployWorkflowTemplate';
 import {ALL_ENVIRONMENT_TIERS} from '@/lib/releaseops/environmentCreateResponder';
@@ -204,6 +206,29 @@ export function createAgentActionExecutionStore(repo:ReleaseOperationPlanRepo,po
     if(rows.length!==1||row.id!==connection.id||row.githubInstallationId!==connection.githubInstallationId||!(row.updatedAt instanceof Date)||row.updatedAt.getTime()!==connection.updatedAt.getTime()||row.status!=='active'||row.revokedAt!==null||row.suspendedAt!==null||row.sessionLive!==true||!(row.now instanceof Date)||!Number.isFinite(row.now.getTime())||!v.row.leaseExpiresAt||v.row.leaseExpiresAt<=row.now||Date.parse(current.review.expiresAt)<=row.now.getTime())deny();
     return{toolName:current.review.toolName,args:current.args,proposalDigest:current.review.proposalDigest,reviewId:current.review.reviewId};
    });
+  },
+  /** Exact source metadata for ONLY the one-POST branch and PR profiles.
+   * The caller owns the existing org-first transaction; no provider I/O. */
+  async readClaimedGithubOutboundLocked(tx:Tx,raw:AgentExecutionScope,proof:AgentExecutionClaim,input:{source:{toolName:string;args:unknown;proposalDigest:string;reviewId:string};connection:{id:string;githubInstallationId:string;updatedAt:Date}}){
+   const wall=Date.now();if(!Number.isFinite(wall))deny();
+   const s=agentExecutionScopeSchema.parse(raw),c=privateClaim(proof),connection=z.object({id:z.string().min(1).max(240),githubInstallationId:z.string().regex(/^[1-9][0-9]*$/),updatedAt:z.date()}).strict().parse(input.connection);
+   if(sha256ContentHash(s)!==sha256ContentHash(c.scope))deny();
+   await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
+   const v=await load(tx,s,c.id);if(v.state.state!=='dispatching'||v.row.leaseOwner!==c.lease||!['create_github_branch','open_github_pull_request'].includes(v.binding.review.toolName))deny();
+   const current=await readAuthority(tx,s,v.binding.review.proposalId);if(sha256ContentHash(current.review)!==sha256ContentHash(v.binding.review))deny();
+   const source={toolName:current.review.toolName,args:current.args,proposalDigest:current.review.proposalDigest,reviewId:current.review.reviewId};if(sha256ContentHash(source)!==sha256ContentHash(input.source))deny();
+   const args=z.record(z.string(),z.unknown()).parse(current.args),repositoryFullName=z.string().min(1).max(240).parse(args.repositoryFullName);
+   const branch=source.toolName==='create_github_branch'?githubBranchReviewFromArgs(args):null,pr=source.toolName==='open_github_pull_request'?githubPullRequestReviewFromArgs(args):null;
+   if(!branch&&!pr)deny();
+   const target=branch?{repositoryFullName,review:branch}:{repositoryFullName,review:pr,title:z.string().min(1).max(10000).parse(args.title),bodyDigest:sha256ContentHash(typeof args.body==='string'?args.body:'')};
+   const rows=await tx.$queryRaw<Array<{id:string;githubInstallationId:string;updatedAt:Date;revokedAt:Date|null;suspendedAt:Date|null;status:string;now:Date;sessionLive:boolean}>>`SELECT i."id",i."githubInstallationId",i."updatedAt",i."revokedAt",i."suspendedAt",i."status",clock_timestamp() AS "now",(s."revokedAt" IS NULL AND s."expiresAt">clock_timestamp()) AS "sessionLive"
+    FROM "GitHubInstallation" i JOIN "DesktopSessionRecord" s ON s."organizationId"=i."organizationId"
+    WHERE i."organizationId"=${s.organizationId} AND i."id"=${connection.id} AND s."id"=${s.sessionId} AND s."userId"=${s.actorUserId}
+    AND i."id"=(SELECT latest."id" FROM "GitHubInstallation" latest WHERE latest."organizationId"=${s.organizationId} AND latest."status"='active' ORDER BY latest."installedAt" DESC LIMIT 1) FOR SHARE OF i,s`;
+   const row=rows[0];if(rows.length!==1||row.id!==connection.id||row.githubInstallationId!==connection.githubInstallationId||!(row.updatedAt instanceof Date)||row.updatedAt.getTime()!==connection.updatedAt.getTime()||row.status!=='active'||row.revokedAt!==null||row.suspendedAt!==null||row.sessionLive!==true||!(row.now instanceof Date)||!Number.isFinite(row.now.getTime())||!v.row.leaseExpiresAt||v.row.leaseExpiresAt<=row.now||Date.parse(current.review.expiresAt)<=row.now.getTime())deny();
+   const remaining=Math.min(v.row.leaseExpiresAt!.getTime(),Date.parse(current.review.expiresAt),current.sessionExpiresAt.getTime())-row.now.getTime();
+   const fresh=()=>{const elapsed=Date.now()-wall;if(claims.get(proof)!==c||!Number.isFinite(elapsed)||!Number.isFinite(remaining)||elapsed<0||elapsed>=remaining)deny()};fresh();
+   return{fresh,profile:source.toolName==='create_github_branch'?'agent.github_create_branch.v1':'agent.github_open_pull_request.v1',attemptId:'agent_execution_attempt_'+sha256ContentHash({operationId:proof.operationId,attemptCount:v.row.attemptCount,lease:c.lease}),sourceDigest:sha256ContentHash({review:current.review,args}),targetDigest:sha256ContentHash(target),connectionId:connection.id};
   },
   /** Final ECS authority: no provider reads in this transaction. The provider
    * reference is still symbolic; this is not immutable release admission. */

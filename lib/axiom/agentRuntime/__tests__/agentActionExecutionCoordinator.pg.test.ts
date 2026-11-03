@@ -5,7 +5,7 @@ import {AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE} from '@/lib/releaseops/awsEcsDeployWor
 import {realpathSync,statSync} from 'node:fs';
 import {NextRequest} from 'next/server';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
-const f=vi.hoisted(()=>({db:null as any,principal:null as any,authCalls:0,revokeAt:0,token:vi.fn(),issuerAvailable:true,loseOutboundAck:false,locker:null as any}));
+const f=vi.hoisted(()=>({db:null as any,principal:null as any,authCalls:0,revokeAt:0,token:vi.fn(),issuerAvailable:true,githubIssuerAvailable:true,loseOutboundAck:false,locker:null as any}));
 // Authentication, commercial entitlement and independent human decision are
 // simulated. Source review rows, membership, session, connection, locks, CAS,
 // private claims, current SQL and fixed GitHub transport below are real.
@@ -17,6 +17,8 @@ vi.mock('@/lib/db',()=>({prisma:new Proxy({},{get(_t,key){const v=f.db[key];retu
 vi.mock('../agentIdentityPolicy',()=>({readWorkspaceAgentIdentity:(org:string)=>f.db.workspaceAgentIdentity.findUnique({where:{organizationId:org}})}));
 // Positive executing identity is SIMULATED; negative invokes actual unavailable canonical seam.
 vi.mock('@/lib/governance/intelligence/agentEcsOutboundIssuer',async original=>{const actual:any=await original();return{readAgentEcsOutboundIssuerDigest:()=>{if(!f.issuerAvailable)return actual.readAgentEcsOutboundIssuerDigest();return 'e'.repeat(64)}}});
+// Positive GitHub single-write issuer is SIMULATED; negative uses actual refusal.
+vi.mock('@/lib/governance/intelligence/agentGithubOutboundIssuer',async original=>{const actual:any=await original();return{readAgentGithubOutboundIssuerDigest:()=>{if(!f.githubIssuerAvailable)return actual.readAgentGithubOutboundIssuerDigest();return 'f'.repeat(64)}}});
 import {decideAgentAction} from '../browserApprovalDecision';
 import {agentActionDigest} from '../proposalIntegrity';
 import {createAgentActionExecutionStore} from '../agentActionExecutionStore';
@@ -34,7 +36,7 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
  });
  afterEach(()=>vi.unstubAllGlobals());afterAll(async()=>{await f.locker?.$disconnect();await f.db?.$disconnect()});
  async function fixture(toolName='create_github_branch',buildArgs?:(org:string)=>Record<string,unknown>){
-  f.authCalls=0;f.revokeAt=0;f.token.mockReset();f.issuerAvailable=true;f.loseOutboundAck=false;
+  f.authCalls=0;f.revokeAt=0;f.token.mockReset();f.issuerAvailable=true;f.githubIssuerAvailable=true;f.loseOutboundAck=false;
   const organizationId='agent-coordinator-'+randomUUID(),sessionId=organizationId+'-session',now=new Date();
   for(const [userId,role]of [['requester',['create_environment','configure_deployment_target','connect_identity_provider'].includes(toolName)?'admin':'operator'],['reviewer','security_reviewer']])await f.db.orgMembership.create({data:{organizationId,userId,role,acceptedAt:now}});
   await f.db.desktopSessionRecord.create({data:{id:sessionId,organizationId,userId:'requester',expiresAt:new Date(Date.now()+60000)}});
@@ -54,7 +56,7 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
    if(!f.principal||f.principal.id!==current.sessionId||f.principal.userId!==current.actorUserId||f.principal.organizationId!==current.organizationId)throw Error('simulated_authentication_refused');
   }});
   f.token.mockImplementation(async(org:string,target:unknown,expected:any,repo:unknown)=>{
-   expect(org).toBe(organizationId);expect(target).toEqual({owner:'fixture',repo:'repository'});expect(expected).toMatchObject(connection);expect(expected.signal).toBeInstanceOf(AbortSignal);expect(repo).toBe(f.db);if(toolName==='trigger_aws_deploy')expect(await f.db.durableAgentWorkflow.count({where:{organizationId,workflowKind:'governance_outbound_v1',currentStep:'reserved'}})).toBe(1);return{ok:true,token:'SIMULATED_PRIVATE_TOKEN'};
+   expect(org).toBe(organizationId);expect(target).toEqual({owner:'fixture',repo:'repository'});expect(expected).toMatchObject(connection);expect(expected.signal).toBeInstanceOf(AbortSignal);expect(repo).toBe(f.db);if(['trigger_aws_deploy','create_github_branch','open_github_pull_request'].includes(toolName))expect(await f.db.durableAgentWorkflow.count({where:{organizationId,workflowKind:'governance_outbound_v1',currentStep:'reserved'}})).toBe(1);return{ok:true,token:'SIMULATED_PRIVATE_TOKEN'};
   });
   const operation=await store.prepare(scope,proposal.id),request=new NextRequest('https://fixture.test/local');
   const coordinator=createAgentActionExecutionCoordinator(request,principal,f.db,store,scope);
@@ -171,6 +173,25 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   const recovered=await v.store.get(v.scope,v.operation.id);if(mode==='confirmed')expect(recovered?.receipt?.references).toEqual([{kind:'github_pull_request',id:'42'}]);else expect(recovered?.receipt?.references).toBeUndefined();
   await expect(v.coordinator.execute(v.operation.id)).rejects.toThrow();expect(writes).toBe(mode==='head_changed'?0:1);
   expect(await f.db.agentActionProposal.findUnique({where:{id:v.proposal.id}})).toEqual(original);expect(JSON.stringify(await v.store.get(v.scope,v.operation.id))).not.toContain('SIMULATED_PRIVATE_TOKEN');
+ });
+
+ it.each(['create_github_branch','open_github_pull_request'])('[outbound] actual single-POST %s owns one durable intent without granting quiescence',async tool=>{
+  const build=()=>tool==='create_github_branch'?{repositoryFullName:'fixture/repository',baseBranch:'main',newBranchName:'work',_review:{kind:'github_branch',baseBranch:'main',newBranchName:'work',baseSha:'a'.repeat(40)}}:{repositoryFullName:'fixture/repository',head:'work',base:'main',title:'One reviewed PR',body:'Exact fixture body',_review:{kind:'github_pull_request',head:'work',base:'main',headSha:'a'.repeat(40),baseSha:'b'.repeat(40)}};
+  const t=await fixture(tool,build);let posts=0;
+  vi.stubGlobal('fetch',vi.fn(async(_url:string,init:any)=>{if(init.method==='GET')return Response.json({object:{type:'commit',sha:tool==='open_github_pull_request'&&_url.endsWith('/heads/main')?'b'.repeat(40):'a'.repeat(40)}});
+   await f.locker.$transaction(async(tx:any)=>{const[row]=await tx.$queryRaw`SELECT pg_try_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(t.scope.organizationId)})) AS held`;expect(row.held).toBe(true);await tx.$queryRaw`SELECT "id" FROM "DurableAgentWorkflow" WHERE "organizationId"=${t.scope.organizationId} FOR UPDATE NOWAIT`});
+   expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1',currentStep:'submission_intent'}})).toBe(1);posts++;
+   return tool==='create_github_branch'?Response.json({ref:'refs/heads/work',object:{sha:'a'.repeat(40)}}):Response.json({number:42,html_url:'https://github.com/fixture/repository/pull/42',head:{ref:'work',sha:'a'.repeat(40),repo:{full_name:'fixture/repository'}},base:{ref:'main',sha:'b'.repeat(40),repo:{full_name:'fixture/repository'}}});
+  }));
+  expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'confirmed',attemptCount:1});expect(posts).toBe(1);expect(f.token).toHaveBeenCalledOnce();
+  expect(await f.db.durableAgentWorkflow.findFirst({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}})).toMatchObject({currentStep:'submission_intent',version:1});await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(posts).toBe(1);
+ });
+ it.each(['create_github_branch','open_github_pull_request'])('[outbound] actual canonical-unavailable %s leaves prepared approval and no slot or token',async tool=>{
+  const build=()=>tool==='create_github_branch'?{repositoryFullName:'fixture/repository',baseBranch:'main',newBranchName:'work',_review:{kind:'github_branch',baseBranch:'main',newBranchName:'work',baseSha:'a'.repeat(40)}}:{repositoryFullName:'fixture/repository',head:'work',base:'main',title:'One reviewed PR',_review:{kind:'github_pull_request',head:'work',base:'main',headSha:'a'.repeat(40),baseSha:'b'.repeat(40)}};
+  const t=await fixture(tool,build);f.githubIssuerAvailable=false;await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow('governance_agent_github_issuer_unavailable');expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});expect(f.token).not.toHaveBeenCalled();expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}})).toBe(0);
+ });
+ it('[outbound] lost single-write reservation acknowledgement persists slot without token or automatic retry',async()=>{
+  const t=await fixture();f.loseOutboundAck=true;expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'refused',attemptCount:1});expect(f.token).not.toHaveBeenCalled();expect(t.writes()).toBe(0);const slot=await f.db.durableAgentWorkflow.findFirst({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}});expect(slot).toMatchObject({currentStep:'reserved',version:0});await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}})).toBe(1);
  });
 
 });

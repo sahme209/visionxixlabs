@@ -1,5 +1,6 @@
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
-const mocks=vi.hoisted(()=>({guard:vi.fn(),resolve:vi.fn()}));
+const mocks=vi.hoisted(()=>({guard:vi.fn(),resolve:vi.fn(),outboundAvailable:vi.fn(),outboundReserve:vi.fn(),outboundIntent:vi.fn(),intentFresh:vi.fn()}));
+vi.mock('@/lib/governance/intelligence/agentGithubOutboundDrain',()=>({createAgentGithubOutboundDrain:()=>({assertAvailable:mocks.outboundAvailable,beforeCredential:mocks.outboundReserve,beforeSubmission:mocks.outboundIntent})}));
 vi.mock('@/lib/desktop/currentGithubWriteAuthority',()=>({createCurrentGithubWriteGuard:mocks.guard}));
 import {createAgentActionExecutionCoordinator} from '../agentActionExecutionCoordinator';
 const scope={organizationId:'org',actorUserId:'requester',sessionId:'session'};
@@ -8,8 +9,8 @@ const args={repositoryFullName:'owner/repo',baseBranch:'main',newBranchName:'wor
 const saved=()=>({toolName:'create_github_branch',args:structuredClone(args),proposalDigest:'d'.repeat(64),reviewId:'review'});
 let store:any,guard:any,writes:number;
 beforeEach(()=>{
- vi.clearAllMocks();writes=0;
- guard=Object.assign(vi.fn().mockResolvedValue(undefined),{resolveToken:mocks.resolve,connectionBinding:vi.fn(()=>({id:'connection',githubInstallationId:'123',updatedAt:new Date('2026-11-01')}))});mocks.guard.mockReturnValue(guard);mocks.resolve.mockResolvedValue({ok:true,token:'private-token'});
+ vi.clearAllMocks();mocks.outboundIntent.mockImplementation(async()=>mocks.intentFresh);writes=0;
+ guard=Object.assign(vi.fn().mockResolvedValue(undefined),{resolveToken:mocks.resolve,assertFresh:vi.fn(),connectionBinding:vi.fn(()=>({id:'connection',githubInstallationId:'123',updatedAt:new Date('2026-11-01')}))});mocks.guard.mockReturnValue(guard);mocks.resolve.mockResolvedValue({ok:true,token:'private-token'});
  const claim=Object.freeze({operationId:'operation'});
  store={inspectForExecution:vi.fn().mockImplementation(async()=>saved()),claim:vi.fn().mockResolvedValue({claimed:true,claim}),beforeDispatch:vi.fn().mockImplementation(async()=>saved()),beforeGithubDispatch:vi.fn().mockImplementation(async()=>saved()),complete:vi.fn().mockImplementation(async(_proof:any,state:string,receipt:any)=>({state,receipt})),get:vi.fn()};
  vi.stubGlobal('fetch',vi.fn(async(_url:string,init:any)=>{if(init.method!=='GET'){writes++;return Response.json({ref:'refs/heads/work',object:{sha:'a'.repeat(40)}})}return Response.json({object:{sha:'a'.repeat(40)}})}));
@@ -71,3 +72,7 @@ it('requires captured pull-request commits before claiming the operation',async(
 it('refuses changed pull-request head with no provider POST',async()=>{usePullRequestSource();pullRequestProvider('head');expect(await create().execute('operation')).toEqual({state:'refused',receipt:{code:'pre_dispatch_refused'}});expect(writes).toBe(0)});
 it('confirms one pull request only after checking both returned reviewed commits',async()=>{usePullRequestSource();pullRequestProvider();expect(await create().execute('operation')).toEqual({state:'confirmed',receipt:{code:'action_completed',references:[{kind:'github_pull_request',id:'42'}]}});expect(writes).toBe(1);expect(store.beforeGithubDispatch).toHaveBeenCalledOnce()});
 it('keeps a created pull request with changed response source consumed unknown',async()=>{usePullRequestSource();pullRequestProvider('response');expect(await create().execute('operation')).toEqual({state:'unknown',receipt:{code:'provider_outcome_unknown'}});expect(writes).toBe(1);expect(store.complete).toHaveBeenCalledOnce()});
+
+it('unavailable single-write identity keeps the original approval unclaimed',async()=>{mocks.outboundAvailable.mockImplementationOnce(()=>{throw Error('canonical issuer unavailable')});await expect(create().execute('operation')).rejects.toThrow('canonical issuer unavailable');expect(store.claim).not.toHaveBeenCalled();expect(mocks.resolve).not.toHaveBeenCalled();expect(writes).toBe(0)});
+it('reserves a branch attempt before token and consumes intent after final original authority',async()=>{expect(await create().execute('operation')).toMatchObject({state:'confirmed'});expect(mocks.outboundReserve).toHaveBeenCalledOnce();expect(mocks.outboundIntent).toHaveBeenCalledOnce();expect(mocks.intentFresh).toHaveBeenCalledOnce();expect(mocks.outboundReserve.mock.invocationCallOrder[0]).toBeLessThan(mocks.resolve.mock.invocationCallOrder[0]);expect(store.beforeGithubDispatch.mock.invocationCallOrder[0]).toBeLessThan(mocks.outboundIntent.mock.invocationCallOrder[0]);});
+it('a failed synchronous branch intent leaves no physical POST',async()=>{mocks.intentFresh.mockImplementationOnce(()=>{throw Error('expired intent')});expect(await create().execute('operation')).toMatchObject({state:'refused'});expect(writes).toBe(0)});

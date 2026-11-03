@@ -1,4 +1,6 @@
 import 'server-only';
+import {createAgentGithubOutboundDrain} from '@/lib/governance/intelligence/agentGithubOutboundDrain';
+import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {githubPullRequestReviewFromArgs} from '@/lib/tauri/agentGithubPullRequestReview';
 import {pullRequestProposalReview} from '@/lib/cockpit/pullRequestProposalReview';
 import {executeStoredAgentDeployment,agentDeploymentArgsSchema,type AgentDeploymentExecutionRepo} from './agentActionDeploymentExecution';
@@ -101,11 +103,16 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
   const parsed=parseRepositoryFullName(args.repositoryFullName as string)!;
   const guard=createCurrentGithubWriteGuard(request,principal,repo);
   await guard(); // Pin the current accepted connection before consuming claim.
+  const singleWrite=saved.toolName==='create_github_branch'||saved.toolName==='open_github_pull_request';
+  const outboundSignal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);
+  const outbound=singleWrite?createAgentGithubOutboundDrain(repo as typeof repo&ReleaseOperationPlanRepo,request,scope,id,store,saved,guard.connectionBinding(),outboundSignal):undefined;
+  outbound?.assertAvailable();
   const claimed=await store.claim(scope,id);if(!claimed.claimed)return claimed.operation;
   let dispatchPossible=false;
   let outcome:'confirmed'|'refused'|'unknown'='refused';
   let references:Array<{kind:'github_pull_request';id:string}>|undefined;
   try{
+   if(outbound)await outbound.beforeCredential(claimed.claim);
    const token=await guard.resolveToken(parsed);if(!token.ok)throw Error('agent_execution_credentials_unavailable');
    const assertExact=async()=>{
     const current=await store.beforeDispatch(scope,claimed.claim);
@@ -117,6 +124,7 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
     const branch=await getRepositoryDefaultBranch({...parsed,installationToken:token.token});
     if(!branch.ok||branch.data===args.branch)throw Error('agent_execution_pull_request_cycle_required');
    };
+   let intentFresh:(()=>void)|undefined;
    const beforeWrite=async()=>{
     await checkDefault();await assertExact();await guard();
     // Last authority await revalidates review, requester, policy and the exact
@@ -127,18 +135,19 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
     request.signal.throwIfAborted();
     // Conservatively consumed from this point, including malformed/lost replies
     // and multi-file object writes before a later guard refuses the ref update.
-    dispatchPossible=true;
+    if(outbound)intentFresh=await outbound.beforeSubmission();else dispatchPossible=true;
    };
    await checkDefault();await assertExact();await guard();
    const authority={...parsed,installationToken:token.token,beforeWrite};
+   const singleAuthority={...authority,signal:outboundSignal,beforeFetch:()=>{outboundSignal.throwIfAborted();if(!outbound||typeof intentFresh!=='function')throw Error('agent_github_final_authority_unavailable');guard.assertFresh();intentFresh();dispatchPossible=true}};
    let result:{ok:boolean;data?:unknown};
-   if(saved.toolName==='create_github_branch')result=await createBranch({...authority,baseBranch:args.baseBranch as string,newBranchName:args.newBranchName as string,expectedBaseSha:githubBranchReviewFromArgs(args)!.baseSha});
+   if(saved.toolName==='create_github_branch')result=await createBranch({...singleAuthority,baseBranch:args.baseBranch as string,newBranchName:args.newBranchName as string,expectedBaseSha:githubBranchReviewFromArgs(args)!.baseSha});
    else if(saved.toolName==='commit_github_file')result=await commitFile({...authority,branch:args.branch as string,path:args.path as string,content:args.content as string,message:args.message as string,expectedSha:githubFileReviewFromArgs(args)!.baseSha});
    else if(saved.toolName==='commit_github_files'){
     const review=githubFilesReviewFromArgs(args)!;
     const files=(args.files as Array<{path:string;content:string}>).map((f,i)=>({...f,expectedSha:review.files[i].baseSha}));
     result=await commitFiles({...authority,branch:args.branch as string,files,message:args.message as string});
-   }else result=await createPullRequest({...authority,head:args.head as string,base:args.base as string,title:args.title as string,expectedHeadSha:githubPullRequestReviewFromArgs(args)!.headSha,expectedBaseSha:githubPullRequestReviewFromArgs(args)!.baseSha,...(typeof args.body==='string'?{body:args.body}:{})});
+   }else result=await createPullRequest({...singleAuthority,head:args.head as string,base:args.base as string,title:args.title as string,expectedHeadSha:githubPullRequestReviewFromArgs(args)!.headSha,expectedBaseSha:githubPullRequestReviewFromArgs(args)!.baseSha,...(typeof args.body==='string'?{body:args.body}:{})});
    if(result.ok){
     const data=result.data as Record<string,unknown>|undefined;
     const sha=typeof data?.sha==='string'&&/^[a-f0-9]{40}$/.test(data.sha);
