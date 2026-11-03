@@ -27,6 +27,7 @@
  */
 
 import "server-only";
+import {createCodingOutboundLifecycle} from "./codingOutboundDrain";
 import { loadApprovedCodingArtifact } from "./approvedCodingArtifact";
 import { loadCodingReadSnapshot } from "./codingReadSnapshot";
 
@@ -34,7 +35,7 @@ import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";
 import type { StageExecutorFn, StageExecutorResult } from "./stageExecutorRegistry";
-import { createCodingWriteAuthority, readCodingGithubFile } from "./codingGithubCredential";
+import { createCodingWriteAuthority, resolveCodingGithubCredential, readCodingGithubFile } from "./codingGithubCredential";
 import { parseRepoRef } from "./parseRepoRef";
 import { parseUnifiedDiff } from "./parseUnifiedDiff";
 import { applyDiff } from "./applyUnifiedDiff";
@@ -88,10 +89,10 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
     return failedPRResult("invalid_repo_ref", ctx);
   }
 
-  const authority = await createCodingWriteAuthority(ctx.organizationId, coords);
+  if(!ctx.codingClaim)return failedPRResult("coding_stage_claim_required",ctx);
+  const lifecycle=createCodingOutboundLifecycle(prisma,ctx.codingClaim,AbortSignal.timeout(600000));
+  const authority = await createCodingWriteAuthority(ctx.organizationId, coords,purpose=>lifecycle.current(purpose==='issuance'?'credential_pending':undefined));
   if (!authority.ok) return failedPRResult(authority.error, ctx);
-  const credential = await authority.resolveToken();
-  if (!credential.ok) return failedPRResult(credential.error, ctx);
 
   // 2. Pull the propose stage's patch text from outputDetail.
   let proposedPatchText: string | null = null;
@@ -176,20 +177,20 @@ export const codePrOpenRealExecutor: StageExecutorFn = async (ctx) => {
   ].join("\n");
 
   // Revalidate the workspace connection immediately before repository writes.
-  const writeCredential = await authority.resolveToken();
-  if (!writeCredential.ok) return failedPRResult(writeCredential.error, ctx);
   const result: OpenPRResult = await openPullRequest({
     resolveToken: async () => {
       const current=await loadApprovedCodingArtifact(scope);
       if(!current.ok || current.digest!==approved.digest)return {ok:false as const,error:"coding_artifact_approval_unavailable"};
       return authority.resolveToken();
     },
+    lifecycle,
+    resolveReadToken:()=>resolveCodingGithubCredential(ctx.organizationId,coords),
     owner: coords.owner,
     repo: coords.repo,
     baseBranch: reviewedBase.branch,
     expectedBaseSha: reviewedBase.headSha,
     newBranch,
-    files: fileChanges,
+    files: actualFiles,
     commitMessage,
     prTitle,
     prBody,

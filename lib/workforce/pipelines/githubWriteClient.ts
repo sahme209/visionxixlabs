@@ -45,23 +45,26 @@ function buildHeaders(installationToken: string, json = false): GhHeaders {
   return h;
 }
 
-async function githubFetch(installationToken: string, path: string, init?: { method?: string; body?: unknown }): Promise<Response> {
+async function githubFetch(installationToken: string, path: string, init?: { method?: string; body?: unknown;beforeFetch?:()=>void;signal?:AbortSignal }): Promise<Response> {
   const controller = new AbortController();
   const t = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
   try {
-    const response = await withGithubAbort(fetch(`${GH_API}${path}`, {
+    const finalSignal=init?.signal?AbortSignal.any([init.signal,controller.signal]):controller.signal;
+    const url=`${GH_API}${path}`,requestInit:RequestInit={
       method: init?.method ?? "GET",
       headers: buildHeaders(installationToken, init?.body !== undefined) as unknown as Record<string, string>,
       body: init?.body === undefined ? undefined : JSON.stringify(init.body),
-      signal: controller.signal,
+      signal: finalSignal,
       redirect: "error",
       credentials: "omit",
-    }), controller.signal);
+    };
+    finalSignal.throwIfAborted();init?.beforeFetch?.();finalSignal.throwIfAborted();
+    const response=await withGithubAbort(fetch(url,requestInit),finalSignal);
     if (!response.ok) {
       void response.body?.cancel().catch(() => {});
       return new Response(null, {status: response.status});
     }
-    const bytes = await readBoundedGithubBody(response, controller.signal, 1048576);
+    const bytes = await readBoundedGithubBody(response, finalSignal, 1048576);
     return new Response(new Uint8Array(bytes).buffer, {status: response.status, headers: {"content-type":"application/json"}});
   } finally {
     clearTimeout(t);
@@ -90,6 +93,8 @@ export type OpenPRFailReason =
   | "network_error";
 
 export interface OpenPRInput {
+  lifecycle?:import("./codingOutboundDrain").CodingOutboundLifecycle;
+  resolveReadToken?:()=>Promise<{ok:boolean;token?:string}>;
   /** Server-resolved workspace/repository-scoped installation authority. */
   resolveToken: () => Promise<{ok:true;token:string}|{ok:false;error:string}>;
   owner: string;
@@ -155,12 +160,17 @@ export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult>
     return failed("no_token", "Scoped GitHub connection required.");
   }
   if (!/^[a-f0-9]{40}$/.test(input.expectedBaseSha ?? "")) return failed("base_identity_required", "A verified base commit is required.");
+  let effectIndex=0;
   const ghFetch = async (path: string, init?: Parameters<typeof githubFetch>[2]) => {
-    let authority: Awaited<ReturnType<OpenPRInput["resolveToken"]>>;
-    try { authority = await input.resolveToken(); } catch { authorityChanged = true; throw Error("authority_changed"); }
-    if (!authority || !authority.ok || !authority.token) { authorityChanged = true; throw Error("authority_changed"); }
-    if (init?.method && init.method !== "GET") writeMayHaveOccurred = true;
-    return githubFetch(authority.token, path, init);
+    const write=Boolean(init?.method&&init.method!=='GET');
+    let authority:{ok:boolean;token?:string};
+    try{authority=input.lifecycle?(write?await input.lifecycle.credential(input.resolveToken):await input.resolveReadToken!()):await input.resolveToken()}catch{authorityChanged=true;throw Error('authority_changed')}
+    if(!authority.ok||!authority.token){authorityChanged=true;throw Error('authority_changed')}
+    if(!input.lifecycle){if(write)writeMayHaveOccurred=true;return githubFetch(authority.token,path,init)}
+    if(!write)return githubFetch(authority.token,path,{...init,signal:input.lifecycle.signal});
+    const hooks=await input.lifecycle.beforeEffect({index:effectIndex++,method:'POST',path,body:init?.body});
+    const response=await githubFetch(authority.token,path,{...init,signal:input.lifecycle.signal,beforeFetch:()=>{hooks.beforeFetch();writeMayHaveOccurred=true}});
+    if(response.ok)await hooks.recordReceipt(await response.clone().json());return response;
   };
 
   // 1. Resolve base branch HEAD.
@@ -222,6 +232,8 @@ export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult>
       modes.set(file.path,existing?.mode==="100755"?"100755":"100644");
     }
   }catch{return failed("file_mode_unavailable","Could not verify reviewed file modes.");}
+
+  await input.lifecycle?.initialize({commitSha:baseSha,treeSha:baseTreeSha,modes:input.files.map(f=>({path:f.path,mode:modes.get(f.path)!}))});
 
   // 3. Build tree entries — POST blobs for each non-null content; for
   //    deleted files use { sha: null } in the tree entry which tells
@@ -320,6 +332,7 @@ export async function openPullRequest(input: OpenPRInput): Promise<OpenPRResult>
     if (typeof body.html_url !== "string" || typeof body.number !== "number") {
       return failed("pull_request_create_failed", "no html_url or number on PR response");
     }
+    await input.lifecycle?.complete();
     return { ok: true, prUrl: body.html_url, prNumber: body.number, headSha: newCommitSha };
   } catch {
     return failed("network_error", "pulls POST network");

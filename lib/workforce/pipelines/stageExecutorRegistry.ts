@@ -11,6 +11,8 @@ import "server-only";
 import type { PipelineStageKind } from "./pipelineRegistry";
 
 export interface StageExecutionContext {
+  /** Opaque actual coding-stage CAS capability, never client context. */
+  codingClaim?:import("./codingStageExecutionClaim").CodingStageClaim;
   organizationId: string;
   runId: string;
   stageRunId: string;

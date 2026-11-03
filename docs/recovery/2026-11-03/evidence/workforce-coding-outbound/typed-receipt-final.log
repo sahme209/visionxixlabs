@@ -1,0 +1,15 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-coding-outbound-46d33d95[39m
+
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingOutbound.pg.test.ts [2m([22m[2m19 tests[22m[2m | [22m[33m17 skipped[39m[2m)[22m[33m 612[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m2 passed[39m[22m[2m | [22m[33m17 skipped[39m[90m (19)[39m
+[2m   Start at [22m 21:13:43
+[2m   Duration [22m 823ms[2m (transform 105ms, setup 0ms, import 158ms, tests 612ms, environment 0ms)[22m
+
+
+waiting for server to shut down.... done
+server stopped
+
+Owned fixture: /private/tmp/axiom-coding-outbound-pg-at6xnkdd

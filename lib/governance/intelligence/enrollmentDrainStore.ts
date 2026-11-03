@@ -1,4 +1,5 @@
 import 'server-only';
+import {readCodingOutboundBlockersLocked} from '@/lib/workforce/pipelines/codingOutboundHistory';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
@@ -46,6 +47,7 @@ async function scanOutboundBlockers(tx:Tx,org:string,assertFresh:()=>void){
   for(const row of rows){if(row.organizationId!==org||row.workflowKind!==SLOT||seen.has(row.id))fail();seen.add(row.id);const x=await history(tx,row);assertFresh();if(x.state.status==='reserved')counts.reservedCount++;else if(x.state.status==='submission_intent')counts.submissionIntentCount++;else if(x.state.status==='unknown')counts.unknownCount++;else if(x.state.status==='quiescent')counts.quiescentCount++;else fail()}
   if(rows.length<100)break;cursor=rows[rows.length-1].id;
  }
+ const coding=await readCodingOutboundBlockersLocked(tx,org,assertFresh);counts.unknownCount+=coding;
  counts.blockingCount=counts.reservedCount+counts.submissionIntentCount+counts.unknownCount;return counts;
 }
 /** Metadata-only in the caller's EXISTING transaction. Exact current reader is

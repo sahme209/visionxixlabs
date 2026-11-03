@@ -13,9 +13,9 @@ function deps(purpose:ReleaseTokenPurpose='workflow_read'){
   return Response.json(response??{token:'ephemeral-fixture-token',expires_at:new Date(Date.now()+3600000).toISOString(),permissions:body.permissions,repository_selection:'selected',repositories:[{name:'fixture',full_name:'owner/fixture',owner:{login:'owner'}}]},{status:201});
  }) as unknown as typeof fetch};
 }
-it.each(['merge','dispatch','workflow_read','source_policy_read','merge_policy_read'] as const)('mints only explicit one-repository %s profile, never returning app JWT',async purpose=>{
+it.each(['merge','dispatch','workflow_read','source_policy_read','merge_policy_read','coding_pr_write'] as const)('mints only explicit one-repository %s profile, never returning app JWT',async purpose=>{
  const result=await resolveReleaseInstallationToken(deps(purpose),new AbortController().signal);expect(result?.token).toBe('ephemeral-fixture-token');expect(result).not.toHaveProperty('jwt');expect(requests).toHaveLength(1);expect(requests[0].url).toBe('https://api.github.com/app/installations/123/access_tokens');expect(requests[0].body.repositories).toEqual(['fixture']);
- const expected={merge:{contents:'write',pull_requests:'read',metadata:'read'},dispatch:{actions:'write',contents:'read',metadata:'read'},workflow_read:{actions:'read',contents:'read',metadata:'read'},source_policy_read:{administration:'read',contents:'read',metadata:'read'},merge_policy_read:{administration:'read',contents:'read',pull_requests:'read',metadata:'read'}};
+ const expected={coding_pr_write:{contents:'write',pull_requests:'write',metadata:'read'},merge:{contents:'write',pull_requests:'read',metadata:'read'},dispatch:{actions:'write',contents:'read',metadata:'read'},workflow_read:{actions:'read',contents:'read',metadata:'read'},source_policy_read:{administration:'read',contents:'read',metadata:'read'},merge_policy_read:{administration:'read',contents:'read',pull_requests:'read',metadata:'read'}};
  expect(requests[0].body.permissions).toEqual(expected[purpose]);
 });
 it('refuses missing activation before reading server credentials',async()=>{const d=deps();d.isEnabled=()=>false;expect(await resolveReleaseInstallationToken(d,new AbortController().signal)).toBeNull();expect(cfg.key).not.toHaveBeenCalled()});

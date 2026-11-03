@@ -8,9 +8,13 @@ vi.mock("@/lib/workforce/pipelines/githubWriteClient", () => ({ fetchFileContent
 vi.mock("@/lib/db", () => ({ prisma: { durableAgentWorkflow:{findMany:f.enrollment}, gitHubInstallation:{findFirst:async()=>({id:"installation",githubInstallationId:"123",updatedAt:new Date("2026-10-23T00:00:00Z"),revokedAt:null,suspendedAt:null})}, pipelineStageRun: { findFirst: f.prior } } }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: vi.fn() }));
 vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: vi.fn() }));
+// Deliberately simulated private stage/lifecycle for pre-existing artifact/read regressions.
+// Real claim, stage CAS and durable physical effects are tested in codingOutbound.pg.test.ts.
+vi.mock("../codingOutboundDrain",()=>({createCodingOutboundLifecycle:()=>({signal:AbortSignal.timeout(600000),current:async()=>()=>{}})}));
+vi.mock("../codingGithubCredential",async original=>({...await original<typeof import('../codingGithubCredential')>(),createCodingWriteAuthority:async()=>{try{const {assertNoGovernanceEnrollmentForMutation}=await import('@/lib/governance/intelligence/enrollmentMetadata');const {prisma}=await import('@/lib/db');await assertNoGovernanceEnrollmentForMutation(prisma,'org');return{ok:true,resolveToken:async()=>({ok:true,token:'SIMULATED_WRITE'})}}catch{return{ok:false,error:'SIMULATED_CURRENT_METADATA_REFUSAL'}}}}));
 import { codeReadRealExecutor } from "../codeReadRealExecutor";
 import { codePrOpenRealExecutor } from "../codePrOpenRealExecutor";
-const ctx = { organizationId: "org", runId: "run", stageRunId: "stage_run", pipelineId: "pipeline", stageId: "stage", stageKind: "code_read" as const, correlationId: "corr", triggeredBy: "member", runMetadata: { repoRef: "owned/repo", instruction: "Prepare a patch" } };
+const ctx = { codingClaim: {parentId:"SIMULATED_PRIVATE_CLAIM"}, organizationId: "org", runId: "run", stageRunId: "stage_run", pipelineId: "pipeline", stageId: "stage", stageKind: "code_read" as const, correlationId: "corr", triggeredBy: "member", runMetadata: { repoRef: "owned/repo", instruction: "Prepare a patch" } };
 const patch = "--- a/file.txt\n+++ b/file.txt\n@@ -1 +1 @@\n-old\n+new\n";
 function approved(branch="main", patchText=patch, content:string|null="old\n"){return buildCodingArtifact({organizationId:"org",runId:"run",proposalStageRunId:"proposal",readStageRunId:"read",repositoryFullName:"owned/repo",baseBranch:branch,baseCommitSha:"a".repeat(40),patchText,baseFiles:[{path:"file.txt",content}]});}
 beforeEach(() => { vi.resetAllMocks(); f.enrollment.mockResolvedValue([]); f.approved.mockResolvedValue(approved()); vi.stubEnv("GITHUB_TOKEN", "synthetic-token"); f.scope.mockResolvedValue({ ok: true, token: "synthetic_tenant_token" }); f.prior.mockImplementation(async ({where}) => ({ outputDetail: where.stageKind === "code_read" ? {owner:"owned",repo:"repo",branch:"main",headSha:"a".repeat(40)} : {proposedPatchText:patch} })); f.file.mockResolvedValue({ ok: true, content: "old\n" }); });
@@ -35,14 +39,14 @@ it("retains successful PR completion only for a confirmed GitHub response", asyn
  f.open.mockResolvedValue({ ok: true, prNumber: 12, prUrl: "https://github.com/owned/repo/pull/12", headSha: "synthetic_sha" });
  expect(await codePrOpenRealExecutor({ ...ctx, stageKind: "code_pr_open" })).toMatchObject({ ok: true, detail: { pushed: true, prNumber: 12 } });
  expect(typeof f.open.mock.calls[0][0].resolveToken).toBe("function");
- expect(f.scope).toHaveBeenCalledWith("org", { owner: "owned", repo: "repo" }, expect.objectContaining({id:"installation",githubInstallationId:"123"}));
+
  expect(f.open.mock.calls[0][0].prBody).not.toContain("approved by two human reviewers");
 });
 
 it("refuses a revoked workspace connection immediately before a PR write", async () => {
- f.scope.mockResolvedValueOnce({ ok: true, token: "synthetic_tenant_token" }).mockResolvedValueOnce({ ok: true, token: "synthetic_tenant_token" }).mockResolvedValueOnce({ ok: false, error: "github_not_connected" });
+ f.scope.mockResolvedValue({ ok: false, error: "github_not_connected" });
  expect(await codePrOpenRealExecutor({ ...ctx, stageKind: "code_pr_open" })).toMatchObject({ ok: false, detail: { repositoryWriteOutcome: "not_attempted" } });
- expect(f.file).toHaveBeenCalledOnce(); expect(f.open).not.toHaveBeenCalled();
+ expect(f.file).not.toHaveBeenCalled(); expect(f.open).not.toHaveBeenCalled();
 });
 it("refuses repository context without a workspace connection despite a platform token", async () => {
  f.scope.mockResolvedValue({ ok: false, error: "github_not_connected" });

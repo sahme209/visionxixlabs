@@ -1,0 +1,22 @@
+{
+  "base": "46d33d95ea44d2bfad840792213454c0e947b591",
+  "files": {
+    "lib/connectors/github/__tests__/releaseInstallationToken.test.ts": "b660ebce9dab2a4b407a9002245c699a7e2502b84bf07f0a41c326b321c80bbf",
+    "lib/connectors/github/githubAppAuth.ts": "a4e25c822d09c9738d9e2d2683d663b3ac3022163343172cdd050fce9f9749de",
+    "lib/governance/intelligence/enrollmentDrainStore.ts": "41dd39f41478209eba137aae6a4d83c8dc40262815741edbae61a29421fafe59",
+    "lib/workforce/pipelines/__tests__/codingCompletionTruth.test.ts": "28fb6ed12f3d122eba39981848b73415a3617e36dea89d6b4ca2c1af937ed291",
+    "lib/workforce/pipelines/__tests__/codingOutbound.pg.test.ts": "5a9342539377ab3c6840ed266927db015c0990f4997a00dc9cf75c48f2deb7b2",
+    "lib/workforce/pipelines/__tests__/codingWriteAuthority.test.ts": "cc69baf122eca31b803f0973f8dc479ed8a85cdf2ac60bf8880acba9ae48ce2a",
+    "lib/workforce/pipelines/approvedCodingArtifact.ts": "ba892ccfd149f8828f211abd80b1aa17b655c264811a8dd6dff24efa479468af",
+    "lib/workforce/pipelines/codePrOpenRealExecutor.ts": "6c64ca5af602dc41971eb5f1de42228281e438e150405a4326e428b5e3238663",
+    "lib/workforce/pipelines/codingGithubCredential.ts": "fbfe68df6e91e8ea1d8ee9b59121ea7ceeba1d56bb7ffe9ead4cf09fbbd2c285",
+    "lib/workforce/pipelines/codingOutboundDrain.ts": "b02a61b4472a870b30851a35f40aab615e69143633b1c1a40496aa4542cba293",
+    "lib/workforce/pipelines/codingOutboundHistory.ts": "abd91c452a27c688729bc469e2ce2ca50c55933a0cbab0b3eb120e58749eb6fc",
+    "lib/workforce/pipelines/codingOutboundIssuer.ts": "5d7f3c0637385747103dae536c6d966a766a9ff7af3fd9140a8d0b69c6250256",
+    "lib/workforce/pipelines/codingStageExecutionClaim.ts": "735bc0fa9603680444314ee0b4ae63ad96caed2a17eee38933885034655f48e7",
+    "lib/workforce/pipelines/githubWriteClient.ts": "890286a89399cc36226f9217c9833a78b5bbfcc260c2c6acc446127f8a9f8578",
+    "lib/workforce/pipelines/pipelineRunner.ts": "b6a2f38c6792d68786d74366e1fa3a02f0f033b6ca0a1560c81e6ca691c27b08",
+    "lib/workforce/pipelines/stageExecutorRegistry.ts": "fefcc69f94c69bd949d303dab46b4c8474b8679bcf27c29f446dd54a77e41c46",
+    "scripts/run-coding-outbound-postgres.py": "0a7ef46112677d9febcc181d0828591d8354213b019638412d77e6ab2f3de127"
+  }
+}

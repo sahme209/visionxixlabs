@@ -1,0 +1,32 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-coding-outbound-46d33d95
+
+ ❯ lib/workforce/pipelines/__tests__/codingCompletionTruth.test.ts (18 tests | 2 failed) 8ms
+   × refuses coding writes when Governance metadata is enrolled 1ms
+   × refuses coding writes when Governance metadata is unavailable 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/workforce/pipelines/__tests__/codingCompletionTruth.test.ts > refuses coding writes when Governance metadata is enrolled
+ FAIL  lib/workforce/pipelines/__tests__/codingCompletionTruth.test.ts > refuses coding writes when Governance metadata is unavailable
+TypeError: Cannot read properties of undefined (reading 'ok')
+ ❯ Module.codePrOpenRealExecutor lib/workforce/pipelines/codePrOpenRealExecutor.ts:199:15
+    197|   });
+    198|
+    199|   if (!result.ok) {
+       |               ^
+    200|     await emitFail(ctx, "pr_open_failed", result.reason, result.detail…
+    201|     return failedPRResult(`pr_open_${result.reason}`, ctx, result.writ…
+ ❯ lib/workforce/pipelines/__tests__/codingCompletionTruth.test.ts:116:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  2 failed | 46 passed (48)
+   Start at  16:10:01
+   Duration  192ms (transform 177ms, setup 0ms, import 283ms, tests 63ms, environment 0ms)
+

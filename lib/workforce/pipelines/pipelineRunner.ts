@@ -17,6 +17,7 @@
  */
 
 import "server-only";
+import {claimCodingStage,type CodingStageClaim} from "./codingStageExecutionClaim";
 
 import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
@@ -272,7 +273,12 @@ export async function advancePipelineRun(runId: string): Promise<void> {
     if (!stage) return;
 
     // Atomic CAS: claim the stage by moving queued → running.
-    const claim = await prisma.pipelineStageRun.updateMany({
+    let codingClaim:CodingStageClaim|null=null;
+    let claim:{count:number};
+    if(run.pipelineId==='ai_coding'&&stage.stageKind==='code_pr_open'){
+      try{codingClaim=await claimCodingStage(prisma,run.organizationId,run.id,stage.id)}catch(error){if(error instanceof Error&&error.message==='coding_outbound_issuer_unavailable')return;throw error}
+      claim={count:codingClaim?1:0};
+    }else claim = await prisma.pipelineStageRun.updateMany({
       where: { id: stage.id, status: "queued" },
       data: { status: "running", startedAt: new Date() },
     });
@@ -378,6 +384,7 @@ export async function advancePipelineRun(runId: string): Promise<void> {
     const stageStart = Date.now();
     try {
       result = await executor({
+        ...(codingClaim?{codingClaim}:{}),
         organizationId: run.organizationId,
         runId: run.id,
         stageRunId: stage.id,

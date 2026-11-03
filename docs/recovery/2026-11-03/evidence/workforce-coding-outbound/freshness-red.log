@@ -1,0 +1,44 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-coding-outbound-46d33d95[39m
+
+ [31m❯[39m lib/workforce/pipelines/__tests__/codingOutbound.pg.test.ts [2m([22m[2m3 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m1 skipped[39m[2m)[22m[33m 490[2mms[22m[39m
+     [2m[90m↓[39m[22m [vertical] real queued-stage CAS and one reviewed file own five ordered effects
+[31m     [31m×[31m [freshness] API-key approval expires after intent commit before fetch, without human substitution[39m[32m 182[2mms[22m[39m
+     [32m✓[39m [freshness] enrollment appearing after credential issuance refuses all physical effects[32m 40[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[2m | [22m[33m1 skipped[39m[90m (3)[39m
+[2m   Start at [22m 21:00:54
+[2m   Duration [22m 678ms[2m (transform 89ms, setup 0ms, import 137ms, tests 490ms, environment 0ms)[22m
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingOutbound.pg.test.ts[2m > [22mactual coding stage/claim/artifact/effect stores, simulated auth/token/provider[2m > [22m[freshness] API-key approval expires after intent commit before fetch, without human substitution
+[31m[1mAssertionError[22m: expected 4 to be +0 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 0[39m
+[31m+ 4[39m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingOutbound.pg.test.ts:[2m49:52[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+waiting for server to shut down.... done
+server stopped
+
+Owned fixture: /private/tmp/axiom-coding-outbound-pg-l4raikx2
+Traceback (most recent call last):
+  File "/private/tmp/axiom-coding-outbound-46d33d95/scripts/run-coding-outbound-postgres.py", line 46, in <module>
+    print(run(args))
+  File "/private/tmp/axiom-coding-outbound-46d33d95/scripts/run-coding-outbound-postgres.py", line 11, in run
+    if r.returncode:print(r.stdout+r.stderr);raise RuntimeError(str(args[0])+' failed')
+RuntimeError: /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node failed

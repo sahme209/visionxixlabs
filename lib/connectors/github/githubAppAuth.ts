@@ -310,8 +310,9 @@ export async function readGithubAppInstallation(installationId:string,callerSign
   }catch{throw unavailable()}finally{void received?.body?.cancel().catch(()=>{})}
 }
 
-export type ReleaseTokenPurpose = 'merge' | 'dispatch' | 'workflow_read' | 'source_policy_read' | 'merge_policy_read';
+export type ReleaseTokenPurpose = 'merge' | 'dispatch' | 'workflow_read' | 'source_policy_read' | 'merge_policy_read' | 'coding_pr_write';
 const releasePermissions = {
+  coding_pr_write: {contents:"write",pull_requests:"write",metadata:"read"},
   merge: { contents:'write', pull_requests:'read', metadata:'read' },
   dispatch: { actions:'write', contents:'read', metadata:'read' },
   workflow_read: { actions:'read', contents:'read', metadata:'read' },

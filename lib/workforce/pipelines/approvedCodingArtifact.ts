@@ -1,4 +1,5 @@
 import "server-only";
+import type {Prisma} from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { hasPermission } from "@/lib/axiom/agent/rbacEngine";
 import type { OrgRole } from "@/lib/axiom/enums";
@@ -7,16 +8,16 @@ import { buildCodingArtifact, verifyCodingArtifact, type CodingArtifact } from "
 type Result={ok:true;artifact:CodingArtifact;digest:string}|{ok:false;error:"coding_artifact_approval_unavailable"};
 const deny=():Result=>({ok:false,error:"coding_artifact_approval_unavailable"});
 /** A current evidence check, never a reusable capability. Call again before each provider operation. */
-export async function loadApprovedCodingArtifact(input:{organizationId:string;runId:string;actorUserId:string}):Promise<Result>{
+export async function loadApprovedCodingArtifact(input:{organizationId:string;runId:string;actorUserId:string},repo:Pick<Prisma.TransactionClient,"pipelineRun"|"orgMembership"|"pipelineStageRun">=prisma):Promise<Result>{
   try{
     // Coding generation does not support machine billing principals. Never
     // substitute a workspace owner for an API-key label here.
     if(!input.actorUserId || input.actorUserId.startsWith("api_key:"))return deny();
-    const run=await prisma.pipelineRun.findUnique({where:{id:input.runId}});
+    const run=await repo.pipelineRun.findUnique({where:{id:input.runId}});
     if(!run || run.organizationId!==input.organizationId || run.pipelineId!=="ai_coding" || run.status!=="running" || run.triggeredBy!==input.actorUserId)return deny();
-    const member=await prisma.orgMembership.findUnique({where:{userId_organizationId:{userId:input.actorUserId,organizationId:input.organizationId}},select:{acceptedAt:true,role:true}});
+    const member=await repo.orgMembership.findUnique({where:{userId_organizationId:{userId:input.actorUserId,organizationId:input.organizationId}},select:{acceptedAt:true,role:true}});
     if(!member?.acceptedAt || !hasPermission(member.role as OrgRole,"actions:apply"))return deny();
-    const gate=await prisma.pipelineStageRun.findFirst({where:{runId:input.runId,run:{organizationId:input.organizationId},stageId:"code_gate",stageKind:"approval_gate",status:"succeeded",approvalRequestId:{not:null}},include:{approvals:{include:{decisions:true}}}});
+    const gate=await repo.pipelineStageRun.findFirst({where:{runId:input.runId,run:{organizationId:input.organizationId},stageId:"code_gate",stageKind:"approval_gate",status:"succeeded",approvalRequestId:{not:null}},include:{approvals:{include:{decisions:true}}}});
     if(!gate || gate.status!=="succeeded" || !gate.approvalRequestId)return deny();
     const data=gate.outputDetail as {codingArtifact?:unknown;codingArtifactDigest?:unknown}|null;
     if(typeof data?.codingArtifactDigest!=="string" || !verifyCodingArtifact(data.codingArtifact,data.codingArtifactDigest,input))return deny();
