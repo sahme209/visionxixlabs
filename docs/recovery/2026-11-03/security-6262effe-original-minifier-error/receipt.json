@@ -1,0 +1,51 @@
+{
+  "sourceRevision": "6262effe4a12289647cff736bae815c805c78302",
+  "ownedRoot": "/private/tmp/axiom-minify-instrumented-6262-f4r33ebf",
+  "attempt": {
+    "sourceRevision": "6262effe4a12289647cff736bae815c805c78302",
+    "command": [
+      "/usr/bin/sandbox-exec",
+      "-p",
+      "(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-minify-instrumented-6262-f4r33ebf/stage\") (subpath \"/private/tmp/axiom-minify-instrumented-6262-f4r33ebf/tmp\") (literal \"/private/tmp/axiom-minify-instrumented-6262-f4r33ebf/diagnostic.log\"))(deny file-write* (subpath \"/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage\"))(deny file-read* (subpath \"/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion\"))(deny file-read* (subpath \"/Users/samirahmed/.npm/_cacache\"))(deny file-read* (subpath \"/Users/samirahmed/.cache/prisma\"))",
+      "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack",
+      "--experimental-build-mode",
+      "compile"
+    ],
+    "inputHashes": {
+      "package-lock.json": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+      "next.config.ts": "491566295d50eddd8dae881ae9c143648c2a2af0ccbf7a050da62a8db4a2bd9f",
+      "node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js": "028d9104d26d6d286dd43d48830296cdf0b8fcdc50713b9a4a25ce560bf2a0bf",
+      "node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node": "75de5a27a1ca697ed5ed10caee2c52cc9161fd35378f4da148341f903bd7e206"
+    },
+    "timeoutSeconds": 180,
+    "logCapBytes": 67108864,
+    "minification": true,
+    "qualification": false
+  },
+  "instrumentation": {
+    "originalSha256": "650f861407d459333cc56ce12b78aa12cb8cf4da34a7b03d0dd90bb287263458",
+    "modifiedSha256": "028d9104d26d6d286dd43d48830296cdf0b8fcdc50713b9a4a25ce560bf2a0bf",
+    "distinctInode": true,
+    "hardlinkCount": 1,
+    "replacementCount": 3,
+    "diagnosticOnly": true
+  },
+  "logSha256": "06c469fe1703fa876b6e7051fca77e9a7f2396df108ca83e0c5a78a7d2d6cbbd",
+  "logBytes": 16686,
+  "minifierAssets": [
+    "91490.js",
+    "23731.js",
+    "38497.js",
+    "93857.js",
+    "5375.js"
+  ],
+  "compileOutcome": "failed_webpack_errors",
+  "wrapperExit": 1,
+  "wrapperCleanupError": "PermissionError in existing helper killpg probe/cleanup",
+  "processObservation": "fresh ps no matching diagnostic compiler/Next worker; not full descendant-quiescence proof",
+  "cause": "DefinePlugin rewrites canonical process.env.NODE_ENV assignment LHS to production string literal",
+  "qualification": false
+}

@@ -1,0 +1,285 @@
+▲ Next.js 16.4.2 (webpack)
+✓ Running next.config.ts took 565ms
+- Experiments (use with caution):
+  · cpus: 1
+  ⨯ serverSourceMaps
+  ✓ webpackBuildWorker
+  ✓ webpackMemoryOptimizations
+
+  Creating an optimized production build ...
+  Using tsconfig file: tsconfig.next.json
+<w> [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: EFBIG: file too large, write
+Failed to compile.
+
+91490.js from Minifier
+  x The left-hand side of an assignment expression must be a variable or a property access.
+     ,-[216:1]
+ 213 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 214 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 215 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 216 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 217 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 218 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 219 |         if (typeof startServer !== 'function') refuse();
+     `----
+  x Invalid assignment target
+     ,-[216:1]
+ 213 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 214 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 215 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 216 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 217 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 218 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 219 |         if (typeof startServer !== 'function') refuse();
+     `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+Error:   x The left-hand side of an assignment expression must be a variable or a property access.
+     ,-[216:1]
+ 213 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 214 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 215 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 216 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 217 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 218 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 219 |         if (typeof startServer !== 'function') refuse();
+     `----
+  x Invalid assignment target
+     ,-[216:1]
+ 213 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 214 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 215 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 216 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 217 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 218 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 219 |         if (typeof startServer !== 'function') refuse();
+     `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+
+23731.js from Minifier
+  x The left-hand side of an assignment expression must be a variable or a property access.
+     ,-[124:1]
+ 121 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 122 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 123 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 124 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 125 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 126 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 127 |         if (typeof startServer !== 'function') refuse();
+     `----
+  x Invalid assignment target
+     ,-[124:1]
+ 121 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 122 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 123 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 124 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 125 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 126 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 127 |         if (typeof startServer !== 'function') refuse();
+     `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+Error:   x The left-hand side of an assignment expression must be a variable or a property access.
+     ,-[124:1]
+ 121 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 122 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 123 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 124 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 125 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 126 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 127 |         if (typeof startServer !== 'function') refuse();
+     `----
+  x Invalid assignment target
+     ,-[124:1]
+ 121 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 122 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 123 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 124 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 125 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 126 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 127 |         if (typeof startServer !== 'function') refuse();
+     `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+
+38497.js from Minifier
+  x The left-hand side of an assignment expression must be a variable or a property access.
+     ,-[124:1]
+ 121 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 122 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 123 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 124 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 125 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 126 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 127 |         if (typeof startServer !== 'function') refuse();
+     `----
+  x Invalid assignment target
+     ,-[124:1]
+ 121 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 122 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 123 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 124 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 125 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 126 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 127 |         if (typeof startServer !== 'function') refuse();
+     `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+Error:   x The left-hand side of an assignment expression must be a variable or a property access.
+     ,-[124:1]
+ 121 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 122 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 123 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 124 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 125 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 126 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 127 |         if (typeof startServer !== 'function') refuse();
+     `----
+  x Invalid assignment target
+     ,-[124:1]
+ 121 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 122 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 123 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 124 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 125 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 126 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 127 |         if (typeof startServer !== 'function') refuse();
+     `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+
+93857.js from Minifier
+  x The left-hand side of an assignment expression must be a variable or a property access.
+     ,-[149:1]
+ 146 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 147 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 148 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 149 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 150 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 151 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 152 |         if (typeof startServer !== 'function') refuse();
+     `----
+  x Invalid assignment target
+     ,-[149:1]
+ 146 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 147 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 148 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 149 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 150 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 151 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 152 |         if (typeof startServer !== 'function') refuse();
+     `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+Error:   x The left-hand side of an assignment expression must be a variable or a property access.
+     ,-[149:1]
+ 146 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 147 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 148 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 149 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 150 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 151 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 152 |         if (typeof startServer !== 'function') refuse();
+     `----
+  x Invalid assignment target
+     ,-[149:1]
+ 146 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 147 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 148 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 149 |         "production" = 'production';
+     :         ^^^^^^^^^^^^
+ 150 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 151 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 152 |         if (typeof startServer !== 'function') refuse();
+     `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+
+5375.js from Minifier
+  x The left-hand side of an assignment expression must be a variable or a property access.
+      ,-[1557:1]
+ 1554 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 1555 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 1556 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 1557 |         "production" = 'production';
+      :         ^^^^^^^^^^^^
+ 1558 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 1559 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 1560 |         if (typeof startServer !== 'function') refuse();
+      `----
+  x Invalid assignment target
+      ,-[1557:1]
+ 1554 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 1555 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 1556 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 1557 |         "production" = 'production';
+      :         ^^^^^^^^^^^^
+ 1558 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 1559 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 1560 |         if (typeof startServer !== 'function') refuse();
+      `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+Error:   x The left-hand side of an assignment expression must be a variable or a property access.
+      ,-[1557:1]
+ 1554 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 1555 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 1556 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 1557 |         "production" = 'production';
+      :         ^^^^^^^^^^^^
+ 1558 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 1559 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 1560 |         if (typeof startServer !== 'function') refuse();
+      `----
+  x Invalid assignment target
+      ,-[1557:1]
+ 1554 |         // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+ 1555 |         const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+ 1556 |         if (!required || !required.config || typeof required.config !== 'object') refuse();
+ 1557 |         "production" = 'production';
+      :         ^^^^^^^^^^^^
+ 1558 |         process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+ 1559 |         const { startServer } = __webpack_require__(769039)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+ 1560 |         if (typeof startServer !== 'function') refuse();
+      `----
+
+Caused by:
+    0: failed to parse input file
+    1: Syntax Error
+
+
+> Build failed because of webpack errors

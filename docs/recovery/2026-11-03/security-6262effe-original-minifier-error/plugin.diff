@@ -1,0 +1,18 @@
+--- original
++++ private-diagnostic
+@@ -18,12 +18,12 @@
+ }
+ function buildError(error, file) {
+     if (error.line) {
+-        return new _webpack.WebpackError(`${file} from Minifier\n${error.message} [${file}:${error.line},${error.col}]${error.stack ? `\n${error.stack.split('\n').slice(1).join('\n')}` : ''}`);
++        return new Error(`${file} from Minifier\n${error.message} [${file}:${error.line},${error.col}]${error.stack ? `\n${error.stack.split('\n').slice(1).join('\n')}` : ''}`);
+     }
+     if (error.stack) {
+-        return new _webpack.WebpackError(`${file} from Minifier\n${error.message}\n${error.stack}`);
++        return new Error(`${file} from Minifier\n${error.message}\n${error.stack}`);
+     }
+-    return new _webpack.WebpackError(`${file} from Minifier\n${error.message}`);
++    return new Error(`${file} from Minifier\n${error.message}`);
+ }
+ const debugMinify = process.env.NEXT_DEBUG_MINIFY;
+ class MinifyPlugin {
