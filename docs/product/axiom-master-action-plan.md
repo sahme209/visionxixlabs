@@ -457,3 +457,21 @@ cleaned by the existing failure path, never the original source/build. A bounded
 arm64-slice parser correction is under review. No launch/enrollment/deployment or
 provider action occurred. The copied066d canonical runtime still predates the new
 profile2 validator; no same-compiled-consumer success is claimed.
+
+## November 3 verified private data package and local visual preview
+
+Corrected FAT arm64 inspection passed16 synthetic tests and independent review.
+A new actual private package copy passed Python and EXTERNAL CJS file verification
+with the same digest,95306 files/53 symlinks. Executing issuer/runtime/fleet/legacy/
+activation still unavailable; source066d canonical consumer predates profile2.
+See `../recovery/2026-11-03/private-package-fat-progress.md`. No provider action,
+launch, deployment, spending or credential change occurred. Officialfont notices
+are now included in later source after two specifically approved successful GETs.
+
+The updated user objective explicitly requests local website/desktop displays
+during implementation. Read-only visual website preview http://127.0.0.1:5186/
+was opened visibly with its source/disabled-actions banner and captured. This is
+a static visual display, not backend/interactive acceptance. Preserve the existing
+paired desktop sessions; refresh live native UI only when source and safe session
+handling justify it. Continue A1–A9/B1–B6; none are silently dropped or marked done
+by these local data/visual milestones.

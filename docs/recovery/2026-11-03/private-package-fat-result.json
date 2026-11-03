@@ -1,0 +1,13 @@
+{
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false,
+  "fileCount": 95306,
+  "fleetQualification": "unavailable",
+  "legacyQualification": "unavailable",
+  "materializationReceipt": "/private/tmp/axiom-private-package-fat-066d821a-u0zyrd12/materialization.json",
+  "packageDigest": "2a377866179b4096a5c809a847ac861770aebdecdff0f459fc4b0f9a8a335685",
+  "qualification": "package_file_set_verified",
+  "runtimeQualification": "unavailable",
+  "sourceRevision": "066d821a82d9317f90a2127fe20a2773d252f168",
+  "symlinkCount": 53
+}
