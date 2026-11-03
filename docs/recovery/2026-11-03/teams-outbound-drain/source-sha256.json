@@ -1,0 +1,12 @@
+{
+  "lib/desktop/connectedActionsHttp.ts": "88d9cc3e8dc01dd15c470621043ef879374c5f3dbf8bae62a00670c80b62437a",
+  "lib/integrations/connectedActionStore.ts": "95101058691d9a1e7ec2f188c36595e0df979a135ba0793766055b5ecf044792",
+  "lib/integrations/connectedActionTransport.ts": "6b25552ae0cff5ed0a2b229ed08910660313e05f3bd14e7e4ca77e3c4d253104",
+  "lib/governance/intelligence/teamsOutboundDrain.ts": "27c0b4b1e65db858b127a0ebf68a58683c434ac5c5c07f8c4ae93c29c71c0ab4",
+  "lib/governance/intelligence/teamsOutboundIssuer.ts": "abff783780065630fcd80691d37256311cb5a249f4970031decb42fcd93c67fa",
+  "lib/desktop/__tests__/connectedActionsHttp.postgres.test.ts": "84b938e147c92d76c2ceae696a9f09a91b88adcd738a6b81f87e9ca169985142",
+  "lib/desktop/__tests__/connectedTeamsCredentialSignal.test.ts": "44f7fa8705762cfc1f3caa9ac9b1128343ae8759b5b3d3fa1a4cd96105f92fdd",
+  "lib/integrations/__tests__/connectedTeamsOutboundFreshness.test.ts": "fa977e1b0ea1da5f34e831daf3fe3b2affe909bd133faa4bb1b715a5316d24bb",
+  "lib/governance/intelligence/__tests__/teamsOutboundDrain.test.ts": "083e32f3ab93c7e00c89d06f62acb2b1e1dc97005258a5ef9ab0613c553b45aa",
+  "lib/governance/intelligence/__tests__/teamsOutboundIssuer.test.ts": "762495a306dc88fb8f7cfad7d62a4b4d7629eb76a6d9d75da5d78c1cf3ed4a44"
+}

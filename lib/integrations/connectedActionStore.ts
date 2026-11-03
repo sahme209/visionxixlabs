@@ -1,3 +1,4 @@
+import {assertNoGovernanceEnrollmentForMutation} from '@/lib/governance/intelligence/enrollmentMetadata';
 import {assertBotActionTaskBinding} from '@/lib/axiom/bot/actionTaskBinding';
 import 'server-only';
 import {z} from 'zod';
@@ -13,6 +14,8 @@ export interface ConnectedActionStorePorts{
  assertCurrent?:(tx:Tx,scope:Scope,intent:Intent,role:'read'|'request'|'approve'|'execute',approval?:Approval)=>Promise<void>;
  /** Rebuild from current trusted target discovery, never echo a client assertion. */
  readCurrentIntent?:(tx:Tx,scope:Scope,intent:Intent)=>Promise<unknown>;
+ /** Retain the original server discovery window; no I/O or serialized authority. */
+ captureCurrentIntentFreshness?:(scope:Scope,intent:Intent)=>()=>void;
  now?:()=>Date;
 }
 const inputSchema=z.object({format:z.literal(1),intent:connectedActionIntentSchema,intentDigest:z.string().regex(/^[a-f0-9]{64}$/),requesterSessionId:z.string().min(1),requestedAt:z.string().datetime()}).strict();
@@ -73,6 +76,26 @@ export function createConnectedActionStore(repo:ReleaseOperationPlanRepo,ports:C
  async approve(rawScope:Scope,id:string,expectedVersion:number){const scope=connectedActionScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const row=await load(tx,scope,id),{i,s}=unpack(row);if(row.version!==expectedVersion||s.state!=='requested')refuse();await live(tx,scope,row,'approve');const approval=connectedActionApprovalSchema.parse({approverUserId:scope.actorUserId,approverSessionId:scope.sessionId,intentDigest:i.intentDigest,approvedAt:now().toISOString(),expiresAt:i.intent.expiresAt});const next=await change(tx,row,{state:'approved',approval},scope.actorUserId);await live(tx,scope,next,'approve');return dto(next)})},
  async claim(rawScope:Scope,id:string,expectedVersion:number){const scope=connectedActionScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const row=await load(tx,scope,id),{i,s}=unpack(row);await authority(tx,scope,row,'read');if(s.state==='requested')refuse();if(s.state!=='approved')return{claimed:false as const,record:dto(row)};if(row.version!==expectedVersion||row.attemptCount!==0||!s.approval)refuse();await live(tx,scope,row,'execute');const lease=new Date(Math.min(now().getTime()+30000,Date.parse(i.intent.expiresAt)));const next=await change(tx,row,{...s,state:'dispatching'},scope.actorUserId,lease);await live(tx,scope,next,'execute');if(now()>=lease)refuse();return{claimed:true as const,record:dto(next)}})},
  async beforeDispatch(rawScope:Scope,id:string){const scope=connectedActionScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const row=await load(tx,scope,id);if(row.currentStep!=='dispatching'||!row.leaseExpiresAt||now()>=row.leaseExpiresAt)refuse();await live(tx,scope,row,'execute');return structuredClone(unpack(row).i.intent)})},
+ /** New Teams outbound proof, inside caller's existing org-first transaction.
+  * Uses the CURRENT execution session: a legitimate re-pair is not a new intent. */
+ async readClaimedTeamsOutboundLocked(tx:Tx,rawScope:Scope,id:string,rawIntent:Intent){
+  const wall=Date.now();if(!Number.isFinite(wall))refuse();
+  const scope=connectedActionScopeSchema.parse(rawScope),intent=connectedActionIntentSchema.parse(rawIntent);
+  await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+hash(scope.organizationId)}))`;
+  const row=await load(tx,scope,id),{i,s}=unpack(row);
+  if(intent.kind!=='teams_channel_message'||intent.provider!=='teams')return refuse();
+  if(!equal(intent,i.intent)||s.state!=='dispatching'||row.attemptCount!==1||row.leaseOwner!==i.intent.executorUserId||!row.leaseExpiresAt||!s.approval||scope.actorUserId!==i.intent.executorUserId||!ports.captureCurrentIntentFreshness)refuse();
+  await live(tx,scope,row,'execute');
+  // This profile remains uncovered: current enrollment always refuses under the same org lock.
+  await assertNoGovernanceEnrollmentForMutation(tx,scope.organizationId);
+  const sourceFresh=ports.captureCurrentIntentFreshness!(scope,structuredClone(i.intent));if(typeof sourceFresh!=='function')refuse();sourceFresh();
+  const approval=s.approval!;
+  const sessions=await tx.$queryRaw<Array<{id:string;userId:string;organizationId:string;expiresAt:Date;revokedAt:Date|null;now:Date}>>`SELECT "id","userId","organizationId","expiresAt","revokedAt",clock_timestamp() AS "now" FROM "DesktopSessionRecord" WHERE "organizationId"=${scope.organizationId} AND (("id"=${scope.sessionId} AND "userId"=${scope.actorUserId}) OR ("id"=${approval.approverSessionId} AND "userId"=${approval.approverUserId})) FOR SHARE`;
+  if(sessions.length!==2||!sessions.some(v=>v.id===scope.sessionId&&v.userId===scope.actorUserId)||!sessions.some(v=>v.id===approval.approverSessionId&&v.userId===approval.approverUserId)||sessions.some(v=>v.organizationId!==scope.organizationId||v.revokedAt!==null||!(v.expiresAt instanceof Date)||!Number.isFinite(v.expiresAt.getTime())||!(v.now instanceof Date)||!Number.isFinite(v.now.getTime())||v.expiresAt<=v.now))refuse();
+  const dbNow=Math.max(...sessions.map(v=>v.now.getTime())),remaining=Math.min(row.leaseExpiresAt!.getTime(),Date.parse(i.intent.expiresAt),Date.parse(approval.expiresAt),...sessions.map(v=>v.expiresAt.getTime()))-dbNow;
+  const fresh=()=>{const elapsed=Date.now()-wall;if(!Number.isFinite(elapsed)||!Number.isFinite(remaining)||elapsed<0||elapsed>=remaining)refuse();sourceFresh()};fresh();
+  return{fresh,attemptId:'connected_action_attempt_'+hash({operationId:row.id,attemptCount:row.attemptCount,intentDigest:i.intentDigest,approval}),sourceDigest:hash({intent:i.intent,approval}),targetDigest:hash({provider:intent.provider,workspaceId:intent.workspaceId,teamId:intent.teamId,channelId:intent.channelId,targetEvidenceDigest:intent.targetEvidenceDigest}),connectionId:intent.connectionId};
+ },
  async finish(rawScope:Scope,id:string,rawResult:Result){const scope=connectedActionScopeSchema.parse(rawScope),result=connectedActionResultSchema.parse(rawResult);return repo.$transaction(async tx=>{const row=await load(tx,scope,id),{s}=unpack(row);await authority(tx,scope,row,'read');if(scope.actorUserId!==unpack(row).i.intent.executorUserId)refuse();if(s.state!=='dispatching'){if(['confirmed','unknown','refused'].includes(s.state)&&equal({...result},s.receipt?{state:s.state,receipt:s.receipt}:{state:s.state}))return dto(row);refuse()}
   if(result.state==='confirmed'){if(!row.leaseExpiresAt||now()>=row.leaseExpiresAt)refuse();await live(tx,scope,row,'execute')}
   const next=await change(tx,row,{state:result.state,approval:s.approval,...(result.state==='confirmed'?{receipt:result.receipt}:{})},scope.actorUserId);

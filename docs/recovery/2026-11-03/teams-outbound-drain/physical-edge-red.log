@@ -1,0 +1,72 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-teams-outbound-e9fcb3bf
+
+ ❯ lib/integrations/__tests__/connectedTeamsOutboundFreshness.test.ts (3 tests | 3 failed) 21ms
+   × records intent after final current authority and consumes both private proofs before one Teams POST 18ms
+   × withholds POST after awaited intent commit if retained original current authority expires 2ms
+   × withholds POST when one-use committed intent proof refuses 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/integrations/__tests__/connectedTeamsOutboundFreshness.test.ts > records intent after final current authority and consumes both private proofs before one Teams POST
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ lib/integrations/__tests__/connectedTeamsOutboundFreshness.test.ts:9:218
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  lib/integrations/__tests__/connectedTeamsOutboundFreshness.test.ts > withholds POST after awaited intent commit if retained original current authority expires
+AssertionError: expected { state: 'confirmed', …(1) } to deeply equal { state: 'refused' }
+
+- Expected
++ Received
+
+  {
+-   "state": "refused",
++   "receipt": {
++     "channelId": "19:general@thread.tacv2",
++     "messageId": "42",
++     "provider": "teams",
++     "teamId": "11111111-1111-4111-8111-111111111111",
++     "url": "https://teams.microsoft.com/l/message/19%3Ageneral%40thread.tacv2/42?tenantId=11111111-1111-4111-8111-111111111111&groupId=11111111-1111-4111-8111-111111111111",
++   },
++   "state": "confirmed",
+  }
+
+ ❯ lib/integrations/__tests__/connectedTeamsOutboundFreshness.test.ts:10:369
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  lib/integrations/__tests__/connectedTeamsOutboundFreshness.test.ts > withholds POST when one-use committed intent proof refuses
+AssertionError: expected { state: 'confirmed', …(1) } to deeply equal { state: 'refused' }
+
+- Expected
++ Received
+
+  {
+-   "state": "refused",
++   "receipt": {
++     "channelId": "19:general@thread.tacv2",
++     "messageId": "42",
++     "provider": "teams",
++     "teamId": "11111111-1111-4111-8111-111111111111",
++     "url": "https://teams.microsoft.com/l/message/19%3Ageneral%40thread.tacv2/42?tenantId=11111111-1111-4111-8111-111111111111&groupId=11111111-1111-4111-8111-111111111111",
++   },
++   "state": "confirmed",
+  }
+
+ ❯ lib/integrations/__tests__/connectedTeamsOutboundFreshness.test.ts:11:179
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  10:58:54
+   Duration  163ms (transform 31ms, setup 0ms, import 72ms, tests 21ms, environment 0ms)
+

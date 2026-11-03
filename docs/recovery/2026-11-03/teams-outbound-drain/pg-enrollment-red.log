@@ -1,0 +1,45 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-teams-outbound-e9fcb3bf[39m
+
+ [31m❯[39m lib/desktop/__tests__/connectedActionsHttp.postgres.test.ts [2m([22m[2m11 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m10 skipped[39m[2m)[22m[33m 338[2mms[22m[39m
+     [2m[90m↓[39m[22m saves and recovers an exact draft without self-blocking the session touch
+     [2m[90m↓[39m[22m requires a distinct current reviewer and retains history after cancellation
+     [2m[90m↓[39m[22m refuses revoked session authority inside the transaction without saving a draft
+     [2m[90m↓[39m[22m Teams mock journey discovers targets, requires distinct review, sends once and saves the exact receipt
+     [2m[90m↓[39m[22m Teams mock lost acknowledgement is durable unknown and is never resent
+     [2m[90m↓[39m[22m Teams refuses private channel action plans before any mocked send
+     [2m[90m↓[39m[22m [teams-outbound] actual unavailable canonical issuer preserves approved unclaimed message; discovery bearer is not a new mint
+     [2m[90m↓[39m[22m [teams-outbound] actual committed reservation lost acknowledgement keeps one slot and no postclaim credential access or resend
+     [2m[90m↓[39m[22m [teams-outbound] actual re-paired current executor session can execute original exact message without reviving old session
+     [2m[90m↓[39m[22m [teams-outbound] actual linked task revision changed after claim blocks new reservation and credential access
+[31m     [31m×[31m [teams-outbound] actual enrollment appearance after claim refuses uncovered Teams before slot or credential access[39m[32m 102[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m10 skipped[39m[90m (11)[39m
+[2m   Start at [22m 16:20:58
+[2m   Duration [22m 661ms[2m (transform 171ms, setup 0ms, import 268ms, tests 338ms, environment 0ms)[22m
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/connectedActionsHttp.postgres.test.ts[2m > [22mConnected actions full service real owned PostgreSQL[2m > [22m[teams-outbound] actual enrollment appearance after claim refuses uncovered Teams before slot or credential access
+[31m[1mAssertionError[22m: expected { …(13) } to match object { state: 'refused', attemptCount: 1 }
+(35 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "attemptCount": 1,[22m
+[32m-   "state": "refused",[39m
+[31m+   "state": "confirmed",[39m
+[2m  }[22m
+
+[36m [2m❯[22m lib/desktop/__tests__/connectedActionsHttp.postgres.test.ts:[2m90:159[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
