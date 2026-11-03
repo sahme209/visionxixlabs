@@ -6,7 +6,7 @@ This is the B2 design deliverable for the [master action plan](axiom-master-acti
 
 ## Local implementation status — November 3
 
-Approved local increments now cover navigation, Docs entry paths, connector browsing, Product, Security and Demo explanations. Product/source d0d959bc has actual build and selected browser evidence; later Download, Troubleshooting and homepage source refinements have focused tests/reviews and await their exact batched build. See [current source receipt](../recovery/2026-11-03/website-download-support-progress.md) and the master checklist. None is published by this approval. Original design descriptions below remain the blueprint, not a claim that every section, media asset, help article, support runtime or acceptance requirement is complete.
+Approved local increments now cover navigation, Docs entry paths, connector browsing, Product, Security and Demo explanations. Product/source d0d959bc has actual build and selected browser evidence; the later Download, Troubleshooting and homepage batch865be1e0 now also has focused tests/reviews, an exact offline production build and selected actual browser rendering/navigation. See [current source receipt](../recovery/2026-11-03/website-download-support-progress.md) and the master checklist. None is published by this approval. Original design descriptions below remain the blueprint, not a claim that every section, media asset, help article, support runtime or acceptance requirement is complete.
 
 ## 1. Intent and chosen direction
 

@@ -1,0 +1,41 @@
+{
+  "sourceRevision": "865be1e0e527fa995fe36470a3f912a537b1d0ea",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/__axiom_preview",
+      "status": 200,
+      "source": "865be1e0",
+      "setCookie": null
+    },
+    {
+      "method": "GET",
+      "path": "/download",
+      "status": 200,
+      "source": "865be1e0",
+      "setCookie": null
+    },
+    {
+      "method": "GET",
+      "path": "/docs/troubleshooting",
+      "status": 200,
+      "source": "865be1e0",
+      "setCookie": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/desktop/release-manifest",
+      "status": 403,
+      "source": "865be1e0",
+      "setCookie": null
+    },
+    {
+      "method": "POST",
+      "path": "/contact",
+      "status": 403,
+      "source": "865be1e0",
+      "setCookie": null
+    }
+  ],
+  "providerActions": false
+}
