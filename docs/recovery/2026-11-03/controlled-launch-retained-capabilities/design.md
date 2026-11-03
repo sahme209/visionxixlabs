@@ -1,10 +1,7 @@
 # Revised controlled launch: eliminate retained filesystem capabilities
 
-**Design for review; not implemented or executed.** This changes the native
-qualification mechanism and requires its own decision before implementation or
-execution. Existing canonical readers, launcher refusal, enrollment and activation
-stay unavailable. It authorizes no rerun, native call, mount, identity, initializer,
-provider access, credentials or settings change.
+**Local implementation approved; runtime qualification not executed.** User approval call_297fb4478f914f58ab0352bccecc97bc[0] now authorizes local code and isolated tests for this changed mechanism. It does not authorize a new restriction run, image mount or identity activation. The original design checkpoint below is retained; actual implementation and qualification need their own evidence. Existing canonical readers, launcher refusal, enrollment and activation
+stay unavailable. It authorizes no further restriction run, image mount, identity activation, provider access, credentials or settings change. Isolated read-only own-process metadata/classifier tests are component verification, not controlled-launch qualification.
 
 The next implementation is a clean launcher plus capability-aware native
 initializer, not another attempt to make NoWrite revoke existing descriptors.
@@ -153,7 +150,7 @@ as executing identity. The deprecated API risk and host/build qualification rema
 | Next work | Within original local artifact implementation | New native decision required |
 | --- | --- | --- |
 | Fixed argv/environment/cwd, package closure checks, explicit FD handoff policy and pure decoders/tests using recorded data | Can be prepared locally while actual launch and identity continue refusing. No customer reads or production changes. | Wiring/executing the revised native mechanism is not inferred from that approval. |
-| Native descriptor/VM inventory + pre/post-install order, strict pipe/device/mapping rules | Can be specified/reviewed now; no fake positive provider or initializer. | Approve this changed mechanism before implementation/execution; the previous one-run native approval is consumed. |
+| Native descriptor/VM inventory + pre/post-install order, strict pipe/device/mapping rules | Can be specified/reviewed now; no fake positive provider or initializer. | Local implementation and isolated tests are now approved; actual restriction execution/image mount/identity activation remain separate. The previous one-run probe approval is consumed. |
 | Owned readonly image carrying the actual new compiled package and backing-file/retained/mapping controls | Packaging/source plans remain local preparation. | Exact mount/native execution scope and bounded experiment must be made concrete and approved; no automatic probe retry. |
 | Same-artifact compiled issuer + actual store/transport consumer | Original required endpoint remains the target, with auth/provider ports explicitly simulated. | Native mechanism must first pass; then all original compiled-consumer/tamper/loader/cache/duplicate/restart gates still need real acceptance. |
 | Fleet/legacy credential qualification, provider quiescence, covered executors and enrollment | Remain separate outstanding controls. | No executing digest, source receipt or local probe supplies them or enables activation. |
