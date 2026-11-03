@@ -1,0 +1,16 @@
+{
+  "accepted": false,
+  "canonicalComparison": "not_performed",
+  "emittedSchemaSha256": "811b29137db279b05feaccc908cdfeb1b0c7124c6deeebafe4581cfcfcf0ae4b",
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false,
+  "expectedRuntimeEngineFile": "libquery_engine-darwin-arm64.dylib.node",
+  "observedGenericEngineFile": "libquery_engine.dylib.node",
+  "observedGenericEngineSha256": "e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d",
+  "originalSchemaUnchangedAtObservation": true,
+  "platformEngineFilePresent": false,
+  "prismaCliExit": 0,
+  "sourceRevision": "dd5391373e54624d6898789f86289128eed6c691",
+  "sourceSchemaSha256": "4e35ea3c8645656dbdae19c1ee6427bf526d9b82527de6ef046048dcdb6e617a",
+  "upstreamAuthenticity": "unavailable"
+}

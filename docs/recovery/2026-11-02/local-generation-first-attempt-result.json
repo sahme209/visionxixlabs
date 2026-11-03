@@ -1,0 +1,19 @@
+{
+  "activationQualification": "unavailable",
+  "buildStarted": false,
+  "descendantQuiescence": "unavailable",
+  "engineCommitAuthenticity": "unavailable",
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false,
+  "exit": 0,
+  "format": "axiom.local-generation-result/1",
+  "generatedOutputsVerified": false,
+  "generationCompatibilityVerified": false,
+  "generationStarted": true,
+  "processBounds": "original_process_group_only",
+  "reason": "generation_verification_unavailable",
+  "runtimeClosure": "unavailable",
+  "runtimeQualification": "unavailable",
+  "status": "unavailable",
+  "upstreamAuthenticity": "unavailable"
+}
