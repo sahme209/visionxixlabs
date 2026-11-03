@@ -1,0 +1,7 @@
+# Owned website fixture source requalification
+
+The user-approved local external CJS consumer foundation changed only the npm lock's local package/link metadata and the Next configuration's external-package entry/comment at442ef5b8. This intentionally invalidated the owned website fixture's older source pins. Next16.4.2, TypeScript5.9.3 and all six dependency-byte pins remain unchanged. The local package currently exports unavailable-only identity and is not imported by the owned website review pages.
+
+After semantic source review, two fixed reviewed hashes replace the older constants: package-lock.json `472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775`; next.config.ts `491566295d50eddd8dae881ae9c143648c2a2af0ccbf7a050da62a8db4a2bd9f`. This is explicit source qualification, not dynamic acceptance of arbitrary current files. No dependency, context, role, before-consumer check, transport/process denial, default adaptation or restoration policy changed.
+
+The existing tests reproduced two source-pin refusals during an interrupted unrelated broad test invocation; those refusals were correct and not hidden. The exact focused suite now passes **31 cases** in `/private/tmp/axiom-owned-website-source-requalification.log`, including a new copied/forged-source-identity refusal before adaptation. Independent source review found no material findings. No browser, website server, visual acceptance, production-equivalence or deployment is claimed by these unit tests.

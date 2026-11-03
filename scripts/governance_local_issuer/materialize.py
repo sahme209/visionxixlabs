@@ -91,6 +91,7 @@ def materialize(build_receipt, node, destination):
     destination.mkdir(mode=0o700)
     destination = destination.resolve()
     selected, folds, links, transformations = {}, {}, [], []
+    active_targets = set()
     total = 0
     path_bytes = 0
 
@@ -105,6 +106,7 @@ def materialize(build_receipt, node, destination):
         nonlocal total, path_bytes
         target = relative(target)
         sensitive(target)
+        if target in active_targets: refuse("recursive_materialization_alias")
         source = Path(source)
         info = source.lstat()
         identity = (str(source.absolute()),info.st_dev,info.st_ino)
@@ -119,15 +121,23 @@ def materialize(build_receipt, node, destination):
         out = destination/target
         out.parent.mkdir(parents=True,exist_ok=True)
         if stat.S_ISLNK(info.st_mode):
-            resolved = source.resolve(strict=True)
+            try: resolved = source.resolve(strict=True)
+            except (OSError,RuntimeError): refuse("invalid_materialization_symlink")
             to = mapped(resolved)
+            # Materialize the WHOLE allowed target, including archive-owned local
+            # packages outside fixed runtime inputs. package.json `files` is not
+            # an exclusion policy: required support and secrets must not vanish.
+            copy(resolved,to)
             rewritten = os.path.relpath(destination/to,out.parent)
             out.symlink_to(rewritten,target_is_directory=resolved.is_dir())
             links.append({"path":target,"target":rewritten,"resolved":to})
         elif stat.S_ISDIR(info.st_mode):
             out.mkdir(exist_ok=True)
-            for child in sorted(source.iterdir(),key=lambda p:p.name):
-                copy(child,target+"/"+child.name)
+            active_targets.add(target)
+            try:
+                for child in sorted(source.iterdir(),key=lambda p:p.name):
+                    copy(child,target+"/"+child.name)
+            finally: active_targets.remove(target)
             out.chmod(stat.S_IMODE(info.st_mode))
         elif stat.S_ISREG(info.st_mode):
             if info.st_mode & 0o7000: refuse("special_source_mode")

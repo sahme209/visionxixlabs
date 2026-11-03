@@ -52,7 +52,7 @@ it("rejects reused process identities during cleanup", () => {
 
 it("pins the real source/dependency framework and refuses Agent-context reuse", () => {
   const identity = framework.captureOwnedWebsiteFramework(root);
-  expect(identity.sourceHashes["next.config.ts"]).toBe("9e70bf0237770c15b4141d086f55e18fd029e0b5a06a32654a9bc4c7ee6e2868");
+  expect(identity.sourceHashes["next.config.ts"]).toBe("491566295d50eddd8dae881ae9c143648c2a2af0ccbf7a050da62a8db4a2bd9f");
   expect(() => framework.installOwnedWebsiteFramework({ root, role: "server", environment: { AXIOM_NEXT_AGENT_MODE: "owned-scripted-core", NODE_ENV: "development" }, identity })).toThrow("owned_framework_context");
 });
 
@@ -109,4 +109,16 @@ it("preserves reviewed managed NODE_PATH without printing or substituting its va
   if (process.env.NODE_PATH === undefined) return;
   const child = policy.childEnvironment({ NODE_PATH: process.env.NODE_PATH }, { directory: "/tmp/axiom-website-test", configPath: "/tmp/axiom-website-test/config.json" }, []);
   expect(child.NODE_PATH === process.env.NODE_PATH).toBe(true);
+});
+
+// Requalification changes only reviewed bytes, never accepts a caller identity.
+it("refuses a copied identity with an unreviewed source digest before any adaptation", () => {
+  const captured = framework.captureOwnedWebsiteFramework(root);
+  const forged = structuredClone(captured);
+  forged.sourceHashes["next.config.ts"] = "0".repeat(64);
+  expect(() => framework.installOwnedWebsiteFramework({
+    root, role: "website-server",
+    environment: { AXIOM_WEBSITE_VISUAL_MODE: "owned-website-visual", NODE_ENV: "development" },
+    identity: forged,
+  })).toThrow("owned_framework_identity");
 });

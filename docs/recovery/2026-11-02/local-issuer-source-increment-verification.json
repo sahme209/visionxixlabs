@@ -1,0 +1,28 @@
+{
+  "kind": "local_source_verification_only",
+  "precedingCommit": "442ef5b84b92fcfeb0a80ade30816d6c09d14736",
+  "sourceFiles": {
+    "scripts/build-local-issuer-package-source.py": "0b0ce7317060ce59e3fa55f0c786ed21b2285e11f034a61a891a04d64c97c517",
+    "scripts/governance_local_issuer/materialize.py": "ec87e52f2edd03096a330e9f4134ec498575cbc41043485f359f26e90446e429",
+    "packages/verified-issuer-runtime/internal/inspect-launch-controls.cjs": "83c4a12ed1959d89723dbbc52ebdcfc24e1cb5669f605bd1a95d7a3990cdcac1",
+    "scripts/fixtures/ownedWebsiteFramework.cjs": "1763de25ee7e887e0a9885097d82f039eb7cb5796b50f32c05a79fde5e1e5d5b",
+    "lib/__tests__/ownedWebsiteVisualPolicy.test.ts": "361c4715bdb675ccaeec168fed90366a3247881b5a0ae11d5a5b0437a395d61c"
+  },
+  "logs": {
+    "/private/tmp/axiom-issuer-controls-canonical-final.log": "38056dddf153dbe49189b400f12245de363f47e2e33e07db3fae1585a5cba768",
+    "/private/tmp/axiom-issuer-symlink-closure-green.log": "45fa4173612762a685fd019e9d5e7b404b6ed585fc7e0f8083da95470777efaa",
+    "/private/tmp/axiom-offline-source-final-tests.log": "55680ba4ec1346545503cf4358bafc23c8347edf5779d5f144597a7efc32c3df",
+    "/private/tmp/axiom-owned-website-source-requalification.log": "9e1281c551803d50f2b192faaa2303690fb7c4cec021ede4b759ff0ec2079eb1"
+  },
+  "scopedCounts": {
+    "pythonPackageCases": 32,
+    "nodeObserverAndControlsCases": 24,
+    "offlinePreparationCases": 9,
+    "ownedWebsiteFixtureCases": 31
+  },
+  "countsOverlapHistorical": true,
+  "realProjectBuildStarted": false,
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false,
+  "productionAcceptance": false
+}

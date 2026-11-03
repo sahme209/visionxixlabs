@@ -50,6 +50,46 @@ class MaterializeTests(unittest.TestCase):
         self.assertEqual(len(audit["traceRelocations"]),1)
         self.assertNotEqual(audit["traceRelocations"][0]["sourceSha256"],audit["traceRelocations"][0]["packagedSha256"])
         verify_package(self.target)
+    def archive_package(self):
+        package=self.stage/"packages/verified-issuer-runtime"
+        package.mkdir(parents=True)
+        for name,data in {"package.json":b'{"files":["index.cjs"]}',"index.cjs":b"module.exports={}","internal/support.cjs":b"fixture support","README.md":b"fixture distribution metadata"}.items():
+            path=package/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
+        (package/"index.cjs").chmod(0o755)
+        link=self.deps/"@axiom/verified-issuer-runtime";link.parent.mkdir()
+        link.symlink_to(package,target_is_directory=True)
+        return package
+    def test_internal_archive_package_symlink_materializes_entire_target(self):
+        package=self.archive_package()
+        result=self.build()
+        link=self.target/"node_modules/@axiom/verified-issuer-runtime"
+        self.assertEqual(link.resolve(),self.target/"packages/verified-issuer-runtime")
+        for source in package.rglob("*"):
+            if source.is_file():self.assertEqual((link/source.relative_to(package)).read_bytes(),source.read_bytes())
+        self.assertEqual((link/"index.cjs").stat().st_mode&0o777,0o755)
+        audit=json.loads((self.base/"materialization.json").read_text())
+        self.assertTrue(any(x["resolved"]=="packages/verified-issuer-runtime" for x in audit["internalSymlinks"]))
+        self.assertFalse(result["executionAuthorized"])
+    def test_internal_archive_package_sensitive_target_is_not_omitted(self):
+        (self.archive_package()/".env").write_bytes(b"fixture forbidden")
+        with self.assertRaises(PackageUnavailable):self.build()
+        self.assertFalse(self.target.exists())
+    def test_internal_archive_package_cycle_refuses(self):
+        package=self.archive_package()
+        (package/"self").symlink_to(package,target_is_directory=True)
+        with self.assertRaises(PackageUnavailable):self.build()
+        self.assertFalse(self.target.exists())
+    def test_archive_package_link_cannot_adopt_external_workspace_package(self):
+        self.archive_package()
+        outside=self.base/"workspace-package";outside.mkdir();(outside/"index.cjs").write_bytes(b"outside archive")
+        link=self.deps/"@axiom/verified-issuer-runtime";link.unlink();link.symlink_to(outside,target_is_directory=True)
+        with self.assertRaisesRegex(PackageUnavailable,"required_input_outside_allowed_roots"):self.build()
+        self.assertFalse(self.target.exists())
+    def test_archive_package_entry_budget_refuses(self):
+        self.archive_package()
+        with patch("governance_local_issuer.materialize.MAX_FILES",8),self.assertRaisesRegex(PackageUnavailable,"materialization_entry_limit"):
+            self.build()
+        self.assertFalse(self.target.exists())
     def test_failed_receipt_and_external_symlink_refuse(self):
         data=json.loads(self.receipt.read_text());data["exit"]=1;self.receipt.write_text(json.dumps(data))
         with self.assertRaises(PackageUnavailable):self.build()
