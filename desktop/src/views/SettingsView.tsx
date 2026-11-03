@@ -239,7 +239,7 @@ function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits
       <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
       <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in Axiom Control." action={<WebButton href="/control/governance" label="Open governance" />} />
       {import.meta.env.DEV && <ActionRow title="Governance evidence preview" detail="Inspect saved evidence and baseline history. Enforcement and authoring remain unavailable in this local preview." action={<button type="button" className="btn-secondary" onClick={onOpenGovernance}>Inspect saved Governance</button>} />}
-      {import.meta.env.DEV && <ActionRow title="Execution limits preview" detail="Review or propose limits for an exact saved baseline. Limits do not enable Governance enforcement or provider actions." action={<button type="button" className="btn-secondary" onClick={onOpenExecutionLimits}>Review execution limits preview</button>} />}
+      {import.meta.env.DEV && <ActionRow title="Execution limits preview" detail="Review or propose limits for an exact saved baseline. Limits do not enable Governance enforcement or provider actions." action={<button data-help-id="governance.execution-limits.entry" type="button" className="btn-secondary" onClick={onOpenExecutionLimits}>Review execution limits preview</button>} />}
       <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-600">Service verified</span>} />
     </Group>
     <Group label="Notifications">
