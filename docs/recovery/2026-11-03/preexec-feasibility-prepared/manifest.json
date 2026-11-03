@@ -1,0 +1,57 @@
+{
+  "scope": "PREPARATION_ONLY_NO_EXECUTION",
+  "node": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+  "node_sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+  "artifact_root": "/private/tmp/axiom-preexec-prepared-fjr9_g5e",
+  "files": {
+    "bootstrap": "47d02675398a5c71e7704247535a283d9dec522f7447c01442f2d80f1bddc468",
+    "fixture.cjs": "d7234379a15ee1ad6a13ca92a4e901f89944c6dc521a5df7ad61aad064abd98f",
+    "fixture.node": "14d8ee53518f9b1f72a91e367b41b4dea2b8448a566d04308472cbb1429f6cae",
+    "fixture.c": "0e9a58c82eeb5d386d5ca991bd207e09cc153d2c3c11ffc626ed5173f231abbf",
+    "run_reviewed.py": "af59aad7fedb0f6275dfc9a068b8ac45c3351fcebb77f5a36d28ea90d4fa7204",
+    "bootstrap.c": "9467a9a9de08ec123d88ae338cbc1e8d0f55a64b5e533cd16f6916768c1c1bc2"
+  },
+  "compile_commands": [
+    [
+      "/usr/bin/xcrun",
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-O1",
+      "-DFIXED_NODE=\"/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node\"",
+      "-DFIXED_SCRIPT=\"/private/tmp/axiom-preexec-prepared-fjr9_g5e/fixture.cjs\"",
+      "/private/tmp/axiom-preexec-prepared-fjr9_g5e/bootstrap.c",
+      "-o",
+      "/private/tmp/axiom-preexec-prepared-fjr9_g5e/bootstrap"
+    ],
+    [
+      "/usr/bin/xcrun",
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-O1",
+      "-bundle",
+      "-undefined",
+      "dynamic_lookup",
+      "-I/Users/samirahmed/.nvm/versions/node/v24.21.0/include/node",
+      "/private/tmp/axiom-preexec-prepared-fjr9_g5e/fixture.c",
+      "-o",
+      "/private/tmp/axiom-preexec-prepared-fjr9_g5e/fixture.node"
+    ]
+  ],
+  "run_argv": [
+    "/usr/bin/python3",
+    "/private/tmp/axiom-preexec-prepared-fjr9_g5e/run_reviewed.py",
+    "--run-exact-reviewed-preexec-fixture"
+  ],
+  "children": 2,
+  "child_timeout_seconds": 15,
+  "provider_io": false,
+  "profile_runs_so_far": 0,
+  "identity": "unavailable"
+}

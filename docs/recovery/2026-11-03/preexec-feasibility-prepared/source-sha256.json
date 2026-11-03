@@ -1,0 +1,7 @@
+{
+  "scripts/governance_local_issuer/native_tests/preexec/fixture.cjs": "d7234379a15ee1ad6a13ca92a4e901f89944c6dc521a5df7ad61aad064abd98f",
+  "scripts/governance_local_issuer/native_tests/preexec/fixture.c": "0e9a58c82eeb5d386d5ca991bd207e09cc153d2c3c11ffc626ed5173f231abbf",
+  "scripts/governance_local_issuer/native_tests/preexec/run_reviewed.py": "af59aad7fedb0f6275dfc9a068b8ac45c3351fcebb77f5a36d28ea90d4fa7204",
+  "scripts/governance_local_issuer/native_tests/preexec/prepare.py": "b98b65979ee6b21b53d3f6ee98f8f74477086fe5fcd8bf0afd2aa17b67a7c7f0",
+  "scripts/governance_local_issuer/native_tests/preexec/bootstrap.c": "9467a9a9de08ec123d88ae338cbc1e8d0f55a64b5e533cd16f6916768c1c1bc2"
+}
