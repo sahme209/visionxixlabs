@@ -191,6 +191,48 @@ def source_inputs(repo,revision):
  if git_bytes(repo,["rev-parse",revision+"^{commit}"]).decode().strip()!=revision:fail("commit_mismatch")
  p=git_bytes(repo,["show",revision+":package.json"]);l=git_bytes(repo,["show",revision+":package-lock.json"])
  return json_data(p),json_data(l),{"sourceRevision":revision,"packageSha256":sha(p),"lockSha256":sha(l)}
+GENERATION_PACKAGES=('node_modules/prisma','node_modules/@prisma/client','node_modules/@prisma/engines','node_modules/@prisma/engines-version','node_modules/@prisma/fetch-engine','node_modules/@prisma/get-platform')
+def observe_generation_sources(stage,lock,cache):
+ stage=private_dir(stage);files=total=0;observations=[]
+ for location in GENERATION_PACKAGES:
+  entry=lock.get('packages',{}).get(location)
+  if not isinstance(entry,dict):fail('generation_package_lock_missing')
+  source,expected=bound_blob(cache,entry.get('integrity'));verified=io.BytesIO()
+  stream_blob(source,expected,verified);verified.seek(0)
+  root=stage/location
+  if root.is_symlink()or not root.is_dir():fail('generation_package_missing')
+  try:root.resolve(strict=True).relative_to(stage)
+  except(ValueError,OSError,RuntimeError):fail('generation_package_escape')
+  members=set();package_files=0
+  with tarfile.open(fileobj=verified,mode='r:*')as archive:
+   for member in archive:
+    if member.isdir():continue
+    if not member.isfile()or not member.name.startswith('package/'):fail('unsupported_generation_tar_member')
+    name=rel(member.name[len('package/'):])
+    if name in members or len(members)>=10000:fail('duplicate_or_large_generation_package')
+    members.add(name)
+    if member.size>MAX_BLOB or total+member.size>MAX_CACHE:fail('generation_package_limit')
+    body=archive.extractfile(member).read(member.size+1)
+    if len(body)!=member.size:fail('partial_generation_tar_member')
+    target=root/name
+    try:target.resolve(strict=True).relative_to(root)
+    except(ValueError,OSError,RuntimeError):fail('generation_file_escape_or_missing')
+    if target.is_symlink()or target.lstat().st_nlink!=1:fail('generation_file_link')
+    total+=stream_blob(target,hashlib.sha512(body).digest(),remaining=MAX_CACHE-total)
+    files+=1;package_files+=1
+  observed=set()
+  for directory,dirs,names in os.walk(root,followlinks=False):
+   if any((Path(directory)/name).is_symlink()for name in dirs):fail('generation_directory_link')
+   for name in names:
+    observed.add((Path(directory)/name).relative_to(root).as_posix())
+    if len(observed)>10000:fail('generation_tree_limit')
+  if observed!=members:fail('generation_package_extra_or_missing_files')
+  observations.append({'location':location,'version':entry.get('version'),'integrity':entry.get('integrity'),'verifiedRegularFiles':package_files})
+ return {'format':'axiom.installed-generation-source-observation/1','status':'installed_source_bytes_observed',
+         'packages':observations,'verifiedRegularFiles':files,'verifiedBytes':total,
+         'nativeEngineBinding':'unavailable','generationStarted':False,'buildStarted':False,
+         'executingIssuerIdentity':'unavailable','executionAuthorized':False}
+
 def engine_plan(lock,cache):
  entry=lock["packages"].get("node_modules/@prisma/engines",{})
  version=lock["packages"].get("node_modules/@prisma/engines-version",{}).get("version","")

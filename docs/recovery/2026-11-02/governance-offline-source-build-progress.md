@@ -99,3 +99,45 @@ explicitly optional cache misses remained absent after installation. Exact recei
 observation only: no generation, compilation, launch, or executing identity was
 accepted. All qualification fields remain unavailable and executionAuthorized false.
 The strict preparation path still refuses these missing packages.
+
+## Generation-source observation after the isolated install
+
+The retained install is `/private/tmp/axiom-offline-project-probe.pMfafy/stage`.
+New read-only `observe_generation_sources` compared every regular tar member and
+complete installed file set for six selected packages: `prisma`, `@prisma/client`,
+`@prisma/engines`, `@prisma/engines-version`, `@prisma/fetch-engine`, and
+`@prisma/get-platform`. Cached tar bytes were SHA512-verified against the lock
+before parsing; installed files must match those bytes, with link/extra/missing
+files refused. Actual observation: **228 regular files, 20,820,045 bytes**.
+Durable receipt: `prisma-installed-source-observation.json` (raw capture also retained at
+`/private/tmp/axiom-prisma-installed-source-observation.json`).
+A separate network-denied Git read confirmed the stage lock SHA256 equals the exact
+committed 73 lock: `472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775`.
+This observes selected generation-source package bytes; it does not establish
+independent upstream authenticity, a complete transitive closure, or executing identity.
+
+The new focused owned-fixture test passes: exact installed bytes accepted and
+tampering refused. RED (missing API): `/private/tmp/axiom-prisma-installed-source-red.log`.
+GREEN (one focused test): `/private/tmp/axiom-prisma-installed-source-green.log`.
+The first GREEN attempt also exposed a fixture directory mode error; making the
+owned fixture root private corrected the test setup. Earlier passing tests ran
+within the initial RED discovery; only the new test was rerun for final GREEN.
+
+Actual installed `@prisma/engines/dist/index.js`, lines 49–82, selects a library
+query engine by default and requests both it and the schema engine. The locked
+commit remains `605197351a3c8bdd595af2d2a9bc3025bca48ea2`. Bundled CLI help defines
+`--no-engine` as generating an Accelerate-only client; that changes the present
+`prisma-client-js`/direct PostgreSQL behavior and is not an equivalent substitute.
+Even CLI `--version` invokes binary ensuring; it was not executed here.
+
+The next preparation prerequisite remains independent vendor binding of both native
+binaries before copying/executing/loading them. Actual downloader code recognizes
+`PRISMA_QUERY_ENGINE_LIBRARY` and `PRISMA_SCHEMA_ENGINE_BINARY`; future reviewed
+generation must use independently verified owned copies through those paths, clean
+environment, explicit archived schema, and network denial. Environment paths alone
+do not authenticate contents. Prior checksum reads yielded no accepted digest;
+the separate one-schema diagnostic was not authorized/executed in this increment.
+No mutable sidecars were substituted. No generation, application build, native
+execution, network request, or runtime/activation qualification occurred.
+
+Independent focused source review found no material issues in this read-only observer; no new tests or provider calls were run by the reviewer.

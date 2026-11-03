@@ -83,6 +83,17 @@ class PlannerTests(unittest.TestCase):
   plan=m.lock_plan(p,l);blob.write_bytes(b'tampered')
   with self.assertRaises(m.Unavailable):m.probe_cache_plan(plan,source)
 
+ def test_installed_generation_source_observation_exact_and_tamper_refuses(self):
+  p,l,source,blob=fixture(self.base);stage=self.base/'installed';target=stage/'node_modules/fixture-dep';target.mkdir(parents=True);stage.chmod(0o700)
+  with tarfile.open(blob,'r:gz')as archive:
+   for item in archive:
+    path=target/item.name[len('package/'):];path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(archive.extractfile(item).read())
+  with patch.object(m,'GENERATION_PACKAGES',('node_modules/fixture-dep',)):
+   result=m.observe_generation_sources(stage,l,source)
+   self.assertEqual(result['verifiedRegularFiles'],3);self.assertFalse(result['executionAuthorized'])
+   (target/'index.js').write_bytes(b'tamper')
+   with self.assertRaises(m.Unavailable):m.observe_generation_sources(stage,l,source)
+
  def test_clean_environment_has_no_credentials_or_module_overrides(self):
   with patch.dict(os.environ,{"NODE_OPTIONS":"untrusted","NPM_TOKEN":"DO_NOT_COPY"}):
    env=m.clean_environment("/fixed/node",self.base)
