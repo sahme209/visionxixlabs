@@ -1,0 +1,7 @@
+# Integrated broker preparation review
+
+Original97f24857 and repairs0461bba4/a4af3147 integrated as5fad5b9b/95799810/91d3f88d. Independent source review passed after correcting the original blocking-control-queue finding, quiescent shutdown, controller timeout mismatch and protocol-to-global revocation synchronization. Root verified all seven final source hashes, preserved the canonical production guard, and checked compile-only artifact hashes/mode0600. No broker/bootstrap/controller binary was executed.
+
+Evidence: six new pure absolute-startup cases and seven adapted pure protocol cases; simulated authentication/liveness, no child spawn. Broker/bootstrap/controller compile passes are separate from actual runtime evidence. No suites were repeated during integration.
+
+Original180-second startup budget begins before blocking inspection. Fixed production environment, bounded eight outstanding jobs and one per peer, retained messages and cancellation, stopped late child and current control-only resume, and quiescent graceful shutdown remain source mechanisms requiring actual final-package validation. Kernel-call or forced-termination cleanup can remain unknown; no hard real-time or hostile-host guarantee is asserted. All TypeScript issuer readers and activation remain unavailable. The automatically blocked compiled-consumer test is still unverified and is not replaced by these cases. No service, restriction/image run, provider action or deployment is authorized by integration.
