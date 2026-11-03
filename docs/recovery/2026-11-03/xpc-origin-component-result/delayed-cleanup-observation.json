@@ -1,0 +1,19 @@
+{
+  "status": {
+    "exit": 0,
+    "stdout": "{\"status\":0,\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"operation\":\"--status-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true}\n",
+    "stderr": ""
+  },
+  "loaded": {
+    "exit": 113,
+    "stdout": "",
+    "stderr": "Bad request.\nCould not find service \"com.visionxixlabs.axiom.origin-unit\" in domain for user gui: 501\n"
+  },
+  "observedBrokerProcess": {
+    "exit": 1,
+    "stdout": "",
+    "stderr": ""
+  },
+  "scope": "read-only delayed cleanup observation, no registration/probe/unregister repeated",
+  "cleanupObserved": true
+}

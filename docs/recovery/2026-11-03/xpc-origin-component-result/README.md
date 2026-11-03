@@ -1,0 +1,9 @@
+# Actual origin component exchange and delayed cleanup
+
+The user approved one exact packet2faef314…bfc1ce invocation (`call_QprbOKmtQzQTdLeZ2c6IrJht[0]`). The frozen driver source hash was checked and invoked once. Actual bundle inspection passed; preStatus3 and exact launchd absence113 were recorded. ServiceManagement returned registrationSucceeded=true/postStatus1. The one pinned controller exited0 and reported `component_observed; executingIssuerIdentity=unavailable`.
+
+Unregistration returned true/postStatus0. The immediate launchd observation still showed broker31992 in SIGTERMed state, so the original driver conservatively exited1 with cleanupVerified=false. That result is preserved byte-for-byte in [driver-result.json](driver-result.json), not rewritten into a successful all-green run. The SDK warns unregister does not wait for process reaping.
+
+Subsequent **read-only** verification found status0, exact service lookup113/not found, and the observed broker PID absent. [Delayed observation](delayed-cleanup-observation.json) confirms cleanup without repeating registration, controller probe or unregister. Claims and artifacts remain consumed/preserved.
+
+This is actual bounded component feasibility: fixed per-message native sender checks and broker-owned diagnostic child startup completed through the reviewed code. It does not prove every adversarial case, continued dispatch liveness, a restricted/immutable executable package, canonical private identity, the actual compiled issuer/store/transport, full coverage, fleet/legacy/provider-effect qualification, enrollment or activation. The diagnostic child was intentionally unrestricted and canonical index.cjs remains refusing. No provider, credentials, image/restriction run, app restart, deployment or spending occurred. The two earlier preflight refusals and all older resource failures remain unchanged.

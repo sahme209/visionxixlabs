@@ -1,0 +1,18 @@
+{
+  "root": "/private/tmp/axiom-origin-unit-prepared-uvmsc9zv",
+  "manifestSha256": "2faef31436cc8a593ca32afa694948c2a57bc35532ff859f1d62349d44bfc1ce",
+  "consumedClaims": [
+    {
+      "name": "host-experiment-claim.json",
+      "sha256": "3439f83b6d32e5af175e17ba42a0e424bc63c2e8dfed30cf284edb727ef0fd9b",
+      "bytes": 125
+    },
+    {
+      "name": "unit-spawn-claim.json",
+      "sha256": "e4af9dd6fb5c99da1a8e7eedf287351c523df95314e265aec5fc1e61c28a4f69",
+      "bytes": 55
+    }
+  ],
+  "approval": "call_QprbOKmtQzQTdLeZ2c6IrJht[0]",
+  "invocations": 1
+}

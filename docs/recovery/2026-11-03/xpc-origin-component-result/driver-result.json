@@ -1,0 +1,61 @@
+{
+  "manifest": "2faef31436cc8a593ca32afa694948c2a57bc35532ff859f1d62349d44bfc1ce",
+  "scope": "component protocol only; NO issuer identity",
+  "phase": "component_observed_no_identity",
+  "ownedRegistration": true,
+  "signature": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "",
+    "stderr": ""
+  },
+  "bundleInspection": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "{\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"operation\":\"--inspect-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"serviceManagementAccessed\":false,\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true}\n",
+    "stderr": ""
+  },
+  "preStatus": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "{\"status\":3,\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"operation\":\"--status-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true}\n",
+    "stderr": ""
+  },
+  "preLoaded": {
+    "exit": 113,
+    "timeout": false,
+    "stdout": "",
+    "stderr": "Bad request.\nCould not find service \"com.visionxixlabs.axiom.origin-unit\" in domain for user gui: 501\n"
+  },
+  "register": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "{\"registrationSucceeded\":true,\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"postStatus\":1,\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"operation\":\"--register-reviewed-unit\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true,\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"preStatus\":3,\"status\":3,\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\"}\n",
+    "stderr": ""
+  },
+  "probe": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "component_observed; executingIssuerIdentity=unavailable\n",
+    "stderr": ""
+  },
+  "unregister": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "{\"status\":1,\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"operation\":\"--unregister-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"unregistrationSucceeded\":true,\"postStatus\":0,\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true}\n",
+    "stderr": ""
+  },
+  "postStatus": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "{\"status\":0,\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"operation\":\"--status-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true}\n",
+    "stderr": ""
+  },
+  "postLoaded": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "gui/501/com.visionxixlabs.axiom.origin-unit = {\n\tactive count = 2\n\tpath = (submitted by smd.780)\n\ttype = Submitted\n\tmanaged_by = com.apple.xpc.ServiceManagement\n\tstate = SIGTERMed\n\n\tprogram identifier = Contents/MacOS/AxiomOriginBroker (mode: 2)\n\tparent bundle identifier = com.visionxixlabs.axiom.origin-unit.app\n\tparent bundle version = 1\n\tBTM uuid = 49E052E8-2516-4418-B0A8-D41D60AAA35B\n\tinherited environment = {\n\t\tSSH_AUTH_SOCK => /var/run/com.apple.launchd.EyHeR0RomE/Listeners\n\t}\n\n\tdefault environment = {\n\t\tPATH => /usr/bin:/bin:/usr/sbin:/sbin\n\t}\n\n\tenvironment = {\n\t\tOSLogRateLimit => 64\n\t\tXPC_SERVICE_NAME => com.visionxixlabs.axiom.origin-unit\n\t}\n\n\tLWCR = {\n\t\t\"reqs\" => {\n\t\t\t\"cdhash\" => {\n\t\t\t\t\"$in\" => [\n\t\t\t\t\t0 = \t\t\t\t]\n\t\t\t}\n\t\t}\n\t\t\"vers\" => 1\n\t\t\"comp\" => 1\n\t\t\"ccat\" => 0\n\t}\n\n\tdomain = gui/501 [100034]\n\tasid = 100034\n\tminimum runtime = 10\n\texit timeout = 5\n\truns = 1\n\tpid = 31992\n\timmediate reason = ipc (mach)\n\tforks = 1\n\texecs = 1\n\tinitialized = 1\n\ttrampolined = 1\n\tstarted suspended = 0\n\tproxy started suspended = 0\n\tchecked allocations = 0 (queried = 1)\n\tchecked allocations reason = no host\n\tchecked allocations flags = 0x0\n\tlast exit code = (never exited)\n\n\tendpoints = {\n\t\t\"com.visionxixlabs.axiom.origin-unit\" = {\n\t\t\tport = 0x170963\n\t\t\tactive = 1\n\t\t\tmanaged = 1\n\t\t\treset = 0\n\t\t\thide = 0\n\t\t\twatching = 0\n\t\t}\n\t}\n\n\tresource coalition = {\n\t\tID = 41116\n\t\ttype = resource\n\t\tstate = active\n\t\tactive count = 1\n\t\tname = com.visionxixlabs.axiom.origin-unit\n\t}\n\n\tjetsam coalition = {\n\t\tID = 41117\n\t\ttype = jetsam\n\t\tstate = active\n\t\tactive count = 1\n\t\tname = com.visionxixlabs.axiom.origin-unit\n\t}\n\n\tspawn type = daemon (3)\n\tjetsam priority = 40\n\tjetsam memory limit (active) = (unlimited)\n\tjetsam memory limit (inactive) = (unlimited)\n\tjetsamproperties category = daemon\n\tsubmitted job. ignore execute allowed\n\tjetsam thread limit = 32\n\tcpumon = default\n\tjob state = running\n\tsanitizer flags = 0x0\n\n\tproperties = partial import | resolve program | has LWCR\n}\n",
+    "stderr": ""
+  },
+  "cleanupVerified": false
+}
