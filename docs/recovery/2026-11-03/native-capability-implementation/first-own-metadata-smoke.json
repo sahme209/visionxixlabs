@@ -1,0 +1,24 @@
+{
+  "buildDirectory": "/private/tmp/axiom-native-inventory-build-6lnyu_xx",
+  "compileArgv": [
+    "/usr/bin/xcrun",
+    "clang",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-O1",
+    "-Ipackages/verified-issuer-runtime/native",
+    "packages/verified-issuer-runtime/native/capability_inventory.c",
+    "scripts/governance_local_issuer/native_tests/inventory_smoke.c",
+    "-o",
+    "/private/tmp/axiom-native-inventory-build-6lnyu_xx/inventory-smoke"
+  ],
+  "smokeExit": 0,
+  "stdout": "decision=1 reason=mapping_capability_refused descriptors=3 regions=13 fd_complete=1 vm_complete=0 stable=0 qualification=metadata_only identity=unavailable\n",
+  "stderr": "",
+  "restrictionInitializerLinked": false,
+  "profileInvoked": false,
+  "identity": "unavailable",
+  "binarySha256": "5797f7e1691b57529478228292b87c95cfe7a6684fead957cffdbc0ba8fba23f"
+}

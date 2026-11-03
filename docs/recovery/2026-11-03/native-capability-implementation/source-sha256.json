@@ -1,0 +1,8 @@
+{
+  "packages/verified-issuer-runtime/native/capability_inventory.h": "29a4a27d48ed0afb7a32d69bfa5cc65b0bdbde773d56d4724d47695d39f93f67",
+  "packages/verified-issuer-runtime/native/capability_inventory.c": "913c909ea0101b5f11764b4e6947d297f851e1866d12a4d8a83d377b94e0e6c6",
+  "packages/verified-issuer-runtime/native/capability_guard.c": "a900e5d75a66faef33c9d66fbbcb3fa2c29736e73e18988b2aa1977fce9e512f",
+  "scripts/governance_local_issuer/native_tests/inventory_smoke.c": "6f00e836dec2bcdcc33a377f79cb672e8e1785c14062857526d48816fc94717a",
+  "scripts/governance_local_issuer/native_tests/classifier_tests.c": "e5b977dca13d3afbd20859d490b3c8639d1eb5046fcbb5d0011f1b1dc1088830",
+  "scripts/governance_local_issuer/native_tests/run_native_tests.py": "cb1f7f53ec6df3f9ba15740bb9bfe5280f0fda0283af905724171fb28cdbec48"
+}

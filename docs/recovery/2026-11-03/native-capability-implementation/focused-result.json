@@ -1,0 +1,92 @@
+{
+  "state": "local_source_and_metadata_only",
+  "buildRoot": "/private/tmp/axiom-native-capability-test-j506wvd9",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-I/private/tmp/axiom-native-capability-2d113a53/packages/verified-issuer-runtime/native",
+        "/private/tmp/axiom-native-capability-2d113a53/packages/verified-issuer-runtime/native/capability_inventory.c",
+        "/private/tmp/axiom-native-capability-2d113a53/scripts/governance_local_issuer/native_tests/classifier_tests.c",
+        "-o",
+        "/private/tmp/axiom-native-capability-test-j506wvd9/classifier-tests"
+      ],
+      "exit": 0,
+      "log": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-I/private/tmp/axiom-native-capability-2d113a53/packages/verified-issuer-runtime/native",
+        "/private/tmp/axiom-native-capability-2d113a53/packages/verified-issuer-runtime/native/capability_inventory.c",
+        "/private/tmp/axiom-native-capability-2d113a53/scripts/governance_local_issuer/native_tests/inventory_smoke.c",
+        "-o",
+        "/private/tmp/axiom-native-capability-test-j506wvd9/inventory-smoke"
+      ],
+      "exit": 0,
+      "log": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-I/private/tmp/axiom-native-capability-2d113a53/packages/verified-issuer-runtime/native",
+        "-Wno-deprecated-declarations",
+        "-fvisibility=hidden",
+        "-I/Users/samirahmed/.nvm/versions/node/v24.21.0/include/node",
+        "-bundle",
+        "-undefined",
+        "dynamic_lookup",
+        "/private/tmp/axiom-native-capability-2d113a53/packages/verified-issuer-runtime/native/capability_inventory.c",
+        "/private/tmp/axiom-native-capability-2d113a53/packages/verified-issuer-runtime/native/capability_guard.c",
+        "-o",
+        "/private/tmp/axiom-native-capability-test-j506wvd9/capability_guard.node"
+      ],
+      "exit": 0,
+      "log": ""
+    }
+  ],
+  "pureClassifiers": {
+    "exit": 0,
+    "stdout": "classifier_assertions=33 metadata_only identity=unavailable\n",
+    "stderr": ""
+  },
+  "ownProcessMetadata": {
+    "exit": 0,
+    "stdout": "decision=1 reason=mapping_capability_refused descriptors=3 regions=13 fd_complete=1 vm_complete=0 stable=0 refused_share=5 refused_prot=0 refused_max=7 refused_external=0 qualification=metadata_only identity=unavailable\n",
+    "stderr": ""
+  },
+  "ownedRetainedDescriptorMetadata": {
+    "exit": 0,
+    "stdout": "decision=1 reason=descriptor_capability_refused descriptors=4 regions=0 fd_complete=0 vm_complete=0 stable=0 refused_share=0 refused_prot=0 refused_max=0 refused_external=0 qualification=metadata_only identity=unavailable\n",
+    "stderr": ""
+  },
+  "ownedRetainedBytes": 0,
+  "initializerAddon": "compiled_only_not_loaded",
+  "profileApiExecuted": false,
+  "identity": "unavailable",
+  "nativeQualification": "unavailable",
+  "hashes": {
+    "/private/tmp/axiom-native-capability-test-j506wvd9/classifier-tests": "de352f6ba1368959d5534dbefc42bb699dff7dbc182ae772cb3505ac3a28a518",
+    "/private/tmp/axiom-native-capability-test-j506wvd9/inventory-smoke": "fabfc570c2dcbbd034b8d229eeeb682f7b263de1f3d8f76bd5da6fba3c62ee88",
+    "/private/tmp/axiom-native-capability-test-j506wvd9/capability_guard.node": "22f44a14f711e86d30e9522aa23e0cd0074a6d99ffdad62b28ae05de0b134b5e",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/include/node/node_api.h": "2d4560831e525b47b060ec8a0864ab73993df9e20215ce9f0fe7b24cd31af32a"
+  }
+}
