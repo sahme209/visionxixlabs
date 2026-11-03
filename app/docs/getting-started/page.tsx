@@ -117,7 +117,7 @@ export default function GettingStartedPage() {
                         { question: "What happens without credentials?", answer: "The relevant connector remains disconnected or unavailable. It must not silently return a mock success." },
                         { question: "Can the sandbox touch production?", answer: "No. The website sandbox uses labeled fictional sample data and cannot execute production operations." },
                         { question: "How are updates installed?", answer: "Updates are currently manual. Check the download page and release notes for a newer verified installer." },
-                        { question: "What should I do when a step fails?", answer: "Keep the failure visible, preserve its evidence, correct the dependency or permission, and retry only the affected step." },
+                        { question: "What should I do when a step fails?", answer: "Keep the failure visible and preserve its evidence. Inspect supported read-only recovery first. Do not resend an uncertain or consumed action; retry only when that workflow explicitly permits it and current checks and required approvals are satisfied." },
                     ]}
                 />
             </DocSection>
