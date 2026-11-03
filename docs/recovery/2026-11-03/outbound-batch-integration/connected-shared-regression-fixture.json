@@ -1,0 +1,8 @@
+{
+  "source": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+  "fixture": "/private/tmp/axiom-slack-approval-pg-aqae4b7m",
+  "clientFixture": "/private/tmp/axiom-slack-approval-pg-evidence-7myd8h5u",
+  "started": true,
+  "stopped": true,
+  "providerAndAuthority": "simulated; actual owned durable storage and HTTP composition"
+}
