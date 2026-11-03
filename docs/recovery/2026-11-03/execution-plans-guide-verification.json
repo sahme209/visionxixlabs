@@ -1,0 +1,37 @@
+{
+  "observedAt": "2026-11-03T20:15:25.105920+00:00",
+  "previousPid10298": "not present; no terminal success receipt recovered",
+  "exactSourceHashes": {
+    "app/docs/execution-plans/page.tsx": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a",
+    "app/docs/execution-plans/__tests__/page.test.ts": "e28e8c69652c2180c1dcb309daabef6671b93ad8b8806558bc3de2a34da03752"
+  },
+  "dependencyRead": {
+    "command": [
+      "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "-e",
+      "const fs=require('fs');const p='node_modules/@heroicons/react/24/outline/StopCircleIcon.d.ts';console.log(JSON.stringify({path:p,bytes:fs.readFileSync(p).length}));"
+    ],
+    "returncode": 0,
+    "stdout": "{\"path\":\"node_modules/@heroicons/react/24/outline/StopCircleIcon.d.ts\",\"bytes\":256}\n",
+    "stderr": "",
+    "elapsedSeconds": 0.025042042
+  },
+  "scopedTypes": {
+    "command": [
+      "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "node_modules/typescript/bin/tsc",
+      "--project",
+      "work/execution-plans-guide/tsconfig.json",
+      "--noEmit"
+    ],
+    "returncode": 0,
+    "result": "pass",
+    "elapsedSeconds": 0.619187292
+  },
+  "focusedTests": "existing final.log: one file, 3 tests passed; not rerun",
+  "limits": [
+    "No dependency reset, download, stubs or type bypass",
+    "No full build, server restart, publication or visual acceptance",
+    "Article remains local; B4 remains incomplete"
+  ]
+}

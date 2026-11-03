@@ -8,6 +8,10 @@ initializer, not another attempt to make NoWrite revoke existing descriptors.
 Keep the original main-only CJS/native-addon topology; do not move restriction
 installation into a different process and accept a parent receipt afterward.
 
+## Superseding implementation findings
+
+Local component implementation found that the VM labels are not a reliable safe/unsafe discriminator: actual shared files and POSIX shm can report SM_PRIVATE and BASIC_INFO.shared=0. See [actual counterexamples](../native-mapping-causal-comparison/README.md) and [conservative correction](../native-classifier-conservative-fix/README.md). No safe runtime is qualified by this design. The source now rejects all maximum-write regions; this is containment, not completion. Stop adding shape exceptions. The [restriction-before-runtime origin candidate](../pre-node-controlled-origin/design.md) is a different proposed mechanism, not implicitly approved by the local implementation decision above.
+
 ## What actually failed
 
 The exact approved binary installed the named profile and denied ten of twelve

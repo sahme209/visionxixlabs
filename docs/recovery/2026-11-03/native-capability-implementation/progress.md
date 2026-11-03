@@ -1,5 +1,7 @@
 # Revised native capability component — local implementation only
 
+**Superseding causal evidence:** actual owned shared-file and POSIX shared-memory mappings reported SM_PRIVATE and were incorrectly allowed by the first classifier. [Counterexamples](../native-mapping-causal-comparison/README.md). The [conservative correction](../native-classifier-conservative-fix/README.md) now refuses all maximum-write mappings, closing that false acceptance but making the runtime unusable as-is. Earlier pure-test/source-review passes below do not qualify mapping safety. No initializer was loaded or identity activated. More VM shape exceptions are not an accepted solution; the [pre-runtime candidate](../pre-node-controlled-origin/design.md) is design-only and needs separate validation.
+
 The specifically approved local revised mechanism now has concrete C descriptor
 and VM collectors/classifiers, a separate compile-only N-API initializer and a
 small isolated native harness. No wrapper inventory is substituted for this work.
