@@ -3,5 +3,5 @@
   "scripts/governance_local_issuer/native_tests/preexec/fixture.c": "397af6b5f6d651b933af78370d570f735f57477b9e5ae48a5d6cd4df9bbef492",
   "scripts/governance_local_issuer/native_tests/preexec/run_reviewed.py": "abd591955636d4443d827e48553111c79a29902589411bd91bfe3ca8dcddd4db",
   "scripts/governance_local_issuer/native_tests/preexec/prepare.py": "b98b65979ee6b21b53d3f6ee98f8f74477086fe5fcd8bf0afd2aa17b67a7c7f0",
-  "scripts/governance_local_issuer/native_tests/preexec/bootstrap.c": "42c797ccef741091bb4b70368ce56b3429ae2cdb125c7aa8dd47a4f46cdb3fa5"
+  "scripts/governance_local_issuer/native_tests/preexec/bootstrap.c": "4bd279f772aad9457edb824a59d96fb34b1e83f5779d5effe339e834917e40fa"
 }
