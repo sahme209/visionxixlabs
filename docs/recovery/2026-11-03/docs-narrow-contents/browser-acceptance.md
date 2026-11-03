@@ -1,0 +1,7 @@
+# Bounded actual-browser acceptance — 3bfae851
+
+Exact source3bfae851 offline build/TypeScript/output verification passed. Loopback preview5202→5203. At the actual817×847 viewport, /docs/surfaces starts with collapsed Documentation contents and the article heading, summary and version warning visible in the first viewport. This fixes the observed long-sidebar-before-article defect at this size.
+
+Actual browser interactions: click contents → expanded; Tab → Overview link focus; Escape → collapsed and focus restored to Documentation contents. Return on focused contents → expanded; click Getting started → actual /docs/getting-started article, contents collapsed and focus restored to toggle. These are real browser checks, not inferred from jsdom. Screenshot externaloutputs/axiom-docs-3bfae851-compact.jpg records collapsed state with focus ring and article. Desktop breakpoint/more sizes/full accessibility remain unverified; browser viewport override API was unavailable and no workaround or broader acceptance was invented. Existing six focused tests and source review remain separate evidence.
+
+No provider, account, consent or execution action used. Local preview only; no production publication or Governance authority. The older Getting started page still contained overly broad retry wording observed during navigation; a separate local editorial correction is needed, not a retroactive change to this built artifact.
