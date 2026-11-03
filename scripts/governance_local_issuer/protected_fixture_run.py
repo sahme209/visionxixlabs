@@ -3,7 +3,7 @@ from __future__ import annotations
 import hashlib,json,os,re,selectors,signal,stat,subprocess,sys,time
 from pathlib import Path
 from .protected_fixture import PACKAGE,PACKAGE_DIGEST,claim_once,inspect_alias_pair,prepare_resource_fixture,PackageUnavailable
-from .manifest import verify_package
+from .manifest import strict_json
 ROOT=Path('/private/tmp/axiom-protected-fixture-prepared-sv2b99jz')
 
 def _run(argv,timeout):
@@ -43,9 +43,26 @@ def _run(argv,timeout):
  return {'argv':argv,'exit':child.returncode,'stdout':bytes(buffers['stdout']).decode(errors='replace'),'stderr':bytes(buffers['stderr']).decode(errors='replace'),'timeout':timed_out,'overflow':overflow}
 
 def _successful(result):return result['exit']==0 and not result['timeout'] and not result['overflow']
+def _inspect(mode):
+ if mode not in ('aliases','mounted'):raise PackageUnavailable('fixed_inspection_mode_required')
+ script=str(Path(__file__).resolve().with_name('protected_fixture_inspect.py'))
+ result=_run([sys.executable,script,mode],90 if mode=='mounted' else 60)
+ if not _successful(result):raise PackageUnavailable('bounded_inspection_unavailable')
+ try:
+  decoded=strict_json(result['stdout'])
+  if type(decoded) is not dict or set(decoded)!= {'mode','observation'} or decoded['mode']!=mode or type(decoded['observation']) is not dict:raise ValueError()
+  observation=decoded['observation']
+  if mode=='aliases':
+   if observation.get('format')!='axiom.actual-owned-alias-observation/1' or observation.get('backing')!=str(ROOT/'package.dmg') or observation.get('alias')!=str(ROOT/'package-hardlink.dmg') or type(observation.get('file')) is not dict or observation.get('qualification')!='resource_observation_only' or observation.get('executingIssuerIdentity')!='unavailable':raise ValueError()
+   file=observation['file']
+   if set(file)!={'dev','ino','size','mode','sha256'} or any(type(file[key]) is not int or file[key]<0 for key in ('dev','ino','size','mode')) or type(file['sha256']) is not str or not re.fullmatch('[0-9a-f]{64}',file['sha256']):raise ValueError()
+  elif observation.get('packageDigest')!=PACKAGE_DIGEST or observation.get('qualification')!='package_file_set_verified' or observation.get('executionAuthorized') is not False or observation.get('executingIssuerIdentity')!='unavailable':raise ValueError()
+  return observation
+ except (ValueError,TypeError,KeyError):raise PackageUnavailable('inspection_result_unavailable') from None
+
 def _verify_mounted(mount):
- if not os.path.ismount(mount) or not os.statvfs(mount).f_flag&os.ST_RDONLY:raise PackageUnavailable('actual_readonly_mount_required')
- if verify_package(mount)['packageDigest']!=PACKAGE_DIGEST:raise PackageUnavailable('mounted_package_changed')
+ if mount!=ROOT/'mount':raise PackageUnavailable('fixed_mount_required')
+ return _inspect('mounted')
 
 def run_exact(expected_manifest_sha):
  """One lifecycle, no retries. Requires separate exact user authorization before calling."""
@@ -65,19 +82,19 @@ def run_exact(expected_manifest_sha):
   mount.mkdir(mode=0o700)
   created=_run(plan['futureImageCreate'],120);result['phases'].append(created)
   if not _successful(created):raise PackageUnavailable('image_creation_unavailable')
-  os.link(image,alias);result['before']=inspect_alias_pair(image,alias)
+  os.link(image,alias);result['before']=_inspect('aliases')
   attach_attempted=True;attached=_run(plan['futureAttach'],30);result['phases'].append(attached)
   if not _successful(attached):raise PackageUnavailable('image_attach_unavailable')
   _verify_mounted(mount)
   for name in ('resource-attack','resource-launcher'):(ROOT/name).chmod(0o700)
   attacked=_run([str(ROOT/'resource-launcher'),'--resource-restriction-once'],15);result['phases'].append(attacked)
-  result['after']=inspect_alias_pair(image,alias)
+  result['after']=_inspect('aliases')
   unchanged=result['before']['file']==result['after']['file']
   result['status']='resource_unit_observations_only' if _successful(attacked) and unchanged else 'resource_matrix_failed'
  except BaseException as error:
   result['failureType']=type(error).__name__ # No exception text/env/customer data.
   if image.exists() and alias.exists():
-   try:result['after']=inspect_alias_pair(image,alias)
+   try:result['after']=_inspect('aliases')
    except BaseException:result['after']='unknown'
   raise
  finally:
@@ -92,7 +109,7 @@ def run_exact(expected_manifest_sha):
   if result['mountStillAttached']:result['status']='unknown_no_retry'
   if image.exists() and alias.exists():
    try:
-    result['afterCleanup']=inspect_alias_pair(image,alias)
+    result['afterCleanup']=_inspect('aliases')
     if result.get('before',{}).get('file')!=result['afterCleanup']['file']:result['status']='resource_matrix_failed'
    except BaseException:result['afterCleanup']='unknown';result['status']='unknown_no_retry'
   elif 'before' in result:result['afterCleanup']='unknown';result['status']='unknown_no_retry'

@@ -20,7 +20,7 @@ class MockedHostLifecycleTests(unittest.TestCase):
   if self.fail==argv[0]:success=False
   return {'argv':argv,'exit':0 if success else 1,'stdout':'mocked','stderr':'','timeout':False,'overflow':False}
  def invoke(self):
-  with patch.object(unit,'ROOT',self.root),patch.object(unit,'prepare_resource_fixture',return_value=self.plan),patch.object(unit,'_verify_mounted'),patch.object(unit,'_run',side_effect=self.run_mock),patch.object(unit.os.path,'ismount',side_effect=lambda _:self.mounted):return unit.run_exact(self.digest)
+  with patch.object(unit,'ROOT',self.root),patch.object(unit,'prepare_resource_fixture',return_value=self.plan),patch.object(unit,'_verify_mounted'),patch.object(unit,'_inspect',side_effect=lambda mode:unit.inspect_alias_pair(self.root/'package.dmg',self.root/'package-hardlink.dmg')),patch.object(unit,'_run',side_effect=self.run_mock),patch.object(unit.os.path,'ismount',side_effect=lambda _:self.mounted):return unit.run_exact(self.digest)
  def test_claim_precedes_every_mocked_side_effect_and_cleanup(self):
   result=self.invoke();self.assertEqual(result['status'],'resource_unit_observations_only');self.assertEqual(self.calls,['create','attach',str(self.root/'resource-launcher'),'detach']);self.assertFalse(self.mounted);self.assertEqual((self.root/'resource-launcher').stat().st_mode&0o777,0o600)
  def test_creation_failure_consumes_claim_no_retry(self):
@@ -73,4 +73,22 @@ class MockedHostLifecycleTests(unittest.TestCase):
   with patch.object(unit.subprocess,'Popen',side_effect=spawn),patch.object(unit.selectors,'DefaultSelector',side_effect=OSError('simulated selector error')):
    with self.assertRaises(OSError):unit._run([sys.executable,'-c','import time; time.sleep(60)'],1)
   self.assertEqual(len(children),1);self.assertIsNotNone(children[0].poll())
+ def bounded_inspection_invoke(self,timeout_mode):
+  from governance_local_issuer.protected_fixture import inspect_alias_pair
+  inspection_calls=[]
+  def run(argv,timeout):
+   if argv[0]==sys.executable:
+    self.assertEqual(argv[1],str(Path(unit.__file__).resolve().with_name('protected_fixture_inspect.py')))
+    mode=argv[2];inspection_calls.append(mode);self.assertEqual(timeout,90 if mode=='mounted' else 60)
+    if mode==timeout_mode or (mode=='aliases' and timeout_mode=='aliases-after-attach' and self.mounted):return {'argv':argv,'exit':-9,'stdout':'','stderr':'','timeout':True,'overflow':False}
+    observation=inspect_alias_pair(self.root/'package.dmg',self.root/'package-hardlink.dmg') if mode=='aliases' else {'packageDigest':unit.PACKAGE_DIGEST,'qualification':'package_file_set_verified','executionAuthorized':False,'executingIssuerIdentity':'unavailable'}
+    return {'argv':argv,'exit':0,'stdout':json.dumps({'mode':mode,'observation':observation}),'stderr':'','timeout':False,'overflow':False}
+   return self.run_mock(argv,timeout)
+  with patch.object(unit,'ROOT',self.root),patch.object(unit,'prepare_resource_fixture',return_value=self.plan),patch.object(unit,'_run',side_effect=run),patch.object(unit.os.path,'ismount',side_effect=lambda _:self.mounted):
+   with self.assertRaises(PackageUnavailable):unit.run_exact(self.digest)
+  return json.loads((self.root/'resource-result.json').read_text()),inspection_calls
+ def test_mounted_verifier_deadline_still_detaches_and_consumes_claim(self):
+  result,calls=self.bounded_inspection_invoke('mounted');self.assertIn('mounted',calls);self.assertEqual(self.calls.count('detach'),1);self.assertFalse(self.mounted);self.assertEqual(result['status'],'unknown_no_retry');self.assertTrue((self.root/'experiment-claim.json').exists())
+ def test_alias_hash_deadline_preserves_unknown_and_no_retry(self):
+  result,calls=self.bounded_inspection_invoke('aliases-after-attach');self.assertEqual(self.calls.count('detach'),1);self.assertFalse(self.mounted);self.assertEqual(result['status'],'unknown_no_retry');self.assertEqual(result['after'],'unknown');self.assertTrue((self.root/'experiment-claim.json').exists())
 if __name__=='__main__':unittest.main()

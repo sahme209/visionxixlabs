@@ -1,8 +1,9 @@
 {
   "scripts/governance_local_issuer/protected_fixture.py": "76d50c1011074e69dd4dda13246b77b4aa03a3e847401b15b96a574588fceb65",
-  "scripts/governance_local_issuer/protected_fixture_run.py": "361d85f8070ea04acdc6bdc6a80a7d6cc1c25b440e7e7c5e39b9b9463fa0c7a0",
+  "scripts/governance_local_issuer/protected_fixture_run.py": "76881e77ecb04172bdbd2ef691404a7e378daccb840f1658229b0dee13a8e378",
   "scripts/governance_local_issuer/tests/test_protected_fixture.py": "b1444d98d409c1b8d62b579efe573e298f5518de5ad2521a01ccc0c1d6f8c38c",
-  "scripts/governance_local_issuer/tests/test_protected_fixture_run.py": "837d27d3a6079144924289972ad90faf6cc32cbc1d76740f3f29e5e217b884af",
+  "scripts/governance_local_issuer/tests/test_protected_fixture_run.py": "ff908ebb5a60fcf211a19e172668338dcb9c477272205a7aa0517e71679e27d1",
   "scripts/governance_local_issuer/native_tests/protected_resource_attack.c": "c5b2b6e6b18637b666dc52379479467d80d81f469dc6d4a5c163ed85eddcdefb",
-  "scripts/governance_local_issuer/native_tests/protected_resource_launcher.c": "ba8e20e6c136172a50de57ee878afa4a9920602c0b50d7627e755c959ff32a6f"
+  "scripts/governance_local_issuer/native_tests/protected_resource_launcher.c": "ba8e20e6c136172a50de57ee878afa4a9920602c0b50d7627e755c959ff32a6f",
+  "scripts/governance_local_issuer/protected_fixture_inspect.py": "76dca69c42d7374c8e91aa0998ffbf131f4f588bdcbf1a0eba37c4efc40c1028"
 }
