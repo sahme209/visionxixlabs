@@ -1,0 +1,10 @@
+{
+  "desktop/src/lib/customerNavigation.ts": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+  "desktop/src/App.tsx": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+  "desktop/src/views/DocsView.tsx": "77e7bb7dcef0ae72a52803284914442aa718f9f371dcc746f5857545e42a50d3",
+  "desktop/src/views/AirflowAutomationView.tsx": "e33956e943ce613e2a564b01d16023718f05853610e01fab623eea9dba82addd",
+  "app/account/help/page.tsx": "5700ec264a256c97f2d014789a7f9f78c1f2653dca17e8466701bce1f5f003e8",
+  "app/docs/approval-workflow/page.tsx": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16",
+  "app/docs/surfaces/page.tsx": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f",
+  "app/docs/surfaces/__tests__/page.test.ts": "b7d0c63c1242587f5bf66d1c20224f911ebb486c992f522160247099d76d3615"
+}

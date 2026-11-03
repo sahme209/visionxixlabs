@@ -1,0 +1,11 @@
+{
+  "returncode": 0,
+  "elapsedSeconds": 0.567375875,
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "--project",
+    "work/docs-surfaces/tsconfig.json",
+    "--noEmit"
+  ]
+}

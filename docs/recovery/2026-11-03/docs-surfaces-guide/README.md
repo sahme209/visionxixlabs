@@ -1,0 +1,7 @@
+# Dedicated product-surfaces reference — local B4 increment
+
+The Docs index promised a product-surface comparison but /docs/surfaces redirected back to that same index. Replaced only that redirect with a version-scoped guide to the eight registered desktop destinations, their purpose, next decision/owner and read-versus-change limits. Public downloads, documentation and illustrative demo are separate from authenticated account help. No commands, provider controls or new authority added.
+
+Source grounding: desktop/src/lib/customerNavigation.ts supplies exact current labels; desktop/src/App.tsx registers those destinations and leaves Governance prototype unregistered; DocsView.tsx opens web guides; AirflowAutomationView.tsx grounds current Batches scope; app/account/help/page.tsx requires sign-in; approval-workflow/page.tsx distinguishes local separate-execution preview from installed-version behavior. Exact source hashes attached. These source observations are not live provider or installed-build acceptance.
+
+Verification: meaningful rendered tests initially failed 3/3 against the redirect, then passed 3/3 against the article. Exact scoped TypeScript under Node24 exited0. No full build, server restart, screenshot/visual acceptance, network, publication, backend or runtime changes. Root independent content review pending. Source modes and Audit logs remain misleading redirects in the attached before-inventory; full B4 documentation and support knowledge are not complete.
