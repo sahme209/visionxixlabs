@@ -68,6 +68,14 @@ describe("listBranches", () => {
 describe("commitFile", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  it("checks the synchronous final authority before the sole Contents PUT", async () => {
+    fetchMock.mockResolvedValueOnce(jsonResponse(404, {message:"Not Found"}));
+    const final = vi.fn(() => {throw Error("authority expired")});
+    const result = await commitFile({owner:"acme",repo:"widgets",branch:"work",path:"a.txt",content:"exact",message:"reviewed",installationToken:"tok",expectedSha:null,beforeWrite:async()=>{},beforeFetch:final,signal:new AbortController().signal});
+    expect(result.ok).toBe(false);expect(final).toHaveBeenCalledOnce();expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+
   it("creates a new file (no existing sha) when the file doesn't exist yet", async () => {
     fetchMock
       .mockResolvedValueOnce(jsonResponse(404, { message: "Not Found" }))

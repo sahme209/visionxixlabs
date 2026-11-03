@@ -194,4 +194,26 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   const t=await fixture();f.loseOutboundAck=true;expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'refused',attemptCount:1});expect(f.token).not.toHaveBeenCalled();expect(t.writes()).toBe(0);const slot=await f.db.durableAgentWorkflow.findFirst({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}});expect(slot).toMatchObject({currentStep:'reserved',version:0});await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}})).toBe(1);
  });
 
+ const singleFileArgs=()=>({repositoryFullName:'fixture/repository',branch:'work',path:'src/a.txt',content:'Exact reviewed bytes\n',message:'Reviewed single file',_review:{kind:'github_file',baseSha:'a'.repeat(40),baseContent:'old'}});
+ it.each(['confirmed','lost_response'])('[singlefile] durable reservation and sole PUT %s',async mode=>{
+  const t=await fixture('commit_github_file',singleFileArgs);let puts=0;
+  f.token.mockImplementation(async()=>{expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1',currentStep:'reserved'}})).toBe(1);return {ok:true,token:'simulated-token'}});
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
+   if(init.method==='GET')return Response.json(url.endsWith('/repos/fixture/repository')?{default_branch:'main'}:{sha:'a'.repeat(40)});
+   expect(init.method).toBe('PUT');expect(url).toContain('/contents/src/a.txt');expect(init.signal).toBeInstanceOf(AbortSignal);
+   await f.locker.$transaction(async(tx:any)=>{const[row]=await tx.$queryRaw`SELECT pg_try_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(t.scope.organizationId)})) AS held`;expect(row.held).toBe(true)});
+   expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1',currentStep:'submission_intent'}})).toBe(1);
+   expect(JSON.parse(init.body)).toEqual({branch:'work',message:'Reviewed single file',content:Buffer.from('Exact reviewed bytes\n').toString('base64'),sha:'a'.repeat(40)});puts++;
+   if(mode==='lost_response')throw Error('SIMULATED lost response');
+   return Response.json({content:{sha:'b'.repeat(40),html_url:'https://github.com/fixture/repository/blob/work/src/a.txt'}});
+  }));
+  expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:mode==='confirmed'?'confirmed':'unknown',attemptCount:1});expect(puts).toBe(1);expect(f.token).toHaveBeenCalledOnce();
+  await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(puts).toBe(1);
+ });
+ it('[singlefile] actual unavailable canonical identity preserves unused approval before token or slot',async()=>{
+  const t=await fixture('commit_github_file',singleFileArgs);f.githubIssuerAvailable=false;
+  await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow('governance_agent_github_issuer_unavailable');
+  expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});expect(f.token).not.toHaveBeenCalled();expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}})).toBe(0);
+ });
+
 });

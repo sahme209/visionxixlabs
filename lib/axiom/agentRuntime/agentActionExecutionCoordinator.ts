@@ -103,7 +103,7 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
   const parsed=parseRepositoryFullName(args.repositoryFullName as string)!;
   const guard=createCurrentGithubWriteGuard(request,principal,repo);
   await guard(); // Pin the current accepted connection before consuming claim.
-  const singleWrite=saved.toolName==='create_github_branch'||saved.toolName==='open_github_pull_request';
+  const singleWrite=saved.toolName==='create_github_branch'||saved.toolName==='open_github_pull_request'||saved.toolName==='commit_github_file';
   const outboundSignal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);
   const outbound=singleWrite?createAgentGithubOutboundDrain(repo as typeof repo&ReleaseOperationPlanRepo,request,scope,id,store,saved,guard.connectionBinding(),outboundSignal):undefined;
   outbound?.assertAvailable();
@@ -142,7 +142,7 @@ export function createAgentActionExecutionCoordinator(request:NextRequest,princi
    const singleAuthority={...authority,signal:outboundSignal,beforeFetch:()=>{outboundSignal.throwIfAborted();if(!outbound||typeof intentFresh!=='function')throw Error('agent_github_final_authority_unavailable');guard.assertFresh();intentFresh();dispatchPossible=true}};
    let result:{ok:boolean;data?:unknown};
    if(saved.toolName==='create_github_branch')result=await createBranch({...singleAuthority,baseBranch:args.baseBranch as string,newBranchName:args.newBranchName as string,expectedBaseSha:githubBranchReviewFromArgs(args)!.baseSha});
-   else if(saved.toolName==='commit_github_file')result=await commitFile({...authority,branch:args.branch as string,path:args.path as string,content:args.content as string,message:args.message as string,expectedSha:githubFileReviewFromArgs(args)!.baseSha});
+   else if(saved.toolName==='commit_github_file')result=await commitFile({...singleAuthority,branch:args.branch as string,path:args.path as string,content:args.content as string,message:args.message as string,expectedSha:githubFileReviewFromArgs(args)!.baseSha});
    else if(saved.toolName==='commit_github_files'){
     const review=githubFilesReviewFromArgs(args)!;
     const files=(args.files as Array<{path:string;content:string}>).map((f,i)=>({...f,expectedSha:review.files[i].baseSha}));

@@ -51,6 +51,12 @@ describe('unmounted fixed requester GitHub execution core (simulated authority/p
   expect(await create().execute('operation')).toEqual({state:'confirmed',receipt:{code:'action_completed'}});expect(writes).toBe(1);
  });
 
+ it('single-file unavailable canonical issuer rejects before consuming approval or minting',async()=>{
+  const file={...saved(),toolName:'commit_github_file',args:{repositoryFullName:'owner/repo',branch:'work',path:'app.txt',content:'new',message:'change',_review:{kind:'github_file',baseSha:'a'.repeat(40),baseContent:'old'}}};store.inspectForExecution.mockResolvedValue(file);
+  mocks.outboundAvailable.mockImplementationOnce(()=>{throw Error('canonical unavailable')});
+  await expect(create().execute('operation')).rejects.toThrow('canonical unavailable');expect(store.claim).not.toHaveBeenCalled();expect(mocks.resolve).not.toHaveBeenCalled();expect(writes).toBe(0);
+ });
+
 });
 
 it('refuses branch execution without captured trusted source before claim',async()=>{const source=saved();delete (source.args as any)._review;store.inspectForExecution.mockResolvedValue(source);await expect(create().execute('operation')).rejects.toThrow('agent_execution_review_unavailable');expect(store.claim).not.toHaveBeenCalled();expect(writes).toBe(0)});

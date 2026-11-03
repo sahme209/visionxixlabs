@@ -1,0 +1,24 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-agent-file-outbound-fd185b60
+
+ ❯ lib/connectors/github/__tests__/githubWriteClient.test.ts (62 tests | 1 failed | 61 skipped) 3ms
+     × checks the synchronous final authority before the sole Contents PUT 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/connectors/github/__tests__/githubWriteClient.test.ts > commitFile > checks the synchronous final authority before the sole Contents PUT
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ lib/connectors/github/__tests__/githubWriteClient.test.ts:75:49
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 61 skipped (62)
+   Start at  13:20:01
+   Duration  113ms (transform 38ms, setup 0ms, import 47ms, tests 3ms, environment 0ms)
+

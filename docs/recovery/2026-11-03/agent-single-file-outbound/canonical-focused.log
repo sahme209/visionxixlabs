@@ -1,0 +1,12 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-agent-file-outbound-fd185b60
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 24 skipped (25)
+   Start at  13:22:26
+   Duration  315ms (transform 172ms, setup 0ms, import 251ms, tests 10ms, environment 0ms)
+

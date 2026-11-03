@@ -346,6 +346,8 @@ export async function createBranch(input: CreateBranchInput): Promise<GithubWrit
 }
 
 export interface CommitFileInput extends GithubMutationAuthority {
+  beforeFetch?:()=>void;
+  signal?:AbortSignal;
   owner: string;
   repo: string;
   branch: string;
@@ -366,6 +368,7 @@ export async function commitFile(input: CommitFileInput): Promise<GithubWriteRes
   const existing = await gh<{ sha: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}?ref=${encodeURIComponent(input.branch)}`,
     input.installationToken,
+    {signal:input.signal},
   );
   if (input.expectedSha !== undefined) {
     if (input.expectedSha === null) {
@@ -387,7 +390,7 @@ export async function commitFile(input: CommitFileInput): Promise<GithubWriteRes
   const result = await gh<{ content: { sha: string; html_url: string } }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/contents/${encodedPath}`,
     input.installationToken,
-    { method: "PUT", beforeWrite: input.beforeWrite, body },
+    { method: "PUT", beforeWrite: input.beforeWrite, beforeFetch:input.beforeFetch, signal:input.signal, body },
   );
   if (!result.ok) return { ok: false, error: result.error };
   return { ok: true, data: { sha: result.data.content.sha, htmlUrl: result.data.content.html_url } };

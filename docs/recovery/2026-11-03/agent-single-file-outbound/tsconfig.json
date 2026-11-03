@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.next.json",
+  "include": [
+    "../../next-env.d.ts",
+    "../../lib/axiom/agentRuntime/agentActionExecutionStore.ts",
+    "../../lib/axiom/agentRuntime/agentActionExecutionCoordinator.ts",
+    "../../lib/connectors/github/githubWriteClient.ts"
+  ],
+  "exclude": [
+    "../../node_modules",
+    "../../desktop",
+    "../../**/__tests__/**"
+  ]
+}
