@@ -1,5 +1,17 @@
 # Governance Intelligence — local foundations
 
+## Current checkpoint — November 3
+
+The [full master checklist](../../../docs/product/axiom-master-action-plan.md) controls scope and acceptance. The chronology below preserves earlier milestones and can describe an older composition state; do not use an old “unmounted” note as the current source audit.
+
+- Actual executing identity is still unavailable: `packages/verified-issuer-runtime/index.cjs` returns `sealed_launch_not_implemented`. Production coverage/enrollment/activation remain unqualified and refuse. File hashes, successful compilation, simulations and a signed helper are insufficient identity.
+- Local merge/deployment/Agent/GitHub/connected-app/ticket outbound compositions exist with scope-specific receipts. The newly integrated workforce Coding PR stage/private claim/one-token/per-effect chain is verified against actual isolated PostgreSQL with simulated external authority and provider ports: [receipt](../../../docs/recovery/2026-11-03/workforce-coding-outbound-local-receipt.md). This is not positive enrolled-scope coverage.
+- One specifically approved actual package-image resource test refused seven protected effects and preserved integrity through detach: [result](../../../docs/recovery/2026-11-03/protected-resource-result/README.md). Its native attacker did not run the canonical issuer or actual compiled consumer. Both earlier failed experiments remain failures under their own contracts.
+- Trusted XPC launch-origin code/compilation/ordinary tests are now approved locally under the [reviewed contract](../../../docs/recovery/2026-11-03/xpc-controlled-origin/contract.md). Registration, actual message qualification, current liveness, fresh native-cache semantics and actual canonical/same-compiled-consumer integration remain outstanding. No background service or real identity is enabled by that design.
+- Remaining full-MVP gates include complete current-authority/admission and mutation/credential coverage, supported source freshness, fleet/legacy/provider-effect drain, genuine native enrollment/review/activation, whole-workflow qualification and separately authorized live acceptance. The numbered master plan retains all requirements; no local milestone closes these broad parents.
+
+## Historical implementation chronology
+
 This package is not an active customer enforcement feature. A new local read-only route is disabled by default and not deployed; selected merge execution paths have a trusted admission seam, while uncovered enrolled execution paths refuse. It grants no execution authority. Local design/implementation approval does not activate it.
 
 Implemented locally:
