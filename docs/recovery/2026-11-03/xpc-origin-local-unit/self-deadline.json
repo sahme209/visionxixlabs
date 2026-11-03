@@ -1,0 +1,8 @@
+{
+  "exit": 75,
+  "elapsedSeconds": 15.796,
+  "stdout": "",
+  "stderr": "",
+  "expectedExit": 75,
+  "scope": "actual owned native self-deadline primitive; no XPC/broker/profile/registration/identity"
+}

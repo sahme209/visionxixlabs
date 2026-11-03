@@ -1,0 +1,14 @@
+{
+  "reviewer": "origin_review",
+  "result": "PASS_with_explicit_component_scope",
+  "sourceReviewOnly": true,
+  "runnerSha256": "cad789c60e70f3e360b030a85c57d2f2d8dfeb0f870cedc1a9130ddc8151fce7",
+  "registrationHostSha256": "bba7d8bbbf795ac4b5a8666bf9f77fb380ff227b94146835339f03df870bdb44",
+  "preparedManifestSha256": "6d0380e929d43d564ad5008c2ebea8f383fc6ad06f18a65c91f291420ffc8a94",
+  "qualifications": [
+    "positive XPC protocol unexecuted",
+    "canonical issuer unchanged/refusing",
+    "same compiled consumer/current-liveness integration unqualified",
+    "host crash or cleanup exception may leave service and incomplete receipt; stop/no retry/exact cleanup only"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "protocolModel": {
+    "cases": 8,
+    "result": "PASS",
+    "authority": "simulated authentication/liveness inputs; actual same model used by compiled broker",
+    "red": "initial test-first compile/link failed because new protocol functions were not yet implemented; not an existing security defect reproduction"
+  },
+  "candidateCache": {
+    "cases": 2,
+    "result": "PASS",
+    "scope": "actual candidate JS source with synthetic module/cache objects; no native load"
+  },
+  "nativeNegative": {
+    "wrongArgvConstructorRefusals": 2,
+    "directCjsImportRefusals": 1,
+    "scope": "copied signed Node24 actual negative-only loads refuse before XPC"
+  },
+  "compiledAndSigned": "local ad-hoc; strict deep signature verification PASS; no keychain identity used",
+  "productionCanonical": "unchanged and unavailable",
+  "executed": {
+    "registrationHost": false,
+    "broker": false,
+    "controller": false,
+    "positiveXpcProtocol": false,
+    "profileOrImage": false,
+    "actualIssuerIdentity": false
+  },
+  "finalManifest": "6d0380e929d43d564ad5008c2ebea8f383fc6ad06f18a65c91f291420ffc8a94",
+  "independentSelfDeadline": {
+    "result": "PASS",
+    "actualOwnedNativeChild": true,
+    "exit": 75,
+    "elapsedSeconds": 15.796,
+    "xpcExecuted": false
+  },
+  "hostOrchestration": {
+    "cases": 5,
+    "result": "PASS",
+    "commands": "simulated only"
+  }
+}

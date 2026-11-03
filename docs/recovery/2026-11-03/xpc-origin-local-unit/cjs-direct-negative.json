@@ -1,0 +1,7 @@
+{
+  "root": "/private/tmp/axiom-origin-unit-prepared-1vm30dj8",
+  "exit": 1,
+  "stdout": "",
+  "stderr": "/private/tmp/axiom-origin-unit-prepared-1vm30dj8/Axiom Origin Unit.app/Contents/Resources/candidate-main.cjs:6\n  throw new Error('origin_unit_fresh_main_required');\n  ^\n\nError: origin_unit_fresh_main_required\n    at Object.<anonymous> (/private/tmp/axiom-origin-unit-prepared-1vm30dj8/Axiom Origin Unit.app/Contents/Resources/candidate-main.cjs:6:9)\n    at Module._compile (node:internal/modules/cjs/loader:1929:14)\n    at Object..js (node:internal/modules/cjs/loader:2060:10)\n    at Module.load (node:internal/modules/cjs/loader:1651:32)\n    at Module._load (node:internal/modules/cjs/loader:1443:12)\n    at wrapModuleLoad (node:internal/modules/cjs/loader:261:19)\n    at Module.require (node:internal/modules/cjs/loader:1674:12)\n    at require (node:internal/modules/helpers:157:16)\n    at [eval]:1:1\n    at runScriptInThisContext (node:internal/vm:219:10)\n\nNode.js v24.21.0\n",
+  "scope": "direct CJS import refuses before addon/XPC"
+}

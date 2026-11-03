@@ -1,0 +1,6 @@
+{
+  "exit": 0,
+  "stdout": "{\"root\": \"/private/tmp/axiom-origin-unit-prepared-ze5igxef\", \"manifestSha256\": \"6d0380e929d43d564ad5008c2ebea8f383fc6ad06f18a65c91f291420ffc8a94\", \"controllerRequirementMatchesBrokerConfig\": true}\n",
+  "stderr": "",
+  "scope": "compile/copy/ad-hoc-sign only; no broker/controller/host execution"
+}

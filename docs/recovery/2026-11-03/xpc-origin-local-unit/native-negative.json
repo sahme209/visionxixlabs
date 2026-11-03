@@ -1,0 +1,10 @@
+{
+  "root": "/private/tmp/axiom-origin-unit-prepared-1vm30dj8",
+  "argvScope": "copied fixed Node -e direct addon require twice; wrong native argv must refuse before XPC",
+  "exit": 0,
+  "stdout": "native_preIPC_refusals=2\n",
+  "stderr": "",
+  "registration": false,
+  "xpcProtocol": false,
+  "profile": false
+}

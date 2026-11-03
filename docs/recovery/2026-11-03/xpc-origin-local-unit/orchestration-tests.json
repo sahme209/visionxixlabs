@@ -1,0 +1,12 @@
+{
+  "cases": 5,
+  "result": "PASS",
+  "scope": "synthetic host command responses and owned temporary fixture only; no registration/XPC/host run",
+  "casesCovered": [
+    "success cleanup",
+    "registration refusal cleanup",
+    "probe refusal cleanup",
+    "consumed claim refuses retry",
+    "unknown cleanup refuses success"
+  ]
+}
