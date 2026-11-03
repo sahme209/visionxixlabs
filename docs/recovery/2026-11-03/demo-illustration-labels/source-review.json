@@ -1,0 +1,18 @@
+{
+  "reviewer": "root",
+  "sourceRevision": "ae5aac781904dd95cb71df583034013cc93b5bb7",
+  "result": "PASS_with_source_scope",
+  "checked": [
+    "actual component uses local state and static example payloads",
+    "figure caption distinguishes illustrative UI from product capture",
+    "example request/response labels do not imply provider execution",
+    "existing navigation/actions unchanged",
+    "all two source/test hashes match retained manifest"
+  ],
+  "limits": [
+    "two rendered tests stub unrelated visual/navigation/link components",
+    "no current browser/full-site/accessibility acceptance",
+    "scoped types intentionally cancelled not passed",
+    "broader static safety-invariant copy remains unqualified"
+  ]
+}
