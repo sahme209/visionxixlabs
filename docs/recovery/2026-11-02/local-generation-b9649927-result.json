@@ -1,0 +1,50 @@
+{
+  "activationQualification": "unavailable",
+  "archiveFormatStarted": true,
+  "buildStarted": false,
+  "descendantQuiescence": "unavailable",
+  "emittedFormatStarted": true,
+  "engineCommitAuthenticity": "unavailable",
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false,
+  "exit": 0,
+  "format": "axiom.local-generation-result/1",
+  "generatedOutputsVerified": true,
+  "generationCompatibilityVerified": false,
+  "generationStarted": true,
+  "outputs": {
+    "default.js": {
+      "sha256": "61419abcd0ff0f9127dd52fee7bd236d49917050317e1cc87067c1f18f86e412",
+      "size": 36
+    },
+    "index.d.ts": {
+      "sha256": "d2ee37b388336cbe86229a4c2c3cb7304ac6ac26b8d70678b19daf8b7a17fe1d",
+      "size": 10482589
+    },
+    "index.js": {
+      "sha256": "269c80b65d529908bc3088f37dcb8397c983f7b37ec1dad1009d088b927cf1db",
+      "size": 969458
+    },
+    "libquery_engine-darwin-arm64.dylib.node": {
+      "sha256": "e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d",
+      "size": 17251592
+    },
+    "schema.prisma": {
+      "sha256": "811b29137db279b05feaccc908cdfeb1b0c7124c6deeebafe4581cfcfcf0ae4b",
+      "size": 192256
+    }
+  },
+  "processBounds": "original_process_group_only",
+  "runtimeClosure": "unavailable",
+  "runtimeQualification": "unavailable",
+  "schemaComparison": {
+    "canonicalArchiveSha256": "811b29137db279b05feaccc908cdfeb1b0c7124c6deeebafe4581cfcfcf0ae4b",
+    "canonicalGeneratedSha256": "811b29137db279b05feaccc908cdfeb1b0c7124c6deeebafe4581cfcfcf0ae4b",
+    "kind": "canonical_formatted_scratch_bytes",
+    "rawArchiveSha256": "4e35ea3c8645656dbdae19c1ee6427bf526d9b82527de6ef046048dcdb6e617a",
+    "rawGeneratedSha256": "811b29137db279b05feaccc908cdfeb1b0c7124c6deeebafe4581cfcfcf0ae4b",
+    "semanticAttestation": "unavailable"
+  },
+  "status": "generated_outputs_observed_unqualified",
+  "upstreamAuthenticity": "unavailable"
+}

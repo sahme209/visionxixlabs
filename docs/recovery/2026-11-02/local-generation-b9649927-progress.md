@@ -1,0 +1,11 @@
+# Actual isolated Prisma generation: output observation
+
+November 3, 2026. Exact source `b964992777d8c3c8601b7e151889e42ee2790d06`; owned stage `/private/tmp/axiom-isolated-b9649927-a6uzltb3/stage`. Fresh cache-only dependency installation completed with networking and lifecycle execution denied. Four lock-optional cache misses remain absent and unqualified.
+
+The reviewed actual runner executed the fixed pinned Prisma CLI to format an exclusive archived-schema scratch copy, generate from the unchanged archived schema, and format a separate emitted-schema scratch copy. The real generator exited0. Required generated outputs were observed and hashed. The platform-named query library matches the exact bound local input; the two canonical formatted schemas match. Original source and emitted files remain unchanged by formatting. Exact receipts accompany this document.
+
+The raw archived schema SHA256 is `4e35ea3c8645656dbdae19c1ee6427bf526d9b82527de6ef046048dcdb6e617a`; raw emitted and both canonical schemas hash to `811b29137db279b05feaccc908cdfeb1b0c7124c6deeebafe4581cfcfcf0ae4b`. Query-library SHA256 is `e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d`.
+
+Result: `generated_outputs_observed_unqualified`, `generatedOutputsVerified:true`. This describes required bytes at observation time only. `generationCompatibilityVerified:false`; semantic attestation, complete descendant quiescence, runtime closure/qualification, executing issuer identity and activation remain unavailable. Source bytes are trusted local inputs, not vendor- or engine-commit-authenticated. Original-process-group bounds do not prove all detached descendants stopped. Later packaging must freshly verify and seal; these receipts grant no authority.
+
+The earlier dd539137 output-check failure and generic-named library remain intact in their original owned stage and durable receipts. No failed result was rewritten into success. No migration, introspection, customer database/provider action, production setting, deployment, paid CI, installer publication or native-bootstrap experiment occurred. The next step is one reviewed isolated Next compile from this same stage without repeating Prisma generation.
