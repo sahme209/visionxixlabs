@@ -1,4 +1,6 @@
 import 'server-only';
+import {createAgentEcsOutboundDrain} from '@/lib/governance/intelligence/agentEcsOutboundDrain';
+import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {z} from 'zod';
 import {ALL_ENVIRONMENT_TIERS} from '@/lib/releaseops/environmentCreateResponder';
 import type {NextRequest} from 'next/server';
@@ -26,6 +28,7 @@ export const agentDeploymentArgsSchema=z.object({repositoryFullName:z.string().m
  * an explicitly reviewed immutable tag is required. Full baseline admission and
  * public execution qualification remain separate prerequisites. */
 export async function executeStoredAgentDeployment(request:NextRequest,principal:DesktopRequestPrincipal,repo:AgentDeploymentExecutionRepo,store:Store,scope:AgentExecutionScope,id:string,saved:Awaited<ReturnType<Store['inspectForExecution']>>){
+ const executionSignal=AbortSignal.any([request.signal,AbortSignal.timeout(25000)]);executionSignal.throwIfAborted();
  if(principal.credentialKind!=='desktop_session'||principal.id!==scope.sessionId||principal.userId!==scope.actorUserId||principal.organizationId!==scope.organizationId)throw Error('agent_execution_scope_unavailable');
  const args=agentDeploymentArgsSchema.parse(saved.args),parsed=parseRepositoryFullName(args.repositoryFullName);
  const reviewedSource=restartWorkflowSourceFromArgs(args);
@@ -34,17 +37,19 @@ export async function executeStoredAgentDeployment(request:NextRequest,principal
  if(!target||!z.enum(ALL_ENVIRONMENT_TIERS).safeParse(target.environmentTier).success||!matchesRestartTarget(args._review,target))throw Error('agent_execution_target_unavailable');
  const guard=createCurrentGithubWriteGuard(request,principal,repo,'deployment_dispatch');
  await guard();
+ const outbound=createAgentEcsOutboundDrain(repo as AgentDeploymentExecutionRepo&ReleaseOperationPlanRepo,request,scope,id,store,saved,guard.connectionBinding(),target,executionSignal);outbound.assertAvailable();
  const claimed=await store.claim(scope,id);if(!claimed.claimed)return claimed.operation;
  let outcome:'confirmed'|'refused'|'unknown'='refused',reservationId:string|undefined,dispatchPossible=false;
  try{
+  await outbound.beforeCredential(claimed.claim);
   const token=await guard.resolveToken(parsed);if(!token.ok)throw Error('agent_execution_credentials_unavailable');
   const observeSource=async()=>{
-   const observed=await observeAgentRestartWorkflowSource({repositoryFullName:args.repositoryFullName,sourceKind:'tag',sourceRef:reviewedSource.tagName,installationToken:token.token,signal:request.signal});
+   const observed=await observeAgentRestartWorkflowSource({repositoryFullName:args.repositoryFullName,sourceKind:'tag',sourceRef:reviewedSource.tagName,installationToken:token.token,signal:executionSignal});
    if(!observed||observed.expiresAt<=Date.now()||sha256ContentHash(observed.source)!==sha256ContentHash(reviewedSource))throw Error('agent_execution_workflow_source_changed');
    return observed;
   };
   await observeSource();
-  const exact=async()=>{const current=await store.beforeDispatch(scope,claimed.claim);if(sha256ContentHash(current)!==sha256ContentHash(saved))throw Error('agent_execution_source_changed');request.signal.throwIfAborted()};
+  const exact=async()=>{const current=await store.beforeDispatch(scope,claimed.claim);if(sha256ContentHash(current)!==sha256ContentHash(saved))throw Error('agent_execution_source_changed');executionSignal.throwIfAborted()};
   const policyInput={requestedCapability:'legacy_ecs_restart' as const,organizationId:scope.organizationId,environmentId:args.environmentId,...parsed,sourceRef:args.sourceRef,sourceKind:args.sourceKind,...(args.pullRequestNumber?{pullRequestNumber:args.pullRequestNumber}:{}),...(target.environmentTier==='prod'?{requiredControlSet:'production' as const}:{}),installationToken:token.token};
   const policyRepo:DeploymentPolicyRepo={repository:{async findMany(input){return(await repo.repository.findMany(input)).sort((a,b)=>a.id.localeCompare(b.id))}},branchEnvironmentPolicy:{async findMany(input){return(await repo.branchEnvironmentPolicy.findMany(input)).sort((a,b)=>a.priority-b.priority||a.id.localeCompare(b.id))}},deploymentExecution:repo.deploymentExecution};
   const policy=async()=>{
@@ -60,6 +65,7 @@ export async function executeStoredAgentDeployment(request:NextRequest,principal
   else if(reservation.reused){outcome='unknown'}
   else{
    reservationId=reservation.reservation.id;
+   let finalFresh:(()=>void)|undefined,sourceExpiresAt:number|undefined;
    const beforeWrite=async()=>{
     const currentTarget=await captureRestartTarget(repo,scope.organizationId,args.environmentId);
     if(!currentTarget||!matchesRestartTarget(args._review,currentTarget))throw Error('agent_execution_target_unavailable');
@@ -69,11 +75,12 @@ export async function executeStoredAgentDeployment(request:NextRequest,principal
     const sourceReceipt=await observeSource();
     const final=await store.beforeDeploymentDispatch(scope,claimed.claim,guard.connectionBinding(),{target,policySnapshotDigest:admitted.digest,sourceCommitSha:admitted.decision.sourceCommitSha});
     if(sha256ContentHash(final)!==sha256ContentHash(saved))throw Error('agent_execution_source_changed');
-    request.signal.throwIfAborted();
+    executionSignal.throwIfAborted();
     if(sourceReceipt.expiresAt<=Date.now())throw Error('agent_execution_workflow_source_expired');
-    dispatchPossible=true;
+    sourceExpiresAt=sourceReceipt.expiresAt;
+    finalFresh=await outbound.beforeSubmission({policySnapshotDigest:admitted.digest,sourceCommitSha:admitted.decision.sourceCommitSha});
    };
-   const result=await dispatchWorkflow({...parsed,workflowFile:AWS_ECS_DEPLOY_WORKFLOW_FILENAME,ref:reviewedSource.ref,inputs:{role_arn:target.roleArn,region:target.region,cluster:target.ecsCluster,service:target.ecsService},installationToken:token.token,beforeWrite});
+   const result=await dispatchWorkflow({...parsed,workflowFile:AWS_ECS_DEPLOY_WORKFLOW_FILENAME,ref:reviewedSource.ref,inputs:{role_arn:target.roleArn,region:target.region,cluster:target.ecsCluster,service:target.ecsService},installationToken:token.token,beforeWrite,signal:executionSignal,beforeFetch:()=>{executionSignal.throwIfAborted();if(typeof finalFresh!=='function'||sourceExpiresAt===undefined||sourceExpiresAt<=Date.now())throw Error('agent_execution_final_authority_unavailable');guard.assertFresh();finalFresh();dispatchPossible=true}});
    if(result.ok){
     outcome='confirmed';
     // Provider acceptance is already confirmed. Failed tracking persistence may

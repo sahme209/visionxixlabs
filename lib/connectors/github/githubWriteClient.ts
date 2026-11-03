@@ -80,7 +80,7 @@ export function isSafeRepositoryPath(path: string): boolean {
 async function gh<T>(
   path: string,
   token: string,
-  init: { beforeWrite?: () => Promise<void>; method?: string; body?: unknown; apiVersion?: string; bounded?: { signal: AbortSignal; maxBytes: number; budget?: GithubReadBudget } } = {},
+  init: { beforeWrite?: () => Promise<void>; beforeFetch?:()=>void; signal?:AbortSignal; method?: string; body?: unknown; apiVersion?: string; bounded?: { signal: AbortSignal; maxBytes: number; budget?: GithubReadBudget } } = {},
 ): Promise<GithubWriteResult<T>> {
   // A lost write response cannot establish whether GitHub applied the change.
   // Keep the one-shot action consumed; callers must reconcile before a new proposal.
@@ -98,8 +98,8 @@ async function gh<T>(
       if (typeof init.beforeWrite !== "function") throw Error("invalid_write_authority");
       await init.beforeWrite();
     }
-    writeDispatched = isWrite;
-    const response = await fetch(`${GITHUB_API}${path}`, {
+    const requestInit = {
+      ...(init.signal?{signal:init.signal}:{}),
       method: init.method ?? "GET",
       headers: {
         Accept: "application/vnd.github+json",
@@ -108,13 +108,26 @@ async function gh<T>(
         ...(init.body ? { "Content-Type": "application/json" } : {}),
       },
       body: init.body ? JSON.stringify(init.body) : undefined,
-    });
+    };
+    if(isWrite&&init.signal)init.signal.throwIfAborted();
+    if(isWrite&&init.beforeFetch!==undefined){if(typeof init.beforeFetch!=='function'||init.beforeFetch()!==undefined)throw Error('invalid_write_freshness')}
+    writeDispatched=isWrite;
+    const pending=fetch(`${GITHUB_API}${path}`,requestInit);
+    void pending.catch(()=>{});
+    const response=init.signal?await withGithubAbort(pending,init.signal):await pending;
+    init.signal?.throwIfAborted();
     if (!response.ok) {
       if (isWrite && (response.status === 408 || response.status >= 500)) return { ok: false, error: "action_outcome_unknown" };
-      const text = await response.text().catch(() => "");
+      const pendingText=response.text();
+      void pendingText.catch(()=>{});
+      const text = await (init.signal?withGithubAbort(pendingText,init.signal):pendingText).catch(() => "");
+      init.signal?.throwIfAborted();
       return { ok: false, error: `github_${response.status}: ${text.slice(0, 300)}` };
     }
-    const data = (await response.json().catch(() => ({}))) as T;
+    const pendingBody=response.json();
+    void pendingBody.catch(()=>{});
+    const data = (await (init.signal?withGithubAbort(pendingBody,init.signal):pendingBody).catch(() => ({}))) as T;
+    init.signal?.throwIfAborted();
     return { ok: true, data };
   } catch (error) {
     if (init.bounded) return { ok: false, error: "github_provenance_read_unavailable" };
@@ -623,6 +636,10 @@ export async function getPullRequestGovernanceEvidence(input: {
 }
 
 export interface DispatchWorkflowInput extends GithubMutationAuthority {
+  /** Trusted synchronous postcommit freshness; never serialized request authority. */
+  beforeFetch?:()=>void;
+  /** Optional trusted caller deadline; cancellation never permits a retry. */
+  signal?:AbortSignal;
   owner: string;
   repo: string;
   /** Workflow filename, e.g. "axiom-deploy-aws-ecs.yml" — not a numeric ID. */
@@ -652,7 +669,7 @@ export async function dispatchWorkflow(input: DispatchWorkflowInput): Promise<Gi
   const result = await gh<{ workflow_run_id?: number | string; run_url?: string; html_url?: string }>(
     `/repos/${encodeURIComponent(input.owner)}/${encodeURIComponent(input.repo)}/actions/workflows/${encodeURIComponent(input.workflowFile)}/dispatches`,
     input.installationToken,
-    { method: "POST", beforeWrite: input.beforeWrite, body: { ref: input.ref, inputs: input.inputs }, apiVersion: "2026-03-10" },
+    { method: "POST", beforeWrite: input.beforeWrite, beforeFetch:input.beforeFetch, signal:input.signal, body: { ref: input.ref, inputs: input.inputs }, apiVersion: "2026-03-10" },
   );
   if (!result.ok) return { ok: false, error: `workflow_dispatch_failed: ${result.error}` };
   return {

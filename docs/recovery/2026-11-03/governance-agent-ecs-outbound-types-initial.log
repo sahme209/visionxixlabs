@@ -1,0 +1,11 @@
+lib/axiom/agentRuntime/agentActionExecutionStore.ts(224,285): error TS18047: 'reviewed' is possibly 'null'.
+lib/axiom/agentRuntime/agentActionExecutionStore.ts(224,326): error TS18047: 'reviewed' is possibly 'null'.
+lib/axiom/agentRuntime/agentActionExecutionStore.ts(224,352): error TS18047: 'reviewed' is possibly 'null'.
+lib/governance/intelligence/agentEcsOutboundDrain.ts(27,108): error TS2345: Argument of type 'AgentExecutionClaim | undefined' is not assignable to parameter of type 'AgentExecutionClaim'.
+  Type 'undefined' is not assignable to type 'AgentExecutionClaim'.
+lib/governance/intelligence/agentEcsOutboundDrain.ts(28,259): error TS2322: Type 'string | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+lib/governance/intelligence/agentEcsOutboundDrain.ts(37,171): error TS2345: Argument of type '{ operationId: string; attemptId: string; profile: string; targetDigest: string; sourceDigest: string; connectionId: string; issuerArtifactDigest: string | undefined; }' is not assignable to parameter of type 'Omit<{ serverNonce: string; operationId: string; attemptId: string; profile: string; targetDigest: string; connectionId: string; sourceDigest: string; issuerArtifactDigest: string; }, "serverNonce">'.
+  Types of property 'issuerArtifactDigest' are incompatible.
+    Type 'string | undefined' is not assignable to type 'string'.
+      Type 'undefined' is not assignable to type 'string'.

@@ -1,5 +1,7 @@
 import 'server-only';
 import {randomUUID} from 'node:crypto';
+import {restartWorkflowSourceFromArgs} from '@/lib/tauri/agentRestartWorkflowSource';
+import {AWS_ECS_DEPLOY_WORKFLOW_FILENAME} from '@/lib/releaseops/awsEcsDeployWorkflowTemplate';
 import {ALL_ENVIRONMENT_TIERS} from '@/lib/releaseops/environmentCreateResponder';
 import {matchesRestartTarget,type RestartTargetReview} from './restartTargetReview';
 import {readAgentDeploymentAuthoritySnapshot,agentDeploymentAuthoritySnapshotDigest} from './agentDeploymentAuthoritySnapshot';
@@ -58,7 +60,7 @@ export function createAgentActionExecutionStore(repo:ReleaseOperationPlanRepo,po
   // or default numeric limit can make an enrolled or unknown scope executable.
   if(enrollment.length!==1||enrollment[0].enrolled!==false)deny();
   await request(tx,s,'executor',p.toolName);const now=await time(tx);if(current.expiresAt<=now)deny();
-  const review=readApprovedAgentReview(p,audits[0],now);return{review,args:structuredClone(p.argsJson),now};
+  const review=readApprovedAgentReview(p,audits[0],now);return{review,args:structuredClone(p.argsJson),now,sessionExpiresAt:current.expiresAt};
  }
  function unpack(row:Row){
   const binding=agentExecutionBindingSchema.parse(row.inputJson),state=agentExecutionStateSchema.parse(row.stateJson);
@@ -93,6 +95,38 @@ export function createAgentActionExecutionStore(repo:ReleaseOperationPlanRepo,po
   const next={...v.row,...data,version:v.row.version+1};await event(tx,next,sha256ContentHash(v.row.stateJson));return unpack(next);
  }
  function privateClaim(proof:AgentExecutionClaim){const c=claims.get(proof);if(!c||proof.operationId!==c.id)return deny();return c}
+ async function claimedDeploymentAuthorityLocked(tx:Tx,s:AgentExecutionScope,proof:AgentExecutionClaim,connection:{id:string;githubInstallationId:string;updatedAt:Date},input:{target:RestartTargetReview;policySnapshotDigest?:string;sourceCommitSha?:string}){
+  const observedWall=Date.now();if(!Number.isFinite(observedWall))deny();
+  const c=privateClaim(proof);if(sha256ContentHash(s)!==sha256ContentHash(c.scope))deny();
+  await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
+    const v=await load(tx,s,c.id);if(v.state.state!=='dispatching'||v.row.leaseOwner!==c.lease||v.binding.review.toolName!=='trigger_aws_deploy')deny();
+    const current=await readAuthority(tx,s,v.binding.review.proposalId);
+    if(sha256ContentHash(current.review)!==sha256ContentHash(v.binding.review))deny();
+    const args=z.record(z.string(),z.unknown()).parse(current.args),environmentId=z.string().min(1).max(240).parse(args.environmentId);
+    const targets=await tx.$queryRaw<Array<{environmentId:string;environmentOrganizationId:string;environmentTier:string;id:string;organizationId:string;provider:string;updatedAt:Date;roleArn:string;region:string;ecsCluster:string;ecsService:string}>>`SELECT e."id" AS "environmentId",e."organizationId" AS "environmentOrganizationId",e."tier" AS "environmentTier",t."id",t."organizationId",t."provider",t."updatedAt",t."roleArn",t."region",t."ecsCluster",t."ecsService" FROM "Environment" e JOIN "DeploymentTarget" t ON t."environmentId"=e."id" WHERE e."id"=${environmentId} AND e."organizationId"=${s.organizationId} FOR SHARE OF e,t`;
+    const targetRow=targets[0];
+    if(targets.length!==1||targetRow.environmentId!==environmentId||targetRow.environmentOrganizationId!==s.organizationId||targetRow.organizationId!==s.organizationId||targetRow.provider!=='aws'||!z.enum(ALL_ENVIRONMENT_TIERS).safeParse(targetRow.environmentTier).success||!(targetRow.updatedAt instanceof Date)||!Number.isFinite(targetRow.updatedAt.getTime()))deny();
+    const target:RestartTargetReview={kind:'ecs_restart_target',organizationId:s.organizationId,environmentId,environmentTier:targetRow.environmentTier,targetId:targetRow.id,provider:'aws',targetUpdatedAt:targetRow.updatedAt.toISOString(),roleArn:targetRow.roleArn,region:targetRow.region,ecsCluster:targetRow.ecsCluster,ecsService:targetRow.ecsService};
+    if(!matchesRestartTarget(args._review,target)||!matchesRestartTarget(input.target,target))deny();
+    if(input.policySnapshotDigest!==undefined&&await readAgentDeploymentAuthoritySnapshot(tx,s.organizationId,environmentId)!==input.policySnapshotDigest)deny();
+    if(input.policySnapshotDigest!==undefined){
+    const reservations=await tx.$queryRaw<Array<{environmentId:string;repositoryFullName:string;sourceRef:string|null;sourceKind:string|null;sourceCommitSha:string|null;source:string;triggeredByUserId:string;status:string}>>`SELECT "environmentId","repositoryFullName","sourceRef","sourceKind","sourceCommitSha","source","triggeredByUserId","status" FROM "DeploymentExecution" WHERE "organizationId"=${s.organizationId} AND "idempotencyKey"=${c.id} FOR SHARE`;
+    const reservation=reservations[0],sourceRef=typeof args.sourceRef==='string'?args.sourceRef.trim():'main',sourceKind=args.sourceKind===undefined?'branch':args.sourceKind;
+    if(reservations.length!==1||reservation.environmentId!==environmentId||reservation.repositoryFullName!==args.repositoryFullName||reservation.sourceRef!==sourceRef||reservation.sourceKind!==sourceKind||reservation.sourceCommitSha!==input.sourceCommitSha||reservation.source!=='agent'||reservation.triggeredByUserId!==s.actorUserId||reservation.status!=='reserved')deny();
+    }
+    const rows=await tx.$queryRaw<Array<{id:string;githubInstallationId:string;updatedAt:Date;revokedAt:Date|null;suspendedAt:Date|null;status:string;now:Date;sessionLive:boolean;policySnapshot:unknown}>>`SELECT i."id",i."githubInstallationId",i."updatedAt",i."revokedAt",i."suspendedAt",i."status",jsonb_build_object('repositories',(SELECT COALESCE(jsonb_agg(to_jsonb(sr)),'[]'::jsonb) FROM (SELECT "id","organizationId","provider","remoteOwner","remoteName" FROM "Repository" WHERE "organizationId"=${s.organizationId} AND "provider"='github' ORDER BY "id" LIMIT 2001) sr),'policies',(SELECT COALESCE(jsonb_agg(to_jsonb(sp)),'[]'::jsonb) FROM (SELECT p."id",p."organizationId",p."repositoryId",p."environmentId",p."enabled",p."branchPattern",p."requireReleaseTag",p."requireCodeowners",p."requirePrLink",p."requireChangeTicket",p."requirePromotionFromEnvironmentId",p."requireTestsPassing",p."priority" FROM "BranchEnvironmentPolicy" p JOIN "Repository" r ON r."id"=p."repositoryId" AND r."organizationId"=p."organizationId" WHERE p."organizationId"=${s.organizationId} AND p."environmentId"=${environmentId} AND p."enabled"=true AND r."provider"='github' ORDER BY p."id" LIMIT 2001) sp)) AS "policySnapshot",clock_timestamp() AS "now",(s."revokedAt" IS NULL AND s."expiresAt">clock_timestamp()) AS "sessionLive"
+     FROM "GitHubInstallation" i JOIN "DesktopSessionRecord" s ON s."organizationId"=i."organizationId"
+     WHERE i."organizationId"=${s.organizationId} AND i."id"=${connection.id} AND s."id"=${s.sessionId} AND s."userId"=${s.actorUserId}
+     AND i."id"=(SELECT latest."id" FROM "GitHubInstallation" latest WHERE latest."organizationId"=${s.organizationId} AND latest."status"='active' ORDER BY latest."installedAt" DESC LIMIT 1) FOR SHARE OF i,s`;
+    const row=rows[0];
+    if(rows.length!==1||row.id!==connection.id||row.githubInstallationId!==connection.githubInstallationId||!(row.updatedAt instanceof Date)||row.updatedAt.getTime()!==connection.updatedAt.getTime()||row.status!=='active'||row.revokedAt!==null||row.suspendedAt!==null||row.sessionLive!==true||!(row.now instanceof Date)||!Number.isFinite(row.now.getTime())||!v.row.leaseExpiresAt||v.row.leaseExpiresAt<=row.now||Date.parse(current.review.expiresAt)<=row.now.getTime())deny();
+    if(input.policySnapshotDigest!==undefined&&agentDeploymentAuthoritySnapshotDigest(s.organizationId,environmentId,row.policySnapshot)!==input.policySnapshotDigest)deny();
+    const source={toolName:current.review.toolName,args:current.args,proposalDigest:current.review.proposalDigest,reviewId:current.review.reviewId};
+    const remaining=Math.min(v.row.leaseExpiresAt!.getTime(),Date.parse(current.review.expiresAt),current.sessionExpiresAt.getTime())-row.now.getTime();
+    const fresh=()=>{const elapsed=Date.now()-observedWall;if(claims.get(proof)!==c||!Number.isFinite(elapsed)||!Number.isFinite(remaining)||elapsed<0||elapsed>=remaining)deny()};fresh();
+    return{source,fresh,review:current.review,lease:c.lease,attemptCount:v.row.attemptCount,target};
+ }
+
  return{
   async conversationHistory(raw:AgentExecutionScope,conversationId:string){
    const s=agentExecutionScopeSchema.parse(raw),conversation=z.string().min(1).max(240).parse(conversationId);
@@ -174,33 +208,21 @@ export function createAgentActionExecutionStore(repo:ReleaseOperationPlanRepo,po
   /** Final ECS authority: no provider reads in this transaction. The provider
    * reference is still symbolic; this is not immutable release admission. */
   async beforeDeploymentDispatch(raw:AgentExecutionScope,proof:AgentExecutionClaim,rawConnection:{id:string;githubInstallationId:string;updatedAt:Date},input:{target:RestartTargetReview;policySnapshotDigest:string;sourceCommitSha:string}){
-   const s=agentExecutionScopeSchema.parse(raw),c=privateClaim(proof);
-   const connection=z.object({id:z.string().min(1).max(240),githubInstallationId:z.string().regex(/^[1-9][0-9]*$/),updatedAt:z.date()}).strict().parse(rawConnection);
+   const s=agentExecutionScopeSchema.parse(raw),connection=z.object({id:z.string().min(1).max(240),githubInstallationId:z.string().regex(/^[1-9][0-9]*$/),updatedAt:z.date()}).strict().parse(rawConnection);
    z.string().regex(/^[a-f0-9]{64}$/).parse(input.policySnapshotDigest);z.string().regex(/^[a-f0-9]{40}$/).parse(input.sourceCommitSha);
-   if(sha256ContentHash(s)!==sha256ContentHash(c.scope))deny();
-   return transaction(s,async tx=>{
-    const v=await load(tx,s,c.id);if(v.state.state!=='dispatching'||v.row.leaseOwner!==c.lease||v.binding.review.toolName!=='trigger_aws_deploy')deny();
-    const current=await readAuthority(tx,s,v.binding.review.proposalId);
-    if(sha256ContentHash(current.review)!==sha256ContentHash(v.binding.review))deny();
-    const args=z.record(z.string(),z.unknown()).parse(current.args),environmentId=z.string().min(1).max(240).parse(args.environmentId);
-    const targets=await tx.$queryRaw<Array<{environmentId:string;environmentOrganizationId:string;environmentTier:string;id:string;organizationId:string;provider:string;updatedAt:Date;roleArn:string;region:string;ecsCluster:string;ecsService:string}>>`SELECT e."id" AS "environmentId",e."organizationId" AS "environmentOrganizationId",e."tier" AS "environmentTier",t."id",t."organizationId",t."provider",t."updatedAt",t."roleArn",t."region",t."ecsCluster",t."ecsService" FROM "Environment" e JOIN "DeploymentTarget" t ON t."environmentId"=e."id" WHERE e."id"=${environmentId} AND e."organizationId"=${s.organizationId} FOR SHARE OF e,t`;
-    const targetRow=targets[0];
-    if(targets.length!==1||targetRow.environmentId!==environmentId||targetRow.environmentOrganizationId!==s.organizationId||targetRow.organizationId!==s.organizationId||targetRow.provider!=='aws'||!z.enum(ALL_ENVIRONMENT_TIERS).safeParse(targetRow.environmentTier).success||!(targetRow.updatedAt instanceof Date)||!Number.isFinite(targetRow.updatedAt.getTime()))deny();
-    const target:RestartTargetReview={kind:'ecs_restart_target',organizationId:s.organizationId,environmentId,environmentTier:targetRow.environmentTier,targetId:targetRow.id,provider:'aws',targetUpdatedAt:targetRow.updatedAt.toISOString(),roleArn:targetRow.roleArn,region:targetRow.region,ecsCluster:targetRow.ecsCluster,ecsService:targetRow.ecsService};
-    if(!matchesRestartTarget(args._review,target)||!matchesRestartTarget(input.target,target))deny();
-    if(await readAgentDeploymentAuthoritySnapshot(tx,s.organizationId,environmentId)!==input.policySnapshotDigest)deny();
-    const reservations=await tx.$queryRaw<Array<{environmentId:string;repositoryFullName:string;sourceRef:string|null;sourceKind:string|null;sourceCommitSha:string|null;source:string;triggeredByUserId:string;status:string}>>`SELECT "environmentId","repositoryFullName","sourceRef","sourceKind","sourceCommitSha","source","triggeredByUserId","status" FROM "DeploymentExecution" WHERE "organizationId"=${s.organizationId} AND "idempotencyKey"=${c.id} FOR SHARE`;
-    const reservation=reservations[0],sourceRef=typeof args.sourceRef==='string'?args.sourceRef.trim():'main',sourceKind=args.sourceKind===undefined?'branch':args.sourceKind;
-    if(reservations.length!==1||reservation.environmentId!==environmentId||reservation.repositoryFullName!==args.repositoryFullName||reservation.sourceRef!==sourceRef||reservation.sourceKind!==sourceKind||reservation.sourceCommitSha!==input.sourceCommitSha||reservation.source!=='agent'||reservation.triggeredByUserId!==s.actorUserId||reservation.status!=='reserved')deny();
-    const rows=await tx.$queryRaw<Array<{id:string;githubInstallationId:string;updatedAt:Date;revokedAt:Date|null;suspendedAt:Date|null;status:string;now:Date;sessionLive:boolean;policySnapshot:unknown}>>`SELECT i."id",i."githubInstallationId",i."updatedAt",i."revokedAt",i."suspendedAt",i."status",jsonb_build_object('repositories',(SELECT COALESCE(jsonb_agg(to_jsonb(sr)),'[]'::jsonb) FROM (SELECT "id","organizationId","provider","remoteOwner","remoteName" FROM "Repository" WHERE "organizationId"=${s.organizationId} AND "provider"='github' ORDER BY "id" LIMIT 2001) sr),'policies',(SELECT COALESCE(jsonb_agg(to_jsonb(sp)),'[]'::jsonb) FROM (SELECT p."id",p."organizationId",p."repositoryId",p."environmentId",p."enabled",p."branchPattern",p."requireReleaseTag",p."requireCodeowners",p."requirePrLink",p."requireChangeTicket",p."requirePromotionFromEnvironmentId",p."requireTestsPassing",p."priority" FROM "BranchEnvironmentPolicy" p JOIN "Repository" r ON r."id"=p."repositoryId" AND r."organizationId"=p."organizationId" WHERE p."organizationId"=${s.organizationId} AND p."environmentId"=${environmentId} AND p."enabled"=true AND r."provider"='github' ORDER BY p."id" LIMIT 2001) sp)) AS "policySnapshot",clock_timestamp() AS "now",(s."revokedAt" IS NULL AND s."expiresAt">clock_timestamp()) AS "sessionLive"
-     FROM "GitHubInstallation" i JOIN "DesktopSessionRecord" s ON s."organizationId"=i."organizationId"
-     WHERE i."organizationId"=${s.organizationId} AND i."id"=${connection.id} AND s."id"=${s.sessionId} AND s."userId"=${s.actorUserId}
-     AND i."id"=(SELECT latest."id" FROM "GitHubInstallation" latest WHERE latest."organizationId"=${s.organizationId} AND latest."status"='active' ORDER BY latest."installedAt" DESC LIMIT 1) FOR SHARE OF i,s`;
-    const row=rows[0];
-    if(rows.length!==1||row.id!==connection.id||row.githubInstallationId!==connection.githubInstallationId||!(row.updatedAt instanceof Date)||row.updatedAt.getTime()!==connection.updatedAt.getTime()||row.status!=='active'||row.revokedAt!==null||row.suspendedAt!==null||row.sessionLive!==true||!(row.now instanceof Date)||!Number.isFinite(row.now.getTime())||!v.row.leaseExpiresAt||v.row.leaseExpiresAt<=row.now||Date.parse(current.review.expiresAt)<=row.now.getTime())deny();
-    if(agentDeploymentAuthoritySnapshotDigest(s.organizationId,environmentId,row.policySnapshot)!==input.policySnapshotDigest)deny();
-    return{toolName:current.review.toolName,args:current.args,proposalDigest:current.review.proposalDigest,reviewId:current.review.reviewId};
-   });
+   return transaction(s,async tx=>(await claimedDeploymentAuthorityLocked(tx,s,proof,connection,input)).source);
+  },
+  /** Caller already owns the org-first transaction. No nested transaction or
+   * provider read; the private claim and original review remain mandatory. */
+  async readClaimedDeploymentOutboundLocked(tx:Tx,raw:AgentExecutionScope,proof:AgentExecutionClaim,input:{source:{toolName:string;args:unknown;proposalDigest:string;reviewId:string};connection:{id:string;githubInstallationId:string;updatedAt:Date};target:RestartTargetReview;policySnapshotDigest?:string;sourceCommitSha?:string}){
+   const s=agentExecutionScopeSchema.parse(raw),connection=z.object({id:z.string().min(1).max(240),githubInstallationId:z.string().regex(/^[1-9][0-9]*$/),updatedAt:z.date()}).strict().parse(input.connection);
+   if(input.policySnapshotDigest!==undefined){z.string().regex(/^[a-f0-9]{64}$/).parse(input.policySnapshotDigest);z.string().regex(/^[a-f0-9]{40}$/).parse(input.sourceCommitSha)}
+   const checked=await claimedDeploymentAuthorityLocked(tx,s,proof,connection,input);
+   if(sha256ContentHash(checked.source)!==sha256ContentHash(input.source))deny();
+   const args=z.record(z.string(),z.unknown()).parse(checked.source.args),reviewed=restartWorkflowSourceFromArgs(args);
+   if(!reviewed)return deny();
+   if(reviewed.repositoryFullName!==args.repositoryFullName||reviewed.workflowFile!==AWS_ECS_DEPLOY_WORKFLOW_FILENAME||input.sourceCommitSha!==undefined&&input.sourceCommitSha!==reviewed.sourceCommitSha)deny();
+   return{fresh:checked.fresh,attemptId:'agent_execution_attempt_'+sha256ContentHash({operationId:proof.operationId,attemptCount:checked.attemptCount,lease:checked.lease}),sourceDigest:sha256ContentHash({review:checked.review,args}),targetDigest:sha256ContentHash({repositoryFullName:reviewed.repositoryFullName,workflowFile:reviewed.workflowFile,ref:reviewed.ref,inputs:{role_arn:checked.target.roleArn,region:checked.target.region,cluster:checked.target.ecsCluster,service:checked.target.ecsService},target:checked.target}),connectionId:connection.id};
   },
   /** Trusted DB-only fixed mutator. Never use a provider adapter in this callback.
    * Mutation and recorded outcome commit together; ambiguous transaction failures

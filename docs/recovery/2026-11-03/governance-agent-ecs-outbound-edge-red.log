@@ -1,0 +1,69 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-agent-ecs-outbound-27f07d76
+
+ ❯ lib/connectors/github/__tests__/dispatchWorkflowFreshness.test.ts (2 tests | 2 failed) 19ms
+   × checks synchronous committed intent after awaited authority immediately before the one POST 17ms
+   × withholds POST when postcommit freshness expires or callback returns asynchronous work 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/connectors/github/__tests__/dispatchWorkflowFreshness.test.ts > checks synchronous committed intent after awaited authority immediately before the one POST
+AssertionError: expected [ 'authority', 'POST' ] to deeply equal [ 'authority', 'intent', 'POST' ]
+
+- Expected
++ Received
+
+  [
+    "authority",
+-   "intent",
+    "POST",
+  ]
+
+ ❯ lib/connectors/github/__tests__/dispatchWorkflowFreshness.test.ts:8:45
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/connectors/github/__tests__/dispatchWorkflowFreshness.test.ts > withholds POST when postcommit freshness expires or callback returns asynchronous work
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "https://api.github.com/repos/owner/repo/actions/workflows/deploy.yml/dispatches",
+      Object {
+        "body": "{"ref":"refs/tags/v1","inputs":{}}",
+        "headers": Object {
+          "Accept": "application/vnd.github+json",
+          "Authorization": "Bearer SIMULATED_TOKEN",
+          "Content-Type": "application/json",
+          "X-GitHub-Api-Version": "2026-03-10",
+        },
+        "method": "POST",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ lib/connectors/github/__tests__/dispatchWorkflowFreshness.test.ts:12:172
+     10| it('withholds POST when postcommit freshness expires or callback retur…
+     11|  const fetch=vi.fn();vi.stubGlobal('fetch',fetch);
+     12|  const expired=await dispatchWorkflow({...input,beforeWrite:async()=>{…
+       |                                                                                                                                                                            ^
+     13|  const asyncResult=await dispatchWorkflow({...input,beforeWrite:async(…
+     14| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  10:03:55
+   Duration  150ms (transform 34ms, setup 0ms, import 43ms, tests 19ms, environment 0ms)
+

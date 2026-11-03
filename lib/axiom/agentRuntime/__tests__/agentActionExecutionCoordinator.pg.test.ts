@@ -4,7 +4,8 @@ import {randomUUID,createHash} from 'node:crypto';
 import {AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE} from '@/lib/releaseops/awsEcsDeployWorkflowTemplate';
 import {realpathSync,statSync} from 'node:fs';
 import {NextRequest} from 'next/server';
-const f=vi.hoisted(()=>({db:null as any,principal:null as any,authCalls:0,revokeAt:0,token:vi.fn()}));
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+const f=vi.hoisted(()=>({db:null as any,principal:null as any,authCalls:0,revokeAt:0,token:vi.fn(),issuerAvailable:true,loseOutboundAck:false,locker:null as any}));
 // Authentication, commercial entitlement and independent human decision are
 // simulated. Source review rows, membership, session, connection, locks, CAS,
 // private claims, current SQL and fixed GitHub transport below are real.
@@ -14,6 +15,8 @@ vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktop
 vi.mock('@/lib/connectors/github/resolveTenantScopedToken',async importActual=>({...await importActual<typeof import('@/lib/connectors/github/resolveTenantScopedToken')>(),resolveTenantScopedToken:f.token}));
 vi.mock('@/lib/db',()=>({prisma:new Proxy({},{get(_t,key){const v=f.db[key];return typeof v==='function'?v.bind(f.db):v}})}));
 vi.mock('../agentIdentityPolicy',()=>({readWorkspaceAgentIdentity:(org:string)=>f.db.workspaceAgentIdentity.findUnique({where:{organizationId:org}})}));
+// Positive executing identity is SIMULATED; negative invokes actual unavailable canonical seam.
+vi.mock('@/lib/governance/intelligence/agentEcsOutboundIssuer',async original=>{const actual:any=await original();return{readAgentEcsOutboundIssuerDigest:()=>{if(!f.issuerAvailable)return actual.readAgentEcsOutboundIssuerDigest();return 'e'.repeat(64)}}});
 import {decideAgentAction} from '../browserApprovalDecision';
 import {agentActionDigest} from '../proposalIntegrity';
 import {createAgentActionExecutionStore} from '../agentActionExecutionStore';
@@ -24,12 +27,14 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   const generated=process.env.AXIOM_EXECUTION_POLICY_PG_CLIENT;
   if(!socket||!/^\/private\/tmp\/axiom-execution-policy-pg-[^/]+\/socket$/.test(socket)||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0||!generated||!generated.startsWith(socket.slice(0,-7)+'/generated/'))throw Error('owned_fixture_required');
   const Client=createRequire(import.meta.url)(generated).PrismaClient;
-  f.db=new Client({datasources:{db:{url:`postgresql://policy_fixture@localhost/policy_fixture?host=${encodeURIComponent(socket)}`}}});
+  const actual=new Client({datasources:{db:{url:`postgresql://policy_fixture@localhost/policy_fixture?host=${encodeURIComponent(socket)}`}}});
+  f.locker=new Client({datasources:{db:{url:`postgresql://policy_fixture@localhost/policy_fixture?host=${encodeURIComponent(socket)}`}}});
+  f.db=new Proxy(actual,{get(db,key){if(key==='$transaction')return async(...args:any[])=>{const result=await db.$transaction(...args);if(f.loseOutboundAck&&result?.status==='reserved'&&String(result.id).startsWith('governance_outbound_'))throw Error('SIMULATED outbound commit acknowledgment lost');return result};const value=db[key];return typeof value==='function'?value.bind(db):value}});
   const [r]=await f.db.$queryRawUnsafe("SELECT current_database()='policy_fixture' AND current_user='policy_fixture' AND current_setting('listen_addresses')='' AS private");if(!r?.private)throw Error('owned_fixture_required');
  });
- afterEach(()=>vi.unstubAllGlobals());afterAll(async()=>f.db?.$disconnect());
+ afterEach(()=>vi.unstubAllGlobals());afterAll(async()=>{await f.locker?.$disconnect();await f.db?.$disconnect()});
  async function fixture(toolName='create_github_branch',buildArgs?:(org:string)=>Record<string,unknown>){
-  f.authCalls=0;f.revokeAt=0;f.token.mockReset();
+  f.authCalls=0;f.revokeAt=0;f.token.mockReset();f.issuerAvailable=true;f.loseOutboundAck=false;
   const organizationId='agent-coordinator-'+randomUUID(),sessionId=organizationId+'-session',now=new Date();
   for(const [userId,role]of [['requester',['create_environment','configure_deployment_target','connect_identity_provider'].includes(toolName)?'admin':'operator'],['reviewer','security_reviewer']])await f.db.orgMembership.create({data:{organizationId,userId,role,acceptedAt:now}});
   await f.db.desktopSessionRecord.create({data:{id:sessionId,organizationId,userId:'requester',expiresAt:new Date(Date.now()+60000)}});
@@ -49,7 +54,7 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
    if(!f.principal||f.principal.id!==current.sessionId||f.principal.userId!==current.actorUserId||f.principal.organizationId!==current.organizationId)throw Error('simulated_authentication_refused');
   }});
   f.token.mockImplementation(async(org:string,target:unknown,expected:any,repo:unknown)=>{
-   expect(org).toBe(organizationId);expect(target).toEqual({owner:'fixture',repo:'repository'});expect(expected).toMatchObject(connection);expect(expected.signal).toBeInstanceOf(AbortSignal);expect(repo).toBe(f.db);return{ok:true,token:'SIMULATED_PRIVATE_TOKEN'};
+   expect(org).toBe(organizationId);expect(target).toEqual({owner:'fixture',repo:'repository'});expect(expected).toMatchObject(connection);expect(expected.signal).toBeInstanceOf(AbortSignal);expect(repo).toBe(f.db);if(toolName==='trigger_aws_deploy')expect(await f.db.durableAgentWorkflow.count({where:{organizationId,workflowKind:'governance_outbound_v1',currentStep:'reserved'}})).toBe(1);return{ok:true,token:'SIMULATED_PRIVATE_TOKEN'};
   });
   const operation=await store.prepare(scope,proposal.id),request=new NextRequest('https://fixture.test/local');
   const coordinator=createAgentActionExecutionCoordinator(request,principal,f.db,store,scope);
@@ -109,7 +114,7 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({attemptCount:1,status:'completed'});
  });
 
- it.each(['confirmed','lost','rejected','workflow_changed'])('actual AWS coordinator policy/quota/store/fixed dispatch %s is one attempt',async mode=>{
+ it.each(['confirmed','lost','rejected','workflow_changed','issuer_unavailable','reservation_ack_lost'])('actual AWS coordinator policy/quota/store/fixed dispatch %s is one attempt',async mode=>{
   const revision=new Date();
   const workflow=Buffer.from(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE),blob=createHash('sha1').update(`blob ${workflow.length}\0`).update(workflow).digest('hex');
   const source={kind:'github_immutable_restart_source_v1',repositoryFullName:'fixture/repository',repositoryId:'1',tagName:'v1',ref:'refs/tags/v1',tagObjectSha:'a'.repeat(40),tagObjectType:'commit',sourceCommitSha:'a'.repeat(40),releaseId:'2',publishedAt:'2026-10-01T00:00:00.000Z',workflowFile:'axiom-deploy-aws-ecs.yml',workflowBlobSha:blob,workflowContentSha256:createHash('sha256').update(workflow).digest('hex')};
@@ -118,8 +123,8 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   await f.db.environment.create({data:{id:input.environmentId,organizationId:t.scope.organizationId,tier:'qa',slug:'qa',name:'QA'}});
   await f.db.deploymentTarget.create({data:{id:target.targetId,environmentId:input.environmentId,organizationId:t.scope.organizationId,provider:'aws',updatedAt:revision,roleArn:target.roleArn,region:target.region,ecsCluster:target.ecsCluster,ecsService:target.ecsService}});
   await f.db.tenantBillingPlan.create({data:{organizationId:t.scope.organizationId,tier:'pro',status:'active'}});
-  let posts=0;
-  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
+  let posts=0,providerFailure:unknown;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{try{
    expect(url==='https://api.github.com/repos/fixture/repository'||url.startsWith('https://api.github.com/repos/fixture/repository/')).toBe(true);
    if(init.method==='GET'){
     if(url.endsWith('/repository'))return Response.json({id:1,full_name:'fixture/repository',archived:false,disabled:false});
@@ -127,16 +132,28 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
     if(url.includes('/contents/'))return Response.json({type:'file',path:'.github/workflows/axiom-deploy-aws-ecs.yml',encoding:'base64',sha:blob,size:workflow.length,content:(mode==='workflow_changed'?Buffer.from('changed'):workflow).toString('base64')});
     return Response.json({ref:'refs/tags/v1',object:{type:'commit',sha:'a'.repeat(40)}});
    }
+   await f.locker.$transaction(async(tx:any)=>{const[row]=await tx.$queryRaw`SELECT pg_try_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(t.scope.organizationId)})) AS held`;expect(row.held).toBe(true);await tx.$queryRaw`SELECT "id" FROM "DurableAgentWorkflow" WHERE "organizationId"=${t.scope.organizationId} FOR UPDATE NOWAIT`});
+   expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1',currentStep:'submission_intent'}})).toBe(1);
    expect(init.method).toBe('POST');expect(JSON.parse(init.body)).toMatchObject({ref:'refs/tags/v1',inputs:{role_arn:target.roleArn,region:target.region,cluster:target.ecsCluster,service:target.ecsService}});posts++;
    if(mode==='lost')throw Error('simulated response lost');if(mode==='rejected')return new Response('refused',{status:403});
    return Response.json({workflow_run_id:42,html_url:'https://github.com/fixture/repository/actions/runs/42'});
-  }));
+  }catch(error){providerFailure=error;throw error}}));
+  if(mode==='issuer_unavailable'){
+   f.issuerAvailable=false;await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow('governance_agent_ecs_issuer_unavailable');
+   expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({currentStep:'prepared',version:0,attemptCount:0});expect(f.token).not.toHaveBeenCalled();expect(posts).toBe(0);expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}})).toBe(0);return;
+  }
+  if(mode==='reservation_ack_lost'){
+   f.loseOutboundAck=true;expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'refused',attemptCount:1});
+   expect(await f.db.durableAgentWorkflow.findFirst({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}})).toMatchObject({currentStep:'reserved',version:0});expect(f.token).not.toHaveBeenCalled();expect(posts).toBe(0);await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();return;
+  }
   const result=await t.coordinator.execute(t.operation.id);
+  if(providerFailure&&mode!=='lost')throw providerFailure;
   expect(result).toMatchObject({state:mode==='confirmed'?'confirmed':mode==='lost'?'unknown':'refused',attemptCount:1});expect(posts).toBe(mode==='workflow_changed'?0:1);
   const reservations=await f.db.deploymentExecution.findMany({where:{organizationId:t.scope.organizationId}});
   if(mode==='rejected'||mode==='workflow_changed')expect(reservations).toHaveLength(0);else expect(reservations).toMatchObject([{idempotencyKey:t.operation.id,triggeredByUserId:t.scope.actorUserId,sourceCommitSha:'a'.repeat(40),status:mode==='lost'?'reserved':'queued'}]);
   await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(posts).toBe(mode==='workflow_changed'?0:1);
   expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({attemptCount:1});
+  const slots=await f.db.durableAgentWorkflow.findMany({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}});expect(slots).toHaveLength(1);expect(slots[0].currentStep).toBe(mode==='workflow_changed'?'reserved':'submission_intent');
  });
 
  it.each(['confirmed','head_changed','response_changed','response_lost'])('composes reviewed pull-request source with durable outcome %s',async mode=>{

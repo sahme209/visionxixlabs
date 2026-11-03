@@ -470,4 +470,22 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   const result=await t.store.conversationHistory(next,t.proposal.conversationId);expect(result.operations).toHaveLength(5);expect(result.truncated).toBe(true);expect(result.operations.every((v:any)=>v.attemptCount===0&&v.state==='prepared')).toBe(true);expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.org,workflowKind:'agent_action_execution_v1'}})).toBe(6);
  });
 
+ it('[outbound] binds the real private claim/source/installation/target and retains original query-time deadline',async()=>{
+  const revision=new Date(),workflow=Buffer.from(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE),blob=createHash('sha1').update(`blob ${workflow.length}\0`).update(workflow).digest('hex');
+  const reviewed={kind:'github_immutable_restart_source_v1',repositoryFullName:'fixture/repository',repositoryId:'1',tagName:'v1',ref:'refs/tags/v1',tagObjectSha:'a'.repeat(40),tagObjectType:'commit',sourceCommitSha:'a'.repeat(40),releaseId:'2',publishedAt:'2026-10-01T00:00:00.000Z',workflowFile:'axiom-deploy-aws-ecs.yml',workflowBlobSha:blob,workflowContentSha256:createHash('sha256').update(workflow).digest('hex')};
+  const buildArgs=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'v1',sourceKind:'tag',_restartSource:reviewed,_review:{kind:'ecs_restart_target',organizationId:org,environmentId:org+'-env',environmentTier:'qa',targetId:org+'-target',provider:'aws',targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/fixture',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
+  const t=await fixture(60000,'trigger_aws_deploy',buildArgs),args=buildArgs(t.org),target=args._review,connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:revision};
+  await f.db.environment.create({data:{id:args.environmentId,organizationId:t.org,tier:'qa'}});await f.db.deploymentTarget.create({data:{id:target.targetId,environmentId:args.environmentId,organizationId:t.org,provider:'aws',updatedAt:revision,roleArn:target.roleArn,region:target.region,ecsCluster:target.ecsCluster,ecsService:target.ecsService}});await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:revision}});
+  const op=await t.store.prepare(t.scope,t.proposal.id),source=await t.store.inspectForExecution(t.scope,op.id),claimed=await t.store.claim(t.scope,op.id),input={source,connection,target};
+  const read=(proof:any=claimed.claim,override:any=input)=>f.db.$transaction((tx:any)=>t.store.readClaimedDeploymentOutboundLocked(tx,t.scope,proof,override));
+  const before=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}}),verified=await read();expect(verified.attemptId).toMatch(/^agent_execution_attempt_[a-f0-9]{64}$/);expect(verified.connectionId).toBe(connection.id);expect(verified.fresh()).toBeUndefined();expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);
+  await expect(read({operationId:op.id})).rejects.toThrow();await expect(read(claimed.claim,{...input,source:{...source,proposalDigest:'f'.repeat(64)}})).rejects.toThrow();await expect(read(claimed.claim,{...input,connection:{...connection,id:'other'}})).rejects.toThrow();
+  const realNow=Date.now,base=realNow(),clock=vi.spyOn(Date,'now').mockReturnValue(base);try{
+   await expect(f.db.$transaction(async(tx:any)=>t.store.readClaimedDeploymentOutboundLocked(new Proxy(tx,{get(object,key){if(key==='$queryRaw')return async(...query:any[])=>{const rows=await object.$queryRaw(...query);if(String(query[0]).includes('AS "policySnapshot"'))clock.mockReturnValue(base+60000);return rows};const value=object[key];return typeof value==='function'?value.bind(object):value}}),t.scope,claimed.claim,input))).rejects.toThrow();
+   clock.mockReturnValue(Number.NaN);await expect(read()).rejects.toThrow();
+  }finally{clock.mockRestore()}
+  expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);
+  await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'read_only'}});await expect(read()).rejects.toThrow();
+ });
+
 });

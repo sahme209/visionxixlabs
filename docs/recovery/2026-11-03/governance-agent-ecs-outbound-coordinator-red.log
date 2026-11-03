@@ -1,0 +1,66 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-agent-ecs-outbound-27f07d76
+
+ ❯ lib/axiom/agentRuntime/__tests__/agentActionDeploymentExecution.test.ts (24 tests | 3 failed | 21 skipped) 30ms
+   × unavailable canonical identity refuses before original claim or credential work 26ms
+   × reserves outbound before token and checks committed intent after final store before POST 2ms
+   × retains refusal with no POST when committed intent freshness fails at synchronous physical edge 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/axiom/agentRuntime/__tests__/agentActionDeploymentExecution.test.ts > unavailable canonical identity refuses before original claim or credential work
+AssertionError: promise resolved "{ state: 'confirmed', …(1) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "receipt": {
++     "code": "action_completed",
++   },
++   "state": "confirmed",
+  }
+
+ ❯ lib/axiom/agentRuntime/__tests__/agentActionDeploymentExecution.test.ts:49:205
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  lib/axiom/agentRuntime/__tests__/agentActionDeploymentExecution.test.ts > reserves outbound before token and checks committed intent after final store before POST
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ lib/axiom/agentRuntime/__tests__/agentActionDeploymentExecution.test.ts:50:182
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  lib/axiom/agentRuntime/__tests__/agentActionDeploymentExecution.test.ts > retains refusal with no POST when committed intent freshness fails at synchronous physical edge
+AssertionError: expected { state: 'confirmed', …(1) } to deeply equal { state: 'refused', …(1) }
+
+- Expected
++ Received
+
+  {
+    "receipt": {
+-     "code": "pre_dispatch_refused",
++     "code": "action_completed",
+    },
+-   "state": "refused",
++   "state": "confirmed",
+  }
+
+ ❯ lib/axiom/agentRuntime/__tests__/agentActionDeploymentExecution.test.ts:51:216
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 21 skipped (24)
+   Start at  10:04:29
+   Duration  346ms (transform 131ms, setup 0ms, import 235ms, tests 30ms, environment 0ms)
+
