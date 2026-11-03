@@ -1,0 +1,29 @@
+▲ Next.js 16.4.2 (webpack)
+✓ Running next.config.ts took 535ms
+- Experiments (use with caution):
+  · cpus: 1
+  ⨯ serverSourceMaps
+  ✓ webpackBuildWorker
+  ✓ webpackMemoryOptimizations
+
+  Creating an optimized production build ...
+  Using tsconfig file: tsconfig.next.json
+Failed to compile.
+
+HookWebpackError: _webpack.WebpackError is not a constructor
+    at makeWebpackError (/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/compiled/webpack/bundle5.js:29:315799)
+    at /private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/compiled/webpack/bundle5.js:29:106487
+    at eval (eval at create (/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/compiled/webpack/bundle5.js:14:9222), <anonymous>:82:1)
+-- inner error --
+TypeError: _webpack.WebpackError is not a constructor
+    at buildError (/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js:24:16)
+    at /private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js:135:57
+    at async Span.traceAsyncFn (/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/trace/trace.js:168:20)
+caused by plugins in Compilation.hooks.processAssets
+TypeError: _webpack.WebpackError is not a constructor
+    at buildError (/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js:24:16)
+    at /private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js:135:57
+    at async Span.traceAsyncFn (/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage/node_modules/next/dist/trace/trace.js:168:20)
+
+
+> Build failed because of webpack errors

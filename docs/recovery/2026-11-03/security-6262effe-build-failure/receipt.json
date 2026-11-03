@@ -1,0 +1,52 @@
+{
+  "sourceRevision": "6262effe4a12289647cff736bae815c805c78302",
+  "owned": "/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp",
+  "session": 92524,
+  "driverExit": 1,
+  "status": "production_compilation_failed",
+  "preparationPassed": true,
+  "generationPassed": true,
+  "fullNextTypeScriptPassed": false,
+  "staticGenerationPassed": false,
+  "buildOutputsVerified": false,
+  "executionAuthorized": false,
+  "archiveSha256": "72970b9681f8d32a56fff82e5183efe310588a46f711610e69cee7baae988395",
+  "archiveBytes": 77230080,
+  "verifiedRegularFiles": 6690,
+  "npmOutcome": "succeeded",
+  "dependencyMaterialization": "existing reviewed pinned offline/ignore-scripts cache-only npm harness; kernel network denied; no new registry fetch/dependency/lifecycle",
+  "observedError": "HookWebpackError: _webpack.WebpackError is not a constructor while minify plugin wraps another error; underlying minification cause unconfirmed",
+  "newPreviewStarted": false,
+  "oldPreviewPreserved": "ae5aac78 at5204/5205 unchanged",
+  "rerun": false,
+  "evidence": {
+    "preparation.json": {
+      "sha256": "533a868bbf3d1d20397e09e7fd4477ef69ada78b1530515d2a28c40320d75c34",
+      "bytes": 1776
+    },
+    "binding.json": {
+      "sha256": "db84bf7f4db676d13abbe685762854ef53056a81fd4fe79691c1244a1d9c0e57",
+      "bytes": 1212
+    },
+    "terminal-summary.json": {
+      "sha256": "31b4ea2f27ad89134766231e7ee0c7ffe3495f454409aae9ab450b58e351ee9a",
+      "bytes": 204
+    },
+    "build-run/result.json": {
+      "sha256": "bee7f3b7cb858f41b03091969dedbdf1ce4dae42f0f03bbc534db82eaa5f05f6",
+      "bytes": 522
+    },
+    "build-run/attempt.json": {
+      "sha256": "c1f3fd09f97babb269846daf3a32483f412b6427aa6cf15c2f61b8bd1862ec7d",
+      "bytes": 7051
+    },
+    "build-run/next-build.log": {
+      "sha256": "e632c3c67cdc30b530cab913b4dbcfedd723833d5be7968d20af7746dbfc128d",
+      "bytes": 1990
+    },
+    "build-run/contract.log": {
+      "sha256": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+      "bytes": 185
+    }
+  }
+}
