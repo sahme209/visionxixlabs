@@ -197,13 +197,16 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           </div>
 
           {/* Visual stage */}
-          <StepVisual step={step} ord={activeOrd + 1} />
+          <figure className="space-y-3">
+            <StepVisual step={step} ord={activeOrd + 1} />
+            <figcaption className="text-xs leading-6 text-zinc-400">Illustrative interface · not a product screenshot</figcaption>
+          </figure>
 
-          {/* API endpoint exercised — pulled from the technical reference */}
+          {/* Illustrative endpoint payloads — no request is sent here. */}
           {endpoint && (
             <div className="rounded-xl border border-orange-500/15 bg-orange-500/[0.03] p-4 space-y-2">
               <div className="flex items-baseline gap-2 flex-wrap">
-                <p className="text-[10px] font-mono text-orange-300/90 uppercase tracking-[0.22em]">api exercised</p>
+                <p className="text-[10px] font-mono text-orange-300/90 uppercase tracking-[0.22em]">Illustrative API reference</p>
                 <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                   endpoint.method === "GET"
                     ? "bg-orange-500/15 text-orange-200 border-orange-500/25"
@@ -213,14 +216,15 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
                 <span className="text-[10px] font-mono text-zinc-500">scope · {endpoint.scope}</span>
               </div>
               <p className="text-[12px] text-zinc-400 leading-relaxed">{endpoint.oneLine}</p>
+              <p className="text-xs leading-6 text-zinc-400">No API request is sent by this walkthrough. These payloads are examples, not saved execution evidence.</p>
               {endpoint.reqBody && (
                 <div>
-                  <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">request body</p>
+                  <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">Example request body</p>
                   <pre className="rounded-lg bg-black/50 border border-white/[0.06] p-2.5 text-[10.5px] font-mono leading-relaxed overflow-x-auto text-zinc-200">{endpoint.reqBody}</pre>
                 </div>
               )}
               <div>
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">response</p>
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">Example response</p>
                 <pre className="rounded-lg bg-black/50 border border-emerald-500/15 p-2.5 text-[10.5px] font-mono leading-relaxed overflow-x-auto text-emerald-100">{endpoint.resBody}</pre>
               </div>
               {endpoint.errorCodes.length > 0 && (

@@ -1,0 +1,7 @@
+# Demo illustration labels: local source refinement
+
+The scenario client rendered a mock interface and static reference payloads under **api exercised**, which could be mistaken for an actual API execution record despite the page-level sandbox banner. The same source now captions the visual **Illustrative interface · not a product screenshot**, labels the API/request/response as examples, and explicitly says the walkthrough sends no API request and supplies no saved execution evidence. Existing scenario data, provider links, handlers and authority are unchanged.
+
+Two focused rendered checks reproduced the missing labels (RED2). After the bounded change, GREEN2 verifies both initial content and retained labels after local Next navigation, with no fetch. The actual ScenarioClient and technical reference render; unrelated navigation/StepVisual and NextLink are narrowly stubbed. The original RED import included actual NextLink and took53.84s; the GREEN test stubs link rendering to avoid unrelated Next imports. The post-GREEN source change was a comment only.
+
+Scoped TypeScript remains pending in the same owned process at the time this draft was written; this is not a type/build claim. No production build, server restart, browser/native visual acceptance, provider request or deployment occurred. Root independent source review and next batched visual preview remain required. Existing broader scenario-copy/legacy safety-invariant accuracy is not qualified by these two label tests.
