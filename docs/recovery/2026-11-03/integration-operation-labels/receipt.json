@@ -1,0 +1,16 @@
+{
+  "base": "95132",
+  "files": {
+    "components/marketing/IntegrationCatalogBrowser.tsx": "f0a4bc146b4cdac20ac3e48862145bb6ac855652059d87f966b05c5296e36f41",
+    "components/marketing/__tests__/IntegrationCatalogBrowser.test.ts": "1fe97eec3bb1ed4787f62c517ab43fe217d71fedb426be7d8e2c7ddba61f8fe7",
+    "lib/integrations/publicIntegrationCatalog.ts": "e225d21bf0fedc57ed4fc3ba8a5c7ee9eb0cae57110d5167c3dbd9180f554f03"
+  },
+  "newBehaviorRed": 2,
+  "greenFocusedFile": 6,
+  "network": "kernel_denied",
+  "newDependencies": false,
+  "availabilityChanged": false,
+  "providerActions": false,
+  "fullBuild": false,
+  "visualAcceptance": false
+}

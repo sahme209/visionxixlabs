@@ -1,8 +1,9 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { CATALOG_JOBS, type PublicCatalogEntry } from "@/lib/integrations/publicIntegrationCatalog";
+import { CATALOG_JOBS, type CatalogOperation, type PublicCatalogEntry } from "@/lib/integrations/publicIntegrationCatalog";
 const TITLES:Record<string,string>={available:"Available",preview:"Preview","implementation review":"Implementation review",planned:"Planned","configuration required":"Configuration required"};
+const OPERATION_LABELS:Record<CatalogOperation,string>={read:"Read context",change:"Change workflows",events:"Receive events"};
 const FIELD="mt-2 min-h-11 w-full rounded-xl border border-white/15 bg-[#171717] px-3 text-sm text-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-orange-300";
 export function IntegrationCatalogBrowser({entries}:{entries:PublicCatalogEntry[]}){
  const [search,setSearch]=useState("");const[job,setJob]=useState("all");const[state,setState]=useState("all");const[operation,setOperation]=useState("all");
@@ -23,6 +24,10 @@ export function IntegrationCatalogBrowser({entries}:{entries:PublicCatalogEntry[
    return <section key={group.id} aria-labelledby={`catalog-${group.id}`} className="space-y-3"><h2 id={`catalog-${group.id}`} className="text-sm font-medium text-zinc-300">{group.label}</h2><div className="grid gap-3 md:grid-cols-2">{selected.map(e=><article key={e.id} aria-label={`${e.name} integration`} className={`flex flex-col rounded-2xl border p-5 sm:p-6 ${e.availability.enabled?"border-white/10 bg-[#151515]":"border-white/[0.07] bg-white/[0.015]"}`}>
     <div className="flex flex-wrap items-center justify-between gap-3"><h3 className="text-base font-medium tracking-tight text-zinc-100">{e.name}</h3><span className="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400">{TITLES[e.availability.label]??e.availability.label}</span></div>
     <p className="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400">{e.availability.detail}</p>
+    <div role="group" aria-label="Operation models" className="mb-5 space-y-2">
+     <p aria-hidden="true" className="text-[11px] font-medium text-zinc-500">Operation models</p>
+     <ul className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300">{e.operations.map(model=><li key={model}>{OPERATION_LABELS[model]}</li>)}</ul>
+    </div>
     <div className="mt-auto">{e.availability.enabled?<Link prefetch={false} href={e.availability.href} className="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">{e.availability.href==="/docs"?"Browse documentation":e.availability.label==="preview"?"Read preview scope":"Read setup guide"}<span aria-hidden="true">↗</span></Link>:<p className="text-xs text-zinc-500">No setup available yet</p>}</div>
    </article>)}</div></section>;
   })}

@@ -1,0 +1,177 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-onprem-inventory-eb31221b
+
+ ❯ components/marketing/__tests__/IntegrationCatalogBrowser.test.ts (6 tests | 2 failed | 4 skipped) 69ms
+   × shows each card's typed operation models separately from availability 58ms
+   × keeps planned operation models descriptive without setup authority 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/IntegrationCatalogBrowser.test.ts > shows each card's typed operation models separately from availability
+TestingLibraryElementError: Unable to find an accessible element with the role "group" and name "Operation models"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "GitHub":
+  [36m<h3[39m
+    [33mclass[39m=[32m"text-base font-medium tracking-tight text-zinc-100"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------link:
+
+  Name "Read setup guide":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+    [33mhref[39m=[32m"/docs/oauth-setup"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<article[39m
+  [33maria-label[39m=[32m"GitHub integration"[39m
+  [33mclass[39m=[32m"flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-3"[39m
+  [36m>[39m
+    [36m<h3[39m
+      [33mclass[39m=[32m"text-base font-medium tracking-tight text-zinc-100"[39m
+    [36m>[39m
+      [0mGitHub[0m
+    [36m</h3>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+    [36m>[39m
+      [0mAvailable[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+  [36m>[39m
+    [0mRead repository context and inspect source/workflow evidence through a repository-scoped GitHub connection. Branch, pull-request and workflow actions have their own permissions and review requirements; this catalog does not establish execution readiness.[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"mt-auto"[39m
+  [36m>[39m
+    [36m<a[39m
+      [33mclass[39m=[32m"inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+      [33mhref[39m=[32m"/docs/oauth-setup"[39m
+    [36m>[39m
+      [0mRead setup guide[0m
+      [36m<span[39m
+        [33maria-hidden[39m=[32m"true"[39m
+      [36m>[39m
+        [0m↗[0m
+      [36m</span>[39m
+    [36m</a>[39m
+  [36m</div>[39m
+[36m</article>[39m
+ ❯ Object.getElementError ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/marketing/__tests__/IntegrationCatalogBrowser.test.ts:49:30
+     47|  render(createElement(IntegrationCatalogBrowser,{entries}));
+     48|  const github=screen.getByRole("article",{name:"GitHub integration"});
+     49|  const models=within(github).getByRole("group",{name:"Operation models…
+       |                              ^
+     50|  expect(within(models).getByText("Read context")).toBeDefined();
+     51|  expect(within(models).getByText("Change workflows")).toBeDefined();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  components/marketing/__tests__/IntegrationCatalogBrowser.test.ts > keeps planned operation models descriptive without setup authority
+TestingLibraryElementError: Unable to find an accessible element with the role "group" and name "Operation models"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "GitLab":
+  [36m<h3[39m
+    [33mclass[39m=[32m"text-base font-medium tracking-tight text-zinc-100"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs text-zinc-500"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<article[39m
+  [33maria-label[39m=[32m"GitLab integration"[39m
+  [33mclass[39m=[32m"flex flex-col rounded-2xl border p-5 sm:p-6 border-white/[0.07] bg-white/[0.015]"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-3"[39m
+  [36m>[39m
+    [36m<h3[39m
+      [33mclass[39m=[32m"text-base font-medium tracking-tight text-zinc-100"[39m
+    [36m>[39m
+      [0mGitLab[0m
+    [36m</h3>[39m
+    [36m<span[39m
+      [33mclass[39m=[32m"rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+    [36m>[39m
+      [0mPlanned[0m
+    [36m</span>[39m
+  [36m</div>[39m
+  [36m<p[39m
+    [33mclass[39m=[32m"mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+  [36m>[39m
+    [0mNo customer-ready activation path is published.[0m
+  [36m</p>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"mt-auto"[39m
+  [36m>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"text-xs text-zinc-500"[39m
+    [36m>[39m
+      [0mNo setup available yet[0m
+    [36m</p>[39m
+  [36m</div>[39m
+[36m</article>[39m
+ ❯ Object.getElementError ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/marketing/__tests__/IntegrationCatalogBrowser.test.ts:61:24
+     59|  render(createElement(IntegrationCatalogBrowser,{entries:publicCatalog…
+     60|  const gitlab=screen.getByRole("article",{name:"GitLab integration"});
+     61|  expect(within(gitlab).getByRole("group",{name:"Operation models"}).te…
+       |                        ^
+     62|  expect(within(gitlab).getByText("Planned")).toBeDefined();
+     63|  expect(within(gitlab).getByText("No setup available yet")).toBeDefine…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 4 skipped (6)
+   Start at  18:37:21
+   Duration  635ms (transform 25ms, setup 0ms, import 100ms, tests 69ms, environment 401ms)
+

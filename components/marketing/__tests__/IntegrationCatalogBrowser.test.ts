@@ -42,3 +42,25 @@ it("keeps setup links as ordinary documentation navigation",()=>{
  const aws=screen.getByRole("article",{name:"AWS integration"});
  expect(within(aws).getByRole("link",{name:"Read setup guide"}).getAttribute("href")).toBe("/docs/aws-setup");
 });
+it("shows each card's typed operation models separately from availability",()=>{
+ const entries=publicCatalogEntries();
+ render(createElement(IntegrationCatalogBrowser,{entries}));
+ const github=screen.getByRole("article",{name:"GitHub integration"});
+ const models=within(github).getByRole("group",{name:"Operation models"});
+ expect(within(models).getByText("Read context")).toBeDefined();
+ expect(within(models).getByText("Change workflows")).toBeDefined();
+ expect(within(models).queryByText("Receive events")).toBeNull();
+ const grafana=screen.getByRole("article",{name:"Grafana integration"});
+ expect(within(within(grafana).getByRole("group",{name:"Operation models"})).getByText("Receive events")).toBeDefined();
+ expect(within(models).queryByText(/connected|available|enabled/i)).toBeNull();
+ expect(screen.getByText(/not your account’s connection or permission status/i)).toBeDefined();
+});
+it("keeps planned operation models descriptive without setup authority",()=>{
+ render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
+ const gitlab=screen.getByRole("article",{name:"GitLab integration"});
+ expect(within(gitlab).getByRole("group",{name:"Operation models"}).textContent).toContain("Change workflows");
+ expect(within(gitlab).getByText("Planned")).toBeDefined();
+ expect(within(gitlab).getByText("No setup available yet")).toBeDefined();
+ expect(within(gitlab).queryByRole("link")).toBeNull();
+ expect(within(gitlab).queryByRole("button")).toBeNull();
+});
