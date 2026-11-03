@@ -1,0 +1,64 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-docs-narrow-e4787605
+
+ ❯ app/docs/__tests__/contents-disclosure.test.ts (5 tests | 1 failed | 4 skipped) 67ms
+   × desktop client navigation never sends focus to the narrow-only disclosure button 66ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/docs/__tests__/contents-disclosure.test.ts > desktop client navigation never sends focus to the narrow-only disclosure button
+AssertionError: expected <button type="button" …(3)>…(1)</button> to be <a …(2)>…(2)</a> // Object.is equality
+
+- Expected
++ Received
+
+- <a
+-   class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"
+-   href="/docs/getting-started"
++ <button
++   aria-controls="docs-contents-panel"
++   aria-expanded="false"
++   class="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden"
++   type="button"
+  >
++   Documentation contents
+    <svg
+      aria-hidden="true"
+-     class="h-3.5 w-3.5 shrink-0 text-orange-400"
++     class="h-4 w-4 shrink-0 text-zinc-400 transition-transform "
+      data-slot="icon"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.5"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+-       d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
++       d="m19.5 8.25-7.5 7.5-7.5-7.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+-   <span
+-     class="truncate"
+-   >
+-     Getting started
+-   </span>
+- </a>
++ </button>
+
+ ❯ app/docs/__tests__/contents-disclosure.test.ts:35:246
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 skipped (5)
+   Start at  15:30:06
+   Duration  391ms (transform 23ms, setup 0ms, import 89ms, tests 67ms, environment 180ms)
+

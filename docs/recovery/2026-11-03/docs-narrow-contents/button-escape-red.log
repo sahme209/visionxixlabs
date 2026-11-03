@@ -1,0 +1,28 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-docs-narrow-e4787605
+
+ ❯ app/docs/__tests__/contents-disclosure.test.ts (6 tests | 1 failed | 5 skipped) 53ms
+   × Escape on the disclosure button also closes expanded contents 53ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/docs/__tests__/contents-disclosure.test.ts > Escape on the disclosure button also closes expanded contents
+AssertionError: expected 'true' to be 'false' // Object.is equality
+
+Expected: "false"
+Received: "true"
+
+ ❯ app/docs/__tests__/contents-disclosure.test.ts:39:214
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 skipped (6)
+   Start at  15:30:40
+   Duration  374ms (transform 22ms, setup 0ms, import 90ms, tests 53ms, environment 178ms)
+
