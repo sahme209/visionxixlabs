@@ -1,0 +1,9 @@
+{
+  "packages/verified-issuer-runtime/index.cjs": "2ac3c199de414d4efafdf760b7a93248979f57f9b71bb246e358f36e3ee73676",
+  "packages/verified-issuer-runtime/native/origin_config.h": "f53102df646fae4bbc96c3ecccff7cfc4c32533637af202dadd8ce0d7008b307",
+  "packages/verified-issuer-runtime/native/origin_guard.c": "bbab245200a35c1b4e25469d874a333c1d5a667e53cbadcc24d468c725c9c043",
+  "packages/verified-issuer-runtime/native/origin_session.c": "1d8ea1d10c59d30ffc4a1d13be882cb03241587e5828dc29ff30b5671d14b545",
+  "packages/verified-issuer-runtime/native/origin_session.h": "16edb08dce762782914d21f50cd9fbe3a6959aafd29050882910025b47ad182f",
+  "packages/verified-issuer-runtime/native/test_origin_guard_preimport.py": "81e1bd19302d6a95c5784adbd700e807587dbe2b97dc3e97e8e37fcfb212d267",
+  "packages/verified-issuer-runtime/test/canonical-preimport.test.cjs": "4dda446a75752b7c5e7b805361623b8ecf73ada1ad03dec407f651a3e2ba7bdb"
+}

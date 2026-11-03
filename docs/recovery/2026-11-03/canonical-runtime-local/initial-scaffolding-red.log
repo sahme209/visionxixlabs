@@ -1,0 +1,54 @@
+✖ actual main records preimport refusal without application loading on an unqualified root (24.861292ms)
+✔ actual controlled-main gate rejects extra argv, module-cache exchange and supplied authority (21.854625ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 1
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 76.876208
+
+✖ failing tests:
+
+test at packages/verified-issuer-runtime/test/canonical-preimport.test.cjs:4:1
+✖ actual main records preimport refusal without application loading on an unqualified root (24.861292ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /verifyPackageFiles\(root\)/. Input:
+  
+  "'use strict';\n" +
+    '// A single canonical external CJS module is the future main/consumer seam.\n' +
+    '// No active launch identity exists until the REAL shared verifier + immutable\n' +
+    '// pre-import launch profile is implemented and independently qualified here.\n' +
+    '// Python file-set observations, JSON, ENV and imported callbacks are not proof.\n' +
+    'const unavailable = Object.freeze({\n' +
+    "  status: 'unavailable',\n" +
+    "  reason: 'sealed_launch_not_implemented',\n" +
+    "  executingIssuerIdentity: 'unavailable',\n" +
+    "  runtimeQualification: 'unavailable',\n" +
+    "  fleetQualification: 'unavailable',\n" +
+    "  legacyQualification: 'unavailable',\n" +
+    '  executionAuthorized: false,\n' +
+    '});\n' +
+    'function readIssuerIdentity() { return unavailable; }\n' +
+    'module.exports = Object.freeze({ readIssuerIdentity });\n' +
+    '\n' +
+    'if (require.main === module) {\n' +
+    '  // Do not import Next, application hooks or a caller-selected entrypoint. A\n' +
+    '  // manifest/hash check alone cannot qualify the currently missing sealed launch.\n' +
+    '  // This real main entry refuses; there is deliberately no stub initializer.\n' +
+    "  process.stderr.write('verified_issuer_launch_unavailable\\n');\n" +
+    '  process.exitCode = 1;\n' +
+    '}\n'
+  
+      at TestContext.<anonymous> (/private/tmp/axiom-canonical-runtime-3afe19c9/packages/verified-issuer-runtime/test/canonical-preimport.test.cjs:8:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: "'use strict';\n// A single canonical external CJS module is the future main/consumer seam.\n// No active launch identity exists until the REAL shared verifier + immutable\n// pre-import launch profile is implemented and independently qualified here.\n// Python file-set observations, JSON, ENV and imported callbacks are not proof.\nconst unavailable = Object.freeze({\n  status: 'unavailable',\n  reason: 'sealed_launch_not_implemented',\n  executingIssuerIdentity: 'unavailable',\n  runtimeQualification: 'unavailable',\n  fleetQualification: 'unavailable',\n  legacyQualification: 'unavailable',\n  executionAuthorized: false,\n});\nfunction readIssuerIdentity() { return unavailable; }\nmodule.exports = Object.freeze({ readIssuerIdentity });\n\nif (require.main === module) {\n  // Do not import Next, application hooks or a caller-selected entrypoint. A\n  // manifest/hash check alone cannot qualify the currently missing sealed launch.\n  // This real main entry refuses; there is deliberately no stub initializer.\n  process.stderr.write('verified_issuer_launch_unavailable\\n');\n  process.exitCode = 1;\n}\n",
+    expected: /verifyPackageFiles\(root\)/,
+    operator: 'match',
+    diff: 'simple'
+  }

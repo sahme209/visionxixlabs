@@ -1,0 +1,31 @@
+{
+  "scope": "local partial canonical/native source implementation, not executing issuer qualification",
+  "base": "3afe19c9",
+  "dependency": "protected-resource collector8aa65b65 (local cherry-pick3ebea619)",
+  "actualCjsNegativeRegressions": {
+    "cases": 8,
+    "result": "PASS",
+    "positiveStartup": false
+  },
+  "actualNewNativeRefusals": {
+    "cases": 3,
+    "result": "PASS",
+    "scope": "writable owned fixture, native one-shot after failed constructor, actual worker before XPC"
+  },
+  "compile": {
+    "originSession": "PASS -Werror",
+    "originGuard": "PASS -Werror",
+    "linkedAddonWithRealNewResourceCollector": "PASS -Werror"
+  },
+  "redLimit": "initial source-presence assertions failed on old stub; those assertions were removed as inadequate behavior proof. No reproduced new runtime defect or positive-startup claim. Actual native negatives are distinct evidence.",
+  "notExecuted": [
+    "ServiceManagement status/registration",
+    "XPC protocol",
+    "profile/restriction",
+    "image/mount",
+    "real executing identity",
+    "compiled positive consumer",
+    "provider/network action"
+  ],
+  "currentConsumer": "all TypeScript outbound issuer readers remain always-throw; no DTO acceptance enabled"
+}
