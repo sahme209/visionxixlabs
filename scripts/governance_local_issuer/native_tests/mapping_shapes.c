@@ -15,10 +15,18 @@
 static int leaf(mach_vm_address_t *a,mach_vm_size_t *s,vm_region_submap_info_data_64_t *i){
  natural_t depth=0;for(unsigned n=0;n<64;n++){mach_msg_type_number_t c=VM_REGION_SUBMAP_INFO_COUNT_64;memset(i,0,sizeof(*i));kern_return_t k=mach_vm_region_recurse(mach_task_self(),a,s,&depth,(vm_region_recurse_info_t)i,&c);if(k!=KERN_SUCCESS||c!=VM_REGION_SUBMAP_INFO_COUNT_64||!*s)return 0;if(!i->is_submap)return 1;depth++;}return 0;
 }
+static int unsafe_allowed=0;
 static void emit(const char *label,mach_vm_address_t a,const vm_region_submap_info_data_64_t *i){
+ mach_vm_address_t basic_address=a;mach_vm_size_t basic_size=0;
+ vm_region_basic_info_data_64_t basic;memset(&basic,0,sizeof(basic));
+ mach_msg_type_number_t basic_count=VM_REGION_BASIC_INFO_COUNT_64;mach_port_t object=MACH_PORT_NULL;
+ kern_return_t basic_status=mach_vm_region(mach_task_self(),&basic_address,&basic_size,VM_REGION_BASIC_INFO_64,(vm_region_info_t)&basic,&basic_count,&object);
+ int port_released=object==MACH_PORT_NULL||mach_port_deallocate(mach_task_self(),object)==KERN_SUCCESS;
+ int basic_valid=basic_status==KERN_SUCCESS&&basic_count==VM_REGION_BASIC_INFO_COUNT_64&&basic_address<=a&&basic_size>a-basic_address&&port_released;
  char p[4096];int named=proc_regionfilename(getpid(),a,p,sizeof(p))>0;
  AxiomVmMetadata m={(unsigned)i->protection,(unsigned)i->max_protection,i->share_mode,i->external_pager,1};
- printf("%s decision=%d prot=%u max=%u share=%u external=%u submap=%u tag=%u inherit=%u shadow=%u resident=%u private_pages=%u refs=%u offset_zero=%d object_present=%d named=%d\n",label,axiom_classify_vm(&m),(unsigned)i->protection,(unsigned)i->max_protection,i->share_mode,i->external_pager,(unsigned)i->is_submap,i->user_tag,(unsigned)i->inheritance,i->shadow_depth,i->pages_resident,i->pages_shared_now_private,i->ref_count,i->offset==0,i->object_id_full!=0,named);
+ if((!strcmp(label,"file_shared_ro_fd_closed")||!strcmp(label,"owned_posix_shm_ro_fd_closed"))&&axiom_classify_vm(&m)==AXIOM_META_ALLOWED)unsafe_allowed++;
+ printf("%s decision=%d prot=%u max=%u share=%u external=%u submap=%u tag=%u inherit=%u shadow=%u resident=%u private_pages=%u refs=%u offset_zero=%d object_present=%d named=%d basic_valid=%d basic_shared=%d basic_reserved=%d\n",label,axiom_classify_vm(&m),(unsigned)i->protection,(unsigned)i->max_protection,i->share_mode,i->external_pager,(unsigned)i->is_submap,i->user_tag,(unsigned)i->inheritance,i->shadow_depth,i->pages_resident,i->pages_shared_now_private,i->ref_count,i->offset==0,i->object_id_full!=0,named,basic_valid,basic_valid?basic.shared:-1,basic_valid?basic.reserved:-1);
 }
 static int inspect(const char *label,void *p){mach_vm_address_t wanted=(uintptr_t)p,a=wanted;mach_vm_size_t s=0;vm_region_submap_info_data_64_t i;if(!leaf(&a,&s,&i)||a>wanted||s<=wanted-a)return 0;emit(label,a,&i);return 1;}
 int main(void){
@@ -47,5 +55,5 @@ int main(void){
  if(shmap==MAP_FAILED||mprotect(shmap,(size_t)page,PROT_READ)||close(shm))return 17;
  ok=inspect("owned_posix_shm_ro_fd_closed",shmap)&&ok;
  if(munmap(shmap,(size_t)page))return 18;
- if(munmap(alias,(size_t)page)||munmap(cow,(size_t)page)||munmap(anon,(size_t)page)||munmap(guard,(size_t)page)||munmap(shared,(size_t)page)||unlink(path)||rmdir(dir))return 9;puts("qualification=diagnostic_only identity=unavailable profile_executed=0");return ok?0:10;
+ if(munmap(alias,(size_t)page)||munmap(cow,(size_t)page)||munmap(anon,(size_t)page)||munmap(guard,(size_t)page)||munmap(shared,(size_t)page)||unlink(path)||rmdir(dir))return 9;puts("qualification=diagnostic_only identity=unavailable profile_executed=0");return !ok?10:unsafe_allowed?20:0;
 }

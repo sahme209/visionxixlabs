@@ -33,8 +33,8 @@ int main(void){
  assert(axiom_vm_leaf_progress(0,1,AXIOM_MAX_VM_REGIONS)==AXIOM_META_UNKNOWN);
  assert(axiom_vm_leaf_progress(4096,4096,0)==AXIOM_META_ALLOWED);
  AxiomVmMetadata vm={VM_PROT_READ|VM_PROT_WRITE,VM_PROT_READ|VM_PROT_WRITE,SM_PRIVATE,0,1};
- assert(axiom_classify_vm(&vm)==AXIOM_META_ALLOWED);
- vm.share_mode=SM_COW;assert(axiom_classify_vm(&vm)==AXIOM_META_ALLOWED);
+ assert(axiom_classify_vm(&vm)==AXIOM_META_REFUSED);
+ vm.share_mode=SM_COW;assert(axiom_classify_vm(&vm)==AXIOM_META_REFUSED);
  vm.share_mode=SM_SHARED;vm.external_pager=1;assert(axiom_classify_vm(&vm)==AXIOM_META_REFUSED);
  vm.protection=VM_PROT_READ;assert(axiom_classify_vm(&vm)==AXIOM_META_REFUSED); /* upgrade rights */
  vm.external_pager=0;assert(axiom_classify_vm(&vm)==AXIOM_META_REFUSED); /* no path != anonymous proof */

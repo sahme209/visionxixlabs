@@ -1,0 +1,6 @@
+{
+  "packages/verified-issuer-runtime/native/capability_inventory.c": "1ed3ea0d9caca0c78c1d3e1813716bea2015f677f94eb6e56e529cdcfbce584f",
+  "scripts/governance_local_issuer/native_tests/classifier_tests.c": "8fa292c836f38c4a8d4aef0116a13710e1673d855caf28f1d280667a15d1cc71",
+  "scripts/governance_local_issuer/native_tests/shared_mapping_regression.c": "ebabdb27cfd0790f2fd8cc6951d89da96835b2b3ecbb2c59056995f64d512035",
+  "scripts/governance_local_issuer/native_tests/mapping_shapes.c": "c0a442cc6ea1d1a1d80e24a40a0d7d08867197528826a385dfca37705ac093ed"
+}

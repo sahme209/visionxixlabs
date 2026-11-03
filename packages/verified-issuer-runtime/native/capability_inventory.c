@@ -41,10 +41,11 @@ AxiomMetadataDecision axiom_classify_vm(const AxiomVmMetadata *m){
  if(!m||!m->complete||m->external_pager>1||(m->protection&~7U)||(m->max_protection&~7U)||(m->protection&~m->max_protection))return AXIOM_META_UNKNOWN;
  switch(m->share_mode){case SM_COW:case SM_PRIVATE:case SM_EMPTY:case SM_SHARED:case SM_TRUESHARED:case SM_PRIVATE_ALIASED:case SM_SHARED_ALIASED:case SM_LARGE_PAGE:break;default:return AXIOM_META_UNKNOWN;}
  if(!(m->max_protection&VM_PROT_WRITE))return AXIOM_META_ALLOWED;
- if(m->share_mode==SM_COW||m->share_mode==SM_PRIVATE)return AXIOM_META_ALLOWED;
  /* Missing pathname is not anonymous-memory proof. Conservatively refuse every
   * shared/ambiguous maximum-write region, even if currently readonly. Public
-  * share_mode metadata itself still needs actual runtime qualification. */
+  * share_mode metadata itself still needs actual runtime qualification. Known
+  * MAP_SHARED file and POSIX shm fixtures can report SM_PRIVATE, so neither
+  * PRIVATE nor COW is sufficient authority to allow maximum-write regions. */
  return AXIOM_META_REFUSED;
 }
 static int fd_order(const void*a,const void*b){int x=((const struct proc_fdinfo*)a)->proc_fd,y=((const struct proc_fdinfo*)b)->proc_fd;return(x>y)-(x<y);}
