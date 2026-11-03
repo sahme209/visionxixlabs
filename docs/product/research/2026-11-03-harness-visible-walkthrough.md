@@ -17,3 +17,11 @@ Use task-led grouping rather than a large undifferentiated product list. Keep do
 ## Remaining
 
 Deep product and policy docs, true demo/media controls, complete navigation, role/plan comparison, responsive/keyboard/contrast and footer/trust destinations remain partial. No vendor compliance, deployment savings, universal enforcement, customer testimonial, pricing or token efficiency claim is adopted by Axiom. No images/copy/markup were imported. Browser tab25 retained as research handoff, not a customer deliverable.
+
+## Additional visible cost-product interaction pass
+
+Visited [Harness home](https://www.harness.io/) and followed its AI/cloud-cost product link to [the product page](https://www.harness.io/products/cloud-ai-cost-management). The page separates attribution, optimization and governance, then offers role-specific explanations, comparisons and FAQs. These are vendor descriptions, not independently tested capabilities or Axiom claims.
+
+Actual controls: the initial numeric ML-role click was invalidated by hydration and did not establish selection. A fresh semantic ML-role button click changed the role panel to model-development cost concerns. The FOCUS FAQ button changed `aria-expanded` to true by click and false by Enter. No sign-up, assessment, demo form, purchase, connector, chatbot or provider account was submitted. Screenshot is private research evidence only: outputs/axiom-reference-harness-cost-controls.png; no visual asset or layout copied into Axiom. Current reference tab31 retained for handoff.
+
+Original Axiom decision: explain supported outcomes by user task; keep optional detail subordinate and keyboard-operable. Token-efficiency work must measure quality-adjusted cost per successful outcome, including retries, rather than copy vendor percentages or infer cheaper operation. No cost-control feature or savings claim added from this research. Full six-reference audit remains partial, including deeper docs, demo playback, responsive, contrast and focus-return checks.
