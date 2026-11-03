@@ -1,5 +1,5 @@
 """Synthetic host command responses only; NEVER register or load XPC."""
-import contextlib,hashlib,importlib.util,io,json,tempfile,unittest
+import contextlib,hashlib,importlib.util,io,json,os,tempfile,unittest
 from pathlib import Path
 from unittest.mock import patch
 spec=importlib.util.spec_from_file_location('prepared',Path(__file__).with_name('run_prepared.py'))
@@ -19,7 +19,7 @@ class HostOrchestration(unittest.TestCase):
         if argv[0]=='/bin/launchctl':return {'exit':0 if self.loaded else 113,'timeout':False,'stdout':'','stderr':''}
         if operation=='--register-reviewed-unit' and self.lostAck:return {'exit':None,'timeout':True,'stdout':'','stderr':'synthetic lost acknowledgement'}
         if operation.startswith('--'):
-            data={'exactCallingBundle':not self.bundleMismatch,'bundleURL':str(self.app),'executableURL':str(self.app/'Contents/MacOS/AxiomOriginRegistrationHost'),'bundleIdentifier':'com.visionxixlabs.axiom.origin-unit.app','status':1 if self.registered else self.initialStatus}
+            data={'exactCallingBundle':not self.bundleMismatch,'bundleURL':os.path.realpath(self.app),'executableURL':os.path.realpath(self.app/'Contents/MacOS/AxiomOriginRegistrationHost'),'bundleIdentifier':'com.visionxixlabs.axiom.origin-unit.app','status':1 if self.registered else self.initialStatus,'serviceManagementAccessed':False}
             if operation=='--register-reviewed-unit':
                 data.update(registrationSucceeded=operation!=self.failure,postStatus=self.afterRegister)
                 if operation!=self.failure:self.registered=True

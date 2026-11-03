@@ -1,0 +1,26 @@
+{
+  "root": "/private/tmp/axiom-origin-unit-prepared-uvmsc9zv",
+  "manifestSha256": "2faef31436cc8a593ca32afa694948c2a57bc35532ff859f1d62349d44bfc1ce",
+  "compile": "PASS",
+  "strictAdHocSignature": "PASS",
+  "allPreparedFileHashesMatch": true,
+  "actualOrdinaryFoundationCases": {
+    "count": 6,
+    "result": "PASS",
+    "operations": "--inspect-reviewed-unit only",
+    "serviceManagementAccessed": false
+  },
+  "simulatedDriverCases": {
+    "count": 15,
+    "result": "PASS",
+    "scope": "owned filesystem with mocked command responses",
+    "initialFailure": "seven mocks returned /var spelling while Python realpath expected /private/var; corrected mock canonical metadata, not a new registration failure"
+  },
+  "serviceStatusRegistrationProbeExecuted": false,
+  "issuerIdentity": "unavailable",
+  "unchangedSuitesNotRepeated": [
+    "protocol",
+    "Node native negatives",
+    "selfdeadline"
+  ]
+}

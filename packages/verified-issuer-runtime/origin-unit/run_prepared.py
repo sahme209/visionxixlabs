@@ -4,8 +4,8 @@ Never imported by the application. Does not create an issuer identity.
 from pathlib import Path
 import hashlib,json,os,signal,stat,subprocess
 
-ROOT=Path('/private/tmp/axiom-origin-unit-prepared-2d_6kwi8')
-MANIFEST_SHA='25129462668fe5ef677af7283b09fda4d6d7c9d2defc443e7c8653c3906ca368'
+ROOT=Path('/private/tmp/axiom-origin-unit-prepared-uvmsc9zv')
+MANIFEST_SHA='2faef31436cc8a593ca32afa694948c2a57bc35532ff859f1d62349d44bfc1ce'
 SERVICE='com.visionxixlabs.axiom.origin-unit'
 
 def command(argv,seconds):
@@ -25,7 +25,7 @@ def host_result(result,app):
     if result['timeout']:raise AssertionError('host_response_unknown')
     data=json.loads(result['stdout'])
     assert isinstance(data,dict) and data.get('exactCallingBundle') is True
-    assert data.get('bundleURL')==str(app) and data.get('executableURL')==str(app/'Contents/MacOS/AxiomOriginRegistrationHost') and data.get('bundleIdentifier')=='com.visionxixlabs.axiom.origin-unit.app'
+    assert data.get('bundleURL')==os.path.realpath(app) and data.get('executableURL')==os.path.realpath(app/'Contents/MacOS/AxiomOriginRegistrationHost') and data.get('bundleIdentifier')=='com.visionxixlabs.axiom.origin-unit.app'
     return data
 
 def main():
@@ -55,6 +55,9 @@ def main():
         mac=app/'Contents/MacOS';host=mac/'AxiomOriginRegistrationHost';controller=mac/'AxiomOriginController'
         results['signature']=command(['/usr/bin/codesign','--verify','--deep','--strict',str(app)],10)
         assert results['signature']['exit']==0 and not results['signature']['timeout']
+        results['bundleInspection']=command([str(host),'--inspect-reviewed-unit'],5)
+        inspection=host_result(results['bundleInspection'],app)
+        assert results['bundleInspection']['exit']==0 and inspection.get('serviceManagementAccessed') is False,'bundle_inspection_failed'
         results['preStatus']=command([str(host),'--status-reviewed-unit'],5)
         status=host_result(results['preStatus'],app)
         assert results['preStatus']['exit']==0 and type(status.get('status')) is int and status['status'] in (0,3),'preexisting_pending_or_unknown_status'

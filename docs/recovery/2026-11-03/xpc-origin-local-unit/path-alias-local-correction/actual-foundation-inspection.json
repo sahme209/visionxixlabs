@@ -1,0 +1,57 @@
+{
+  "scope": "ordinary actual Foundation/filesystem only; no SMAppService construction/status/registration/probe",
+  "preparedRoot": "/private/tmp/axiom-origin-unit-prepared-uvmsc9zv",
+  "cases": [
+    {
+      "case": "private-tmp-alias",
+      "result": {
+        "exit": 0,
+        "stdout": "{\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"operation\":\"--inspect-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"serviceManagementAccessed\":false,\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "case": "tmp-alias",
+      "result": {
+        "exit": 0,
+        "stdout": "{\"rawBundleURL\":\"\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"operation\":\"--inspect-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"serviceManagementAccessed\":false,\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-unit-prepared-uvmsc9zv\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "case": "wrong-copy-refused",
+      "result": {
+        "exit": 65,
+        "stdout": "{\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Wrong Copy.app\",\"operation\":\"--inspect-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Wrong Copy.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Wrong Copy.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Wrong Copy.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Wrong Copy.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":false}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "case": "owned-fixture-positive",
+      "result": {
+        "exit": 0,
+        "stdout": "{\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\",\"operation\":\"--inspect-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"serviceManagementAccessed\":false,\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":true}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "case": "wrong-identifier-refused",
+      "result": {
+        "exit": 65,
+        "stdout": "{\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\",\"operation\":\"--inspect-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.wrong-fixture\",\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"exactCallingBundle\":false}\n",
+        "stderr": ""
+      }
+    },
+    {
+      "case": "wrong-process-main-refused",
+      "result": {
+        "exit": 65,
+        "stdout": "{\"rawBundleURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\",\"operation\":\"--inspect-reviewed-unit\",\"rawDeclaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AlternateMain\",\"executableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AlternateMain\",\"bundleURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\",\"declaredExecutableURL\":\"\\/private\\/tmp\\/axiom-origin-foundation-fixture-rrapca6m\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AlternateMain\",\"exactCallingBundle\":false}\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "fixtureRoot": "/private/tmp/axiom-origin-foundation-fixture-rrapca6m",
+  "casesPassed": 6,
+  "sourceSha256": "79d717e10bb7411b518148c39d9e35062d63588293f00fd56c0cfd4231b4884e"
+}

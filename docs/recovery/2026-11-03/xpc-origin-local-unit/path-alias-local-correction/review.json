@@ -1,0 +1,16 @@
+{
+  "reviewer": "origin_review",
+  "result": "PASS_with_preparation_scope",
+  "runnerSha256": "6cdedc5792a1fec4763a1175ca374f7312338679363509f333c2c2103ab1ee53",
+  "registrationHostSha256": "79d717e10bb7411b518148c39d9e35062d63588293f00fd56c0cfd4231b4884e",
+  "manifestSha256": "2faef31436cc8a593ca32afa694948c2a57bc35532ff859f1d62349d44bfc1ce",
+  "sourceReviewed": [
+    "C realpath plus exact filesystem identity",
+    "actual process main binding",
+    "inspect mode returns before SMAppService construction",
+    "canonical driver receipt comparisons",
+    "prior ownership/cleanup contract preserved"
+  ],
+  "noApiRunByReviewer": true,
+  "actualServiceEligibilityAndPositiveXpc": "unqualified"
+}

@@ -1,6 +1,6 @@
 # Local XPC origin component — first coherent unit
 
-**Current packet:** see [first-registration local correction](first-registration-local-correction/README.md). The `ze5igxef` preparation and review below remain historical; its one actual invocation stopped at the status gate, with no registration. Current corrected packet is `2d_6kwi8`, not yet executed.
+**Current packet:** see [path-alias local correction](path-alias-local-correction/README.md). Root/first-registration manifests and source hashes identify older frozen packets, not the current source. `ze5igxef` stopped at the status3 gate; `2d_6kwi8` stopped before SM at the raw path-alias mismatch. Both actual observations/consumed journals are preserved. New `uvmsc9zv` passed actual Foundation-only preflight but no service-status/registration/probe call.
 
 Approved local code/compilation/ordinary isolated tests only. Actual canonical `packages/verified-issuer-runtime/index.cjs` is unchanged and refuses. All candidate code is under `origin-unit/`; no production reader, activation or provider wiring changes.
 

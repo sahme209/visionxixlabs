@@ -1,5 +1,7 @@
 # Routine local first-registration correction
 
+**Historical frozen `2d_6kwi8` packet.** Its actual call stopped before SM at the path-alias guard. Source hashes in this folder are historical; current correction is [path-alias packet](../path-alias-local-correction/README.md). Do not run this consumed packet.
+
 This fixes the agent-added literal status0 precondition and unconditional unregister-on-registration-error assumption while preserving the original approved ownership/status/consent/cleanup contract. The stopped old invocation and its actual status3/missing-record evidence remain unchanged. No new host/API/service operation was executed during this correction.
 
 The revised registration-only native host validates its actual main bundle URL, executable and identifier before touching SMAppService, emits bounded structured status/error records, and rechecks known existing/pending status immediately before a registration request. The driver treats0/3 only as recorded prestatus;3 is not absence or authority. Only the OS's unambiguous successful registration response from that exact host establishes ownership for this invocation. Only postregistration Enabled1 permits the one controller probe. NO/error/timeout/lost acknowledgement never permits a probe or automatic unregister. Confirmed YES with RequiresApproval/unknown status permits only cleanup of that same known-owned app registration, without changing system consent.
