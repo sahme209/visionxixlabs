@@ -1,0 +1,13 @@
+{
+  "lib/desktop/__tests__/jiraAssociatedOutbound.pg.test.ts": "02208512a64c1caeed0d54d12f02ee207c1397e36c03422716864f9c5acae865",
+  "lib/desktop/associatedTicketActionsService.ts": "052c1535774c5f9f3d9ea8933183fd8cdbab334ed712c2191de5f9ff275652cf",
+  "lib/desktop/associatedTicketRequestService.ts": "5cf1dafaeab44e0174c681a69098a28e972785091d6aeb42d75c360a3e945c83",
+  "lib/desktop/jiraTicketCredential.ts": "8fb41f0f94308f3272807f6aa5f1706687200bf7377d92949fc641d4da52f31d",
+  "lib/governance/intelligence/__tests__/jiraOutboundDrain.test.ts": "05eca6f0e76d22b719d6bc038db795976635a4ca9f2d5b638a2d89c79326bf2b",
+  "lib/governance/intelligence/__tests__/jiraOutboundIssuer.test.ts": "cfb97fed80512afa1da383497057498f06b6d964f5504666deaf76f44c29d107",
+  "lib/governance/intelligence/jiraOutboundDrain.ts": "df6509df0f53572390cca60ac13abbce8721b71dc62d77d1d2e1ee9fb897f93d",
+  "lib/governance/intelligence/jiraOutboundIssuer.ts": "a41688288f638c743ea6bea58e37b3e2be64701506bc6012dc23491b51716b12",
+  "lib/releaseops/__tests__/jiraOutboundFreshness.test.ts": "ee23f54a8488861821cb46c1eaeb1e3371ada776672b088a5c83eaf54a59a99d",
+  "lib/releaseops/jiraTicketLifecycleStore.ts": "5ab091ff11125bf994c7f3606e6a16cd6847b7ebb5cd97fa997de5eea1d01344",
+  "lib/releaseops/jiraTicketTransport.ts": "a91d151ef71c88da423d519c1b79105d289b97099471aeba419a8905cf6cf71b"
+}

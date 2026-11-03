@@ -9,7 +9,8 @@ export const jiraTicketCredentialSchema=z.object({organizationId:z.string(),conn
 export interface JiraTicketTransportDependencies {
  /** Must re-read the durable dispatch claim, independent approval and current actors.
   * No production adapter is supplied by this module. Caller data is not authority. */
- assertCurrent:(actionId:string,candidate:Readonly<JiraTicketActionCandidate>,signal:AbortSignal)=>Promise<void>;
+ assertCurrent:(actionId:string,candidate:Readonly<JiraTicketActionCandidate>,signal:AbortSignal)=>Promise<void|(()=>void)>;
+ beforeSubmission?:(actionId:string,candidate:Readonly<JiraTicketActionCandidate>,signal:AbortSignal)=>Promise<()=>void>;
  readCredential:(candidate:Readonly<JiraTicketActionCandidate>,signal:AbortSignal)=>Promise<unknown>;
  fetchImpl?:typeof fetch;
  isEnabled?:()=>boolean;
@@ -45,7 +46,8 @@ export function createJiraTicketTransport(deps:JiraTicketTransportDependencies){
    if(c.kind==='link'&&c.payload.globalId!==jiraTicketRemoteLinkId({organizationId:c.organizationId,releaseId:c.releaseId,issueId:c.issue.id,evidenceId:c.evidence.id}))return{status:'refused'};
    const signal=AbortSignal.any([parent,AbortSignal.timeout(Math.max(0,deadline-Date.now()))]);
    const ensure=()=>{signal.throwIfAborted();if(Date.now()>=deadline||!(deps.isEnabled??(()=>process.env.AXIOM_JIRA_TICKET_WRITES_ENABLED==='true'))())throw Error('jira_ticket_transport_stopped')};
-   ensure();await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal),signal);ensure();
+   let currentFresh:(()=>void)|undefined;const current=async()=>{const fresh=await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal),signal);if(fresh!==undefined&&typeof fresh!=='function')throw Error('jira_ticket_transport_stopped');if(typeof fresh==='function')currentFresh=fresh;currentFresh?.();ensure()};
+   ensure();await current();
    const auth=jiraTicketCredentialSchema.parse(await untilAbort(deps.readCredential(structuredClone(c),signal),signal));ensure();
    if(auth.organizationId!==c.organizationId||auth.connectionId!==c.connectionId||auth.connectionRevision!==c.connectionRevision||auth.siteId!==c.siteId||auth.expiresAt<=deadline||!auth.scopes.includes('write:jira-work')||!auth.scopes.includes('read:jira-work'))return{status:'refused'};
    const base=`https://api.atlassian.com/ex/jira/${c.siteId}/rest/api/3`,fetcher=deps.fetchImpl??fetch;
@@ -59,14 +61,15 @@ export function createJiraTicketTransport(deps:JiraTicketTransportDependencies){
     if(matches.length!==1||observed.discoveryDigest!==c.transition.discoveryDigest)return{status:'refused'};
    }
    // Authority is checked again after credentials and any read, immediately before POST.
-   await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal),signal);ensure();
+   await current();
    const body=JSON.stringify(c.payload);if(Buffer.byteLength(body,'utf8')>24576)return{status:'refused'};
    const path=c.kind==='publish'?'/issue':`/issue/${c.issue.id}/${c.kind==='link'?'remotelink':'transitions'}`;
-   ensure();dispatched=true;const response=await request(path,{method:'POST',body});
+   let intentFresh:(()=>void)|undefined;if(deps.beforeSubmission){intentFresh=await untilAbort(deps.beforeSubmission(actionId,structuredClone(c),signal),signal);if(typeof intentFresh!=='function')throw Error('jira_ticket_transport_stopped')}
+   ensure();currentFresh?.();intentFresh?.();dispatched=true;const response=await request(path,{method:'POST',body});
    if(response.redirected){void response.body?.cancel().catch(()=>{});return{status:'unknown'}}
    if(c.kind==='publish'){
     if(response.status!==201){void response.body?.cancel().catch(()=>{});return{status:'unknown'}}
-    const saved=issue.parse(await readBoundedJiraJson(response,signal));ensure();await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal),signal);ensure();return{status:'confirmed',issue:{id:saved.id,key:saved.key}};
+    const saved=issue.parse(await readBoundedJiraJson(response,signal));ensure();await current();return{status:'confirmed',issue:{id:saved.id,key:saved.key}};
    }
    if(c.kind==='link'){
     if(![200,201].includes(response.status)){void response.body?.cancel().catch(()=>{});return{status:'unknown'}}
@@ -76,7 +79,7 @@ export function createJiraTicketTransport(deps:JiraTicketTransportDependencies){
     const saved=z.object({id:native,key:z.string(),fields:z.object({status:z.object({id:native,statusCategory:z.object({key:z.string()})})})}).parse(await read(`/issue/${c.issue.id}?fields=status`));
     if(saved.id!==c.issue.id||saved.key!==c.issue.key||saved.fields.status.id!==c.transition.targetStatusId||saved.fields.status.statusCategory.key!=='done')return{status:'unknown'};
    }
-   ensure();await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal),signal);ensure();return{status:'confirmed'};
+   ensure();await current();return{status:'confirmed'};
   }catch{return{status:dispatched?'unknown':'refused'}}
  }};
 }

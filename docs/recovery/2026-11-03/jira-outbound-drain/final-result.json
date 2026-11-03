@@ -1,0 +1,23 @@
+{
+  "focused": {
+    "files": 7,
+    "passed": 90,
+    "initial87Overlap": true,
+    "positiveIssuerAuthorityProvider": "simulated"
+  },
+  "scopedTypes": "pass after explicit existing publish refusal narrowing; initial errors retained",
+  "independentSourceReview": "pass; no important findings",
+  "actualPostgres": {
+    "session": 3045,
+    "passed": 12,
+    "fixture": "5x0bv768; stopped",
+    "composition": "actual mounted request-service, real stores/session/membership/connection locks/history/claims/drain/fixed transport",
+    "simulated": "request identity, historical source collection, provider responses, positive issuer"
+  },
+  "canonicalIssuer": "unavailable before claim",
+  "coveredProfiles": "none; activation unavailable",
+  "legacyJiraPublicationAndUnassociatedRoutes": "outside this adoption",
+  "serviceNowHistory": "unchanged",
+  "liveProviderRequests": 0,
+  "nativeProbeExecuted": false
+}

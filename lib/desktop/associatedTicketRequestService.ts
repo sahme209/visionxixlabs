@@ -1,3 +1,4 @@
+import {createJiraLinkOutboundDrain,createJiraCloseOutboundDrain,assertJiraOutboundIssuerAvailable} from '@/lib/governance/intelligence/jiraOutboundDrain';
 import {assertNoUncoveredGovernanceExecution} from '@/lib/governance/intelligence/uncoveredExecution';
 import {createServiceNowNativeLinkPreflight} from '@/lib/releaseops/serviceNowNativeLinkPreflight';
 import {inspectServiceNowPreflight} from '@/lib/releaseops/serviceNowPreflightInspection';
@@ -70,10 +71,11 @@ export function createAssociatedTicketRequestService(request:NextRequest,repo:Re
     if(c.kind==='publish'||!snEnabled()||s.actorUserId!==a.executorUserId)throw Error('ticket_provider_execution_unavailable');if(c.kind==='close'||c.kind==='link'&&c.freshAttempt)await administrator();
     const auth=serviceNowTicketCredentialSchema.parse(await snConnection.readCredential(s,c,signal));if(!auth.permissions.write||!auth.permissions.journalRead||auth.expiresAt<=Date.now()+15000)throw Error('servicenow_scoped_credential_unavailable');await snConnection.readJournalConfiguration(s,c,signal);if(c.kind==='link'&&c.association)await nativeLinkPreflight.validateBeforeClaim(c,signal);else{await nativePlan(s,c,signal);await current()}return;
    }if(!['link','close'].includes(c.kind))throw Error('ticket_provider_execution_unavailable');
+   assertJiraOutboundIssuerAvailable();
    if(!enabled()||s.actorUserId!==a.executorUserId)throw Error('ticket_provider_execution_unavailable');
    if(c.kind==='close')await administrator();const auth=jiraTicketCredentialSchema.parse(await readJiraTicketCredential(c,a.executorUserId,current,signal));if(!auth.scopes.includes('write:jira-work')||auth.expiresAt<=Math.min(Date.now()+15000,Date.parse(c.expiresAt)))throw Error('ticket_provider_credential_unavailable');await current();
   },
-  executeTransport:async(id,c,signal,assertClaim)=>{
+  executeTransport:async(id,c,signal,assertClaim,jiraOutbound)=>{
    const guardedAssertClaim:typeof assertClaim=async(...args)=>{await assertClaim(...args);await assertNoUncoveredGovernanceExecution(request,repo,scope,args[1])};
    if(!('siteId'in c)){
     if(c.kind==='publish'||!snEnabled())throw Error('ticket_provider_execution_unavailable');
@@ -82,7 +84,9 @@ export function createAssociatedTicketRequestService(request:NextRequest,repo:Re
     const transport=createServiceNowTicketTransport({consumeNativeLinkPreflight:candidate=>nativeLinkPreflight.consume(candidate),onRefusal:detail=>console.warn("axiom_servicenow_transport_refused",detail),isEnabled:snEnabled,assertCurrent:async(actionId,candidate,s,context)=>{if(actionId!==id)throw Error('ticket_action_changed');await current();await guardedAssertClaim(candidate,s,context)},readCredential:credential,assertNativePlan:(candidate,s)=>nativePlan(scope,candidate,s),...journal});
     return{status:(await transport.execute(id,c,signal)).status};
    }if(!['link','close'].includes(c.kind))throw Error('ticket_provider_execution_unavailable');
-   const transport=createJiraTicketTransport({isEnabled:enabled,assertCurrent:(actionId,candidate,s)=>{if(actionId!==id)throw Error('ticket_action_changed');return guardedAssertClaim(candidate,s)},readCredential:(candidate,s)=>readJiraTicketCredential(candidate,scope.actorUserId,current,s)});
+   if(!jiraOutbound||c.kind==='publish')throw Error('jira_outbound_unavailable');
+   const outbound=(c.kind==='link'?createJiraLinkOutboundDrain:createJiraCloseOutboundDrain)(repo,request,scope,id,jiraOutbound,{signal,isEnabled:enabled});
+   const transport=createJiraTicketTransport({isEnabled:enabled,beforeSubmission:outbound.beforeSubmission,assertCurrent:async(actionId,candidate,s)=>{if(actionId!==id)throw Error('ticket_action_changed');s.throwIfAborted();const proof=await repo.$transaction(tx=>(c.kind==='link'?jiraOutbound.readClaimedJiraLinkOutboundLocked:jiraOutbound.readClaimedJiraCloseOutboundLocked)(tx,scope,id,candidate));s.throwIfAborted();proof.fresh();return proof.fresh},readCredential:async(candidate,s)=>{await outbound.beforeCredential(candidate,s);return readJiraTicketCredential(candidate,scope.actorUserId,current,s)}});
    const result=await transport.execute(id,c,signal);return{status:result.status};
   },
  });
