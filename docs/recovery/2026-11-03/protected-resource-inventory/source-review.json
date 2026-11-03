@@ -1,0 +1,17 @@
+{
+  "reviewer": "root",
+  "result": "PASS_observation_component_scope",
+  "checked": [
+    "kernel typed declarations, bounded/progress/overflow and snapshot checks",
+    "exact dev/inode backing alias classification",
+    "readonly mountpoint verification and changing-identity refusal",
+    "unattributed VM retained as unproven, never inferred anonymous",
+    "private heap/COW behavior not globally denied",
+    "no old initializer, restriction, service or authority emitted"
+  ],
+  "limits": [
+    "actual Node/final package not tested",
+    "OBSERVED is not origin, full alias-absence or authorization",
+    "positive ordinary kernel fixture uses readonly OS root, not Axiom package"
+  ]
+}
