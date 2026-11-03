@@ -379,4 +379,3 @@ Ignored nodes: comments, script, style
       Tests  2 failed (2)
    Start at  16:51:56
    Duration  53.84s (transform 2.01s, setup 0ms, import 53.33s, tests 67ms, environment 387ms)
-
