@@ -1,0 +1,14 @@
+[
+  {
+    "profile": "original",
+    "exit": 1,
+    "stdout": "",
+    "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nPermissionError: [Errno 1] Operation not permitted: '/dev/null'"
+  },
+  {
+    "profile": "dev-null-only",
+    "exit": 0,
+    "stdout": "DEV_NULL_OPENED",
+    "stderr": ""
+  }
+]

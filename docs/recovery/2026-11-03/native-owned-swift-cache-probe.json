@@ -1,0 +1,21 @@
+{
+  "exit": 0,
+  "sdk": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network-outbound)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-native-30de2006-kq5nvkuu\"))(allow file-write* (literal \"/dev/null\"))",
+    "/usr/bin/xcrun",
+    "swiftc",
+    "-typecheck",
+    "-target",
+    "arm64-apple-macosx10.15",
+    "-sdk",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+    "-module-cache-path",
+    "/private/tmp/axiom-native-30de2006-kq5nvkuu/swift-cache-probe/module-cache",
+    "/private/tmp/axiom-native-30de2006-kq5nvkuu/swift-cache-probe/fixture.swift"
+  ],
+  "stdout": "",
+  "stderr": ""
+}
