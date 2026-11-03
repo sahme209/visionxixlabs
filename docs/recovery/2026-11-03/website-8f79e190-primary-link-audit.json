@@ -1,0 +1,599 @@
+{
+  "source": "8f79e190",
+  "primaryPages": [
+    "/",
+    "/product",
+    "/integrations",
+    "/security",
+    "/docs",
+    "/demo",
+    "/download"
+  ],
+  "results": [
+    {
+      "path": "/",
+      "fromPages": [
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/account/help",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "kind": "preview-disabled-account-action"
+    },
+    {
+      "path": "/api/desktop/download?platform=linux",
+      "fromPages": [
+        "/download"
+      ],
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "kind": "preview-disabled-account-action"
+    },
+    {
+      "path": "/api/desktop/download?platform=mac-arm",
+      "fromPages": [
+        "/download"
+      ],
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "kind": "preview-disabled-account-action"
+    },
+    {
+      "path": "/api/desktop/download?platform=mac-intel",
+      "fromPages": [
+        "/download"
+      ],
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "kind": "preview-disabled-account-action"
+    },
+    {
+      "path": "/api/desktop/download?platform=windows",
+      "fromPages": [
+        "/download"
+      ],
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "kind": "preview-disabled-account-action"
+    },
+    {
+      "path": "/auth/signin",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 403,
+      "expected": 403,
+      "passed": true,
+      "kind": "preview-disabled-account-action"
+    },
+    {
+      "path": "/axiom",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 403,
+      "expected": 200,
+      "passed": false,
+      "kind": "public-local-link",
+      "isolatedBackendStatus": 307,
+      "isolatedBackendLocation": "/product",
+      "classification": "preview intentionally refuses redirect; source alias is not a missing-route proof"
+    },
+    {
+      "path": "/cloud-solutions/azure",
+      "fromPages": [
+        "/integrations"
+      ],
+      "status": 403,
+      "expected": 200,
+      "passed": false,
+      "kind": "public-local-link",
+      "isolatedBackendStatus": 307,
+      "isolatedBackendLocation": "/integrations",
+      "classification": "preview intentionally refuses redirect; source alias is not a missing-route proof"
+    },
+    {
+      "path": "/cloud-solutions/gcp",
+      "fromPages": [
+        "/integrations"
+      ],
+      "status": 403,
+      "expected": 200,
+      "passed": false,
+      "kind": "public-local-link",
+      "isolatedBackendStatus": 307,
+      "isolatedBackendLocation": "/integrations",
+      "classification": "preview intentionally refuses redirect; source alias is not a missing-route proof"
+    },
+    {
+      "path": "/contact",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/demo",
+      "fromPages": [
+        "/",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/approval-workflow",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/architecture",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 403,
+      "expected": 200,
+      "passed": false,
+      "kind": "public-local-link",
+      "isolatedBackendStatus": 307,
+      "isolatedBackendLocation": "/docs/releaseops",
+      "classification": "preview intentionally refuses redirect; source alias is not a missing-route proof"
+    },
+    {
+      "path": "/docs/audit-logs",
+      "fromPages": [
+        "/docs",
+        "/security"
+      ],
+      "status": 403,
+      "expected": 200,
+      "passed": false,
+      "kind": "public-local-link",
+      "isolatedBackendStatus": 307,
+      "isolatedBackendLocation": "/docs/security-model",
+      "classification": "preview intentionally refuses redirect; source alias is not a missing-route proof"
+    },
+    {
+      "path": "/docs/aws-setup",
+      "fromPages": [
+        "/demo",
+        "/docs",
+        "/integrations"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/azure-setup",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/desktop-install",
+      "fromPages": [
+        "/docs",
+        "/download"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/execution-plans",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 403,
+      "expected": 200,
+      "passed": false,
+      "kind": "public-local-link",
+      "isolatedBackendStatus": 307,
+      "isolatedBackendLocation": "/docs/approval-workflow",
+      "classification": "preview intentionally refuses redirect; source alias is not a missing-route proof"
+    },
+    {
+      "path": "/docs/faq",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/gcp-setup",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/getting-started",
+      "fromPages": [
+        "/docs",
+        "/product"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/glossary",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/integration-setup",
+      "fromPages": [
+        "/docs",
+        "/integrations"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/oauth-setup",
+      "fromPages": [
+        "/integrations"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/permissions-model",
+      "fromPages": [
+        "/docs",
+        "/integrations",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/quickstart-checklist",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/releaseops",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/releaseops/connectors",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/releaseops/readiness",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/rollback",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/security-model",
+      "fromPages": [
+        "/docs",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/docs/source-modes",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 403,
+      "expected": 200,
+      "passed": false,
+      "kind": "public-local-link",
+      "isolatedBackendStatus": 307,
+      "isolatedBackendLocation": "/docs/security-model",
+      "classification": "preview intentionally refuses redirect; source alias is not a missing-route proof"
+    },
+    {
+      "path": "/docs/surfaces",
+      "fromPages": [
+        "/docs"
+      ],
+      "status": 403,
+      "expected": 200,
+      "passed": false,
+      "kind": "public-local-link",
+      "isolatedBackendStatus": 307,
+      "isolatedBackendLocation": "/docs",
+      "classification": "preview intentionally refuses redirect; source alias is not a missing-route proof"
+    },
+    {
+      "path": "/docs/troubleshooting",
+      "fromPages": [
+        "/docs",
+        "/download"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/download",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/integrations",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/plans",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/privacy",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/product",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/security",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/status",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/support",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    },
+    {
+      "path": "/terms",
+      "fromPages": [
+        "/",
+        "/demo",
+        "/docs",
+        "/download",
+        "/integrations",
+        "/product",
+        "/security"
+      ],
+      "status": 200,
+      "expected": 200,
+      "passed": true,
+      "kind": "public-local-link"
+    }
+  ],
+  "allPassed": false,
+  "limitations": [
+    "HTML anchor destinations from seven primary pages only; not recursive full-site coverage",
+    "No external destination, download bytes, authenticated route, fragment focus, browser keyboard or provider behavior verified",
+    "Accounts and API deliberately blocked in local preview",
+    "Eight local public redirects inspected without following; live public behavior and semantic adequacy remain unverified"
+  ]
+}
