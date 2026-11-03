@@ -1,0 +1,7 @@
+# Recorded materialization copy binding
+
+Based on fce7fd07 only; this branch does not replace newer main canonical code. Node and generated guard/bootstrap copies must match their original recorded overlay hashes, not merely a fresh hash of potentially changed source. Every regular copied file retains its source/content hash; before receipt creation and immediately before manifest creation the materializer rechecks the original overlay, all copied sources and packaged bytes. Explicit NFT relocations are checked against their recorded packaged transformation hash.
+
+Two ordinary deterministic mutation fixtures reproduce the defect on the original implementation: changing Node just after precheck, and changing an overlay source after copying. Both final RED tests failed because materialization wrongly succeeded. Both now refuse, remove the partial destination and emit no receipt. Initial harness import failure and an initial overly early mutation already refused by old code are preserved and not counted as final RED proof.
+
+After correction: targeted2 pass; complete overlay suite15 pass and existing materializer suite11 pass, each complete suite once. Fixtures use synthetic files/signature observations; no native build, image/mount/service, real runtime identity, provider or production action. No broad build was run. This closes observed copy/check gaps, not a hostile-host atomicity or completed runtime-qualification claim.

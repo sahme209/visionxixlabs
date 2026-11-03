@@ -1,0 +1,25 @@
+EE
+======================================================================
+ERROR: governance_local_issuer (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: governance_local_issuer
+Traceback (most recent call last):
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+ModuleNotFoundError: No module named 'scripts.governance_local_issuer'
+
+
+======================================================================
+ERROR: governance_local_issuer (unittest.loader._FailedTest)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: governance_local_issuer
+Traceback (most recent call last):
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/loader.py", line 154, in loadTestsFromName
+    module = __import__(module_name)
+ModuleNotFoundError: No module named 'scripts.governance_local_issuer'
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+FAILED (errors=2)

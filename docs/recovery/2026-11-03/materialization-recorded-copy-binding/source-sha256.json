@@ -1,0 +1,4 @@
+{
+  "scripts/governance_local_issuer/materialize.py": "f68f30913fa036ed53a586ec112fa84302f5af82694fb8938bc6575531202afc",
+  "scripts/governance_local_issuer/tests/test_native_overlay.py": "5f7cf08d82802edadeb7e7409d784ff61dee21c266191048bcae7196699c8dcf"
+}

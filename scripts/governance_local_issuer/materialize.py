@@ -134,6 +134,11 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
     destination.mkdir(mode=0o700)
     destination = destination.resolve()
     selected, folds, links, transformations = {}, {}, [], []
+    recorded_hashes = {}
+    if native_overlay is not None:
+        recorded_hashes[str(node)] = native_overlay['node']['sha256']
+        recorded_hashes.update({str(stage/name): item['sha256'] for name,item in native_overlay['stageArtifacts'].items()})
+    copied_bindings = {}
     active_targets = set()
     total = 0
     path_bytes = 0
@@ -198,6 +203,8 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
                 try: _, source_sha, _ = hash_regular(source,MAX_BYTES-total)
                 except PackageUnavailable as exc: refuse(str(exc)+":"+target)
             else: refuse("source_escape")
+            if str(source) in recorded_hashes and source_sha != recorded_hashes[str(source)]:
+                refuse('recorded_materialization_input_changed')
             total += info.st_size
             if total>MAX_BYTES or info.st_size>MAX_FILE_BYTES: refuse("materialization_byte_limit")
             # Read/copy no more than the reserved original size (+one growth
@@ -216,6 +223,7 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             finally:os.close(fd)
             if copied!=info.st_size or copy_hash.hexdigest()!=source_sha:refuse("copy_mismatch")
             if any(getattr(info,k)!=getattr(copied_info,k) for k in ("st_dev","st_ino","st_size","st_mtime_ns","st_ctime_ns")):refuse("source_changed_during_copy")
+            copied_bindings[target] = (source, source_sha)
             out.chmod(stat.S_IMODE(info.st_mode))
             after=source.lstat()
             if any(getattr(info,k)!=getattr(after,k) for k in ("st_dev","st_ino","st_size","st_mtime_ns","st_ctime_ns")):
@@ -223,6 +231,16 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             if source_sha != hash_regular(out)[1]:
                 refuse("copy_mismatch")
         else: refuse("special_source_file")
+
+    def verify_copy_bindings():
+        if native_overlay is not None and verify_overlay(stage,after_build=True)!=native_overlay:
+            refuse('native_overlay_materialization_input_changed')
+        relocated = {item['path']: item['packagedSha256'] for item in transformations}
+        for target,(source,expected) in copied_bindings.items():
+            if hash_regular(source)[1] != expected:
+                refuse('materialization_source_changed_after_copy')
+            if hash_regular(destination/target)[1] != relocated.get(target,expected):
+                refuse('materialization_output_changed_after_copy')
 
     try:
         for name in [".next","public","package.json","next.config.ts","tsconfig.json"]:
@@ -261,6 +279,7 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         for link in links:
             if not (destination/link["resolved"]).exists(): refuse("unmaterialized_link_target")
         native=collect_native_prerequisites(destination)
+        verify_copy_bindings()
         audit={"format":"axiom.local-issuer-materialization/2" if profile==ISOLATED_PROFILE else "axiom.local-issuer-materialization/1","source":details["source"],
                "buildReceiptSha256":receipt_sha,"copiedEntryCount":len(selected),
                "copiedFileBytes":total,"traceRelocations":transformations,"internalSymlinks":links,
@@ -286,6 +305,7 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         if native["unresolved"]: refuse("native_dependency_resolution_unavailable")
         provenance={"sourceRevision":details["source"],"archiveSha256":details["archiveSha256"],
                     "buildReceiptSha256":receipt_sha,"materializationReceiptSha256":digest(audit_bytes)}
+        verify_copy_bindings()
         write_manifest(destination,provenance,details["nodeVersion"],profile=profile)
         return {**verify_package(destination),"materializationReceipt":str(audit_path),
                 "sourceRevision":details["source"]}

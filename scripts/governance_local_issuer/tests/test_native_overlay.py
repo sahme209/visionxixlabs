@@ -106,6 +106,23 @@ class MaterializationOverlayTests(unittest.TestCase):
  def test_traced_diagnostic_refuses_instead_of_silent_omission(self):
   details,destination=self.prepare(True)
   with patch.object(material,'collect_native_prerequisites',return_value={'unresolved':[]}),self.assertRaisesRegex(PackageUnavailable,'outside_explicit_distribution'):material._materialize(details,'c'*64,self.node,destination,profile=ISOLATED_PROFILE)
+ def test_node_changed_after_overlay_precheck_cannot_be_copied_as_new_authority(self):
+  details,destination=self.prepare();original=n.verify_overlay;changed=False
+  def mutate_after_precheck(*args,**kwargs):
+   nonlocal changed
+   result=original(*args,**kwargs)
+   if not changed:
+    changed=True;self.node.write_bytes(b'CHANGED NODE AFTER PRECHECK')
+   return result
+  with patch.object(n,'verify_overlay',side_effect=mutate_after_precheck),patch.object(material,'collect_native_prerequisites',return_value={'unresolved':[]}),self.assertRaises(PackageUnavailable):material._materialize(details,'c'*64,self.node,destination,profile=ISOLATED_PROFILE)
+  self.assertTrue(changed);self.assertFalse(destination.exists());self.assertFalse((destination.parent/'materialization.json').exists())
+ def test_source_changed_after_copy_refuses_before_receipt_or_manifest(self):
+  details,destination=self.prepare()
+  def mutate_after_copy(root):
+   (self.stage/n.SOURCE_INPUTS[0]).write_bytes(b'CHANGED SOURCE AFTER COPY')
+   return {'unresolved':[]}
+  with patch.object(material,'collect_native_prerequisites',side_effect=mutate_after_copy),self.assertRaises(PackageUnavailable):material._materialize(details,'c'*64,self.node,destination,profile=ISOLATED_PROFILE)
+  self.assertFalse(destination.exists());self.assertFalse((destination.parent/'materialization.json').exists())
  def test_postbuild_native_mutation_refuses_without_stage_repair(self):
   details,destination=self.prepare();(self.stage/n.GENERATED_STAGE[0]).write_bytes(b'CHANGED')
   with self.assertRaises(PackageUnavailable):material._materialize(details,'c'*64,self.node,destination,profile=ISOLATED_PROFILE)
