@@ -8,7 +8,11 @@ is **USER-APPROVED LOCAL IMPLEMENTATION**, call
 `e3d8994aa36e4a64b7293ece87346e14`. Its scope is a closed package followed by a
 controlled pre-import launch and private same-module identity under a trusted-local-host
 model. The [additional native proposal](../2026-11-02/governance-native-bootstrap-proposal.md)
-remains pending specific approval. This audit adds no new acceptance gates.
+is not a blanket runtime qualification. A later exact one-run probe approval was granted and consumed; see the failed result below. Any revised mechanism or further execution remains separately reviewed. This audit adds no new acceptance gates.
+
+## Current experiment result
+
+The [exact prepared probe](native-nowrite-probe-preparation/review.md) was specifically approved and run once. Its [actual result](native-nowrite-probe-result/progress.md) fails required protection: path-based writes were denied, but pre-opened descriptor write/truncate succeeded and changed owned files. API initialization worked on this host; this is not a missing-API result. Approval is consumed; no retry, initializer, mount or identity activation is authorized. The primitive as tested is insufficient. Revise the controlled topology to address retained capabilities and real package/backing storage without dropping failed acceptance cases. Compilation or passing subsets do not qualify the runtime.
 
 ## Requirements mapped to current evidence
 
@@ -31,12 +35,9 @@ caller flags, policy text or mutable-data exception. It cannot be chained with a
 already-installed profile. The public API is deprecated/no-longer-supported; actual
 installation and required denial behavior must be tested rather than assumed.
 
-After explicit approval, the smallest sequence is:
+After this failed one-run experiment, the remaining sequence is:
 
-1. Implement the fixed native feasibility probe and owned positive/negative write
-   controls. Demonstrate the required package/backing-file operations and retained
-   descriptor cases; report unsupported behavior honestly. This first probe emits
-   no identity and authorizes no provider traffic.
+1. Preserve the failed matrix and prepare a concrete revised mechanism/topology for review. Do not repeat the consumed experiment or exclude retained-descriptor cases. Any next experiment requires appropriate specific authorization; no alternative is presumed qualified.
 2. If that mechanism is viable, complete the actual main-only, same-module private
    bootstrap and controlled launcher within the reviewed topology. Verify package,
    runtime, canonical native component and clean loader state before application
@@ -49,7 +50,7 @@ After explicit approval, the smallest sequence is:
    executing package digest for outbound binding. Current role/source/approval/
    claim/credential/drain authority remains independently mandatory.
 
-Until the native decision, source-level design and documentation work remain
+While the revised runtime topology is unqualified, approved source composition, design and documentation work remain
 available; no alternative weaker identity, another observer, source harness or new
 build is being implemented here. The pending boundary does not globally block B1,
 customer workflow or factual documentation work.

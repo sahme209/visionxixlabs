@@ -2,6 +2,10 @@
 
 Source reviewed: `6de76e7450cd905d952ba3eff3faa2511dcad684` (November 2, 2026). All paths below are repository-relative. This document is a read-only source classification, not a registered execution manifest, live acceptance, or permission to activate. No test, provider request, database query, mutation, flag change or deployment was run for this audit. Existing test sources and recorded receipts are identified separately.
 
+## November 3 source increments supersede the historical row status
+
+This catalog's detailed rows were reviewed at the November2 source above; do not treat their earlier gap labels as a fresh audit of today's code. The [master A2 evidence index](../../product/axiom-master-action-plan.md#a2-current-bounded-evidence) records newer actual merge/deployment, Agent ECS/branch/PR, Teams, Linear create/update/transition, Slack, Outlook and associated Jira outbound compositions with exact receipts and limits. These are local durable protocol increments, not positive runtime identity, complete admission, production registration or activation. Unlisted/legacy families still require their own actual-source qualification. Do not assume absence of a historical reviewer session field blocks composition when the existing approved action contract deliberately records reviewer actor identity and current membership instead; equally, do not invent such a field or claim that session qualification exists.
+
 ## Current decision
 
 **Activation remains unavailable.** `lib/governance/intelligence/requestService.ts` deliberately installs no `verifyCoverage`, returns `coveredActions: []` from `readExecutionCoverage`, and throws from `activate`. `revisionStore.ts` independently requires trusted `verifyCoverage` inside the same organization-locked activation transaction. Neither this catalog nor a flag is that port.

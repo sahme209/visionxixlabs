@@ -1,0 +1,28 @@
+fixture=/private/tmp/axiom-nowrite-probe-TQckLUzj
+case=control operation=create rc=0 errno=0 expected=1
+case=control operation=write rc=0 errno=0 expected=1
+case=control operation=truncate rc=0 errno=0 expected=1
+case=control operation=rename rc=0 errno=0 expected=1
+case=control operation=unlink rc=0 errno=0 expected=1
+case=control operation=chmod rc=0 errno=0 expected=1
+case=control operation=timestamp rc=0 errno=0 expected=1
+case=control operation=retained_write rc=0 errno=0 expected=1
+case=control operation=retained_truncate rc=0 errno=0 expected=1
+case=control operation=retained_chmod rc=0 errno=0 expected=1
+case=control operation=backing_file_write rc=0 errno=0 expected=1
+case=control operation=hardlink_write rc=0 errno=0 expected=1
+case=control parent_file_comparison=1
+case=restricted operation=create rc=-1 errno=1 expected=1
+case=restricted operation=write rc=-1 errno=1 expected=1
+case=restricted operation=truncate rc=-1 errno=1 expected=1
+case=restricted operation=rename rc=-1 errno=1 expected=1
+case=restricted operation=unlink rc=-1 errno=1 expected=1
+case=restricted operation=chmod rc=-1 errno=1 expected=1
+case=restricted operation=timestamp rc=-1 errno=1 expected=1
+case=restricted operation=retained_write rc=0 errno=0 expected=0
+case=restricted operation=retained_truncate rc=0 errno=0 expected=0
+case=restricted operation=retained_chmod rc=-1 errno=1 expected=1
+case=restricted operation=backing_file_write rc=-1 errno=1 expected=1
+case=restricted operation=hardlink_write rc=-1 errno=1 expected=1
+case=restricted parent_file_comparison=0
+native_sandbox_profile_unsupported

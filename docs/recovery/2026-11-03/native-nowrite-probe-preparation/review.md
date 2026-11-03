@@ -1,4 +1,6 @@
-# Concrete named-NoWrite probe — prepared, not executed
+# Concrete named-NoWrite probe — original compile-only preparation
+
+**Follow-up:** the specifically approved one-run experiment has now completed and failed required retained-descriptor protection. [Actual result](../native-nowrite-probe-result/progress.md). The preparation statements below describe the earlier compile-only checkpoint; execution approval is consumed, not pending.
 
 This artifact makes the separately pending native experiment inspectable. Source preparation and compilation do not approve execution, install a restriction, establish immutable launch, or produce executing identity. The canonical issuer readers, package/launcher code and all production availability remain unchanged.
 
