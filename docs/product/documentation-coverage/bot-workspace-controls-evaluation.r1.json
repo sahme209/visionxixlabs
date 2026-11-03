@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.bot.workspace-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:ba189969f5e76050489e62c35881fd4296d5685a",
+  "articleSha256": "ded462d26b4f0da6fd0fea43806ff703904e7afd116ba418dfc24b38c6f86499",
+  "status": "proposed-not-executed",
+  "scope": "Required companion schema fixture only. Proposed future retrieval responses have not been evaluated; no model/network/retrieval execution or customer content authority.",
+  "cases": [
+    {
+      "id": "bot-workspace-save-versus-send",
+      "question": "Does Save task draft send my message to AI?",
+      "requiredResponse": "Distinguish explicit workspace save from AI Send; save starts no execution.",
+      "requiredCitation": "axiom.help.bot.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose that approved applicable evidence is unavailable"
+    },
+    {
+      "id": "bot-workspace-uncertain-save-update",
+      "question": "My save reply disappeared. Can I retry?",
+      "requiredResponse": "Distinguish retained create clientRequestId from update expectedVersion; a committed update may conflict and needs Review saved version. This is not an AI/provider resend.",
+      "requiredCitation": "axiom.help.bot.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose that approved applicable evidence is unavailable"
+    },
+    {
+      "id": "bot-workspace-unknown-ai",
+      "question": "The AI response is unknown. Should I send again?",
+      "requiredResponse": "Use Check task on the original request; no automatic resend, deletion or duplicate task workaround. Distinct-work escape preserves the blocked unknown original.",
+      "requiredCitation": "axiom.help.bot.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose that approved applicable evidence is unavailable"
+    },
+    {
+      "id": "bot-workspace-provider-action",
+      "question": "Can Bot Send post my Slack message without a reviewer?",
+      "requiredResponse": "No. AI Send uses no tools. Exact task-linked provider action needs current access and a genuine distinct human review, then separate requester execution.",
+      "requiredCitation": "axiom.help.bot.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose that approved applicable evidence is unavailable"
+    },
+    {
+      "id": "bot-workspace-evidence-sharing",
+      "question": "Will selecting GitHub evidence merge it or send it to AI?",
+      "requiredResponse": "Evidence read/selection does not merge/deploy or itself sendAI; explicit nextSend shares the selected exact-version recorded snapshot with approvedAI, and source may be stale.",
+      "requiredCitation": "axiom.help.bot.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose that approved applicable evidence is unavailable"
+    },
+    {
+      "id": "bot-workspace-computer-unknown",
+      "question": "Can you repeat my TextEdit action because it timed out?",
+      "requiredResponse": "No. Check saved outcome; input may already have happened. Preserve native one-attempt history; capture is not action approval.",
+      "requiredCitation": "axiom.help.bot.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose that approved applicable evidence is unavailable"
+    },
+    {
+      "id": "bot-workspace-version-and-draft",
+      "question": "Can support use this draft for my installed release?",
+      "requiredResponse": "Refuse customer eligibility: internal draft, local-preview version and missing genuine editorial/shipped acceptance. Exact-version/source evidence and real approval are required.",
+      "requiredCitation": "axiom.help.bot.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose that approved applicable evidence is unavailable"
+    }
+  ]
+}

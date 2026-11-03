@@ -1,0 +1,17 @@
+{
+  "sourceRevision": "ba189969f5e76050489e62c35881fd4296d5685a",
+  "articlePath": "docs/product/documentation-coverage/articles/bot-workspace-controls.r1.json",
+  "articleSha256": "ded462d26b4f0da6fd0fea43806ff703904e7afd116ba418dfc24b38c6f86499",
+  "evaluationPath": "docs/product/documentation-coverage/bot-workspace-controls-evaluation.r1.json",
+  "evaluationSha256": "ee579650e265cf3852a6d92dc0b262210acb8a5eaae628298b8aa2dda6ec6376",
+  "validatorPath": "docs/product/documentation-coverage/validate-support-knowledge.cjs",
+  "validatorSha256": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+  "ordinaryValidationExit": 0,
+  "customerValidationExit": 1,
+  "evaluationExecution": "not_performed_proposed_only",
+  "sourceFiles": 16,
+  "proposedCases": 7,
+  "customerEligible": false,
+  "reviewerRecorded": false,
+  "mediaCount": 0
+}

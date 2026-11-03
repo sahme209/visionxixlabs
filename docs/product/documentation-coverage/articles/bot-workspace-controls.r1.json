@@ -1,0 +1,221 @@
+{
+  "schema": 1,
+  "id": "axiom.help.bot.workspace-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Axiom Bot: drafts, AI responses and separately reviewed actions",
+  "productVersion": "local-source-preview:ba189969f5e76050489e62c35881fd4296d5685a",
+  "screenIds": [
+    "proposed.axiom.screen.desktop.bot"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.bot.save-draft",
+    "proposed.axiom.control.bot.send-ai-response",
+    "proposed.axiom.control.bot.check-task",
+    "proposed.axiom.control.bot.app-actions",
+    "proposed.axiom.control.bot.workspace-report",
+    "proposed.axiom.control.bot.read-github-evidence",
+    "proposed.axiom.control.bot.select-window",
+    "proposed.axiom.control.bot.prepare-text-edit",
+    "proposed.axiom.control.bot.check-saved-input-outcome"
+  ],
+  "goal": "Distinguish local editing, saved draft content, explicit AI response requests, recorded reads and separately reviewed provider/computer operations without treating history, approval or uncertainty as execution success.",
+  "prerequisites": [
+    "Internal source-only local-preview authoring record derived from the preserved Markdown draft; no shipped-version, customer availability, media or native acceptance.",
+    "A current verified paired desktop workspace session; current task ownership/version and relevant server capability must be checked independently for each workflow.",
+    "AI sending additionally needs current verified recovery storage, enabled service/capability and an available permitted selected model. No AI call is authorized by this record.",
+    "Reports/evidence history and task-linked actions require a saved clean task; GitHub reads require a stored submitted-release target and current read access; native observation requires supported macOS15.2+ and current native capability."
+  ],
+  "permissions": [
+    "Typing locally does not upload. Save uploads content explicitly; AI Send may share saved instruction/context and selected evidence with the approved model, but uses no tools or provider mutation.",
+    "Opening Connect apps or App actions grants no connection scope or execution authority. Current server/task/connection checks remain independent.",
+    "A required independent review is a personal decision by a different eligible person; this record, its metadata and a checkbox do not make that decision.",
+    "Computer actions remain a separately authorized exact ordinary TextEdit path with native confirmation, foreground and one-attempt checks; observation is not input approval."
+  ],
+  "steps": [
+    {
+      "instruction": "Open Axiom Bot in the current verified paired workspace. Connect apps opens separate integration management and grants no Bot action authority.",
+      "effect": "read",
+      "expectedState": "A current owned editor is available, or the UI explicitly requests a paired workspace session."
+    },
+    {
+      "instruction": "Type an instruction in What should Axiom Bot help with? Open Task details → Details to edit Bot task title and Context to include. Do not include secrets. Keep instruction/context within4,000characters each, title200 and combined serialized content16KiB.",
+      "effect": "local-preference",
+      "expectedState": "Editing stays local; invalid oversized text is retained for correction. The automatic title stops changing after manual title editing."
+    },
+    {
+      "instruction": "Choose Save task draft only when you intend to upload the content to the signed-in workspace. Saving is separate from AI sending.",
+      "effect": "propose",
+      "expectedState": "Task draft saved. No execution started. An opened draft updates against its expected version."
+    },
+    {
+      "instruction": "Use Tasks, Filter loaded tasks, Refresh saved tasks and More saved tasks to find loaded/saved drafts. Opening a different saved task or New draft requires confirming replacement when unsaved edits exist; Keep editing preserves the editor. History and Older history read saved content only.",
+      "effect": "read",
+      "expectedState": "Draft/version and recorded content are visible; history is not execution evidence or provider success."
+    },
+    {
+      "instruction": "Check Refresh AI setup and the permitted selected model before Send. The current Bot hook offers approved Vercel Gateway choices only. Choose Send or Enter to explicitly request an AI response; Shift+Enter inserts a newline and IME composition is not sent.",
+      "effect": "execute",
+      "expectedState": "The exact saved task version is verified before the explicit AI request. A saved text response records model/time and No tools used; no provider action runs."
+    },
+    {
+      "instruction": "Use Check task, Recent AI task activity, a recorded run or Open associated task to inspect the exact stored AI outcome. Cancel task requests stopping an eligible pending run, not a refund or a provider rollback.",
+      "effect": "read",
+      "expectedState": "Current saved status distinguishes pending, saved response, stopped-before-dispatch, cancellation and unknown result; it does not infer a result from elapsed time."
+    },
+    {
+      "instruction": "For a saved unchanged task, open App actions → Open workspace report and explicitly confirm recorded metadata before Create readiness report. Refresh reports, Check report and recent reports read the original stored report; Cancel report requests stopping a pending report.",
+      "effect": "propose",
+      "expectedState": "A recorded metadata report is separate from fresh provider discovery, AI response and action authorization. Saved artifact time/version remains visible."
+    },
+    {
+      "instruction": "Open GitHub evidence, choose a Submitted release and Stored pull request, confirm read-only evidence and select Read evidence when current access permits. Refresh evidence, Check saved read and Cancel read concern the same recorded read.",
+      "effect": "read",
+      "expectedState": "Only the selected stored target is read; no merge/deployment. Pending/unknown reads block a new start."
+    },
+    {
+      "instruction": "Optionally choose Use in next AI response on completed exact task-version evidence. Review the selected snapshot; Send shares it with the approved AI provider. Clear selected evidence removes the opt-in, and editing task/owner/version invalidates an old selection.",
+      "effect": "local-preference",
+      "expectedState": "Recorded source may have changed; selection does not grant merge/deploy permission or send the AI request by itself."
+    },
+    {
+      "instruction": "Explore Jira form reads supported choices, not ticket execution evidence. Slack notification, Teams message and Linear issue open separate task/version/connection-bound workflows; a distinct authorized human must personally approve exact provider target/content before the requester executes.",
+      "effect": "read",
+      "expectedState": "Opening a form/panel sends no provider mutation. Bot Send remains AI-response-only. Nested provider controls require their separate reviewed guide."
+    },
+    {
+      "instruction": "In Task details → Computer, Select window uses the macOS picker. With supported native capability, Capture once observes only that selected window in app memory; Stop ends observation.",
+      "effect": "read",
+      "expectedState": "No capture is saved or sent to AI. Paused/expired selection, changed task/workspace or leaving the panel prevents continued observation until valid revalidation/selection."
+    },
+    {
+      "instruction": "Only when already authorized/currently available, Act once → Exact replacement text → Prepare one text edit displays the exact ordinary TextEdit target, before/after and expiry. Confirm one action requires separate native confirmation and foreground validation.",
+      "effect": "propose",
+      "expectedState": "Preparation does not edit. Normal edits require explicit foreground handoff; only the separately confirmed disposable test permits its bounded activation exception. Saved documents otherwise refuse; browser/password/file/mouse actions and AI sharing are unavailable."
+    },
+    {
+      "instruction": "Use Close task list or Close task details to return focus to their triggers. Inspector tabs support Left/Right, Home and End. Workspace report is the visible label for the internal Library tab.",
+      "effect": "local-preference",
+      "expectedState": "Navigation changes no provider state; current native focus/accessibility acceptance remains pending."
+    }
+  ],
+  "expectedOutcome": "A user can identify which named operation is local, a save, an AI call, a recorded read or a separately governed action, and choose original-record recovery rather than repeating uncertain effects.",
+  "limitations": [
+    "All screen/control IDs beginning proposed. are authoring identifiers only; they are not installed UI help bindings, registered controls or permanent public IDs.",
+    "This first draft condenses the preserved source-reviewed Markdown; it does not complete every nested provider form, native control/state, source-to-control inventory or whole-app documentation.",
+    "The source Markdown retains its earlier21f4351f snapshot context; this record binds exact current ba189969 source hashes. No Markdown/history is rewritten to imply shipped availability.",
+    "No genuine editorial/release approval is recorded: review fields are null; media is empty and native/browser/shipped-version acceptance is pending.",
+    "Source/hash validation cannot prove semantic accuracy, actual access, complete runtime coverage, Governance completion, live provider results or current connection health.",
+    "AI stopped-before-dispatch and cancellation labels describe saved AI request state, not a promise that all network work or billing has stopped. Unknown records remain unresolved.",
+    "Local computer capture is memory-only/noAI; the fixture-only input exception is not general computer control. An article never supplies OS sharing selection or action consent.",
+    "No customer/local/cloud support assistant, ingestion/catalog authority, retrieval activation, publication or executed retrieval evaluation is created by this bundle."
+  ],
+  "recovery": [
+    "Unconfirmed draft creation retains its original clientRequestId/content. Existing-task update retains its original expectedVersion; a committed update with lost response can conflict. Use Review saved version before deciding which edits to retain; draft-save recovery is not an AI/provider resend.",
+    "For AI outcome_unknown, Check task on the same request and preserve original history. There is no automatic resend. Keep record and start another task opens distinct work while the old task remains blocked; it is not a duplicate-call workaround.",
+    "A corrupt/unavailable AI recovery marker/storage blocks sending. Do not delete markers, invent another nonce or infer no charge to clear uncertainty.",
+    "For unconfirmed/pending GitHub evidence, Check saved read; no merge/deployment or new-start permission follows. Retry same report, when offered, retains the original metadata-report request and is not a provider write retry.",
+    "For input unknown, Check saved outcome; input may already have occurred. Never repeat the action merely because a response/foreground handoff timed out. Stop action does not undo a prior edit.",
+    "Workspace/context/task version changes invalidate prior owned state/evidence selection. Reopen under the current verified identity; do not adopt another user/task approval or historical access."
+  ],
+  "searchTerms": [
+    "Axiom Bot",
+    "Save task draft",
+    "Send",
+    "Enter to send",
+    "Shift Enter newline",
+    "Retry same save",
+    "Review saved version",
+    "Outcome unconfirmed",
+    "Check task",
+    "Recent AI task activity",
+    "App actions",
+    "Workspace report",
+    "Read evidence",
+    "Use in next AI response",
+    "Select window",
+    "Confirm one action",
+    "Check saved outcome"
+  ],
+  "sources": [
+    {
+      "path": "docs/product/knowledge/axiom-bot-controls.md",
+      "sha256": "0f619d0ce04d74234ce129ffa9e6769302fa3377c093014404337c13e17af8dc"
+    },
+    {
+      "path": "desktop/src/views/AxiomBotView.tsx",
+      "sha256": "a0de62b5da8223df441dc5d1cbf501f1227daa23071f733df179ee055f31b02d"
+    },
+    {
+      "path": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "sha256": "674db35fb998470416d0f853978d7ddaad3e9c3e97508b5e84b7c10938890a14"
+    },
+    {
+      "path": "desktop/src/components/BotTaskComposer.tsx",
+      "sha256": "b87aa9c4086801d34367dafee5baeabf934d90fa883612151e2d1ee4f3e95d5f"
+    },
+    {
+      "path": "desktop/src/components/BotAiTaskActivity.tsx",
+      "sha256": "0e8c5a97979ed1994f1584835592e91350f72d6ba689836ca5d28e03bc576c9d"
+    },
+    {
+      "path": "desktop/src/lib/useBotAiTask.ts",
+      "sha256": "9966d47fcfc4b983adb1bbf07f381270f588423ce0b9a123213251fb9fb4e1f5"
+    },
+    {
+      "path": "desktop/src/components/BotAppActionLauncher.tsx",
+      "sha256": "db1972fc75e387591c071ff7d3b905b8690dfe0c79582db555e7e543a35ae3c4"
+    },
+    {
+      "path": "desktop/src/components/BotConnectedActionsPanel.tsx",
+      "sha256": "6d49b0a7ee3c635ad984cf6f8248bfe49317a1c45a890edf476a43fb5678ded2"
+    },
+    {
+      "path": "desktop/src/components/BotReadinessReportPanel.tsx",
+      "sha256": "23a7828a631e045abd44af1fe7d4846f926011c3833ddd6ec13f934f080b2d0f"
+    },
+    {
+      "path": "desktop/src/components/BotPullRequestEvidencePanel.tsx",
+      "sha256": "5910537f5936d1c7b87ad9faa2495cbe29bdfa9cf64d57beea691b7fcd21fae5"
+    },
+    {
+      "path": "desktop/src/components/BotComputerObservationPanel.tsx",
+      "sha256": "ad7d3e6a146f12240c467c9164776bbc61fb696cba9b2bd51262a30be007409a"
+    },
+    {
+      "path": "desktop/src/components/BotComputerInputPanel.tsx",
+      "sha256": "1972bc80378b5ed8f2716e9d700cacb5efe626bf145446a0efdc7145f8e9da04"
+    },
+    {
+      "path": "lib/axiom/bot/actionTaskBinding.ts",
+      "sha256": "63499033bbface2de3f1313627d035dc2b42c5996f59dc52a4664d83c71d0820"
+    },
+    {
+      "path": "lib/axiom/bot/savedTaskHttp.ts",
+      "sha256": "00800b6776c48cb4db92f1e28034caf67ae8585af85eed089e509fe9e1d20d9f"
+    },
+    {
+      "path": "lib/axiom/bot/savedTaskSchema.ts",
+      "sha256": "7c57f46da3fa917355d91cb5ffc44d3f6ccd3d6ece7eb451fd52931c8d9bed80"
+    },
+    {
+      "path": "lib/axiom/bot/aiTaskHttp.ts",
+      "sha256": "9901d1ce12636b5540a9c7f89bb2340d8c9e3a36d91b6614389df3913df7b8fa"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/axiom-bot-controls.md"
+    ],
+    "verifiedVersion": "local-source-preview:ba189969f5e76050489e62c35881fd4296d5685a",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
