@@ -1,0 +1,18 @@
+{
+  "tests": {
+    "red": "3 failed against redirect",
+    "green": "3 passed; work/audit-evidence-guide/green.log"
+  },
+  "scopedTypes": "Node24 tsc work/audit-evidence-guide/tsconfig.json terminal0",
+  "independentReview": "governance_scope_efficiency source/content PASS, no important findings",
+  "files": {
+    "app/docs/audit-logs/page.tsx": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945",
+    "app/docs/audit-logs/__tests__/page.test.ts": "3bdfa81fc864f68255e18fd7ee852f22034ae3bf618dca92af13e91a5299eaa8"
+  },
+  "limits": [
+    "local source only",
+    "not built into current preview",
+    "not deployed",
+    "not full B4 coverage"
+  ]
+}
