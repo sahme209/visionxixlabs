@@ -1,0 +1,8 @@
+{
+  "core.cjs": "377e90d5800eec1129e0aec6fe4cae6f8edccb7b60f0f2c685bc6719666bc2b1",
+  "cli.cjs": "fc393fe468796f6146ee8dd3796cfcbc2a9555ff07a6f04d5fc3cd4947a284dd",
+  "evaluate.cjs": "f5df25c22c02f4afcbf66a808c8037e0fcbcf84febd89c0a016c38eeb6467ada",
+  "README.md": "20032d6c3b4a061639556bdd88dfd89af3babaeb452a0e9f7b44920eac99b45c",
+  "fixtures/make-fixture.cjs": "58f15fbc90ff6457dcc013033eef8c2750913e3cb534d75bed963a5b3076fd51",
+  "tests/pipeline.test.cjs": "e0096d6e27994ceaf22b650ba2d30d1ebaedafde5ae7065deb5c0226ffdae46f"
+}

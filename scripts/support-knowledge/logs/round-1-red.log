@@ -1,0 +1,74 @@
+✔ ordinary entry cannot bless caller trust (0.606458ms)
+✔ synthetic exact extraction, canonical citation and determinism (5.110333ms)
+✔ version (1.5465ms)
+✔ expired (1.196125ms)
+✔ replay (0.993458ms)
+✔ real forgery (0.945416ms)
+✔ generation (1.034917ms)
+✔ secret (0.897916ms)
+✔ article tamper (1.062792ms)
+✔ source tamper (1.551916ms)
+✔ evidence tamper (1.249708ms)
+✔ duplicate (1.225333ms)
+✔ revoked (1.207334ms)
+✔ missing replacement metadata (1.000917ms)
+✔ tie (1.198125ms)
+✔ missing context (1.1605ms)
+✔ destination version (1.0845ms)
+✔ pointer (1.447042ms)
+✔ unknown field (0.975583ms)
+✔ unsupported (1.07825ms)
+✔ oversized question (1.045209ms)
+✔ strict JSON rejects duplicate, invalid scalar and malformed bytes (0.245375ms)
+✔ reader rejects traversal, escapes and oversized files (1.855584ms)
+✔ ordinary CLI refuses forged flags and real drafts without leaking (392.510167ms)
+✔ actual simulation evaluator enforces suite digest and exact assertions (160.775125ms)
+✔ all safety context exceeds three: refuses without truncation (1.9325ms)
+✔ media and transcript bytes bound independently (2.36775ms)
+✔ internal and draft metadata excluded from simulated public result (1.29325ms)
+✔ malicious prose remains inert literal data (1.382541ms)
+✔ superseded predecessor cannot resurrect on revoked or missing replacement (2.226917ms)
+✔ cycles and forks refuse complete catalog (1.971708ms)
+✔ distinct article same pointer and group always ambiguous (1.67925ms)
+✔ missing symmetric conflict refuses (1.511083ms)
+✔ exact version release match never folds case or semver (1.027333ms)
+✔ changed catalog without fresh pin fails closed (0.940625ms)
+✔ evaluator fails wrong citation digest or pointer despite plausible quote (83.317042ms)
+✔ bounded catalog, source and case limits reject rather than partially select (2.648209ms)
+✖ context step must include instruction, state and effect (1.8685ms)
+✔ complete step selection succeeds with all three fields (1.825459ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 38
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 789.982834
+
+✖ failing tests:
+
+test at scripts/support-knowledge/tests/pipeline.test.cjs:27:1
+✖ context step must include instruction, state and effect (1.8685ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 'integrity_failure'
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/support-knowledge/tests/pipeline.test.cjs:27:149)
+      at Test.runInAsyncScope (node:async_hooks:213:14)
+      at Test.run (node:internal/test_runner/test:1106:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:788:18)
+      at Test.postRun (node:internal/test_runner/test:1235:19)
+      at Test.run (node:internal/test_runner/test:1163:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 'integrity_failure',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+exit=1

@@ -1,0 +1,26 @@
+✔ ordinary CLI refuses forged flags and real drafts without leaking (379.396417ms)
+✔ context step must include instruction, state and effect (50.172292ms)
+✔ complete step selection succeeds with all three fields (41.158375ms)
+✔ kernel boundary denies intermediate directory swap before any outside bytes (8.464333ms)
+✔ special-file replacement is kernel denied without waiting for a writer (8.544ms)
+✔ 16 MiB total read bound accepts boundary and refuses one byte over (107.356ms)
+✔ 256 proposed evaluation cases accepted; 257 refused by actual pipeline (71.596042ms)
+✔ all exact unchanged real drafts fail metadata gate and actual bounded byte pipeline (149.637458ms)
+✔ literal safe operational guidance: lost acknowledgement (41.1775ms)
+✔ literal safe operational guidance: consumed attempt (39.914083ms)
+✔ literal safe operational guidance: missing record (39.973209ms)
+✔ literal safe operational guidance: unsupported AWS (40.805333ms)
+✔ literal safe operational guidance: approval execution (39.976334ms)
+✔ literal safe operational guidance: health claim (40.254084ms)
+✔ evaluation identity binds actual full selected bundle and pipeline/evaluator/schema bytes (46.971041ms)
+✔ actual evaluator accepts 256 explicit refusals and refuses 257 cases (179.310958ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1379.706667
+
+exit=0
