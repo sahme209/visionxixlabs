@@ -3,30 +3,70 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 
 const primaryLinks = [
-  { href: "/product", label: "Axiom" },
-  { href: "/demo", label: "Product tour" },
+  { href: "/product", label: "Product" },
   { href: "/integrations", label: "Integrations" },
-  { href: "/plans", label: "Pricing" },
   { href: "/security", label: "Security" },
+  { href: "/docs", label: "Docs" },
+  { href: "/demo", label: "Demo" },
 ];
-
+const secondaryLinks = [
+  { href: "/plans", label: "Pricing" },
+  { href: "/account/help", label: "Support (account required)" },
+  { href: "/status", label: "Status" },
+  { href: "/axiom", label: "Company" },
+];
 const mobileLinks = [
   ...primaryLinks,
-  { href: "/capabilities", label: "Capabilities" },
-  { href: "/resources", label: "Resources" },
-  { href: "/status", label: "Status" },
+  ...secondaryLinks,
   { href: "/support", label: "Founding Supporters" },
-  { href: "/contact", label: "Contact" },
 ];
 
 export function Navigation() {
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const moreButtonRef = useRef<HTMLButtonElement>(null);
+  const moreRef = useRef<HTMLDivElement>(null);
+  const focusMoreLink = useRef(false);
   const [scrolled, setScrolled] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setMoreOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!moreOpen) return;
+    if (focusMoreLink.current) {
+      moreRef.current?.querySelector<HTMLElement>("a[href]")?.focus();
+      focusMoreLink.current = false;
+    }
+    const outside = (event: PointerEvent) => {
+      if (!moreRef.current?.contains(event.target as Node)) setMoreOpen(false);
+    };
+    const key = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setMoreOpen(false);
+        moreButtonRef.current?.focus();
+      }
+    };
+    const resize = () => { if (window.innerWidth < 1280) setMoreOpen(false); };
+    document.addEventListener("pointerdown", outside);
+    document.addEventListener("keydown", key);
+    window.addEventListener("resize", resize);
+    return () => {
+      document.removeEventListener("pointerdown", outside);
+      document.removeEventListener("keydown", key);
+      window.removeEventListener("resize", resize);
+    };
+  }, [moreOpen]);
 
   useEffect(() => {
     // Shrinks the bar height and deepens its border/shadow once the page
@@ -67,6 +107,12 @@ export function Navigation() {
       }
     };
 
+    const onOutside = (event: PointerEvent) => {
+      if (!menuRef.current?.contains(event.target as Node) && !menuButtonRef.current?.contains(event.target as Node)) {
+        setMobileMenuOpen(false);
+      }
+    };
+
     // Match xl navigation visibility: a hidden dialog must not retain focus
     // trapping or scroll locks after a tablet/desktop resize.
     const onResize = () => {
@@ -77,16 +123,18 @@ export function Navigation() {
     window.addEventListener("resize", onResize);
     onResize();
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("pointerdown", onOutside);
     requestAnimationFrame(() => menuRef.current?.querySelector<HTMLElement>("a[href]")?.focus());
     return () => {
       document.body.style.overflow = previousOverflow;
       document.documentElement.style.overflow = previousRootOverflow;
       document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("pointerdown", onOutside);
       window.removeEventListener("resize", onResize);
     };
   }, [mobileMenuOpen]);
 
-  const closeMenu = () => setMobileMenuOpen(false);
+  const closeMenu = () => { setMobileMenuOpen(false); setMoreOpen(false); };
 
   return (
     <nav
@@ -104,21 +152,38 @@ export function Navigation() {
           scrolled ? "h-14 xl:h-16" : "h-16 xl:h-[72px]"
         }`}
       >
-        <Link href="/" className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
+        <Link href="/" onClick={closeMenu} className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
           <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" priority />
           <span>Vision XIX Labs</span>
         </Link>
 
         <div className="hidden items-center gap-7 xl:flex">
           {primaryLinks.map((item) => (
-            <Link key={item.href} href={item.href} className="text-sm text-zinc-400 transition-colors hover:text-white">
+            <Link key={item.href} href={item.href} onClick={closeMenu} className="text-sm text-zinc-400 transition-colors hover:text-white">
               {item.label}
             </Link>
           ))}
+          <div ref={moreRef} className="relative" onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setMoreOpen(false);
+          }}>
+            <button ref={moreButtonRef} type="button" aria-expanded={moreOpen} aria-controls="more-navigation"
+              className="flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"
+              onClick={() => setMoreOpen((open) => !open)} onKeyDown={(event) => {
+                if (event.key === "ArrowDown") {
+                  event.preventDefault();
+                  if (moreOpen) moreRef.current?.querySelector<HTMLElement>("a[href]")?.focus();
+                  else { focusMoreLink.current = true; setMoreOpen(true); }
+                }
+              }}>More <span aria-hidden="true" className="text-[10px]">⌄</span></button>
+            {moreOpen && <div id="more-navigation" role="group" aria-label="More destinations"
+              className="absolute right-0 top-full mt-2 min-w-60 rounded-xl border border-white/[0.09] bg-[#11120f] p-2 shadow-xl">
+              {secondaryLinks.map((item) => <Link key={item.href} href={item.href} onClick={closeMenu}
+                className="block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white">{item.label}</Link>)}
+            </div>}
+          </div>
         </div>
 
         <div className="hidden items-center gap-3 xl:flex">
-          <Link href="/support" className="px-2 py-2 text-sm text-zinc-400 transition-colors hover:text-orange-200">Support Axiom</Link>
           <Link href="/auth/signin" className="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white">Sign in</Link>
           <Link href="/download" className="rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white">Download</Link>
         </div>
@@ -129,7 +194,7 @@ export function Navigation() {
           aria-expanded={mobileMenuOpen}
           aria-controls="mobile-navigation"
           aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-          onClick={() => setMobileMenuOpen((open) => !open)}
+          onClick={() => { setMoreOpen(false); setMobileMenuOpen((open) => !open); }}
           className="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"
         >
           {mobileMenuOpen ? <XMarkIcon className="h-6 w-6" /> : <Bars3Icon className="h-6 w-6" />}

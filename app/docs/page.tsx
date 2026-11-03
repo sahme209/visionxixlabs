@@ -1,216 +1,63 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
-  RocketLaunchIcon,
-  CloudIcon,
-  ShieldCheckIcon,
-  CommandLineIcon,
-  CpuChipIcon,
-  LockClosedIcon,
-  QuestionMarkCircleIcon,
-  WrenchScrewdriverIcon,
-  ArrowRightIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { DocHeader, Callout, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Documentation — Axiom Agent",
+  title: "Documentation — Axiom",
   alternates: { canonical: "/docs" },
-  description: "Guides for Axiom Agent's governed deployment workflow, desktop installation, security boundaries, and verified integration states.",
+  description: "Find setup guides, task instructions, control references and recovery guidance for Axiom. Check each guide's version and availability.",
 };
 
-const QUICK_PATHS = [
-  {
-    href: "/docs/quickstart-checklist",
-    icon: RocketLaunchIcon,
-    title: "Quickstart checklist",
-    desc: "Seven steps from verified installer to a first non-production workflow.",
-    color: "orange",
-  },
-  {
-    href: "/docs/getting-started",
-    icon: RocketLaunchIcon,
-    title: "Getting started",
-    desc: "Download, authenticate the desktop, configure integrations, and complete a workflow.",
-    color: "orange",
-  },
-  {
-    href: "/docs/aws-setup",
-    icon: CloudIcon,
-    title: "AWS setup",
-    desc: "IAM role, External ID, read-only validation, region selection.",
-    color: "amber",
-  },
-  {
-    href: "/docs/security-model",
-    icon: ShieldCheckIcon,
-    title: "Security model",
-    desc: "What Axiom accesses, what gets stored, what is read-only, how to revoke.",
-    color: "emerald",
-  },
-  {
-    href: "/docs/troubleshooting",
-    icon: WrenchScrewdriverIcon,
-    title: "Troubleshooting",
-    desc: "Recover from installation, connection, approval, and deployment errors.",
-    color: "blue",
-  },
-];
-
-const COLOR_MAP = {
-  orange: "bg-orange-500/10 border-orange-500/20 text-orange-400",
-  amber: "bg-white/10 border-white/20 text-zinc-400",
-  emerald: "bg-emerald-500/10 border-emerald-500/20 text-emerald-400",
-  blue: "bg-blue-500/10 border-blue-500/20 text-blue-400",
-} as const;
-
-const TOPIC_GROUPS = [
-  {
-    title: "Configure delivery",
-    icon: CloudIcon,
-    items: [
-      { href: "/docs/aws-setup", label: "AWS ECS · GitHub Actions OIDC", available: true },
-      { href: "/docs/azure-setup", label: "Azure · Preview boundary", available: true },
-      { href: "/docs/gcp-setup", label: "GCP · Preview boundary", available: true },
-    ],
-  },
-  {
-    title: "Operate",
-    icon: CpuChipIcon,
-    items: [
-      { href: "/docs/approval-workflow", label: "Approval workflow", available: true },
-      { href: "/docs/rollback", label: "AWS ECS rollback", available: true },
-    ],
-  },
-  {
-    title: "ReleaseOps",
-    icon: ShieldCheckIcon,
-    items: [
-      { href: "/docs/releaseops", label: "ReleaseOps overview", available: true },
-      { href: "/docs/releaseops/connectors", label: "CI/CD connectors", available: true },
-      { href: "/docs/releaseops/readiness", label: "Readiness scoring", available: true },
-    ],
-  },
-  {
-    title: "Desktop",
-    icon: CommandLineIcon,
-    items: [
-      { href: "/docs/desktop-install", label: "Install the desktop app", available: true },
-      { href: "/docs/integration-setup", label: "GitHub, Slack, Teams & Linear setup", available: true },
-    ],
-  },
-  {
-    title: "Trust & security",
-    icon: LockClosedIcon,
-    items: [
-      { href: "/docs/security-model", label: "Security model", available: true },
-      { href: "/docs/permissions-model", label: "Permissions model", available: true },
-    ],
-  },
-  {
-    title: "Production guides",
-    icon: ShieldCheckIcon,
-    items: [
-      { href: "/docs/quickstart-checklist", label: "Quickstart checklist · installed application", available: true },
-    ],
-  },
-  {
-    title: "Reference",
-    icon: QuestionMarkCircleIcon,
-    items: [
-      { href: "/docs/troubleshooting", label: "Troubleshooting", available: true },
-      { href: "/docs/faq", label: "FAQ", available: true },
-      { href: "/docs/glossary", label: "Glossary", available: true },
-    ],
-  },
-];
+const PATHS = [
+  { title: "Get started", description: "Set up your workspace, then check what is ready.", items: [
+    ["/docs/getting-started", "Start with Axiom", "Understand the setup sequence and prerequisites."],
+    ["/docs/desktop-install", "Install the desktop app", "Check platform and installation guidance."],
+    ["/docs/quickstart-checklist", "Follow the quickstart checklist", "Separate installation from workflow readiness."],
+  ] },
+  { title: "Complete a task", description: "Find the workflow, its access requirements and its outcome.", items: [
+    ["/docs/approval-workflow", "Understand approval and execution", "Check review and execution steps for your version."],
+    ["/docs/releaseops", "Explore ReleaseOps", "Inspect the release workflow and its boundaries."],
+    ["/docs/integration-setup", "Set up an integration", "Check connection-specific setup and permissions."],
+    ["/docs/source-modes", "Choose a source mode", "Understand where repository context comes from."],
+  ] },
+  { title: "Look up a control", description: "Understand permissions, plans, surfaces and saved records.", items: [
+    ["/docs/permissions-model", "Check the permissions model", "Understand roles and operation-specific access."],
+    ["/docs/execution-plans", "Read about execution plans", "Distinguish a recorded plan from an authorized action."],
+    ["/docs/surfaces", "Find the right product surface", "Compare where a workflow is presented."],
+    ["/docs/glossary", "Look up a term", "Find the vocabulary used in the guides."],
+    ["/docs/audit-logs", "Inspect recorded activity", "Understand the scope of saved outcome records."],
+  ] },
+  { title: "Resolve a problem", description: "Inspect the current state before deciding what to do next.", items: [
+    ["/docs/troubleshooting", "Find troubleshooting guidance", "Start with the symptom and inspect existing records."],
+    ["/docs/faq", "Read frequently asked questions", "Find answers about setup and product behavior."],
+    ["/docs/releaseops/readiness", "Understand release readiness", "Check readiness signals and their limitations."],
+  ] },
+] as const;
 
 export default function DocsIndexPage() {
-  return (
-    <>
-      <DocHeader
-        number="01"
-        kicker="Axiom documentation"
-        title="Guides for the release you can explain."
-        summary="Start with the installed Axiom Agent workflow, then use reference material for setup, readiness, security, and recovery. Documentation distinguishes recorded plans, preview work, and verified provider state."
-      />
-
-      <Callout variant="safe" title="What this documentation covers">
-        Every product flow answers the same questions: <strong>what is happening, why is it needed, what access is required, is it safe, what does Axiom store, can access be revoked, what happens next, what if it fails, how do I fix it.</strong> Look for these answers in every guide.
-      </Callout>
-
-      {/* Quick paths */}
-      <div className="grid sm:grid-cols-2 gap-3 mb-12">
-        {QUICK_PATHS.map((p) => {
-          const Icon = p.icon;
-          return (
-            <Link
-              key={p.href}
-              href={p.href}
-              className="surface-glass rounded-2xl p-5 hover:border-white/[0.12] transition-all group"
-            >
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <div className={`w-10 h-10 rounded-xl border flex items-center justify-center ${COLOR_MAP[p.color as keyof typeof COLOR_MAP]}`}>
-                  <Icon className="h-5 w-5" />
-                </div>
-                <ArrowRightIcon className="h-4 w-4 text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 transition-all mt-2.5" />
-              </div>
-              <p className="text-base font-bold text-white mb-1">{p.title}</p>
-              <p className="text-sm text-zinc-400 leading-relaxed">{p.desc}</p>
-            </Link>
-          );
-        })}
-      </div>
-
-      {/* Topic groups — Axiom-style numbered chapters */}
-      <div className="space-y-10">
-        {TOPIC_GROUPS.map((group, gi) => {
-          const Icon = group.icon;
-          return (
-            <div key={group.title}>
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-[10px] font-mono tabular-nums text-brand-coral/90">{String(gi + 1).padStart(2, "0")}</span>
-                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
-                <Icon className="h-4 w-4 text-zinc-400" />
-                <h2 className="text-[11px] font-mono font-semibold text-white uppercase tracking-[0.22em]">{group.title}</h2>
-              </div>
-              <ul className="surface-glass rounded-xl divide-y divide-white/[0.04] overflow-hidden">
-                {group.items.map((item, ii) => (
-                  <li key={item.href}>
-                    {item.available ? (
-                      <Link href={item.href} className="relative flex items-center justify-between px-5 py-3.5 hover:bg-brand-coral/[0.04] transition-colors group overflow-hidden">
-                        {/* Coral hairline that appears on the left edge on hover */}
-                        <span aria-hidden className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-brand-coral via-amber-400 to-brand-orange opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="flex items-center gap-3 min-w-0">
-                          <span className="text-[10px] font-mono tabular-nums text-zinc-600 group-hover:text-brand-coral/80 transition-colors">
-                            {String(ii + 1).padStart(2, "0")}
-                          </span>
-                          <span className="text-[13.5px] text-zinc-300 group-hover:text-white transition-colors">{item.label}</span>
-                        </div>
-                        <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-700 group-hover:text-brand-coral group-hover:translate-x-0.5 transition-all" />
-                      </Link>
-                    ) : (
-                      <span className="flex items-center justify-between px-5 py-3.5 cursor-not-allowed">
-                        <span className="text-sm text-zinc-600">{item.label}</span>
-                        <span className="text-[9px] font-semibold uppercase tracking-wider text-white/70 bg-white/10 border border-white/20 rounded-full px-1.5 py-px">
-                          Doc coming
-                        </span>
-                      </span>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Honest demo-state note */}
-      <Callout variant="info" title="Where the platform is right now">
-        GitHub release evidence is the first read-only provider workflow. Cloud-provider setup guides explain the intended permission model, but a provider is not treated as connected until a tenant-scoped live validation succeeds. <strong>Azure and GCP remain preview until their inventory and provider paths are implemented and verified.</strong> Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract.
-      </Callout>
-
-      <DocFeedback />
-    </>
-  );
+  return <>
+    <DocHeader number="01" kicker="Axiom documentation" title="Find your next step."
+      summary="Start with setup, follow a task, understand a control or investigate an outcome. Choose the guide that matches the work in front of you." />
+    <Callout variant="info" title="Version and scope">
+      Guides describe different surfaces and stages of availability. Check the installed version, current access and each guide’s preview or supported-scope notes. A guide’s presence does not establish that every operation is available or production-activated.
+    </Callout>
+    <div className="grid gap-5 md:grid-cols-2 my-10">
+      {PATHS.map((group,index)=><section key={group.title} aria-labelledby={`docs-path-${index}`} className="surface-glass rounded-2xl border border-white/[0.08] p-5 sm:p-6">
+        <p aria-hidden="true" className="mb-4 font-mono text-[11px] tracking-widest text-brand-coral">0{index+1}</p>
+        <h2 id={`docs-path-${index}`} className="text-xl font-semibold tracking-tight text-white">{group.title}</h2>
+        <p className="mt-2 mb-5 text-sm leading-relaxed text-zinc-400">{group.description}</p>
+        <ul className="space-y-1">{group.items.map(([href,label,description])=><li key={href}>
+          <Link href={href} className="group flex items-start justify-between gap-4 rounded-lg px-3 py-3 -mx-3 transition-colors hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950">
+            <span><span className="block text-sm font-medium text-zinc-200 group-hover:text-white">{label}</span><span className="mt-1 block text-xs leading-relaxed text-zinc-400">{description}</span></span>
+            <ArrowRightIcon aria-hidden="true" className="mt-1 h-4 w-4 shrink-0 text-zinc-500 group-hover:text-brand-coral" />
+          </Link>
+        </li>)}</ul>
+      </section>)}
+    </div>
+    <Callout variant="warning" title="When an outcome is unknown">
+      Do not resend an uncertain or consumed action. Use the workflow’s read-only history or recovery guidance to inspect the original request. An approval, dispatch acknowledgment or saved plan does not prove a successful deployment, application health or verified rollback.
+    </Callout>
+    <DocFeedback />
+  </>;
 }

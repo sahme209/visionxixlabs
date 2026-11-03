@@ -99,3 +99,36 @@ page's own scroll transition, placed its heading at roughly64CSS pixels from the
 viewport top. The Table of Contents button then collapsed its links. A fresh
 state read was needed to distinguish in-flight animation from failed navigation.
 This validates those two public controls only, not all linked article destinations.
+
+## November 3 — visible Workshops and Community inspection
+
+Resources menu: after hydration, used its actual Expand secondary action and
+observed Changelog, Blog, Docs, Community, Help, Workshops, Forum and Careers.
+Workshops opened `/workshops`; upcoming events and recorded sessions are separate,
+with dates, duration/author, training contact and external event/video destinations.
+No registration, email, sign-in, subscription or external social action was sent.
+
+The on-demand filter is a button, not a native select. Exercised all seven
+options: All workshops, Product sessions, Agentic teams, Role-based sessions,
+Partner Spotlights, Industry-focused sessions and Grok Bot. Selected labels and
+accessible content changed. Current accessible on-demand link counts for five
+final checks were7,16,3,11 and50 respectively for Agentic/Role/Industry/Grok/All;
+Partner showed4 current accessible links. Restored All workshops. Early raw DOM
+reads retained outgoing article content, so final observations used the current
+accessibility tree rather than inferring visible results from stale DOM nodes.
+These counts are a dated UI observation, not vendor business/performance evidence.
+
+The observed Community footer destination opened `/en-US/community`. Inspected
+its gallery, learning/event types, event/city tabs, search and participation links.
+The gallery's semantic DOM control is a button despite the platform AX toggle
+representation. Clicking Pause changed it to Play with pressed state1; Play
+restored Pause/state0. No event RSVP, user location access, social reaction, message
+or newsletter submission occurred. Event/city selection/search and individual
+external destinations remain untested; no full Community audit is claimed.
+
+Transferable Axiom design decisions: distinguish live learning from recorded
+material; expose content type/scope/version before starting; separate browsing
+filters from signup or action authority; support motion controls; never manufacture
+event metrics, customer endorsements or authentic product-execution evidence.
+Cursor walkthrough is now22 partial canonical destinations, not complete B1 or
+all-six-reference verification.

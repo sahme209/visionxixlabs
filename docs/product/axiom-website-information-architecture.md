@@ -1,6 +1,6 @@
 # Axiom website: information architecture and design proposal
 
-November 2, 2026 · **Internal design draft — not approved, implemented or published.**
+November 2 design; user approved local implementation November 3, 2026. **Local implementation in progress — not published.**
 
 This is the B2 design deliverable for the [master action plan](axiom-master-action-plan.md). It proposes an original public experience grounded in current source and six partial reference audits. It does not change runtime behavior, account creation, installer publication, authorization, pricing, production flags or existing source/evidence history. Security, visual quality and understandable next steps are acceptance criteria throughout.
 

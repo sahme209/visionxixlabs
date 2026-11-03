@@ -18,7 +18,7 @@ Updated November 3, 2026. Two coordinated workstreams. The user explicitly resum
 | A8 Ecosystem | Full integration and batch/observability backlog retained below and remaining-work.md. | Prioritize with customers; provider-specific least privilege, implementation, docs and separately authorized live acceptance. |
 | A9 Orchestrator independence / on-prem | Newly requested architecture program; existing Airflow behavior must be preserved. No implementation or offline acceptance is claimed. | Versioned Airflow/Temporal/custom adapter contract and capability model; complete customer-controlled, offline deployment; identical core engine contract tests and a real governed internet-disconnected deployment. Foundations first, migration/deployment after core Governance. |
 | B1 Research | Partial notes for all six references; visible browser interaction recovered in fresh tab14. Cursor homepage, product, docs, security search, quickstart, download, changelog, enterprise and pricing inspected; see research/2026-11-02-cursor-visible-walkthrough.md. Earlier root-visible configuration/Harness navigation retained. | Visible interactions/page checklist, blocked destinations, responsive/keyboard audit and comparative decisions. Distinguish root-visible interactions from source-only notes; no full audit claimed. |
-| B2 Website | Existing positioning/navigation source and an original route/CTA/visual architecture draft at axiom-website-information-architecture.md. | Approved original architecture and complete premium responsive design, truthful implemented/preview/planned distinctions. |
+| B2 Website | Local website architecture approved November3; Docs four-path landing, primary/More navigation and local connector browsing implemented with focused tests/source reviews, pending exact batched build and browser acceptance. | Approved original architecture and complete premium responsive design, truthful implemented/preview/planned distinctions. |
 | B3 Demos | Historical product evidence preserved. | Authentic current-source screenshots/video, redaction, captions/transcripts/posters and source/version binding. No fabricated execution. |
 | B4 Documentation | Existing candidate inventory; internal Agent r2 and deployment r2 guides with exact control/source bindings and full offline schema/integrity validation. | Every supported screen/control documented with actual media, prerequisites, outcomes and recovery; genuine editorial approval and shipped-version verification. Validated draft is not customer documentation. |
 | B5 Support knowledge | Versioned draft format, eighteen offline-validator tests, ten proposed Agent cases and twenty proposed deployment r2 cases (older revisions preserved); no retrieval execution claim. | Reviewed ingestion/version matching/citation pipeline, executed retrieval evaluations and safe uncertainty/escalation architecture. No support AI implementation claim. |
@@ -475,3 +475,31 @@ a static visual display, not backend/interactive acceptance. Preserve the existi
 paired desktop sessions; refresh live native UI only when source and safe session
 handling justify it. Continue A1–A9/B1–B6; none are silently dropped or marked done
 by these local data/visual milestones.
+
+## November 3 approved website implementation batch
+
+User explicitly approved local website IA implementation. First batch: five primary
+links plus accessible More/mobile navigation, footer Contact/Download and explicit
+account Support versus Founding Supporters; Docs four task-led starting paths with
+15 existing guide destinations and version/uncertain-outcome guidance; public
+connector search/job/availability/operation-model intersections, clear/reset/counts,
+planned-state visibility and documentation-only CTAs. No runtime connection, OAuth,
+permission, action authority, backend or installer selection changed. Two broad
+legacy connector descriptions were narrowed to read context/validation and
+operation-specific limits. Article/catalog filters are not account readiness.
+
+Verification:11 navigation,3 Docs and4 catalog rendered checks; scoped types for
+each; independent whole-batch source review clear after Footer Contact/Download
+correction. First Docs command accidentally passed an extra run to the wrapper,
+broadening selectors; that mistake is not a wrapper defect or full-suite pass.
+Subsequent focused tests selected exact paths. Full new-source build/browser
+acceptance still pending; parent will run once for this complete batch.
+
+B4/B5:33 source-backed DEV execution-limits help controls +human guide +3 bounded
+source completeness/content checks now exist, independently reviewed. These are
+content artifacts, not mounted help anchors, production documentation or a support
+retriever. Source-linked controlled-launch gap audit records the exact pending
+same-process native boundary without inventing additional vendor/network gates.
+B1 adds Workshops/all category controls and Community gallery controls; remains
+partial. Full Product/Security/Demo/Download bodies, authentic media, complete
+documentation/retrieval, all other original requirements and publishing gates remain.

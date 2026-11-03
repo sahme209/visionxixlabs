@@ -1,0 +1,391 @@
+{
+  "format": "axiom.product-control-inventory/1",
+  "helpId": "governance.execution-limits",
+  "title": "Execution limits preview",
+  "availability": {
+    "desktop": "DEV-only",
+    "server": "Requires enabled Governance service and a current paired desktop session with accepted workspace membership.",
+    "productionSupported": false
+  },
+  "executionAuthorized": false,
+  "qualification": "Current local implementation; no full MVP, runtime coverage, baseline enrollment or provider-action authorization claim.",
+  "roles": {
+    "read": "Current workspace:read capability.",
+    "propose": "Current policy:manage capability (owner/admin role mapping).",
+    "review": "Current agent:approve capability (owner/admin/security_reviewer mapping), independent of requester and named executors.",
+    "manage": "Current policy:manage capability for activation and revocation. UI role presentation does not grant server authority."
+  },
+  "http": {
+    "path": "/api/desktop/governance-intelligence/execution-policy",
+    "method": "POST",
+    "readOnlyOperations": [
+      "read",
+      "lookup",
+      "read_active",
+      "list_saved",
+      "list_requests"
+    ],
+    "mutationOperations": [
+      "propose",
+      "approve",
+      "activate",
+      "revoke"
+    ],
+    "source": "lib/governance/intelligence/executionPolicyHttp.ts",
+    "baselineReadPath": "/api/desktop/governance-intelligence/read"
+  },
+  "recovery": {
+    "source": "desktop/src/lib/executionPolicyRecoveryStore.ts",
+    "namespace": [
+      "canonical service origin",
+      "organization ID",
+      "user ID"
+    ],
+    "stored": "Inert original operation/nonce and safe ID/digest/expected version where applicable; never policy payload, credentials or authority.",
+    "writeAhead": true,
+    "automaticResend": false,
+    "unknown": "Absent, unavailable or session-refused history retains the blocker. Do not create a replacement nonce to retry.",
+    "historicalObservation": "Original actor/session-bound lookup; exactProposalContentVerified:false. A verified result clears only its exact local locator; reload current policy separately.",
+    "containment": "An unrelated valid unresolved locator blocks grants but permits a fresh authorized exact revoke. An unresolved revoke for that same policy blocks a replacement revoke. Corrupt, overflowing or unavailable storage blocks mutations.",
+    "bounds": "At most 20 pending namespace records and 10000 storage keys scanned; failures do not evict history."
+  },
+  "sources": [
+    "desktop/src/lib/governanceExecutionPolicy.ts",
+    "desktop/src/lib/useExecutionPolicyRecovery.ts",
+    "lib/governance/intelligence/executionPolicyStore.ts",
+    "lib/governance/intelligence/executionPolicyRequestService.ts",
+    "lib/desktop/desktopAuthorization.ts"
+  ],
+  "controls": [
+    {
+      "helpId": "governance.execution-limits.saved",
+      "label": "Load saved limit policies",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_read",
+      "purpose": "Read up to 20 recent policies; a bounded list is not complete history.",
+      "requiredCapability": "workspace:read",
+      "operation": "list_saved",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.decisions",
+      "label": "Load my recorded decisions",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_read",
+      "purpose": "Read up to 20 recorded decisions for the original paired session; missing history does not establish failure.",
+      "requiredCapability": "workspace:read",
+      "operation": "list_requests",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.load",
+      "label": "Load exact policy",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_read",
+      "purpose": "Read the exact saved ID and verify its organization and offered scope.",
+      "requiredCapability": "workspace:read",
+      "operation": "read",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.pointer",
+      "label": "Read current limit pointer",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_read",
+      "purpose": "Read the current pointer for the loaded approved policy scope before activation.",
+      "requiredCapability": "workspace:read",
+      "operation": "read_active",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.outcome",
+      "label": "Check original saved outcome",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_read",
+      "purpose": "Look up the unchanged in-memory original request and exact expected result; never resend.",
+      "requiredCapability": "workspace:read",
+      "operation": "lookup",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.observe",
+      "label": "Observe original request history",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_read",
+      "purpose": "Observe a persisted original locator as historical metadata only; no proposal content or current authority is restored.",
+      "requiredCapability": "workspace:read",
+      "operation": "lookup",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.directory",
+      "label": "Saved limit policies",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "local_only",
+      "purpose": "Select an ID locally; load the exact policy separately.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.policy-id",
+      "label": "Saved execution-limit policy ID",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "local_only",
+      "purpose": "Enter an exact saved policy ID; editing clears the loaded policy, pointer and review.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.receipt-select",
+      "label": "Select policy from this receipt",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "local_only",
+      "purpose": "Select a historical receipt ID locally; this does not load or authorize the policy.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.identifiers",
+      "label": "Exact policy identifiers",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "local_only",
+      "purpose": "Disclose the exact ID, digest and parent digest.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.history",
+      "label": "My recorded decisions in this paired session",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "local_only",
+      "purpose": "Disclose historical decisions without resending any request.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.locator",
+      "label": "Original request locator",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "local_only",
+      "purpose": "Disclose the original request nonce for historical lookup.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.review",
+      "label": "I reviewed this exact scope, limit, named executors and expiry.",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "local_only",
+      "purpose": "Confirm local review of the loaded record; the checkbox is not server authority.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.approve",
+      "label": "Record independent limit approval",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_mutation",
+      "purpose": "Record independent review of an unexpired proposed policy. The reviewer must be neither requester nor named executor.",
+      "requiredCapability": "agent:approve",
+      "operation": "approve",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.activate",
+      "label": "Activate these limits",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_mutation",
+      "purpose": "Set the current numeric ceiling for the exact scope after approval, expiry and parent/pointer compare-and-swap checks. Does not activate Governance enrollment or execute an action.",
+      "requiredCapability": "policy:manage",
+      "operation": "activate",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.revoke",
+      "label": "Revoke this limit policy",
+      "source": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "effect": "server_mutation",
+      "purpose": "Revoke the exact loaded nonrevoked revision with current management authority and expected version. Expiry does not prevent containment revocation.",
+      "requiredCapability": "policy:manage",
+      "operation": "revoke",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.scope",
+      "label": "Exact policy scope",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "local_only",
+      "purpose": "Choose one baseline-provided repository/resource/environment tuple; scope edits clear the read parent and review.",
+      "requiredCapability": "policy:manage",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.executors",
+      "label": "Named executors",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "local_only",
+      "purpose": "Choose current accepted owner, admin or operator members; actual action rights remain server checked.",
+      "requiredCapability": "policy:manage",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.level",
+      "label": "Maximum numeric level",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "local_only",
+      "purpose": "Choose integer 0\u20135. Level 0 permits eligible observations; level 1 adds recommendations; mutations require at least 4 plus all action checks. No broader meaning is promised for other levels.",
+      "requiredCapability": "policy:manage",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.actions",
+      "label": "Eligible actions",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "local_only",
+      "purpose": "Choose exact action identifiers; an offered identifier does not establish coverage, connection or provider permission.",
+      "requiredCapability": "policy:manage",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.expiry",
+      "label": "Limit expiry",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "local_only",
+      "purpose": "Enter future local date/time; review its displayed absolute UTC value. No renewal or grace period is inferred.",
+      "requiredCapability": "policy:manage",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.proposal-review",
+      "label": "I reviewed this exact proposal and its named executors.",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "local_only",
+      "purpose": "Confirm the current draft locally; edits clear this confirmation.",
+      "requiredCapability": "policy:manage",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.members",
+      "label": "Load current workspace members",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "server_read",
+      "purpose": "Explicitly read members; only accepted eligible executor roles are offered.",
+      "requiredCapability": "policy:manage",
+      "operation": "workspace_members",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.parent",
+      "label": "Read exact current limit parent",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "server_read",
+      "purpose": "Explicitly read the exact selected scope parent; required before saving.",
+      "requiredCapability": "policy:manage",
+      "operation": "read_active",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.save",
+      "label": "Save limits for independent review",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "server_mutation",
+      "purpose": "Persist a proposed ceiling after durable local locator reservation. Does not approve, activate or execute it.",
+      "requiredCapability": "policy:manage",
+      "operation": "propose",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.proposal-outcome",
+      "label": "Check original proposal outcome",
+      "source": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "effect": "server_read",
+      "purpose": "Read the exact unchanged original proposal outcome; an unknown result remains blocked from resend.",
+      "requiredCapability": "policy:manage",
+      "operation": "lookup",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.baselines",
+      "label": "Load saved baselines",
+      "source": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "effect": "server_read",
+      "purpose": "Read recent saved baseline revisions; no baseline is authored.",
+      "requiredCapability": "workspace:read",
+      "operation": "list_revisions",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.baseline-load",
+      "label": "Load baseline review",
+      "source": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "effect": "server_read",
+      "purpose": "Read the exact saved baseline ID in this organization; changing or reloading it removes prior limits controls until validated.",
+      "requiredCapability": "workspace:read",
+      "operation": "read_revision",
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.baseline-select",
+      "label": "Select a saved baseline",
+      "source": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "effect": "local_only",
+      "purpose": "Select a saved baseline ID locally.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.baseline-id",
+      "label": "Saved baseline revision ID",
+      "source": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "effect": "local_only",
+      "purpose": "Enter the exact baseline ID; no source collection or baseline enrollment occurs.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.baseline-rules",
+      "label": "Review typed rules and source bindings",
+      "source": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "effect": "local_only",
+      "purpose": "Disclose saved typed rules and source bindings, not current execution authority.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.entry",
+      "label": "Review execution limits preview",
+      "source": "desktop/src/views/SettingsView.tsx",
+      "effect": "local_only",
+      "purpose": "Open the development-only execution limits lane; opening it does not fetch server data.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    },
+    {
+      "helpId": "governance.execution-limits.back",
+      "label": "Back to Settings",
+      "source": "desktop/src/views/GovernanceWorkspacePreview.tsx",
+      "effect": "local_only",
+      "purpose": "Return to Settings without sending a policy decision.",
+      "requiredCapability": "workspace:read",
+      "operation": null,
+      "executionAuthorized": false
+    }
+  ]
+}
