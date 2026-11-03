@@ -1,0 +1,29 @@
+{
+  "attachExit": 0,
+  "createExit": 0,
+  "detachExit": 0,
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false,
+  "fixtureImageSha256": "0813f897d491f1381c07433049cba7733bc06d2c0177b260c766e461fb4f2473",
+  "fleetQualification": "unavailable",
+  "host": {
+    "architecture": "arm64",
+    "osBuild": "26B123",
+    "system": "Darwin"
+  },
+  "kernelReadonly": true,
+  "legacyQualification": "unavailable",
+  "mountStillAttached": false,
+  "ownedChildSandbox": {
+    "exit": 0,
+    "qualification": "control_probe_only_not_complete_process_profile",
+    "stderr": "",
+    "stdout": "{\"denied\": true, \"errno\": 1}"
+  },
+  "profile": "owned-readonly-data-fixture/1",
+  "root": "/private/tmp/axiom-issuer-seal-qxls9u5a",
+  "runtimeQualification": "unavailable",
+  "status": "data_fixture_kernel_readonly",
+  "statvfsFlags": 3,
+  "writeErrno": 30
+}

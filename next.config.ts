@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
   // clients during every route build while preserving the installed modules
   // for server-side execution.
   serverExternalPackages: [
+    // One canonical native CJS main/consumer; compilation does not verify launch.
+    "@axiom/verified-issuer-runtime",
     "@aws-sdk/client-acm",
     "@aws-sdk/client-backup",
     "@aws-sdk/client-cloudtrail",

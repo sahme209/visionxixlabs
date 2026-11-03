@@ -1,0 +1,25 @@
+{
+  "name": "@axiom/verified-issuer-runtime",
+  "version": "0.0.0",
+  "private": true,
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "main": "./index.cjs",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "require": "./index.cjs",
+      "default": "./index.cjs"
+    }
+  },
+  "files": [
+    "index.cjs",
+    "index.d.ts",
+    "README.md",
+    "internal/*.cjs"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.cjs"
+  }
+}
