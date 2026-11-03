@@ -1,0 +1,509 @@
+{
+  "format": "axiom.retained-local-font-inputs/1",
+  "provenance": {
+    "kind": "retained_local_successful_build_output",
+    "sourceRevision": "eae00077ee130731d7721bc9dd5b544054867b05",
+    "sourceArchiveSha256": "2ed0870862beb9441224aa176c5c12657a8d8f3e83c767dabdb70f94969c9db6",
+    "sourceStage": "/private/tmp/axiom-deployment-baseline-production-vpje2mso",
+    "sourceCssRelativePath": "static/css/c48d7e578e585d53.css",
+    "sourceCssSha256": "d7bd29bb7eb66e63af007875113bec6dd092c536ffb313e13e1a75c86c5b5238",
+    "parserPackage": "next@16.4.2",
+    "parserSha256": "46d99b59b83287d148de5655cbaab3408e46d05a8b636db5f5fc65cd1c0caf4f"
+  },
+  "upstreamAuthenticity": "unavailable",
+  "licenseStatus": "pending_official_notices",
+  "publicationStatus": "blocked_pending_license_notices",
+  "licenseNotice": "Embedded copyright and license URLs are observations, not a complete redistribution notice. No official license text has been fetched or invented here.",
+  "retainedFaceMapSha256": "056b263b45c747a74809e0e605bf5556dd126bbe4759727abf4dde9e8f784333",
+  "faces": [
+    {
+      "family": "Inter",
+      "file": "ba9851c3c22cd980-s.woff2",
+      "subset": "cyrillic-ext",
+      "style": "normal",
+      "weight": "100 900",
+      "display": "swap",
+      "unicodeRange": "u+0460-052f,u+1c80-1c8a,u+20b4,u+2de0-2dff,u+a640-a69f,u+fe2e-fe2f",
+      "preload": false,
+      "sha256": "fccca918fea40089dacadc7045861314d1a6bc91f1f323cc1eeb22ebcdb321b5",
+      "size": 25844,
+      "metadata": {
+        "family": "Inter",
+        "subfamily": "Regular",
+        "version": "Version 4.001;git-66647c0bb",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 900
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)"
+        },
+        "licenseURL": {
+          "en": "https://openfontlicense.org"
+        },
+        "characterCount": 158,
+        "availableFeatures": [
+          "pnum",
+          "tnum",
+          "kern"
+        ]
+      }
+    },
+    {
+      "family": "Inter",
+      "file": "21350d82a1f187e9-s.woff2",
+      "subset": "cyrillic",
+      "style": "normal",
+      "weight": "100 900",
+      "display": "swap",
+      "unicodeRange": "u+0301,u+0400-045f,u+0490-0491,u+04b0-04b1,u+2116",
+      "preload": false,
+      "sha256": "aebf2ab4a4ce6810d73c1ac7be7cafb4e5ec4cee2d6db5fb3e09691747ec4bd6",
+      "size": 18744,
+      "metadata": {
+        "family": "Inter",
+        "subfamily": "Regular",
+        "version": "Version 4.001;git-66647c0bb",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 900
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)"
+        },
+        "licenseURL": {
+          "en": "https://openfontlicense.org"
+        },
+        "characterCount": 108,
+        "availableFeatures": [
+          "ccmp",
+          "pnum",
+          "tnum",
+          "kern",
+          "mark",
+          "mkmk"
+        ]
+      }
+    },
+    {
+      "family": "Inter",
+      "file": "c5fe6dc8356a8c31-s.woff2",
+      "subset": "greek-ext",
+      "style": "normal",
+      "weight": "100 900",
+      "display": "swap",
+      "unicodeRange": "u+1f??",
+      "preload": false,
+      "sha256": "a2e2c783ca6f9c20486e81e72a279203e86730bbf8f01ff6a5ee9dbd09e1c271",
+      "size": 11272,
+      "metadata": {
+        "family": "Inter",
+        "subfamily": "Regular",
+        "version": "Version 4.001;git-66647c0bb",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 900
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)"
+        },
+        "licenseURL": {
+          "en": "https://openfontlicense.org"
+        },
+        "characterCount": 239,
+        "availableFeatures": [
+          "pnum",
+          "tnum",
+          "kern"
+        ]
+      }
+    },
+    {
+      "family": "Inter",
+      "file": "19cfc7226ec3afaa-s.woff2",
+      "subset": "greek",
+      "style": "normal",
+      "weight": "100 900",
+      "display": "swap",
+      "unicodeRange": "u+0370-0377,u+037a-037f,u+0384-038a,u+038c,u+038e-03a1,u+03a3-03ff",
+      "preload": false,
+      "sha256": "46dd4cdca58c26ae87cc6927657bf83b2e8abfc39ffd0ab176e301a8d28d22bf",
+      "size": 19044,
+      "metadata": {
+        "family": "Inter",
+        "subfamily": "Regular",
+        "version": "Version 4.001;git-66647c0bb",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 900
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)"
+        },
+        "licenseURL": {
+          "en": "https://openfontlicense.org"
+        },
+        "characterCount": 111,
+        "availableFeatures": [
+          "pnum",
+          "tnum",
+          "kern"
+        ]
+      }
+    },
+    {
+      "family": "Inter",
+      "file": "df0a9ae256c0569c-s.woff2",
+      "subset": "vietnamese",
+      "style": "normal",
+      "weight": "100 900",
+      "display": "swap",
+      "unicodeRange": "u+0102-0103,u+0110-0111,u+0128-0129,u+0168-0169,u+01a0-01a1,u+01af-01b0,u+0300-0301,u+0303-0304,u+0308-0309,u+0323,u+0329,u+1ea0-1ef9,u+20ab",
+      "preload": false,
+      "sha256": "8db00ff46c67b22cda8bed865acf7077651cac8d2841d5b40980556b48961931",
+      "size": 10280,
+      "metadata": {
+        "family": "Inter",
+        "subfamily": "Regular",
+        "version": "Version 4.001;git-66647c0bb",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 900
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)"
+        },
+        "licenseURL": {
+          "en": "https://openfontlicense.org"
+        },
+        "characterCount": 116,
+        "availableFeatures": [
+          "ccmp",
+          "pnum",
+          "tnum",
+          "kern",
+          "mark",
+          "mkmk"
+        ]
+      }
+    },
+    {
+      "family": "Inter",
+      "file": "8e9860b6e62d6359-s.woff2",
+      "subset": "latin-ext",
+      "style": "normal",
+      "weight": "100 900",
+      "display": "swap",
+      "unicodeRange": "u+0100-02ba,u+02bd-02c5,u+02c7-02cc,u+02ce-02d7,u+02dd-02ff,u+0304,u+0308,u+0329,u+1d00-1dbf,u+1e00-1e9f,u+1ef2-1eff,u+2020,u+20a0-20ab,u+20ad-20c4,u+2113,u+2c60-2c7f,u+a720-a7ff",
+      "preload": false,
+      "sha256": "a28eb6d3ccb534ae0c94ca999371df024aab60b08c3c8a5720ee9e32fa0faaa2",
+      "size": 85272,
+      "metadata": {
+        "family": "Inter",
+        "subfamily": "Regular",
+        "version": "Version 4.001;git-66647c0bb",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 900
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)"
+        },
+        "licenseURL": {
+          "en": "https://openfontlicense.org"
+        },
+        "characterCount": 734,
+        "availableFeatures": [
+          "ccmp",
+          "pnum",
+          "tnum",
+          "kern",
+          "mark",
+          "mkmk"
+        ]
+      }
+    },
+    {
+      "family": "Inter",
+      "file": "e4af272ccee01ff0-s.p.woff2",
+      "subset": "latin",
+      "style": "normal",
+      "weight": "100 900",
+      "display": "swap",
+      "unicodeRange": "u+00??,u+0131,u+0152-0153,u+02bb-02bc,u+02c6,u+02da,u+02dc,u+0304,u+0308,u+0329,u+2000-206f,u+20ac,u+2122,u+2191,u+2193,u+2212,u+2215,u+feff,u+fffd",
+      "preload": true,
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4",
+      "size": 48432,
+      "metadata": {
+        "family": "Inter",
+        "subfamily": "Regular",
+        "version": "Version 4.001;git-66647c0bb",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 900
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2016 The Inter Project Authors (https://github.com/rsms/inter)"
+        },
+        "licenseURL": {
+          "en": "https://openfontlicense.org"
+        },
+        "characterCount": 231,
+        "availableFeatures": [
+          "calt",
+          "ccmp",
+          "dnom",
+          "frac",
+          "numr",
+          "pnum",
+          "tnum",
+          "kern",
+          "mark",
+          "mkmk"
+        ]
+      }
+    },
+    {
+      "family": "JetBrains Mono",
+      "file": "886030b0b59bc5a7-s.woff2",
+      "subset": "cyrillic-ext",
+      "style": "normal",
+      "weight": "100 800",
+      "display": "swap",
+      "unicodeRange": "u+0460-052f,u+1c80-1c8a,u+20b4,u+2de0-2dff,u+a640-a69f,u+fe2e-fe2f",
+      "preload": false,
+      "sha256": "992eea2f70210457ddd1196de4df3240919ffe068ad188c79d985fba4565d3bf",
+      "size": 2020,
+      "metadata": {
+        "family": "JetBrains Mono",
+        "subfamily": "Regular",
+        "version": "Version 2.211",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 800
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)"
+        },
+        "licenseURL": {
+          "en": "https://scripts.sil.org/OFL"
+        },
+        "characterCount": 11,
+        "availableFeatures": []
+      }
+    },
+    {
+      "family": "JetBrains Mono",
+      "file": "0aa834ed78bf6d07-s.woff2",
+      "subset": "cyrillic",
+      "style": "normal",
+      "weight": "100 800",
+      "display": "swap",
+      "unicodeRange": "u+0301,u+0400-045f,u+0490-0491,u+04b0-04b1,u+2116",
+      "preload": false,
+      "sha256": "af7486955880be1c2b972e9c766acffb776768d669b6576ed9a0919ce72e7ca6",
+      "size": 12064,
+      "metadata": {
+        "family": "JetBrains Mono",
+        "subfamily": "Regular",
+        "version": "Version 2.211",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 800
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)"
+        },
+        "licenseURL": {
+          "en": "https://scripts.sil.org/OFL"
+        },
+        "characterCount": 103,
+        "availableFeatures": [
+          "ccmp",
+          "mark"
+        ]
+      }
+    },
+    {
+      "family": "JetBrains Mono",
+      "file": "67957d42bae0796d-s.woff2",
+      "subset": "greek",
+      "style": "normal",
+      "weight": "100 800",
+      "display": "swap",
+      "unicodeRange": "u+0370-0377,u+037a-037f,u+0384-038a,u+038c,u+038e-03a1,u+03a3-03ff",
+      "preload": false,
+      "sha256": "3edf363dbf9d5fa0cdc784ae2b431a8a4152f4055a8a8858028c0bd668808273",
+      "size": 9084,
+      "metadata": {
+        "family": "JetBrains Mono",
+        "subfamily": "Regular",
+        "version": "Version 2.211",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 800
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)"
+        },
+        "licenseURL": {
+          "en": "https://scripts.sil.org/OFL"
+        },
+        "characterCount": 84,
+        "availableFeatures": [
+          "ccmp"
+        ]
+      }
+    },
+    {
+      "family": "JetBrains Mono",
+      "file": "f911b923c6adde36-s.woff2",
+      "subset": "vietnamese",
+      "style": "normal",
+      "weight": "100 800",
+      "display": "swap",
+      "unicodeRange": "u+0102-0103,u+0110-0111,u+0128-0129,u+0168-0169,u+01a0-01a1,u+01af-01b0,u+0300-0301,u+0303-0304,u+0308-0309,u+0323,u+0329,u+1ea0-1ef9,u+20ab",
+      "preload": false,
+      "sha256": "1390e86cc2823e759358918c01c4fcc1b6e4f01bca915bdbeb6d68eb5c244405",
+      "size": 7468,
+      "metadata": {
+        "family": "JetBrains Mono",
+        "subfamily": "Regular",
+        "version": "Version 2.211",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 800
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)"
+        },
+        "licenseURL": {
+          "en": "https://scripts.sil.org/OFL"
+        },
+        "characterCount": 116,
+        "availableFeatures": [
+          "ccmp",
+          "mark"
+        ]
+      }
+    },
+    {
+      "family": "JetBrains Mono",
+      "file": "939c4f875ee75fbb-s.woff2",
+      "subset": "latin-ext",
+      "style": "normal",
+      "weight": "100 800",
+      "display": "swap",
+      "unicodeRange": "u+0100-02ba,u+02bd-02c5,u+02c7-02cc,u+02ce-02d7,u+02dd-02ff,u+0304,u+0308,u+0329,u+1d00-1dbf,u+1e00-1e9f,u+1ef2-1eff,u+2020,u+20a0-20ab,u+20ad-20c4,u+2113,u+2c60-2c7f,u+a720-a7ff",
+      "preload": false,
+      "sha256": "7db7affbce1fdee69c1ffc2641bbca289b049867f524c9d861fe35ab6670bf29",
+      "size": 15204,
+      "metadata": {
+        "family": "JetBrains Mono",
+        "subfamily": "Regular",
+        "version": "Version 2.211",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 800
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)"
+        },
+        "licenseURL": {
+          "en": "https://scripts.sil.org/OFL"
+        },
+        "characterCount": 191,
+        "availableFeatures": [
+          "ccmp",
+          "mark"
+        ]
+      }
+    },
+    {
+      "family": "JetBrains Mono",
+      "file": "bb3ef058b751a6ad-s.p.woff2",
+      "subset": "latin",
+      "style": "normal",
+      "weight": "100 800",
+      "display": "swap",
+      "unicodeRange": "u+00??,u+0131,u+0152-0153,u+02bb-02bc,u+02c6,u+02da,u+02dc,u+0304,u+0308,u+0329,u+2000-206f,u+20ac,u+2122,u+2191,u+2193,u+2212,u+2215,u+feff,u+fffd",
+      "preload": true,
+      "sha256": "1e06740a02a443fb7f3eeda8fcaa685a0f6c620e3f01e6666e847295469ce3ad",
+      "size": 40480,
+      "metadata": {
+        "family": "JetBrains Mono",
+        "subfamily": "Regular",
+        "version": "Version 2.211",
+        "variationAxes": {
+          "wght": {
+            "name": "Weight",
+            "min": 100,
+            "default": 400,
+            "max": 800
+          }
+        },
+        "copyright": {
+          "en": "Copyright 2020 The JetBrains Mono Project Authors (https://github.com/JetBrains/JetBrainsMono)"
+        },
+        "licenseURL": {
+          "en": "https://scripts.sil.org/OFL"
+        },
+        "characterCount": 230,
+        "availableFeatures": [
+          "calt",
+          "ccmp",
+          "frac",
+          "mark"
+        ]
+      }
+    }
+  ]
+}

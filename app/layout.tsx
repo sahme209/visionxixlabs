@@ -1,8 +1,8 @@
 import {AXIOM_FAVICON_URL,AXIOM_APP_ICON_URL,AXIOM_APPLE_ICON_URL} from '@/lib/brandAssets';
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "../styles/axiom-theme.css";
+import "../styles/local-fonts.css";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";
 import AIChatWidget from "@/components/AIChatWidget";
 import { AxiomPanelProvider } from "@/lib/contexts/AxiomPanelContext";
@@ -13,23 +13,8 @@ import { SITE_URL, defaultOgImage, primaryKeywords, secondaryKeywords } from "@/
 import { PrivacyConsent } from "@/components/PrivacyConsent";
 import { RouteAnnouncer } from "@/components/a11y/RouteAnnouncer";
 
-// Inter with the SF-Pro-leaning OpenType features baked in:
-// - `cv02` rounded 'g'  - `cv11` single-storey 'a'  - `ss03` shorter '8'
-// gives Inter the tightened, hardware-grade character of SF Pro Display
-// without shipping a new font payload.
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-// JetBrains Mono for spec-sheet numerals + monospace labels — tighter
-// rhythm than IBM Plex, more presence than SF Mono on the web.
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-  display: "swap",
-});
+// Original variable font subsets and fallback metrics are packaged locally.
+// Preserve OpenType feature settings in globals.css; no build-time font fetch.
 
 export const viewport: Viewport = {
   themeColor: "#141414",
@@ -88,7 +73,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${jetbrainsMono.variable} ${inter.className} antialiased`}>
+      <head>
+        <link rel="preload" href="/fonts/e4af272ccee01ff0-s.p.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+        <link rel="preload" href="/fonts/bb3ef058b751a6ad-s.p.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
+      </head>
+      <body className="axiom-font-inter axiom-font-mono antialiased">
         <Providers>
           <AxiomPanelProvider>
             <OrganizationJsonLd />

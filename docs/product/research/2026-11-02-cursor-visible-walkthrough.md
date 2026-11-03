@@ -93,3 +93,9 @@ presentation observations only; vendor performance/security statements have not
 been independently validated. The current leaderboard and historical article use
 different version labels, reinforcing that Axiom evidence must bind its own task
 set/version rather than silently combining old screenshots and current numbers.
+
+The methodology TOC's Building CursorBench link updated the hash and, after the
+page's own scroll transition, placed its heading at roughly64CSS pixels from the
+viewport top. The Table of Contents button then collapsed its links. A fresh
+state read was needed to distinguish in-flight animation from failed navigation.
+This validates those two public controls only, not all linked article destinations.
