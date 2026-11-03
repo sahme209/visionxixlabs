@@ -1,0 +1,83 @@
+{
+  "format": "axiom.protected-resource-preparation/1",
+  "sourcePackage": "/private/tmp/axiom-private-package-fat-066d821a-u0zyrd12/package",
+  "packageDigest": "2a377866179b4096a5c809a847ac861770aebdecdff0f459fc4b0f9a8a335685",
+  "manifestSha256": "f589e6e48a7c374d9d9edf7e50aea83e6bfbbaef9ffecce6352ea92fc40991a9",
+  "fileCount": 95306,
+  "symlinkCount": 53,
+  "fixedCanonicalLaunch": {
+    "argv": [
+      "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount/__axiom_runtime__/node",
+      "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount/node_modules/@axiom/verified-issuer-runtime/index.cjs"
+    ],
+    "cwd": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount",
+    "environment": {
+      "PATH": "/usr/bin:/bin",
+      "LANG": "C",
+      "LC_ALL": "C"
+    },
+    "stdin": "readonly_devnull",
+    "stdout": "owned_anonymous_pipe",
+    "stderr": "owned_anonymous_pipe",
+    "close_fds": true,
+    "shell": false,
+    "pass_fds": [],
+    "expected": "canonical_refuses_no_identity"
+  },
+  "futureImageCreate": [
+    "/usr/bin/hdiutil",
+    "create",
+    "-srcfolder",
+    "/private/tmp/axiom-private-package-fat-066d821a-u0zyrd12/package",
+    "-volname",
+    "axiom-protected-package",
+    "-format",
+    "UDRO",
+    "-fs",
+    "HFS+",
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg"
+  ],
+  "futureAttach": [
+    "/usr/bin/hdiutil",
+    "attach",
+    "-readonly",
+    "-nobrowse",
+    "-noautoopen",
+    "-mountpoint",
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount",
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg"
+  ],
+  "futureDetach": [
+    "/usr/bin/hdiutil",
+    "detach",
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/mount"
+  ],
+  "inspection": {
+    "backing": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package.dmg",
+    "hardlink": "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/package-hardlink.dmg",
+    "requireSameInode": true,
+    "requireMountedRootReadonly": true,
+    "requireFullMountedPackageReverification": true,
+    "beforeAfter": [
+      "sha256",
+      "device",
+      "inode",
+      "mode",
+      "size"
+    ],
+    "aliasCreation": "host creates exact owned hardlink before launch; never copies as substitute"
+  },
+  "resourceUnit": "image/backing-alias mutation feasibility only; future test-only attacker is separate from canonical main and cannot qualify its identity",
+  "executionAuthorized": false,
+  "imageCreationAuthorized": false,
+  "restrictionRunAuthorized": false,
+  "executingIssuerIdentity": "unavailable",
+  "blockers": [
+    "resource_attack_requires_separate_exact_hash_binding_and_host_orchestration",
+    "new_image_mount_and_restriction_run_require_exact_approval",
+    "canonical_main_deliberately_refuses",
+    "kernel_authenticated_launch_origin_unimplemented",
+    "same_artifact_compiled_consumer_not_exercisable_through_current_main"
+  ],
+  "noFullQualificationRunProposed": true
+}

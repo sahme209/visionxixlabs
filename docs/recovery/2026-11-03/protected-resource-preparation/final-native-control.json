@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "/private/tmp/axiom-protected-fixture-prepared-sv2b99jz/resource-attack",
+    "--ordinary-control"
+  ],
+  "returncode": 0,
+  "stdout": "operation=write effect=1 scope=ordinary_control identity=unavailable\noperation=truncate effect=1 scope=ordinary_control identity=unavailable\noperation=closed_fd_shared_upgrade effect=1 scope=ordinary_control identity=unavailable\noperation=metadata effect=1 scope=ordinary_control identity=unavailable\noperation=rename effect=1 scope=ordinary_control identity=unavailable\noperation=unlink effect=1 scope=ordinary_control identity=unavailable\nresource_identity=unavailable qualification=feasibility_only\n",
+  "stderr": "",
+  "profileCalls": 0,
+  "imageCreated": false,
+  "mounted": false
+}
