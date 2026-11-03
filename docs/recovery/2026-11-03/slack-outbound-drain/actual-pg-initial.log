@@ -1,0 +1,47 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-slack-outbound-044535e3[39m
+
+ [31m❯[39m lib/desktop/__tests__/slackNotificationsHttp.postgres.test.ts [2m([22m[2m13 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[33m 986[2mms[22m[39m
+     [32m✓[39m actual HTTP request→distinct approval→prepare→single mocked send consumes durableapproval atomically[32m 171[2mms[22m[39m
+     [32m✓[39m exact original UUID lookup recovers old request without boundedlist ambiguity or crossuser authority[32m 12[2mms[22m[39m
+     [32m✓[39m own read/cancel survives sendflagoff and revoked connection; no provider write[32m 11[2mms[22m[39m
+     [32m✓[39m approved history stays readable after original approver expires, but prepare readiness is false and no operation is created[32m 25[2mms[22m[39m
+     [32m✓[39m fresh accepted requester read-only role retains exact history and cancellation with write controls disabled[32m 11[2mms[22m[39m
+     [32m✓[39m a freshly authenticated session of the same executor can prepare, but cannot transfer a prepared operation to another session[32m 105[2mms[22m[39m
+     [32m✓[39m reauthentication never revives an approval whose original requester session was revoked[32m 24[2mms[22m[39m
+     [32m✓[39m rechecks the original requester after claim commit before any provider call[32m 52[2mms[22m[39m
+     [32m✓[39m [slack-outbound] actual unavailable issuer preserves prepared operation and unconsumed approval[32m 32[2mms[22m[39m
+     [32m✓[39m [slack-outbound] actual lost POST acknowledgement stays unknown with one intent and no resend[32m 91[2mms[22m[39m
+     [32m✓[39m [slack-outbound] actual lost reservation acknowledgement retains slot without postclaim credential or POST[32m 79[2mms[22m[39m
+     [32m✓[39m [slack-outbound] actual enrollment appearing after claim refuses before reservation or POST[32m 61[2mms[22m[39m
+[31m     [31m×[31m [slack-outbound] actual changed linked task after claim blocks reservation and postclaim credential[39m[32m 63[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m12 passed[39m[22m[90m (13)[39m
+[2m   Start at [22m 17:20:39
+[2m   Duration [22m 1.29s[2m (transform 162ms, setup 0ms, import 256ms, tests 986ms, environment 0ms)[22m
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/slackNotificationsHttp.postgres.test.ts[2m > [22mSlack notification full service real owned PostgreSQL[2m > [22m[slack-outbound] actual changed linked task after claim blocks reservation and postclaim credential
+[31m[1mAssertionError[22m: expected { …(24) } to match object { currentStep: 'unknown', …(1) }
+(28 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "attemptCount": 1,[22m
+[32m-   "currentStep": "unknown",[39m
+[31m+   "currentStep": "dispatching",[39m
+[2m  }[22m
+
+[36m [2m❯[22m lib/desktop/__tests__/slackNotificationsHttp.postgres.test.ts:[2m68:328[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+

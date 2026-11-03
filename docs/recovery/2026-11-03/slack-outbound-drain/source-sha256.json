@@ -1,0 +1,13 @@
+{
+  "lib/desktop/__tests__/slackNotificationsHttp.postgres.test.ts": "7c1ae6f2c81033556ffa9e1b67cedd45179bfea8ae3e22dcb8dfb58fb4a8588e",
+  "lib/desktop/slackNotificationsHttp.ts": "bd0e9f6c7d805f5b3dcfeaf65392db9a56b3b8fa0683d63d6b193b4f531b0232",
+  "lib/governance/intelligence/__tests__/slackOutboundDrain.test.ts": "8a8a2bd9b609cb4bf20de74954ca4dfd2081f3bebc0e55741ef7df2b54603aa7",
+  "lib/governance/intelligence/__tests__/slackOutboundIssuer.test.ts": "7e9356d40bd905aa7a7e76529fbfce227a3a8f0b625e567de29d2fc16700600f",
+  "lib/governance/intelligence/slackOutboundDrain.ts": "95d9691a6543a6dc288b8fcea1d2abbd75074ac8973577d683b474eb4849f0a3",
+  "lib/governance/intelligence/slackOutboundIssuer.ts": "8021c00fdad0b7486f80b86fbd553c89ef159803e7abfa040078eb69f5d5043f",
+  "lib/integrations/slack/__tests__/slackOutboundFreshness.test.ts": "2364e8062126e7389ab1e1670c01f5957b566b4d10775406147f0445788951d3",
+  "lib/integrations/slack/slackNotificationApprovalStore.ts": "c3b39e248a9d1b656b2f62121dd6485b4da1334215552362df8eee13d5d0e674",
+  "lib/integrations/slack/slackNotificationExecutor.ts": "ab5f58f5f42e51d1ab2e5601f531db629aacecc25b4e9b6216d8abc9baa53596",
+  "lib/integrations/slack/slackNotificationStore.ts": "af32d4c6ea451ef6906503aa8c1857c099a4bd1877a86ef66c85e1b4f0afe908",
+  "lib/integrations/slack/slackNotificationTransport.ts": "437902a5ecd1cff60e7c8664de9c37593aed7edf71dc1975f237b42cae4a051c"
+}

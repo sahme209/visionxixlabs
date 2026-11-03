@@ -1,3 +1,4 @@
+import {assertNoGovernanceEnrollmentForMutation} from '@/lib/governance/intelligence/enrollmentMetadata';
 import {assertBotActionTaskBinding} from '@/lib/axiom/bot/actionTaskBinding';
 import 'server-only';
 import type {Prisma} from '@prisma/client';
@@ -11,6 +12,10 @@ const inputSchema=z.object({format:z.literal(1),scope:slackNotificationScopeSche
 const stateSchema=z.object({state:z.enum(['prepared','dispatching','sent','unknown','refused','cancelled']),receipt:slackNotificationReceiptSchema.optional()}).strict();
 export interface SlackNotificationDependencies{
  now?:()=>Date;
+ /** DB-only original approval binding; never supplied by request JSON. */
+ readApprovalRequesterScopeLocked?:(tx:Tx,scope:Scope,intent:Readonly<Intent>,approval:Readonly<Approval>)=>Promise<Scope>;
+ /** Synchronous original public-channel snapshot proof, with no fresh I/O. */
+ captureCurrentChannelFreshness?:(scope:Scope,intent:Readonly<Intent>)=>()=>void;
  /** Mandatory server authority: exact paired executor, original distinct approver/session,
   * accepted memberships and current action capabilities under tx-local locks. Never call
   * a session-touching global resolver while holding its session row lock. */
@@ -42,6 +47,26 @@ export function createSlackNotificationStore(repo:ReleaseOperationPlanRepo,deps:
  async prepare(rawScope:Scope,rawIntent:Intent){ready();const s=slackNotificationScopeSchema.parse(rawScope),i=slackNotificationIntentSchema.parse(structuredClone(rawIntent));return repo.$transaction(async tx=>{const a=slackNotificationApprovalSchema.parse(await deps.readIndependentApproval!(tx,s,structuredClone(i)));await current(tx,s,i,a);const id=slackNotificationId(i),rows=await tx.$queryRaw<Row[]>`SELECT * FROM "DurableAgentWorkflow" WHERE "id"=${id} AND "organizationId"=${s.organizationId} FOR UPDATE`;const binding={format:1,scope:s,intent:i,intentDigest:sha256ContentHash(i),approval:a};if(rows.length){const r=await load(tx,s,id);if(!equal(r.inputJson,binding))refuse();await current(tx,s,i,a);return dto(r,s)}const at=now();const r=await tx.durableAgentWorkflow.create({data:{id,organizationId:s.organizationId,workflowKind:SLACK_NOTIFICATION_KIND,objective:'Send one exact independently approved Slack notification',autonomyLevel:'observe',requestedByUserId:s.actorUserId,status:'paused_for_input',currentStep:'prepared',inputJson:binding,stateJson:{state:'prepared'},attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,createdAt:at,updatedAt:at} satisfies Prisma.DurableAgentWorkflowUncheckedCreateInput});await event(tx,r);await current(tx,s,i,a);return dto(r,s)})},
  async claim(rawScope:Scope,id:string){const s=slackNotificationScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const r=await load(tx,s,id),{input:i,v}=unpack(r,s);await authority(tx,s,i.intent,i.approval);if(v.state!=='prepared')return{claimed:false as const};await current(tx,s,i.intent,i.approval);await deps.consumeIndependentApproval!(tx,s,structuredClone(i.approval),id);await current(tx,s,i.intent,i.approval);const updated=await change(tx,r,'dispatching');await current(tx,s,i.intent,i.approval,updated.leaseExpiresAt!);return{claimed:true as const,leaseExpiresAt:updated.leaseExpiresAt!,intent:structuredClone(i.intent)}})},
  async beforeDispatch(rawScope:Scope,id:string){const s=slackNotificationScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const r=await load(tx,s,id),{input:i,v}=unpack(r,s);if(v.state!=='dispatching')refuse();await current(tx,s,i.intent,i.approval,r.leaseExpiresAt!);return structuredClone(i.intent)})},
+ /** Exact claimed session-bound Slack operation; all source reads remain DB-only. */
+ async readClaimedSlackOutboundLocked(tx:Tx,rawScope:Scope,id:string,rawIntent:Intent){
+  const wall=Date.now();if(!Number.isFinite(wall))refuse();
+  const s=slackNotificationScopeSchema.parse(rawScope),intent=slackNotificationIntentSchema.parse(rawIntent);
+  await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(s.organizationId)}))`;
+  const r=await load(tx,s,id),{input:i,v}=unpack(r,s);
+  if(v.state!=='dispatching'||r.attemptCount!==1||r.leaseOwner!==s.sessionId||!r.leaseExpiresAt||!equal(intent,i.intent)||!deps.readApprovalRequesterScopeLocked||!deps.captureCurrentChannelFreshness)refuse();
+  await current(tx,s,i.intent,i.approval,r.leaseExpiresAt!);
+  const requester=slackNotificationScopeSchema.parse(await deps.readApprovalRequesterScopeLocked!(tx,s,i.intent,i.approval));
+  if(requester.organizationId!==s.organizationId||requester.actorUserId!==i.intent.requesterUserId)refuse();
+  const channelFresh=deps.captureCurrentChannelFreshness!(s,structuredClone(i.intent));if(typeof channelFresh!=='function')refuse();channelFresh();
+  const a=i.approval,reviewer={sessionId:a.approverSessionId,actorUserId:a.approverUserId};
+  const sessions=await tx.$queryRaw<Array<{id:string;userId:string;organizationId:string;expiresAt:Date;revokedAt:Date|null;now:Date}>>`SELECT "id","userId","organizationId","expiresAt","revokedAt",clock_timestamp() AS "now" FROM "DesktopSessionRecord" WHERE "organizationId"=${s.organizationId} AND (("id"=${s.sessionId} AND "userId"=${s.actorUserId}) OR ("id"=${requester.sessionId} AND "userId"=${requester.actorUserId}) OR ("id"=${reviewer.sessionId} AND "userId"=${reviewer.actorUserId})) FOR SHARE`;
+  const required=[s,requester,reviewer],keys=new Set(required.map(x=>x.sessionId+'\0'+x.actorUserId));
+  if(sessions.length!==keys.size||required.some(x=>!sessions.some(v=>v.id===x.sessionId&&v.userId===x.actorUserId))||sessions.some(v=>v.organizationId!==s.organizationId||v.revokedAt!==null||!(v.expiresAt instanceof Date)||!Number.isFinite(v.expiresAt.getTime())||!(v.now instanceof Date)||!Number.isFinite(v.now.getTime())||v.expiresAt<=v.now))refuse();
+  await assertNoGovernanceEnrollmentForMutation(tx,s.organizationId);
+  const dbNow=Math.max(...sessions.map(v=>v.now.getTime())),remaining=Math.min(r.leaseExpiresAt!.getTime(),Date.parse(i.intent.expiresAt),Date.parse(a.expiresAt),...sessions.map(v=>v.expiresAt.getTime()))-dbNow;
+  const fresh=()=>{const elapsed=Date.now()-wall;if(!Number.isFinite(elapsed)||!Number.isFinite(remaining)||elapsed<0||elapsed>=remaining)refuse();channelFresh()};fresh();
+  return{fresh,attemptId:'slack_notification_attempt_'+sha256ContentHash({operationId:r.id,attemptCount:r.attemptCount,intentDigest:i.intentDigest,approval:a,scope:i.scope}),sourceDigest:sha256ContentHash({intent:i.intent,approval:a,scope:i.scope}),targetDigest:sha256ContentHash({workspaceId:i.intent.workspaceId,channelId:i.intent.channelId,channelName:i.intent.channelName,connectionRevision:i.intent.connectionRevision}),connectionId:i.intent.connectionId};
+ },
  async finish(rawScope:Scope,id:string,rawResult:Result){const s=slackNotificationScopeSchema.parse(rawScope),result=slackNotificationResultSchema.parse(rawResult);return repo.$transaction(async tx=>{const r=await load(tx,s,id),{input:i,v}=unpack(r,s);await authority(tx,s,i.intent,i.approval);if(v.state!=='dispatching')return dto(r,s);if(result.state==='sent'&&result.receipt.channelId!==i.intent.channelId)refuse();if(result.state!=='unknown')await current(tx,s,i.intent,i.approval,r.leaseExpiresAt!);const updated=await change(tx,r,result.state,result.state==='sent'?result.receipt:undefined);if(result.state!=='unknown')await current(tx,s,i.intent,i.approval,r.leaseExpiresAt!);else await authority(tx,s,i.intent,i.approval);return dto(updated,s)})},
  async get(rawScope:Scope,id:string){const s=slackNotificationScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const r=await load(tx,s,id);await authority(tx,s);return dto(r,s)})},
  async recover(rawScope:Scope,id:string,expectedVersion?:number){const s=slackNotificationScopeSchema.parse(rawScope);return repo.$transaction(async tx=>{const r=await load(tx,s,id);await authority(tx,s);if(expectedVersion!==undefined&&(!Number.isSafeInteger(expectedVersion)||r.version!==expectedVersion))refuse();const updated=r.currentStep==='dispatching'&&r.leaseExpiresAt!.getTime()<=now().getTime()?await change(tx,r,'unknown'):r;await authority(tx,s);return dto(updated,s)})},

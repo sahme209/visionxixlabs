@@ -1,0 +1,32 @@
+{
+  "focused": {
+    "files": 6,
+    "passed": 69,
+    "positiveIssuerAuthorityProvider": "simulated"
+  },
+  "scopedTypes": "pass",
+  "independentSourceReview": "pass; no important findings",
+  "actualPostgres": {
+    "initial": {
+      "session": 81426,
+      "passed": 12,
+      "failed": 1,
+      "failure": "new task-after-claim test expected unknown; original completion authority correctly retained dispatching attempt1",
+      "fixture": "cgb_fxlz; stopped"
+    },
+    "correctedTargeted": {
+      "session": 50940,
+      "passed": 1,
+      "filtered": 12,
+      "fixture": "t591u20x; stopped"
+    },
+    "distinctPassingCasesAcrossRuns": 13,
+    "single13GreenRun": false,
+    "positiveIssuerAuthorityProvider": "simulated"
+  },
+  "canonicalIssuer": "unavailable; preclaim refusal",
+  "persistedBearerLifetime": "unqualified",
+  "coverageActivation": "unavailable",
+  "liveProviderRequests": 0,
+  "nativeProbeExecuted": false
+}
