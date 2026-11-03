@@ -1,0 +1,30 @@
+{
+  "scope": "signed_component_preparation_only",
+  "root": "/private/tmp/axiom-origin-unit-prepared-2d_6kwi8",
+  "app": "/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app",
+  "files": {
+    "config.h": "41fbe22b73e50a4ed697774eff230f187c4964e80951e173cb0790f0420b4bc6",
+    "Axiom Origin Unit.app/Contents/Info.plist": "a9b42e4517d74b5250e239682d2f495e2712dc663e204342e28932dfb84d8f0a",
+    "Axiom Origin Unit.app/Contents/_CodeSignature/CodeResources": "081e3116ed23e9636faf897631b69ba86cca437a83288c1432951e105b812bce",
+    "Axiom Origin Unit.app/Contents/MacOS/AxiomOriginRegistrationHost": "f843023bc22c301f976237cf44d3cf056d91b615feeb79a648f26f0ca99c93a7",
+    "Axiom Origin Unit.app/Contents/MacOS/AxiomOriginBroker": "06b6909e44261062e62011f254dc0890bc1f2cbf32e3e7038df2ec5e69969115",
+    "Axiom Origin Unit.app/Contents/MacOS/AxiomOriginController": "5ad22f77f0690ca06acbf11d83d67652b99d93b5331fee41da42817749bac9f8",
+    "Axiom Origin Unit.app/Contents/MacOS/node": "43aa9baf363e1e1ede7f7e4dd16e175793312d8ef0abd7b10868ba2ba3fe27f1",
+    "Axiom Origin Unit.app/Contents/Resources/origin-client.node": "6ae1e267d47e8d89920d51bff79a8f2c978ced34a31c90d0894a2b050a85976b",
+    "Axiom Origin Unit.app/Contents/Resources/candidate-main.cjs": "c62ff29a9cd0100c31696fb4628988c89d0a0a2f484d938361119b8c313fb646",
+    "Axiom Origin Unit.app/Contents/Library/LaunchAgents/com.visionxixlabs.axiom.origin-unit.plist": "d7b45b53fa2448cb37ad9b8179eb8d65ec256aef6812528ec682ac1ae3a3e0ee"
+  },
+  "brokerRequirement": "cdhash H\"96311a33f49a5e68e277de6e34733620ae2037f3\"",
+  "controllerRequirementMatchesBrokerConfig": true,
+  "executingIssuerIdentity": "unavailable",
+  "registrationPerformed": false,
+  "xpcProtocolExecuted": false,
+  "profileOrMountExecuted": false,
+  "actualCanonicalUnchanged": true,
+  "remaining": [
+    "actual message/registration unit unexecuted",
+    "current origin liveness admission unimplemented",
+    "actual canonical NAPI integration unimplemented",
+    "same compiled consumer unqualified"
+  ]
+}

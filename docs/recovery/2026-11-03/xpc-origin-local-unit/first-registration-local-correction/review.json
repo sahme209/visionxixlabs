@@ -1,0 +1,22 @@
+{
+  "reviewer": "origin_review",
+  "result": "PASS_with_preparation_scope",
+  "reviewMode": "source only; no actual host/service calls",
+  "runnerSha256": "ba35be4e7abc8a82ae0066eddf1d164c54aff608d1e6c79ea8af9d1946e84a80",
+  "registrationHostSha256": "2547b27ea1997b303de8cfe8a00f2fc6a7bc28e95c72f3c3aea1e3bfbdc61330",
+  "manifestSha256": "25129462668fe5ef677af7283b09fda4d6d7c9d2defc443e7c8653c3906ca368",
+  "verifiedBoundary": [
+    "exact calling bundle before SM",
+    "NotFound is diagnostic, not authority",
+    "YES-only owned registration",
+    "Enabled-only one probe",
+    "NO/lostack no automatic cleanup",
+    "ownedYES sameapp cleanup with status/launchd checks",
+    "exclusive preclaim failure journal"
+  ],
+  "remaining": [
+    "actual host/protocol unexecuted",
+    "unknown registration/cleanup is terminal no retry",
+    "identity/current-liveness/canonical/compiledconsumer unqualified"
+  ]
+}

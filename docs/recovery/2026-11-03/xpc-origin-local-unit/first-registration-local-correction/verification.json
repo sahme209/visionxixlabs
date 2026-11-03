@@ -1,0 +1,25 @@
+{
+  "preparedRoot": "/private/tmp/axiom-origin-unit-prepared-2d_6kwi8",
+  "manifestSha256": "25129462668fe5ef677af7283b09fda4d6d7c9d2defc443e7c8653c3906ca368",
+  "compilation": "PASS; prepare.py terminal0 and samecontrollerrequirement true",
+  "strictSignature": "PASS",
+  "allPreparedFileHashesMatch": true,
+  "ordinaryTests": {
+    "cases": 15,
+    "result": "PASS",
+    "scope": "synthetic host command responses and owned temporary files only; no actual Foundation/status/service calls"
+  },
+  "unchangedSuitesNotRerun": [
+    "protocol model",
+    "Node pre-IPC negatives",
+    "self deadline primitive"
+  ],
+  "executed": {
+    "newStatusHost": false,
+    "registration": false,
+    "broker": false,
+    "controller": false,
+    "positiveXpc": false,
+    "identity": false
+  }
+}

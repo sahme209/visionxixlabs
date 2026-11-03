@@ -1,5 +1,7 @@
 # Local XPC origin component — first coherent unit
 
+**Current packet:** see [first-registration local correction](first-registration-local-correction/README.md). The `ze5igxef` preparation and review below remain historical; its one actual invocation stopped at the status gate, with no registration. Current corrected packet is `2d_6kwi8`, not yet executed.
+
 Approved local code/compilation/ordinary isolated tests only. Actual canonical `packages/verified-issuer-runtime/index.cjs` is unchanged and refuses. All candidate code is under `origin-unit/`; no production reader, activation or provider wiring changes.
 
 Compiled native broker, client addon, diagnostic controller and registration-only host; copied cached Node24 into an owned diagnostic app bundle and signed those local copies ad-hoc. No existing keychain credential was used. Latest prepared root `/private/tmp/axiom-origin-unit-prepared-ze5igxef`, manifest `6d0380e929d43d564ad5008c2ebea8f383fc6ad06f18a65c91f291420ffc8a94`. Strict deep signature verification passes. Broker/controller/registration host and the positive candidate main were NEVER executed; no actual XPC exchange/registration, profile, image, mount or identity occurred. Only actual wrong-argv addon/direct-import negatives executed and refused before IPC.

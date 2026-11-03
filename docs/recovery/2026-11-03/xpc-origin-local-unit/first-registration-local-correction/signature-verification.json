@@ -1,0 +1,7 @@
+{
+  "root": "/private/tmp/axiom-origin-unit-prepared-2d_6kwi8",
+  "exit": 0,
+  "stdout": "",
+  "stderr": "--prepared:/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app/Contents/MacOS/AxiomOriginBroker\n--prepared:/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app/Contents/MacOS/AxiomOriginController\n--validated:/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app/Contents/MacOS/AxiomOriginBroker\n--validated:/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app/Contents/MacOS/AxiomOriginController\n--prepared:/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app/Contents/MacOS/node\n--validated:/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app/Contents/MacOS/node\n/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app: valid on disk\n/private/tmp/axiom-origin-unit-prepared-2d_6kwi8/Axiom Origin Unit.app: satisfies its Designated Requirement\n",
+  "scope": "strict local ad-hoc signature only; no host/service run"
+}

@@ -1,6 +1,6 @@
-# Proposed first-registration state model — review required
+# First-registration state model — local correction review
 
-Design only. No code, host/status rerun, service registration, relocation or positive protocol experiment is included. The old exact driver remains frozen/refusing3, and the stopped invocation stays in history.
+This model corrects our agent-added literal0 guard within the existing local trusted-launch implementation approval. Independent source review precedes the local correction; no extra user design approval is required merely to repair that mistaken assumption. No host/status rerun, service registration, relocation or positive protocol experiment is included. The old exact driver remains frozen/refusing3, and the stopped invocation stays in history.
 
 ## Evidence and supported operations
 
@@ -11,7 +11,7 @@ The local SDK says service status3 is generic NotFound, not an authenticated ass
 ## State transition and ownership
 
 1. Recheck exact frozen app hashes/signature, private artifact ownership, exact host/broker/plist paths, and unused local experiment/spawn claims. Existing claims refuse. Record read-only SM status as diagnostic evidence. Refuse Enabled or RequiresApproval and any loaded exact-label launchd service without changing it.
-2. For NotRegistered0 or generic NotFound3, **request explicit user authorization for one first-registration operation**, acknowledging that3 does not prove prior state. It authorizes only the OS's supported registration request for this exact calling app. This is a changed precondition requiring design review and one new exact-run approval, not permission to relabel3 as0 or bypass the existing driver.
+2. For NotRegistered0 or generic NotFound3, **request explicit user authorization for one first-registration operation**, acknowledging that3 does not prove prior state. It authorizes only the OS's supported registration request for this exact calling app. Independent review must verify preservation of the original ownership/status/approval/cleanup contract; one new exact-run approval remains required. This is not permission to relabel3 as0 or bypass the existing driver.
 3. Consume the one-use host claim and fsync an intent receipt before the supported call. The host returns bounded structured `registered`, error domain/code and the exact calling-app identity/path, not only an opaque exit70. No private NSError userInfo or unbounded error payload is retained.
 4. Only an unambiguous `registerAndReturnError:YES` result from that exact pinned host, durably acknowledged in the same run, grants the driver permission to run its one diagnostic controller and later unregister **that same calling app's service**. This is ownership of a temporary diagnostic registration, not issuer or execution authority.
 5. A NO/error/timeout/lost acknowledgement stops without a probe **and without automatic unregister**. AlreadyRegistered, prior denied/pending state and generic errors must never trigger cleanup of possibly preexisting registration. The current driver's unconditional unregister-after-any-register-attempt behavior must be corrected before this changed design is usable. Ambiguous new service state remains material failure, with the intent/receipt preserved for separately authorized exact cleanup. No automatic register retry, status loop, settings change or user-consent simulation.
