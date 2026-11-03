@@ -1,0 +1,33 @@
+{
+  "state": "prepared_compile_only_not_executed",
+  "source": "/private/tmp/axiom-native-nowrite-probe-73b3b78a/scripts/governance_local_issuer/native_nowrite_probe.c",
+  "sourceSha256": "fd20d674ef3159457ad57548fcd97be520d2f9319c114777afcb508ca08c6e41",
+  "binary": "/private/tmp/axiom-nowrite-probe-build-z9grs6d6/native-nowrite-probe",
+  "binarySha256": "7e1420dac7dcc23fc0454b17404aa8b45b70ac6b379506b9142cce2f0774d771",
+  "binaryBytes": 35704,
+  "binaryMode": "0o600",
+  "buildDirectoryMode": "0o700",
+  "compilerArgv": [
+    "/usr/bin/xcrun",
+    "clang",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-deprecated-declarations",
+    "-O2",
+    "-isysroot",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+    "/private/tmp/axiom-native-nowrite-probe-73b3b78a/scripts/governance_local_issuer/native_nowrite_probe.c",
+    "-o",
+    "/private/tmp/axiom-nowrite-probe-build-z9grs6d6/native-nowrite-probe"
+  ],
+  "compilerExitCode": 0,
+  "compileLog": "/private/tmp/axiom-nowrite-probe-build-z9grs6d6/compile.log",
+  "sdkHeader": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sandbox.h",
+  "sdkHeaderSha256": "5baa98c212110d6323f7d73f4b42b0072a4c66a826a46c8bfd8fb850305f9416",
+  "deprecation": "SDK marks API no longer supported; declaration warnings suppressed only for compile, no runtime support inferred",
+  "runApproval": "pending; source and compilation are preparation only",
+  "probeExecuted": false,
+  "identityProduced": false
+}

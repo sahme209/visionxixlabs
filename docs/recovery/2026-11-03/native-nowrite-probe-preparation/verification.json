@@ -1,0 +1,16 @@
+{
+  "state": "prepared_only",
+  "compiler": "pass; official installed SDK; no execution",
+  "independentSourceAndArtifactReview": "pass; no remaining important findings",
+  "reviewCorrection": "bounded post-kill reaping and explicit unknown/unreaped report; bounded pipe report asserted",
+  "sourceAndBinaryHashes": "compile-result.json",
+  "probeExecuted": false,
+  "reviewerExecutedProbe": false,
+  "nativeExperimentApproval": "pending",
+  "sandboxInstalled": false,
+  "imageMounted": false,
+  "canonicalIssuerChanged": false,
+  "identityProduced": false,
+  "providerRequests": 0,
+  "coverageActivation": "unavailable"
+}
