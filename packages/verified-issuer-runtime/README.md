@@ -7,9 +7,9 @@ closed before importing Next or application code. Direct import, another module
 instance, a worker, JSON and environment descriptors cannot initialize anything.
 There is no exported or unused fake initializer and no successful launch path.
 
-The real shared CJS package verifier, private launch registry, immutable-root
-mechanism, native/runtime closure and same-artifact compiled issuer acceptance
-are NOT implemented. Python `package_file_set_verified` is an observation, never
+The private launch registry, immutable-root mechanism, complete native/runtime
+closure and same-artifact compiled issuer acceptance remain NOT implemented.
+The internal file-set verifier described below is implemented; it is not a launch capability. Python `package_file_set_verified` is an observation, never
 a cross-language capability. Future main-only initialization must remain inside
 this canonical module after real verification/seal and before importing Next;
 it requires source review and acceptance, not a global/env/HTTP handoff.
@@ -33,3 +33,10 @@ file-set/NFT observation verification, with Python-produced canonical fixtures
 used only as data. It returns file-set observation with all execution/runtime/
 fleet/legacy states unavailable and never initializes the public consumer. It
 is not exported as a package subpath. Real sealed-launch identity remains absent.
+
+
+The file observer recognizes explicit package profiles `/1` (250,000 trace entries)
+and `/2` (512,000), with the same remaining file/path/byte and qualification checks.
+Unknown profiles refuse; older profile descriptors do not silently acquire the
+larger bound. Python/CJS observations must agree. Neither profile initializes the
+public consumer or establishes dynamic/native loader search or running identity.

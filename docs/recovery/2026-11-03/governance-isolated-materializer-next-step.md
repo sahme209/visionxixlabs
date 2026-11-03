@@ -1,8 +1,9 @@
 # Next action: package the exact isolated build output
 
-November 3, 2026 · implementation plan only. No materializer/runtime code change,
-new build, regeneration, launch, seal experiment or network request was performed.
-The active 066d stage was not inspected until the parent's terminal-build cue.
+November 3, 2026 · initial planning snapshot followed by implemented local adapter
+and profile progress below. No actual materialization, new build, regeneration,
+launch, seal experiment or network request was performed in this work unit. The
+066d stage was not inspected until the parent's terminal-build cue.
 
 ## Terminal evidence and receipt boundary
 
@@ -12,11 +13,12 @@ reports actual Next compilation, TypeScript and route generation exited 0. The
 existing output observer then refused its 250,000 trace-entry budget. The original
 failed `build-run/result.json` and generation/build attempts must remain unchanged.
 
-The parent is qualifying a bounded 512,000-entry read-only observer; no compile or
-generation repeat is needed. Packaging must wait for its successful independent
-observation cue, then correlate the original command exit 0 and a **separate fresh
-output observation** with current source/generated/Node/native input checks. A new
-observation must never rewrite the failed result or turn its status into success.
+The parent qualified the bounded 512,000-entry read-only observer and provided the
+completed cue. `completed-build-observation.json` records source
+`066d821a82d9317f90a2127fe20a2773d252f168`, 6,060 source files, 1,104 routes, 1,108
+traces and 289,120 references. Original command exit 0 and the **separate fresh
+output observation** are correlated with current source/generated/Node/native
+inputs. No compile or generation repeated, and the failed result was not rewritten.
 
 ## Actual output inventory after the terminal cue
 
@@ -111,11 +113,15 @@ claim of complete dynamic/runtime closure.
 The required preview-props object has field names `previewModeId`,
 `previewModeSigningKey`, `previewModeEncryptionKey`; server-reference metadata has
 `node`, `edge`, `encryptionKey`. Values were not printed or copied in this audit.
-These are framework-generated runtime state, not evidence of customer/provider
-credentials or authority, but their treatment must be explicit in the private
-package profile. Do not silently omit required state or claim a generic secret
-scanner proves no credentials exist. Customer environment dumps/configuration and
-actual provider secrets remain excluded/refused under the existing design.
+Root inspected the pinned Next encryption generator and confirmed that the fresh
+clean build had no NEXT_SERVER_ACTIONS_ENCRYPTION_KEY. Root reviewed this as required
+locally generated framework state, not customer/provider credentials or authority.
+Preserve and hash these required files inside the private package; never print or
+copy their values into source/docs/public evidence. No scanner relaxation or new
+allowlist is needed: the existing recognized-PEM/dot-credential-path scanner is not
+a generic base64-secret detector. Do not omit required files or claim it proves no
+credentials exist. Actual customer environment dumps/configuration and provider
+secrets remain excluded/refused under the existing design.
 
 ## What this action does not complete
 
@@ -132,3 +138,75 @@ and native command resolution, then attempt **one** new bounded materialization 
 this exact completed build. Report any concrete closure refusal; do not repeatedly
 rebuild or re-copy to hide it. Keep all execution/issuer/activation qualification
 unavailable throughout that packaging increment.
+
+
+## Implemented adapter and explicit bounded profile migration
+
+`materialize.py` now exposes `isolated_build_details` and `materialize_isolated`.
+The new explicit CLI path takes completed observation/build-run/stage/repository/
+source-cache/bound-engine/generation-run/Node/output coordinates. It reads the
+original attempt/result as bounded owned single-link files, requires the original
+compiler exit 0 and actual Node-version log/current Node bytes, matches the original
+result's raw hash and content to the independent observation, and recomputes current
+post-build source/compiler/generation inputs, output metadata and derived type file.
+Changed inputs/outputs or a failed compiler refuse even if receipt booleans say true.
+The original unavailable observer result remains byte-for-byte unchanged. New
+construction evidence retains all original/fresh-record and current-check hashes;
+none constructs an executing identity.
+
+The shared bounded copy core accepts a canonical real dependency root only for the
+new path. Legacy `materialize` still requires its original dependency symlink and
+legacy receipt contract. Entire archive-owned local-package targets are retained,
+with no workspace adoption or dependency omission. The new construction receipt is
+`axiom.local-issuer-materialization/2` and binds the isolated evidence. The native
+wrapper delegates to C's separately reviewed typed `native_linkage` module; it does
+not retain the flawed otool-line classification.
+
+The actual 289,120 references also exceeded the old package-verifier 250,000 cap.
+Both Python and CJS now recognize explicit package profile
+`next-start-darwin-arm64/2` with **512,000** trace entries. Legacy `/1` remains at
+**250,000**; no old descriptor silently gains the larger budget. Manifest format
+and fields stay `/1`; only the declared bounded profile changes. All other file,
+byte, path, trace, alias, sensitive-content and qualification checks remain intact.
+Unknown profiles refuse. No routes or trace references were dropped to fit a cap.
+
+Exact checks:
+
+- Adapter RED: `/private/tmp/axiom-isolated-materializer-red.log`; **4 tests pass**
+  at `/private/tmp/axiom-isolated-materializer-green.log`.
+- Profile RED: `/private/tmp/axiom-package-trace-profile-red.log`; **2 Python tests
+  pass** at `/private/tmp/axiom-package-trace-profile-green.log`, including 250,001
+  positive for `/2`, unchanged legacy refusal, 512,001 refusal and unknown-profile rejection.
+- **3 selected CJS profile/parity tests pass** at
+  `/private/tmp/axiom-package-cjs-profile-green.log` with the same boundaries and
+  Python/CJS equal file-observation results, no identity grant.
+- **11 directly affected legacy-copy tests pass** at
+  `/private/tmp/axiom-isolated-materializer-legacy-regression.log`.
+
+The copy tests use synthetic files/runtime/native metadata explicitly, not an
+actual server/package execution. Profile-positive tests check actual bounded
+filesystem reference traversal, not a DTO permission flag. A first profile
+implementation missed threading the limit into the separate trace-validation
+function; the final tests passed after that local fix.
+
+Actual **read-only** new-adapter validation of the completed 066d pipeline passed:
+`/private/tmp/axiom-isolated-materializer-066d-input-validation.json`.
+It reverified all 6,060 source files and correlated original result, fresh observation,
+current generated/Node/native-input bytes and output data. `materializationStarted`
+is false, and no destination package was created. Old stages/evidence remain intact.
+
+The original native-profile blanket rejection of every unused escaping rpath was
+identified on Sharp. Root/C separately reviewed a data-only correction: preserve
+all unqualified search-context strings, require each actual LOAD to resolve uniquely
+inside the package or to declared system prerequisites, and leave dynamic/inherited/
+runtime search qualification unavailable. Final native source review is separate;
+no parser rule was loosened in this adapter. No actual materialization, native
+experiment, launch, provider action, build or generation is authorized by these
+passing checks. Root's explicit first-copy cue is still required.
+
+
+Final independent source review: C cleared the isolated adapter/profile changes;
+this agent cleared C's final native LOAD/search-context correction (14 author-owned
+synthetic tests, not rerun by this reviewer). Documentation now labels the opening
+as the historical planning snapshot. All implementation/test evidence above concerns
+local tooling and owned fixtures; no production package copy or launch occurred.

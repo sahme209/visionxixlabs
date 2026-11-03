@@ -11,6 +11,8 @@ import unicodedata
 MANIFEST = "_axiom_local_issuer_manifest.json"
 FORMAT = "axiom.local-issuer-package/1"
 PROFILE = "next-start-darwin-arm64/1"
+ISOLATED_PROFILE = "next-start-darwin-arm64/2"
+ISOLATED_MAX_TRACE_ENTRIES = 512000
 MAX_FILES = 250000
 MAX_BYTES = 8 * 1024 ** 3
 MAX_FILE_BYTES = 2 * 1024 ** 3
@@ -168,7 +170,13 @@ def hash_regular(path, remaining_bytes=None):
         refuse("file_changed_during_verification[preopen_to_open="+changed(before,opened)+";open_to_end="+changed(opened,after)+";end_to_path="+changed(after,latest)+"]")
     return before, h.hexdigest(), prefix
 
-def snapshot(root):
+def trace_entry_limit(profile):
+    if profile == PROFILE: return MAX_TRACE_ENTRIES
+    if profile == ISOLATED_PROFILE: return ISOLATED_MAX_TRACE_ENTRIES
+    refuse("unsupported_manifest_profile")
+
+def snapshot(root, profile=PROFILE):
+    trace_limit = trace_entry_limit(profile)
     root = Path(root)
     if root.is_symlink() or not root.is_dir():
         refuse("invalid_package_root")
@@ -224,12 +232,13 @@ def snapshot(root):
             refuse("required_support_missing")
     if not (root / "__axiom_runtime__/node").stat().st_mode & 0o111:
         refuse("runtime_not_executable")
-    validate_traces(root, files)
+    validate_traces(root, files, profile=profile)
     return {"files":sorted(files,key=lambda x:x["path"]),
             "directories":sorted(directories,key=lambda x:x["path"]),
             "symlinks":sorted(links,key=lambda x:x["path"])}
 
-def validate_traces(root, files):
+def validate_traces(root, files, profile=PROFILE):
+    trace_limit = trace_entry_limit(profile)
     names = {x["path"] for x in files}
     trace_count = trace_entries = trace_bytes = trace_path_bytes = 0
     for item in files:
@@ -242,7 +251,7 @@ def validate_traces(root, files):
         if not isinstance(data, dict) or (type(data.get("version")) is not int or data["version"] != 1) or not isinstance(data.get("files"), list):
             refuse("invalid_trace")
         trace_entries += len(data["files"])
-        if trace_entries > MAX_TRACE_ENTRIES: refuse("trace_limit_exceeded")
+        if trace_entries > trace_limit: refuse("trace_limit_exceeded")
         for raw in data["files"]:
             if not isinstance(raw, str) or os.path.isabs(raw) or "\\" in raw or "\0" in raw:
                 refuse("invalid_trace_target")
@@ -267,7 +276,7 @@ def validate_traces(root, files):
 
 def validate_manifest(data):
     expected = {"format","profile","provenance","runtime","closure","files","directories","symlinks"}
-    if not isinstance(data, dict) or set(data) != expected or data["format"] != FORMAT or data["profile"] != PROFILE:
+    if not isinstance(data, dict) or set(data) != expected or data["format"] != FORMAT or data["profile"] not in {PROFILE, ISOLATED_PROFILE}:
         refuse("unsupported_manifest")
     p = data["provenance"]
     if (not isinstance(p, dict) or set(p) != {"sourceRevision","archiveSha256","buildReceiptSha256","materializationReceiptSha256"}
@@ -312,12 +321,12 @@ def validate_manifest(data):
                 if path_bytes>MAX_PATH_BYTES:refuse("manifest_path_limit")
     return data
 
-def write_manifest(root, provenance, node_version):
-    data = {"format":FORMAT,"profile":PROFILE,"provenance":provenance,
+def write_manifest(root, provenance, node_version, profile=PROFILE):
+    data = {"format":FORMAT,"profile":profile,"provenance":provenance,
             "runtime":{"platform":"darwin","architecture":"arm64","nodeVersion":node_version,"entrypoint":"__axiom_runtime__/node"},
             "closure":{"strategy":"next-traces-plus-materialized-dependencies/1","executingIssuerIdentity":"unavailable",
                        "nativePrerequisite":"trusted-macos-host-not-attested","privateBootstrapConsumer":"unavailable"},
-            **snapshot(root)}
+            **snapshot(root, profile=profile)}
     validate_manifest(data)
     path = Path(root) / MANIFEST
     encoded=canonical(data)+b"\n"
@@ -340,7 +349,7 @@ def verify_package(root):
     if path.is_symlink() or not path.is_file() or path.stat().st_size > 64 * 1024**2:
         refuse("manifest_unavailable")
     data = validate_manifest(strict_json(read_bytes_bounded(path,64*1024**2)))
-    actual = snapshot(root)
+    actual = snapshot(root, profile=data["profile"])
     if any(actual[k] != data[k] for k in ["files","directories","symlinks"]):
         refuse("package_changed_or_partial")
     return {"qualification":"package_file_set_verified","packageDigest":digest(canonical(data)),
