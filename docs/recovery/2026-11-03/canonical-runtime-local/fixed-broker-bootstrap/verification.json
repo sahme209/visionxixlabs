@@ -1,0 +1,26 @@
+{
+  "scope": "local native source/compile/preparation only",
+  "compile": {
+    "brokerWithSharedProtocolRootBindingAndRealCollector": "PASS -Werror",
+    "restrictionBootstrap": "PASS -Werror, never executed",
+    "fixedController": "PASS -Werror, never executed"
+  },
+  "ordinaryProtocolModel": {
+    "cases": 7,
+    "result": "PASS",
+    "authority": "simulated native authentication/child liveness inputs; not real XPC or identity",
+    "red": "initial compile failed on missing implementation, normal new-feature scaffolding not product security defect"
+  },
+  "notExecuted": [
+    "broker/controller/bootstrap",
+    "service/status/register",
+    "profile/restriction",
+    "image/mount",
+    "full production build",
+    "real issuer identity",
+    "compiled consumer qualification",
+    "provider action"
+  ],
+  "qualification": "unavailable; readers remain always-throw",
+  "review": "pending independent review before build/integration activation"
+}

@@ -1,0 +1,11 @@
+{
+  "packages/verified-issuer-runtime/native/origin_config.h": "de02b11bfc8562fbe735e27a8f9ec989e56c781caf7e72cdc1678ffe0021ee72",
+  "packages/verified-issuer-runtime/native/origin_bootstrap.c": "67ce4bb898817fd019179ac29bd3c80f5e64d338d211f65cf0a619b7417e5696",
+  "packages/verified-issuer-runtime/native/origin_broker.c": "c175893a3c3d83ba8fc2f74d43f35bf4d2b5f72d19f00d4183890bac679130fc",
+  "packages/verified-issuer-runtime/native/origin_root_binding.h": "3c987842b16731cd59954231ba9ff4349d776dc5c4664742c34a1e8973be726b",
+  "packages/verified-issuer-runtime/native/origin_root_binding.m": "a74167becb5225348ff6c14bba01e17b93d857c81a5d00a50fccae88cb44b252",
+  "packages/verified-issuer-runtime/native/origin_runtime_protocol.h": "296c9e9638f3d328e2c6294e4a3eaca4b0ccd9bda13103a4574df9fd9c66ecdc",
+  "packages/verified-issuer-runtime/native/origin_runtime_protocol.c": "5257959a2940bf49a7929deb9c3060e1feaf8ded5f21074d59381d29c57103ca",
+  "packages/verified-issuer-runtime/native/origin_runtime_protocol_test.c": "09add91e6470dce51ff591a6e27e3442edc83309a3cd714e434c202da743b3ea",
+  "scripts/governance_local_issuer/origin_control.m": "ccd39256186af7a962384e7c4c3e075d12bafbbddfcecb0788a634a708900c22"
+}
