@@ -100,6 +100,24 @@ class SourceInputs(unittest.TestCase):
     integrity='sha512-'+base64.b64encode(hashlib.sha512(overlapping).digest()).decode();blob,_=m.cache_path(cache,integrity);blob.parent.mkdir(parents=True,exist_ok=True);blob.write_bytes(overlapping);lock['packages']['node_modules/next']['integrity']=integrity
     with self.assertRaises(m.Unavailable):m.observe_build_sources(stage,lock,cache)
 
+class OutputTraceBudget(unittest.TestCase):
+ def test_large_legitimate_trace_set_remains_bounded_and_checks_references(self):
+  with tempfile.TemporaryDirectory(prefix='axiom-trace-budget-',dir='/private/tmp')as tmp:
+   stage=Path(tmp);root=stage/'.next';(root/'server').mkdir(parents=True)
+   (root/'BUILD_ID').write_text('FIXTURE_ID')
+   (root/'required-server-files.json').write_text(json.dumps({'files':[]}))
+   (root/'server/app-paths-manifest.json').write_text(json.dumps({'/fixture':'fixture.js'}))
+   (root/'server/fixture.js').write_text('FIXTURE ONLY')
+   trace=root/'server/fixture.js.nft.json'
+   trace.write_text(json.dumps({'version':1,'files':['fixture.js']*250001}))
+   result=m.verify_build_outputs(stage)
+   self.assertEqual(result['traceEntryCount'],250001)
+   self.assertEqual(result['completeExecutableClosure'],'unavailable')
+   trace.write_text(json.dumps({'version':1,'files':['fixture.js']*512001}))
+   with self.assertRaisesRegex(m.Unavailable,'next_trace_entry_limit'):m.verify_build_outputs(stage)
+   trace.write_text(json.dumps({'version':1,'files':['fixture.js']*250000+['../../../outside']}))
+   with self.assertRaisesRegex(m.Unavailable,'next_trace_reference_escape'):m.verify_build_outputs(stage)
+
 @unittest.skipUnless(sys.platform=='darwin'and Path('/usr/bin/sandbox-exec').exists(),'Darwin controls')
 class BuildMechanics(unittest.TestCase):
  def setUp(self):

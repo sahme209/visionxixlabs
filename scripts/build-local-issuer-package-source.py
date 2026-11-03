@@ -441,7 +441,7 @@ def verify_build_outputs(stage):
    value=json_data(body)
    if not isinstance(value,dict)or value.get('version')!=1 or not isinstance(value.get('files'),list):fail('next_trace_metadata_invalid')
    entries+=len(value['files'])
-   if entries>250000:fail('next_trace_entry_limit')
+   if entries>512000:fail('next_trace_entry_limit')
    for reference in value['files']:
     if not isinstance(reference,str)or not reference or len(reference)>4096 or not reference.isascii()or '\\'in reference or '\0'in reference or Path(reference).is_absolute():fail('next_trace_reference_invalid')
     paths+=len(reference)

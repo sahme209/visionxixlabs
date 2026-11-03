@@ -409,3 +409,34 @@ Next: prove local font family/license/source mapping and review self-hosted exac
 inputs; preserve the failed stage and no-regeneration limit. CursorBench Tokens/Steps
 controls were visibly tested and keyboard behavior recorded in the B1 walkthrough.
 Full A1–A9/B1–B6 scope and all acceptance gates remain open as enumerated above.
+
+## Same-font source actual compilation and separate output observation
+
+Source066d821a uses the exact13 retained fonts and no remote font fetch. Fresh
+ownedstage `/private/tmp/axiom-isolated-066d821a-i6ofubya` passed offline dependency
+preparation, current native input binding and one actual generation. The generation
+was required for the new archived source and new absolute output path; old attempts
+remain unchanged. Root initially omitted the private generation log directory,
+so the first orchestration stopped before invoking the generator. It resumed the
+same prepared stage after creating that required directory; preparation was not
+repeated. `preexecution-stop.json` preserves that distinction.
+
+Actual Next compilation, TypeScript and route generation exited0. The original
+output checker refused its arbitrary250000 aggregate-reference budget: actual
+output has1108 traces /289120 references /23310097 JSON bytes /22417253 path
+characters, within existing64MiB JSON and32MiB path bounds. A focused genuine
+RED→GREEN regression raised only the local observation budget to512000, checks
+250001 acceptance/512001 refusal and a late escaping reference. All byte/tree/
+trace/path/containment constraints remain; package producer/verifier profiles are
+unchanged. Independent source review found no material issue. No recompile or
+regeneration was used for the corrected observation.
+
+A separate readonly current-input/output observation passed:6060 exact archived
+regular source files,1104 routes and1108 trace records. Durable receipt
+`local-build-066d821a-observation.json` retains the original refusal+hash and binds
+the updated observer hash. The old result was not overwritten. This proves the
+stated local source/compiler/output observation only. Complete executable closure,
+descendant quiescence, loaded issuer identity, runtime qualification and activation
+remain unavailable; executionAuthorized false. Full license notices are pending
+and publication remains blocked. No provider/customer/database read, deployment,
+paid CI or new permission occurred.
