@@ -1,0 +1,25 @@
+{
+  "format": "axiom.bot-prompt-figure-source-checks/1",
+  "red": {
+    "command": "node scripts/run-vitest.mjs app/security/__tests__/botAiDataFlow.test.ts",
+    "exit": 1,
+    "failed": 3,
+    "reason": "Actual SecurityPage has no named Bot prompt/response figure before implementation.",
+    "logPath": "work/bot-ai-data-flow/red.log",
+    "logSha256": "3fd60a2f9dcc6140c2ab3536bb51be2c35d8a5638bb80006b872b2806d7e8299"
+  },
+  "green": {
+    "command": "node scripts/run-vitest.mjs app/security/__tests__/botAiDataFlow.test.ts app/security/__tests__/securityScope.test.ts",
+    "exit": 0,
+    "passed": 6,
+    "files": 2,
+    "newChecks": 3,
+    "existingChangedSurfaceChecks": 3,
+    "logPath": "work/bot-ai-data-flow/green.log",
+    "logSha256": "1e0b36bf22742f0c6016d30adb8e656f0e35ad6c6a81bcd6e8a6b636624a327d"
+  },
+  "actualBrowserAcceptance": false,
+  "productionBuildRun": false,
+  "newNetworkProviderOrAiCall": false,
+  "previewChanged": false
+}

@@ -1,0 +1,18 @@
+{
+  "base": "4c6a46a2ead791ba2d3d848e1dc1167bc9b70c76",
+  "changed": {
+    "components/marketing/BotAiDataFlow.tsx": "ea2c279c7fe4ea42a3e9d6c86cd18ffdc266c254e4295090fd35987d1278a93b",
+    "app/security/page.tsx": "c449cb38d23eba652b7738f59dc6e8515167f6de4247de9e175e99468d736639",
+    "app/security/__tests__/botAiDataFlow.test.ts": "dd73a771d84364bb5cd78b1a02b5727a5f84774b6060b2eeff210b59e93eb88e"
+  },
+  "payloadGrounding": {
+    "desktop/src/components/SavedBotTaskWorkspace.tsx": "674db35fb998470416d0f853978d7ddaad3e9c3e97508b5e84b7c10938890a14",
+    "desktop/src/components/BotTaskComposer.tsx": "b87aa9c4086801d34367dafee5baeabf934d90fa883612151e2d1ee4f3e95d5f",
+    "desktop/src/lib/useBotAiTask.ts": "9966d47fcfc4b983adb1bbf07f381270f588423ce0b9a123213251fb9fb4e1f5",
+    "desktop/src/components/BotAppActionLauncher.tsx": "db1972fc75e387591c071ff7d3b905b8690dfe0c79582db555e7e543a35ae3c4",
+    "lib/axiom/bot/aiTaskContract.ts": "12e05057ef239049fb5ac8684c552c4ef9ec880f85b5ff95e17e03f22f97c754",
+    "lib/axiom/bot/aiTaskWorker.ts": "47e0b2834022049f1ea93fe75218f75122d60d17b84c24ac590f034d2e0f16f2",
+    "lib/axiom/bot/aiTaskGovernance.ts": "ccedb905b925813ceecf27abab9fdb573be35c0b34a95fe881895b6d44280527",
+    "lib/axiom/bot/aiTaskEvidenceContext.ts": "9038e800dac9a20015e2d506da11d8507ebfde73b1ad5b842291cfc24c74e757"
+  }
+}
