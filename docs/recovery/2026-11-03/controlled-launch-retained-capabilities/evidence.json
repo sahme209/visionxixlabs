@@ -1,0 +1,30 @@
+{
+  "state": "design_only; changed native mechanism pending review",
+  "baseCommit": "d5f82293",
+  "observedProbe": "approved binary returned78; profile installed/path denial worked, retained write+truncate succeeded; independent files changed",
+  "newProbeOrApiExecution": false,
+  "newMountOrInitializerOrIdentity": false,
+  "runtimeSourceChanged": false,
+  "sdkDeclarationsOnlyNotCompletenessProof": {
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sandbox.h": "5baa98c212110d6323f7d73f4b42b0072a4c66a826a46c8bfd8fb850305f9416",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/spawn.h": "8e73a88c3f63dae77ebf831737942e82ee7c78a7af1446fdbb1ee7ac6804a7e4",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/spawn.h": "2d90f16beec60b2080553613234f004b58f384003feaa5eb809fe5e91b42b884",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/libproc.h": "246d87709fc6b9157ce5cf3c475656ac48e0e1ae8bbdc46cf45acd34294448cd",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/proc_info.h": "e427fa96b348537b21552b9de71e01039410bcad2cedee5584c5e5fddafd70fc",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/mach/mach_vm.h": "40b7509ce3b64271d1947bfdf1328146ddb2b0cb5b337054e61a6e8e9749cba8",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/mach/vm_region.h": "d872aab626ae7c83b6451400de146b469e7d5a7454dbbf539524fe94f2e20ea7",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/mount.h": "45872741bb916b92bddd2e562d2047b552af1f68269081a0aeb58a3e5a2b8a51"
+  },
+  "inspectedRuntimeSources": [
+    "scripts/governance_local_issuer/launcher.py",
+    "scripts/governance_local_issuer/seal_probe.py",
+    "packages/verified-issuer-runtime/index.cjs"
+  ],
+  "designSha256": "7b8e14d5d30177971d7143f71c1441d03371fcb29be519fa99d73e168385a948",
+  "remainingQualifications": [
+    "descriptor and VM inventory completeness/races/maximum upgrade rights",
+    "actual sealed package and backing-image protection",
+    "same-artifact actual compiled issuer/store/transport acceptance",
+    "fleet/legacy/provider effects/coverage/activation"
+  ]
+}

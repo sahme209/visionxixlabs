@@ -1,0 +1,26 @@
+{
+  "retained_write": {
+    "bytes": 21,
+    "sha256": "0d2989dc5c6a6dae74df0cad1a6dd5e00b81a6f399372a1d0a4ace70dc3965f1",
+    "originalSeedUnchanged": false,
+    "mode": "0o600"
+  },
+  "retained_truncate": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "originalSeedUnchanged": false,
+    "mode": "0o600"
+  },
+  "write": {
+    "bytes": 21,
+    "sha256": "7659e35c6710502b6dac8ced532831fd5339301d1e3ad6467a0fcc44ed7045fa",
+    "originalSeedUnchanged": true,
+    "mode": "0o600"
+  },
+  "backing_file": {
+    "bytes": 21,
+    "sha256": "7659e35c6710502b6dac8ced532831fd5339301d1e3ad6467a0fcc44ed7045fa",
+    "originalSeedUnchanged": true,
+    "mode": "0o600"
+  }
+}

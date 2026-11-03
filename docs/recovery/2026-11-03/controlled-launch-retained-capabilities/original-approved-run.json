@@ -1,0 +1,15 @@
+{
+  "approval": "Approve one isolated test; call_364513f7b17f4a749f454555ea1cf942",
+  "binary": "/private/tmp/axiom-nowrite-probe-build-z9grs6d6/native-nowrite-probe",
+  "sha256": "7e1420dac7dcc23fc0454b17404aa8b45b70ac6b379506b9142cce2f0774d771",
+  "argv": [
+    "--owned-temp-fixture-run"
+  ],
+  "state": "terminal",
+  "startedAt": 1793729590.4059148,
+  "networkOrProviderActions": false,
+  "identityInitialized": false,
+  "returncode": 78,
+  "finishedAt": 1793729590.485982,
+  "finalMode": "0o600"
+}
