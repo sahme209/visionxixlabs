@@ -1,0 +1,9 @@
+# Owned mapping causal comparison
+
+Diagnostic-only native source, no production classifier change. Compiled with installed SDK using xcrun clang -std=c11 -Wall -Wextra -Werror -O1, linking only capability_inventory.c (not initializer/profile code). Final own-process child completed with exit 0 within a 10-second parent timeout, empty stderr. Nine metadata observations; no addresses, paths, memory contents, environment, or object IDs emitted.
+
+The known file MAP_SHARED mapping, made current-readonly and with its descriptor closed, reports SM_PRIVATE=2 and is allowed by the current classifier. Faulting it leaves that classification. Adding a second owned shared alias changes both shared mappings to SM_SHARED=4 and refusal. The known POSIX shared-memory mapping likewise reports SM_PRIVATE=2, external_pager=0, max=3 and is allowed. These are concrete counterexamples to treating SM_PRIVATE metadata as proof that maximum-write mappings lack shared backing. SDK share-mode metadata is best effort; external_pager, user_tag and missing pathname are not anonymous/guard authority.
+
+Private/COW, anonymous shared PROT_NONE and private guard controls are recorded, not security qualification. No policy exception or whitelist is inferred from their differences. Canonical runtime remains unavailable. Actual clean handoff, complete capability closure, readonly backing image, profile run and same-artifact identity/consumer acceptance remain unqualified.
+
+One intermediate diagnostic run stopped at exit15 because a POSIX shm name exceeded Darwin's name limit; its owned file/directory were explicitly cleaned after inspection. Short random name fixed that fixture only. Final run unlinked shm immediately and cleaned all owned files/maps. Earlier first comparison is retained separately. No previous consumed NoWrite probe was repeated.

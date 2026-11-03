@@ -1,0 +1,5 @@
+{
+  "scripts/governance_local_issuer/native_tests/mapping_shapes.c": "b37060358eae358468b6f7f8fbd5ec65334bab91c11278fbb2661f409e3741b2",
+  "packages/verified-issuer-runtime/native/capability_inventory.c": "913c909ea0101b5f11764b4e6947d297f851e1866d12a4d8a83d377b94e0e6c6",
+  "work/native-mapping-shapes/mapping-shapes": "1870a375d03884aa3fbadc9b0d4a765a3200db0a031afe604ceba90bf4b813eb"
+}

@@ -1,0 +1,10 @@
+baseline_first_refusal decision=1 prot=0 max=7 share=5 external=0 submap=0 tag=1 inherit=1 shadow=0 resident=0 private_pages=0 refs=2 offset_zero=1 object_present=1 named=0
+file_shared_ro_fd_closed decision=0 prot=1 max=7 share=2 external=1 submap=0 tag=0 inherit=0 shadow=0 resident=0 private_pages=0 refs=2 offset_zero=1 object_present=1 named=1
+file_shared_ro_faulted decision=0 prot=1 max=7 share=2 external=1 submap=0 tag=0 inherit=0 shadow=0 resident=1 private_pages=0 refs=2 offset_zero=1 object_present=1 named=1
+file_shared_alias decision=1 prot=3 max=7 share=4 external=1 submap=0 tag=0 inherit=0 shadow=0 resident=1 private_pages=0 refs=4 offset_zero=1 object_present=1 named=1
+file_private_cow decision=0 prot=3 max=7 share=1 external=1 submap=0 tag=0 inherit=1 shadow=1 resident=1 private_pages=0 refs=4 offset_zero=1 object_present=1 named=1
+file_shared_with_alias decision=1 prot=1 max=7 share=4 external=1 submap=0 tag=0 inherit=0 shadow=0 resident=1 private_pages=0 refs=4 offset_zero=1 object_present=1 named=1
+anonymous_shared_none decision=1 prot=0 max=7 share=3 external=0 submap=0 tag=0 inherit=0 shadow=0 resident=0 private_pages=0 refs=0 offset_zero=1 object_present=0 named=1
+private_guard_none decision=1 prot=0 max=7 share=3 external=0 submap=0 tag=0 inherit=1 shadow=0 resident=0 private_pages=0 refs=0 offset_zero=1 object_present=0 named=1
+owned_posix_shm_ro_fd_closed decision=0 prot=1 max=3 share=2 external=0 submap=0 tag=0 inherit=0 shadow=0 resident=0 private_pages=0 refs=1 offset_zero=1 object_present=1 named=1
+qualification=diagnostic_only identity=unavailable profile_executed=0
