@@ -18,7 +18,7 @@ External identity, token issuance, provider replies and authenticated principal 
 - Coherently rewritten ref/final-PR receipt plus matching event digest: **2 passed,17 filtered**; fixture `at6xnkdd`, stopped. Wrong ref proof prevents PR; wrong final receipt kind prevents success.
 - Credential focused **8 passed**; immutable artifact/shared drain **30 passed**; existing completion/read/artifact checks **18 passed** with explicitly simulated private capability harness; unchanged file-mode/credential-client regressions **35 passed**; new exact coding token-purpose test **1 passed,18 filtered**.
 - Independent final current-source review passed with no outstanding important finding; exact drain SHA256 `b02a61b4472a870b30851a35f40aab615e69143633b1c1a40496aa4542cba293`.
-- Scoped Node24.21 TypeScript passed terminal0. Cached TypeScript printer then expanded multiline blocks only; no intended runtime change. No production/full build repeated. `git diff --check` passed.
+- Scoped Node24.21 TypeScript passed terminal0. Cached TypeScript printer then expanded multiline blocks only; no intended runtime change. The single later exact production build passed; see [build receipt](workforce-coding-production-build/README.md). No duplicate build was run. `git diff --check` passed.
 
 Evidence and exact runtime/test hashes: [evidence/workforce-coding-outbound](evidence/workforce-coding-outbound). `shared-focused.log` intentionally retains the initial two outdated test-harness failures; `completion-corrected.log` records correction of that explicitly simulated harness, not a runtime relaxation. No aggregate single-run count is claimed.
 

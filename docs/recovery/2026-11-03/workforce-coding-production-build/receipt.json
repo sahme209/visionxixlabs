@@ -1,0 +1,35 @@
+{
+  "format": "axiom.coding-production-build-receipt/1",
+  "sourceRevision": "fab36de117111c214fffe0290777d05284ced04a",
+  "ownedStage": "/private/tmp/axiom-coding-build-fab36de1-022njhu7",
+  "status": "build_outputs_observed_unqualified",
+  "exit": 0,
+  "buildOutputsVerified": true,
+  "executionAuthorized": false,
+  "runtimeQualification": "unavailable",
+  "executingIssuerIdentity": "unavailable",
+  "routeCount": 1104,
+  "traceCount": 1108,
+  "evidence": {
+    "terminal-summary.json": {
+      "sha256": "dcc4e91916e4bcd029a2a4dea0df389709c1619c2eeec5c9b7ff0c66a34441e9",
+      "bytes": 188
+    },
+    "build-run/attempt.json": {
+      "sha256": "2a250ec91c9b400ccfca0c6c9057cdb99a8751e17ec36c2fb291475b915bb01f",
+      "bytes": 7051
+    },
+    "build-run/result.json": {
+      "sha256": "26023e0328d57b4e93c3aca3acafe5afd8406aacfd55f64388bb4fa2a46638bc",
+      "bytes": 180430
+    },
+    "build-run/next-build.log": {
+      "sha256": "8655070a9670917578f067d2c1d9b470570500b833a4bfdca10d976fb9361c93",
+      "bytes": 41909
+    },
+    "build-run/contract.log": {
+      "sha256": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+      "bytes": 185
+    }
+  }
+}
