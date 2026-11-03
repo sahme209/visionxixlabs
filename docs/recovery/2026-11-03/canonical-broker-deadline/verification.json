@@ -36,5 +36,9 @@
   "runtimeQualification": "unavailable",
   "executingIssuerIdentity": "unavailable",
   "executionAuthorized": false,
-  "independentReview": "pending"
+  "independentReview": "pending",
+  "corrections": [
+    "root found initial controller literal240s unchanged; now literal assignment derives original startup180s constant, controller recompiled",
+    "shared protocol revocation now propagates global epoch cancellation and owned cleanup, broker recompiled"
+  ]
 }

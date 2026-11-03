@@ -31,7 +31,7 @@ typedef enum {JOB_START,JOB_OBSERVE,JOB_BEGIN,JOB_ACK,JOB_LIVE} JobKind;
 typedef struct Job {atomic_uint refs;atomic_int cancelled;Peer*peer;xpc_object_t message;dispatch_source_t timer;JobKind kind;uint64_t deadline,epoch;int replied,authenticated,live,prepared;pid_t expected_child,child;int output,error;AxiomOriginRootBinding binding;unsigned char client[32],broker[32];} Job;
 static AxiomOriginSlot slot;
 static AxiomOriginRootBinding resources;
-static int started_once,shutting_down;
+static int started_once,shutting_down,epoch_revoked;
 static pid_t owned_child;
 static uint64_t epoch;
 static uintptr_t startup_peer;
@@ -52,7 +52,7 @@ static int alive_pid(pid_t child){if(child<=0)return 0;siginfo_t info;memset(&in
 static void kill_owned(pid_t child){if(alive_pid(child))kill(child,SIGKILL);}
 static void maybe_exit(void){if(!shutting_down||owned_child>0)return;for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i])return;_exit(0);}
 static void reap_owned(pid_t child,unsigned remaining){int status;pid_t result=waitpid(child,&status,WNOHANG);if(result==child||(result<0&&errno==ECHILD)){if(owned_child==child)owned_child=0;maybe_exit();return;}if(result<0&&errno!=EINTR){fputs("verified_issuer_child_cleanup_unknown\n",stderr);return;}if(!remaining){fputs("verified_issuer_child_cleanup_unknown\n",stderr);return;}dispatch_after(dispatch_time(DISPATCH_TIME_NOW,10000000LL),control,^{reap_owned(child,remaining-1);});}
-static void revoke_slot(void){if(slot.phase!=AXIOM_ORIGIN_REVOKED){uint64_t old_epoch=epoch;epoch++;axiom_origin_slot_revoke(&slot);for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i]&&jobs[i]->epoch==old_epoch)atomic_store(&jobs[i]->cancelled,1);}kill_owned(slot.child);if(slot.child>0)reap_owned(slot.child,20);}
+static void revoke_slot(void){if(!epoch_revoked){uint64_t old_epoch=epoch;epoch++;epoch_revoked=1;axiom_origin_slot_revoke(&slot);for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i]&&jobs[i]->epoch==old_epoch)atomic_store(&jobs[i]->cancelled,1);}kill_owned(slot.child);if(slot.child>0)reap_owned(slot.child,20);}
 static void reply(xpc_object_t message,const char*status,pid_t child,const unsigned char*a,const unsigned char*b){xpc_object_t value=xpc_dictionary_create_reply(message);if(!value)return;xpc_dictionary_set_string(value,"status",status);xpc_dictionary_set_int64(value,"child",child);if(a)xpc_dictionary_set_data(value,"client",a,32);if(b)xpc_dictionary_set_data(value,"broker",b,32);xpc_connection_t peer=xpc_dictionary_get_remote_connection(message);if(peer)xpc_connection_send_message(peer,value);xpc_release(value);}
 static int claim_startup(void){
  if(!AXIOM_ISSUER_SPAWN_CLAIM[0])return 0;char parent[PATH_MAX];if(strlen(AXIOM_ISSUER_SPAWN_CLAIM)>=sizeof(parent))return 0;strcpy(parent,AXIOM_ISSUER_SPAWN_CLAIM);char*end=strrchr(parent,'/');if(!end||end==parent||strcmp(end+1,"issuer-startup-claim.json"))return 0;*end=0;
@@ -116,6 +116,7 @@ static void finish_job(Job*j){
   else if(j->kind==JOB_LIVE&&axiom_origin_slot_live(&slot,1,live,now_ns(),(uintptr_t)j->peer->connection,j->client,j->broker))job_reply(j,"origin_current",slot.child,j->client,j->broker);
   else job_reply(j,"refused",0,NULL,NULL);
  }else{if(j->epoch==epoch&&(slot.peer==(uintptr_t)j->peer->connection||(j->authenticated&&j->kind==JOB_BEGIN)))revoke_slot();job_reply(j,"refused",0,NULL,NULL);}
+ if(slot.phase==AXIOM_ORIGIN_REVOKED&&!epoch_revoked)revoke_slot();
  for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i]==j){jobs[i]=NULL;break;}j->peer->busy=0;cancel_timer(j);release_job(j); /* control ownership */
  maybe_exit();
 }
@@ -140,7 +141,7 @@ static void handle(Peer*p,xpc_object_t message){
  uint64_t now=now_ns(),deadline;if(now==UINT64_MAX||now>UINT64_MAX-REQUEST_NS){reply(message,"refused",0,NULL,NULL);return;}
  if(kind==JOB_START){
   if(started_once){reply(message,"refused",0,NULL,NULL);return;}started_once=1;
-  if(!axiom_origin_slot_reserve(&slot,now)){revoke_slot();reply(message,"refused",0,NULL,NULL);return;}epoch++;deadline=slot.deadline;startup_peer=(uintptr_t)p;
+  if(!axiom_origin_slot_reserve(&slot,now)){revoke_slot();reply(message,"refused",0,NULL,NULL);return;}epoch++;epoch_revoked=0;deadline=slot.deadline;startup_peer=(uintptr_t)p;
   uint64_t startup_epoch=epoch;
   dispatch_after(at_deadline(deadline),control,^{if(epoch==startup_epoch&&slot.phase!=AXIOM_ORIGIN_CONSUMED)revoke_slot();});
  }else deadline=now+REQUEST_NS;

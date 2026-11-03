@@ -20,7 +20,7 @@ static int actual_sender(xpc_object_t message,const char*text){
 int main(int argc,const char**argv){@autoreleasepool{
  if(argc!=3||!AXIOM_ISSUER_ORIGIN_SERVICE[0]||strlen(argv[2])>1024)return 64;
  const char*operation=NULL,*expected=NULL;int64_t timeout;
- if(!strcmp(argv[1],"--start-reviewed-issuer")){operation="start";expected="spawned_origin_only";timeout=240000000000LL;}
+ if(!strcmp(argv[1],"--start-reviewed-issuer")){operation="start";expected="spawned_origin_only";timeout=(int64_t)AXIOM_ORIGIN_STARTUP_NS;}
  else if(!strcmp(argv[1],"--observe-reviewed-issuer")){operation="observe";expected="origin_observed_no_issuer_identity";timeout=1000000000LL;}
  else return 64;
  /* argv[2] is the exact requirement recorded by the owning preparation/harness,
