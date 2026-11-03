@@ -1,0 +1,5 @@
+{
+  "scripts/governance_local_issuer/launch_preparation.py": "f7f01e45a388bef814aa1f498cdb550fc1ea9cc81506446d03f1ca1dfe334abf",
+  "scripts/governance_local_issuer/launcher.py": "1d4a49424ced637fc230b08f88b19cdc68bd6e2fff8a0683e7f2d903caf3931d",
+  "scripts/governance_local_issuer/tests/test_launch_preparation.py": "3c84bb23111640f825c86162fc053c752fcda50387eca9dc814f10d58d174b0f"
+}

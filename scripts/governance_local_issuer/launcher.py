@@ -10,6 +10,7 @@ import sys
 if __package__ in (None,""):
     sys.path.insert(0,str(Path(__file__).resolve().parent.parent))
 from governance_local_issuer.manifest import PackageUnavailable,verify_package,MANIFEST
+from governance_local_issuer.launch_preparation import forbidden_environment_present
 
 def readonly_filesystem(root):
     flags=os.statvfs(root).f_flag
@@ -27,9 +28,7 @@ def preflight_launch(root):
     result={"status":"unavailable","executingIssuerIdentity":"unavailable",
             "fleetQualification":"unavailable","legacyQualification":"unavailable",
             "runtimeQualification":"unavailable","executionAuthorized":False}
-    forbidden=[key for key in os.environ if key in {"NODE_OPTIONS","NODE_PATH","LD_PRELOAD","LD_LIBRARY_PATH"}
-               or key.startswith(("DYLD_","TS_NODE_","BABEL_","AXIOM_ISSUER_"))]
-    if forbidden:
+    if forbidden_environment_present(os.environ):
         return {**result,"reasons":["loader_or_self_report_override"]}
     try:
         observation=verify_package(root)

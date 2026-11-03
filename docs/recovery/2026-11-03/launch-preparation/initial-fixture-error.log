@@ -1,0 +1,19 @@
+....E.........
+======================================================================
+ERROR: test_even_a_manifest_bound_main_symlink_is_not_the_fixed_canonical_entrypoint (test_launch_preparation.LaunchPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/axiom-launch-preparation-aec84688/scripts/governance_local_issuer/tests/test_launch_preparation.py", line 99, in test_even_a_manifest_bound_main_symlink_is_not_the_fixed_canonical_entrypoint
+    main=self.root/preparation.MAIN_RELATIVE;main.unlink();main.symlink_to('../../external/index.js');self.save()
+  File "/private/tmp/axiom-launch-preparation-aec84688/scripts/governance_local_issuer/tests/test_launch_preparation.py", line 43, in save
+    def save(self):manifest.write_manifest(self.root,{'sourceRevision':'a'*40,'archiveSha256':'b'*64,'buildReceiptSha256':'c'*64,'materializationReceiptSha256':'d'*64},'v24.21.0')
+  File "/private/tmp/axiom-launch-preparation-aec84688/scripts/governance_local_issuer/manifest.py", line 336, in write_manifest
+    if read_bytes_bounded(path,64*1024**2)!=encoded:refuse("existing_manifest_not_identical")
+  File "/private/tmp/axiom-launch-preparation-aec84688/scripts/governance_local_issuer/manifest.py", line 30, in refuse
+    raise PackageUnavailable(reason)
+governance_local_issuer.manifest.PackageUnavailable: existing_manifest_not_identical
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.048s
+
+FAILED (errors=1)

@@ -1,0 +1,20 @@
+F
+======================================================================
+FAIL: test_compile_cache_loader_control_refuses_before_package_observation (test_launch_preparation.EnvironmentBoundaryTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/axiom-launch-preparation-aec84688/scripts/governance_local_issuer/tests/test_launch_preparation.py", line 13, in test_compile_cache_loader_control_refuses_before_package_observation
+    self.assertEqual(result['reasons'],['loader_or_self_report_override'])
+AssertionError: Lists differ: ['package_or_runtime_prerequisite_unavailable'] != ['loader_or_self_report_override']
+
+First differing element 0:
+'package_or_runtime_prerequisite_unavailable'
+'loader_or_self_report_override'
+
+- ['package_or_runtime_prerequisite_unavailable']
++ ['loader_or_self_report_override']
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (failures=1)

@@ -1,0 +1,19 @@
+{
+  "state": "local_preparation_only",
+  "tests": {
+    "passed": 17,
+    "new": 14,
+    "existingLauncher": 3,
+    "realRuntimeSpawn": false,
+    "realFdHandoff": false,
+    "fixtures": "owned synthetic closed-file packages; recorded metadata and spawn stub"
+  },
+  "red": "existing preflight NODE_COMPILE_CACHE reached package observation; corrected to early loader refusal",
+  "initialTestSetupFailure": "immutable fixture manifest rewrite refused; corrected owned unit fixture setup, no production relaxation",
+  "independentSourceReview": "pass; no important finding",
+  "nativeMechanismDecision": "pending; no inferred consent",
+  "nativeApiExecuted": false,
+  "mountedImage": false,
+  "initializerOrExecutingIdentity": false,
+  "coverageActivation": "unavailable"
+}
