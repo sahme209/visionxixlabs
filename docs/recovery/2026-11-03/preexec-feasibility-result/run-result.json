@@ -1,0 +1,40 @@
+{
+  "results": [
+    {
+      "mode": "control",
+      "root": "/private/tmp/axiom-preexec-owned-8cd4851f",
+      "returncode": 0,
+      "stdout": "{\"mode\":\"control\",\"nodeStarted\":true,\"pathWrite\":true,\"shared_write\":1,\"upgrade_write\":1,\"shm_write\":1,\"shm_created\":1,\"cleanup_error\":0,\"identity\":\"unavailable\",\"qualification\":\"feasibility_only\"}\n",
+      "stderr": "",
+      "output_overflow": false,
+      "timed_out": false,
+      "before": {
+        "mapping": "11ec8ff5d35f04eaedefcd02ffc5391c5e9d43299ebd739316d3c303ad6f3672",
+        "path-write": "11ec8ff5d35f04eaedefcd02ffc5391c5e9d43299ebd739316d3c303ad6f3672"
+      },
+      "after": {
+        "mapping": "9d2440bdfd8755308e42ef832bb7f6f629169051db65b4327e2126bc9bff21e9",
+        "path-write": "b8af5a19646cd4d7de31982018240041f95719976cadf109948a9902d2714caa"
+      }
+    },
+    {
+      "mode": "restricted",
+      "root": "/private/tmp/axiom-preexec-owned-939a8bdb",
+      "returncode": 0,
+      "stdout": "{\"mode\":\"restricted\",\"nodeStarted\":true,\"pathWrite\":false,\"shared_write\":0,\"upgrade_write\":0,\"shm_write\":1,\"shm_created\":1,\"cleanup_error\":0,\"identity\":\"unavailable\",\"qualification\":\"feasibility_only\"}\n",
+      "stderr": "",
+      "output_overflow": false,
+      "timed_out": false,
+      "before": {
+        "mapping": "11ec8ff5d35f04eaedefcd02ffc5391c5e9d43299ebd739316d3c303ad6f3672",
+        "path-write": "11ec8ff5d35f04eaedefcd02ffc5391c5e9d43299ebd739316d3c303ad6f3672"
+      },
+      "after": {
+        "mapping": "11ec8ff5d35f04eaedefcd02ffc5391c5e9d43299ebd739316d3c303ad6f3672",
+        "path-write": "11ec8ff5d35f04eaedefcd02ffc5391c5e9d43299ebd739316d3c303ad6f3672"
+      }
+    }
+  ],
+  "identity": "unavailable",
+  "qualification": "feasibility_only"
+}
