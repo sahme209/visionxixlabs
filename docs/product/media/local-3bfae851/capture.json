@@ -1,0 +1,32 @@
+{
+  "format": "axiom.local-media-capture/1",
+  "sourceRevision": "3bfae851aa17046db316b3408d687fe89e0a4e07",
+  "artifact": "docs/product/media/local-3bfae851/docs-contents-817x847.jpg",
+  "sha256": "9f36f01e923e1e38d569d0d7807f9adb10c212f97d1a1c54de9e42353ec02878",
+  "bytes": 83588,
+  "width": 817,
+  "height": 847,
+  "mediaType": "image/jpeg",
+  "capture": "actual browser screenshot, not generated artwork or edited simulation",
+  "route": "/docs/surfaces",
+  "previewOrigin": "http://127.0.0.1:5202",
+  "visibility": "local-preview-draft",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "alt": "Axiom local documentation preview with collapsed contents, keyboard focus ring and the navigation guide visible at narrow width.",
+  "observedChecks": [
+    "article visible initially",
+    "contents expands",
+    "Tab enters Overview link",
+    "Escape collapses and returns focus",
+    "Return expands",
+    "client navigation collapses and returns focus"
+  ],
+  "privacyReview": "Root visually inspected actual capture: public guide text and Axiom branding only; no customer workspace, account, credential or provider record shown. No redaction needed for this local artifact.",
+  "limits": [
+    "website screenshot only, not desktop recording",
+    "not released-version documentation",
+    "not full responsive or accessibility acceptance",
+    "no verified provider action or Governance activation shown"
+  ]
+}
