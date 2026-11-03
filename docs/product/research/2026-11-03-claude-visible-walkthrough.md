@@ -23,3 +23,7 @@ User-requested reference research only; vendor claims are not Axiom capabilities
 ## Remaining research
 
 Full Claude navigation/deep destinations, docs layout and support article controls, demo playback/captions, keyboard/responsive/contrast behavior and blocked actions remain incomplete. Cursor remains partial22 canonical pages; ChatGPT, Codex, Harness and Grok also remain partial. No external messages, sign-in, installation, downloads, account change, data submission or provider action occurred.
+
+## Third public page: help article and search
+
+Followed the safety article link observed on Product to `https://support.claude.com/en/articles/13364135-use-claude-cowork-safely`. Actual article presents collection navigation, relative update label, availability, risk, safety measures, user responsibility and related articles. A Copy for LLM control exists but was not pressed; no vendor article copied into Axiom knowledge. Search docs opened with focus in its combo box; a public “permissions” query produced ranked articles with collection context. Escape closed the search; focus landed on the web area, not a proven returned trigger. No claim that its focus return passes Axiom acceptance. Did not submit messenger/contact, copy/share controls, rating or account actions. The direct article/current search are partial documentation research, not vendor security verification. Future Axiom retrieval must use approved versioned content and genuine citations, never treat a vendor promise as Axiom authority.

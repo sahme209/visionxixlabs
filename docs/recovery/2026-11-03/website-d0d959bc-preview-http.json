@@ -1,0 +1,34 @@
+{
+  "sourceRevision": "d0d959bcdc2c23069c4e76546fd14f10e994425a",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/__axiom_preview",
+      "status": 200,
+      "source": "d0d959bc",
+      "setCookie": null
+    },
+    {
+      "method": "GET",
+      "path": "/product",
+      "status": 200,
+      "source": "d0d959bc",
+      "setCookie": null
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/session",
+      "status": 403,
+      "source": "d0d959bc",
+      "setCookie": null
+    },
+    {
+      "method": "POST",
+      "path": "/product",
+      "status": 403,
+      "source": "d0d959bc",
+      "setCookie": null
+    }
+  ],
+  "providerActions": false
+}
