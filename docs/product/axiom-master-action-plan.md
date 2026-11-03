@@ -24,7 +24,7 @@ acceptance. No pending approval is inferred or repeatedly requested.
 
 5. [ ] **B1 — Six-reference research — In Progress, parallel.** Cursor, ChatGPT, Claude, Codex, Harness.io and Grok all remain required. Current Cursor walkthrough is22 partial canonical pages with recorded public-control interactions; other reference notes remain partial. Still required: each reference's navigation, docs, demos, deeper controls, responsive/keyboard behavior, blocked destinations and original Axiom decisions. No full-site audit is inferred from a few pages. [Visible research](research/2026-11-02-cursor-visible-walkthrough.md).
 
-6. [ ] **B2 — Original premium website — In Progress, parallel.** ~~Local website architecture approved~~; ~~ed0 Docs/navigation/catalog batch compiled and selected browser interactions verified~~. Mobile browser testing found the inaccessible modal Close; its source fix is under final qualification, so mobile navigation is not crossed out. Still required: complete Product, Integrations, Security, Docs, Demo, Download and support-entry architecture; authentic scoped availability and exact CTAs, original premium/responsive/accessibility treatment and visible local acceptance. [Approved design](axiom-website-information-architecture.md).
+6. [ ] **B2 — Original premium website — In Progress, parallel.** ~~Local website architecture approved~~; ~~ed0 Docs/navigation/catalog batch compiled and selected browser interactions verified~~. ~~The mobile Close control, initial focus, Tab wrap and focus return were browser-verified at375px in a25~~ ([receipt](../recovery/2026-11-03/website-a25-build-browser-progress.md)); this is not full mobile accessibility acceptance. Still required: complete Product, Integrations, Security, Docs, Demo, Download and support-entry architecture; authentic scoped availability and exact CTAs, original premium/responsive/accessibility treatment and visible local acceptance. [Approved design](axiom-website-information-architecture.md).
 
 7. [ ] **B4 — Complete visual documentation — In Progress, parallel.** ~~33-control DEV execution-limits inventory and workflow article source-checked~~ ([content](knowledge/governance-execution-limits.md)). Still required: every supported screen/control, stable help anchors, prerequisites/permissions/effects/states, failure/recovery, source/release versions and authentic images/demos; editorial and shipped-version validation. Content-only help IDs are not mounted anchors or complete public docs.
 
@@ -32,9 +32,9 @@ acceptance. No pending approval is inferred or repeatedly requested.
 
 9. [ ] **B3 — Authentic product media — In Progress.** ~~Clearly labeled local-source website screenshots captured~~. Still required: authentic current-source app/website recordings, redaction/consent, source/version binding, chapters/captions/transcripts/posters and safe playback/focus behavior. Distinguish scripted simulations, UI previews and genuinely verified native/provider outcomes. No fictional approval or deployment becomes live evidence.
 
-10. [ ] **B6 — Website qualification and authorized delivery — In Progress.** ~~ed0 isolated production compile/TypeScript passed~~; ~~local preview blocks account/API mutations and forwards no cookies or authorization~~. Still required: final changed-source build after fixes, real browser link/keyboard/responsive/motion/contrast/performance/media/claim checks, independent final review, separately authorized publishing and exact live acceptance. Preview evidence is not production activation. Current preview: http://127.0.0.1:5188/__axiom_preview.
+10. [ ] **B6 — Website qualification and authorized delivery — In Progress.** ~~a25 isolated production compile/TypeScript passed~~; ~~local preview blocks account/API mutations and forwards no cookies or authorization~~. Still required: final changed-source build after fixes, real browser link/keyboard/responsive/motion/contrast/performance/media/claim checks, independent final review, separately authorized publishing and exact live acceptance. Preview evidence is not production activation. Current preview: http://127.0.0.1:5192/__axiom_preview.
 
-11. [ ] **A1 — Release reconciliation and newest reviewed shipment — In Progress.** ~~Immutable v0.1.21 publication and four-platform download acceptance~~; ~~verified private source backup through4d2bc7c6~~ (newer local commits still need their next backup). Still required: reconcile v0.1.22 partial artifacts/settled spending; preserve Windows/Linux successes and address Mac correction; a specifically authorized successful signed/notarized complete installer run, exact draft verification, genuine protected human publication decision and public version/hash checks. No new paid run or Vercel exception is inferred.
+11. [ ] **A1 — Release reconciliation and newest reviewed shipment — In Progress.** ~~Immutable v0.1.21 publication and four-platform download acceptance~~; ~~verified private source recovery checkpoint4d2bc7c6~~ (current recovery hash is tracked in verification receipts and task status, not inferred for uncommitted files). Still required: reconcile v0.1.22 partial artifacts/settled spending; preserve Windows/Linux successes and address Mac correction; a specifically authorized successful signed/notarized complete installer run, exact draft verification, genuine protected human publication decision and public version/hash checks. No new paid run or Vercel exception is inferred.
 
 12. [ ] **A9 — Orchestrator independence and enterprise on-prem — In Progress, foundations only.** Source-backed dependency inventory and versioned contract drafts exist. Still required: preserve Airflow while implementing Airflow/Temporal/custom adapters with explicit capabilities and common execution/status/cancel/retry/event/recovery contracts; keep approvals/policy/audit/rollback independent of engines. Build full customer-controlled/offline workflow, policy/approval/audit/database/identity/key/optional-local-AI services, reproducible install/upgrades/backup/restore/monitoring/DR with no mandatory cloud telemetry/licensing. Acceptance needs identical Airflow/Temporal contract tests, documented custom integration and a real internet-disconnected governed deployment with security/audit/rollback/recovery proof. Foundations may run in parallel; adapter migration/deployment follows core enforcement. No cloud purchase/trial/migration/grant is authorized by this item.
 
@@ -548,3 +548,22 @@ same-process native boundary without inventing additional vendor/network gates.
 B1 adds Workshops/all category controls and Community gallery controls; remains
 partial. Full Product/Security/Demo/Download bodies, authentic media, complete
 documentation/retrieval, all other original requirements and publishing gates remain.
+
+## November 3 current browser milestone and maintained checklist
+
+The full15-item prioritized checklist above is now canonical for status and retains
+all detailed A1–A9/B1–B6 requirements. No top-level item is marked complete. Only
+bounded verified milestones are struck through; genuine permission/human gates
+and version/evidence limits are explicit.
+
+Actual sourcea25 build/NextTypeScript and bounded outputs passed. Its real browser
+proved mobileClose AXpresence/initialfocus/Tabcycle/clickfocusreturn and desktop
+resize recovery; current Security and scripted Demo labels/interactions checked.
+See `../recovery/2026-11-03/website-a25-build-browser-progress.md`. Livecustomer,
+provider, authenticrecording, fulla11y/performance and productionacceptance are not
+implied. Originaled0Docs/catalogbrowserchecks retained without needless repeats.
+
+Next authorized work remains whole-plan: core native feasibility awaits its existing
+explicit approval; independent reference research, Product/Download/support/docs
+completion and remaining website qualification can continue locally. No release,
+Govactivation, providerwrite, paidCI or migration permission is inferred.

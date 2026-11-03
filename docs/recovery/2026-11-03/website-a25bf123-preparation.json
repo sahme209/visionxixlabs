@@ -1,0 +1,66 @@
+{
+  "sourceRevision": "a25bf123f3b8e9521db264078b408a6e70078477",
+  "packageSha256": "3f484e77eedd0eede93df152b8c1c4fedd139072b72dfa52957257d8d5a2e4d1",
+  "lockSha256": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+  "archiveSha256": "7e4324398ca9b0cb1de58afbebfbe7258dcb286657eb32eef5fe904b5f65a23a",
+  "verifiedRegularFiles": 6096,
+  "archiveBytes": 73308160,
+  "format": "axiom.offline-optional-probe/1",
+  "status": "offline_install_observed_unqualified",
+  "npmOutcome": "succeeded",
+  "missingOptional": [
+    {
+      "location": "node_modules/@emnapi/core",
+      "reason": "pinned_tarball_cache_miss",
+      "presentAfterInstall": false
+    },
+    {
+      "location": "node_modules/@emnapi/wasi-threads",
+      "reason": "pinned_tarball_cache_miss",
+      "presentAfterInstall": false
+    },
+    {
+      "location": "node_modules/@napi-rs/wasm-runtime",
+      "reason": "pinned_tarball_cache_miss",
+      "presentAfterInstall": false
+    },
+    {
+      "location": "node_modules/@tybys/wasm-util",
+      "reason": "pinned_tarball_cache_miss",
+      "presentAfterInstall": false
+    }
+  ],
+  "cacheObservation": {
+    "status": "unavailable",
+    "selectedCount": 963,
+    "verifiedCount": 959,
+    "verifiedBytes": 194101567,
+    "missing": [
+      {
+        "location": "node_modules/@emnapi/core",
+        "reason": "pinned_tarball_cache_miss"
+      },
+      {
+        "location": "node_modules/@emnapi/wasi-threads",
+        "reason": "pinned_tarball_cache_miss"
+      },
+      {
+        "location": "node_modules/@napi-rs/wasm-runtime",
+        "reason": "pinned_tarball_cache_miss"
+      },
+      {
+        "location": "node_modules/@tybys/wasm-util",
+        "reason": "pinned_tarball_cache_miss"
+      }
+    ],
+    "platformOptionalExcludedCount": 72
+  },
+  "network": "kernel_denied",
+  "lifecycleScriptsExecuted": false,
+  "buildStarted": false,
+  "runtimeQualification": "unavailable",
+  "legacyQualification": "unavailable",
+  "executingIssuerIdentity": "unavailable",
+  "activationQualification": "unavailable",
+  "executionAuthorized": false
+}

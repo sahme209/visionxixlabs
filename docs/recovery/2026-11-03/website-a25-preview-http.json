@@ -1,0 +1,42 @@
+[
+  {
+    "path": "/__axiom_preview",
+    "method": "GET",
+    "status": 200,
+    "source": "a25bf123",
+    "setCookie": false,
+    "bytes": 627
+  },
+  {
+    "path": "/security",
+    "method": "GET",
+    "status": 200,
+    "source": "a25bf123",
+    "setCookie": false,
+    "bytes": 67977
+  },
+  {
+    "path": "/demo",
+    "method": "GET",
+    "status": 200,
+    "source": "a25bf123",
+    "setCookie": false,
+    "bytes": 78352
+  },
+  {
+    "path": "/api/auth/session",
+    "method": "GET",
+    "status": 403,
+    "source": "a25bf123",
+    "setCookie": false,
+    "bytes": 95
+  },
+  {
+    "path": "/integrations",
+    "method": "POST",
+    "status": 403,
+    "source": "a25bf123",
+    "setCookie": false,
+    "bytes": 36
+  }
+]
