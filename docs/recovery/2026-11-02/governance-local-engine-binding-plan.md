@@ -195,3 +195,69 @@ Final **10 tests pass** on the corrected contract:
 No new API, native containment mechanism, actual Prisma engine execution/generation,
 project build, external network request, identity or activation was introduced.
 Independent final review/root cue remains required before a real engine attempt.
+
+## Platform engine name and canonical scratch schemas, November 3
+
+The parent's first actual local attempt at source
+`dd539137` in `/private/tmp/axiom-isolated-dd539137-9454c80z/stage` exited the
+Prisma generation CLI with code 0 but failed required-output verification. Its
+`generation-run/result.json` remains unavailable and unchanged. The old generic
+query binding and all original attempt/receipt history are preserved, not overwritten
+or reinterpreted as successful. No retry has been performed by this implementation.
+
+Actual installed, pinned Prisma 5.22.0 source explains both differences:
+
+- `@prisma/client/generator-build/index.js`, lines 10027–10035, copies each engine
+  using `path.basename(filePath)`. A generic `libquery_engine.dylib.node` override
+  therefore produces that generic file. The runtime's `qr(target,'fs')`/`Ya` name
+  resolution instead searches `libquery_engine-darwin-arm64.dylib.node` for this
+  platform without an override. Accepting a generic unused file would be wrong.
+- The same generator, lines 10038–10039, writes its supplied `datamodel` verbatim.
+  The CLI's `getGenerators` implementation builds it through `ey({schemas})`, which
+  calls pinned WASM `merge_schemas`. The CLI `format` command uses a different helper,
+  `Mk`, invoking pinned WASM `format`. Formatting equivalence to raw merged bytes
+  must not be assumed, and whitespace stripping is not a valid schema comparison.
+
+The new strict binding format is **`axiom.local-engine-inputs/2`**, whose query
+copy has the exact platform runtime basename. Format /1 is historical and refused
+by the new verifier; obtain a fresh exclusive owned binding rather than rename or
+rewrite an old receipt. Source cache filenames and bytes are unchanged, and native
+upstream/commit authenticity remain unavailable.
+
+The executor now makes an exclusive scratch copy of the exact archived schema
+before generation and runs the same pinned archived CLI `format --schema` on that
+scratch path. After generation it makes another exclusive scratch copy of the actual
+emitted schema and invokes the identical formatter. It compares the complete
+canonical-formatted scratch bytes exactly, retaining both raw schema hashes and
+both canonical hashes. The original archive and actual generated schema are never
+formatted. Original archive bytes are still strictly checked against Git, and the
+emitted raw schema is checked unchanged after its scratch-format phase. The result
+labels this `canonical_formatted_scratch_bytes`, with semantic attestation unavailable.
+This does not prove raw-schema equality, semantic attestation or runtime compatibility.
+
+Both format commands use the same clean environment, fixed arguments and existing
+network/write-denial sandbox profile, with their own exclusive logs. All child
+phases receive the remaining portion of one overall deadline, not fresh independent
+budgets. Before the generation child the source/preparation/Node checks run again.
+All prior data-only/process-group limitations remain unchanged: observed bytes only,
+compatibility always false, and descendant quiescence/runtime/issuer/activation
+unavailable. Later packaging must freshly verify and seal the actual output.
+
+Meaningful fixture RED receipts:
+`/private/tmp/axiom-local-generation-basename-red.log` (fixture now models the actual
+basename copy and exposes the missing platform-named file), and
+`/private/tmp/axiom-local-generation-canonical-red.log` (format-only raw difference
+was refused before canonical comparison existed).
+
+GREEN: `/private/tmp/axiom-local-generation-canonical-green.log` (**13 runner tests**)
+and `/private/tmp/axiom-local-engine-platform-binding-green.log` (**8 binding tests**).
+The runner fixtures use actual Node/Seatbelt/process mechanics but simulated preparation
+and a deliberately limited fixture formatter, not actual Prisma or a replacement
+production parser. They cover formatting-only equivalence without modifying either
+original schema, model/field/type/attribute-value differences (including spaces
+inside a quoted value), actual basename-driven copying, and shared phase deadlines.
+The binding fixtures also reject historical /1 metadata. Synthetic native bytes
+are never loaded. No real Prisma formatter, engine, generation retry, project build,
+new network request, immutable package or issuer identity was executed/qualified by
+these checks. Final source review and the parent's explicit cue remain prerequisites
+for a new actual attempt in a fresh stage/binding/run directory.

@@ -16,7 +16,7 @@ class EngineInputs(unittest.TestCase):
  def bind(self):return m.bind_local_engines(self.source,self.owned)
  def test_exact_owned_bytes_receipt_and_no_authenticity_or_execution(self):
   original={p.name:p.read_bytes()for p in self.source.iterdir()};result=self.bind()
-  self.assertEqual(result['provenance'],'trusted_local_host_input');self.assertEqual(result['upstreamAuthenticity'],'unavailable');self.assertEqual(result['engineCommitAuthenticity'],'unavailable');self.assertFalse(result['executionAuthorized'])
+  self.assertEqual(result['format'],'axiom.local-engine-inputs/2');self.assertEqual(result['provenance'],'trusted_local_host_input');self.assertEqual(result['upstreamAuthenticity'],'unavailable');self.assertEqual(result['engineCommitAuthenticity'],'unavailable');self.assertFalse(result['executionAuthorized'])
   for kind,item in result['inputs'].items():
    target=self.owned/'engine-inputs'/item['file'];self.assertEqual(hashlib.sha256(target.read_bytes()).hexdigest(),item['sha256']);self.assertEqual(item['architecture'],'arm64');self.assertEqual(target.stat().st_mode&0o777,0o700 if kind=='schema' else 0o600)
   self.assertEqual(original,{p.name:p.read_bytes()for p in self.source.iterdir()})
@@ -35,10 +35,15 @@ class EngineInputs(unittest.TestCase):
   path.unlink();path.write_bytes(native('query'));self.bind()
   with self.assertRaises((m.Unavailable,OSError)):self.bind()
  def test_owned_tamper_and_malformed_receipt_refuse(self):
-  self.bind();directory=self.owned/'engine-inputs';(directory/'libquery_engine.dylib.node').write_bytes(native('query')+b'changed')
+  self.bind();directory=self.owned/'engine-inputs';(directory/'libquery_engine-darwin-arm64.dylib.node').write_bytes(native('query')+b'changed')
   with self.assertRaises(m.Unavailable):m.verify_bound_engines(directory)
   (directory/'receipt.json').write_text('{}')
   with self.assertRaises(m.Unavailable):m.verify_bound_engines(directory)
+ def test_old_generic_basename_receipt_version_is_historical_not_reused(self):
+  result=self.bind();directory=self.owned/'engine-inputs';result['format']='axiom.local-engine-inputs/1'
+  (directory/'receipt.json').write_text(json.dumps(result))
+  with self.assertRaises(m.Unavailable):m.verify_bound_engines(directory)
+
  def test_mutating_source_during_read_refuses_and_removes_partial_copy(self):
   real=os.read;changed=False
   def read(fd,count):
@@ -68,5 +73,5 @@ class EngineInputs(unittest.TestCase):
   self.assertFalse(result['generationStarted']);self.assertFalse(result['executionAuthorized'])
   self.assertEqual(result['arguments'],['node_modules/prisma/build/index.js','generate','--schema',str(stage/'prisma/schema.prisma')])
   self.assertEqual(result['engineEnvironment']['PRISMA_SCHEMA_ENGINE_BINARY'],str(self.owned/'engine-inputs/schema-engine'))
-  self.assertEqual(result['engineEnvironment']['PRISMA_QUERY_ENGINE_LIBRARY'],str(self.owned/'engine-inputs/libquery_engine.dylib.node'))
+  self.assertEqual(result['engineEnvironment']['PRISMA_QUERY_ENGINE_LIBRARY'],str(self.owned/'engine-inputs/libquery_engine-darwin-arm64.dylib.node'))
 if __name__=='__main__':unittest.main()

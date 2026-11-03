@@ -7,7 +7,7 @@ from pathlib import Path
 MAX_FILE=64*1024*1024
 MAX_COMMANDS=16*1024*1024
 REQUESTED_COMMIT='605197351a3c8bdd595af2d2a9bc3025bca48ea2'
-KINDS={'query':('libquery-engine','libquery_engine.dylib.node',6,0o600),'schema':('schema-engine','schema-engine',2,0o700)}
+KINDS={'query':('libquery-engine','libquery_engine-darwin-arm64.dylib.node',6,0o600),'schema':('schema-engine','schema-engine',2,0o700)}
 class Unavailable(RuntimeError):pass
 def fail(reason):raise Unavailable(reason)
 def private(path):
@@ -93,7 +93,7 @@ def bind_local_engines(source,owned):
    copied,_=read_native(path,kind)
    if copied!=identity:fail('owned_engine_copy_mismatch')
    inputs[kind]={'file':name,'mode':mode,**identity,'sourceObservation':observation}
-  receipt={'format':'axiom.local-engine-inputs/1','provenance':'trusted_local_host_input','platform':'darwin-arm64',
+  receipt={'format':'axiom.local-engine-inputs/2','provenance':'trusted_local_host_input','platform':'darwin-arm64',
            'requestedEngineCommit':REQUESTED_COMMIT,'upstreamAuthenticity':'unavailable','engineCommitAuthenticity':'unavailable',
            'inputs':inputs,'generationStarted':False,'buildStarted':False,'executingIssuerIdentity':'unavailable','executionAuthorized':False}
   fd=os.open(destination/'receipt.json',os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
@@ -112,7 +112,7 @@ def verify_bound_engines(directory):
   if len(body)>16384 or state(opened)!=state(os.fstat(fd))or state(opened)!=state(path.lstat()):fail('receipt_changed')
  finally:os.close(fd)
  value=strict_json(body)
- fixed={'format':'axiom.local-engine-inputs/1','provenance':'trusted_local_host_input','platform':'darwin-arm64','requestedEngineCommit':REQUESTED_COMMIT,
+ fixed={'format':'axiom.local-engine-inputs/2','provenance':'trusted_local_host_input','platform':'darwin-arm64','requestedEngineCommit':REQUESTED_COMMIT,
         'upstreamAuthenticity':'unavailable','engineCommitAuthenticity':'unavailable','generationStarted':False,'buildStarted':False,'executingIssuerIdentity':'unavailable','executionAuthorized':False}
  if not isinstance(value,dict)or set(value)!=set(fixed)|{'inputs'}or any(value.get(k)!=v or type(value.get(k))is not type(v)for k,v in fixed.items()):fail('invalid_engine_receipt')
  if not isinstance(value['inputs'],dict)or set(value['inputs'])!=set(KINDS):fail('invalid_receipt_inputs')
@@ -219,6 +219,27 @@ def _run_generation_child(command,stage,environment,log,timeout):
   except ProcessLookupError:pass
   process.wait();raise
 
+def _schema_bytes(path):
+ path=Path(path);before=path.lstat();fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
+ try:
+  opened=os.fstat(fd)
+  if not stat.S_ISREG(opened.st_mode)or opened.st_nlink!=1 or state(before)!=state(opened)or not 0<opened.st_size<=16*1024*1024:fail('schema_observation_unavailable')
+  parts=[];count=0
+  while True:
+   chunk=os.read(fd,min(1024*1024,opened.st_size-count+1))
+   if not chunk:break
+   count+=len(chunk)
+   if count>opened.st_size:fail('schema_changed_during_read')
+   parts.append(chunk)
+  if count!=opened.st_size or state(opened)!=state(os.fstat(fd))or state(opened)!=state(path.lstat()):fail('schema_changed_during_read')
+  return b''.join(parts)
+ finally:os.close(fd)
+def _schema_scratch(source,target):
+ body=_schema_bytes(source);fd=os.open(target,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600)
+ with os.fdopen(fd,'wb')as out:out.write(body);out.flush();os.fsync(out.fileno())
+ if _schema_bytes(target)!=body:fail('scratch_schema_copy_mismatch')
+ return hashlib.sha256(body).hexdigest()
+
 def verify_generated_outputs(stage,plan):
  root=stage/'node_modules/.prisma/client'
  if root.is_symlink()or root.resolve()!=root or not root.is_dir():fail('generated_client_missing_or_aliased')
@@ -227,14 +248,14 @@ def verify_generated_outputs(stage,plan):
   path=root/name
   if path.resolve()!=path:fail('generated_output_alias')
   observations[name]=stable_file_hash(path,64*1024*1024)
- if observations['schema.prisma']['sha256']!=plan['schemaSha256']:fail('generated_schema_mismatch')
  expected=plan['engines']['inputs']['query'];query=observations['libquery_engine-darwin-arm64.dylib.node']
  if query!={'sha256':expected['sha256'],'size':expected['size']}:fail('generated_query_engine_mismatch')
  return observations
 
 def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeout=120):
- import math,platform
+ import math,platform,time
  if type(timeout)not in (int,float)or not math.isfinite(timeout)or not 0<timeout<=120:fail('generation_deadline_invalid')
+ deadline=time.monotonic()+timeout
  if platform.system()!='Darwin'or platform.machine()!='arm64':fail('unsupported_generation_host')
  stage=private(stage);directory=private(directory);owned_run=private(owned_run);repo=Path(repo).resolve();cache=Path(cache).resolve();node=Path(node)
  pinned=Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
@@ -247,7 +268,7 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
  node_identity=stable_file_hash(node)
  plan=prepare_generation(stage,directory,repo,revision,cache,node)
  # Fail before launch on any existing output; never truncate prior evidence.
- names=['attempt.json','result.json','generation.log','node-version.log','tmp']
+ names=['attempt.json','result.json','generation.log','node-version.log','format-archive.log','format-emitted.log','tmp']
  if any((owned_run/name).exists()or(owned_run/name).is_symlink()for name in names):fail('fresh_generation_outputs_required')
  handles={}
  try:
@@ -261,25 +282,51 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
   environment={'PATH':str(node.parent)+':/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','TZ':'UTC','TMPDIR':str(tmp),'XDG_CACHE_HOME':str(tmp),
                'CHECKPOINT_DISABLE':'1','PRISMA_HIDE_UPDATE_MESSAGE':'1','PRISMA_GENERATE_SKIP_AUTOINSTALL':'true','NEXT_TELEMETRY_DISABLED':'1',
                'PRISMA_QUERY_ENGINE_LIBRARY':str(directory/KINDS['query'][1]),'PRISMA_SCHEMA_ENGINE_BINARY':str(directory/KINDS['schema'][1])}
-  profile=_generation_profile(stage,tmp,[owned_run/'generation.log',owned_run/'node-version.log'],protected)
+  profile=_generation_profile(stage,tmp,[owned_run/name for name in ['generation.log','node-version.log','format-archive.log','format-emitted.log']],protected)
   prefix=['/usr/bin/sandbox-exec','-p',profile,str(node)]
-  result={'format':'axiom.local-generation-result/1','status':'unavailable','generationStarted':False,'generatedOutputsVerified':False,'generationCompatibilityVerified':False,
+  result={'format':'axiom.local-generation-result/1','status':'unavailable','archiveFormatStarted':False,'emittedFormatStarted':False,'generationStarted':False,'generatedOutputsVerified':False,'generationCompatibilityVerified':False,
           'processBounds':'original_process_group_only','descendantQuiescence':'unavailable','runtimeQualification':'unavailable',
           'upstreamAuthenticity':'unavailable','engineCommitAuthenticity':'unavailable','runtimeClosure':'unavailable',
           'executingIssuerIdentity':'unavailable','activationQualification':'unavailable','executionAuthorized':False,'buildStarted':False}
+  def remaining(cap=None):
+   left=deadline-time.monotonic()
+   if left<=0:fail('generation_parent_wall_timeout')
+   return min(left,cap)if cap is not None else left
   try:
-   code,error=_run_generation_child([*prefix,'--version'],stage,environment,handles['node-version.log'],min(timeout,5))
+   code,error=_run_generation_child([*prefix,'--version'],stage,environment,handles['node-version.log'],remaining(5))
    handles['node-version.log'].flush()
    if error or code!=0 or (owned_run/'node-version.log').read_bytes()!=b'v24.21.0\n':fail(error or 'pinned_node_version_unavailable')
    # Recompute source/schema/SRI/native binding after the last child await.
    recomputed=prepare_generation(stage,directory,repo,revision,cache,node)
    if recomputed!=plan:fail('preparation_changed_before_generation')
    if stable_file_hash(node)!=node_identity:fail('node_changed_before_generation')
+   archive_scratch=tmp/'archive-schema.prisma';emitted_scratch=tmp/'emitted-schema.prisma'
+   archive_raw=_schema_scratch(stage/'prisma/schema.prisma',archive_scratch)
+   if archive_raw!=plan['schemaSha256']:fail('archive_changed_before_format')
+   result['archiveFormatStarted']=True
+   code,error=_run_generation_child([*prefix,'node_modules/prisma/build/index.js','format','--schema',str(archive_scratch)],stage,environment,handles['format-archive.log'],remaining())
+   if error or code!=0:fail(error or 'offline_archive_format_failed')
+   archive_canonical=_schema_bytes(archive_scratch)
+   if prepare_generation(stage,directory,repo,revision,cache,node)!=plan:fail('preparation_changed_after_archive_format')
+   if stable_file_hash(node)!=node_identity:fail('node_changed_before_generation')
    result['generationStarted']=True
-   code,error=_run_generation_child([*prefix,'node_modules/prisma/build/index.js','generate','--schema',str(stage/'prisma/schema.prisma')],stage,environment,handles['generation.log'],timeout)
+   code,error=_run_generation_child([*prefix,'node_modules/prisma/build/index.js','generate','--schema',str(stage/'prisma/schema.prisma')],stage,environment,handles['generation.log'],remaining())
    result['exit']=code
    if error or code!=0:fail(error or 'offline_generation_failed')
    outputs=verify_generated_outputs(stage,plan)
+   emitted_path=stage/'node_modules/.prisma/client/schema.prisma'
+   generated_raw=_schema_scratch(emitted_path,emitted_scratch)
+   if generated_raw!=outputs['schema.prisma']['sha256']:fail('generated_schema_changed_during_observation')
+   result['emittedFormatStarted']=True
+   code,error=_run_generation_child([*prefix,'node_modules/prisma/build/index.js','format','--schema',str(emitted_scratch)],stage,environment,handles['format-emitted.log'],remaining())
+   if error or code!=0:fail(error or 'offline_emitted_format_failed')
+   generated_canonical=_schema_bytes(emitted_scratch)
+   if _schema_bytes(archive_scratch)!=archive_canonical:fail('canonical_archive_scratch_changed')
+   if archive_canonical!=generated_canonical:fail('generated_schema_canonical_mismatch')
+   if hashlib.sha256(_schema_bytes(emitted_path)).hexdigest()!=generated_raw:fail('generated_schema_changed_after_format')
+   result['schemaComparison']={'kind':'canonical_formatted_scratch_bytes','rawArchiveSha256':archive_raw,'rawGeneratedSha256':generated_raw,
+                               'canonicalArchiveSha256':hashlib.sha256(archive_canonical).hexdigest(),'canonicalGeneratedSha256':hashlib.sha256(generated_canonical).hexdigest(),
+                               'semanticAttestation':'unavailable'}
    verify_generation_sources(stage,cache);verify_bound_engines(directory)
    after=verify_archived_inputs(stage,repo,revision)
    if any(plan.get(key)!=value for key,value in after.items()):fail('archive_changed_after_generation')

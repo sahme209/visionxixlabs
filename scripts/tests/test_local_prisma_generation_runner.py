@@ -9,17 +9,22 @@ class GenerationMechanics(unittest.TestCase):
  def setUp(self):
   self.temp=tempfile.TemporaryDirectory(prefix='axiom-generation-mechanics-',dir='/private/tmp');self.root=Path(self.temp.name);self.root.chmod(0o700)
   self.stage=self.root/'stage';self.stage.mkdir(mode=0o700);(self.stage/'prisma').mkdir();(self.stage/'prisma/schema.prisma').write_text('SIMULATED SCHEMA NOT PRISMA')
-  self.bound=self.root/'engines';self.bound.mkdir(mode=0o700);(self.bound/'libquery_engine.dylib.node').write_bytes(b'FIXTURE QUERY BYTES NEVER LOADED')
+  self.bound=self.root/'engines';self.bound.mkdir(mode=0o700);(self.bound/m.KINDS['query'][1]).write_bytes(b'FIXTURE QUERY BYTES NEVER LOADED')
   self.repo=self.root/'protected-repo';self.repo.mkdir();self.cache=self.root/'protected-cache';self.cache.mkdir();self.run=self.root/'run';self.run.mkdir(mode=0o700);self.home=self.root/'simulated-home';self.enginecache=self.home/'.cache/prisma';self.enginecache.mkdir(parents=True)
   for directory in [self.repo,self.cache,self.bound,self.enginecache]:(directory/'sentinel').write_text('unchanged')
   self.cli=self.stage/'node_modules/prisma/build/index.js';self.cli.parent.mkdir(parents=True)
-  self.plan={'status':'prepared_not_executed','schemaSha256':m.hashlib.sha256((self.stage/'prisma/schema.prisma').read_bytes()).hexdigest(),'sourceRevision':'a'*40,'engineEnvironment':{'PRISMA_QUERY_ENGINE_LIBRARY':str(self.bound/'libquery_engine.dylib.node'),'PRISMA_SCHEMA_ENGINE_BINARY':str(self.bound/'schema-engine')},'engines':{'inputs':{'query':{'sha256':m.hashlib.sha256((self.bound/'libquery_engine.dylib.node').read_bytes()).hexdigest(),'size':len((self.bound/'libquery_engine.dylib.node').read_bytes())}}}}
+  self.plan={'status':'prepared_not_executed','schemaSha256':m.hashlib.sha256((self.stage/'prisma/schema.prisma').read_bytes()).hexdigest(),'sourceRevision':'a'*40,'engineEnvironment':{'PRISMA_QUERY_ENGINE_LIBRARY':str(self.bound/m.KINDS['query'][1]),'PRISMA_SCHEMA_ENGINE_BINARY':str(self.bound/'schema-engine')},'engines':{'inputs':{'query':{'sha256':m.hashlib.sha256((self.bound/m.KINDS['query'][1]).read_bytes()).hexdigest(),'size':len((self.bound/m.KINDS['query'][1]).read_bytes())}}}}
  def tearDown(self):self.temp.cleanup()
  def execute(self,timeout=5,source_error=None):
   with patch.object(m.Path,'home',return_value=self.home),patch.object(m,'prepare_generation',return_value=self.plan),patch.object(m,'verify_generation_sources',side_effect=source_error,return_value={'status':'simulated_source_fixture'}),patch.object(m,'verify_bound_engines',return_value=self.plan['engines']),patch.object(m,'verify_archived_inputs',return_value={'schemaSha256':self.plan['schemaSha256']}):
    return m.execute_generation(self.stage,self.bound,self.repo,'a'*40,self.cache,NODE,self.run,timeout=timeout)
- def output_js(self):
-  return "const fs=require('node:fs'),p=require('node:path');const out=p.join(process.cwd(),'node_modules/.prisma/client');fs.mkdirSync(out,{recursive:true});for(const n of ['index.js','default.js','index.d.ts'])fs.writeFileSync(p.join(out,n),'SIMULATED GENERATED OUTPUT');fs.copyFileSync('prisma/schema.prisma',p.join(out,'schema.prisma'));fs.copyFileSync(process.env.PRISMA_QUERY_ENGINE_LIBRARY,p.join(out,'libquery_engine-darwin-arm64.dylib.node'));"
+ def formatter_js(self,delay=0):
+  # Deliberately limited fixture formatting for named fixture fields; NOT a Prisma parser.
+  return "if(process.argv[2]==='format'){const fs=require('node:fs');const file=process.argv[process.argv.indexOf('--schema')+1];"+("Atomics.wait(new Int32Array(new SharedArrayBuffer(4)),0,0,%d);"%delay if delay else '')+"const text=fs.readFileSync(file,'utf8').split('\\n').map(line=>line.trimStart().replace(/^(id|value)[ \\t]+/,'$1 ')).join('\\n');fs.writeFileSync(file,text);process.exit(0);}"
+ def output_js(self,emitted=None,delay=0):
+  body=self.formatter_js(delay)+"const fs=require('node:fs'),p=require('node:path');const out=p.join(process.cwd(),'node_modules/.prisma/client');fs.mkdirSync(out,{recursive:true});for(const n of ['index.js','default.js','index.d.ts'])fs.writeFileSync(p.join(out,n),'SIMULATED GENERATED OUTPUT');"
+  body+=("fs.copyFileSync('prisma/schema.prisma',p.join(out,'schema.prisma'));"if emitted is None else "fs.writeFileSync(p.join(out,'schema.prisma'),%s);"%json.dumps(emitted))
+  return body+"fs.copyFileSync(process.env.PRISMA_QUERY_ENGINE_LIBRARY,p.join(out,p.basename(process.env.PRISMA_QUERY_ENGINE_LIBRARY)));"
  def test_actual_fixed_node_fixture_denies_network_and_protected_writes(self):
   probes='';paths=[self.repo/'sentinel',self.cache/'sentinel',self.bound/'sentinel',self.enginecache/'sentinel']
   for path in paths:probes+="try{fs.writeFileSync(%s,'BAD');throw Error('write escaped')}catch(e){if(!['EPERM','EACCES'].includes(e.code))throw e;}"%json.dumps(str(path))
@@ -92,6 +97,28 @@ class GenerationMechanics(unittest.TestCase):
      except ProcessLookupError:break
      time.sleep(0.02)
     else:self.fail('known owned detached fixture was not reaped by host')
+
+ def test_formatting_only_difference_compares_scratch_canonical_bytes(self):
+  original='model Thing {\n    id    Int @id\n    value   String @default("x y")\n}\n'
+  emitted='model Thing {\nid Int @id\n value String @default("x y")\n}\n'
+  (self.stage/'prisma/schema.prisma').write_text(original);self.plan['schemaSha256']=m.hashlib.sha256(original.encode()).hexdigest()
+  self.cli.write_text(self.output_js(emitted=emitted));result=self.execute()
+  self.assertTrue(result['generatedOutputsVerified']);self.assertEqual(result['schemaComparison']['kind'],'canonical_formatted_scratch_bytes')
+  self.assertNotEqual(result['schemaComparison']['rawArchiveSha256'],result['schemaComparison']['rawGeneratedSha256'])
+  self.assertEqual((self.stage/'prisma/schema.prisma').read_text(),original)
+  self.assertEqual((self.stage/'node_modules/.prisma/client/schema.prisma').read_text(),emitted)
+ def test_model_field_type_attribute_changes_refuse_canonical_match(self):
+  original='model Thing {\n id Int @id\n value String @default("x y")\n}\n'
+  (self.stage/'prisma/schema.prisma').write_text(original);self.plan['schemaSha256']=m.hashlib.sha256(original.encode()).hexdigest()
+  for label,emitted in [('model',original.replace('Thing','Other')),('field',original.replace('value','other')),('type',original.replace('String','Int')),('attribute',original.replace('x y','x  y'))]:
+   with self.subTest(change=label):
+    self.run=self.root/('run-'+label);self.run.mkdir(mode=0o700);self.cli.write_text(self.output_js(emitted=emitted))
+    with self.assertRaises(m.Unavailable):self.execute()
+    result=json.loads((self.run/'result.json').read_text());self.assertEqual(result['reason'],'generated_schema_canonical_mismatch');self.assertFalse(result['generatedOutputsVerified'])
+ def test_format_phases_share_overall_remaining_deadline(self):
+  self.cli.write_text(self.output_js(delay=180));start=time.monotonic()
+  with self.assertRaises(m.Unavailable):self.execute(timeout=0.4)
+  result=json.loads((self.run/'result.json').read_text());self.assertEqual(result['reason'],'generation_parent_wall_timeout');self.assertLess(time.monotonic()-start,0.9)
 
  def test_preexisting_log_refuses_before_child(self):
   self.cli.write_text("require('node:fs').writeFileSync('SHOULD_NOT_RUN','bad')")
