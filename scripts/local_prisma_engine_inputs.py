@@ -185,16 +185,19 @@ def _sandbox_string(value):
  text=str(value)
  if not text.isascii()or any(ord(c)<32 for c in text)or any(c in text for c in '"\\'):fail('unsupported_sandbox_path')
  return '"'+text+'"'
-def _generation_profile(stage,tmp,logs,protected):
+def _generation_profile(stage,tmp,logs,protected,read_protected=()):
  rules=['(version 1)','(allow default)','(deny network*)','(deny file-write*)',
         '(allow file-write* (subpath '+_sandbox_string(stage)+') (subpath '+_sandbox_string(tmp)+') '+ ' '.join('(literal '+_sandbox_string(log)+')'for log in logs)+')']
  for directory in protected:rules.append('(deny file-write* (subpath '+_sandbox_string(directory)+'))')
+ for directory in read_protected:rules.append('(deny file-read* (subpath '+_sandbox_string(directory)+'))')
  return ''.join(rules)
-def _run_generation_child(command,stage,environment,log,timeout):
+def _run_generation_child(command,stage,environment,log,timeout,file_size_limit=128*1024*1024,creation_mask=None):
  # Bounds the original process group only; detached groups may survive.
  # No complete descendant/quiescence or untrusted-code containment claim.
  import signal,time,resource
- def limits():resource.setrlimit(resource.RLIMIT_FSIZE,(128*1024*1024,128*1024*1024))
+ def limits():
+  resource.setrlimit(resource.RLIMIT_FSIZE,(file_size_limit,file_size_limit))
+  if creation_mask is not None:os.umask(creation_mask)
  process=subprocess.Popen(command,cwd=stage,env=environment,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,preexec_fn=limits)
  reason=None;deadline=time.monotonic()+timeout
  try:
