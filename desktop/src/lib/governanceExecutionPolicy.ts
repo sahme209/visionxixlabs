@@ -1,3 +1,4 @@
+import {executionPolicyRecoveryReferenceSchema,type ExecutionPolicyRecoveryReference} from './executionPolicyRecoveryStore';
 import {z} from 'zod';
 import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
 const identity=z.string().min(1).max(256).refine(v=>v.trim()===v&&!/[\x00-\x1f*]/.test(v)),digest=z.string().regex(/^[a-f0-9]{64}$/),nonce=z.string().uuid(),version=z.number().int().min(0).max(999);
@@ -22,6 +23,8 @@ export type ExecutionPolicyRevision=z.infer<typeof executionPolicyRevisionSchema
 export type ExecutionPolicyMutation=z.infer<typeof mutationSchema>;
 export type ExecutionPolicyPointer=z.infer<typeof pointerSchema>;
 export type ExecutionPolicyResult=ExecutionPolicyRevision|z.infer<typeof executionPolicyActivationSchema>;
+/** A sparse locator cannot verify original proposal content or restore authority. */
+export type ExecutionPolicyHistoricalObservation={found:boolean;historical:true;exactProposalContentVerified:false;executionAuthorized:false;revisionId?:string;status?:'proposed'|'approved'|'revoked'|'activation_recorded'};
 export type ExecutionPolicyLookup={found:false;historical:true;executionAuthorized:false}|{found:true;result:ExecutionPolicyResult;historical:true;executionAuthorized:false};
 const equal=(a:unknown,b:unknown)=>JSON.stringify(a)===JSON.stringify(b);
 function matches(raw:unknown,request:ExecutionPolicyMutation):raw is ExecutionPolicyResult{
@@ -36,6 +39,24 @@ export function createExecutionPolicyClient(context:Parameters<typeof releaseOpe
  const path='/api/desktop/governance-intelligence/execution-policy';
  const fail=<T>():Promise<ReleasePlanResult<T>>=>Promise.resolve({ok:false,error:'Load the exact policy and workspace before taking this step.',outcomeUnconfirmed:false});
  return{
+  async observeOriginal(raw:ExecutionPolicyRecoveryReference,rawOwner:{organizationId:string;userId:string},signal?:AbortSignal):Promise<ReleasePlanResult<ExecutionPolicyHistoricalObservation>>{
+   const selected=executionPolicyRecoveryReferenceSchema.safeParse(raw),owner=z.object({organizationId:identity,userId:identity}).strict().safeParse(rawOwner);
+   if(!selected.success||!owner.success)return fail<ExecutionPolicyHistoricalObservation>();const reference=selected.data;
+   const result=await releaseOperationPlanRequest(context,'POST',path,{operation:'lookup',recordedOperation:reference.operation,requestId:reference.requestId},(value):value is ExecutionPolicyLookup=>{
+    if(!value||typeof value!=='object'||Array.isArray(value))return false;const row=value as ExecutionPolicyLookup;
+    if(row.historical!==true||row.executionAuthorized!==false||typeof row.found!=='boolean'||Object.keys(row).sort().join(',')!==(row.found?'executionAuthorized,found,historical,result':'executionAuthorized,found,historical'))return false;
+    if(!row.found)return true;
+    if(reference.operation==='activate'){const r=executionPolicyActivationSchema.safeParse(row.result);return r.success&&r.data.digest===reference.digest&&r.data.pointerVersion===reference.expectedPointerVersion}
+    const r=executionPolicyRevisionSchema.safeParse(row.result);if(!r.success||r.data.policy.organizationId!==owner.data.organizationId)return false;const saved=r.data;
+    if(reference.operation==='propose')return saved.status==='proposed'&&saved.requesterUserId===owner.data.userId;
+    if(saved.id!==reference.id)return false;
+    return reference.operation==='approve'?saved.status==='approved'&&saved.policy.digest===reference.digest&&saved.approval?.clientRequestId===reference.requestId&&saved.approval.userId===owner.data.userId:saved.status==='revoked'&&saved.version===reference.expectedVersion;
+   },signal);
+   if(!result.ok)return result;
+   const summary:ExecutionPolicyHistoricalObservation={found:result.data.found,historical:true,exactProposalContentVerified:false,executionAuthorized:false};
+   if(result.data.found){if('policy' in result.data.result){summary.revisionId=result.data.result.id;summary.status=result.data.result.status}else summary.status='activation_recorded'}
+   return{ok:true,data:summary};
+  },
   list(signal?:AbortSignal){return releaseOperationPlanRequest(context,'POST',path,{operation:'list_saved'},(v):v is ExecutionPolicyDirectory=>executionPolicyDirectorySchema.safeParse(v).success,signal)},
   requests(signal?:AbortSignal){return releaseOperationPlanRequest(context,'POST',path,{operation:'list_requests'},(v):v is ExecutionPolicyRequests=>executionPolicyRequestsSchema.safeParse(v).success,signal)},
   read(id:string,signal?:AbortSignal){if(!executionPolicyId.safeParse(id).success)return fail<ExecutionPolicyRevision>();return releaseOperationPlanRequest(context,'POST',path,{operation:'read',id},(v):v is ExecutionPolicyRevision=>executionPolicyRevisionSchema.safeParse(v).success&&(v as ExecutionPolicyRevision).id===id,signal)},

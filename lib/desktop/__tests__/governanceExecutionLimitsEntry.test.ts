@@ -1,10 +1,12 @@
 /** @vitest-environment jsdom */
+import {ownedRecoveryStorage} from './fixtures/executionPolicyRecoveryStorage';
+import {beforeEach as beforeRecoveryTest} from 'vitest';
 // Actual Settings -> saved baseline -> existing policy panel. API/auth identities
 // below are SIMULATED presentation fixtures, never proof of server authority.
 import {createElement} from 'react';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,act} from '@testing-library/react';
-const m=vi.hoisted(()=>({config:{},revision:0,listeners:new Set<()=>void>(),baseline:vi.fn(),evidence:vi.fn(),sources:vi.fn(),drift:vi.fn(),list:vi.fn(),requests:vi.fn(),policy:vi.fn(),active:vi.fn(),mutate:vi.fn(),members:vi.fn()}));
+const m=vi.hoisted(()=>({config:{apiBase:'https://fixture.invalid'},revision:0,listeners:new Set<()=>void>(),baseline:vi.fn(),evidence:vi.fn(),sources:vi.fn(),drift:vi.fn(),list:vi.fn(),requests:vi.fn(),policy:vi.fn(),active:vi.fn(),mutate:vi.fn(),members:vi.fn()}));
 vi.mock('@tauri-apps/plugin-shell',()=>({open:vi.fn()}));
 vi.mock('@tauri-apps/api/core',()=>({invoke:vi.fn()}));
 vi.mock('../../../desktop/src/lib/preferences',()=>({readDesktopPreferences:async()=>null,writeDesktopPreferences:vi.fn()}));
@@ -15,8 +17,8 @@ const scope={repositoryId:'team/repo',resourceId:'github:repository:team/repo',e
 const baseline={id:baselineId,version:1,status:'approved',baseline:{organizationId:'org',digest,scopes:[scope],rules:[]},executionAuthorized:false};
 const identity={kind:'desktop_session',organizationId:'org',userId:'reviewer',role:'security_reviewer',capabilities:['workspace:read','agent:approve'],access:{allowed:true}} as any;
 const policy={id:policyId,version:0,status:'proposed',policy:{scope,organizationId:'org',digest,parentDigest:null,autonomyLevel:4,actions:['repository.merge'],executorUserIds:['executor'],expiresAt:'2030-01-01T00:00:00Z'},requesterUserId:'owner',approval:null,executionAuthorized:false};
-beforeEach(()=>{vi.clearAllMocks();m.config={};m.revision=0;m.listeners.clear();m.baseline.mockResolvedValue({ok:true,data:baseline});m.policy.mockResolvedValue({ok:true,data:policy});m.mutate.mockResolvedValue({ok:true,data:{...policy,status:'approved',version:1}})});
-afterEach(()=>{cleanup();vi.unstubAllEnvs()});
+beforeEach(()=>{vi.clearAllMocks();m.config={apiBase:'https://fixture.invalid'};m.revision=0;m.listeners.clear();m.baseline.mockResolvedValue({ok:true,data:baseline});m.policy.mockResolvedValue({ok:true,data:policy});m.mutate.mockResolvedValue({ok:true,data:{...policy,status:'approved',version:1}})});
+afterEach(()=>{cleanup();vi.unstubAllGlobals();vi.unstubAllEnvs()});
 function openLimits(){fireEvent.click(screen.getByRole('button',{name:'Review execution limits preview'}))}
 async function loadBaseline(){fireEvent.change(screen.getByLabelText('Saved baseline revision ID'),{target:{value:baselineId}});fireEvent.click(screen.getByRole('button',{name:'Load baseline review'}));await screen.findByRole('button',{name:'Load saved limit policies'})}
 async function loadPolicy(){fireEvent.change(screen.getByLabelText('Saved execution-limit policy ID'),{target:{value:policyId}});fireEvent.click(screen.getByRole('button',{name:'Load exact policy'}));await screen.findByText('proposed · version 0')}
@@ -98,3 +100,5 @@ it('locks selection controls during reads so users cannot change the pending req
  m.policy.mockImplementation(()=>new Promise(r=>resolve=r));const policyInput=screen.getByLabelText('Saved execution-limit policy ID');fireEvent.change(policyInput,{target:{value:policyId}});fireEvent.click(screen.getByRole('button',{name:'Load exact policy'}));expect(policyInput).toHaveProperty('disabled',true);expect(screen.getByRole('button',{name:'Load saved limit policies'})).toHaveProperty('disabled',true);
  await act(async()=>resolve({ok:true,data:policy}));expect(policyInput).toHaveProperty('disabled',false);expect(m.mutate).not.toHaveBeenCalled();
 });
+
+beforeRecoveryTest(()=>vi.stubGlobal('localStorage',ownedRecoveryStorage()));
