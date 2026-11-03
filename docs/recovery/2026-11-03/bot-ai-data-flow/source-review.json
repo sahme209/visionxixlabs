@@ -1,0 +1,16 @@
+{
+  "reviewer": "root",
+  "result": "PASS_source_scope",
+  "checked": [
+    "actual public Security page mount",
+    "matches saved-task and buildAiTaskPrompt fields and explicit opt-in evidence",
+    "scopes gateway/prompt vs request metadata, not complete egress inventory",
+    "existing visible retention/redaction/offline/certification caveats preserved",
+    "separate genuine reviewer/requester app-action lane, no AI tools",
+    "pure semantic server component, responsive grid and native disclosure, no hooks/network/new dependencies"
+  ],
+  "limits": [
+    "no visual/assistive technology browser acceptance",
+    "not deployed or actual customer connection inspection"
+  ]
+}
