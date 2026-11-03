@@ -440,3 +440,20 @@ descendant quiescence, loaded issuer identity, runtime qualification and activat
 remain unavailable; executionAuthorized false. Full license notices are pending
 and publication remains blocked. No provider/customer/database read, deployment,
 paid CI or new permission occurred.
+
+## November 3 package preparation and font notices
+
+The two explicitly approved official font-license GETs both returned200 once;
+complete notices now accompany unchanged retained font assets. Publication is not
+authorized by this retrieval. Frozen066d build receipts predate the notice-only
+source additions and are not relabeled.
+
+The new isolated materializer/profile2 adapter passed focused tests and independent
+review, including an actual read-only validation of completed066d evidence. First
+actual private copy captured107344 entries/3537412824 file bytes, then refused only
+fsevents' unsupported universal native header. Its audit/failure are preserved in
+`../recovery/2026-11-03/private-package-first-*`; the owned partial destination was
+cleaned by the existing failure path, never the original source/build. A bounded
+arm64-slice parser correction is under review. No launch/enrollment/deployment or
+provider action occurred. The copied066d canonical runtime still predates the new
+profile2 validator; no same-compiled-consumer success is claimed.

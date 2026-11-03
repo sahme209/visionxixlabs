@@ -210,3 +210,32 @@ this agent cleared C's final native LOAD/search-context correction (14 author-ow
 synthetic tests, not rerun by this reviewer). Documentation now labels the opening
 as the historical planning snapshot. All implementation/test evidence above concerns
 local tooling and owned fixtures; no production package copy or launch occurred.
+
+## Actual first copy and canonical-consumer version gap
+
+The parent ran one private materialization after the implementation reviews. It
+copied 107,344 entries / 3,537,412,824 bytes, then refused native qualification.
+Preserved evidence: `/private/tmp/axiom-private-package-066d821a-9m11hmgw/`
+(`materialization.json`, `root-attempt.json`, `root-failure.json`). No partial package
+was retained as accepted output. The only unresolved entry was
+`node_modules/fsevents/fsevents.node`, rejected as `unsupported_native_header`.
+An independent read of the original completed stage confirms a big-endian FAT_MAGIC
+0xcafebabe container with two architecture slices, including arm64. C owns bounded
+typed host-slice support; no package omission, native execution, copy or build
+retry occurred in this review. All original audits and stages remain unchanged.
+
+**Canonical copied consumer remains old.** Source 066d was compiled before the new
+external Python/CJS `/2` profile implementation. Its archive-owned
+`packages/verified-issuer-runtime` and the corresponding copied canonical consumer
+still implement the older `/1` verifier and unavailable public reader. The updated
+external packaging/verification tools may observe `/2` data; that does not make
+the original copied module accept `/2` or initialize an issuer. Do not patch copied
+executable/module bytes, import a newer workspace module, or describe external
+verification as same-artifact compiled-consumer acceptance. A future exact source
+build containing the updated canonical runtime is a genuinely changed build input,
+not an unchanged repeat, and is required before that consumer-version gap can be
+qualified. A successful data-only package copy would still supply no mounted
+launch, private bootstrap, executing issuer identity, fleet/legacy proof or activation.
+
+License-notice publication restrictions do not prohibit the parent's authorized
+private local copy. They remain separate from runtime and execution authority.

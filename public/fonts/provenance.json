@@ -11,9 +11,9 @@
     "parserSha256": "46d99b59b83287d148de5655cbaab3408e46d05a8b636db5f5fc65cd1c0caf4f"
   },
   "upstreamAuthenticity": "unavailable",
-  "licenseStatus": "pending_official_notices",
-  "publicationStatus": "blocked_pending_license_notices",
-  "licenseNotice": "Embedded copyright and license URLs are observations, not a complete redistribution notice. No official license text has been fetched or invented here.",
+  "licenseStatus": "official_notices_included",
+  "publicationStatus": "not_authorized_by_license_reads",
+  "licenseNotice": "Official complete copyright and OFL 1.1 notices are included beside unchanged retained fonts. These two authorized reads establish notice provenance only, not binary upstream authenticity or publication authority.",
   "retainedFaceMapSha256": "056b263b45c747a74809e0e605bf5556dd126bbe4759727abf4dde9e8f784333",
   "faces": [
     {
@@ -505,5 +505,22 @@
         ]
       }
     }
-  ]
+  ],
+  "publicationAuthorized": false,
+  "licenseNotices": {
+    "Inter": {
+      "file": "Inter-OFL.txt",
+      "sha256": "262481e844521b326f5ecd053e59b98c8b2da78c8ee1bdbb6e8174305e54935a",
+      "bytes": 4380,
+      "sourceUrl": "https://raw.githubusercontent.com/rsms/inter/master/LICENSE.txt",
+      "retrievalStatus": 200
+    },
+    "JetBrains Mono": {
+      "file": "JetBrainsMono-OFL.txt",
+      "sha256": "a76abf002c49097d146e86740a3105a5d00450b1592e820a1109a8c5680cd697",
+      "bytes": 4399,
+      "sourceUrl": "https://raw.githubusercontent.com/JetBrains/JetBrainsMono/master/OFL.txt",
+      "retrievalStatus": 200
+    }
+  }
 }

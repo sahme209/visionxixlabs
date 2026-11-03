@@ -10,6 +10,13 @@ def string_command(kind, value, header=24):
 def image(*commands, kind=6):
  body=b''.join(commands)
  return struct.pack('<IiiIIIII',0xfeedfacf,0x100000c,0,kind,len(commands),len(body),0,0)+body
+def universal(arm, duplicate=False):
+ foreign=b'FOREIGN SLICE NOT INSPECTED'+bytes(40)
+ offset1=64;offset2=offset1+len(foreign);offset2=(offset2+7)//8*8
+ descriptors=[(0x1000007,3,offset1,len(foreign),3),(0x100000c,0,offset2,len(arm),3)]
+ if duplicate:descriptors[0]=(0x100000c,0,offset1,len(foreign),3)
+ header=struct.pack('>II',0xcafebabe,2)+b''.join(struct.pack('>iiIII',*d)for d in descriptors)
+ return header+bytes(offset1-len(header))+foreign+bytes(offset2-offset1-len(foreign))+arm
 class NativeLinkage(unittest.TestCase):
  def setUp(self):
   self.tmp=tempfile.TemporaryDirectory();self.addCleanup(self.tmp.cleanup);self.root=Path(self.tmp.name).resolve()
@@ -94,6 +101,22 @@ class NativeLinkage(unittest.TestCase):
     return original(path,*args,**kwargs)
    with patch.object(Path,'lstat',guarded):result=self.collect()
    self.assertTrue(result['unresolved'])
+ def test_universal_arm64_slice_preserves_full_hash_and_all_descriptors(self):
+  import hashlib
+  raw=universal(image(string_command(0xc,'/usr/lib/libSystem.B.dylib'),kind=8));(self.root/'fsevents.node').write_bytes(raw)
+  result=self.collect();self.assertEqual(result['unresolved'],[]);entry=result['machOFiles'][0]
+  self.assertEqual(entry['sha256'],hashlib.sha256(raw).hexdigest());self.assertEqual(entry['size'],len(raw))
+  self.assertEqual(len(entry['architectures']),2);self.assertEqual(entry['selectedArchitecture']['cpuType'],0x100000c)
+  self.assertEqual(entry['otherArchitecturesQualification'],'not_inspected')
+  self.assertEqual(result['runtimeQualification'],'unavailable')
+ def test_universal_duplicate_overlap_bounds_and_missing_arm64_refuse(self):
+  raw=universal(image(string_command(0xc,'/usr/lib/libSystem.B.dylib'),kind=8))
+  variants=[universal(image(string_command(0xc,'/usr/lib/libSystem.B.dylib'),kind=8),True)]
+  for pos,value in ((36,64),(40,0xffffffff),(44,31),(28,0x1000007)):
+   changed=bytearray(raw);struct.pack_into('>I',changed,pos,value);variants.append(bytes(changed))
+  for variant in variants:
+   with self.subTest(header=variant[:48].hex()):
+    (self.root/'fsevents.node').write_bytes(variant);self.assertTrue(self.collect()['unresolved'])
  def test_non_native_files_are_not_reported(self):
   (self.root/'data').write_text('not native');self.assertEqual(self.collect()['machOFiles'],[])
 if __name__=='__main__':unittest.main()

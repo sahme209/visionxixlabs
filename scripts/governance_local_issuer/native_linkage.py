@@ -5,7 +5,7 @@ dlopen, environment injection and executable-relative search are not qualified.
 System install names declare trusted macOS host prerequisites, not copied bytes.
 """
 from __future__ import annotations
-import os, platform, plistlib, stat, struct, subprocess
+import hashlib, os, platform, plistlib, stat, struct, subprocess
 from pathlib import Path
 from .manifest import refuse, PackageUnavailable
 
@@ -37,16 +37,46 @@ def _read(path, consume_commands):
    if _state(opened)!=_state(os.fstat(fd))or _state(opened)!=_state(path.lstat()):refuse('native_changed')
    return None
   if len(header)!=32 or not 32<=opened.st_size<=MAX_NATIVE_BYTES:refuse('native_header_bounds')
+  architectures=[];selected=None;slice_offset=0;slice_size=opened.st_size
+  if header[:4]==b'\xca\xfe\xba\xbe':
+   arch_count=struct.unpack_from('>I',header,4)[0]
+   if not 1<=arch_count<=32:refuse('native_fat_architecture_count')
+   table_end=8+20*arch_count
+   if table_end>opened.st_size:refuse('native_fat_table_bounds')
+   os.lseek(fd,8,os.SEEK_SET);table=os.read(fd,20*arch_count)
+   if len(table)!=20*arch_count:refuse('native_fat_table_truncated')
+   seen=set();ranges=[];arm=[]
+   for i in range(arch_count):
+    cpu,subtype,start,length,alignment=struct.unpack_from('>iiIII',table,i*20)
+    if (cpu,subtype)in seen:refuse('native_fat_duplicate_architecture')
+    seen.add((cpu,subtype))
+    if alignment>30 or start<table_end or start%(1<<alignment)or length<32 or start+length>opened.st_size:refuse('native_fat_slice_bounds')
+    if any(start<end and begin<start+length for begin,end in ranges):refuse('native_fat_slice_overlap')
+    ranges.append((start,start+length))
+    descriptor={'cpuType':cpu,'cpuSubtype':subtype,'offset':start,'size':length,'alignmentExponent':alignment}
+    architectures.append(descriptor)
+    if cpu==0x100000c:arm.append(descriptor)
+   if len(arm)!=1 or arm[0]['cpuSubtype']!=0:refuse('native_fat_exact_arm64_required')
+   selected=arm[0];slice_offset=selected['offset'];slice_size=selected['size']
+   os.lseek(fd,slice_offset,os.SEEK_SET);header=os.read(fd,32)
+   if len(header)!=32:refuse('native_header_bounds')
   magic,cpu,subtype,kind,count,size,flags,reserved=struct.unpack('<IiiIIIII',header)
   if (magic,cpu,subtype,reserved)!=(0xfeedfacf,0x100000c,0,0)or kind not in {2,6,8}:refuse('unsupported_native_header')
-  if not 0<count<=4096 or not 8*count<=size<=MAX_COMMAND_BYTES or size>opened.st_size-32:refuse('native_command_bounds')
+  if not 0<count<=4096 or not 8*count<=size<=MAX_COMMAND_BYTES or size>slice_size-32:refuse('native_command_bounds')
   consume_commands(size)
   data=bytearray()
   while len(data)<size:
    chunk=os.read(fd,min(size-len(data),1024*1024))
    if not chunk:refuse('native_commands_truncated')
    data.extend(chunk)
-  if _state(opened)!=_state(os.fstat(fd))or _state(opened)!=_state(path.lstat()):refuse('native_changed')
+  os.lseek(fd,0,os.SEEK_SET);full_hash=hashlib.sha256();hashed=0
+  while True:
+   chunk=os.read(fd,min(1024*1024,opened.st_size-hashed+1))
+   if not chunk:break
+   hashed+=len(chunk)
+   if hashed>opened.st_size:refuse('native_changed')
+   full_hash.update(chunk)
+  if hashed!=opened.st_size or _state(opened)!=_state(os.fstat(fd))or _state(opened)!=_state(path.lstat()):refuse('native_changed')
  finally:os.close(fd)
  offset=0;loads=[];rpaths=[];install_id=None;linker=None
  for _ in range(count):
@@ -75,7 +105,9 @@ def _read(path, consume_commands):
   elif command not in METADATA:refuse('native_loader_command_unsupported')
   offset+=length
  if offset!=size:refuse('native_command_count')
- return {'kind':kind,'installId':install_id,'installNames':loads,'rpaths':rpaths,'dynamicLinker':linker,'commandBytes':size}
+ return {'size':opened.st_size,'sha256':full_hash.hexdigest(),'architectures':architectures,
+         'selectedArchitecture':selected,'otherArchitecturesQualification':'not_inspected'if selected else'not_applicable',
+         'kind':kind,'installId':install_id,'installNames':loads,'rpaths':rpaths,'dynamicLinker':linker,'commandBytes':size}
 
 def _inside(root,path,strict=False):
  """Resolve links componentwise; never stat/read a candidate outside root."""
@@ -147,6 +179,7 @@ def collect_native_prerequisites(root):
  system=set();bound=[]
  for path,record in sorted(parsed.items()):
   item={'path':path.relative_to(root).as_posix(),'installNames':record['installNames'],'installId':record['installId'],'rpaths':record['rpaths'],'resolvedDependencies':[]}
+  for field in ('size','sha256','architectures','selectedArchitecture','otherArchitecturesQualification'):item[field]=record[field]
   if record['dynamicLinker']:system.add(record['dynamicLinker']);item['dynamicLinker']=record['dynamicLinker']
   search=[];item['unqualifiedSearchContexts']=[]
   for rpath in record['rpaths']:

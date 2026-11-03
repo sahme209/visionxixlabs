@@ -81,3 +81,15 @@ and no permission to publish inferred. Root owns the separately pending narrowly
 scoped official notice reads. Any later notice/status update must preserve this
 history and its actual evidence. Final review and notices precede a fresh exact
 source/build attempt; the old failed attempt is never overwritten or retried in place.
+
+## November 3 authorized official notices retrieved
+
+The user explicitly approved the two public license reads. Both returned HTTP200
+once, without redirects/retries/new font downloads. Exact complete copyright/OFL
+notices now accompany the unchanged13 font files: public/fonts/Inter-OFL.txt and
+JetBrainsMono-OFL.txt. Source URLs, SHA256 and byte sizes are retained in
+provenance.json and separate retrieval receipts. This resolves the missing notice
+artifact only; cached binary upstream authenticity remains unavailable, and these
+reads do not authorize any publication, deployment, credential or spending. Existing
+frozen066d build/package attempts predate these notice-only source additions and
+are not relabeled as containing them.
