@@ -346,3 +346,9 @@ The approved invitation repair is local and independently reviewed (23 focused c
 - B4/B6 permissions reference now labels separate requester execution as a nonactivated local preview and distinguishes capability, independent review and execution. Two actual rendered-page checks, scoped types and independent source review pass. No publication or visual acceptance is asserted.
 
 All A1–A9/B1–B6 requirements and existing approval, provider, spending and database restrictions remain unchanged. Production stays at3b596; no new rollout, provider action, engine download or Governance activation occurred.
+
+## November 2 next core launch gate and approval-guide correction
+
+The verified-launch implementation cannot yet establish SAMEPROCESS kernel enforcement before compiled issuer imports. Built-in Node has no supported primitive for that operation; existing parent/child receipts are not capabilities. Actual local SDK inspection confirms sandbox_init is deprecated/no-longer-supported and does not expose sandbox_check declarations. No private ABI was guessed or called. A package-bound native-bootstrap profile requires separate concrete trust-boundary review and actual supported-OS tests; no identity was issued. See ../recovery/2026-11-02/governance-private-bootstrap-kernel-gap.md. Full A2 remains incomplete, not replaced with file observations.
+
+The current approval-workflow public-source reference now uses explicit local-preview/not-production wording, capability-based independent review, separate original-requester execution and unchanged provider-result/rollback limits. Two rendered-page checks and scoped types pass; independent source review found no material issues. Existing historical article revisions/media remain unchanged. This is local B4/B6 correction, not customer publication or full docs acceptance. Receipt: ../recovery/2026-11-02/approval-workflow-documentation-local-progress.md. All other master requirements remain active.

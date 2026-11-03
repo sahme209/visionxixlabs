@@ -3,7 +3,7 @@ import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } 
 
 export const metadata: Metadata = {
   title: "Approval workflow — Axiom Documentation",
-  description: "How Axiom separates agent proposals, administrator approval, execution, and audit evidence.",
+  description: "How Axiom separates Agent proposals, independent human review, execution, and audit evidence.",
 };
 
 export default function ApprovalWorkflowPage() {
@@ -12,11 +12,15 @@ export default function ApprovalWorkflowPage() {
       <DocHeader
         kicker="Governance · Approvals"
         title="A write starts as a proposal."
-        summary="The Agent can inspect low-risk context, but GitHub writes, deployment-target changes, identity configuration, and deployments stop at an explicit approval boundary."
+        summary="For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval."
       />
 
-      <Callout variant="safe" title="The released boundary">
-        Medium- and high-risk tool calls do not execute inside the decision loop. A workspace administrator must approve the persisted proposal before the server invokes the real write function.
+      <Callout title="Preview workflow reference">
+        Separate requester execution is a local preview and is not production-activated. Your installed version may not include an Execute control. Check the controls and release guidance for your installed version; approval status alone does not prove that an action ran.
+      </Callout>
+
+      <Callout variant="safe" title="Proposal approval boundary">
+        Medium- and high-risk tool calls do not execute inside the decision loop. An authorized independent human reviewer must approve the exact persisted proposal. Approval permission is distinct from execution permission.
       </Callout>
 
       <DocSection id="risk" title="Risk classification" kicker="01">
@@ -33,7 +37,7 @@ export default function ApprovalWorkflowPage() {
       </DocSection>
 
       <DocSection id="execution" title="Execution and recovery" kicker="03">
-        <p>After approval, the scoped responder must still satisfy current authorization and target checks. An AWS ECS request depends on a separately configured tenant-owned workflow. Approval or dispatch acceptance does not verify ECS execution, service health or rollback; each requires independent outcome evidence. The website preview grants no execution authority.</p>
+        <p>In the separate-execution preview, approval records review only. The original requester must use a separate execution step for a supported action; current authorization, exact proposal and target checks still apply. An AWS ECS request depends on a separately configured tenant-owned workflow. Approval or dispatch acceptance does not verify ECS execution, service health or rollback; each requires independent outcome evidence. The website preview grants no execution authority.</p>
       </DocSection>
 
       <DocSection id="audit" title="Audit evidence" kicker="04">
@@ -42,11 +46,11 @@ export default function ApprovalWorkflowPage() {
 
       <DocSection id="trust" title="Trust questions">
         <TrustGrid items={[
-          { question: "Can the Agent write without approval?", answer: "Not through the released medium- and high-risk tool path." },
+          { question: "Can the Agent write without approval?", answer: "Not through registered medium- and high-risk Agent tools. The separate-execution preview also requires independent review and requester execution." },
           { question: "Can production lower the risk?", answer: "No. Production context raises risk; it never lowers it." },
-          { question: "Who approves?", answer: "A workspace administrator authenticated through the desktop-session path." },
+          { question: "Who approves?", answer: "An independent human reviewer with current approval permission, authenticated through the desktop-session path." },
           { question: "Are reads recorded?", answer: "Yes. Low-risk tool calls receive executed action records." },
-          { question: "Does approval prove success?", answer: "No. Approval authorizes execution; the external result and validation provide outcome evidence." },
+          { question: "Does approval prove success?", answer: "No. Approval is one requirement; execution must pass current checks. The external result and validation provide outcome evidence." },
           { question: "Is every rollback universal?", answer: "No. Automatic ECS rollback is not verified by this preview or by approval. Recovery depends on the configured tenant-owned workflow and independently observed evidence." },
         ]} />
       </DocSection>
