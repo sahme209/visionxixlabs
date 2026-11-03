@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { desktopVersionAlignmentErrors } from "./desktop-release-versions.mjs";
+import { hasActionableDemoDownloadLink } from "./demo-download-link.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const desktopPackage = readJson("desktop/package.json");
@@ -68,7 +69,7 @@ if (footer.includes("apps.apple.com")) {
 if (demoLanding.includes("Create a web workspace") || demoLanding.includes("/auth/signup")) {
   errors.push("sandbox must direct customers to the downloadable app, not advertise a browser product");
 }
-if (!demoLanding.includes('href="/download"') || !demoLanding.includes("Download the desktop app")) {
+if (!hasActionableDemoDownloadLink(demoLanding)) {
   errors.push("sandbox must provide a clear path to the downloadable app");
 }
 
