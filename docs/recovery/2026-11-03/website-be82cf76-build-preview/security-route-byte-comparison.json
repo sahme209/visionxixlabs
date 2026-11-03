@@ -1,0 +1,19 @@
+{
+  "scope": "local uncompressed HTML and referenced JS/CSS only; not browser performance/Core Web Vitals",
+  "rows": [
+    {
+      "source": "ae5aac78",
+      "htmlBytes": 67977,
+      "htmlSha256": "41f50847f89ff4141020297f1e81d478d65e13dcdc1771696a7a150378b3d358",
+      "referencedJsCssCount": 14,
+      "referencedJsCssBytes": 881686
+    },
+    {
+      "source": "be82cf76",
+      "htmlBytes": 79190,
+      "htmlSha256": "a26df7cf68db9de8e36c3d36a9602875b18a77ebd42a9a436afdad1744388f29",
+      "referencedJsCssCount": 14,
+      "referencedJsCssBytes": 881799
+    }
+  ]
+}
