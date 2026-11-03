@@ -1,0 +1,11 @@
+# Stopped status gate: concrete local evidence
+
+Root executed the separately approved driver once. It stopped at the read-only service-status precondition: stdout `3`, exit0. No host claim, broker spawn claim or experiment result exists. No registration, broker, controller or positive XPC run happened. This diagnostic investigation did not rerun any host/API operation.
+
+Static file inspection proves the exact frozen manifest still matches every file, both plists parse, the calling app's declared main executable exists, and the LaunchAgent's app-relative `BundleProgram` resolves to an executable file. Strict local signature inspection remains valid/ad-hoc. Installed SDK `SMAppService.h` identifies3 as `SMAppServiceStatusNotFound`, distinct from0 NotRegistered. It requires the plist within the calling app's `Contents/Library/LaunchAgents`, which this artifact has. The header's `/Applications` recommendation is for LaunchDaemons, not this LaunchAgent; relocation is not a demonstrated fix.
+
+A bounded one-hour exact-label/own-process unified-log read found the actual query at2026-11-03 16:31:53 Eastern. BackgroundTaskManagement resolved the exact prepared app URL, expected plist label and `Contents/MacOS/AxiomOriginBroker`. It then explicitly reported `record not found`; the own host immediately reported status3. The records are retained in `status3-local-log-inspection.json`. Other matching Gatekeeper scans do not establish a denial cause.
+
+This establishes that the status refusal comes with a missing BackgroundTaskManagement disposition record, rather than demonstrating that the on-disk plist or calling app was unresolved. It does **not** prove registration eligibility, user consent, a pristine system registration state, code-signing acceptance or positive XPC behavior. The0-only precondition is more restrictive than this observed never-registered packet can pass; silently treating3 as0 would change the reviewed execution conditions.
+
+Next work should explicitly review the pre-registration state model and preserve no-touch behavior for any existing/pending/denied registration. Do not move/install the app, accept3, register/unregister, clear a claim or rerun the experiment based solely on this log. No private background-task database was read, no sudo was used, and no system setting changed.

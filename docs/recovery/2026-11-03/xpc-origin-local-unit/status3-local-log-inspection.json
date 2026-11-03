@@ -1,0 +1,79 @@
+{
+  "scope": "bounded recent local exact-label/process read-only logs; no sudo/API rerun",
+  "exit": 0,
+  "stderr": "",
+  "entries": [
+    {
+      "timestamp": "2026-11-03 16:15:33.054586-0500",
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "subsystem": "com.apple.syspolicy.exec",
+      "category": "default",
+      "eventMessage": "GK evaluateScanResult: 2, PST: (path: d8f13e7bee45fa3b), (team: (null)), (id: com.visionxixlabs.axiom.origin-unit.app), (bundle_id: com.visionxixlabs.axiom.origin-unit.app), 0, 0, 1, 0, 0, 0, 0"
+    },
+    {
+      "timestamp": "2026-11-03 16:25:53.054280-0500",
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "subsystem": "com.apple.syspolicy.exec",
+      "category": "default",
+      "eventMessage": "GK evaluateScanResult: 2, PST: (path: efc86cc2f2fd28bb), (team: (null)), (id: com.visionxixlabs.axiom.origin-unit.app), (bundle_id: com.visionxixlabs.axiom.origin-unit.app), 0, 0, 1, 0, 0, 0, 0"
+    },
+    {
+      "timestamp": "2026-11-03 16:31:53.077715-0500",
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "subsystem": "com.apple.syspolicy.exec",
+      "category": "default",
+      "eventMessage": "scan finished, waking up any waiters: PST: (path: 4c7ca9eea714e665), (team: (null)), (id: com.visionxixlabs.axiom.origin-unit.app), (bundle_id: com.visionxixlabs.axiom.origin-unit.app)"
+    },
+    {
+      "timestamp": "2026-11-03 16:31:53.077748-0500",
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "subsystem": "com.apple.syspolicy.exec",
+      "category": "default",
+      "eventMessage": "GK evaluateScanResult: 2, PST: (path: 4c7ca9eea714e665), (team: (null)), (id: com.visionxixlabs.axiom.origin-unit.app), (bundle_id: com.visionxixlabs.axiom.origin-unit.app), 0, 0, 1, 0, 0, 0, 0"
+    },
+    {
+      "timestamp": "2026-11-03 16:31:53.077759-0500",
+      "processImagePath": "/usr/libexec/syspolicyd",
+      "subsystem": "com.apple.syspolicy.exec",
+      "category": "default",
+      "eventMessage": "Unregistering bundle for protection after scan: PST: (path: 4c7ca9eea714e665), (team: (null)), (id: com.visionxixlabs.axiom.origin-unit.app), (bundle_id: com.visionxixlabs.axiom.origin-unit.app)"
+    },
+    {
+      "timestamp": "2026-11-03 16:31:53.087939-0500",
+      "processImagePath": "/System/Library/PrivateFrameworks/BackgroundTaskManagement.framework/Versions/A/Resources/backgroundtaskmanagementd",
+      "subsystem": "com.apple.backgroundtaskmanagement",
+      "category": "main",
+      "eventMessage": "effectiveItemDispositionWithAuditToken: pid=29353, type=agent, url=Contents/Library/LaunchAgents/com.visionxixlabs.axiom.origin-unit.plist -- file:///, config={\n    BTMConfigArguments =     (\n    );\n    BTMConfigBundleIdentifiers =     (\n    );\n    BTMConfigExecutablePath = \"Contents/MacOS/AxiomOriginBroker\";\n    BTMConfigLabel = \"com.visionxixlabs.axiom.origin-unit\";\n    BTMConfigSHA256Checksum = {length = 32, bytes = 0xd7b45b53 fa2448cb 37ad9b81 79eb8d65 ... c682ac1a e3a3e0ee };\n}"
+    },
+    {
+      "timestamp": "2026-11-03 16:31:53.089856-0500",
+      "processImagePath": "/System/Library/PrivateFrameworks/BackgroundTaskManagement.framework/Versions/A/Resources/backgroundtaskmanagementd",
+      "subsystem": "com.apple.backgroundtaskmanagement",
+      "category": "main",
+      "eventMessage": "effectiveItemDisposition: appURL=file:///private/tmp/axiom-origin-unit-prepared-ze5igxef/Axiom%20Origin%20Unit.app/, type=agent, url=Contents/Library/LaunchAgents/com.visionxixlabs.axiom.origin-unit.plist -- file:///, config={\n    BTMConfigArguments =     (\n    );\n    BTMConfigBundleIdentifiers =     (\n    );\n    BTMConfigExecutablePath = \"Contents/MacOS/AxiomOriginBroker\";\n    BTMConfigLabel = \"com.visionxixlabs.axiom.origin-unit\";\n    BTMConfigSHA256Checksum = {length = 32, bytes = 0xd7b45b53 fa2448cb 37ad9b81 79eb8d65 ... c682ac1a e3a3e0ee };\n}"
+    },
+    {
+      "timestamp": "2026-11-03 16:31:53.089878-0500",
+      "processImagePath": "/System/Library/PrivateFrameworks/BackgroundTaskManagement.framework/Versions/A/Resources/backgroundtaskmanagementd",
+      "subsystem": "com.apple.backgroundtaskmanagement",
+      "category": "main",
+      "eventMessage": "effectiveItemDisposition: record not found: appURL=/private/tmp/axiom-origin-unit-prepared-ze5igxef/Axiom Origin Unit.app, url=/Contents/Library/LaunchAgents/com.visionxixlabs.axiom.origin-unit.plist, type=agent, config={\n    BTMConfigArguments =     (\n    );\n    BTMConfigBundleIdentifiers =     (\n    );\n    BTMConfigExecutablePath = \"Contents/MacOS/AxiomOriginBroker\";\n    BTMConfigLabel = \"com.visionxixlabs.axiom.origin-unit\";\n    BTMConfigSHA256Checksum = {length = 32, bytes = 0xd7b45b53 fa2448cb 37ad9b81 79eb8d65 ... c682ac1a e3a3e0ee };\n}"
+    },
+    {
+      "timestamp": "2026-11-03 16:31:53.090966-0500",
+      "processImagePath": "/private/tmp/axiom-origin-unit-prepared-ze5igxef/Axiom Origin Unit.app/Contents/MacOS/AxiomOriginRegistrationHost",
+      "subsystem": "com.apple.libxpc.SMAppService",
+      "category": "all",
+      "eventMessage": "Service <private> status: 3"
+    },
+    {
+      "timestamp": "2026-11-03 16:33:19.961314-0500",
+      "processImagePath": "/usr/bin/log",
+      "subsystem": "com.apple.log",
+      "category": "",
+      "eventMessage": "log run noninteractively, parent: 29643 (Python), args: '/usr/bin/log' 'show' '--last' '1h' '--style' 'json' '--info' '--debug' '--predicate' 'eventMessage CONTAINS \"com.visionxixlabs.axiom.origin-unit\" OR process == \"AxiomOriginRegistrationHost\"'"
+    }
+  ],
+  "matchingEntryCount": 10,
+  "truncated": false
+}

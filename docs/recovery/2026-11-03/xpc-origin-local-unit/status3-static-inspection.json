@@ -1,0 +1,24 @@
+{
+  "scope": "read-only static inspection after root-reported status3; no host/API/registration rerun",
+  "reportedGate": {
+    "statusInteger": 3,
+    "semantic": "SMAppServiceStatusNotFound",
+    "rootConfirmedNoRegistration": true
+  },
+  "manifestSha256": "6d0380e929d43d564ad5008c2ebea8f383fc6ad06f18a65c91f291420ffc8a94",
+  "allManifestFilesMatch": true,
+  "appIdentifier": "com.visionxixlabs.axiom.origin-unit.app",
+  "mainExecutableExists": true,
+  "mainExecutableMode": "0o755",
+  "plistLabel": "com.visionxixlabs.axiom.origin-unit",
+  "bundleProgram": "Contents/MacOS/AxiomOriginBroker",
+  "brokerExists": true,
+  "brokerExecutable": true,
+  "header": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/ServiceManagement.framework/Headers/SMAppService.h",
+  "headerSha256": "859ec2a7c4471dc1ac1e36b4de67e76d0a62ce4e4d145c942fd80cc4c2d8f8ff",
+  "hostExperimentClaimExists": false,
+  "brokerSpawnClaimExists": false,
+  "hostExperimentResultExists": false,
+  "cause": "unconfirmed; status3 alone does not identify packaging, signing, location or registration-state cause",
+  "guardPreserved": "status3 remains refused; no relocation/register attempt/workaround"
+}
