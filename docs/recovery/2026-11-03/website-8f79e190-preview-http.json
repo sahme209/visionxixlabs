@@ -1,0 +1,18 @@
+[
+  {
+    "path": "/product",
+    "status": 200
+  },
+  {
+    "path": "/api/auth/session",
+    "status": 403
+  },
+  {
+    "path": "/auth/signin",
+    "status": 403
+  },
+  {
+    "path": "/account/help",
+    "status": 403
+  }
+]
