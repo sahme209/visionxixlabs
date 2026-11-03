@@ -1,0 +1,23 @@
+{
+  "sourceRevision": "479ac14adb602a78adae5d4af4829cac460390df",
+  "ownedRoot": "/private/tmp/axiom-security-figure-build-479ac14a-fhtc6h3l",
+  "buildSession": 9416,
+  "exit": 0,
+  "status": "build_outputs_observed_unqualified",
+  "buildOutputsVerified": true,
+  "executionAuthorized": false,
+  "sourceArchive": {
+    "archiveSha256": "e50bfa1ec187969c43b88014b872ce8a08f563246283eb7724aa9bbc2d02eef0",
+    "sourceBytes": 71429589,
+    "sourceObservationSha256": "0c544025fe51f9828eb1f1bea5e30506b977e32f1da3161254992ea5b46b34ff",
+    "verifiedRegularFiles": 6756,
+    "verifiedSymlinks": 0
+  },
+  "resultSha256": "221bb45a053a8b3315a82a09baa2248afbe7453fa371712d02f1fddd98384d6b",
+  "nextLogSha256": "b320509d9b774c0662664c275cc021266595cd2b7e10479d0bb604225fa23347",
+  "backendSession": 42351,
+  "proxySession": 22538,
+  "previewUrl": "http://127.0.0.1:5208/integrations",
+  "openInCodexStatus": "queued",
+  "visualAcceptance": false
+}
