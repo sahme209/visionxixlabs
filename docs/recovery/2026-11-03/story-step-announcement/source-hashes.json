@@ -1,0 +1,7 @@
+{
+  "base": "8f5006f39d34000530d2468c674e33b833b5e9fe",
+  "files": {
+    "components/marketing/CinematicAxiomDemo.tsx": "fe5b090d5df718c2c1cf1ad22e46d9292ac3902671d703f62047b880e3b46284",
+    "components/marketing/__tests__/WorkflowStories.test.ts": "6f9ec7d1c5786368175d3708c9fde72de1291e6ab872a69ce8ba592715eb6b1f"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "oldIgnoredSymlink": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules",
+  "newIgnoredSymlink": "/private/tmp/axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules",
+  "packageLockSha256": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+  "exactBuildSource": "ae5aac781904dd95cb71df583034013cc93b5bb7",
+  "sharedImportStatus": "intentionally_cancelled_not_semantic_red",
+  "noInstallOrNetwork": true
+}

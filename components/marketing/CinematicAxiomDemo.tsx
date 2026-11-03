@@ -42,7 +42,7 @@ export function CinematicAxiomDemo({ variant = "section" }: { variant?: "section
           <button type="button" className={storyButton} aria-label="Replay story" onClick={() => { setDecision(null); playback.replay(); }}><ArrowPathIcon className="h-4 w-4" /></button>
           <button type="button" className={storyButton} aria-label="Previous step" disabled={playback.index === 0} onClick={() => choose(playback.index - 1)}><ChevronLeftIcon className="h-4 w-4" /></button>
           <button type="button" className={storyButton} aria-label="Next step" disabled={playback.index === story.steps.length - 1} onClick={() => choose(playback.index + 1)}><ChevronRightIcon className="h-4 w-4" /></button>
-          <span className="ml-1 text-xs tabular-nums text-zinc-400">{playback.index + 1} / {story.steps.length}</span>
+          <span role="status" aria-label="Current story step" aria-live="polite" aria-atomic="true" className="ml-1 text-xs tabular-nums text-zinc-400"><span aria-hidden="true">{playback.index + 1} / {story.steps.length}</span><span className="sr-only">Step {playback.index + 1} of {story.steps.length}: {step.title}</span></span>
         </div>
         <p className="mt-3 text-[11px] leading-5 text-zinc-400">{playback.reducedMotion ? "Reduced motion · use the step controls" : playback.playing && !playback.active ? "Playback paused while out of view" : step.review ? "Playback stops at review. Decisions here are samples only." : "Play the sequence, or explore each step at your own pace."}</p>
       </div>

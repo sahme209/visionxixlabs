@@ -146,3 +146,34 @@ it("grounds the scripted frame in customer navigation without exposing operation
   expect(screen.getByText("Axiom Agent · Releases")).toBeDefined();
   expect(screen.getByText("Scripted preview")).toBeDefined();
 });
+
+it("announces the current story step after deliberate navigation and story changes", () => {
+  mount();
+  const status = screen.getByRole("status", { name: "Current story step" });
+  expect(status.getAttribute("aria-live")).toBe("polite");
+  expect(status.getAttribute("aria-atomic")).toBe("true");
+  expect(status.textContent).toContain("Choose the working context.");
+  fireEvent.click(screen.getByRole("button", { name: "Next step" }));
+  expect(status.textContent).toContain("Step 2 of");
+  expect(status.textContent).toContain("Make a small, reviewable edit.");
+  fireEvent.click(screen.getByRole("button", { name: "Agent & approval" }));
+  expect(status.textContent).toContain("Step 1 of");
+  expect(status.textContent).toContain(screen.getAllByRole("heading", { level: 2 })[0].textContent!);
+});
+
+it("announces manual reduced-motion steps without per-frame animation chatter", async () => {
+  reduced = true; mount();
+  const status = screen.getByRole("status", { name: "Current story step" });
+  fireEvent.click(screen.getByRole("button", { name: "Next step" }));
+  expect(status.textContent).toContain("Make a small, reviewable edit.");
+  act(() => { media.matches = false; motionChange({ matches: false }); });
+  const mutations: MutationRecord[] = [];
+  const observer = new MutationObserver(records => mutations.push(...records));
+  observer.observe(status, { subtree: true, childList: true, characterData: true });
+  fireEvent.click(screen.getByRole("button", { name: "Play story" }));
+  advance(360);
+  await act(async () => { await Promise.resolve(); });
+  expect(mutations).toHaveLength(0);
+  expect(status.textContent).toContain("Make a small, reviewable edit.");
+  observer.disconnect();
+});

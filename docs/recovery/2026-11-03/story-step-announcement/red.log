@@ -1,0 +1,1030 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-onprem-inventory-eb31221b
+
+ ❯ components/marketing/__tests__/WorkflowStories.test.ts (14 tests | 2 failed | 12 skipped) 119ms
+   × announces the current story step after deliberate navigation and story changes 88ms
+   × announces manual reduced-motion steps without per-frame animation chatter 31ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/WorkflowStories.test.ts > announces the current story step after deliberate navigation and story changes
+TestingLibraryElementError: Unable to find an accessible element with the role "status" and name "Current story step"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "Axiom interactive workflow stories":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Axiom interactive workflow stories"[39m
+    [33mclass[39m=[32m"mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20"[39m
+    [33mid[39m=[32m"product-tour"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "Choose a workflow story":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Choose a workflow story"[39m
+    [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "Story playback":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Story playback"[39m
+    [33mclass[39m=[32m"mt-5 flex flex-wrap items-center gap-2"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Code & review":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 border-white/25 bg-white/[0.06] text-zinc-100"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Agent & approval":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Terraform & cloud":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 1: Choose the working context.":
+  [36m<button[39m
+    [33maria-current[39m=[32m"step"[39m
+    [33maria-label[39m=[32m"Step 1: Choose the working context."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 bg-white/[0.06] text-zinc-100"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 2: Make a small, reviewable edit.":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Step 2: Make a small, reviewable edit."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 3: Review the bounded check.":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Step 3: Review the bounded check."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 4: Read the check output.":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Step 4: Read the check output."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 5: Review before publishing.":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Step 5: Review before publishing."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Play story":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Play story"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Replay story":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Replay story"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Previous step":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Previous step"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Next step":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Next step"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-300"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-4 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-2 text-xs font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-2 text-[10px] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-2 text-[10px] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-2 text-[10px] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-8 border-t border-white/[0.07] px-2 pt-3 text-[10px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm leading-6 text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-widest text-orange-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] font-medium uppercase tracking-widest text-zinc-300"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-2 text-xs leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Choose the working context.":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mt-3 text-2xl font-medium leading-tight tracking-[-0.035em] text-zinc-100 sm:text-3xl"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  complementary:
+
+  Name "Navigation illustrated from the desktop application":
+  [36m<aside[39m
+    [33maria-label[39m=[32m"Navigation illustrated from the desktop application"[39m
+    [33mclass[39m=[32m"hidden border-r border-white/[0.07] bg-[#151719] px-3 py-5 xl:block"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"mt-2 space-y-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"mt-2 space-y-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"mt-2 space-y-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-zinc-100 text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "Repository":
+  [36m<select[39m
+    [33mclass[39m=[32m"min-h-11 w-full min-w-0 rounded-lg border border-white/15 bg-[#191b1d] px-2 text-xs text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300"[39m
+  [36m/>[39m
+
+  Name "Branch":
+  [36m<select[39m
+    [33mclass[39m=[32m"min-h-11 w-full min-w-0 rounded-lg border border-white/15 bg-[#191b1d] px-2 text-xs text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300"[39m
+  [36m/>[39m
+
+  Name "Environment":
+  [36m<select[39m
+    [33mclass[39m=[32m"min-h-11 w-full min-w-0 rounded-lg border border-white/15 bg-[#191b1d] px-2 text-xs text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "acme/customer-web":
+  [36m<option />[39m
+
+  Name "acme/payments-api":
+  [36m<option />[39m
+
+  Name "feature/timeout":
+  [36m<option />[39m
+
+  Name "review/retry-policy":
+  [36m<option />[39m
+
+  Name "Development":
+  [36m<option />[39m
+
+  Name "Test":
+  [36m<option />[39m
+
+  Name "Production · held":
+  [36m<option />[39m
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"mt-1 break-words text-xs leading-5 text-zinc-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"mt-1 break-words text-xs leading-5 text-zinc-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"mt-1 break-words text-xs leading-5 text-zinc-200"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Read approval workflow":
+  [36m<a[39m
+    [33mclass[39m=[32m"mt-2 inline-flex min-h-11 items-center gap-2 text-xs font-medium text-zinc-300 underline-offset-4 hover:underline"[39m
+    [33mhref[39m=[32m"/docs/approval-workflow"[39m
+  [36m/>[39m
+
+  Name "Explore every safe demo":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 shrink-0 items-center gap-2 font-medium text-zinc-300"[39m
+    [33mhref[39m=[32m"/demo"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"Axiom interactive workflow stories"[39m
+      [33mclass[39m=[32m"mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20"[39m
+      [33mid[39m=[32m"product-tour"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-5 flex flex-wrap items-center justify-between gap-4"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-[10px] font-medium text-zinc-400"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 w-1.5 rounded-full bg-zinc-500"[39m
+          [36m/>[39m
+          [0m Interactive simulation · scripted walkthrough[0m
+        [36m</span>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Choose a workflow story"[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+          [33mrole[39m=[32m"group"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 border-white/25 bg-white/[0.06] text-zinc-100"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mCode & review[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 "[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mAgent & approval[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 "[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mTerraform & cloud[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)] lg:items-start lg:gap-8"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-300"[39m
+          [36m>[39m
+            [0mA small change. A clear review.[0m
+          [36m</p>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"mt-3 text-2xl font-medium leading-tight tracking-[-0.035em] text-zinc-100 sm:text-3xl"[39m
+          [36m>[39m
+            [0mChoose the working context.[0m
+          [36m</h2>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-4 text-sm leading-6 text-zinc-400"[39m
+          [36m>[39m
+            [0mSelect a sample repository and working branch. Keep the target visible throughout the change.[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"Story steps"[39m
+            [33mclass[39m=[32m"mt-5 grid gap-1"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-current[39m=[32m"step"[39m
+              [33maria-label[39m=[32m"Step 1: Choose the working context."[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 bg-white/[0.06] text-zinc-100"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-mono text-[10px] text-zinc-300"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m1[0m
+              [36m</span>[39m
+              [0mChoose the working context.[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Step 2: Make a small, reviewable edit."[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-mono text-[10px] text-zinc-500"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m2[0m
+              [36m</span>[39m
+              [0mMake a small, reviewable edit.[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Step 3: Review the bounded check."[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-mono text-[10px] text-zinc-500"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m3[0m
+              [36m</span>[39m
+              [0mReview the bounded check.[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Step 4: Read the check output."[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-mono text-[10px] text-zinc-500"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m4[0m
+              [36m</span>[39m
+              [0mRead the check output.[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Step 5: Review before publishing."[39m
+              [33mclass[...
+ ❯ Object.getElementError ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/marketing/__tests__/WorkflowStories.test.ts:152:25
+    150| it("announces the current story step after deliberate navigation and s…
+    151|   mount();
+    152|   const status = screen.getByRole("status", { name: "Current story ste…
+       |                         ^
+    153|   expect(status.getAttribute("aria-live")).toBe("polite");
+    154|   expect(status.getAttribute("aria-atomic")).toBe("true");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  components/marketing/__tests__/WorkflowStories.test.ts > announces manual reduced-motion steps without per-frame animation chatter
+TestingLibraryElementError: Unable to find an accessible element with the role "status" and name "Current story step"
+
+Here are the accessible roles:
+
+  region:
+
+  Name "Axiom interactive workflow stories":
+  [36m<section[39m
+    [33maria-label[39m=[32m"Axiom interactive workflow stories"[39m
+    [33mclass[39m=[32m"mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20"[39m
+    [33mid[39m=[32m"product-tour"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "Choose a workflow story":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Choose a workflow story"[39m
+    [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  Name "Story playback":
+  [36m<div[39m
+    [33maria-label[39m=[32m"Story playback"[39m
+    [33mclass[39m=[32m"mt-5 flex flex-wrap items-center gap-2"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Code & review":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 border-white/25 bg-white/[0.06] text-zinc-100"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Agent & approval":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Terraform & cloud":
+  [36m<button[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 "[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 1: Choose the working context.":
+  [36m<button[39m
+    [33maria-current[39m=[32m"step"[39m
+    [33maria-label[39m=[32m"Step 1: Choose the working context."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 bg-white/[0.06] text-zinc-100"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 2: Make a small, reviewable edit.":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Step 2: Make a small, reviewable edit."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 3: Review the bounded check.":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Step 3: Review the bounded check."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 4: Read the check output.":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Step 4: Read the check output."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Step 5: Review before publishing.":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Step 5: Review before publishing."[39m
+    [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Play story":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Play story"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Replay story":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Replay story"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Previous step":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Previous step"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40"[39m
+    [33mdisabled[39m=[32m""[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Next step":
+  [36m<button[39m
+    [33maria-label[39m=[32m"Next step"[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-300"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-4 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-2 text-xs font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-2 text-[10px] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-2 text-[10px] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-2 text-[10px] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-8 border-t border-white/[0.07] px-2 pt-3 text-[10px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm leading-6 text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-widest text-orange-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] font-medium uppercase tracking-widest text-zinc-300"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-2 text-xs leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "Choose the working context.":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mt-3 text-2xl font-medium leading-tight tracking-[-0.035em] text-zinc-100 sm:text-3xl"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  complementary:
+
+  Name "Navigation illustrated from the desktop application":
+  [36m<aside[39m
+    [33maria-label[39m=[32m"Navigation illustrated from the desktop application"[39m
+    [33mclass[39m=[32m"hidden border-r border-white/[0.07] bg-[#151719] px-3 py-5 xl:block"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"mt-2 space-y-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"mt-2 space-y-1"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"mt-2 space-y-1"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-zinc-100 text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] border-transparent text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  combobox:
+
+  Name "Repository":
+  [36m<select[39m
+    [33mclass[39m=[32m"min-h-11 w-full min-w-0 rounded-lg border border-white/15 bg-[#191b1d] px-2 text-xs text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300"[39m
+  [36m/>[39m
+
+  Name "Branch":
+  [36m<select[39m
+    [33mclass[39m=[32m"min-h-11 w-full min-w-0 rounded-lg border border-white/15 bg-[#191b1d] px-2 text-xs text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300"[39m
+  [36m/>[39m
+
+  Name "Environment":
+  [36m<select[39m
+    [33mclass[39m=[32m"min-h-11 w-full min-w-0 rounded-lg border border-white/15 bg-[#191b1d] px-2 text-xs text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  option:
+
+  Name "acme/customer-web":
+  [36m<option />[39m
+
+  Name "acme/payments-api":
+  [36m<option />[39m
+
+  Name "feature/timeout":
+  [36m<option />[39m
+
+  Name "review/retry-policy":
+  [36m<option />[39m
+
+  Name "Development":
+  [36m<option />[39m
+
+  Name "Test":
+  [36m<option />[39m
+
+  Name "Production · held":
+  [36m<option />[39m
+
+  --------------------------------------------------
+  term:
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dt[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  definition:
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"mt-1 break-words text-xs leading-5 text-zinc-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"mt-1 break-words text-xs leading-5 text-zinc-200"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<dd[39m
+    [33mclass[39m=[32m"mt-1 break-words text-xs leading-5 text-zinc-200"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Read approval workflow":
+  [36m<a[39m
+    [33mclass[39m=[32m"mt-2 inline-flex min-h-11 items-center gap-2 text-xs font-medium text-zinc-300 underline-offset-4 hover:underline"[39m
+    [33mhref[39m=[32m"/docs/approval-workflow"[39m
+  [36m/>[39m
+
+  Name "Explore every safe demo":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-11 shrink-0 items-center gap-2 font-medium text-zinc-300"[39m
+    [33mhref[39m=[32m"/demo"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"Axiom interactive workflow stories"[39m
+      [33mclass[39m=[32m"mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20"[39m
+      [33mid[39m=[32m"product-tour"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mb-5 flex flex-wrap items-center justify-between gap-4"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-md border border-white/10 px-3 py-2 text-[10px] font-medium text-zinc-400"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-1.5 w-1.5 rounded-full bg-zinc-500"[39m
+          [36m/>[39m
+          [0m Interactive simulation · scripted walkthrough[0m
+        [36m</span>[39m
+        [36m<div[39m
+          [33maria-label[39m=[32m"Choose a workflow story"[39m
+          [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+          [33mrole[39m=[32m"group"[39m
+        [36m>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"true"[39m
+            [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 border-white/25 bg-white/[0.06] text-zinc-100"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mCode & review[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 "[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mAgent & approval[0m
+          [36m</button>[39m
+          [36m<button[39m
+            [33maria-pressed[39m=[32m"false"[39m
+            [33mclass[39m=[32m"inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-xs font-medium text-zinc-200 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 disabled:opacity-40 "[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m>[39m
+            [0mTerraform & cloud[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"grid gap-6 lg:grid-cols-[230px_minmax(0,1fr)] lg:items-start lg:gap-8"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"min-w-0"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-300"[39m
+          [36m>[39m
+            [0mA small change. A clear review.[0m
+          [36m</p>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"mt-3 text-2xl font-medium leading-tight tracking-[-0.035em] text-zinc-100 sm:text-3xl"[39m
+          [36m>[39m
+            [0mChoose the working context.[0m
+          [36m</h2>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-4 text-sm leading-6 text-zinc-400"[39m
+          [36m>[39m
+            [0mSelect a sample repository and working branch. Keep the target visible throughout the change.[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33maria-label[39m=[32m"Story steps"[39m
+            [33mclass[39m=[32m"mt-5 grid gap-1"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-current[39m=[32m"step"[39m
+              [33maria-label[39m=[32m"Step 1: Choose the working context."[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 bg-white/[0.06] text-zinc-100"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-mono text-[10px] text-zinc-300"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m1[0m
+              [36m</span>[39m
+              [0mChoose the working context.[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Step 2: Make a small, reviewable edit."[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-mono text-[10px] text-zinc-500"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m2[0m
+              [36m</span>[39m
+              [0mMake a small, reviewable edit.[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Step 3: Review the bounded check."[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-mono text-[10px] text-zinc-500"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m3[0m
+              [36m</span>[39m
+              [0mReview the bounded check.[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Step 4: Read the check output."[39m
+              [33mclass[39m=[32m"flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-300 text-zinc-400 hover:bg-white/[0.03]"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"font-mono text-[10px] text-zinc-500"[39m
+              [36m>[39m
+                [0m0[0m
+                [0m4[0m
+              [36m</span>[39m
+              [0mRead the check output.[0m
+            [36m</button>[39m
+            [36m<button[39m
+              [33maria-label[39m=[32m"Step 5: Review before publishing."[39m
+              [33mclass[...
+ ❯ Object.getElementError ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/marketing/__tests__/WorkflowStories.test.ts:166:25
+    164| it("announces manual reduced-motion steps without per-frame animation …
+    165|   reduced = true; mount();
+    166|   const status = screen.getByRole("status", { name: "Current story ste…
+       |                         ^
+    167|   fireEvent.click(screen.getByRole("button", { name: "Next step" }));
+    168|   expect(status.textContent).toContain("Make a small, reviewable edit.…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 12 skipped (14)
+   Start at  17:05:39
+   Duration  680ms (transform 46ms, setup 0ms, import 196ms, tests 119ms, environment 303ms)
