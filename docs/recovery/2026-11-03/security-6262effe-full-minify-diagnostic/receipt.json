@@ -1,0 +1,52 @@
+{
+  "sourceRevision": "6262effe4a12289647cff736bae815c805c78302",
+  "ownedRoot": "/private/tmp/axiom-minify-full-diag-6262-a0fkxmw0",
+  "compile": {
+    "exit": -9,
+    "reason": "generation_output_limit",
+    "logBytes": 67768978,
+    "logSha256": "c29681878200525fcf571e45da0f6167abdf5577052de9ebea4a8162c2282c41",
+    "qualification": false
+  },
+  "attempt": {
+    "sourceRevision": "6262effe4a12289647cff736bae815c805c78302",
+    "command": [
+      "/usr/bin/sandbox-exec",
+      "-p",
+      "(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-minify-full-diag-6262-a0fkxmw0/stage\") (subpath \"/private/tmp/axiom-minify-full-diag-6262-a0fkxmw0/tmp\") (literal \"/private/tmp/axiom-minify-full-diag-6262-a0fkxmw0/diagnostic.log\"))(deny file-write* (subpath \"/private/tmp/axiom-security-figure-build-6262effe-mxa8n4tp/stage\"))(deny file-read* (subpath \"/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion\"))(deny file-read* (subpath \"/Users/samirahmed/.npm/_cacache\"))(deny file-read* (subpath \"/Users/samirahmed/.cache/prisma\"))",
+      "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "node_modules/next/dist/bin/next",
+      "build",
+      "--webpack",
+      "--experimental-build-mode",
+      "compile"
+    ],
+    "inputHashes": {
+      "package-lock.json": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+      "next.config.ts": "491566295d50eddd8dae881ae9c143648c2a2af0ccbf7a050da62a8db4a2bd9f",
+      "node_modules/next/dist/build/webpack/plugins/minify-webpack-plugin/src/index.js": "650f861407d459333cc56ce12b78aa12cb8cf4da34a7b03d0dd90bb287263458",
+      "node_modules/@next/swc-darwin-arm64/next-swc.darwin-arm64.node": "75de5a27a1ca697ed5ed10caee2c52cc9161fd35378f4da148341f903bd7e206"
+    },
+    "timeoutSeconds": 180,
+    "logCapBytes": 134217728,
+    "minification": true,
+    "qualification": false
+  },
+  "captureComplete": false,
+  "capturedRecords": 1147,
+  "rawDataSha256": "4e548f8362be80d65cce45db8f742014d42249cf76cd5be1ad2c762a57522b90",
+  "initialAdapter": "bindings_not_initialized_not_parser_result",
+  "initialAdapterSha256": "579b5947a9736d2354ea4db4854a302e66de237abb27ac4dc0fe84a5bfc9be9c",
+  "initializedAdapterResult": {
+    "count": 1147,
+    "pass": 1147,
+    "errors": [],
+    "execution": false,
+    "qualification": false
+  },
+  "initializedAdapterSha256": "84f0dd74c4fd0053dfa3a6e1139299ac78c0aa056fab1dfb1ca50d5219d3f2e5",
+  "sourceMapsAvailable": false,
+  "serverDisableCharFreq": true,
+  "originalError": "unconfirmed",
+  "qualification": false
+}

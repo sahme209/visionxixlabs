@@ -1,0 +1,7 @@
+# Full-route compile-only debug capture — inconclusive
+
+One authorized exact6262 fresh-stage compile retained actual minification and selected all routes. It was terminated by the existing helper’s stricter 64-MiB output monitor at 67,768,978 bytes, although the requested file RLIMIT was 128 MiB. This is an output-bound termination, **not** a reproduced compiler error or passing full build. No automatic second compile occurred.
+
+The private log contained 1,147 complete unique debug JSON records, parsed as data. An initial ordinary SWC adapter omitted binding initialization and returned only “bindings not loaded”; this failed adapter and output are preserved. After calling the real pinned Next `loadBindings`, its actual minify API accepted all 1,147 captured strings using the plugin compress/mangle/module/output options (server `disableCharFreq=true`). No source-map payloads were supplied by the debug logger. Source strings were not evaluated or executed. Both passes remained kernel network-denied.
+
+The incomplete capture does not establish that every asset minifies. No original parser error/filename was recovered, and the canonical-assignment hypothesis was not confirmed in captured strings. No framework patch, disabled minification, preview, runtime qualification, provider action or source repair was performed. Original failed stage/receipt and both diagnostic stages remain preserved. Receipt records exact inputs, hashes, command and terminal states.
