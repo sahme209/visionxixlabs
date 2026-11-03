@@ -21,23 +21,25 @@ describe("mobile website contract", () => {
 
     expect(page).toContain("min-h-12 items-center justify-center");
     expect(page).toContain("Download Axiom Agent");
-    expect(page).toContain("Try the interactive tour");
+    expect(page).toContain("Explore the scripted tour");
   });
 
   it("uses a concise mobile menu and locks both root scroll containers", () => {
     const navigation = source("components/Navigation.tsx");
 
     expect(navigation).toContain("const mobileLinks = [");
-    expect(navigation).toContain('{ href: "/product", label: "Axiom" }');
-    expect(navigation).toContain('{ href: "/demo", label: "Product tour" }');
+    expect(navigation).toContain('{ href: "/product", label: "Product" }');
+    expect(navigation).toContain('{ href: "/demo", label: "Demo" }');
     expect(navigation).toContain('{ href: "/integrations", label: "Integrations" }');
     expect(navigation).toContain('{ href: "/security", label: "Security" }');
-    expect(navigation).toContain('{ href: "/capabilities", label: "Capabilities" }');
-    expect(navigation).toContain('{ href: "/resources", label: "Resources" }');
+    expect(navigation).toContain("...primaryLinks");
+    expect(navigation).toContain("...secondaryLinks");
+    expect(navigation).toContain('{ href: "/docs", label: "Docs" }');
+    expect(navigation).toContain('{ href: "/account/help", label: "Support (account required)" }');
+    expect(navigation).toContain('{ href: "/axiom", label: "Company" }');
     expect(navigation).toContain('{ href: "/status", label: "Status" }');
     expect(navigation).toContain('{ href: "/plans", label: "Pricing" }');
     expect(navigation).toContain('{ href: "/support", label: "Founding Supporters" }');
-    expect(navigation).toContain('{ href: "/contact", label: "Contact" }');
     expect(navigation).toContain('document.body.style.overflow = "hidden"');
     expect(navigation).toContain('document.documentElement.style.overflow = "hidden"');
     expect(navigation).toContain('h-16');

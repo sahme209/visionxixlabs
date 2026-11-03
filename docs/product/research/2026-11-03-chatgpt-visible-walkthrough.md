@@ -1,0 +1,9 @@
+# ChatGPT public overview — bounded visible walkthrough
+
+November3,2026. Public reference research, not a complete audit or Axiom capability evidence.
+
+Navigated the public OpenAI ChatGPT overview link; it redirected to `https://chatgpt.com/overview/`. An initial “Just a moment” page resolved normally before the later observation; no CAPTCHA/security-warning challenge was solved or bypassed. Actual public overview presented Chat/Work/Codex purpose grouping, image-led examples, a feature carousel, download and account destinations. No sign-in, signup, chat/model submission, app download or connector access occurred.
+
+The mode selection changed during hydration/automatic presentation and an old numeric Codex target disappeared before a click could be sent. Refreshed state confirmed current selection; **manual mode navigation and its focus behavior were not accepted**. Clicking the actual Next feature button changed the carousel: screenshot showed Images at the leading edge with Work partially visible, and Previous became available. Clicked Previous afterward but did not establish a final reset state or keyboard carousel acceptance. Screenshot inspected for layout; no vendor artwork imported into Axiom.
+
+Observed responsive narrow-layout hierarchy: restrained persistent brand/account header, large purpose heading, a brief task description and visual examples below. This is evidence of presentation only. Remaining docs, deeper controls, menus, media/captions, footer, accessibility, responsive breakpoints and all account-gated functions remain unreviewed. Vendor functionality/performance/security claims are not Axiom promises. Original Axiom direction: purpose before controls, discrete task examples, explicit sample-versus-authentic labels and one clear next action; retain Axiom identity and current scope caveats.

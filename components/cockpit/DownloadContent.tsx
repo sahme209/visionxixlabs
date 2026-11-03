@@ -188,6 +188,20 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
           </div>
         </section>
 
+        {!cockpit && <section aria-labelledby="installation-help" className="mx-auto max-w-[1280px] px-5 pb-12 sm:px-8 lg:px-10">
+          <div className="rounded-xl border border-white/[0.08] bg-white/[0.015] p-5 sm:p-8">
+            <h2 id="installation-help" className="text-2xl font-medium tracking-[-0.035em] text-white">Installation and help</h2>
+            <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-400">Downloading does not connect a provider or authorize actions. Supported capabilities and support options vary by installed version and current access. Review the installation guide, then follow the supported authorization and approval workflow for your workspace.</p>
+            <div className="mt-5 flex flex-col gap-3 text-sm sm:flex-row sm:flex-wrap sm:gap-x-6">
+              <Link href="/docs/desktop-install" className="text-zinc-200 underline underline-offset-4 hover:text-white">Desktop installation guide</Link>
+              <Link href="/docs/troubleshooting" className="text-zinc-200 underline underline-offset-4 hover:text-white">Troubleshooting</Link>
+              <Link href="/docs/approval-workflow" className="text-zinc-200 underline underline-offset-4 hover:text-white">Approval workflow</Link>
+            </div>
+            <p className="mt-5 text-sm leading-6 text-zinc-400">Need more help? <Link href="/account/help" className="text-zinc-200 underline underline-offset-4 hover:text-white">Account help (account required)</Link> provides an account-context support entry. You can also <Link href="/contact" className="text-zinc-200 underline underline-offset-4 hover:text-white">Contact us</Link> through the public contact page.</p>
+            <p className="mt-3 text-xs leading-5 text-zinc-500"><Link href="/support" className="text-zinc-300 underline underline-offset-4 hover:text-white">Founding Supporters</Link> is a separate way to support Axiom’s development.</p>
+          </div>
+        </section>}
+
         {manifest?.previousReleases?.length ? (
           <section aria-labelledby="previous-releases" className={cockpit ? "mb-6" : "mx-auto max-w-[1280px] px-5 pb-12 sm:px-8 lg:px-10"}>
             <h2 id="previous-releases" className={cockpit ? "text-sm font-medium text-zinc-100" : "text-xl font-medium text-zinc-100"}>Previous desktop releases</h2>
@@ -270,6 +284,7 @@ function DownloadCard({
                   : "Manifest reports signed")
                 : "Signing not confirmed"}</p> : null}
               {asset?.installFriction ? <p className="mt-1 text-[11px] leading-5 text-zinc-400">{asset.installFriction}</p> : null}
+              {id === "windows" && <p className="mt-3 text-xs leading-5 text-zinc-400">Windows trusted signing remains unresolved; SmartScreen warnings may appear. A manifest signing report does not establish Windows trust or reputation. Follow your organization’s software policy when deciding whether to install.</p>}
               </div>
             );
           })}

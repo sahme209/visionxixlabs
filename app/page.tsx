@@ -21,7 +21,7 @@ const pillars = [
     icon: CpuChipIcon,
     eyebrow: "AI",
     title: "Context before action.",
-    copy: "Select a repository, branch, file, and environment, then ask in everyday language. The Agent inspects the selected GitHub context through audited read-only tools before it answers. It never executes a write by itself.",
+    copy: "Select repository context and ask in everyday language. Repository assistance helps inspect the selected context and explain evidence; available tools and actions depend on the installed version and current access.",
   },
   {
     icon: ShieldCheckIcon,
@@ -58,10 +58,16 @@ export default function Home() {
                 Explore Axiom <ArrowRightIcon className="h-4 w-4" />
               </Link>
               <Link href="/demo" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.05] px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.08]">
-                Try the interactive tour <ArrowRightIcon className="h-4 w-4" />
+                Explore the scripted tour <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
           </div>
+
+          <p className="mt-6 max-w-3xl text-sm leading-6 text-zinc-400">
+            Actual actions depend on the installed version, current permissions, and enabled workflow. Complete Governance enforcement and activation are not established.{" "}
+            <Link href="/security" className="text-zinc-200 underline underline-offset-4">Assess security boundaries</Link>{" · "}
+            <Link href="/docs/approval-workflow" className="text-zinc-200 underline underline-offset-4">Read the approval workflow</Link>.
+          </p>
 
           <HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} />
         </section>
@@ -84,23 +90,24 @@ export default function Home() {
         </section>
 
         <section className="mx-auto max-w-[1280px] space-y-8 px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+          <p className="max-w-3xl text-sm leading-6 text-zinc-400">These boards are conceptual examples. Support depends on the installed version and enabled workflow. A saved request, approval, or workflow is not a verified provider result, application health, or rollback proof.</p>
           <EditorialPanel
             eyebrow="01 · Structured intake"
-            title="Five stages. No hidden assumptions."
-            copy="The request captures the deployment window, affected scope, exact execution, production validation, and recovery path before a playbook is treated as ready."
+            title="Five stages to frame a request."
+            copy="The illustrated request separates the deployment window, affected scope, execution, production validation, and recovery path for review. Recorded fields alone do not establish readiness."
             visual={<StageBoard />}
           />
           <EditorialPanel
             reverse
             eyebrow="02 · Revision integrity"
-            title="Every meaningful edit has an author and a version."
-            copy="Updates use optimistic concurrency. If the record changed elsewhere, Axiom stops and asks the operator to reconcile instead of silently overwriting newer work."
+            title="Keep revisions in view."
+            copy="The illustrated history keeps authorship and revisions visible for comparison. Revision and conflict handling depend on the supported surface and installed version."
             visual={<HistoryBoard />}
           />
           <EditorialPanel
             eyebrow="03 · Operational truth"
             title="A green workflow is not production validation."
-            copy="Axiom keeps trigger state, execution state, technical validation, functional validation, rollback readiness, and closure evidence separate so the interface never invents certainty."
+            copy="Assess trigger state, execution results, technical and functional validation, rollback readiness, and closure evidence separately. A workflow acceptance or recorded recovery instruction alone does not verify the outcome."
             visual={<ValidationBoard />}
           />
         </section>

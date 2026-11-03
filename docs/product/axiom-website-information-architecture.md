@@ -4,6 +4,10 @@ November 2 design; user approved local implementation November 3, 2026. **Local 
 
 This is the B2 design deliverable for the [master action plan](axiom-master-action-plan.md). It proposes an original public experience grounded in current source and six partial reference audits. It does not change runtime behavior, account creation, installer publication, authorization, pricing, production flags or existing source/evidence history. Security, visual quality and understandable next steps are acceptance criteria throughout.
 
+## Local implementation status — November 3
+
+Approved local increments now cover navigation, Docs entry paths, connector browsing, Product, Security and Demo explanations. Product/source d0d959bc has actual build and selected browser evidence; later Download, Troubleshooting and homepage source refinements have focused tests/reviews and await their exact batched build. See [current source receipt](../recovery/2026-11-03/website-download-support-progress.md) and the master checklist. None is published by this approval. Original design descriptions below remain the blueprint, not a claim that every section, media asset, help article, support runtime or acceptance requirement is complete.
+
 ## 1. Intent and chosen direction
 
 Help an engineering operator understand Axiom, assess whether a particular workflow fits, inspect its limits, and find the correct next step. A technical evaluator should reach the relevant permissions and recovery documentation without entering an account or watching a long film. An existing customer should reach a task guide without navigating a sales funnel.
