@@ -91,5 +91,11 @@ and root/dependency lifecycle markers remain absent. Its emitted observation
 explicitly retains all unavailable qualifications. Other tests refuse required
 misses and tampered optional content. Fixture cleanup removes owned stage/cache.
 
-No real-project probe has run. Such a probe remains pending root review and a
-committed exact source revision; previous 442 cache findings are historical.
+One actual real-project probe at committed source
+`73cfd135f943596a16ec8b5d83c33d78257915b7` succeeded with kernel-denied
+network and lifecycle scripts disabled. It verified 959 cached tarballs; the four
+explicitly optional cache misses remained absent after installation. Exact receipt:
+`offline-project-probe-73cfd135.json`. This is an unqualified dependency-install
+observation only: no generation, compilation, launch, or executing identity was
+accepted. All qualification fields remain unavailable and executionAuthorized false.
+The strict preparation path still refuses these missing packages.
