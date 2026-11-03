@@ -1,6 +1,6 @@
 # Direct-merge authority writers and resource custody inventory
 
-**Source-only, bounded candidate inventory; no runtime or access change.** Source scope `d410`; complements the existing [mutation inventory](../governance-mutation-inventory.md) and the C service proposal. This is not an exhaustive all-writers, deployment-role, reachable-code or security-audit claim. No AST catalog was regenerated, tests run or provider/DB/credential inspected. `authority-writer-sources.json` records inspected file hashes and the finite map below.
+**Source-only, bounded candidate inventory; no runtime or access change.** Source scope `d410`; complements the existing [mutation inventory](../../2026-11-01/governance-mutation-inventory.md) and the C service proposal. This is not an exhaustive all-writers, deployment-role, reachable-code or security-audit claim. No AST catalog was regenerated, tests run or provider/DB/credential inspected. `authority-writer-sources.json` records inspected file hashes and the finite map below.
 
 ## Authority map for the proposed compiled-direct-pr-merge/1 profile
 
