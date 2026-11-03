@@ -58,6 +58,17 @@ export async function readEnrollmentDrainBlockersLocked(tx:Tx,rawOrg:string,port
  readerFresh=await ports.assertCurrent(tx,org);if(typeof readerFresh!=='function')fail();await drainDatabaseClock(tx);fresh();
  return{...counts,transition:bar?drainRecordView(bar.row):null,executionAuthorized:false as const,legacyQualification:'unavailable' as const,runtimeQualification:'unavailable' as const};
 }
+/** Internal DB-only association check in the caller's existing org-first transaction.
+ * This validates canonical slot history, not participant authority or quiescence.
+ * The trusted caller must separately verify the actual original private claim. */
+export async function readExactEnrollmentDrainAttemptLocked(tx:Tx,rawScope:RevisionScope,rawBinding:Omit<DrainOutboundBinding,'serverNonce'>,status:'reserved'|'submission_intent'){
+ const scope=drainScopeSchema.parse(rawScope),binding=outboundBindingSchema.omit({serverNonce:true}).parse(rawBinding);
+ await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+hash(scope.organizationId)}))`;
+ const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,workflowKind:SLOT,inputJson:{path:['binding','operationId'],equals:binding.operationId}},orderBy:[{id:'asc'}],take:2});
+ if(rows.length!==1)fail();const checked=await history(tx,rows[0]),input=slotInput.parse(checked.input),{serverNonce:_,...actual}=input.binding;
+ if(!same(input.scope,scope)||!same(actual,binding)||checked.state.status!==status)fail();
+ return{id:rows[0].id,status:checked.state.status,executionAuthorized:false as const};
+}
 export interface EnrollmentDrainPorts{
  signal:AbortSignal;
  assertAuthority(tx:Tx,caller:RevisionScope,callerRole:DrainAuthorityRole,subject:RevisionScope,subjectRole:DrainAuthorityRole):Promise<()=>void>;

@@ -396,7 +396,11 @@ export async function commitFile(input: CommitFileInput): Promise<GithubWriteRes
   return { ok: true, data: { sha: result.data.content.sha, htmlUrl: result.data.content.html_url } };
 }
 
+export interface GithubMultiEffect {index:number;method:'POST'|'PATCH';path:string;body:unknown}
+export interface GithubMultifileLifecycle {initialize(base:{parentSha:string;treeSha:string}):Promise<void>;beforeEffect(effect:GithubMultiEffect):Promise<{beforeFetch():void;recordReceipt(sha:string):Promise<void>}>;complete():Promise<void>}
 export interface CommitFilesInput extends GithubMutationAuthority {
+  signal?:AbortSignal;
+  lifecycle?:GithubMultifileLifecycle;
   owner: string;
   repo: string;
   branch: string;
@@ -423,18 +427,19 @@ export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteR
   const reference = await gh<{ object?: { type?: unknown; sha?: unknown } }>(
     `${basePath}/git/ref/heads/${encodeURIComponent(input.branch)}`,
     input.installationToken,
+    {signal:input.signal},
   );
   if (!reference.ok || reference.data.object?.type !== "commit" || typeof reference.data.object.sha !== "string") {
     return { ok: false, error: reference.ok ? "github_branch_commit_unavailable" : reference.error };
   }
   const parentSha = reference.data.object.sha;
-  const parent = await gh<{ tree?: { sha?: unknown } }>(`${basePath}/git/commits/${encodeURIComponent(parentSha)}`, input.installationToken);
+  const parent = await gh<{ tree?: { sha?: unknown } }>(`${basePath}/git/commits/${encodeURIComponent(parentSha)}`, input.installationToken,{signal:input.signal});
   if (!parent.ok || typeof parent.data.tree?.sha !== "string") return { ok: false, error: parent.ok ? "github_tree_unavailable" : parent.error };
 
   for (const file of input.files) {
     // Validate exactly the tree used below. A moving branch must not supply
     // evidence for files in a different captured parent commit.
-    const current = await getFile({ owner: input.owner, repo: input.repo, branch: parentSha, path: file.path, installationToken: input.installationToken });
+    const current = await getFile({ owner: input.owner, repo: input.repo, branch: parentSha, path: file.path, installationToken: input.installationToken,...(input.signal?{read:{signal:input.signal,maxBytes:300000}}:{}) });
     if (file.expectedSha === null) {
       if (current.ok || !current.error.startsWith("github_404:")) return { ok: false, error: "github_file_changed_since_proposal" };
     } else if (!current.ok || current.data.sha !== file.expectedSha) {
@@ -442,33 +447,38 @@ export async function commitFiles(input: CommitFilesInput): Promise<GithubWriteR
     }
   }
 
+  if(input.lifecycle){
+    if(!/^[a-f0-9]{40}$/.test(parentSha)||!/^[a-f0-9]{40}$/.test(parent.data.tree.sha))return {ok:false,error:"github_execution_base_unavailable"};
+    await input.lifecycle.initialize({parentSha,treeSha:parent.data.tree.sha});
+  }
+  let effectIndex=0;
+  const effect=async<T>(path:string,method:'POST'|'PATCH',body:unknown):Promise<GithubWriteResult<T>>=>{
+    if(!input.lifecycle)return gh<T>(path,input.installationToken,{method,beforeWrite:input.beforeWrite,body,signal:input.signal});
+    await input.beforeWrite();input.signal?.throwIfAborted();
+    const hooks=await input.lifecycle.beforeEffect({index:effectIndex++,method,path,body});
+    const result=await gh<T>(path,input.installationToken,{method,beforeWrite:async()=>{},beforeFetch:hooks.beforeFetch,signal:input.signal,body});
+    if(!result.ok)return result;
+    const value=result.data as {sha?:unknown;ref?:unknown;object?:{sha?:unknown}};
+    const receipt=method==='PATCH'?value.object?.sha:value.sha;
+    if(typeof receipt!=='string'||!/^[a-f0-9]{40}$/.test(receipt)||method==='PATCH'&&(value.ref!==`refs/heads/${input.branch}`||receipt!==(body as {sha:string}).sha))return {ok:false,error:"action_outcome_unknown"};
+    await hooks.recordReceipt(receipt);return result;
+  };
   let wroteObject = false;
   const writeFailure = (error:string) => ({ok:false as const,error:wroteObject && error==="github_write_authority_unavailable"?"action_outcome_unknown":error});
   const treeEntries: Array<{ path: string; mode: "100644"; type: "blob"; sha: string }> = [];
   for (const file of input.files) {
-    const blob = await gh<{ sha?: unknown }>(`${basePath}/git/blobs`, input.installationToken, {
-      method: "POST", beforeWrite: input.beforeWrite,
-      body: { content: Buffer.from(file.content, "utf8").toString("base64"), encoding: "base64" },
-    });
+    const blob = await effect<{ sha?: unknown }>(`${basePath}/git/blobs`, "POST", { content: Buffer.from(file.content, "utf8").toString("base64"), encoding: "base64" });
     if (!blob.ok || typeof blob.data.sha !== "string") return writeFailure(blob.ok ? "github_blob_unavailable" : blob.error);
     wroteObject = true;
     treeEntries.push({ path: file.path, mode: "100644", type: "blob", sha: blob.data.sha });
   }
-  const tree = await gh<{ sha?: unknown }>(`${basePath}/git/trees`, input.installationToken, {
-    method: "POST", beforeWrite: input.beforeWrite,
-    body: { base_tree: parent.data.tree.sha, tree: treeEntries },
-  });
+  const tree = await effect<{ sha?: unknown }>(`${basePath}/git/trees`, "POST", { base_tree: parent.data.tree.sha, tree: treeEntries });
   if (!tree.ok || typeof tree.data.sha !== "string") return writeFailure(tree.ok ? "github_tree_create_failed" : tree.error);
-  const commit = await gh<{ sha?: unknown; html_url?: unknown }>(`${basePath}/git/commits`, input.installationToken, {
-    method: "POST", beforeWrite: input.beforeWrite,
-    body: { message: input.message, tree: tree.data.sha, parents: [parentSha] },
-  });
+  const commit = await effect<{ sha?: unknown; html_url?: unknown }>(`${basePath}/git/commits`, "POST", { message: input.message, tree: tree.data.sha, parents: [parentSha] });
   if (!commit.ok || typeof commit.data.sha !== "string") return writeFailure(commit.ok ? "github_commit_create_failed" : commit.error);
-  const updated = await gh<unknown>(`${basePath}/git/refs/heads/${encodeURIComponent(input.branch)}`, input.installationToken, {
-    method: "PATCH", beforeWrite: input.beforeWrite,
-    body: { sha: commit.data.sha, force: false },
-  });
+  const updated = await effect<unknown>(`${basePath}/git/refs/heads/${encodeURIComponent(input.branch)}`, "PATCH", { sha: commit.data.sha, force: false });
   if (!updated.ok) return writeFailure(updated.error);
+  await input.lifecycle?.complete();
   return {
     ok: true,
     data: {

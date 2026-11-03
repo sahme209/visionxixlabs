@@ -1,6 +1,6 @@
 # Proposed Agent multi-file outbound decomposition — local review required
 
-Status: user-approved for local implementation and isolated tests (call_297fb4478f914f58ab0352bccecc97bc[1]); not proof of implementation or execution authority. Existing `commit_github_files` performs N blob POSTs, one tree POST, one commit POST and one ref PATCH (N+3 writes). A single once-only outbound slot cannot truthfully authorize all of these submissions.
+Status: user-approved for local implementation and isolated tests (call_297fb4478f914f58ab0352bccecc97bc[1]). Implemented local source and exact validation are recorded in [the implementation receipt](agent-multifile-outbound/README.md); this is not live authority or runtime qualification. Existing `commit_github_files` performs N blob POSTs, one tree POST, one commit POST and one ref PATCH (N+3 writes). A single once-only outbound slot cannot truthfully authorize all of these submissions.
 
 ## Exact proposed change
 

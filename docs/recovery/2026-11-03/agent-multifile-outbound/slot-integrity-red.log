@@ -1,0 +1,80 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-agent-multifile-2d113a53[39m
+
+ [31m❯[39m lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts [2m([22m[2m38 tests[22m[2m | [22m[31m2 failed[39m[2m | [22m[33m36 skipped[39m[2m)[22m[33m 706[2mms[22m[39m
+     [2m[90m↓[39m[22m records a changed reviewed branch as a consumed refusal with no provider POST
+     [2m[90m↓[39m[22m completes one saved branch using pinned credentials and immutable original review
+     [2m[90m↓[39m[22m keeps one lost POST consumed unknown and re-execution issues zero additional writes
+     [2m[90m↓[39m[22m refuses reviewer revocation committed during the later asynchronous guard with no POST
+     [2m[90m↓[39m[22m competing coordinators can dispatch at most one provider write
+     [2m[90m↓[39m[22m actual fixed database coordinator create_environment commits one mutation and outcome together without provider access
+     [2m[90m↓[39m[22m actual fixed database coordinator configure_deployment_target commits one mutation and outcome together without provider access
+     [2m[90m↓[39m[22m actual fixed database coordinator connect_identity_provider commits one mutation and outcome together without provider access
+     [2m[90m↓[39m[22m actual AWS coordinator policy/quota/store/fixed dispatch confirmed is one attempt
+     [2m[90m↓[39m[22m actual AWS coordinator policy/quota/store/fixed dispatch lost is one attempt
+     [2m[90m↓[39m[22m actual AWS coordinator policy/quota/store/fixed dispatch rejected is one attempt
+     [2m[90m↓[39m[22m actual AWS coordinator policy/quota/store/fixed dispatch workflow_changed is one attempt
+     [2m[90m↓[39m[22m actual AWS coordinator policy/quota/store/fixed dispatch issuer_unavailable is one attempt
+     [2m[90m↓[39m[22m actual AWS coordinator policy/quota/store/fixed dispatch reservation_ack_lost is one attempt
+     [2m[90m↓[39m[22m composes reviewed pull-request source with durable outcome confirmed
+     [2m[90m↓[39m[22m composes reviewed pull-request source with durable outcome head_changed
+     [2m[90m↓[39m[22m composes reviewed pull-request source with durable outcome response_changed
+     [2m[90m↓[39m[22m composes reviewed pull-request source with durable outcome response_lost
+     [2m[90m↓[39m[22m [outbound] actual single-POST create_github_branch owns one durable intent without granting quiescence
+     [2m[90m↓[39m[22m [outbound] actual single-POST open_github_pull_request owns one durable intent without granting quiescence
+     [2m[90m↓[39m[22m [outbound] actual canonical-unavailable create_github_branch leaves prepared approval and no slot or token
+     [2m[90m↓[39m[22m [outbound] actual canonical-unavailable open_github_pull_request leaves prepared approval and no slot or token
+     [2m[90m↓[39m[22m [outbound] lost single-write reservation acknowledgement persists slot without token or automatic retry
+     [2m[90m↓[39m[22m [singlefile] durable reservation and sole PUT confirmed
+     [2m[90m↓[39m[22m [singlefile] durable reservation and sole PUT lost_response
+     [2m[90m↓[39m[22m [singlefile] actual unavailable canonical identity preserves unused approval before token or slot
+     [2m[90m↓[39m[22m [multifile vertical] two reviewed files own five ordered durable effects
+     [2m[90m↓[39m[22m [multifile failures] lost response at effect 1 never continues or replays
+     [2m[90m↓[39m[22m [multifile failures] lost response at effect 2 never continues or replays
+     [2m[90m↓[39m[22m [multifile failures] lost response at effect 3 never continues or replays
+     [2m[90m↓[39m[22m [multifile failures] lost response at effect 4 never continues or replays
+     [2m[90m↓[39m[22m [multifile failures] lost response at effect 5 never continues or replays
+     [2m[90m↓[39m[22m [multifile failures] reviewer change after first effect stops dependencies
+     [2m[90m↓[39m[22m [multifile failures] connection change after first effect stops dependencies
+     [2m[90m↓[39m[22m [multifile failures] receipt_ack change after first effect stops dependencies
+     [2m[90m↓[39m[22m [multifile failures] unavailable canonical identity leaves original approval unused
+[31m     [31m×[31m [multifile slot integrity] missing parent_slot refuses dependency and keeps original attempt consumed[39m[32m 281[2mms[22m[39m
+[31m     [31m×[31m [multifile slot integrity] missing child_slot refuses dependency and keeps original attempt consumed[39m[32m 224[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[33m36 skipped[39m[90m (38)[39m
+[2m   Start at [22m 19:00:31
+[2m   Duration [22m 1.00s[2m (transform 142ms, setup 0ms, import 218ms, tests 706ms, environment 0ms)[22m
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts[2m > [22mactual coordinator SQL/CAS/guard/fixed transport; simulated authentication, human review and provider[2m > [22m[multifile slot integrity] missing parent_slot refuses dependency and keeps original attempt consumed
+[41m[1m FAIL [22m[49m lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts[2m > [22mactual coordinator SQL/CAS/guard/fixed transport; simulated authentication, human review and provider[2m > [22m[multifile slot integrity] missing child_slot refuses dependency and keeps original attempt consumed
+[31m[1mAssertionError[22m: expected 5 to be 1 // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 5[39m
+
+[36m [2m❯[22m lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts:[2m266:75[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+
+waiting for server to shut down.... done
+server stopped
+
+Owned fixture: /private/tmp/axiom-execution-policy-pg-kakfgd1n
+Traceback (most recent call last):
+  File "/private/tmp/axiom-agent-multifile-2d113a53/scripts/run-agent-requester-postgres.py", line 119, in <module>
+    output=run(args)
+  File "/private/tmp/axiom-agent-multifile-2d113a53/scripts/run-agent-requester-postgres.py", line 15, in run
+    if r.returncode: print(r.stdout+r.stderr);raise RuntimeError(str(args[0])+' failed')
+RuntimeError: node failed

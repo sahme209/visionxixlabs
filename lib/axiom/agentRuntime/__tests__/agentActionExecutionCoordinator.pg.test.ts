@@ -5,7 +5,7 @@ import {AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE} from '@/lib/releaseops/awsEcsDeployWor
 import {realpathSync,statSync} from 'node:fs';
 import {NextRequest} from 'next/server';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
-const f=vi.hoisted(()=>({db:null as any,principal:null as any,authCalls:0,revokeAt:0,token:vi.fn(),issuerAvailable:true,githubIssuerAvailable:true,loseOutboundAck:false,locker:null as any}));
+const f=vi.hoisted(()=>({db:null as any,principal:null as any,authCalls:0,revokeAt:0,token:vi.fn(),issuerAvailable:true,githubIssuerAvailable:true,loseOutboundAck:false,loseChildReceiptAckAt:0,abortChildIntent:null as AbortController|null,locker:null as any}));
 // Authentication, commercial entitlement and independent human decision are
 // simulated. Source review rows, membership, session, connection, locks, CAS,
 // private claims, current SQL and fixed GitHub transport below are real.
@@ -31,12 +31,12 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   const Client=createRequire(import.meta.url)(generated).PrismaClient;
   const actual=new Client({datasources:{db:{url:`postgresql://policy_fixture@localhost/policy_fixture?host=${encodeURIComponent(socket)}`}}});
   f.locker=new Client({datasources:{db:{url:`postgresql://policy_fixture@localhost/policy_fixture?host=${encodeURIComponent(socket)}`}}});
-  f.db=new Proxy(actual,{get(db,key){if(key==='$transaction')return async(...args:any[])=>{const result=await db.$transaction(...args);if(f.loseOutboundAck&&result?.status==='reserved'&&String(result.id).startsWith('governance_outbound_'))throw Error('SIMULATED outbound commit acknowledgment lost');return result};const value=db[key];return typeof value==='function'?value.bind(db):value}});
+  f.db=new Proxy(actual,{get(db,key){if(key==='$transaction')return async(...args:any[])=>{const result=await db.$transaction(...args);if(f.abortChildIntent&&result?.status==='submission_intent'){const c=f.abortChildIntent;f.abortChildIntent=null;c.abort()}if(f.loseChildReceiptAckAt&&f.principal&&await db.durableAgentWorkflow.count({where:{organizationId:f.principal.organizationId,workflowKind:'agent_github_multifile_effect_v1',currentStep:'confirmed'}})===f.loseChildReceiptAckAt){f.loseChildReceiptAckAt=0;throw Error('SIMULATED child receipt commit acknowledgment lost')}if(f.loseOutboundAck&&result?.status==='reserved'&&String(result.id).startsWith('governance_outbound_'))throw Error('SIMULATED outbound commit acknowledgment lost');return result};const value=db[key];return typeof value==='function'?value.bind(db):value}});
   const [r]=await f.db.$queryRawUnsafe("SELECT current_database()='policy_fixture' AND current_user='policy_fixture' AND current_setting('listen_addresses')='' AS private");if(!r?.private)throw Error('owned_fixture_required');
  });
  afterEach(()=>vi.unstubAllGlobals());afterAll(async()=>{await f.locker?.$disconnect();await f.db?.$disconnect()});
  async function fixture(toolName='create_github_branch',buildArgs?:(org:string)=>Record<string,unknown>){
-  f.authCalls=0;f.revokeAt=0;f.token.mockReset();f.issuerAvailable=true;f.githubIssuerAvailable=true;f.loseOutboundAck=false;
+  f.authCalls=0;f.revokeAt=0;f.token.mockReset();f.issuerAvailable=true;f.githubIssuerAvailable=true;f.loseOutboundAck=false;f.loseChildReceiptAckAt=0;f.abortChildIntent=null;
   const organizationId='agent-coordinator-'+randomUUID(),sessionId=organizationId+'-session',now=new Date();
   for(const [userId,role]of [['requester',['create_environment','configure_deployment_target','connect_identity_provider'].includes(toolName)?'admin':'operator'],['reviewer','security_reviewer']])await f.db.orgMembership.create({data:{organizationId,userId,role,acceptedAt:now}});
   await f.db.desktopSessionRecord.create({data:{id:sessionId,organizationId,userId:'requester',expiresAt:new Date(Date.now()+60000)}});
@@ -56,7 +56,7 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
    if(!f.principal||f.principal.id!==current.sessionId||f.principal.userId!==current.actorUserId||f.principal.organizationId!==current.organizationId)throw Error('simulated_authentication_refused');
   }});
   f.token.mockImplementation(async(org:string,target:unknown,expected:any,repo:unknown)=>{
-   expect(org).toBe(organizationId);expect(target).toEqual({owner:'fixture',repo:'repository'});expect(expected).toMatchObject(connection);expect(expected.signal).toBeInstanceOf(AbortSignal);expect(repo).toBe(f.db);if(['trigger_aws_deploy','create_github_branch','open_github_pull_request'].includes(toolName))expect(await f.db.durableAgentWorkflow.count({where:{organizationId,workflowKind:'governance_outbound_v1',currentStep:'reserved'}})).toBe(1);return{ok:true,token:'SIMULATED_PRIVATE_TOKEN'};
+   expect(org).toBe(organizationId);expect(target).toEqual({owner:'fixture',repo:'repository'});expect(expected).toMatchObject(connection);expect(expected.signal).toBeInstanceOf(AbortSignal);expect(repo).toBe(f.db);if(['trigger_aws_deploy','create_github_branch','open_github_pull_request','commit_github_files'].includes(toolName))expect(await f.db.durableAgentWorkflow.count({where:{organizationId,workflowKind:'governance_outbound_v1',currentStep:'reserved'}})).toBe(1);return{ok:true,token:'SIMULATED_PRIVATE_TOKEN'};
   });
   const operation=await store.prepare(scope,proposal.id),request=new NextRequest('https://fixture.test/local');
   const coordinator=createAgentActionExecutionCoordinator(request,principal,f.db,store,scope);
@@ -214,6 +214,74 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   const t=await fixture('commit_github_file',singleFileArgs);f.githubIssuerAvailable=false;
   await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow('governance_agent_github_issuer_unavailable');
   expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});expect(f.token).not.toHaveBeenCalled();expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1'}})).toBe(0);
+ });
+
+ it('[multifile vertical] two reviewed files own five ordered durable effects',async()=>{
+  const files=[{path:'src/a.txt',content:'exact A'},{path:'src/b.txt',content:'exact B'}];
+  const t=await fixture('commit_github_files',()=>({repositoryFullName:'fixture/repository',branch:'work',message:'Reviewed two files',files,_review:{kind:'github_files',files:files.map(file=>({path:file.path,baseSha:'a'.repeat(40),baseContent:'old'}))}}));
+  let writes=0;const observedChildren:number[]=[];
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{
+   if(init.method==='GET')return Response.json(url.endsWith('/repos/fixture/repository')?{default_branch:'main'}:url.includes('/git/ref/')?{object:{type:'commit',sha:'b'.repeat(40)}}:url.includes('/git/commits/')?{tree:{sha:'c'.repeat(40)}}:{type:'file',encoding:'base64',content:Buffer.from('old').toString('base64'),sha:'a'.repeat(40),html_url:'https://fixture.invalid'});
+   const childCount=await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'agent_github_multifile_effect_v1'}});observedChildren.push(childCount);console.info('MULTIFILE_FIXED_POST_CHILDREN',JSON.stringify(observedChildren));expect(childCount).toBe(writes+1);
+   await f.locker.$transaction(async(tx:any)=>{const[row]=await tx.$queryRaw`SELECT pg_try_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(t.scope.organizationId)})) AS held`;expect(row.held).toBe(true)});
+   writes++;const payload=JSON.parse(init.body);if(writes<=2)expect(payload).toEqual({content:Buffer.from(files[writes-1].content).toString('base64'),encoding:'base64'});else if(writes===3)expect(payload).toEqual({base_tree:'c'.repeat(40),tree:files.map((file,i)=>({path:file.path,mode:'100644',type:'blob',sha:String(i+1).repeat(40)}))});else if(writes===4)expect(payload).toEqual({message:'Reviewed two files',tree:'3'.repeat(40),parents:['b'.repeat(40)]});else expect(payload).toEqual({sha:'4'.repeat(40),force:false});const sha=String(writes).repeat(40);return writes===5?Response.json({ref:'refs/heads/work',object:{sha:'4'.repeat(40)}}):Response.json({sha});
+  }));
+  expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'confirmed',attemptCount:1});expect(writes).toBe(5);
+  const children=await f.db.durableAgentWorkflow.findMany({where:{organizationId:t.scope.organizationId,workflowKind:'agent_github_multifile_effect_v1'},orderBy:{createdAt:'asc'}});expect(children).toHaveLength(5);expect(children.every((row:any)=>row.currentStep==='confirmed'&&row.version===1)).toBe(true);
+  await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(writes).toBe(5);
+ });
+
+ const multiFiles=[{path:'a.txt',content:'A'},{path:'b.txt',content:'B'}];
+ const multiArgs=()=>({repositoryFullName:'fixture/repository',branch:'work',message:'Exact multi',files:multiFiles,_review:{kind:'github_files',files:multiFiles.map(f=>({path:f.path,baseSha:'a'.repeat(40),baseContent:'old'}))}});
+ function multiRead(url:string){return Response.json(url.endsWith('/repos/fixture/repository')?{default_branch:'main'}:url.includes('/git/ref/')?{object:{type:'commit',sha:'b'.repeat(40)}}:url.includes('/git/commits/')?{tree:{sha:'c'.repeat(40)}}:{type:'file',encoding:'base64',content:Buffer.from('old').toString('base64'),sha:'a'.repeat(40),html_url:'https://fixture.invalid'})}
+ it.each([1,2,3,4,5])('[multifile failures] lost response at effect %s never continues or replays',async lostAt=>{
+  const t=await fixture('commit_github_files',multiArgs);let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{if(init.method==='GET')return multiRead(url);writes++;if(writes===lostAt)throw Error('SIMULATED lost effect reply');return Response.json({sha:String(writes).repeat(40)})}));
+  expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'unknown',attemptCount:1});expect(writes).toBe(lostAt);
+  expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'agent_github_multifile_effect_v1',currentStep:'confirmed'}})).toBe(lostAt-1);
+  await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(writes).toBe(lostAt);
+ });
+ it.each(['reviewer','connection','receipt_ack'])('[multifile failures] %s change after first effect stops dependencies',async mode=>{
+  const t=await fixture('commit_github_files',multiArgs);let writes=0;if(mode==='receipt_ack')f.loseChildReceiptAckAt=1;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{if(init.method==='GET')return multiRead(url);writes++;
+   if(mode==='reviewer')await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.scope.organizationId,userId:'reviewer'}},data:{role:'read_only'}});
+   if(mode==='connection')await f.db.gitHubInstallation.update({where:{id:t.connection.id},data:{status:'revoked',revokedAt:new Date()}});
+   return Response.json({sha:'1'.repeat(40)});
+  }));
+  expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'unknown',attemptCount:1});expect(writes).toBe(1);
+  expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'agent_github_multifile_effect_v1'}})).toBe(1);
+  if(mode==='receipt_ack')expect(await f.db.durableAgentWorkflow.findFirst({where:{organizationId:t.scope.organizationId,workflowKind:'agent_github_multifile_effect_v1'}})).toMatchObject({currentStep:'confirmed',version:1});
+  await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(writes).toBe(1);
+ });
+ it('[multifile failures] unavailable canonical identity leaves original approval unused',async()=>{
+  const t=await fixture('commit_github_files',multiArgs);f.githubIssuerAvailable=false;await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow('governance_agent_github_issuer_unavailable');expect(f.token).not.toHaveBeenCalled();expect(await f.db.durableAgentWorkflow.findUnique({where:{id:t.operation.id}})).toMatchObject({currentStep:'prepared',version:0,attemptCount:0});expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:{in:['agent_github_multifile_chain_v1','agent_github_multifile_effect_v1','governance_outbound_v1']}}})).toBe(0);
+ });
+
+ it.each(['parent_slot','child_slot'])('[multifile slot integrity] missing %s refuses dependency and keeps original attempt consumed',async mode=>{
+  const t=await fixture('commit_github_files',multiArgs);let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{if(init.method==='GET')return multiRead(url);writes++;
+   if(writes===1){const rows=await f.db.durableAgentWorkflow.findMany({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1',inputJson:{path:['binding','profile'],equals:mode==='parent_slot'?'agent.github_commit_files_chain.v1':'agent.github_multifile_effect.v1'}}});expect(rows).toHaveLength(1);await f.db.durableAgentWorkflowEvent.deleteMany({where:{organizationId:t.scope.organizationId,workflowRunId:rows[0].id}});await f.db.durableAgentWorkflow.delete({where:{id:rows[0].id}})}
+   return writes===5?Response.json({ref:'refs/heads/work',object:{sha:'4'.repeat(40)}}):Response.json({sha:String(writes).repeat(40)});
+  }));
+  const result=await t.coordinator.execute(t.operation.id);expect(writes).toBe(1);expect(result).toMatchObject({state:'unknown',attemptCount:1});await expect(t.coordinator.execute(t.operation.id)).rejects.toThrow();expect(writes).toBe(1);
+ });
+
+ it('[multifile bounds] twenty reviewed files produce exactly twenty-three fixed child effects',async()=>{
+  const files=Array.from({length:20},(_,i)=>({path:`src/${i}.txt`,content:`bytes ${i}`}));const t=await fixture('commit_github_files',()=>({...multiArgs(),files,_review:{kind:'github_files',files:files.map(f=>({path:f.path,baseSha:'a'.repeat(40),baseContent:'old'}))}}));let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{if(init.method==='GET')return multiRead(url);writes++;const sha=writes.toString(16).padStart(40,'0');return writes===23?Response.json({ref:'refs/heads/work',object:{sha:(22).toString(16).padStart(40,'0')}}):Response.json({sha})}));
+  expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'confirmed',attemptCount:1});expect(writes).toBe(23);expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'agent_github_multifile_effect_v1',currentStep:'confirmed'}})).toBe(23);
+ });
+ it('[multifile slot integrity] tampered child canonical history refuses before receipt and next effect',async()=>{
+  const t=await fixture('commit_github_files',multiArgs);let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{if(init.method==='GET')return multiRead(url);writes++;const row=await f.db.durableAgentWorkflow.findFirst({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1',inputJson:{path:['binding','profile'],equals:'agent.github_multifile_effect.v1'}}});await f.db.durableAgentWorkflowEvent.updateMany({where:{organizationId:t.scope.organizationId,workflowRunId:row.id,sequence:1},data:{actorId:'substituted'}});return Response.json({sha:'1'.repeat(40)})}));
+  expect(await t.coordinator.execute(t.operation.id)).toMatchObject({state:'unknown',attemptCount:1});expect(writes).toBe(1);expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'agent_github_multifile_effect_v1',currentStep:'confirmed'}})).toBe(0);
+ });
+
+ it('[multifile abort] child intent committed then request aborted performs zero physical writes',async()=>{
+  const t=await fixture('commit_github_files',multiArgs),controller=new AbortController();f.abortChildIntent=controller;
+  const coordinator=createAgentActionExecutionCoordinator(new NextRequest('https://fixture.test/local',{signal:controller.signal}),f.principal,f.db,t.store,t.scope);let writes=0;
+  vi.stubGlobal('fetch',vi.fn(async(url:string,init:any)=>{if(init.method==='GET')return multiRead(url);writes++;return Response.json({sha:'1'.repeat(40)})}));
+  expect(await coordinator.execute(t.operation.id)).toMatchObject({state:'refused',attemptCount:1});expect(writes).toBe(0);expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'governance_outbound_v1',currentStep:'submission_intent'}})).toBe(1);expect(await f.db.durableAgentWorkflow.count({where:{organizationId:t.scope.organizationId,workflowKind:'agent_github_multifile_effect_v1',currentStep:'confirmed'}})).toBe(0);
  });
 
 });

@@ -1,0 +1,63 @@
+import 'server-only';
+import {z} from 'zod';
+import type {NextRequest} from 'next/server';
+import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
+import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction as Tx,ReleaseOperationPlanRow as Row} from '@/lib/agent/workflows/releaseOperationPlanStore';
+import type {createAgentActionExecutionStore,AgentExecutionClaim} from '@/lib/axiom/agentRuntime/agentActionExecutionStore';
+import type {AgentExecutionScope} from '@/lib/axiom/agentRuntime/agentActionExecutionContract';
+import type {GithubMultiEffect,GithubMultifileLifecycle} from '@/lib/connectors/github/githubWriteClient';
+import {createEnrollmentDrainStore,readExactEnrollmentDrainAttemptLocked} from './enrollmentDrainStore';
+import {createEnrollmentDrainAuthority} from './enrollmentDrainAuthority';
+import {readAgentGithubOutboundIssuerDigest} from './agentGithubOutboundIssuer';
+const CHAIN='agent_github_multifile_chain_v1',CHILD='agent_github_multifile_effect_v1';
+const sha=z.string().regex(/^[a-f0-9]{40}$/),digest=z.string().regex(/^[a-f0-9]{64}$/);
+const effectSchema=z.object({index:z.number().int().min(0).max(22),method:z.enum(['POST','PATCH']),path:z.string().min(1).max(2000),bodyDigest:digest}).strict();
+const effectMetadata=(e:GithubMultiEffect)=>effectSchema.parse({index:e.index,method:e.method,path:e.path,bodyDigest:hash(e.body)});
+const baseSchema=z.object({parentSha:sha,treeSha:sha}).strict();
+const stateSchema=z.discriminatedUnion('status',[z.object({status:z.literal('reserved')}).strict(),z.object({status:z.literal('confirmed'),sha}).strict()]);
+const refuse=():never=>{throw Error('agent_multifile_outbound_unavailable')};
+type Store=ReturnType<typeof createAgentActionExecutionStore>;
+type Input=Parameters<Store['readClaimedGithubOutboundLocked']>[3];
+/** Each fixed physical effect is durably tied to the original real private claim.
+ * Receipts are dependency evidence only, never quiescence, issuer or CAS proof. */
+export function createAgentGithubMultifileDrain(repo:ReleaseOperationPlanRepo,request:NextRequest,scope:AgentExecutionScope,claim:AgentExecutionClaim,store:Store,source:Input['source'],connection:Input['connection'],signal:AbortSignal):GithubMultifileLifecycle{
+ const original=structuredClone({source,connection}),args=z.object({repositoryFullName:z.string(),branch:z.string(),message:z.string(),files:z.array(z.object({path:z.string(),content:z.string()})).min(2).max(20)}).passthrough().parse(source.args);
+ if(source.toolName!=='commit_github_files')refuse();
+ const issuer=digest.parse(readAgentGithubOutboundIssuerDigest()),count=args.files.length+3;
+ const ready=()=>{signal.throwIfAborted();request.signal.throwIfAborted();if(readAgentGithubOutboundIssuerDigest()!==issuer)refuse()};
+ let chainId:string|undefined,base:z.infer<typeof baseSchema>|undefined;
+ const current=async(tx:Tx)=>{ready();const value=await store.readClaimedGithubOutboundLocked(tx,scope,claim,original);value.fresh();await readExactEnrollmentDrainAttemptLocked(tx,scope,{operationId:claim.operationId,attemptId:value.attemptId,profile:value.profile,targetDigest:value.targetDigest,sourceDigest:value.sourceDigest,connectionId:value.connectionId,issuerArtifactDigest:issuer},'reserved');value.fresh();ready();return value};
+ async function transaction<T>(run:(tx:Tx,retain:(fresh:()=>void)=>void)=>Promise<T>){ready();let fresh:(()=>void)|undefined;const value=await repo.$transaction(async tx=>{await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+hash(scope.organizationId)}))`;const a=await current(tx);fresh=a.fresh;const result=await run(tx,f=>{fresh=f});await current(tx);return result},{maxWait:15000,timeout:15000});ready();if(!fresh)refuse();fresh!();return value}
+ function identity(value:{attemptId:string;sourceDigest:string;targetDigest:string;connectionId:string}){return{parentOperationId:claim.operationId,attemptId:value.attemptId,sourceDigest:value.sourceDigest,targetDigest:value.targetDigest,connectionId:value.connectionId,issuerArtifactDigest:issuer}}
+ async function append(tx:Tx,row:Row,previous:unknown){await tx.durableAgentWorkflowEvent.create({data:{organizationId:scope.organizationId,workflowRunId:row.id,sequence:row.version,eventType:row.workflowKind+'.'+row.currentStep,actorKind:'user',actorId:scope.actorUserId,occurredAt:row.updatedAt,detailJson:{inputDigest:hash(row.inputJson),stateDigest:hash(row.stateJson),previousStateDigest:previous===null?null:hash(previous),state:row.stateJson}}})}
+ async function create(tx:Tx,id:string,kind:string,input:unknown,at:Date){const state={status:'reserved'};const row=await tx.durableAgentWorkflow.create({data:{id,organizationId:scope.organizationId,workflowKind:kind,objective:'Exact Agent multi-file dependency metadata; no independent authority',requestedByUserId:scope.actorUserId,autonomyLevel:'observe',status:'paused_for_input',currentStep:'reserved',inputJson:input,stateJson:state,attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,createdAt:at,updatedAt:at}});await append(tx,row,null);return row}
+ async function validate(tx:Tx,row:Row,kind:string,input:unknown){
+  const state=stateSchema.parse(row.stateJson);if(row.organizationId!==scope.organizationId||row.workflowKind!==kind||row.requestedByUserId!==scope.actorUserId||hash(row.inputJson)!==hash(input)||row.currentStep!==state.status||row.status!=='paused_for_input'||row.attemptCount!==0||row.maxAttempts!==1||row.leaseOwner!==null||row.leaseExpiresAt!==null||row.approvalProposalId!==null||(row as Row&{autonomyLevel?:string}).autonomyLevel!=='observe'||row.version!==(state.status==='reserved'?0:1))refuse();
+  const events=await tx.durableAgentWorkflowEvent.findMany({where:{organizationId:scope.organizationId,workflowRunId:row.id},orderBy:{sequence:'asc'},take:3});if(events.length!==row.version+1)refuse();let previous:unknown=null;
+  for(let i=0;i<events.length;i++){const e=events[i],d=z.object({inputDigest:digest,stateDigest:digest,previousStateDigest:digest.nullable(),state:z.unknown()}).strict().parse(e.detailJson),s=stateSchema.parse(d.state);if(e.workflowRunId!==row.id||e.organizationId!==scope.organizationId||e.sequence!==i||e.actorKind!=='user'||e.actorId!==scope.actorUserId||e.eventType!==kind+'.'+s.status||d.inputDigest!==hash(input)||d.stateDigest!==hash(s)||d.previousStateDigest!==(previous===null?null:hash(previous))||s.status!==(i===0?'reserved':'confirmed')||!Number.isFinite(e.occurredAt.getTime())||e.occurredAt<row.createdAt||e.occurredAt>row.updatedAt||i===0&&e.occurredAt.getTime()!==row.createdAt.getTime()||i===row.version&&(hash(s)!==hash(state)||e.occurredAt.getTime()!==row.updatedAt.getTime()))refuse();previous=s}return state;
+ }
+ async function chain(tx:Tx){if(!chainId||!base)refuse();const value=await current(tx),input={format:1,scope,parent:identity(value),base,count};const row=await tx.durableAgentWorkflow.findFirst({where:{id:chainId,organizationId:scope.organizationId}});if(!row)refuse();await validate(tx,row!,CHAIN,input);return{input,value}}
+ function expected(index:number,receipts:string[]):GithubMultiEffect{
+  if(!base||index<0||index>=count||receipts.length!==index)refuse();const [owner,repository]=args.repositoryFullName.split('/'),prefix=`/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repository)}`;
+  if(index<args.files.length)return{index,method:'POST',path:prefix+'/git/blobs',body:{content:Buffer.from(args.files[index].content,'utf8').toString('base64'),encoding:'base64'}};
+  if(index===args.files.length)return{index,method:'POST',path:prefix+'/git/trees',body:{base_tree:base!.treeSha,tree:args.files.map((f,i)=>({path:f.path,mode:'100644',type:'blob',sha:receipts[i]}))}};
+  if(index===args.files.length+1)return{index,method:'POST',path:prefix+'/git/commits',body:{message:args.message,tree:receipts[index-1],parents:[base!.parentSha]}};
+  return{index,method:'PATCH',path:prefix+'/git/refs/heads/'+encodeURIComponent(args.branch),body:{sha:receipts[index-1],force:false}};
+ }
+ async function children(tx:Tx,allowActive:boolean){await chain(tx);const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:scope.organizationId,inputJson:{path:['chainId'],equals:chainId}},orderBy:[{id:'asc'}],take:24});if(rows.length>count)refuse();const parsed=rows.map(row=>({row,input:z.object({format:z.literal(1),scope:z.unknown(),chainId:z.string(),parent:z.unknown(),effect:effectSchema,previousReceiptsDigest:digest}).strict().parse(row.inputJson)})).sort((a,b)=>a.input.effect.index-b.input.effect.index);const receipts:string[]=[];
+  const c=await chain(tx);for(let i=0;i<parsed.length;i++){const{row,input}=parsed[i],wanted={format:1,scope,chainId,parent:c.input.parent,effect:effectMetadata(expected(i,receipts)),previousReceiptsDigest:hash(receipts)};if(input.effect.index!==i||row.id!=='agent_multifile_effect_'+hash({chainId,index:i}))refuse();const state=await validate(tx,row,CHILD,wanted);if(state.status==='confirmed'){await readExactEnrollmentDrainAttemptLocked(tx,scope,{operationId:row.id,attemptId:c.value.attemptId,profile:'agent.github_multifile_effect.v1',targetDigest:hash(wanted.effect),sourceDigest:hash({chainId,parent:c.input.parent,previousReceipts:receipts}),connectionId:c.value.connectionId,issuerArtifactDigest:issuer},'submission_intent');receipts.push(state.sha)}else if(!allowActive||i!==parsed.length-1)refuse()}
+  return{parsed,receipts};
+ }
+ return{
+  async initialize(raw){ready();if(chainId)refuse();base=baseSchema.parse(raw);await transaction(async(tx,retain)=>{const value=await current(tx);chainId='agent_multifile_chain_'+hash({operationId:claim.operationId,attemptId:value.attemptId});if(await tx.durableAgentWorkflow.findFirst({where:{id:chainId,organizationId:scope.organizationId}}))refuse();await create(tx,chainId,CHAIN,{format:1,scope,parent:identity(value),base,count},new Date());retain(value.fresh)})},
+  async beforeEffect(raw){
+   const effect=effectMetadata(raw);let childId='',binding:any;
+   await transaction(async(tx,retain)=>{const c=await chain(tx),prior=await children(tx,false);if(prior.receipts.length!==effect.index||hash(effectMetadata(expected(effect.index,prior.receipts)))!==hash(effect))refuse();childId='agent_multifile_effect_'+hash({chainId,index:effect.index});await create(tx,childId,CHILD,{format:1,scope,chainId,parent:c.input.parent,effect,previousReceiptsDigest:hash(prior.receipts)},new Date());binding={operationId:childId,attemptId:c.value.attemptId,profile:'agent.github_multifile_effect.v1',targetDigest:hash(effect),sourceDigest:hash({chainId,parent:c.input.parent,previousReceipts:prior.receipts}),connectionId:c.value.connectionId,issuerArtifactDigest:issuer};retain(c.value.fresh)});
+   const verify=async(tx:Tx,b:any)=>{const c=await chain(tx),all=await children(tx,true),active=all.parsed.at(-1);if(!active||active.row.id!==childId||active.row.currentStep!=='reserved'||hash(active.input.effect)!==hash(effect))refuse();const{serverNonce:_,...actual}=b;if(hash(actual)!==hash(binding))refuse();return()=>{ready();c.value.fresh()}};
+   const drain=createEnrollmentDrainStore(repo,{signal,assertAuthority:createEnrollmentDrainAuthority(request),verifyOperation:async(tx,s,b)=>{if(hash(s)!==hash(scope))refuse();return verify(tx,b)}});
+   const slot=await drain.reserveAttempt(scope,binding);let fresh:(()=>void)|undefined;await drain.markSubmissionIntent(scope,slot.id,f=>{fresh=f});ready();if(!fresh)refuse();let sent=false,recorded=false;
+   return{beforeFetch(){if(sent||hash(effectMetadata(raw))!==binding.targetDigest)refuse();ready();fresh!();sent=true},async recordReceipt(rawSha){if(!sent||recorded)refuse();recorded=true;const result=sha.parse(rawSha);await transaction(async(tx,retain)=>{await verify(tx,binding);await readExactEnrollmentDrainAttemptLocked(tx,scope,binding,'submission_intent');const all=await children(tx,true),active=all.parsed.at(-1)!;const at=new Date(),state={status:'confirmed',sha:result};const changed=await tx.durableAgentWorkflow.updateMany({where:{id:childId,organizationId:scope.organizationId,workflowKind:CHILD,version:0,inputJson:{equals:active.row.inputJson},stateJson:{equals:active.row.stateJson}},data:{stateJson:state,currentStep:'confirmed',version:{increment:1},updatedAt:at}});if(changed.count!==1)refuse();await append(tx,{...active.row,stateJson:state,currentStep:'confirmed',version:1,updatedAt:at},active.row.stateJson);retain((await current(tx)).fresh)})}};
+  },
+  async complete(){await transaction(async(tx,retain)=>{const all=await children(tx,false);if(all.receipts.length!==count)refuse();retain((await current(tx)).fresh)})},
+ };
+}

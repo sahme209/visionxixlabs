@@ -1,6 +1,8 @@
 import {beforeEach,afterEach,describe,it,expect,vi} from 'vitest';
 const mocks=vi.hoisted(()=>({guard:vi.fn(),resolve:vi.fn(),outboundAvailable:vi.fn(),outboundReserve:vi.fn(),outboundIntent:vi.fn(),intentFresh:vi.fn()}));
 vi.mock('@/lib/governance/intelligence/agentGithubOutboundDrain',()=>({createAgentGithubOutboundDrain:()=>({assertAvailable:mocks.outboundAvailable,beforeCredential:mocks.outboundReserve,beforeSubmission:mocks.outboundIntent})}));
+// Multi-effect durable semantics are exercised by actual owned PostgreSQL; this unit port only preserves existing guard-transport tests.
+vi.mock('@/lib/governance/intelligence/agentGithubMultifileDrain',()=>({createAgentGithubMultifileDrain:()=>({initialize:async()=>{},beforeEffect:async()=>({beforeFetch:()=>{},recordReceipt:async()=>{}}),complete:async()=>{}})}));
 vi.mock('@/lib/desktop/currentGithubWriteAuthority',()=>({createCurrentGithubWriteGuard:mocks.guard}));
 import {createAgentActionExecutionCoordinator} from '../agentActionExecutionCoordinator';
 const scope={organizationId:'org',actorUserId:'requester',sessionId:'session'};

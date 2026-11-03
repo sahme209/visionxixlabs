@@ -1,0 +1,30 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-agent-multifile-2d113a53[39m
+
+[90mstdout[2m | lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts[2m > [22m[2mactual coordinator SQL/CAS/guard/fixed transport; simulated authentication, human review and provider[2m > [22m[2m[multifile vertical] two reviewed files own five ordered durable effects
+[22m[39mMULTIFILE_FIXED_POST_CHILDREN [1]
+
+[90mstdout[2m | lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts[2m > [22m[2mactual coordinator SQL/CAS/guard/fixed transport; simulated authentication, human review and provider[2m > [22m[2m[multifile vertical] two reviewed files own five ordered durable effects
+[22m[39mMULTIFILE_FIXED_POST_CHILDREN [1,2]
+
+[90mstdout[2m | lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts[2m > [22m[2mactual coordinator SQL/CAS/guard/fixed transport; simulated authentication, human review and provider[2m > [22m[2m[multifile vertical] two reviewed files own five ordered durable effects
+[22m[39mMULTIFILE_FIXED_POST_CHILDREN [1,2,3]
+
+[90mstdout[2m | lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts[2m > [22m[2mactual coordinator SQL/CAS/guard/fixed transport; simulated authentication, human review and provider[2m > [22m[2m[multifile vertical] two reviewed files own five ordered durable effects
+[22m[39mMULTIFILE_FIXED_POST_CHILDREN [1,2,3,4]
+
+[90mstdout[2m | lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts[2m > [22m[2mactual coordinator SQL/CAS/guard/fixed transport; simulated authentication, human review and provider[2m > [22m[2m[multifile vertical] two reviewed files own five ordered durable effects
+[22m[39mMULTIFILE_FIXED_POST_CHILDREN [1,2,3,4,5]
+
+ [32m✓[39m lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts [2m([22m[2m27 tests[22m[2m | [22m[33m26 skipped[39m[2m)[22m[33m 479[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m1 passed[39m[22m[2m | [22m[33m26 skipped[39m[90m (27)[39m
+[2m   Start at [22m 18:56:01
+[2m   Duration [22m 772ms[2m (transform 139ms, setup 0ms, import 213ms, tests 479ms, environment 0ms)[22m
+
+
+waiting for server to shut down.... done
+server stopped
+
+Owned fixture: /private/tmp/axiom-execution-policy-pg-rmyjkti7
