@@ -1,0 +1,4 @@
+#include "origin_runtime_protocol.h"
+#include <assert.h>
+#include <stdio.h>
+int main(void){AxiomOriginSlot s={0};assert(axiom_origin_slot_reserve(&s,100));uint64_t deadline=s.deadline;assert(!axiom_origin_slot_reserve(&s,101));assert(axiom_origin_slot_spawn(&s,42,deadline-1));assert(s.deadline==deadline);assert(axiom_origin_slot_may_resume(&s,42,deadline-1));assert(!axiom_origin_slot_may_resume(&s,42,deadline));assert(!axiom_origin_slot_may_resume(&s,43,deadline-1));axiom_origin_slot_revoke(&s);assert(!axiom_origin_slot_may_resume(&s,42,101));s=(AxiomOriginSlot){0};assert(axiom_origin_slot_reserve(&s,100));assert(!axiom_origin_slot_spawn(&s,42,s.deadline));assert(s.phase==AXIOM_ORIGIN_REVOKED);assert(!axiom_origin_slot_reserve(&s,200));s=(AxiomOriginSlot){0};assert(!axiom_origin_slot_reserve(&s,UINT64_MAX));puts("startup_absolute_deadline_cases=6 simulated_state_no_spawn");return 0;}

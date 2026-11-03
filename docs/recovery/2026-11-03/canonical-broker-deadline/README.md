@@ -1,0 +1,25 @@
+# Broker control-queue and late-spawn repair — local source only
+
+Base97f24857; addresses independent review P1: slow Security/seal/hash/stat/claim fsync and process creation previously ran on the serial control queue before the startup deadline was established. This could delay cancellation/cleanup and start a child after the intended startup window. This is a source defect; no live broker or successful late process was reproduced or run by this task.
+
+## Corrected source flow
+
+- Reserve the **existing180-second** startup budget at receipt, before Security, claim or resource inspection. Startup slot gains a reserved phase; later adoption preserves its original absolute deadline, never resets it after inspection/spawn.
+- Slow per-message Security, root binding, signature/resource hashing, stat checks, claim creation/fsync and posix_spawn run on a separate concurrent inspection queue. At most8 jobs remain outstanding, including timed-out jobs still blocked in a kernel call; each peer has at most1. New jobs refuse when saturated. Timer/cleanup work remains on the separate serial control queue.
+- A job retains its actual received XPC message and peer/connection. Refcounted control, worker, completion and timer ownership keep late callbacks valid. Timers mark permanent cancellation and send refusal once. Late results cannot apply protocol state or resume a child. Slot revocation cancels all pending jobs from its epoch.
+- The sole spawn uses `POSIX_SPAWN_START_SUSPENDED|POSIX_SPAWN_CLOEXEC_DEFAULT`. A worker never sends SIGCONT. Even a process returned after a delayed kernel creation remains stopped. The control queue installs owned-child exit observation, checks current epoch, deadline, direct-child liveness and the original slot deadline, then alone may resume. Failed/expired results are killed/reaped instead. The permanent startup claim remains consumed; no retry/reset/adoption path is added.
+- Current origin request jobs retain the existing250ms native query budget. Native guard's outer250ms total assertion remains unchanged. Wrong-role/unbound BEGIN timeout cannot broadly revoke the runtime; known bound-peer loss or an actually authenticated failed BEGIN remains fail-closed. Foreign valid-runtime races may deny the singleton as already documented, but never grant origin.
+- Graceful SIGTERM/INT rejects new work, cancels jobs and waits for creation jobs and tracked child reaping. It no longer exits unconditionally300ms later while a creation syscall might still return a new child. Late returned children are tracked before adoption; cleanup-unknown does not permit successful shutdown/retry.
+- The fixed controller START wait uses the same existing180-second startup constant rather than an unrelated1-second wait; it performs one request, not retries. Observe remains1second. Bootstrap passes literal `NODE_ENV=production` to Node in its fixed replacement environment, matching the separate canonical production-mode guard; it never inherits caller environment.
+
+## Important limits
+
+No userspace timeout can preempt a blocking kernel process-creation or filesystem/Security call. The deadline is an admission/revocation boundary: late results cannot authorize resume. It is not a hard real-time syscall-return or reaping guarantee. Graceful shutdown can remain pending/unknown on an uninterruptible worker or unreaped child. Forced SIGKILL/OS service termination during an uninterruptible creation may leave a suspended orphan; no claim of completed cleanup or full runtime qualification is made. The later exact artifact test must account for such unknown outcomes, not silently retry.
+
+The current canonical/TypeScript issuer availability is unchanged/unavailable. This task does not qualify native liveness, readonly resources, a real broker, restricted startup, the same compiled consumer, fleet/legacy drain or Governance activation. Blocked compiled-consumer validation remains unverified. No actual service/status, broker/controller/bootstrap invocation, profile, image/mount, provider, identity or full production build occurred.
+
+## Focused evidence
+
+Test-first six-case absolute-startup state test initially failed compilation because reserve/may-resume were missing. The shared protocol implementation then passes those **6 pure cases** (absolute deadline retained through inspection time; expiration/child mismatch/revocation refuse resume; no reserve replay; overflow). Existing **7 pure protocol cases** were adapted to explicit reservation and pass. Authentication/liveness inputs are simulated; no processes are spawned by these tests.
+
+Broker plus root-binding/identity/real collector compilation with `-Wall -Wextra -Werror`, bootstrap compilation and controller compilation pass. Those three generated binaries are retained mode0600 and **NEVER EXECUTED**. Native SDK declares START_SUSPENDED; actual runtime behavior remains a future separately authorized qualification gate. Root independent source review is pending on this frozen delta.

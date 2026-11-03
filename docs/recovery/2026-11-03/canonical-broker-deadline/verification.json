@@ -1,0 +1,40 @@
+{
+  "scope": "ordinary compilation and pure state tests only",
+  "startupAbsoluteDeadlinePureCases": {
+    "count": 6,
+    "exit": 0,
+    "authority": "simulated state, no process spawn"
+  },
+  "priorProtocolCases": {
+    "count": 7,
+    "exit": 0,
+    "authority": "simulated authentication/liveness"
+  },
+  "compile": {
+    "broker-COMPILE-ONLY": {
+      "path": "/private/tmp/axiom-canonical-broker-deadline-97f24857/work/broker-deadline/broker-COMPILE-ONLY",
+      "sha256": "c0e779f80714e8dbba7847da958c6a93ca8f1f09232523d9174a29418eb52996",
+      "mode": "0o600",
+      "compilerExit": 0,
+      "executed": false
+    },
+    "bootstrap-COMPILE-ONLY": {
+      "path": "/private/tmp/axiom-canonical-broker-deadline-97f24857/work/broker-deadline/bootstrap-COMPILE-ONLY",
+      "sha256": "bbab9a70f63315879107666c3d20f41a90d1ef4147b6bfbee86e4559a901b696",
+      "mode": "0o600",
+      "compilerExit": 0,
+      "executed": false
+    },
+    "controller-COMPILE-ONLY": {
+      "path": "/private/tmp/axiom-canonical-broker-deadline-97f24857/work/broker-deadline/controller-COMPILE-ONLY",
+      "sha256": "d96744402d6b1f607b9d30e703e77380865e54bd438015c20ea4c493b27525a5",
+      "mode": "0o600",
+      "compilerExit": 0,
+      "executed": false
+    }
+  },
+  "runtimeQualification": "unavailable",
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false,
+  "independentReview": "pending"
+}

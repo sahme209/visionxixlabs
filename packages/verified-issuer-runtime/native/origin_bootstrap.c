@@ -41,6 +41,6 @@ int main(int argc,char**argv){
  if(error)sandbox_free_error(error);
 #pragma clang diagnostic pop
  if(installed)return failure();
- char*args[]={node,main_file,NULL};char*environment[]={"PATH=/usr/bin:/bin:/usr/sbin:/sbin","LANG=C","LC_ALL=C","TZ=UTC",NULL};
+ char*args[]={node,main_file,NULL};char*environment[]={"PATH=/usr/bin:/bin:/usr/sbin:/sbin","LANG=C","LC_ALL=C","TZ=UTC","NODE_ENV=production",NULL};
  execve(node,args,environment);return failure();
 }

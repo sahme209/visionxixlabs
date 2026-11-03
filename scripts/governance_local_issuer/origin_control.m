@@ -3,6 +3,7 @@
  * Never execute against a real service without the exact run authorization. */
 #import <Foundation/Foundation.h>
 #include "origin_config.h"
+#include "origin_runtime_protocol.h"
 #include <Security/Security.h>
 #include <xpc/xpc.h>
 #include <dispatch/dispatch.h>
