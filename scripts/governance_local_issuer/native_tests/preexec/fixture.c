@@ -10,7 +10,7 @@
 #include <stdlib.h>
 static napi_value run(napi_env env,napi_callback_info info){
  size_t argc=1,n=0; napi_value args[1],out;char root[512];
- if(napi_get_cb_info(env,info,&argc,args,NULL,NULL)!=napi_ok||argc!=1||napi_get_value_string_utf8(env,args[0],root,sizeof(root),&n)!=napi_ok||n>=sizeof(root)-1||strncmp(root,"/private/tmp/axiom-preexec-owned-",31)||strchr(root+31,'/')){napi_throw_error(env,NULL,"fixed_owned_root_required");return NULL;}
+ if(napi_get_cb_info(env,info,&argc,args,NULL,NULL)!=napi_ok||argc!=1||napi_get_value_string_utf8(env,args[0],root,sizeof(root),&n)!=napi_ok||n>=sizeof(root)-1||strncmp(root,"/private/tmp/axiom-preexec-owned-",sizeof("/private/tmp/axiom-preexec-owned-")-1)||strchr(root+sizeof("/private/tmp/axiom-preexec-owned-")-1,'/')){napi_throw_error(env,NULL,"fixed_owned_root_required");return NULL;}
  char path[600],shmname[96];struct stat st;if(lstat(root,&st)||!S_ISDIR(st.st_mode)||st.st_uid!=getuid()||(st.st_mode&0777)!=0700){napi_throw_error(env,NULL,"owned_root_invalid");return NULL;}
  if(snprintf(path,sizeof(path),"%s/mapping",root)>=(int)sizeof(path)||snprintf(shmname,sizeof(shmname),"/axiom-preexec-%s",root+strlen(root)-8)>=(int)sizeof(shmname)){napi_throw_error(env,NULL,"bound");return NULL;}
  long page=sysconf(_SC_PAGESIZE);if(page<=0){napi_throw_error(env,NULL,"page_unknown");return NULL;}
