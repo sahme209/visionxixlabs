@@ -64,12 +64,13 @@ export function createConnectedActionStore(repo:ReleaseOperationPlanRepo,ports:C
   const result=await tx.durableAgentWorkflow.updateMany({where:{id:row.id,organizationId:row.organizationId,workflowKind:KIND,version:row.version,inputJson:{equals:row.inputJson},stateJson:{equals:row.stateJson},attemptCount:row.attemptCount},data});if(result.count!==1)refuse();
   const next={...row,...data,version:row.version+1};unpack(next);await event(tx,next,actor);return next;
  }
- async function readClaimedConnectedOutboundLocked(tx:Tx,rawScope:Scope,id:string,rawIntent:Intent,profile:'teams.channel_message.v1'|'linear.issue_create.v1'){
+ async function readClaimedConnectedOutboundLocked(tx:Tx,rawScope:Scope,id:string,rawIntent:Intent,profile:'teams.channel_message.v1'|'linear.issue_create.v1'|'linear.issue_update.v1'|'linear.issue_transition.v1'){
   const wall=Date.now();if(!Number.isFinite(wall))refuse();
   const scope=connectedActionScopeSchema.parse(rawScope),intent=connectedActionIntentSchema.parse(rawIntent);
   await tx.$queryRaw`SELECT 1 FROM pg_advisory_xact_lock(hashtext(${'governance_org_'+hash(scope.organizationId)}))`;
   const row=await load(tx,scope,id),{i,s}=unpack(row);
-  if(profile==='teams.channel_message.v1'?(intent.kind!=='teams_channel_message'||intent.provider!=='teams'):(intent.kind!=='linear_issue_create'||intent.provider!=='linear'))return refuse();
+  const exactKind=profile==='teams.channel_message.v1'?'teams_channel_message':profile==='linear.issue_create.v1'?'linear_issue_create':profile==='linear.issue_update.v1'?'linear_issue_update':'linear_issue_close';
+  if(intent.kind!==exactKind||intent.provider!==(profile==='teams.channel_message.v1'?'teams':'linear'))return refuse();
   if(intent.provider!=='teams'&&intent.provider!=='linear')return refuse();
   if(!equal(intent,i.intent)||s.state!=='dispatching'||row.attemptCount!==1||row.leaseOwner!==i.intent.executorUserId||!row.leaseExpiresAt||!s.approval||scope.actorUserId!==i.intent.executorUserId||!ports.captureCurrentIntentFreshness)refuse();
   await live(tx,scope,row,'execute');
@@ -81,7 +82,7 @@ export function createConnectedActionStore(repo:ReleaseOperationPlanRepo,ports:C
   if(sessions.length!==2||!sessions.some(v=>v.id===scope.sessionId&&v.userId===scope.actorUserId)||!sessions.some(v=>v.id===approval.approverSessionId&&v.userId===approval.approverUserId)||sessions.some(v=>v.organizationId!==scope.organizationId||v.revokedAt!==null||!(v.expiresAt instanceof Date)||!Number.isFinite(v.expiresAt.getTime())||!(v.now instanceof Date)||!Number.isFinite(v.now.getTime())||v.expiresAt<=v.now))refuse();
   const dbNow=Math.max(...sessions.map(v=>v.now.getTime())),remaining=Math.min(row.leaseExpiresAt!.getTime(),Date.parse(i.intent.expiresAt),Date.parse(approval.expiresAt),...sessions.map(v=>v.expiresAt.getTime()))-dbNow;
   const fresh=()=>{const elapsed=Date.now()-wall;if(!Number.isFinite(elapsed)||!Number.isFinite(remaining)||elapsed<0||elapsed>=remaining)refuse();sourceFresh()};fresh();
-  return{fresh,attemptId:'connected_action_attempt_'+hash({operationId:row.id,attemptCount:row.attemptCount,intentDigest:i.intentDigest,approval}),sourceDigest:hash({intent:i.intent,approval}),targetDigest:hash({provider:intent.provider,workspaceId:intent.workspaceId,teamId:intent.teamId,...(intent.provider==='teams'?{channelId:intent.channelId}:{}),targetEvidenceDigest:intent.targetEvidenceDigest}),connectionId:intent.connectionId};
+  return{fresh,attemptId:'connected_action_attempt_'+hash({operationId:row.id,attemptCount:row.attemptCount,intentDigest:i.intentDigest,approval}),sourceDigest:hash({intent:i.intent,approval}),targetDigest:hash({provider:intent.provider,workspaceId:intent.workspaceId,teamId:intent.teamId,...(intent.provider==='teams'?{channelId:intent.channelId}:intent.kind!=='linear_issue_create'?{issueId:intent.issueId,...(intent.kind==='linear_issue_close'?{stateId:intent.stateId}:{})}:{}),targetEvidenceDigest:intent.targetEvidenceDigest}),connectionId:intent.connectionId};
  }
  return{
  async request(rawScope:Scope,rawIntent:Intent){const scope=connectedActionScopeSchema.parse(rawScope),intent=connectedActionIntentSchema.parse(rawIntent),id=connectedActionId(intent);if(intent.organizationId!==scope.organizationId||intent.requesterUserId!==scope.actorUserId||intent.executorUserId!==scope.actorUserId)refuse();return repo.$transaction(async tx=>{
@@ -98,6 +99,8 @@ export function createConnectedActionStore(repo:ReleaseOperationPlanRepo,ports:C
  /** Exact existing single-mutation profiles only; update/close remain uncovered. */
  readClaimedTeamsOutboundLocked:(tx:Tx,scope:Scope,id:string,intent:Intent)=>readClaimedConnectedOutboundLocked(tx,scope,id,intent,'teams.channel_message.v1'),
  readClaimedLinearCreateOutboundLocked:(tx:Tx,scope:Scope,id:string,intent:Intent)=>readClaimedConnectedOutboundLocked(tx,scope,id,intent,'linear.issue_create.v1'),
+ readClaimedLinearUpdateOutboundLocked:(tx:Tx,scope:Scope,id:string,intent:Intent)=>readClaimedConnectedOutboundLocked(tx,scope,id,intent,'linear.issue_update.v1'),
+ readClaimedLinearTransitionOutboundLocked:(tx:Tx,scope:Scope,id:string,intent:Intent)=>readClaimedConnectedOutboundLocked(tx,scope,id,intent,'linear.issue_transition.v1'),
  async finish(rawScope:Scope,id:string,rawResult:Result){const scope=connectedActionScopeSchema.parse(rawScope),result=connectedActionResultSchema.parse(rawResult);return repo.$transaction(async tx=>{const row=await load(tx,scope,id),{s}=unpack(row);await authority(tx,scope,row,'read');if(scope.actorUserId!==unpack(row).i.intent.executorUserId)refuse();if(s.state!=='dispatching'){if(['confirmed','unknown','refused'].includes(s.state)&&equal({...result},s.receipt?{state:s.state,receipt:s.receipt}:{state:s.state}))return dto(row);refuse()}
   if(result.state==='confirmed'){if(!row.leaseExpiresAt||now()>=row.leaseExpiresAt)refuse();await live(tx,scope,row,'execute')}
   const next=await change(tx,row,{state:result.state,approval:s.approval,...(result.state==='confirmed'?{receipt:result.receipt}:{})},scope.actorUserId);

@@ -1,0 +1,25 @@
+{
+  "focused": {
+    "initialFiles": 11,
+    "initialPassed": 71,
+    "targetedFactoryAdversarialPassed": 2,
+    "targetedFiltered": 16,
+    "notSingle73CaseRun": true,
+    "simulatedProviderAndAuthority": true
+  },
+  "types": "pass",
+  "independentSourceReview": "pass; no important findings",
+  "actualPostgres": {
+    "passed": 18,
+    "filtered": 16,
+    "newLinearChangeCases": 16,
+    "existingCreateAndTeamsPositiveRegressions": 2,
+    "session": 85918,
+    "fixture": "32k9kkyt; stopped",
+    "providerAndRequestAuthorityAndPositiveIssuer": "simulated"
+  },
+  "canonicalIssuer": "unavailable; preclaim refusal",
+  "providerCAS": "not supplied",
+  "coverageActivation": "unavailable",
+  "liveProviderRequests": 0
+}

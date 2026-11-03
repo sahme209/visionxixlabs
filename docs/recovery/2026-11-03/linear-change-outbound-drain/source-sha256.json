@@ -1,0 +1,9 @@
+{
+  "lib/integrations/connectedActionStore.ts": "dde1f37a85e7e1cf8baaab0848dd8ed08e7179398056998e42ed59203c39e7d2",
+  "lib/desktop/connectedActionsHttp.ts": "09c8bfb61fd09aec8c675ed223f79c00d326fbda87369e8137072ce65a9f3cf5",
+  "lib/desktop/__tests__/connectedActionsHttp.postgres.test.ts": "c0c901f5465e471e84c5488ab5384784b574f2563ffff4cdf5a21d03c7c366c5",
+  "lib/governance/intelligence/linearChangeOutboundDrain.ts": "49382fef08e7643e2e62739ada9b7e5e7b283782a8472cf0273722565796380c",
+  "lib/governance/intelligence/linearChangeOutboundIssuer.ts": "54c469efedac82fa818b8bb7b90b853ea24aef6b55cf1be5ca4955784f2ab689",
+  "lib/governance/intelligence/__tests__/linearChangeOutboundDrain.test.ts": "ad697b94bb477f7d544a50e574f6be3f1945258dccab4653602c4c7fd4f703e2",
+  "lib/governance/intelligence/__tests__/linearChangeOutboundIssuer.test.ts": "7a1ee2731c367ec82048901eefc4448f6b0779ee7519e8a91010377b304170d0"
+}
