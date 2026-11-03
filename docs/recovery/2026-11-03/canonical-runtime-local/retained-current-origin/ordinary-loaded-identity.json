@@ -1,0 +1,25 @@
+{
+  "scope": "actual own executable mapping and owned hardlink/replacement metadata only; no profile/service/identity",
+  "exit": 0,
+  "stdout": "ordinary_loaded_identity_observations=5; qualification=unavailable; fixture=/private/tmp/axiom-origin-identity-metadata-SlF6sK",
+  "firstFixtureAttempt": {
+    "exit": 13,
+    "reason": "attempted data-file PROT_EXEC mapping unavailable; switched to observing actual already-executed owned test binary, preserving EXEC requirement instead of relaxing it"
+  },
+  "nativeBinary": "work/canonical-runtime/compile/origin_process_identity_test",
+  "qualification": "unavailable",
+  "reportedObservationCounter": 5,
+  "counterLimit": "instrumented count, not an aggregate acceptance claim; exact assertions are in native test source",
+  "distinction": {
+    "actualKernelAndFilesystem": [
+      "actual owned loaded executable vnode",
+      "samepath replacement has different inode and does not match oldmapping",
+      "oldvnode still matchesoriginal"
+    ],
+    "pureCopiedStructComparisons": [
+      "changed ctime field",
+      "changed size field",
+      "identical metadata"
+    ]
+  }
+}

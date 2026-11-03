@@ -1,0 +1,12 @@
+{
+  "packages/verified-issuer-runtime/index.cjs": "8898b460e33bc8042faee339447a5fd383cbc96d2ddc1ab7f71f09ece97ed0d2",
+  "packages/verified-issuer-runtime/index.d.ts": "fe8bb18005a312a1e059e77dc5d76887ee38aa586d6506f5c5c1a64f164bc045",
+  "packages/verified-issuer-runtime/native/origin_config.h": "f53102df646fae4bbc96c3ecccff7cfc4c32533637af202dadd8ce0d7008b307",
+  "packages/verified-issuer-runtime/native/origin_guard.c": "c51cea129b2e0865091adf051fc79b9a94ceff5d7c3ce29df78f816c2f746fe7",
+  "packages/verified-issuer-runtime/native/origin_session.c": "8642af8e500dc35814be3170276f15935cdeed773ce4174cabb588a30a28e110",
+  "packages/verified-issuer-runtime/native/origin_session.h": "57d39ca948bb5a1e5dfb367b8379d105791c6c929a3ef751ab6b67867ef6f511",
+  "packages/verified-issuer-runtime/native/origin_process_identity.c": "004193879c5af000873199fef26336457e7251da2b21611d91d7af8dec4ea78a",
+  "packages/verified-issuer-runtime/native/origin_process_identity.h": "bc31f80b03880648aaf28cc8ed4467b6bd20996576a1d2a0524a5c5290df52e0",
+  "packages/verified-issuer-runtime/native/origin_process_identity_test.c": "96a148b235956a90f96b40ff373a3a4421ac28008027d8c73cd1f4d31f4dbda9",
+  "packages/verified-issuer-runtime/native/test_origin_guard_preimport.py": "6da231a5950a3477bc70d83af081f75be38c1ab74d1eb7b71f7d1956a15aed7c"
+}

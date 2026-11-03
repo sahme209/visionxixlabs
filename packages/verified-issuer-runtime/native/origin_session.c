@@ -57,6 +57,7 @@ AxiomOriginSession*axiom_origin_session_open(void){
  xpc_connection_set_event_handler(s->connection,^(xpc_object_t event){(void)event;atomic_store(&s->invalid,1);});xpc_connection_activate(s->connection);
  if(!start_session(s)){axiom_origin_session_destroy(s);return NULL;}return s;
 }
+int axiom_origin_session_locally_valid(AxiomOriginSession*s){return s&&!atomic_load(&s->invalid)&&s->self==getpid();}
 int axiom_origin_session_assert(AxiomOriginSession*s){
  if(!s||atomic_load(&s->invalid)||atomic_flag_test_and_set(&s->busy))return 0;
  int ok=exchange(s,"live","origin_current",0,1);if(!ok)atomic_store(&s->invalid,1);atomic_flag_clear(&s->busy);return ok;

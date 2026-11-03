@@ -1,0 +1,14 @@
+{
+  "reviewer": "origin_review",
+  "result": "PASS_source_and_manifest_scope",
+  "manifestFiles": 10,
+  "scope": [
+    "privatequeue250ms absolute totaldeadline",
+    "latecallbackrefcounts/sessionrevocation",
+    "retained actual kernel file/mount/mappedvnode identity",
+    "observationonly canonical state",
+    "actualTSissuers always refuse"
+  ],
+  "qualification": "unavailable; no actualpositiveorigin/compiledconsumer validation",
+  "noRuntimeRunByReviewer": true
+}

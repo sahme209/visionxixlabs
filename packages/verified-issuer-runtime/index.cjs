@@ -34,7 +34,7 @@ function actualRoot() {
   const main = process.argv[1];
   if (typeof main !== 'string' || !main.endsWith(suffix)) refuse();
   const root = main.slice(0, -suffix.length);
-  if (!root || !path.isAbsolute(root) || path.normalize(root) !== root || fs.realpathSync(root) !== root || fs.realpathSync(main) !== __filename || fs.realpathSync(__filename) !== __filename || fs.realpathSync(process.execPath) !== path.join(root, '__axiom_runtime__/node')) refuse();
+  if (!root || !path.isAbsolute(root) || path.normalize(root) !== root || fs.realpathSync(root) !== root || fs.realpathSync(main) !== __filename || fs.realpathSync(__filename) !== __filename || fs.realpathSync(process.execPath) !== path.join(root, '__axiom_runtime__/node') || fs.realpathSync(process.cwd()) !== root) refuse();
   return root;
 }
 function readIssuerIdentity() {
@@ -44,7 +44,7 @@ function readIssuerIdentity() {
     // Actual native code owns this zero-argument fresh challenge. No public
     // ready bit, copied receipt or caller verifier is accepted at this seam.
     apply(privateRuntime.assertCurrentOrigin, undefined, []);
-    return privateRuntime.identity;
+    return privateRuntime.observation;
   } catch {
     privateRuntime = null; // Permanent local revocation, never reconnect/rearm.
     return unavailable;
@@ -70,9 +70,11 @@ if (require.main === canonicalModule) {
     // snapshot cannot substitute for the native readonly/owned-origin gates.
     const after = verifyPackageFiles(root);
     if (after.packageDigest !== files.packageDigest) refuse();
-    const identity = Object.freeze({ status: 'runtime_verified', issuerArtifactDigest: files.packageDigest, executingIssuerIdentity: 'verified', runtimeQualification: 'verified', fleetQualification: 'unavailable', legacyQualification: 'unavailable', executionAuthorized: false });
-    privateRuntime = Object.freeze({ root, addon, nativeModule, nativeExports, assertCurrentOrigin, identity });
-    if (readIssuerIdentity() !== identity) refuse();
+    const observation = Object.freeze({ status: 'unavailable', reason: 'canonical_consumer_qualification_pending', packageFileSetObservationDigest: files.packageDigest, nativeOriginObservation: 'observed', executingIssuerIdentity: 'unavailable', runtimeQualification: 'unavailable', fleetQualification: 'unavailable', legacyQualification: 'unavailable', executionAuthorized: false });
+    privateRuntime = Object.freeze({ root, addon, nativeModule, nativeExports, assertCurrentOrigin, observation });
+    // Successful primitives remain observations until the actual compiled
+    // consumer and full original matrix qualify. No flag/manifest can flip this.
+    if (readIssuerIdentity() !== observation) refuse();
     // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
     const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
     if (!required || !required.config || typeof required.config !== 'object') refuse();

@@ -1,0 +1,30 @@
+{
+  "scope": "actual ordinary N-API constructor refusals only; configured root is writable fixture, never a mounted image",
+  "root": "/private/tmp/axiom-origin-preimport-m1lk7c7s",
+  "nodeVersion": "v24.21.0",
+  "cases": [
+    {
+      "case": "writable_root_refusal_before_XPC",
+      "stdout": "actual_writable_refusal_and_native_once=PASS"
+    },
+    {
+      "case": "native_process_once_after_failed_constructor",
+      "sameProcess": true
+    },
+    {
+      "case": "actual_worker_constructor_refusal_before_XPC",
+      "stdout": "actual_worker_constructor_refusal=PASS"
+    }
+  ],
+  "nativeSha256": "f2de008a6dee43883d8711e130b7f046d2ee12f0343d3160257038412b874a3e",
+  "serviceOrProfileOrIdentityExecuted": false,
+  "sourceSha256": {
+    "origin_guard.c": "c51cea129b2e0865091adf051fc79b9a94ceff5d7c3ce29df78f816c2f746fe7",
+    "origin_session.c": "8642af8e500dc35814be3170276f15935cdeed773ce4174cabb588a30a28e110",
+    "origin_session.h": "57d39ca948bb5a1e5dfb367b8379d105791c6c929a3ef751ab6b67867ef6f511",
+    "origin_process_identity.c": "004193879c5af000873199fef26336457e7251da2b21611d91d7af8dec4ea78a",
+    "origin_process_identity.h": "bc31f80b03880648aaf28cc8ed4467b6bd20996576a1d2a0524a5c5290df52e0",
+    "protected_resource_inventory.c": "b257135d421cf1ba69fb33ee347970dbdd978d1e43c56c3197018e969614ee4d",
+    "protected_resource_inventory.h": "507a9fa8518a1182a9baeccee3c5e9a616aff949016ceb8b7711ef189f9482a6"
+  }
+}

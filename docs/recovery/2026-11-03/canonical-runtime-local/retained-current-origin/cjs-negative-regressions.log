@@ -1,0 +1,16 @@
+✔ actual main records preimport refusal without application loading on an unqualified root (22.908333ms)
+✔ actual controlled-main gate rejects extra argv, module-cache exchange and supplied authority (21.97575ms)
+✔ direct import exposes only immutable unavailable consumer, no activation or digest (0.814375ms)
+✔ main fails closed and imports no application even when given alleged manifest/digest (21.070542ms)
+✔ environment and copied descriptors cannot initialize direct consumer (22.60325ms)
+✔ independent module instances and cached import cannot acquire or exchange identity (0.213875ms)
+✔ preloaded/loader-overridden main remains unavailable; main does not claim to prevent earlier preload execution (21.099583ms)
+✔ worker import remains unavailable and exports no initializer (11.515667ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 106.454458
