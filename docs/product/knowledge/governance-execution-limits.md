@@ -2,6 +2,8 @@
 
 Help ID: `governance.execution-limits`
 
+**Internal source-reviewed draft; customer-ineligible and unpublished.** Reconciled against local source `91d3f88d` on November 3, 2026. This version has no current native screenshots, production release binding, or complete native end-to-end qualification. The existing guide already covers the workflow; this reconciliation does not create a second guide or new authority.
+
 This development-only desktop preview lets you inspect, propose, independently review, activate and revoke numeric execution ceilings. An active ceiling is only a maximum eligible level. It does not approve a provider action, supply provider access, enroll a baseline or prove execution coverage. This article describes the current local implementation, not a production-supported Governance MVP.
 
 ## Start with an exact saved baseline
@@ -44,4 +46,28 @@ Reads require a current accepted workspace member with `workspace:read`. Proposi
 
 Policy reads and decisions use POST requests to the existing execution-policy endpoint. POST lookup/list/read operations are read-only; propose/approve/activate/revoke persist policy state. None of these controls sends a provider action or collects new source evidence. No automatic server reads occur merely on opening this lane.
 
-The [control inventory](governance-execution-limits-controls.json) assigns stable help IDs to each visible control and records its source, request effect and capability. These are documentation identifiers; they are not installed UI anchors or a retrieval service.
+The [control inventory](governance-execution-limits-controls.json) assigns stable help IDs to each visible control and records its source, request effect and capability. All33 inventoried controls currently have matching literal `data-help-id` attributes in their declared source components. Those source bindings are not a customer retrieval service, approved article ingestion, or evidence of native visual acceptance.
+
+
+## Source registration and request binding
+
+`SettingsView.tsx:163,241–242` registers this lane only under `import.meta.env.DEV`; the actual preview renders `GovernanceEvidenceView`, which mounts the policy panel only for the current paired desktop identity/capabilities and matching organization/baseline scope. This is a registered **development preview**, not an unmounted example and not a production-shipped feature. The numeric policy panel is not baseline enrollment or provider-action approval.
+
+The actual route `app/api/desktop/governance-intelligence/execution-policy/route.ts` exposes POST and gates the composed HTTP/service on `AXIOM_GOVERNANCE_INTELLIGENCE_ENABLED === 'true'`. `executionPolicyHttp.ts` separates read/lookup/read_active/list_saved/list_requests from propose/approve/activate/revoke; it requires accepted paired desktop membership, refuses API-key authority, checks each required capability and bounds JSON input/output. `executionPolicyRequestService.ts:17–69` binds service operations and lookups to the actual organization, actor and original paired session, with current membership/session checks. A client context or help identifier supplies no permission.
+
+Proposal limits are schema bounds, not autonomy grants: level0–5,1–12 distinct action kinds,1–100 distinct named executors and a canonical UTC expiry (`desktop/src/lib/governanceExecutionPolicy.ts:4–14`). Version/digest/parent checks and current authority still apply. No automatic collection/provider write occurs from a numeric ceiling being active.
+
+The following exact SHA-256 values pin this source-only reconciliation. Later source changes require re-review; this table does not certify a release or runtime.
+
+| Inspected source | SHA-256 |
+|---|---|
+| `desktop/src/views/SettingsView.tsx` | `48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029` |
+| `desktop/src/views/GovernanceEvidenceView.tsx` | `d154a29c5cb47dfa7786a14bd420d8f20205f27d2e3f8af14b42d7cb3c8ffb9c` |
+| `desktop/src/components/GovernanceExecutionPolicyProposal.tsx` | `568a74d4cefb98268745a7fa8b495abb00213954ce91ed81c0e9eb2c9483dde4` |
+| `desktop/src/components/GovernanceExecutionPolicyPanel.tsx` | `db586c750e00a46d2551f89f41558fa7e90b3e00e32c54257f9acf87d51e1a4e` |
+| `desktop/src/lib/governanceExecutionPolicy.ts` | `3da2dbcf268977d84998d283435dad9413e0424c3a8ce127ae32cc8ca00cee91` |
+| `desktop/src/lib/useExecutionPolicyRecovery.ts` | `6342c60c7ea21b89aa0f4714b63975ae02d7d1b2139986bff3277762018298aa` |
+| `desktop/src/lib/executionPolicyRecoveryStore.ts` | `e51b4c81fa3599a765592d43ca6ce0c9e29ae22b28a90d744aa2a5591bfc310e` |
+| `app/api/desktop/governance-intelligence/execution-policy/route.ts` | `dbc25e40d175df6bc1782ef9d0834c1d9ef07ce80a0ad3f146bf51d41916216b` |
+| `lib/governance/intelligence/executionPolicyHttp.ts` | `09ff9bbed6041a112f9481f50cb1f1b3fcd894cd04019ee72e61d16d6c430212` |
+| `lib/governance/intelligence/executionPolicyRequestService.ts` | `2cb82e97a69336a1974ecb8ce841adf1bd4f3b786eeef8dbbbe20b0fb7114d46` |
