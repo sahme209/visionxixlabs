@@ -32,7 +32,7 @@
 
 **Files:** Modify `scripts/governance_local_issuer/native_overlay.py`; create `scripts/governance_local_issuer/origin_registration.m`, `scripts/governance_local_issuer/control_artifact.py`; tests `scripts/governance_local_issuer/tests/test_control_artifact.py`.
 
-**Interfaces:** `compile_role_command(role, stage, node, layout, available_requirements) -> fixed argv` requires only that role's already-derived requirements. `prepare_control_layout(layout) -> nonauthorizing plist/compile instructions`. `record_overlay` remains the original complete prebuild input snapshot; do not change its meaning or fabricate missing hashes.
+**Interfaces:** `compile_role_command(role, stage, node, layout, available_requirements) -> fixed argv` covers controller/broker/bootstrap/guard and the registration-only main, requiring only that role's already-derived requirements. Add `origin_registration.m` to the fixed source-input snapshot; record its later outer-seal transformation separately from unchanged inner issuer-role bytes. `prepare_control_layout(layout) -> nonauthorizing plist/compile instructions`. `record_overlay` remains the original complete prebuild input snapshot; do not change its meaning or fabricate missing hashes.
 
 - [ ] Write ordinary fixture tests for controller-first command construction, missing required predecessor rejection, exact fixed service/app/executable plists and no registration invocation during preparation.
 - [ ] Run the new ordinary test file to observe missing-operator RED.
