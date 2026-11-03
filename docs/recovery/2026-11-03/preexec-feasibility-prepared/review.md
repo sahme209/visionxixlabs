@@ -1,13 +1,15 @@
 # Exact pre-Node feasibility artifact — execution pending
 
-Prepared artifact: `/private/tmp/axiom-preexec-prepared-baofbwkn`.
-Manifest SHA256: `b2e83a262fa389de5d58623f4028044870b90a0f0eadfe0021720d340557088d`.
+Prepared artifact: `/private/tmp/axiom-preexec-prepared-e4nvmbv1`.
+Manifest SHA256: `7945858f8385cd762a828185083cd9f5918bf438b4eb7963cc8ef2192c89270e`.
 Native bootstrap and addon compiled with installed SDK, strict warnings/Werror. All artifact files currently mode0600 inside owned0700 root. No bootstrap, Node fixture, native addon, profile, or runner was executed. Python source parsed only. Initial bootstrap compile failed because closefrom is not declared by this macOS SDK; replaced with bounded closure loop, exact runner also uses close_fds. No runtime test happened while fixing compilation.
 
-Exact future opt-in (not run): `/usr/bin/python3 /private/tmp/axiom-preexec-prepared-baofbwkn/run_reviewed.py --run-exact-reviewed-preexec-fixture`.
+Exact future opt-in (not run): `/usr/bin/python3 /private/tmp/axiom-preexec-prepared-e4nvmbv1/run_reviewed.py --run-exact-reviewed-preexec-fixture`.
 
 It verifies all manifest hashes and cached Node24 bytes before changing only the bootstrap to mode0700. It owns/seeds two distinct random0700 roots under `/private/tmp/axiom-preexec-owned-`, then launches two sequential fixed children: unrestricted control and NoWrite-before-exec. Each receives readonly `/dev/null` stdin, output pipes, no inherited extra handles, fixed clean environment. Bootstrap uses the compile-bound cached Node and JS paths, never caller executable/flags/preloads. Each child has 15seconds plus at most two bounded3second cleanup waits (21seconds maximum); stdout/stderr bounded8192bytes each. Results/seeds remain for independent readback, roots never reused.
 
 Actual tests inside Node (only after new approval): fixed path write; shared owned file RW mapping; downgrade to currentRO then FDclose/upgrade/write; owned O_EXCL POSIX shm immediately unlinked, mapped then currentRO/FDclose/upgrade/write. Parent records hashes of seeded path/mapping files before/after. Control must start exact Node and succeed in all dangerous effects; restricted must start exact Node and refuse effects with unchanged owned seeds. Any failure to start, missing control, timeout, overflow, cleanup error, ambiguous output or dangerous restricted effect is inconclusive/fail, never qualification. Shared mapping acquisition may stop at denied O_RDWR open; report actual stage instead of claiming later syscalls were exercised.
 
 This is the first functional feasibility knockout, not actual sealed-package, live launch-origin, backing-image or same-artifact issuer/consumer qualification. No broker/private initializer, mount, external provider/network/auth or product module change exists. Original consumed NoWrite run and its failures remain immutable. Approval of source preparation is not authorization to run this new profile experiment. No automatic retry.
+
+After hash checks and before changing bootstrap mode, the runner atomically creates an exclusive0600 run-claim. Any existing claim refuses permanently, including incomplete/failed attempts. It never overwrites result/terminal files; normal terminal or unknown-no-retry is recorded, and bootstrap0600 is restored in finally. No older prepared artifact is authorized.

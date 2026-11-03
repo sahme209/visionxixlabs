@@ -2,13 +2,13 @@
   "scope": "PREPARATION_ONLY_NO_EXECUTION",
   "node": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
   "node_sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
-  "artifact_root": "/private/tmp/axiom-preexec-prepared-baofbwkn",
+  "artifact_root": "/private/tmp/axiom-preexec-prepared-e4nvmbv1",
   "files": {
-    "bootstrap": "899db10b2c1febf92932396d68ca445b45e3ed25a6d4e1e25061212dafdb7c30",
+    "bootstrap": "eeb0c0c76a197dc5ca94d7389a975ebaaf1af959ccf692e76a9cf585977e074d",
     "fixture.cjs": "d7234379a15ee1ad6a13ca92a4e901f89944c6dc521a5df7ad61aad064abd98f",
     "fixture.node": "b7900d942d4a3e49ecf7abec4bc8f627481d05d462a5e7fc9128418bedcf6e55",
     "fixture.c": "397af6b5f6d651b933af78370d570f735f57477b9e5ae48a5d6cd4df9bbef492",
-    "run_reviewed.py": "af59aad7fedb0f6275dfc9a068b8ac45c3351fcebb77f5a36d28ea90d4fa7204",
+    "run_reviewed.py": "abd591955636d4443d827e48553111c79a29902589411bd91bfe3ca8dcddd4db",
     "bootstrap.c": "42c797ccef741091bb4b70368ce56b3429ae2cdb125c7aa8dd47a4f46cdb3fa5"
   },
   "compile_commands": [
@@ -22,10 +22,10 @@
       "-Wno-deprecated-declarations",
       "-O1",
       "-DFIXED_NODE=\"/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node\"",
-      "-DFIXED_SCRIPT=\"/private/tmp/axiom-preexec-prepared-baofbwkn/fixture.cjs\"",
-      "/private/tmp/axiom-preexec-prepared-baofbwkn/bootstrap.c",
+      "-DFIXED_SCRIPT=\"/private/tmp/axiom-preexec-prepared-e4nvmbv1/fixture.cjs\"",
+      "/private/tmp/axiom-preexec-prepared-e4nvmbv1/bootstrap.c",
       "-o",
-      "/private/tmp/axiom-preexec-prepared-baofbwkn/bootstrap"
+      "/private/tmp/axiom-preexec-prepared-e4nvmbv1/bootstrap"
     ],
     [
       "/usr/bin/xcrun",
@@ -39,14 +39,14 @@
       "-undefined",
       "dynamic_lookup",
       "-I/Users/samirahmed/.nvm/versions/node/v24.21.0/include/node",
-      "/private/tmp/axiom-preexec-prepared-baofbwkn/fixture.c",
+      "/private/tmp/axiom-preexec-prepared-e4nvmbv1/fixture.c",
       "-o",
-      "/private/tmp/axiom-preexec-prepared-baofbwkn/fixture.node"
+      "/private/tmp/axiom-preexec-prepared-e4nvmbv1/fixture.node"
     ]
   ],
   "run_argv": [
     "/usr/bin/python3",
-    "/private/tmp/axiom-preexec-prepared-baofbwkn/run_reviewed.py",
+    "/private/tmp/axiom-preexec-prepared-e4nvmbv1/run_reviewed.py",
     "--run-exact-reviewed-preexec-fixture"
   ],
   "children": 2,
