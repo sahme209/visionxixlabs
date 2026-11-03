@@ -1,0 +1,16 @@
+{
+  "reviewer": "root",
+  "result": "PASS_source_scope",
+  "checked": [
+    "actual mounted component not redirected legacy route",
+    "same visible counter and layout",
+    "current step title/count only, animation fraction excluded",
+    "polite atomic region and decorative counter hidden from assistive text",
+    "existing buttons/reduced-motion/review controls unchanged",
+    "two actual rendered test claims scoped accurately"
+  ],
+  "limits": [
+    "no actual assistive technology/browser acceptance",
+    "not yet rebuilt into ae5 preview"
+  ]
+}
