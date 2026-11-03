@@ -63,3 +63,33 @@ Potential subsequent commands have **not started and are currently blocked by mi
 independently verified owned engine copies. Missing cache/engine prerequisites must
 be resolved and the exact generation plan reviewed before any real project install/build.
 No production coverage, legacy qualification, activation, or execution permission is implied.
+
+## Explicit unqualified optional-cache resolver probe
+
+The source planner now has a separate `--probe-optional-cache --owned-root <fresh-private-directory>`
+mode. It still requires an exact committed Git archive, archive-owned local package
+links, the pinned lock, SRI verification for every copied blob, and existing network,
+lifecycle, source-cache, and original-source write denials. Required cache misses
+refuse before installation. Only missing selected entries explicitly marked
+`optional: true` in the lock may proceed through this observational mode; invalid
+available cache contents refuse. Every missing entry is recorded together with
+whether its exact package path exists after npm. Normal strict preparation remains
+unchanged and refuses any selected cache miss.
+
+The result is always `offline_install_observed_unqualified`, with an explicit npm
+outcome and missing-optional audit. Runtime, legacy, activation, and executing issuer
+qualifications remain unavailable, and `executionAuthorized` is false. npm success
+does not establish that an omitted package is safe or irrelevant at runtime.
+Generation/build/launch are not invoked, and `execute_build` continues to refuse.
+
+RED: `/private/tmp/axiom-offline-optional-probe-red.log` (two absent new APIs).
+GREEN: `/private/tmp/axiom-offline-optional-probe-green.log`, **11 tests pass**.
+The new actual controlled owned-archive fixture supplies one required verified
+tarball and an archive-local package while deliberately withholding a lock-optional
+tarball. Actual offline npm succeeds, the missing optional package remains absent,
+and root/dependency lifecycle markers remain absent. Its emitted observation
+explicitly retains all unavailable qualifications. Other tests refuse required
+misses and tampered optional content. Fixture cleanup removes owned stage/cache.
+
+No real-project probe has run. Such a probe remains pending root review and a
+committed exact source revision; previous 442 cache findings are historical.

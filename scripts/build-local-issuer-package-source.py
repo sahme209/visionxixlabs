@@ -48,7 +48,7 @@ def lock_plan(package,lock,os_name="darwin",cpu="arm64"):
  packages=lock.get("packages")
  if lock.get("lockfileVersion")!=3 or not isinstance(packages,dict)or len(packages)>10000:fail("bounded_lock_v3_required")
  root=packages.get("")
- if not isinstance(root,dict)or any(root.get(k,{})!=package.get(k,{})for k in ["dependencies","devDependencies"]):fail("manifest_lock_mismatch")
+ if not isinstance(root,dict)or any(root.get(k,{})!=package.get(k,{})for k in ["dependencies","devDependencies","optionalDependencies"]):fail("manifest_lock_mismatch")
  tarballs=[];links=[];excluded=[]
  for location,e in sorted(packages.items()):
   if not location:continue
@@ -68,7 +68,7 @@ def lock_plan(package,lock,os_name="darwin",cpu="arm64"):
   if parsed.scheme!="https"or parsed.netloc!="registry.npmjs.org"or parsed.query or parsed.fragment or not parsed.path.endswith(".tgz"):fail("unsupported_offline_tarball_source")
   cache_path(".",e.get("integrity"))
   if not isinstance(e.get("version"),str)or not e["version"]:fail("exact_version_required")
-  tarballs.append({"location":location,"version":e["version"],"resolved":url,"integrity":e["integrity"],"hasInstallScript":e.get("hasInstallScript")is True})
+  tarballs.append({"location":location,"version":e["version"],"resolved":url,"integrity":e["integrity"],"hasInstallScript":e.get("hasInstallScript")is True,"optional":e.get("optional")is True})
  return {"format":"axiom.offline-lock-plan/1","tarballs":tarballs,"localLinks":links,"platformOptionalExcluded":excluded}
 def stream_blob(path,expected,output=None,remaining=MAX_CACHE):
  path=Path(path);before=path.lstat();limit=min(MAX_BLOB,remaining)
@@ -111,6 +111,30 @@ def snapshot_cache(plan,source,owned_cache):
    with os.fdopen(fd,"wb")as target:total+=stream_blob(src,expected,target,MAX_CACHE-total)
   return destination
  except BaseException:shutil.rmtree(destination);raise
+def probe_cache_plan(plan,source):
+ observation=inspect_cache(plan,source);by_location={item['location']:item for item in plan['tarballs']}
+ for missing in observation['missing']:
+  if by_location[missing['location']]['optional']is not True:fail('probe_required_cache_missing')
+  if missing['reason']!='pinned_tarball_cache_miss':fail('probe_invalid_optional_cache')
+ missing_locations={item['location']for item in observation['missing']}
+ available={**plan,'tarballs':[item for item in plan['tarballs']if item['location']not in missing_locations]}
+ return available,observation
+
+def observe_optional_probe(stage,plan,source,owned_cache,node,npm_cli,protected_repo):
+ available,observation=probe_cache_plan(plan,source)
+ copied=snapshot_cache(available,source,owned_cache)
+ outcome='succeeded'
+ try:install_offline(stage,plan,copied,node,npm_cli,source,protected_repo)
+ except Unavailable as exc:
+  if str(exc)!='offline_ci_unavailable_no_network_fallback':raise
+  outcome='failed_offline_no_fallback'
+ missing=[{**item,'presentAfterInstall':(Path(stage)/item['location']).exists()or(Path(stage)/item['location']).is_symlink()}for item in observation['missing']]
+ return {'format':'axiom.offline-optional-probe/1','status':'offline_install_observed_unqualified',
+         'npmOutcome':outcome,'missingOptional':missing,'cacheObservation':observation,
+         'network':'kernel_denied','lifecycleScriptsExecuted':False,'buildStarted':False,
+         'runtimeQualification':'unavailable','legacyQualification':'unavailable',
+         'executingIssuerIdentity':'unavailable','activationQualification':'unavailable','executionAuthorized':False}
+
 def validate_local_links(stage,plan):
  stage=Path(stage).resolve()
  for item in plan["localLinks"]:
@@ -210,6 +234,14 @@ def prepare_offline(repo,revision,cache,node,npm_cli,owned):
  if sha((stage/"package-lock.json").read_bytes())!=source["lockSha256"]:fail("archive_lock_mismatch")
  validate_local_links(stage,plan);copied=snapshot_cache(plan,cache,owned/"npm-cache")
  return {**source,**provenance,"dependencies":install_offline(stage,plan,copied,node,npm_cli,cache,repo),"engines":engine_plan(lock,cache),"buildStarted":False,"executingIssuerIdentity":"unavailable"}
+def prepare_optional_probe(repo,revision,cache,node,npm_cli,owned):
+ owned=private_dir(owned);package,lock,source=source_inputs(repo,revision);plan=lock_plan(package,lock)
+ probe_cache_plan(plan,cache) # Refuse required misses or invalid blobs before extracting.
+ archive=git_bytes(repo,['archive','--format=tar',revision]);stage=owned/'stage';provenance=extract_archive(archive,stage)
+ if sha((stage/'package-lock.json').read_bytes())!=source['lockSha256']:fail('archive_lock_mismatch')
+ validate_local_links(stage,plan)
+ return {**source,**provenance,**observe_optional_probe(stage,plan,cache,owned/'npm-cache',node,npm_cli,repo)}
+
 def preflight(repo,revision,cache):
  package,lock,source=source_inputs(repo,revision);plan=lock_plan(package,lock)
  for item in plan["localLinks"]:
@@ -218,9 +250,15 @@ def preflight(repo,revision,cache):
  dependencies=inspect_cache(plan,cache);engines=engine_plan(lock,cache)
  return {"format":"axiom.offline-source-preflight/1","status":"unavailable",**source,"dependencies":dependencies,"engines":engines,"generationPlan":{"status":"not_authorized_or_started","commands":["node scripts/check-vercel-build.mjs","node node_modules/prisma/build/index.js generate --schema prisma/schema.prisma","node node_modules/next/dist/bin/next build --webpack"],"network":"must_remain_kernel_denied","engineOverrides":"only independently verified owned copies; none accepted yet"},"buildStarted":False,"executingIssuerIdentity":"unavailable","executionAuthorized":False}
 def main():
- parser=argparse.ArgumentParser();parser.add_argument("--repo",default=".");parser.add_argument("--revision",required=True);parser.add_argument("--cache-source",required=True);a=parser.parse_args()
+ parser=argparse.ArgumentParser();parser.add_argument("--repo",default=".");parser.add_argument("--revision",required=True);parser.add_argument("--cache-source",required=True);parser.add_argument("--probe-optional-cache",action="store_true");parser.add_argument("--owned-root");a=parser.parse_args()
  try:
-  result=preflight(Path(a.repo).resolve(),a.revision,Path(a.cache_source).resolve())
+  if a.probe_optional_cache:
+   if not a.owned_root:fail('probe_owned_root_required')
+   node=Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
+   result=prepare_optional_probe(Path(a.repo).resolve(),a.revision,Path(a.cache_source).resolve(),node,node.parent.parent/'lib/node_modules/npm/bin/npm-cli.js',Path(a.owned_root))
+  else:
+   if a.owned_root:fail('owned_root_requires_explicit_probe')
+   result=preflight(Path(a.repo).resolve(),a.revision,Path(a.cache_source).resolve())
   print(json.dumps(result,sort_keys=True))
  except(Unavailable,OSError,ValueError,tarfile.TarError)as exc:
   print(json.dumps({"status":"unavailable","reason":str(exc),"buildStarted":False,"executionAuthorized":False}));return 1

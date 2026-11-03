@@ -76,6 +76,13 @@ class PlannerTests(unittest.TestCase):
   outside=self.base/"outside";(outside/"local").mkdir(parents=True);(outside/"local/package.json").write_text('{"name":"@axiom/local","version":"0.0.0"}')
   stage=self.base/"stage";stage.mkdir(mode=0o700);(stage/"packages").symlink_to(outside)
   with self.assertRaises(m.Unavailable):m.validate_local_links(stage,plan)
+ def test_probe_required_missing_and_optional_tamper_refuse(self):
+  p,l,source,blob=fixture(self.base);plan=m.lock_plan(p,l);blob.unlink()
+  with self.assertRaises(m.Unavailable):m.probe_cache_plan(plan,source)
+  l['packages']['node_modules/fixture-dep']['optional']=True
+  plan=m.lock_plan(p,l);blob.write_bytes(b'tampered')
+  with self.assertRaises(m.Unavailable):m.probe_cache_plan(plan,source)
+
  def test_clean_environment_has_no_credentials_or_module_overrides(self):
   with patch.dict(os.environ,{"NODE_OPTIONS":"untrusted","NPM_TOKEN":"DO_NOT_COPY"}):
    env=m.clean_environment("/fixed/node",self.base)
@@ -100,6 +107,25 @@ class ActualOfflineInstall(unittest.TestCase):
    self.assertFalse((stage/"node_modules/fixture-dep/LIFECYCLE_RAN").exists())
    self.assertFalse((source/"index-v5").exists())
    print("ACTUAL_OFFLINE_FIXTURE "+json.dumps({"format":"axiom.offline-ci-fixture/1","node":"v24.21.0","npm":"11.19.0","copiedSRIContentOnly":True,"cacheIndexCopied":False,"network":"kernel_denied","lifecycleMarkersPresent":False,"archiveOwnedLocalLink":True,"applicationBuildStarted":False,"executingIssuerIdentity":"unavailable"},sort_keys=True))
+
+ def test_optional_miss_probe_observes_npm_without_qualification(self):
+  with tempfile.TemporaryDirectory(prefix='axiom-offline-optional-',dir='/private/tmp')as tmp:
+   base=Path(tmp);base.chmod(0o700);p,l,source,_=fixture(base)
+   p['optionalDependencies']={'fixture-optional-missing':'1.0.0'}
+   l['packages']['']['optionalDependencies']=p['optionalDependencies']
+   l['packages']['node_modules/fixture-optional-missing']={'version':'1.0.0','resolved':'https://registry.npmjs.org/fixture-optional-missing/-/fixture-optional-missing-1.0.0.tgz','integrity':'sha512-'+base64.b64encode(hashlib.sha512(b'not-cached').digest()).decode(),'optional':True}
+   plan=m.lock_plan(p,l);stage,local=archived_fixture_stage(base,p,l)
+   self.assertEqual(m.inspect_cache(plan,source)['status'],'unavailable')
+   result=m.observe_optional_probe(stage,plan,source,base/'probe-cache',Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node'),Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/lib/node_modules/npm/bin/npm-cli.js'),base/'protected-original')
+   self.assertEqual(result['status'],'offline_install_observed_unqualified')
+   self.assertEqual(result['npmOutcome'],'succeeded')
+   self.assertEqual(result['missingOptional'],[{'location':'node_modules/fixture-optional-missing','reason':'pinned_tarball_cache_miss','presentAfterInstall':False}])
+   self.assertFalse(result['executionAuthorized']);self.assertEqual(result['runtimeQualification'],'unavailable')
+   self.assertEqual((stage/'node_modules/fixture-dep/index.js').read_bytes(),b'module.exports=1')
+   self.assertEqual((stage/'node_modules/@axiom/local').resolve(),local)
+   self.assertFalse((stage/'ROOT_LIFECYCLE_RAN').exists())
+   self.assertFalse((stage/'node_modules/fixture-dep/LIFECYCLE_RAN').exists())
+   print('ACTUAL_OPTIONAL_PROBE '+json.dumps(result,sort_keys=True))
 
  def test_offline_missing_blob_refuses_without_lifecycle_or_network_fallback(self):
   with tempfile.TemporaryDirectory(prefix="axiom-offline-miss-",dir="/private/tmp")as tmp:
