@@ -1,0 +1,10 @@
+{
+  "base": "81da50ee6d844f1db6114a3f6e91f0ede4ba3c57",
+  "files": {
+    "packages/verified-issuer-runtime/native/protected_resource_inventory.h": "507a9fa8518a1182a9baeccee3c5e9a616aff949016ceb8b7711ef189f9482a6",
+    "packages/verified-issuer-runtime/native/protected_resource_inventory.c": "b257135d421cf1ba69fb33ee347970dbdd978d1e43c56c3197018e969614ee4d",
+    "packages/verified-issuer-runtime/native/protected_resource_inventory_test.c": "a0b345d8d1320918d0ecd8ff44b32b3273a00f932893f63a9d879b35a3450997",
+    "packages/verified-issuer-runtime/native/protected_resource_inventory_fixture.c": "70cc8ea8840ceeaa17d3ab94cb1e119c4a4b6874a02b65f482ec4717b30ec041",
+    "packages/verified-issuer-runtime/native/test_protected_resource_inventory.py": "cad336c7e9a6115ec0dedbc37a797071f35d62dbc96c81c5c1b71fac7417e5d9"
+  }
+}

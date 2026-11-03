@@ -1,0 +1,12 @@
+Undefined symbols for architecture arm64:
+  "_axiom_classify_protected_descriptor", referenced from:
+      _main in protected_resource_inventory_test-17c3bb.o
+      _main in protected_resource_inventory_test-17c3bb.o
+      _main in protected_resource_inventory_test-17c3bb.o
+  "_axiom_classify_protected_region", referenced from:
+      _main in protected_resource_inventory_test-17c3bb.o
+      _main in protected_resource_inventory_test-17c3bb.o
+      _main in protected_resource_inventory_test-17c3bb.o
+      _main in protected_resource_inventory_test-17c3bb.o
+ld: symbol(s) not found for architecture arm64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)

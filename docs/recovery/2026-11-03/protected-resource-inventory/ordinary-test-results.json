@@ -1,0 +1,24 @@
+{
+  "root": "/private/tmp/axiom-protected-resource-ordinary-r1312hjw",
+  "scope": "ordinary owned fixtures; existing readonly OS root=/ is NOT actual package qualification",
+  "unattributedLineage": "UNPROVEN",
+  "profileMountServiceIdentityExecuted": false,
+  "results": [
+    {
+      "name": "protected_resource_inventory_test",
+      "compileExit": 0,
+      "compileError": "",
+      "exit": 0,
+      "stdout": "resource_classifier_cases=7 observations_not_origin\n",
+      "stderr": ""
+    },
+    {
+      "name": "protected_resource_inventory_fixture",
+      "compileExit": 0,
+      "compileError": "",
+      "exit": 0,
+      "stdout": "owned_kernel_resource_cases=7 PASS; root=/ readonlyOSfixture NOT package; unattributed_lineage=UNPROVEN; restriction_or_identity=NOT_RUN\n",
+      "stderr": ""
+    }
+  ]
+}
