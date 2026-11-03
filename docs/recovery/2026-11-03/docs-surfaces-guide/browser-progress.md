@@ -1,0 +1,5 @@
+# Current-source browser progress — 019fa045
+
+Exact source019fa045 offline build produced verified outputs and terminal exit0; executing identity/closure/activation remain unavailable. New loopback read-only preview5200→5201 preserves old5198/5199. Actual browser navigation to /docs/surfaces shows correct article title, all eight registered destinations, version caveat and next-owner/recovery sections. Scrolling showed website guidance and next-owner text; this is bounded selected-page visual acceptance, not complete links/a11y/desktop/mobile acceptance.
+
+At the actual narrow viewport817×847, the full documentation sidebar pushes the article well below the initial viewport. Source fix is now assigned separately; do not call current narrow-screen clarity complete. Screenshots in external outputs: axiom-docs-019fa045-narrow-before.jpg and axiom-docs-019fa045-guide-body.jpg. No provider, account, consent, message or execution control was used. Local source preview only, not public deployment.
