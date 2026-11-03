@@ -1,0 +1,21 @@
+{
+  "focused": {
+    "files": 9,
+    "passed": 54,
+    "simulatedProviderAndAuthority": true
+  },
+  "types": "pass",
+  "independentSourceReview": "pass; no important findings",
+  "actualPostgres": {
+    "passed": 9,
+    "filtered": 9,
+    "newLinearCases": 7,
+    "existingTeamsRegressions": 2,
+    "session": 87585,
+    "fixture": "mmrspgog; stopped",
+    "providerAndRequestAuthorityAndPositiveIssuer": "simulated"
+  },
+  "canonicalIssuer": "unavailable; preclaim refusal",
+  "coverageActivation": "unavailable",
+  "liveProviderRequests": 0
+}
