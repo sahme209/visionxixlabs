@@ -1,0 +1,53 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-outlook-outbound-044535e3
+
+ ❯ lib/integrations/outlook/__tests__/outlookActionTransport.test.ts (7 tests | 2 failed) 21ms
+   × records intent once for the sole POST then rechecks retained authority immediately before sending 2ms
+   × retains an uncertain intent after a lost mail acknowledgement without a second POST or hook 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/integrations/outlook/__tests__/outlookActionTransport.test.ts > records intent once for the sole POST then rechecks retained authority immediately before sending
+AssertionError: expected { state: 'confirmed', …(1) } to deeply equal { state: 'refused' }
+
+- Expected
++ Received
+
+  {
+-   "state": "refused",
++   "receipt": {
++     "accountId": "mailbox",
++     "deliveryVerified": false,
++     "kind": "outlook_mail_send",
++     "provider": "outlook",
++     "submissionAccepted": true,
++   },
++   "state": "confirmed",
+  }
+
+ ❯ lib/integrations/outlook/__tests__/outlookActionTransport.test.ts:17:17
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/integrations/outlook/__tests__/outlookActionTransport.test.ts > retains an uncertain intent after a lost mail acknowledgement without a second POST or hook
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ lib/integrations/outlook/__tests__/outlookActionTransport.test.ts:24:17
+     22|  const transport=createOutlookActionTransport({enabled:()=>true,readCr…
+     23|  expect(await transport.dispatch({intent:mail,operationId:connectedAct…
+     24|  expect(intent).toHaveBeenCalledTimes(1);expect(fetch.mock.calls.filte…
+       |                 ^
+     25| });
+     26|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 8 passed (10)
+   Start at  12:16:55
+   Duration  335ms (transform 165ms, setup 0ms, import 330ms, tests 36ms, environment 0ms)
+

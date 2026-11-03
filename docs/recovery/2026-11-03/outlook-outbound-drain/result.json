@@ -1,0 +1,45 @@
+{
+  "baseRevision": "044535e379904aa626a53b34799d2fbef3f07619",
+  "sourceHashes": "source-sha256.json",
+  "focused": {
+    "initialFinalBatch": {
+      "tests": 40,
+      "passed": 40,
+      "note": "Before later childsignal correction; six matching files. Nonexistent additional filter produced no case and is not counted."
+    },
+    "childSignalCorrection": {
+      "redFailed": 1,
+      "greenPassed": 1
+    },
+    "doNotClaimSingle41CaseRun": true
+  },
+  "actualOwnedPostgres": {
+    "tests": 15,
+    "passed": 15,
+    "fixture": "/private/tmp/axiom-outlook-outbound-pg-vtphdr8b",
+    "stopped": true,
+    "productionProviderOrCustomerReads": false,
+    "identityAndAuthenticationAndGraph": "explicitly simulated",
+    "actualComponents": "HTTP + shared store + transport + database transactions/history + independent lock checks"
+  },
+  "types": {
+    "exitCode": 0,
+    "logBytes": 0,
+    "command": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "work/outlook-outbound/tsconfig.json",
+      "--noEmit",
+      "--incremental",
+      "false"
+    ]
+  },
+  "productionCoverage": "empty/refused; unchanged",
+  "executingIssuerIdentity": "unavailable by actual canonical module",
+  "activation": "unavailable",
+  "deploymentPerformed": false,
+  "providerOperationPerformed": false,
+  "newCredentialIssued": false,
+  "schemaChanges": false
+}

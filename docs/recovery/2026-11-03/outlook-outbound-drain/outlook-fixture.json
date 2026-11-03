@@ -1,0 +1,8 @@
+{
+  "source": "/private/tmp/axiom-outlook-outbound-044535e3",
+  "fixture": "/private/tmp/axiom-outlook-outbound-pg-vtphdr8b",
+  "clientFixture": "/private/tmp/axiom-outlook-outbound-pg-evidence-qg13ejkj",
+  "started": true,
+  "stopped": true,
+  "providerAndAuthority": "simulated; actual owned durable storage and HTTP composition"
+}

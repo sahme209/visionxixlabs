@@ -1,0 +1,5 @@
+{
+ "extends":"../../tsconfig.next.json",
+ "include":["../../next-env.d.ts","../../lib/desktop/outlookActionsHttp.ts","../../lib/integrations/outlook/outlookActionTransport.ts","../../lib/integrations/connectedActionStore.ts","../../lib/governance/intelligence/outlookOutboundDrain.ts","../../lib/governance/intelligence/outlookOutboundIssuer.ts"],
+ "exclude":["../../node_modules","../../desktop","../../**/__tests__/**"]
+}

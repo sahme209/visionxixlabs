@@ -1,0 +1,13 @@
+{
+  "lib/desktop/outlookActionsHttp.ts": "17638a4b6b860f57e466256d6d67a2d6e023173d03916290abe72f3858bbf8e7",
+  "lib/integrations/outlook/outlookActionTransport.ts": "1f99ec7ba8c476693222cee8748d5ffd9059b3540e3f5bda6df6ff808eaed10d",
+  "lib/integrations/connectedActionStore.ts": "e7c978936416df525cc8ab045859892167587bb4f85263effd002c524d87f891",
+  "lib/governance/intelligence/outlookOutboundDrain.ts": "b1af55e6e1df112c41fdc11f08beb85448969562cb44579b4e5d5da21d690b09",
+  "lib/governance/intelligence/outlookOutboundIssuer.ts": "72c2de18278490b177f8572a9d0d13753f68e6481adfdb679842206c47c085e2",
+  "lib/governance/intelligence/__tests__/outlookOutboundDrain.test.ts": "e7431c4e69d63daaadcbeccf0daddc4c7653a418a54f62825b42478fba523b35",
+  "lib/governance/intelligence/__tests__/outlookOutboundIssuer.test.ts": "05ebaa1e608791ea632810e531217e6bc8c19e034de073ac17e2cb71a9d85b3d",
+  "lib/integrations/outlook/__tests__/outlookActionTransport.test.ts": "5b48004699ed42f624a4b546d31a56c36f2ab8f42964f2f2ec00de8bb091310d",
+  "lib/desktop/__tests__/outlookActionsHttp.test.ts": "b6011f02ffe90e2db1d2433c3fe9d7f677e081078a0521274dc171e3c71fe99f",
+  "lib/desktop/__tests__/outlookCredentialSignal.test.ts": "dd4da25a8ec7518f5c9ffe090161db896ab1d68901f3b9bf73ab3fca4b225305",
+  "lib/desktop/__tests__/outlookActionsHttp.postgres.test.ts": "1979a976306505fca04d262fb01a25d295980cf59985b5aabbfbc9fa419719a1"
+}
