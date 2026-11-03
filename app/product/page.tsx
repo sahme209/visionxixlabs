@@ -2,20 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
+import { WorkflowEvidenceMap } from "@/components/marketing/WorkflowEvidenceMap";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 
 export const metadata: Metadata = {
   title: "Axiom Agent product",
   description: "A calm, governed workspace for deployment evidence, human approval, recovery context, and honest connection state.",
 };
-
-const WORKFLOW = [
-  ["01", "Repository context", "Start with the repository, branch, environment, and requested outcome so the work has a clear scope."],
-  ["02", "Exact proposal", "Inspect the specific change, its expected effect, the validation plan, and recovery context before making a decision."],
-  ["03", "Independent review", "Where supported, an authorized reviewer assesses the exact proposal separately from the requester."],
-  ["04", "Separate requester execution", "Where supported, the requester deliberately asks to execute after review. Approval and execution are separate steps."],
-  ["05", "Recorded outcome and recovery", "Inspect the recorded result and available evidence. Keep refused or unknown outcomes visible alongside recovery context; a plan is not proof of recovery."],
-];
 
 const BOUNDARIES = [
   ["GitHub", "Repository-scoped, read-only release evidence is the first source of truth."],
@@ -58,7 +51,7 @@ export default function ProductPage() {
 
         <section className="mx-auto max-w-[1280px] px-5 py-20 sm:px-8 lg:py-20">
           <div className="max-w-xl"><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">The release, made legible</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">From repository context to a recorded outcome.</h2><p className="mt-5 text-sm leading-6 text-zinc-400">This is a conceptual sequence. Support depends on the installed version and enabled workflow; these steps do not establish complete coverage for every action.</p></div>
-          <ol aria-label="Conceptual workflow" className="mt-10 grid list-none gap-3 p-0 md:grid-cols-2 xl:grid-cols-5">{WORKFLOW.map(([number, title, detail]) => <li key={number} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"><p className="text-[10px] tracking-[0.16em] text-zinc-400">{number}</p><h3 className="mt-5 text-xl font-medium tracking-[-0.03em] text-zinc-100">{title}</h3><p className="mt-3 max-w-md text-sm leading-6 text-zinc-400">{detail}</p></li>)}</ol>
+          <WorkflowEvidenceMap />
         </section>
 
         <section className="border-y border-white/[0.07] bg-[#141414] px-5 py-20 sm:px-8 lg:px-10 lg:py-20">
