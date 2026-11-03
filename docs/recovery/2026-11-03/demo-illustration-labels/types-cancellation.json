@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "16a97932",
+  "scope": "work/demo-evidence-labels/tsconfig.json",
+  "processId": 33357,
+  "execSession": 83942,
+  "status": "intentionally_cancelled_not_pass",
+  "signalSent": "SIGTERM",
+  "verifiedOriginalCommand": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node node_modules/typescript/bin/tsc --project work/demo-evidence-labels/tsconfig.json --noEmit",
+  "processAbsentAfterSignal": true,
+  "wrapperExit": 0,
+  "wrapperExitIsTypeResult": false,
+  "diagnosticLogBytes": 0,
+  "reason": "Root consolidated verification into one later exact integrated production build; shared dependency declaration read remained pending. No automatic retry or restart."
+}
