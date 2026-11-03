@@ -41,3 +41,11 @@ unavailable. A mechanical fixed-entry child launch could be implemented separate
 but would still not close this identity boundary; it is not substituted here for
 the requested private compiled-consumer proof. Fleet, legacy, activation, and
 execution qualifications remain unavailable.
+
+Review correction: the subsequently inspected SDK contract requires
+`SANDBOX_NAMED` (other flag values reserved) and rejects an already-sandboxed
+process. The arbitrary profile possibility above is not a supported public-API
+implementation plan. The corrected `governance-native-bootstrap-proposal.md`
+limits the proposed first experiment to fixed `kSBXProfileNoWrite` feasibility,
+with no network/process-denial claim or chained-profile assumption. No native
+implementation or identity was issued from the earlier possibility.

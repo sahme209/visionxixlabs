@@ -15,14 +15,15 @@ Readonly files alone do not protect a mounted image's backing file. A parent's
 receipt, environment value, callback, or claimed sandbox status cannot initialize
 private issuer identity. See `governance-private-bootstrap-kernel-gap.md`.
 
-Implement one **owned, network-denied, read-only local probe profile** first. It
-would combine a real readonly mounted package with actual same-process sandbox
-installation before application imports. The first profile denies filesystem
-writes, networking, and subsequent process execution; it has no mutable-data
-exception, arbitrary policy input, customer credentials, or provider access. If
-Node, addon loading, required runtime operations, or the sealed compiled fixture
-cannot work under these restrictions, that profile is unsupported. Do not silently
-broaden it or call a narrower successful probe a production launch.
+Implement one **owned local named-profile write-denial feasibility probe** first.
+The candidate is exactly `sandbox_init(kSBXProfileNoWrite, SANDBOX_NAMED, &error)`.
+It combines no profiles and accepts no policy text, flags, mutable-data exception,
+customer credentials, or provider access. Its documented purpose is filesystem
+write prohibition; it does **not** establish network or process-execution denial.
+The probe must perform no network/provider operations. Any outer harness network
+restrictions are test controls, not proof that the child installed those restrictions.
+If the API or actual required write denials fail, report unsupported; do not silently
+substitute a different profile or claim a production launch.
 
 This is an **experimental local control test**, not a production-supported profile
 based on a deprecated API. Approval of the fixed probe would not approve trusted
@@ -51,7 +52,7 @@ decision requiring the complete sealed compiled-consumer evidence below.
    `readIssuerIdentity()`; no exported initializer, setter, token exchange, global
    registry, IPC initialization message, or caller-provided validator exists.
 4. Main loads one fixed, canonical, manifest-bound native addon. Its N-API module
-   initialization itself installs the **compiled fixed restriction profile** through
+   initialization itself installs the **fixed named `kSBXProfileNoWrite` profile** through
    the actual OS API. It accepts no JS arguments and exports no callable methods,
    policy setter, or authority boolean. Initialization throws/terminates on an
    unsupported platform/API/profile or installation failure. Successful `require`
@@ -80,13 +81,23 @@ and deprecated for macOS 10.5–10.8. API availability does not imply that the r
 profile is supported or stable on the current OS. The host observed during this
 investigation is build `26B123`; another host/build requires qualification again.
 
-Use only that declared API, with flags fixed for the reviewed literal profile and
-proper error-buffer cleanup. Do not infer a supported `sandbox_check` ABI from a
-symbol: its declaration/filter constants were absent from the inspected public SDK.
-No guessed private ABI, entitlements, privileged helper, sudo, or system setting
-change is proposed. If `sandbox_init`, its required operations, inheritance, or
-actual enforcement is unavailable, stop with `native_sandbox_profile_unsupported`.
-No permission-only, parent-asserted, or post-load-observation fallback is allowed.
+The SDK explicitly says flags **must be `SANDBOX_NAMED`; all other values are
+reserved**. Use only `kSBXProfileNoWrite` with that flag and proper error-buffer
+cleanup. No flags-zero literal profile, custom Seatbelt text, private API, or
+combined profile is proposed. Other predefined names include `kSBXProfileNoNetwork`
+and `kSBXProfilePureComputation`; their existence does not combine their effects
+with NoWrite. The header also says an already-sandboxed process ignores the new
+profile and returns an error: **do not chain calls or assume additive restrictions**.
+In particular, an outer sandbox-exec wrapper may cause this probe's initialization
+to fail; record that incompatibility rather than pretending both profiles applied.
+Do not remove or weaken required harness controls without review to obtain a pass.
+
+Do not infer a supported `sandbox_check` ABI from a symbol: its declaration/filter
+constants were absent from the inspected public SDK. No guessed private ABI,
+entitlements, privileged helper, sudo, or system setting change is proposed. If
+installation or the required actual write enforcement is unavailable, stop with
+`native_sandbox_profile_unsupported`. No permission-only, parent-asserted, or
+post-load-observation fallback is allowed.
 
 The native build/toolchain is an explicit prerequisite. Its resulting bytes and
 native dependency closure must be included in a newly successful exact-source
@@ -97,22 +108,24 @@ remain explicit trusted-host prerequisites, not a hostile-host attestation claim
 ## Immutable closure and enforcement
 
 The package must be genuinely kernel-readonly before main runs; owner-writable
-`chmod` modes are insufficient. The native restriction profile denies **all**
-filesystem writes, including package files, its backing image and parent directory,
-renames, truncation, unlink, metadata changes, and alternate writable paths. It
-does not rely on a supplied backing-image pathname. Required mount/detach, process,
-or other mutation operations must be shown denied where the proposed profile can
-express them; otherwise the immutable-launch gate remains unsupported. Existing
-open descriptors and OS/native mutation paths need explicit tests; open/read-only
-mount observations alone do not prove these properties.
+`chmod` modes are insufficient. The named NoWrite profile is a **candidate** for
+protecting the executable root and backing files. Its actual behavior must be
+qualified against package/backing-image writes, rename, truncation, unlink,
+metadata changes, alternate writable paths, and retained open descriptors. Do not
+claim every operation is denied from the profile's name alone. Readonly mount
+observations alone do not establish backing-file protection.
 
-There is no exemption for a writable executable cache, source tree, alternative
-module path, native loader path, downloaded module, or mutable Next configuration.
-The first profile allows no mutable application data. Any future logs/cache/data
-exception needs a separate concrete non-executable path policy and tests against
-module/config/native loading from that path. Do not grant executable writes to
-make a server start. The host owner/kernel remain trusted; external hostile host
-modification and fleet absence are outside this local model.
+There is no proposed exemption for writable executable caches, source trees,
+alternative module/native loader paths, downloaded modules, or mutable Next
+configuration. If required write protection cannot be established, immutable launch
+remains unavailable. Any future data-write exception requires separate review.
+
+NoWrite does not establish network or process-execution denial. These are explicit
+limitations, **not newly invented mandatory conditions for local identity** under
+the original approved immutable-launch design. Provider traffic remains forbidden
+by this task and independently governed by existing action authority/transport
+controls. No local identity grants provider access. The host owner/kernel remain
+trusted; external hostile-host modification and fleet absence remain out of scope.
 
 ## RED → GREEN qualification gates
 
@@ -120,7 +133,7 @@ modification and fleet absence are outside this local model.
 | --- | --- |
 | Native installation | On an owned child, absence/failure/unsupported API never imports the fixture consumer or returns identity. Actual successful API installation must precede observed kernel denials; a mocked boolean is insufficient. |
 | Filesystem enforcement | An otherwise-writable owned control file is writable in an unrestricted control child, but denied in the restricted child; package/backing-image writes, truncate/rename/unlink/metadata and retained writable-descriptor cases refuse. Compare exact file bytes afterward. |
-| Network/process limits | Actual network attempts and child execution are denied in the owned probe without contacting a real provider. Use local controlled endpoints only if separately allowed for the test; otherwise no-network tests must not claim all network-operation coverage. No retries or provider credentials. |
+| Network/process scope | No network/provider operations occur in the probe. NoWrite is not credited with network or process-execution denial. Outer harness restrictions are documented separately and never become child self-proof; initialization failure under an already-sandboxed harness is unsupported, not a chained success. |
 | Readonly root | Writable copy, permission-only readonly root, missing mount, writable runtime/native module, changed mode, symlink alias, missing file, or extra executable file refuses before native load/application import. Actual sealed fixture is the positive control. |
 | Pre-import/loaded code | Preload/loader/path/cache overrides refuse before child execution where controllable. Attempt replacement before and after import, duplicate resolution, worker/restart and direct-import initialization; none can acquire or replay lexical identity. Record trusted-host limits honestly. |
 | Same compiled consumer | A newly successful exact archive build must include the canonical native bootstrap and actual compiled issuer/store/transport consumer in the same sealed package. Real compiled composition, with explicitly simulated auth/provider ports, must obtain identity through the same module instance and refuse tampered/partial/runtime/native/profile variants before reservation/mint/write. A toy fixture alone cannot pass this gate. |
@@ -140,10 +153,13 @@ the native boundary **and actual compiled issuer consumer** exists may a reviewe
 private identity variant be implemented/accepted. Current Prisma engine provenance
 still blocks the full application build and is not bypassed by this proposal.
 
-A network-denied local probe is not a provider-enabled production runtime. Permitting
-real provider networking, writable runtime data, additional processes, unsupported
-OS profiles, or production issuer binding requires a separately reviewed concrete
-profile and its genuine tests. No global activation or current coverage change is
+The first named-profile probe grants no identity and authorizes no provider traffic.
+If actual NoWrite enforcement, clean loader/runtime closure, immutable package and
+all actual compiled-consumer gates subsequently pass, it may support local identity
+under the original approved design without invented network/process-denial gates.
+Provider traffic still requires its existing independent action authorization; the
+probe itself supplies none. Writable runtime exceptions and unsupported OS changes
+require separate review. No global activation or current coverage change is
 part of this proposal. Until every relevant gate passes, keep fixed unavailable
 states and do not expose an `issuerArtifactDigest` as executing identity.
 
@@ -151,3 +167,12 @@ Review requested: approve or reject the additional native component/API support
 risk, the strict first profile, the exact main-only topology, and these acceptance
 gates before implementation. If the deprecated API cannot support a defensible
 profile, retain unavailable and select a separately reviewed execution boundary.
+
+## Review correction before approval
+
+Independent review and a second direct SDK-header read corrected the initial draft's
+unsupported literal-profile/flags assumption and combined network/process-denial
+claims. The public API requires SANDBOX_NAMED and rejects re-sandboxing. This revision
+proposes only fixed named NoWrite feasibility, records its exact limitations, and
+does not promote a harness result or profile name into actual issuer identity.
+No native code or test was executed while making this documentation correction.
