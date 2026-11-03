@@ -1,0 +1,12 @@
+{
+  "lib/db.ts": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4",
+  "lib/desktop/releaseProviderMergeCoordinator.ts": "c5c39961ba3e1ba17efb516ae8797c7dc0c1cc69ea6520dc1ec35e43a4210bf5",
+  "lib/tauri/releaseProviderMergeStore.ts": "5a72178233f2d4300830192f8d11ac21a591ca30e1de4c9754f54ef84fd20033",
+  "lib/tauri/releaseProviderMergeApprovalStore.ts": "50aefd553326346ac88a9f8754427c67c0d2bff3ffe5a98b197d7572c4c337f3",
+  "lib/desktop/releaseProviderMergeToken.ts": "5824796e3983cca49939cd49c9928bdda6a16557885fa5ce723b64cd3cc9a3e6",
+  "lib/tauri/releaseProviderMergeCredential.ts": "f0d5a35464c4cb9b8447f6da7d0ff709abc8ea43d829c11701a503261c29cd14",
+  "lib/tauri/releaseProviderMergeTransport.ts": "64d12519c4cb3d6beb4d62e21ec603972a46d8758c9d42afd2399c03e509fc97",
+  "lib/security/credentialVault.ts": "4a83e24129610e7c4872fac512f847828152691e1723ad21b8877bcdd3486c33",
+  "lib/connectors/github/githubAppAuth.ts": "a4e25c822d09c9738d9e2d2683d663b3ac3022163343172cdd050fce9f9749de",
+  "packages/verified-issuer-runtime/index.cjs": "a9152cbf65c8b1516c2506dc7d37250ed1ea0057ca11feabbfba08cb47de8c1f"
+}

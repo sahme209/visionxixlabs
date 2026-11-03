@@ -1,0 +1,51 @@
+# C: fixed compiled direct-merge effect service
+
+**Review proposal only; no implementation or operational approval.** Source scope `d410` with bridge analysis `04dd4576`/`b128aaa4`. This replaces neither the approved artifact-binding matrix nor full master coverage/fleet requirements. No tests, execution, service, DB operation, grant, credential or provider action occurred.
+
+## Decision and bounded scope
+
+Recommend a **separate resource-owning issuer process** for the first proposed profile, `axiom.compiled-direct-pr-merge/1`, because current Next module topology does not establish option B’s exclusive ownership. It executes the **same actual emitted compiled** `releaseProviderMergeCoordinator` → approval/operation store → drain/admission → credential factory → `releaseProviderMergeTransport` graph from one verified package. It does not reimplement merge policy in a native proxy, call a source wrapper, or accept a web-supplied “verified” digest.
+
+The private bootstrap creates one fixed dispatcher as its sole capability recipient and launches no arbitrary entrypoint. The native origin/lifetime component and the fixed compiled dispatcher jointly guard the privileged resources. Exact dispatcher artifact, transitive modules, Node/native closure and resource configuration belong to the supported package profile. Packaging alone does not prove any of this wiring.
+
+### Data-only boundary
+
+The web/desktop route forwards a bounded exact saved operation locator, expected revision/digest, original nonce and requested tighter deadline/cancellation. It forwards authenticated user/session material through a separately specified authenticated channel, not claimed actor IDs. The issuer independently resolves the **current** session, accepted membership, requester capability, real distinct reviewer, exact saved approval, baseline/source/connection and native policy before acting. IPC client authentication establishes caller transport identity, not user approval.
+
+No request supplies a callback, repo/client object, `fetch`, module path, credential, native handle, authority digest or permit. The only response is bounded inert saved outcome/history locator. No DB capability, provider token or callable execution authority returns to the frontend. Reads and recovery have explicit authorized interfaces and cannot become an alternate execute operation.
+
+## Resource custody: necessary operational changes
+
+| Resource | Proposed sole privileged owner | Required exclusion of unbound processes / integrity condition |
+|---|---|---|
+| Exact operation claim, consumed attempt, approval consumption and drain/lease records | Fixed compiled issuer using the actual current store and original transaction/lock order. | General Next/worker DB principal cannot create/update these authority records for this profile. Shared `DurableAgentWorkflow` storage means table-wide web write access is insufficient: a reviewed row/kind-scoped or equivalent isolated access boundary is required. No DB enforcement implementation is selected or installed here. |
+| Independent approval and canonical plan | Issuer-controlled persistence after independently authenticated exact reviewer/requester decisions; current source may remain read through narrowly authorized interfaces. | Web cannot manufacture an approved revision or change a claimed plan, reviewer, deadline, policy or stored source underneath the issuer. Approval authoring therefore also needs an issuer-owned data-only decision interface (or an equivalently independent authority service), not unrestricted web writes to the same rows. Genuine human decisions remain required. |
+| Current identity/membership/policy/revocation facts | Existing authoritative identity/policy service or separately constrained DB owner, read and locked/revalidated by issuer. | A web DB role that can arbitrarily manufacture sessions, accepted roles or policy approvals would bypass this design. Exact authority writers, revoke-only containment paths and admin boundaries must be inventoried before a least-privilege role design can be approved. This proposal does not assert current identity storage already meets that condition. |
+| GitHub App signing/mint authority and connection decryption | Issuer process only for this profile, through existing scoped token/credential logic and tracked lifetime. | Remove real App signing and relevant decrypt capability from general Next/workers, including legacy broad token routes. Merely moving a JS guard while leaving those secrets available elsewhere is insufficient. Existing shared `CREDENTIAL_ENCRYPTION_KEY`/fallback custody requires separation or a reviewed external key owner; no new keys/rotation/grants are authorized here. |
+| Write-capable installation token | Issuer-owned memory and durable exposure/lease accounting; never returned to frontend. | Other process credentials must not independently mint/use equivalent tokens. Existing valid/untracked tokens and older runtimes remain activation/drain blockers until genuinely qualified or expired under the original rules. |
+| Final provider write | Fixed compiled transport privately created by dispatcher, with no caller-selected implementation. | General web/worker cannot recover the real token or provider signing authority. Generic network access alone is not merge authority, but any alternative credential/signing route must be removed or remain a coverage blocker. Native freshness alone is not sufficient to grant network or DB authority. |
+
+These are **prerequisites, not evidenced facts**. Current `lib/db.ts:3–20` exports a general Prisma client. Coordinator imports stores/token/credential factories (`lib/desktop/releaseProviderMergeCoordinator.ts:1–31`) and accepts configurable ports. `releaseProviderMergeToken.ts:15–29` returns bearer credentials; `releaseProviderMergeTransport.ts:27–55` accepts resource ports and performs the final PUT. `githubAppAuth.ts` uses App signing configuration and `credentialVault.ts:6–10,32–65` uses shared decryption configuration. Moving those imports to another JS file does not make the resources exclusive.
+
+## One operation’s ownership and freshness
+
+1. Fixed dispatcher reads exact saved operation and current authorized participants/source outside locks; request data never supplies the saved content. Preserve existing preflight and approval meaning.
+2. Before durable claim/approval consumption, confirm current native origin/lifetime and original current actor/session/policy. The actual store retains its transaction, locks, exact expected version and approval consumption. Claim delivery after awaits must retain original freshness; do not reconstruct it from a persisted receipt.
+3. Before credential mint/exposure, verify the exact privately owned admitted claim and current native/session/connection/source authority. Acquire the narrowly scoped credential with existing lease accounting, then recheck after awaited mint. Failures never release possibly exposed credentials prematurely.
+4. Actual fixed compiled transport retains existing target/policy/read and final-authority checks. At synchronous send handoff, require fresh native lifetime plus the same original private claim/freshness and live credential budget. No data-only permit can substitute.
+5. Append bounded outcome through issuer-owned store. Timeout/crash/aborted send remains consumed unknown where acceptance is possible; restart performs read-only exact reconciliation and never reconstructs execution permission or sends again. Prior unknown histories remain immutable.
+
+An admission-to-send service crash is not proof of no effect. Caller disconnect/cancellation may stop unsubmitted work, but cannot erase a claim or establish provider cancellation after submission. Revocation is observed at original current checks, including after awaits/final handoff; service unavailability refuses execution while preserving authorized history/containment access. Shutdown/cleanup must retain outstanding credential/unknown holds and refuse activation until the original quiescence requirements are proven. No new emergency bypass or automatic replay is introduced.
+
+## Compatibility and decisions needed before code approval
+
+**Cost:** this reuses actual business logic but is materially larger than a reader implementation: fixed compiled dispatcher/package profile, authenticated data-only operation and approval APIs, authority-record access separation, provider-key custody, transition of existing web readers/writers and old-token/runtime accounting. It avoids duplicate business-policy code; it does not avoid infrastructure and access-boundary work. Existing signed desktop/UI may remain data-only clients; no service availability should be advertised yet.
+
+Concrete decisions for review:
+
+- Adopt a separately launched local process versus an existing reviewed customer deployment service boundary; neither is implemented. Do not silently register a daemon or create a cloud service.
+- Select enforceable authority-record isolation for shared workflow storage and enumerate all allowed identity/policy writers. A least-privilege role/row policy or separate authority storage requires its own reviewed schema/access plan, backup/restore and migration. No production DB change is authorized.
+- Select provider signing/decryption custody and migration for existing tokens/legacy paths. These are real permission/credential changes requiring explicit operational consent; current broad access cannot be treated as already removed.
+- Define authenticated channel/session validation and fixed dispatcher artifact/lifetime binding. IPC credentials, service installation and live qualification are separate approvals; do not treat this document as consent.
+
+A subsequent **local-code-only** approval may cover strict data contracts and isolated composition with inert simulated resources. That cannot qualify exclusive real custody, native launch, DB grants or provider effects. No test procedure/code is included here. Actual same-package compiled-consumer acceptance, original tamper/loader/claim/credential/freshness/unknown matrix, runtime/fleet/legacy/drain gates and **all master executor profiles** remain mandatory. Every uncovered profile continues to refuse; this initial profile cannot justify global enrollment or completion.
