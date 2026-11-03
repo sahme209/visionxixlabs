@@ -1,0 +1,30 @@
+{
+  "kind": "local_verified_source_only",
+  "precedingCommit": "b67525da",
+  "sourceFiles": {
+    "lib/billing/organizationSeatClaim.ts": "e54a834353248eac41c3defc40ea5d7e91fe08540d03b22b92acd4bb655f110a",
+    "app/accept-invite/[token]/page.tsx": "be6e480535283007a37459eb4a61a30bc2a52ff15ca202361e70e34e37cd563b",
+    "scripts/verify-local-prisma-engine-checksums.py": "74d97ed7708f812724e7a86eaf1ac2ea190a4a7cf0c1bdd15f92e0ce695d763c"
+  },
+  "logs": {
+    "/private/tmp/axiom-invitation-repair-green.log": "2c4377d2567e0d6704eb7ee6d3e00329ce922d55b0595c21857d6110085d2515",
+    "/private/tmp/axiom-invitation-seat-pg.log": "4ac8097926367e4dee2500da0a7f013f79fed8aa5a74c1d556fc928cf4acedc0",
+    "/private/tmp/axiom-invitation-repair-types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/private/tmp/axiom-prisma-collector-wallclock-green.log": "d8cda113f3aca26af2051f2884a84a600f2f6540a4fd759eb04ae6c5402503a5"
+  },
+  "cases": {
+    "invitationFocused": 23,
+    "actualIsolatedPostgresRaces": 2,
+    "collectorLocal": 12
+  },
+  "invitationScopedTypes": "passed",
+  "providerReadsThisIncrement": 0,
+  "productionChanges": false,
+  "fullBuild": "not_claimed",
+  "remainingInvitationPolicy": [
+    "removed_member_old_token_recreation",
+    "nonce_revocation_lifetime",
+    "governance_barrier_admission"
+  ],
+  "engineVendorMatch": "unavailable"
+}

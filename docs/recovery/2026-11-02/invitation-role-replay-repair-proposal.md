@@ -1,6 +1,6 @@
 # Invite acceptance: reproduced defects and narrow repair proposal
 
-**Pending user validation-first approval. Local code/tests only are proposed; no invitation, real membership change, migration or deployment is authorized by this document.**
+**USER APPROVED LOCAL IMPLEMENTATION: approval call `c98f76fab51441dbb9bebfea5b235edf`. Authorization covers this narrow local repair and isolated validation only; no invitation delivery, real membership change, production database action, migration, deployment or broader invitation-policy change is authorized.**
 
 Source inspected at `442ef5b84b92fcfeb0a80ade30816d6c09d14736`, 2026-11-02. Design/evidence only; no production changes, protocol, new grant, provider, invitation delivery or live database. Reproductions explicitly simulate database, browser authentication, audit and billing entitlement; they invoke the actual acceptance page, real HMAC invitation implementation, and actual seat helper. No real credentials are used.
 

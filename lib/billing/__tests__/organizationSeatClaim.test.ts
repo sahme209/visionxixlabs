@@ -5,7 +5,7 @@ function repository(input: { used: number; tier?: string; seats?: number | null;
   const tx = {
     tenantBillingPlan: { findUnique: vi.fn(async () => input.tier ? { tier: input.tier, status: "active", seatQuantity: input.seats ?? null } : null) },
     orgMembership: {
-      findUnique: vi.fn(async () => input.existing ? { id: "membership-1" } : null),
+      findUnique: vi.fn(async () => input.existing ? { id: "membership-1", role:"read_only", acceptedAt:new Date("2026-11-02T12:00:00Z") } : null),
       count: vi.fn(async () => input.used),
       create: vi.fn(async () => ({})),
       update: vi.fn(async () => ({})),

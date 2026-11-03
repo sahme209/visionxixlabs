@@ -20,7 +20,7 @@ import { validateInviteToken, ROLE_LABEL, type InviteRole } from "@/lib/workforc
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
-import { claimOrganizationSeat, type OrganizationSeatClaimRepo } from "@/lib/billing/organizationSeatClaim";
+import { claimInvitedOrganizationSeat, type OrganizationSeatClaimRepo } from "@/lib/billing/organizationSeatClaim";
 
 export const dynamic = "force-dynamic";
 
@@ -80,12 +80,14 @@ export default async function AcceptInvitePage({
 
   // Permission check passed. Create or update the membership.
   const correlationId = `team_accept_${Date.now().toString(36)}` as CorrelationId;
+  let currentRole: InviteRole = role as InviteRole;
   let result: "created" | "already_member" | "seat_limit" | "error" = "error";
   try {
-    const claim = await claimOrganizationSeat(prisma as unknown as OrganizationSeatClaimRepo, {
+    const claim = await claimInvitedOrganizationSeat(prisma as unknown as OrganizationSeatClaimRepo, {
       userId: String(ctx.userId), organizationId, role: role as InviteRole, invitedBy: invitedByUserId,
     });
-    result = claim.ok ? (claim.created ? "created" : "already_member") : claim.error === "seat_limit_exhausted" ? "seat_limit" : "error";
+    if (claim.ok) currentRole = claim.role as InviteRole;
+    result = claim.ok ? (claim.alreadyMember ? "already_member" : "created") : claim.error === "seat_limit_exhausted" ? "seat_limit" : "error";
   } catch (err) {
     console.warn("[accept-invite] failed:", err instanceof Error ? err.message : err);
     result = "error";
@@ -119,13 +121,13 @@ export default async function AcceptInvitePage({
       <div className="rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-6 text-center">
         <ShieldCheckIcon className="h-8 w-8 text-emerald-300 mx-auto mb-3" />
         <p className="text-[15px] text-zinc-100 font-mono mb-2">
-          {result === "created" ? "welcome to the workspace" : "role refreshed"}
+          {result === "created" ? "welcome to the workspace" : "already a workspace member"}
         </p>
         <p className="text-[12px] text-zinc-400 mb-1 font-mono">
-          role :: <span className="text-emerald-300">{role}</span> · {ROLE_LABEL[role as InviteRole]?.label}
+          role :: <span className="text-emerald-300">{currentRole}</span> · {ROLE_LABEL[currentRole]?.label}
         </p>
         <p className="text-[11px] text-zinc-500 leading-relaxed mb-4">
-          {ROLE_LABEL[role as InviteRole]?.description}
+          {ROLE_LABEL[currentRole]?.description}
         </p>
         <form action="/api/account/workspace" method="post"><input type="hidden" name="organizationId" value={organizationId} /><button type="submit" className="text-[11px] font-mono uppercase tracking-wider px-4 py-2 rounded-full border border-emerald-500/30 text-emerald-100 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/15 transition-colors inline-block">
           enter dashboard →
