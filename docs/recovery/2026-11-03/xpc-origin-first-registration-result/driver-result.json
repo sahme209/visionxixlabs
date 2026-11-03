@@ -1,0 +1,21 @@
+{
+  "manifest": "25129462668fe5ef677af7283b09fda4d6d7c9d2defc443e7c8653c3906ca368",
+  "scope": "component protocol only; NO issuer identity",
+  "phase": "refused_or_unknown_no_retry",
+  "ownedRegistration": false,
+  "signature": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "",
+    "stderr": ""
+  },
+  "preStatus": {
+    "exit": 65,
+    "timeout": false,
+    "stdout": "{\"operation\":\"--status-reviewed-unit\",\"bundleURL\":\"\\/tmp\\/axiom-origin-unit-prepared-2d_6kwi8\\/Axiom Origin Unit.app\",\"exactCallingBundle\":false,\"executableURL\":\"\\/tmp\\/axiom-origin-unit-prepared-2d_6kwi8\\/Axiom Origin Unit.app\\/Contents\\/MacOS\\/AxiomOriginRegistrationHost\",\"bundleIdentifier\":\"com.visionxixlabs.axiom.origin-unit.app\"}\n",
+    "stderr": ""
+  },
+  "failureType": "AssertionError",
+  "phaseAtFailure": "started",
+  "cleanupAttempted": false
+}
