@@ -1,0 +1,58 @@
+{
+  "baseRevision": "5580afdb47468c855be237a1633fc42b29b91929",
+  "scope": "local fixed legacy Jira publish and nonassociated close only",
+  "sourceHashes": "source-sha256.json",
+  "focused": {
+    "genuineCanonicalRed": {
+      "failed": 1,
+      "filtered": 31
+    },
+    "routeGreen": {
+      "passed": 32
+    }
+  },
+  "actualPostgres": [
+    {
+      "run": "initial legacy",
+      "passed": 11,
+      "failed": 1,
+      "reason": "test incorrectly demanded definitive refused after current reviewer authority was lost; existing safe finish fallback records unknown",
+      "fixture": "/private/tmp/axiom-jira-legacy-pg-wqvfoyk0",
+      "stopped": true
+    },
+    {
+      "run": "targeted corrected expectation + both canonical-negative decrypt counters",
+      "passed": 3,
+      "filtered": 9,
+      "fixture": "/private/tmp/axiom-jira-legacy-pg-kz1xdhrt",
+      "stopped": true
+    },
+    {
+      "run": "associated-link/close regression of generalized helper",
+      "passed": 2,
+      "filtered": 10,
+      "fixture": "/private/tmp/axiom-ticket-governance-pg-hddw131o",
+      "stopped": true
+    }
+  ],
+  "doNotClaimSingle12or14CaseGreen": true,
+  "types": {
+    "exit": 0,
+    "stdoutBytes": 0,
+    "command": [
+      "node",
+      "node_modules/typescript/bin/tsc",
+      "-p",
+      "work/jira-legacy-outbound/tsconfig.json",
+      "--noEmit",
+      "--incremental",
+      "false"
+    ]
+  },
+  "externalPorts": "authentication, initial source-preview issuer, positive canonical identity and provider replies explicitly simulated; actual stores/transactions/history and independent-lock checks",
+  "canonicalExecutingIdentity": "unavailable",
+  "productionCoverage": "empty/refused unchanged",
+  "activation": "unavailable",
+  "providerWrites": false,
+  "productionOrSchemaChanges": false
+}

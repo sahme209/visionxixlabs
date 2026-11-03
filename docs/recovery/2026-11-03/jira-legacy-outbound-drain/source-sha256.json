@@ -1,0 +1,9 @@
+{
+  "lib/desktop/jiraTicketLifecycleHttp.ts": "d13e88a713f698117a358905836c4f943969789f143c0b7c87839ef98da7641a",
+  "lib/releaseops/jiraTicketLifecycleStore.ts": "8dbb4a0ccf6de6af62e428c3691710a2babbabf374a0525b5d21c0ccce93adfd",
+  "lib/governance/intelligence/jiraLegacyOutboundDrain.ts": "a4ffe53c05d4e932116345b721a2a0896fe3d332115a2e55efcfa66584ddeb58",
+  "lib/governance/intelligence/jiraOutboundIssuer.ts": "a41688288f638c743ea6bea58e37b3e2be64701506bc6012dc23491b51716b12",
+  "lib/releaseops/jiraTicketTransport.ts": "a91d151ef71c88da423d519c1b79105d289b97099471aeba419a8905cf6cf71b",
+  "lib/desktop/__tests__/jiraTicketLifecycleRoute.test.ts": "a984ad60927702af32cb0e3bf2c62d7adcc170ccbbf174ba816c15a39f8a6891",
+  "lib/desktop/__tests__/jiraLegacyOutbound.pg.test.ts": "41d3880ab86948780630bcec67976421a29d0ae2e4db738fb3e0e644a8ee4a99"
+}

@@ -1,0 +1,8 @@
+{
+  "source": "/private/tmp/axiom-jira-legacy-outbound-5580afdb",
+  "fixture": "/private/tmp/axiom-ticket-governance-pg-hddw131o",
+  "clientFixture": "/private/tmp/axiom-provider-approval-pg-evidence-ekacs0_g",
+  "started": true,
+  "stopped": true,
+  "providerAndAuthority": "simulated; actual owned durable storage and HTTP composition"
+}

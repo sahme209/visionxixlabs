@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-jira-legacy-outbound-5580afdb
+
+ ❯ lib/desktop/__tests__/jiraTicketLifecycleRoute.test.ts (32 tests | 1 failed | 31 skipped) 10ms
+   × actual unavailable issuer refuses legacy dispatch before credential preflight or claim 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/jiraTicketLifecycleRoute.test.ts > actual unavailable issuer refuses legacy dispatch before credential preflight or claim
+AssertionError: expected 201 to be 409 // Object.is equality
+
+- Expected
++ Received
+
+- 409
++ 201
+
+ ❯ lib/desktop/__tests__/jiraTicketLifecycleRoute.test.ts:67:24
+     65|  readyDispatchFixture();m.issuerAvailable=false;
+     66|  const result=await handleJiraTicketLifecycle(request('POST',{expected…
+     67|  expect(result.status).toBe(409);expect(m.credential).not.toHaveBeenCa…
+       |                        ^
+     68| });
+     69|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 31 skipped (32)
+   Start at  12:52:12
+   Duration  352ms (transform 155ms, setup 0ms, import 283ms, tests 10ms, environment 0ms)
+

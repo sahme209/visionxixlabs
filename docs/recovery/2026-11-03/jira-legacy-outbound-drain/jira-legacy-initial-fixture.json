@@ -1,0 +1,8 @@
+{
+  "source": "/private/tmp/axiom-jira-legacy-outbound-5580afdb",
+  "fixture": "/private/tmp/axiom-jira-legacy-pg-wqvfoyk0",
+  "clientFixture": "/private/tmp/axiom-jira-legacy-pg-evidence-eov9y8uw",
+  "started": true,
+  "stopped": true,
+  "providerAndAuthority": "simulated; actual owned durable storage and HTTP composition"
+}

@@ -1,0 +1,5 @@
+{
+ "extends":"../../tsconfig.next.json",
+ "include":["../../next-env.d.ts","../../lib/desktop/jiraTicketLifecycleHttp.ts","../../lib/releaseops/jiraTicketLifecycleStore.ts","../../lib/governance/intelligence/jiraLegacyOutboundDrain.ts"],
+ "exclude":["../../node_modules","../../desktop","../../**/__tests__/**"]
+}
