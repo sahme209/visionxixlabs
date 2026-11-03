@@ -1,0 +1,19 @@
+{
+  "baseRevision": "6262effe4a12289647cff736bae815c805c78302",
+  "files": {
+    "packages/verified-issuer-runtime/index.cjs": "a9152cbf65c8b1516c2506dc7d37250ed1ea0057ca11feabbfba08cb47de8c1f",
+    "packages/verified-issuer-runtime/test/production-define-minify.test.cjs": "5a2168df11a1c22f1376120314fdd29cf6e2e37eb77655a2a2f2d5766db5043c"
+  },
+  "newCompilerRegression": {
+    "red": 1,
+    "green": 1,
+    "actualSourceBundled": true,
+    "bundleExecuted": false,
+    "network": "kernel_denied"
+  },
+  "existingCjsSuite": {
+    "pass": 29,
+    "fail": 0
+  },
+  "qualification": false
+}

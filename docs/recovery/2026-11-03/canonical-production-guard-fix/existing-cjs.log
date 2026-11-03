@@ -1,0 +1,37 @@
+✔ actual main records preimport refusal without application loading on an unqualified root (23.794375ms)
+✔ actual controlled-main gate rejects extra argv, module-cache exchange and supplied authority (23.495541ms)
+✔ direct import exposes only immutable unavailable consumer, no activation or digest (0.849541ms)
+✔ main fails closed and imports no application even when given alleged manifest/digest (22.967ms)
+✔ environment and copied descriptors cannot initialize direct consumer (23.546209ms)
+✔ independent module instances and cached import cannot acquire or exchange identity (0.310792ms)
+✔ preloaded/loader-overridden main remains unavailable; main does not claim to prevent earlier preload execution (23.2965ms)
+✔ worker import remains unavailable and exports no initializer (12.256708ms)
+✔ actual CJS observer agrees with Python canonical golden manifest, still unqualified (94.501208ms)
+✔ missing/tampered/extra executable or changed mode refuses (112.152583ms)
+✔ forged/duplicate/noncanonical manifest cannot qualify (83.513458ms)
+✔ outside symlink, hardlink and sensitive files refuse (82.757667ms)
+✔ manifest root and transitive external subtree cannot be partial (28.980917ms)
+✔ observer never initializes public consumer or accepts descriptor instead of package path (27.765291ms)
+✔ late PEM beyond original prefix refuses despite exact synthetic file hash (25.782ms)
+✔ duplicate JSON keys in trace and required server files refuse (53.057166ms)
+✔ trace total entry cap refuses a hash-matching oversized list (45.049583ms)
+✔ combined directory/link/file manifest entry cap refuses before walking (315.573334ms)
+✔ oversized sparse regular file refuses before reading contents (27.106833ms)
+✔ recognized PEM header followed by long cross-chunk whitespace refuses (64.363666ms)
+✔ quoted parser header literal is data and both observers agree (50.012458ms)
+✔ launch observations refuse writable format fixture and outside actual executable (29.388708ms)
+✔ launch observations reject actual process loader override flags (55.039166ms)
+✔ launch observations do not accept a mismatched manifest runtime profile (26.652875ms)
+✔ launch controls accept canonical in-root source package symlink without qualifying identity (51.336708ms)
+✔ failed package observation withholds runtime and loader metadata (0.06025ms)
+✔ explicit profile /2 accepts 250001 trace entries without widening legacy /1 (2547.801916ms)
+✔ explicit profile /2 refuses 512001 trace entries and unknown profile (86.369083ms)
+✔ explicit profile /2 Python and CJS observations agree without identity (51.90275ms)
+ℹ tests 29
+ℹ suites 0
+ℹ pass 29
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3905.121125

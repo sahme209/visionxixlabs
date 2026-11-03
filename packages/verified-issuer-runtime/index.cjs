@@ -19,7 +19,7 @@ let privateRuntime = null;
 let canonicalExports;
 function refuse() { throw Error('verified_issuer_launch_unavailable'); }
 function cleanLoader() {
-  if (!isMainThread || process.execArgv.length || process.argv.length !== 2) refuse();
+  if (!isMainThread || process.execArgv.length || process.argv.length !== 2 || process.env.NODE_ENV !== 'production') refuse();
   for (const [name, value] of Object.entries(process.env)) {
     // Fixed production mode is application configuration, never origin authority.
     if (name === 'NODE_ENV' && value === 'production') continue;
@@ -78,7 +78,6 @@ if (require.main === canonicalModule) {
     // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
     const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
     if (!required || !required.config || typeof required.config !== 'object') refuse();
-    process.env.NODE_ENV = 'production';
     process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
     const { startServer } = require(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
     if (typeof startServer !== 'function') refuse();

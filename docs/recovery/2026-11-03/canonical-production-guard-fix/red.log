@@ -1,0 +1,43 @@
+✖ actual canonical module remains parseable after production DefinePlugin replacement (51.227167ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 112.954542
+
+✖ failing tests:
+
+test at packages/verified-issuer-runtime/test/production-define-minify.test.cjs:10:1
+✖ actual canonical module remains parseable after production DefinePlugin replacement (51.227167ms)
+  [Error:   x The left-hand side of an assignment expression must be a variable or a property access.
+      ,-[89:1]
+   86 |     // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+   87 |     const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+   88 |     if (!required || !required.config || typeof required.config !== 'object') refuse();
+   89 |     "production" = 'production';
+      :     ^^^^^^^^^^^^
+   90 |     process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+   91 |     const { startServer } = __webpack_require__(732)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+   92 |     if (typeof startServer !== 'function') refuse();
+      `----
+    x Invalid assignment target
+      ,-[89:1]
+   86 |     // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
+   87 |     const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
+   88 |     if (!required || !required.config || typeof required.config !== 'object') refuse();
+   89 |     "production" = 'production';
+      :     ^^^^^^^^^^^^
+   90 |     process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
+   91 |     const { startServer } = __webpack_require__(732)(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
+   92 |     if (typeof startServer !== 'function') refuse();
+      `----
+  
+  
+  Caused by:
+      0: failed to parse input file
+      1: Syntax Error] {
+    code: 'GenericFailure'
+  }
