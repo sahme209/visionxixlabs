@@ -1,0 +1,13 @@
+{
+  "lib/governance/intelligence/mergeOutboundDrain.ts": "c744366368b71af45070b03a232e879ec061fcbb8a041b15c5726069f8e2e2fd",
+  "lib/governance/intelligence/mergeOutboundIssuer.ts": "3e0d39538b925a443788a075e5d4a2114d1f4ffba11abd5caddeb2ef5ab7535f",
+  "lib/governance/intelligence/enrollmentDrainStore.ts": "51e4b994973148488e73bffba9e49a743f27050b24d8033390379a5cbd2749e0",
+  "lib/desktop/releaseProviderMergeCoordinator.ts": "c5c39961ba3e1ba17efb516ae8797c7dc0c1cc69ea6520dc1ec35e43a4210bf5",
+  "lib/tauri/releaseProviderMergeStore.ts": "5a72178233f2d4300830192f8d11ac21a591ca30e1de4c9754f54ef84fd20033",
+  "lib/governance/intelligence/__tests__/mergeOutboundDrain.test.ts": "891322f030f9da984657f565b4944d287d58afaa6d407571ca0cc8dab769d96b",
+  "lib/governance/intelligence/__tests__/mergeOutboundIssuer.test.ts": "ef0e00dd5cd4895663f37a6c632a520e396460db6888db9d1ee96974205d8b8d",
+  "lib/governance/intelligence/__tests__/enrollmentDrainStore.test.ts": "3405e0c0560339d8ddcfc5a9d64bb13ec05d8a77c1d3300f0c976a702919a4b7",
+  "lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts": "c3388ab82acbc8b3a13261584cf9714c9f316eb11ed3b18bc01037caadb7f62d",
+  "lib/tauri/__tests__/releaseProviderMergeStore.test.ts": "7bc6c2d1af5b0725a2d812e2fceb459c455f3abdfb5fa77ca4968fdb86837f67",
+  "lib/desktop/__tests__/releaseProviderMergeCoordinator.test.ts": "f7f9391a1a2b6f866ae552c099c2232494e6fab9a55514c9843e65243be0eee5"
+}

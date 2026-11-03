@@ -1,0 +1,63 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge] { phase: [32m'authority'[39m, outcome: [32m'started'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge.topology] { phase: [32m'classic_protection'[39m, outcome: [32m'verified'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge.policy] { phase: [32m'final_authority'[39m, outcome: [32m'verified'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge] { phase: [32m'credential'[39m, outcome: [32m'started'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge] { phase: [32m'policy'[39m, outcome: [32m'started'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge.topology] { phase: [32m'classic_protection'[39m, outcome: [32m'verified'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge.policy] { phase: [32m'final_authority'[39m, outcome: [32m'verified'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge] { phase: [32m'target'[39m, outcome: [32m'started'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge] { phase: [32m'final_authority'[39m, outcome: [32m'started'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge.topology] { phase: [32m'classic_protection'[39m, outcome: [32m'verified'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge.policy] { phase: [32m'final_authority'[39m, outcome: [32m'verified'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge] { phase: [32m'write'[39m, outcome: [32m'started'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge] { phase: [32m'confirmation'[39m, outcome: [32m'started'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mnormal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT
+[22m[39m[axiom.release.merge] { phase: [32m'confirmation'[39m, outcome: [32m'confirmed'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mlost outbound reservation acknowledgement retains actual committed slot and never remints or resends
+[22m[39m[axiom.release.merge] { phase: [32m'authority'[39m, outcome: [32m'started'[39m }
+
+[90mstdout[2m | lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts[2m > [22m[2mactual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider[2m > [22m[2mlost outbound reservation acknowledgement retains actual committed slot and never remints or resends
+[22m[39m[axiom.release.merge] { phase: [32m'authority'[39m, outcome: [32m'refused'[39m }
+
+ [32m✓[39m lib/governance/intelligence/__tests__/mergeCoordinatorEnrolled.pg.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m9 skipped[39m[2m)[22m[33m 5999[2mms[22m[39m
+     [33m[2m✓[22m[39m normal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT [33m 4754[2mms[22m[39m
+     [33m[2m✓[22m[39m lost outbound reservation acknowledgement retains actual committed slot and never remints or resends [33m 917[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[2m | [22m[33m9 skipped[39m[90m (12)[39m
+[2m   Start at [22m 14:08:48
+[2m   Duration [22m 6.50s[2m (transform 250ms, setup 0ms, import 439ms, tests 6.00s, environment 0ms)[22m
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.

@@ -1,4 +1,7 @@
-# Governance execution coverage — local audit
+# Governance execution coverage — historical audit with current qualification pointer
+
+**Current November3 pointer:** the original October30 inventory and increments below are historical evidence, not an authoritative claim that today's merge factory is unmounted. The actual normal enrolled merge coordinator already selects V2; the new real outbound attempt/intent adapter is now composed in that coordinator. See [current outbound composition](../2026-11-03/governance-merge-outbound-progress.md) and [corrected critical path](../2026-11-03/governance-critical-path-correction.md). Production registered coverage still returns an empty set and activation refuses. Real executing identity, compiled qualification, all-family/fleet/legacy/quiescence and live acceptance remain missing. Do not repeat the obsolete unmounted-factory statement as current status.
+
 
 No execution path is registered as covered yet. Enrollment remains refused by
 request composition. This inventory is a starting audit, not a complete set of

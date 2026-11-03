@@ -1,4 +1,5 @@
 import 'server-only';
+import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
 import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
 import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction as Tx,ReleaseOperationPlanRow as Row} from '@/lib/agent/workflows/releaseOperationPlanStore';
@@ -82,6 +83,25 @@ export function createEnrollmentDrainStore(repo:ReleaseOperationPlanRepo,deps:En
  async function append(tx:Tx,row:Row,actor:RevisionScope,prior:any){await tx.durableAgentWorkflowEvent.create({data:{organizationId:row.organizationId,workflowRunId:row.id,sequence:row.version,eventType:row.workflowKind+'.'+(row.stateJson as any).status,actorKind:'user',actorId:actor.actorUserId,detailJson:{inputDigest:hash(row.inputJson),stateDigest:hash(row.stateJson),previousStateDigest:prior===null?null:hash(prior),expectedVersion:row.version===0?null:row.version-1,state:row.stateJson,actor},occurredAt:row.updatedAt}})}
  async function create(tx:Tx,s:RevisionScope,id:string,kind:string,input:any,state:any,at:Date){validStep(kind,null,state,input,s);const row=await tx.durableAgentWorkflow.create({data:{id,organizationId:s.organizationId,workflowKind:kind,objective:'Governance drain protocol metadata; no execution authority',requestedByUserId:s.actorUserId,autonomyLevel:'observe',status:'paused_for_input',currentStep:state.status,inputJson:input,stateJson:state,attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,createdAt:at,updatedAt:at}});await append(tx,row,s,null);return row;}
  async function update(tx:Tx,s:RevisionScope,x:Awaited<ReturnType<typeof history>>,state:any,at:Date){if(x.row.version>=127)fail();validStep(x.row.workflowKind,x.state,state,x.input,s);const consumed=x.row.workflowKind===DECISION&&state.status==='consumed',complete=consumed||state.status==='aborted'||state.status==='quiescent';const data={stateJson:state,currentStep:state.status,status:complete?'completed':'paused_for_input',attemptCount:consumed?1:0,version:{increment:1},updatedAt:at};const result=await tx.durableAgentWorkflow.updateMany({where:{id:x.row.id,organizationId:s.organizationId,workflowKind:x.row.workflowKind,version:x.row.version,inputJson:{equals:x.input},stateJson:{equals:x.state},attemptCount:x.row.attemptCount,leaseOwner:null,leaseExpiresAt:null},data});if(result.count!==1)fail();const row={...x.row,...data,version:x.row.version+1};await append(tx,row,s,x.state);return row;}
+ /** One actual operation has one attempt in the current merge profile. The
+  * canonical slot itself persists its server nonce; query under the org lock,
+  * never a process cache, recovers that immutable association after lost ack. */
+ async function findAttempt(tx:Tx,s:RevisionScope,operationId:string){
+  const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:s.organizationId,workflowKind:SLOT,inputJson:{path:['binding','operationId'],equals:operationId}},orderBy:{id:'asc'},take:2});
+  if(rows.length>1)fail();
+  if(!rows.length)return null;
+  const x=await history(tx,rows[0]),input=slotInput.parse(x.input);
+  if(input.scope.organizationId!==s.organizationId||input.binding.operationId!==operationId)fail();
+  return {...x,slot:input};
+ }
+ async function reserveLocked(tx:Tx,s:RevisionScope,b:DrainOutboundBinding,retain:(f:()=>void)=>void){
+  const a=await authority(tx,s,'reader'),v=await operationProof(tx,s,b),bar=await barrier(tx,s);
+  if(bar&&bar.state.status!=='aborted')fail();
+  const epoch=bar?transitionState.parse(bar.state).epoch:null,id='governance_outbound_'+hash({organizationId:s.organizationId,serverNonce:b.serverNonce});
+  if(await tx.durableAgentWorkflow.findFirst({where:{id}}))fail();
+  const at=await clock(tx),row=await create(tx,s,id,SLOT,{format:1,scope:s,binding:b,epoch,createdAt:at.toISOString()},{status:'reserved'},at);
+  await clock(tx);const fresh=()=>{a();v()};fresh();retain(fresh);return drainRecordView(row);
+ }
  const view=drainRecordView;
  function live(plan:DrainDecisionPlan,at:Date){ready();const expiry=Date.parse(plan.expiresAt);if(!Number.isFinite(expiry)||Date.now()>=expiry||at.getTime()>=expiry)fail();}
  async function principals(tx:Tx,s:RevisionScope,callerRole:DrainAuthorityRole,x:Awaited<ReturnType<typeof history>>){const input=decisionInput.parse(x.input),p=input.plan;const fs=[await authority(tx,s,callerRole,input.scope,'administrator')];if(x.state.status!=='proposed'){const reviewer=decisionState.parse(x.state);if(reviewer.status==='proposed')fail();if(reviewer.reviewer.actorUserId!==p.reviewerUserId||reviewer.reviewer.organizationId!==s.organizationId)fail();fs.push(await authority(tx,s,callerRole,reviewer.reviewer,'reviewer'))}return()=>fs.forEach(f=>f())}
@@ -90,7 +110,27 @@ export function createEnrollmentDrainStore(repo:ReleaseOperationPlanRepo,deps:En
   async approveDecision(raw:RevisionScope,id:string){drainDecisionIdSchema.parse(id);return transaction(raw,async(tx,s,retain)=>{const x=await load(tx,s,id),input=decisionInput.parse(x.input),p=input.plan;if(x.state.status!=='proposed'||s.actorUserId!==p.reviewerUserId||s.actorUserId===p.requesterUserId)fail();const a=await principals(tx,s,'reviewer',x),r=await authority(tx,s,'reviewer'),v=await planProof(tx,s,p),at=await clock(tx);live(p,at);const row=await update(tx,s,x,{status:'approved',reviewer:s},at);const end=await clock(tx);const fresh=()=>{a();r();v();live(p,end)};fresh();retain(fresh);return view(row)})},
   async begin(raw:RevisionScope,id:string){return execute(raw,id,'begin')},
   async abort(raw:RevisionScope,id:string){return execute(raw,id,'abort')},
-  async reserve(raw:RevisionScope,rawBinding:DrainOutboundBinding){const b=outboundBindingSchema.parse(rawBinding);return transaction(raw,async(tx,s,retain)=>{const a=await authority(tx,s,'reader'),v=await operationProof(tx,s,b),bar=await barrier(tx,s);if(bar&&bar.state.status!=='aborted')fail();const epoch=bar?transitionState.parse(bar.state).epoch:null,id='governance_outbound_'+hash({organizationId:s.organizationId,serverNonce:b.serverNonce});if(await tx.durableAgentWorkflow.findFirst({where:{id}}))fail();const at=await clock(tx),row=await create(tx,s,id,SLOT,{format:1,scope:s,binding:b,epoch,createdAt:at.toISOString()},{status:'reserved'},at);await clock(tx);const fresh=()=>{a();v()};fresh();retain(fresh);return view(row)})},
+  async reserve(raw:RevisionScope,rawBinding:DrainOutboundBinding){const b=outboundBindingSchema.parse(rawBinding);return transaction(raw,(tx,s,retain)=>reserveLocked(tx,s,b,retain))},
+  /** New operations only; an existing reserved/unknown/terminal slot is never
+   * reused to mint, resend, replace history or escape an uncertain commit. */
+  async reserveAttempt(raw:RevisionScope,rawBinding:Omit<DrainOutboundBinding,'serverNonce'>){
+   const b=outboundBindingSchema.omit({serverNonce:true}).parse(rawBinding);
+   return transaction(raw,async(tx,s,retain)=>{
+    const a=await authority(tx,s,'reader');
+    if(await findAttempt(tx,s,b.operationId))fail();
+    a();return reserveLocked(tx,s,{...b,serverNonce:randomUUID()},retain);
+   });
+  },
+  /** Read-only lost-ack/restart association. It grants no replay capability. */
+  async readAttempt(raw:RevisionScope,operationId:string,attemptId:string){
+   identifier.parse(operationId);identifier.parse(attemptId);
+   return transaction(raw,async(tx,s,retain)=>{
+    let a=await authority(tx,s,'reader');const x=await findAttempt(tx,s,operationId);
+    if(!x||x.slot.binding.attemptId!==attemptId)fail();
+    a=await authority(tx,s,'reader');await clock(tx);a();retain(a);
+    return structuredClone({...view(x.row),kind:'slot' as const,binding:x.slot.binding,originalScope:x.slot.scope});
+   });
+  },
   async markSubmissionIntent(raw:RevisionScope,id:string,publishFreshness?:(consumeFresh:()=>void)=>void){return slotChange(raw,id,'submission_intent',undefined,publishFreshness)},
   async markUnknown(raw:RevisionScope,id:string){return slotChange(raw,id,'unknown')},
   async observeQuiescent(raw:RevisionScope,id:string,observationDigest:string){digestSchema.parse(observationDigest);return slotChange(raw,id,'quiescent',observationDigest)},

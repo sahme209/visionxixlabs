@@ -22,3 +22,23 @@ it('allows current same-tenant reader terminal reconciliation without adopting o
 it('recovers exact consumed decision and unknown slot read-only with a new current reader',async()=>{const f=fixture(),slot=await f.store.reserve(scope,binding);await f.store.markSubmissionIntent(scope,slot.id);await f.store.markUnknown(scope,slot.id);await begin(f);const decision=f.rows().find(r=>r.workflowKind==='governance_drain_decision_v1'),observer={...scope,actorUserId:'observer',sessionId:'new-session'},before=f.events().length;f.deps.verifyPlan=undefined as any;f.deps.verifyOperation=undefined as any;expect(await f.store.readSaved(observer,slot.id)).toMatchObject({kind:'slot',status:'unknown',binding,originalScope:scope,executionAuthorized:false});expect(await f.store.readSaved(observer,decision.id)).toMatchObject({kind:'decision',status:'consumed',plan,originalScope:scope,reviewerScope:reviewer});expect(f.events()).toHaveLength(before);await expect(f.store.readSaved({...observer,organizationId:'other'},slot.id)).rejects.toThrow();await expect(f.store.readSaved(observer,'arbitrary-workflow')).rejects.toThrow();f.events()[0].detailJson.inputDigest='f'.repeat(64);await expect(f.store.readSaved(observer,slot.id)).rejects.toThrow();});
 
 it.each([undefined,async()=>undefined,async()=>true])('DB-only outbound metadata reader requires actual private current reader even for empty state',async assertCurrent=>{const f=fixture();await expect(readEnrollmentDrainBlockersLocked(f.tx,'org',{signal:f.signal.signal,assertCurrent:assertCurrent as any})).rejects.toThrow();});
+
+it('reserves a durable unique original attempt with a server nonce, then only reads that exact association after restart',async()=>{
+ const f=fixture(),{serverNonce:_,...attempt}=binding;
+ // JSON association lookup is a real database query in the PG journey; this
+ // small in-memory repository only models immutable rows for the unit boundary.
+ const original=f.tx.durableAgentWorkflow.findMany.getMockImplementation()!;
+ f.tx.durableAgentWorkflow.findMany.mockImplementation(async(args:any)=>{
+  if(args.where.inputJson){const op=args.where.inputJson.equals;return structuredClone(f.rows().filter(r=>r.organizationId===args.where.organizationId&&r.workflowKind===args.where.workflowKind&&r.inputJson.binding.operationId===op).slice(0,args.take))}
+  return original(args);
+ });
+ const slot=await (f.store as any).reserveAttempt(scope,attempt);
+ expect(slot).toMatchObject({status:'reserved',epoch:null,executionAuthorized:false});
+ const saved=await (f.store as any).readAttempt(scope,attempt.operationId,attempt.attemptId);
+ expect(saved).toMatchObject({id:slot.id,kind:'slot',status:'reserved',binding:attempt,originalScope:scope});
+ expect(saved.binding.serverNonce).toMatch(/^[a-f0-9-]{36}$/);
+ expect(f.rows()).toHaveLength(1);expect(f.events()).toHaveLength(1);
+ await expect((f.store as any).reserveAttempt(scope,attempt)).rejects.toThrow();
+ await expect((f.store as any).readAttempt(scope,attempt.operationId,'other-attempt')).rejects.toThrow();
+ expect(f.rows()).toHaveLength(1);expect(f.events()).toHaveLength(1);
+});

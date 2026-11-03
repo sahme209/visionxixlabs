@@ -1,3 +1,5 @@
+// Explicit source-composition fixture only; no executing issuer is qualified.
+vi.mock('@/lib/governance/intelligence/mergeOutboundIssuer',()=>({readMergeOutboundIssuerDigest:()=> 'c'.repeat(64)}));
 import {beforeEach,it,expect,vi} from 'vitest';import {NextRequest} from 'next/server';
 const m=vi.hoisted(()=>({auth:vi.fn(),query:vi.fn(),prepare:vi.fn(),recover:vi.fn(),read:vi.fn(),consume:vi.fn(),deps:null as any,approvalDeps:null as any,governed:vi.fn(),governedRun:vi.fn(),fence:vi.fn(),enrolled:vi.fn(),defaultGuard:{assert:vi.fn()},composition:vi.fn(),binding:vi.fn()}));
 vi.mock('@/lib/governance/intelligence/requestService',()=>({createGovernanceRequestService:()=>({hasAnyEnrollment:m.enrolled})}));

@@ -15,11 +15,16 @@ import {buildReleaseMergePlan} from '@/lib/tauri/releaseMergePlan';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createReleaseOperationPlan,reviewReleaseOperationPlan} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {createReleaseProviderMergeApprovalStore} from '@/lib/tauri/releaseProviderMergeApprovalStore';
-const FIXTURE=vi.hoisted(()=>({coverage:true,coverageReads:0,lastOrg:'',afterWarm:null as null|(()=>Promise<void>)}));
+const FIXTURE=vi.hoisted(()=>({coverage:true,coverageReads:0,issuerAvailable:true,lastOrg:'',afterWarm:null as null|(()=>Promise<void>)}));
 vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:async(request:any)=>({credentialKind:'desktop_session',id:request.principal.sessionId,userId:request.principal.actorUserId,organizationId:request.principal.organizationId,capabilities:['workspace:read','policy:manage','github:read','deploy:execute','agent:approve']})}));
 // ONLY this closed fixture extends actual empty production coverage. Every
 // source/evidence/enrollment/authority/policy method remains actual requestService.
 vi.mock('../requestService',async(importActual)=>{const actual:any=await importActual();return{...actual,createGovernanceRequestService:(...args:any[])=>{const service=actual.createGovernanceRequestService(...args);return{...service,readActiveEvidence:async(selection:any)=>{const result=await service.readActiveEvidence(selection);if(FIXTURE.afterWarm&&args[2].actorUserId==='executor'){const mutate=FIXTURE.afterWarm;FIXTURE.afterWarm=null;await mutate()}return result},readExecutionCoverage:async(selection:any)=>{const original=await service.readExecutionCoverage(selection);expect(original.coveredActions).toEqual([]);FIXTURE.coverageReads++;return{...original,coveredActions:FIXTURE.coverage&&original.enrolled?['repository.merge']:[]}}}}}});
+// ONLY this source-level fixture supplies a simulated canonical digest. The
+// false branch invokes the actual current rejecting canonical extractor.
+vi.mock('../mergeOutboundIssuer',async(importActual)=>{
+ const actual:any=await importActual();return{readMergeOutboundIssuerDigest:()=>FIXTURE.issuerAvailable?'c'.repeat(64):actual.readMergeOutboundIssuerDigest()};
+});
 function request(scope:any){const r=new NextRequest('https://fixture.invalid/local');Object.assign(r,{principal:scope});return r}
 const socket=process.env.AXIOM_EXECUTION_POLICY_PG_SOCKET;
 describe.skipIf(!socket)('actual enrolled coordinator selects V2; closed FIXTURE coverage/pairing/provider',()=>{
@@ -34,8 +39,8 @@ describe.skipIf(!socket)('actual enrolled coordinator selects V2; closed FIXTURE
   const[r]=await db.$queryRawUnsafe("SELECT current_database()='policy_fixture' AND current_user='policy_fixture' AND current_setting('listen_addresses')='' AS private");if(!r?.private)throw Error('owned_fixture_required');
  });
  afterAll(async()=>{vi.unstubAllEnvs();await locker?.$disconnect();await db?.$disconnect()});
- async function fixture(options:{missingBaseline?:boolean;otherScope?:boolean;expirySubject?:'executor'|'approver';sourceChangeAfterWarm?:boolean}={}){
-  FIXTURE.coverage=true;FIXTURE.coverageReads=0;FIXTURE.afterWarm=null;
+ async function fixture(options:{missingBaseline?:boolean;otherScope?:boolean;expirySubject?:'executor'|'approver';sourceChangeAfterWarm?:boolean;reservationLostAck?:boolean}={}){
+  FIXTURE.coverage=true;FIXTURE.issuerAvailable=true;FIXTURE.coverageReads=0;FIXTURE.afterWarm=null;
   const org='merge-'+randomUUID(),now=Date.now(),selection={repositoryId:'team/service',resourceId:'github:repository:team/service',environment:(options.otherScope?'staging':'production') as 'staging'|'production'};
   const identities=Object.fromEntries(['owner','reviewer','executor','creator','requester','approver'].map(userId=>[userId,{organizationId:org,actorUserId:userId,sessionId:org+'-'+userId}]));
   for(const[userId,role]of [['owner','admin'],['reviewer','security_reviewer'],['executor','operator'],['creator','admin'],['requester','operator'],['approver','security_reviewer']]){
@@ -68,13 +73,20 @@ describe.skipIf(!socket)('actual enrolled coordinator selects V2; closed FIXTURE
   let mode='valid',merged=false,exactExpiry=0;const calls:Array<{method:string;url:string;profile?:string;attempt:number}>=[];
   const pr=()=>({number:42,state:merged?'closed':'open',draft:false,merged,merge_commit_sha:merged?'e'.repeat(40):null,head:{sha:plan.pullRequest.headSha,ref:'feature',repo:{full_name:'team/service'}},base:{sha:plan.pullRequest.baseSha,ref:'main',repo:{full_name:'team/service'}}});
   const fetcher=vi.fn(async(url:any,init:any)=>{
-   await locker.$transaction(async(tx:any)=>{await tx.$queryRaw`SELECT "id" FROM "DurableAgentWorkflow" WHERE "id" IN (${operation.id},${planRecord.id}) FOR UPDATE NOWAIT`});
+   await locker.$transaction(async(tx:any)=>{
+    const [orgLock]=await tx.$queryRaw`SELECT pg_try_advisory_xact_lock(hashtext(${'governance_org_'+sha256ContentHash(org)})) AS "acquired"`;expect(orgLock.acquired).toBe(true);
+    await tx.$queryRaw`SELECT "id" FROM "DurableAgentWorkflow" WHERE "id" IN (${operation.id},${planRecord.id}) OR ("organizationId"=${org} AND "workflowKind"='governance_outbound_v1') FOR UPDATE NOWAIT`;
+   });
    const current=await db.durableAgentWorkflow.findUnique({where:{id:operation.id}}),target=String(url);const body=init.body?JSON.parse(init.body):null,profile=target.endsWith('/access_tokens')?(body.permissions.contents==='write'?'write':'read_only'):undefined;calls.push({method:init.method,url:target,profile,attempt:current.attemptCount});
-   if(profile){if(profile==='write'){expect(current).toMatchObject({currentStep:'dispatching',attemptCount:1});expect(await db.durableAgentWorkflow.count({where:{organizationId:org,workflowKind:'release_credential_exposure_v1',currentStep:'pending'}})).toBe(1);exactExpiry=Date.now()+3600000}else expect(body.permissions).toEqual({administration:'read',contents:'read',pull_requests:'read',metadata:'read'});
+   if(profile){if(profile==='write'){expect(await db.durableAgentWorkflow.findMany({where:{organizationId:org,workflowKind:'governance_outbound_v1'}})).toMatchObject([{currentStep:'reserved',version:0}]);expect(current).toMatchObject({currentStep:'dispatching',attemptCount:1});expect(await db.durableAgentWorkflow.count({where:{organizationId:org,workflowKind:'release_credential_exposure_v1',currentStep:'pending'}})).toBe(1);exactExpiry=Date.now()+3600000}else expect(body.permissions).toEqual({administration:'read',contents:'read',pull_requests:'read',metadata:'read'});
     const permissions=mode==='profile_changed'&&profile==='read_only'?{...body.permissions,contents:'write'}:body.permissions;
     return Response.json({token:profile==='write'?'SIMULATED_WRITE_TOKEN':'SIMULATED_READ_TOKEN',expires_at:new Date(profile==='write'?exactExpiry:Date.now()+3600000).toISOString(),permissions,repository_selection:'selected',repositories:[{name:'service',full_name:'team/service',owner:{login:'team'}}]},{status:201});}
    if(target.endsWith('/installation')||target.endsWith('/app/installations/123')){if(mode==='metadata_missing')return Response.json({},{status:404});return Response.json({id:123,app_id:123,account:{id:456,login:'team',type:'Organization'},suspended_at:null,repository_selection:'selected',permissions:{contents:'write',pull_requests:'read',metadata:'read'}})}
-   if(init.method==='PUT'){merged=true;return Response.json({sha:'e'.repeat(40),merged:true})}
+   if(init.method==='PUT'){
+    expect(await db.durableAgentWorkflow.findMany({where:{organizationId:org,workflowKind:'governance_outbound_v1'}})).toMatchObject([{currentStep:'submission_intent',version:1}]);
+    merged=true;if(mode==='lost_merge_ack')throw Error('SIMULATED merge response lost');
+    return Response.json({sha:'e'.repeat(40),merged:true});
+   }
    if(target.includes('/compare/'))return Response.json({status:'ahead',ahead_by:1,behind_by:0,total_commits:1,base_commit:{sha:plan.pullRequest.baseSha},merge_base_commit:{sha:plan.pullRequest.baseSha},commits:[{sha:plan.pullRequest.headSha,parents:[{sha:plan.pullRequest.baseSha}]}]});
    if(target.includes('/rulesets?')||target.includes('/rules/branches/'))return Response.json([]);
    if(target.endsWith('/protection'))return Response.json({},{status:404});
@@ -82,16 +94,47 @@ describe.skipIf(!socket)('actual enrolled coordinator selects V2; closed FIXTURE
    if(target.endsWith('/pulls/42'))return Response.json(pr());
    return Response.json({id:12,full_name:'team/service',default_branch:'main',archived:false,disabled:false,allow_merge_commit:true,allow_squash_merge:true,allow_rebase_merge:true});
   });
-  const coordinatorRepo=options.expirySubject?new Proxy(db,{get(target,key){if(key==='$transaction')return async(fn:any,opts:any)=>{const result=await target.$transaction(fn,opts);if(result?.state==='prepared'&&result?.attemptCount===0)await locker.$queryRaw`SELECT true AS delayed FROM pg_sleep(1.1)`;return result};const value=target[key];return typeof value==='function'?value.bind(target):value}}):db;
+  let reservationAckFaults=0;
+  const coordinatorRepo=options.expirySubject||options.reservationLostAck?new Proxy(db,{get(target,key){if(key==='$transaction')return async(fn:any,opts:any)=>{const result=await target.$transaction(fn,opts);
+   if(options.expirySubject&&result?.state==='prepared'&&result?.attemptCount===0)await locker.$queryRaw`SELECT true AS delayed FROM pg_sleep(1.1)`;
+   if(options.reservationLostAck&&result?.status==='reserved'&&typeof result.id==='string'&&result.id.startsWith('governance_outbound_')){reservationAckFaults++;throw Error('SIMULATED lost reservation acknowledgement AFTER actual database commit')}
+   return result};const value=target[key];return typeof value==='function'?value.bind(target):value}}):db;
   const coordinator=createReleaseProviderMergeCoordinator(coordinatorRepo,request(scope),{enabled:()=>true,useScopedInstallationTokens:true,useVerifiedLinearTopology:true,mergeTopologyPolicy:'empty_effective_target',fetch:fetcher as typeof fetch});
   if(options.expirySubject)await db.desktopSessionRecord.update({where:{id:identities[options.expirySubject].sessionId},data:{expiresAt:new Date(Date.now()+1000)}});
   if(options.sourceChangeAfterWarm)FIXTURE.afterWarm=async()=>{await ownerService.uploadDocument({name:'merge.md',selection,utf8Bytes:new TextEncoder().encode('Releases require independent approval.'),expectedVersion:artifact.headVersion,requestId:randomUUID()})};
   operation=await coordinator.prepare(planRecord.id);
-  return{org,scope,operation,planRecord,calls,coordinator,setMode:(value:string)=>mode=value,exactExpiry:()=>exactExpiry,rows:()=>db.durableAgentWorkflow.findMany({where:{organizationId:org,workflowKind:'release_credential_exposure_v1'}}),saved:()=>db.durableAgentWorkflow.findUnique({where:{id:operation.id}})};
+  return{org,scope,operation,planRecord,calls,coordinator,setMode:(value:string)=>mode=value,exactExpiry:()=>exactExpiry,reservationAckFaults:()=>reservationAckFaults,rows:()=>db.durableAgentWorkflow.findMany({where:{organizationId:org,workflowKind:'release_credential_exposure_v1'}}),slots:()=>db.durableAgentWorkflow.findMany({where:{organizationId:org,workflowKind:'governance_outbound_v1'}}),saved:()=>db.durableAgentWorkflow.findUnique({where:{id:operation.id}})};
  }
  it('normal hasAnyEnrollment branch composes actual V2 eligibility, readonly source and one tracked postclaim write grant/PUT',async()=>{
   const f=await fixture();expect(await f.coordinator.run(f.operation.id)).toMatchObject({state:'confirmed',attemptCount:1});expect(FIXTURE.coverageReads).toBeGreaterThan(0);expect(f.calls.filter(c=>c.profile==='read_only'&&c.attempt===0).length).toBeGreaterThan(0);expect(f.calls.filter(c=>c.profile==='write')).toHaveLength(1);expect(f.calls.filter(c=>c.profile==='write').every(c=>c.attempt===1)).toBe(true);expect(f.calls.filter(c=>c.method==='PUT')).toHaveLength(1);
+  const slots=await f.slots();expect(slots).toHaveLength(1);expect(slots[0]).toMatchObject({version:1,currentStep:'submission_intent'});expect(slots[0].inputJson.binding).toMatchObject({operationId:f.operation.id,issuerArtifactDigest:'c'.repeat(64)});expect(JSON.stringify(slots)).not.toContain('SIMULATED_WRITE_TOKEN');
   const rows=await f.rows();expect(rows).toHaveLength(1);expect(rows[0]).toMatchObject({currentStep:'issued',version:1});expect(rows[0].stateJson.providerExpiresAt).toBe(f.exactExpiry());expect(JSON.stringify(rows)).not.toContain('SIMULATED_WRITE_TOKEN');await expect(f.coordinator.run(f.operation.id)).rejects.toThrow('governance_merge_binding_unavailable');expect(f.calls.filter(c=>c.profile==='write')).toHaveLength(1);expect(f.calls.filter(c=>c.method==='PUT')).toHaveLength(1);
+ });
+ it('canonical actual issuer-unavailable refuses before outbound or credential reservations and physical mutation',async()=>{
+  const f=await fixture();FIXTURE.issuerAvailable=false;
+  await expect(f.coordinator.run(f.operation.id)).rejects.toThrow('governance_merge_outbound_issuer_unavailable');
+  expect(await f.saved()).toMatchObject({currentStep:'prepared',attemptCount:0,version:0});
+  expect(await f.slots()).toEqual([]);expect(await f.rows()).toEqual([]);
+  expect(f.calls.filter(c=>c.profile==='write'||c.method==='PUT')).toHaveLength(0);
+ });
+ it('lost outbound reservation acknowledgement retains actual committed slot and never remints or resends',async()=>{
+  const f=await fixture({reservationLostAck:true});
+  expect(await f.coordinator.run(f.operation.id)).toMatchObject({state:'refused',attemptCount:1});
+  expect(f.reservationAckFaults()).toBe(1);const [slot]=await f.slots();
+  expect(slot).toMatchObject({currentStep:'reserved',version:0});expect(await f.rows()).toEqual([]);
+  expect(await f.saved()).toMatchObject({currentStep:'refused',attemptCount:1,version:2});
+  await expect(f.coordinator.run(f.operation.id)).rejects.toThrow();
+  expect(await f.slots()).toHaveLength(1);expect((await f.slots())[0].id).toBe(slot.id);
+  expect(f.calls.filter(c=>c.profile==='write'||c.method==='PUT')).toHaveLength(0);
+ });
+ it('lost merge response preserves one durable submission intent and consumed original attempt without resend or quiescence',async()=>{
+  const f=await fixture();f.setMode('lost_merge_ack');
+  expect(await f.coordinator.run(f.operation.id)).toMatchObject({state:'unknown',attemptCount:1});
+  const [slot]=await f.slots();expect(slot).toMatchObject({currentStep:'submission_intent',version:1});
+  expect(await f.saved()).toMatchObject({currentStep:'unknown',attemptCount:1,version:2});
+  await expect(f.coordinator.run(f.operation.id)).rejects.toThrow();
+  expect(f.calls.filter(c=>c.method==='PUT')).toHaveLength(1);expect(f.calls.filter(c=>c.profile==='write')).toHaveLength(1);
+  expect(await f.slots()).toHaveLength(1);expect((await f.slots())[0].id).toBe(slot.id);
  });
  it.each(['metadata_missing','profile_changed'])('actual enrolled coordinator refuses %s before claim or write issuance',async mode=>{const f=await fixture();f.setMode(mode);await expect(f.coordinator.run(f.operation.id)).rejects.toThrow();expect(f.calls.filter(c=>c.profile==='write')).toHaveLength(0);expect(f.calls.filter(c=>c.method==='PUT')).toHaveLength(0);expect(await f.rows()).toEqual([]);expect(await f.saved()).toMatchObject({currentStep:'prepared',attemptCount:0})});
  it('the actual production-empty coverage result still refuses when the closed fixture extension is disabled',async()=>{const f=await fixture();FIXTURE.coverage=false;await expect(f.coordinator.run(f.operation.id)).rejects.toThrow();expect(f.calls.filter(c=>c.profile==='write')).toHaveLength(0);expect(f.calls.filter(c=>c.method==='PUT')).toHaveLength(0);expect(await f.saved()).toMatchObject({attemptCount:0})});

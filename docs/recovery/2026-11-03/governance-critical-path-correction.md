@@ -1,0 +1,11 @@
+# Governance sequencing correction — November 3
+
+The user requested a direct efficiency audit after prolonged incomplete Governance work. Two independent source/scope audits agree: the pending deprecated native NoWrite experiment is a genuine separate decision for that mechanism, but it does not prohibit implementing the already-approved durable outbound drain composition. Prior reports conflated positive runtime qualification with permission to implement source. Their statement that no wiring could begin pending identity was unnecessarily restrictive.
+
+## Critical path now
+1. Implement actual merge coordinator adoption: original claimed operation and authority → durable attempt-bound slot → once-only submission intent → private postcommit freshness → fixed physical transport. Reuse existing org-first transaction/store seams. Preserve original row versions, approvals, consumed attempts and unknown history; no provider I/O under locks.
+2. Verify actual coordinator/store protocol using isolated PostgreSQL and clearly simulated external identity/provider ports, plus the actual canonical-unavailable production refusal. Such tests qualify protocol composition, not executing identity.
+3. Resolve and qualify the controlled immutable pre-import launcher. The original approved trust model does not specifically mandate a deprecated child-native self-installation API. A trusted reviewed launcher and untrusted parent JSON are different. No existing mechanism is presumed qualified; no probe, alternate boundary, initializer or digest is silently enabled.
+4. Run same-artifact compiled consumer acceptance after actual launch qualification, bind real executing identity, then expand action-family coverage/drain/fleet/legacy qualifications. Production activation/coverage remain unavailable until all gates pass.
+
+Approved design authority: ../2026-11-02/governance-enrollment-drain-proposal.md (reservation and actual submission) and governance-issuer-artifact-binding-proposal.md (controlled launch). Native bootstrap proposal remains specifically pending. No provider operations, deployment, schema/settings/grants/credentials/spending authorized by this correction. Independent website/media work must not displace this core path.

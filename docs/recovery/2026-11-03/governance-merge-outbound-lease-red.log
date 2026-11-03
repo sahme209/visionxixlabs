@@ -1,0 +1,43 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/tauri/__tests__/releaseProviderMergeStore.test.ts (32 tests | 1 failed | 31 skipped) 17ms
+   × refuses changed claim ownership for outbound and credential proof without touching original history 16ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/tauri/__tests__/releaseProviderMergeStore.test.ts > refuses changed claim ownership for outbound and credential proof without touching original history
+AssertionError: promise resolved "{ fresh: [Function fresh], …(4) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "attemptId": "release_merge_attempt_ecfcf05b007e27fdf9865cc05c51ebc176c72f54e0281b420278272bac50ba7e",
++   "connectionId": "github-1",
++   "fresh": [Function fresh],
++   "sourceDigest": "3bfa67f1dc73d45cead36e738ef63b2118527539ac8e2db993c70542d95484b8",
++   "targetDigest": "5448cb58dd319745fe4b1834d37438dd7a4a7fd2bb34689fc8a9ca28977d6708",
+  }
+
+ ❯ lib/tauri/__tests__/releaseProviderMergeStore.test.ts:107:118
+    105|  await store.claim(f.scope,op.id);f.rows[0].leaseOwner='another-owner';
+    106|  const before=structuredClone(f.rows),events=structuredClone(f.events);
+    107|  await expect(f.repo.$transaction((tx:any)=>store.readClaimedOutboundL…
+       |                                                                                                                      ^
+    108|  await expect(f.repo.$transaction((tx:any)=>store.assertClaimedCredent…
+    109|  expect(f.rows).toEqual(before);expect(f.events).toEqual(events);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 31 skipped (32)
+   Start at  09:04:46
+   Duration  151ms (transform 46ms, setup 0ms, import 78ms, tests 17ms, environment 0ms)
+
