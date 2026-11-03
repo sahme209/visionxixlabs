@@ -106,7 +106,7 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
 ];
 
 export function SettingsView({ identity, initialSection, onClose, onOpenRepository }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" | "plan" | "integrations"; onOpenRepository?: () => void; onClose?: () => void }) {
-  const [governancePreview, setGovernancePreview] = useState(false);
+  const [governancePreview, setGovernancePreview] = useState<"records" | "limits">();
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Section>(initialSection ?? "general");
   const [prefs, setPrefs] = useState<DesktopPreferences | null>(null);
@@ -160,7 +160,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
     }
   }
 
-  if (import.meta.env.DEV && governancePreview) return <GovernanceWorkspacePreview identity={identity} onClose={() => setGovernancePreview(false)} />;
+  if (import.meta.env.DEV && governancePreview) return <GovernanceWorkspacePreview identity={identity} executionLimits={governancePreview === "limits"} onClose={() => setGovernancePreview(undefined)} />;
   return (
     <div className="settings-workbench relative flex min-h-0 flex-1 bg-axiom-bg">
       <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
@@ -200,7 +200,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
           {saved && <div role="status" className="mb-5 flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200"><Check className="h-4 w-4" />Saved on this computer.</div>}
           <fieldset disabled={savingPreferences || preferenceSaveUnconfirmed && ["general", "profile", "appearance", "agents"].includes(active)} className="m-0 min-w-0 border-0 p-0">
           <legend className="sr-only">Settings controls</legend>
-          {active === "general" && <GeneralSection prefs={prefs} onSave={savePreferences} onOpenGovernance={() => setGovernancePreview(true)} />}
+          {active === "general" && <GeneralSection prefs={prefs} onSave={savePreferences} onOpenGovernance={() => setGovernancePreview("records")} onOpenExecutionLimits={() => setGovernancePreview("limits")} />}
           {active === "profile" && <ProfileSection identity={identity} prefs={prefs} onSave={savePreferences} onRequestSignOut={() => setShowSignOut(true)} />}
           {active === "appearance" && <AppearanceSection prefs={prefs} onSave={savePreferences} />}
           {active === "plan" && <PlanSection identity={identity} />}
@@ -232,13 +232,14 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
   );
 }
 
-function GeneralSection({ prefs, onSave, onOpenGovernance }: PreferenceSectionProps & {onOpenGovernance:()=>void}) {
+function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits }: PreferenceSectionProps & {onOpenGovernance:()=>void;onOpenExecutionLimits:()=>void}) {
   return <div>
     <SectionHeading title="General" detail="Application startup, notifications, and account management." />
     <Group label="Account">
       <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
       <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in Axiom Control." action={<WebButton href="/control/governance" label="Open governance" />} />
       {import.meta.env.DEV && <ActionRow title="Governance evidence preview" detail="Inspect saved evidence and baseline history. Enforcement and authoring remain unavailable in this local preview." action={<button type="button" className="btn-secondary" onClick={onOpenGovernance}>Inspect saved Governance</button>} />}
+      {import.meta.env.DEV && <ActionRow title="Execution limits preview" detail="Review or propose limits for an exact saved baseline. Limits do not enable Governance enforcement or provider actions." action={<button type="button" className="btn-secondary" onClick={onOpenExecutionLimits}>Review execution limits preview</button>} />}
       <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-600">Service verified</span>} />
     </Group>
     <Group label="Notifications">

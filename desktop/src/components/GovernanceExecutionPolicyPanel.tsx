@@ -5,7 +5,7 @@ import {executionPolicyId,type ExecutionPolicyRevision,type ExecutionPolicyMutat
 interface Props {organizationId:string;currentUserId:string;canManage:boolean;canApprove:boolean;scopes:Array<{repositoryId:string;resourceId:string;environment:'production'|'staging'|'development'|'qa'}>}
 /** Local prototype. Capabilities affect presentation only; paired server services
  * independently enforce current authority, exact scope and human independence. */
-export function GovernanceExecutionPolicyPanel(props:Props){const rev=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);return <PolicySession key={rev+':'+props.organizationId+':'+props.currentUserId} {...props}/>}
+export function GovernanceExecutionPolicyPanel(props:Props){const rev=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);return <PolicySession key={rev+':'+props.organizationId+':'+props.currentUserId+':'+JSON.stringify(props.scopes.map(scope=>[scope.repositoryId,scope.resourceId,scope.environment]))} {...props}/>}
 function PolicySession({organizationId,currentUserId,canManage,canApprove,scopes}:Props){
  const owner=useRef({config:desktopClient.config,revision:desktopClient.getContextRevision()}).current,alive=useRef(true),running=useRef(false),active=useRef<AbortController|undefined>(undefined);
  const[directory,setDirectory]=useState<ExecutionPolicyDirectory>(),[requests,setRequests]=useState<ExecutionPolicyRequests>();
@@ -27,6 +27,7 @@ function PolicySession({organizationId,currentUserId,canManage,canApprove,scopes
     setChecked(false);setPointer(undefined);setPolicy(undefined);
     if(!result.ok){setMessage(result.error);return}
     if(result.data.policy.organizationId!==organizationId){setMessage('This policy does not belong to this workspace.');return}
+    if(scopes.length&&!scopes.some(scope=>scope.repositoryId===result.data.policy.scope.repositoryId&&scope.resourceId===result.data.policy.scope.resourceId&&scope.environment===result.data.policy.scope.environment)){setMessage('This policy is outside the loaded baseline scopes.');return}
     setPolicy(result.data);setClock(Date.now());if(!pending)setHeld(false);
    }else if(kind==='pointer'){
     setPointer(undefined);setChecked(false);const result=await client().active(policy!.policy.scope,c.signal);if(!owns())return;
