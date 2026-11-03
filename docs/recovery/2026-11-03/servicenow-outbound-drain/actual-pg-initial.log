@@ -1,0 +1,149 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-servicenow-outbound-5580afdb[39m
+
+ [32m✓[39m lib/desktop/__tests__/jiraAssociatedOutbound.pg.test.ts [2m([22m[2m12 tests[22m[2m | [22m[33m10 skipped[39m[2m)[22m[33m 864[2mms[22m[39m
+       [33m[2m✓[22m[39m actual mounted exact write reserves before credential and commits one intent before unlocked POST [33m 444[2mms[22m[39m
+ [31m❯[39m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts [2m([22m[2m16 tests[22m[2m | [22m[31m16 failed[39m[2m)[22m[33m 616[2mms[22m[39m
+[31m       [31m×[31m actual mounted exact write reserves before credential and commits one intent before unlocked PATCH[39m[32m 70[2mms[22m[39m
+[31m       [31m×[31m actual canonical unavailable preserves independent approval without claim[39m[32m 40[2mms[22m[39m
+[31m       [31m×[31m actual lost PATCH acknowledgement preserves unknown and never resends[39m[32m 42[2mms[22m[39m
+[31m       [31m×[31m actual reservation acknowledgement loss retains slot and blocks postclaim credential access[39m[32m 34[2mms[22m[39m
+[31m       [31m×[31m actual revoked independent association refuses before claim[39m[32m 45[2mms[22m[39m
+[31m       [31m×[31m actual native criterion refusal preserves reserved slot and withholds PATCH[39m[32m 34[2mms[22m[39m
+[31m       [31m×[31m actual journal presence refuses a duplicate evidence append without PATCH[39m[32m 37[2mms[22m[39m
+[31m       [31m×[31m actual enrollment appearing after claim refuses without slot or PATCH[39m[32m 32[2mms[22m[39m
+[31m       [31m×[31m actual mounted exact write reserves before credential and commits one intent before unlocked PATCH[39m[32m 37[2mms[22m[39m
+[31m       [31m×[31m actual canonical unavailable preserves independent approval without claim[39m[32m 38[2mms[22m[39m
+[31m       [31m×[31m actual lost PATCH acknowledgement preserves unknown and never resends[39m[32m 33[2mms[22m[39m
+[31m       [31m×[31m actual reservation acknowledgement loss retains slot and blocks postclaim credential access[39m[32m 33[2mms[22m[39m
+[31m       [31m×[31m actual revoked independent association refuses before claim[39m[32m 30[2mms[22m[39m
+[31m       [31m×[31m actual native criterion refusal preserves reserved slot and withholds PATCH[39m[32m 32[2mms[22m[39m
+[31m       [31m×[31m actual revoked independent terminal policy refuses before claim[39m[32m 31[2mms[22m[39m
+[31m       [31m×[31m actual enrollment appearing after claim refuses without slot or PATCH[39m[32m 30[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m16 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[2m | [22m[33m10 skipped[39m[90m (28)[39m
+[2m   Start at [22m 18:02:10
+[2m   Duration [22m 2.14s[2m (transform 271ms, setup 0ms, import 548ms, tests 1.48s, environment 0ms)[22m
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 16 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual mounted exact write reserves before credential and commits one intent before unlocked PATCH
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual mounted exact write reserves before credential and commits one intent before unlocked PATCH
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m67:125[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual canonical unavailable preserves independent approval without claim
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual canonical unavailable preserves independent approval without claim
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m68:100[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual lost PATCH acknowledgement preserves unknown and never resends
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual lost PATCH acknowledgement preserves unknown and never resends
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m69:96[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual reservation acknowledgement loss retains slot and blocks postclaim credential access
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual reservation acknowledgement loss retains slot and blocks postclaim credential access
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m70:118[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual revoked independent association refuses before claim
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual revoked independent association refuses before claim
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m71:86[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual native criterion refusal preserves reserved slot and withholds PATCH
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual native criterion refusal preserves reserved slot and withholds PATCH
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m72:102[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual journal presence refuses a duplicate evidence append without PATCH
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m73:117[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual enrollment appearing after claim refuses without slot or PATCH
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual enrollment appearing after claim refuses without slot or PATCH
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m75:96[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual revoked independent terminal policy refuses before claim
+[31m[1mServiceNowTicketLifecycleConflict[22m: servicenow_ticket_write_authority_unavailable[39m
+[36m [2m❯[22m writeReady lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m67:227[22m[39m
+
+[90m [2m❯[22m lib/releaseops/serviceNowTicketLifecycleStore.ts:[2m124:523[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback ../axiom-provider-approval-pg-evidence-621ngfa0/generated/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m Proxy.get lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m28:825[22m[39m
+[90m [2m❯[22m prepared lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m57:109[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m74:108[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯[22m[39m
+

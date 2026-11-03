@@ -1,0 +1,51 @@
+{
+  "focused": {
+    "files": 8,
+    "finalPassed": 132,
+    "simulatedPositiveIssuerAuthorityProvider": true
+  },
+  "scopedTypes": "pass after narrow canonical-ordering correction",
+  "independentSourceReview": "full scoped review pass; narrow ordering correction pass",
+  "actualPostgres": {
+    "first": {
+      "session": 48104,
+      "serviceNowFailed": 16,
+      "jiraRegressionsPassed": 2,
+      "failure": "fixture used Jira flags; production write readiness correctly refused",
+      "fixture": "chidx27j; stopped"
+    },
+    "flagsCorrected": {
+      "session": 76787,
+      "passed": 12,
+      "failed": 4,
+      "failure": "test incorrectly expected refused instead of original conservative unknown for adapter preparation exceptions",
+      "fixture": "wg53xrtd; stopped"
+    },
+    "orderingRed": {
+      "session": 96047,
+      "failed": 1,
+      "filtered": 15,
+      "failure": "unavailable canonical runtime still reached native closure metadata once",
+      "fixture": "x921yklm; stopped"
+    },
+    "finalTargeted": {
+      "session": 18567,
+      "passed": 6,
+      "filtered": 10,
+      "fixture": "frl5r05a; stopped"
+    },
+    "distinctServiceNowPassingCasesAcrossRuns": 16,
+    "single16GreenRun": false,
+    "positiveJiraRegressions": 2,
+    "jiraRegressionTiming": "before final SN-only canonical callback; Jira callback is no-op",
+    "actualComposition": "separate durable reviews/policy, DB sessions/memberships/connection binding/history/claims/drain/narrow journal verifier/fixed PATCH/readback",
+    "simulated": "request identity, historical source collectors, native and credential external collectors, provider responses, positive issuer"
+  },
+  "canonicalIssuer": "unavailable; execution-specific preclaim refusal",
+  "sourceWarmupPersistedBearerLifetime": "unqualified; no claim of credential-free association reads",
+  "coverageActivation": "unavailable",
+  "realServiceNowRowsTouched": false,
+  "existingUnknownNoteResentOrRewritten": false,
+  "liveProviderRequests": 0,
+  "nativeProbeExecutedByThisTask": false
+}

@@ -1,0 +1,46 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-servicenow-outbound-5580afdb
+
+ ❯ lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts (3 tests | 3 failed) 11ms
+   × consumes exact private intent before sole PATCH and retains native/readback flow 9ms
+   × original authority expiring during intent commit refuses PATCH 1ms
+   × consumed private intent refuses PATCH after native preflight reads 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts > consumes exact private intent before sole PATCH and retains native/readback flow
+Error: ticket_associated_source_changed
+ ❯ buildAssociatedTicketLink lib/releaseops/associatedTicketCandidate.ts:13:718
+
+ ❯ fixture lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts:6:77
+ ❯ lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts:7:105
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts > original authority expiring during intent commit refuses PATCH
+Error: ticket_associated_source_changed
+ ❯ buildAssociatedTicketLink lib/releaseops/associatedTicketCandidate.ts:13:718
+
+ ❯ fixture lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts:6:77
+ ❯ lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts:8:87
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts > consumed private intent refuses PATCH after native preflight reads
+Error: ticket_associated_source_changed
+ ❯ buildAssociatedTicketLink lib/releaseops/associatedTicketCandidate.ts:13:718
+
+ ❯ fixture lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts:6:77
+ ❯ lib/releaseops/__tests__/serviceNowOutboundFreshness.test.ts:9:91
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 7 passed (8)
+      Tests  3 failed | 129 passed (132)
+   Start at  12:55:35
+   Duration  527ms (transform 728ms, setup 0ms, import 1.23s, tests 409ms, environment 0ms)
+

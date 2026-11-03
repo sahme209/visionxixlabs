@@ -1,0 +1,10 @@
+{
+  "root": "/private/tmp/axiom-ticket-governance-pg-frl5r05a",
+  "client": "/private/tmp/axiom-provider-approval-pg-evidence-_ucl1ifu",
+  "socket": "/private/tmp/axiom-ticket-governance-pg-frl5r05a/socket",
+  "started": true,
+  "stopped": true,
+  "testFile": "lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts",
+  "testStatus": "pass",
+  "testExitCode": 0
+}

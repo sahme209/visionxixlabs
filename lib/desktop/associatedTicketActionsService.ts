@@ -25,6 +25,8 @@ type Candidate=JiraTicketActionCandidate|ServiceNowTicketActionCandidate;
 type Role='read'|'prepare'|'approve'|'execute';
 export type TicketActionDispatchPhase='association_preflight'|'candidate_read'|'native_closure_preflight'|'transport_preflight'|'approved_record_read'|'durable_claim'|'provider_execution'|'result_recording';
 export interface AssociatedTicketActionsPorts{
+ /** Pure server-owned availability refusal, before execution-specific native/credential preflight. */
+ assertPreclaimExecutionAvailable?:(candidate:Readonly<Candidate>)=>void;
  inspectServiceNowPreflight?:(scope:TicketReviewScope,candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<ServiceNowPreflightInspection>;
  probeServiceNowJournal?:(scope:TicketReviewScope,candidate:Readonly<Extract<ServiceNowTicketActionCandidate,{kind:'link'}>>,signal:AbortSignal)=>Promise<{absent:boolean}>;
  governance:Pick<ReturnType<typeof createTicketGovernanceService>,'preflightApproved'|'readApprovedInTransaction'|'get'>;
@@ -33,7 +35,7 @@ export interface AssociatedTicketActionsPorts{
  writeReady:(tx:ReleaseOperationPlanTransaction,scope:TicketReviewScope,candidate:Readonly<Candidate>,binding:TicketReleaseAssociation)=>Promise<boolean>;
  /** Fixed server adapters only. Must check scopes/credential/journal readiness before claim. */
  preflightTransport?:(scope:TicketReviewScope,candidate:Readonly<Candidate>,binding:TicketReleaseAssociation,signal:AbortSignal)=>Promise<void>;
- executeTransport?:(id:string,candidate:Readonly<Candidate>,signal:AbortSignal,assertClaim:(candidate:Readonly<Candidate>,signal:AbortSignal,context?:{phase:'before_dispatch'|'confirm';issue?:{sysId:string;number:string}})=>Promise<void>,jiraOutbound?:Pick<ReturnType<typeof createJiraTicketLifecycleStore>,'readClaimedJiraLinkOutboundLocked'|'readClaimedJiraCloseOutboundLocked'>)=>Promise<{status:'confirmed'|'refused'|'unknown'}>;
+ executeTransport?:(id:string,candidate:Readonly<Candidate>,signal:AbortSignal,assertClaim:(candidate:Readonly<Candidate>,signal:AbortSignal,context?:{phase:'before_dispatch'|'confirm';issue?:{sysId:string;number:string}})=>Promise<void>,jiraOutbound?:Pick<ReturnType<typeof createJiraTicketLifecycleStore>,'readClaimedJiraLinkOutboundLocked'|'readClaimedJiraCloseOutboundLocked'>,serviceNowOutbound?:Pick<ReturnType<typeof createServiceNowTicketLifecycleStore>,'readClaimedServiceNowLinkOutboundLocked'|'readClaimedServiceNowCloseOutboundLocked'>)=>Promise<{status:'confirmed'|'refused'|'unknown'}>;
  readServiceNowClosureDiscovery?:(scope:TicketReviewScope,policyReference:TicketGovernanceReference,issue:{sysId:string;number:string},signal:AbortSignal)=>Promise<ServiceNowTrustedCloseMetadata>;
  readJiraClosureDiscovery?:(scope:TicketReviewScope,candidate:Readonly<JiraTicketActionCandidate>,issue:{id:string;key:string},signal:AbortSignal)=>Promise<JiraTerminalDiscovery>;
  now?:()=>number;
@@ -202,6 +204,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
    if(mode==='cancel'||mode==='recover')await historyHint(scope,signal);else await warm(scope,signal);
    onPhase?.('candidate_read');
    const candidate=await selected(scope,input.actionId);signal.throwIfAborted();
+   if(mode==='dispatch')ports.assertPreclaimExecutionAvailable?.(candidate);
    if((mode==='approve'||mode==='dispatch')&&candidate.kind==='close'&&'instanceOrigin'in candidate){onPhase?.('native_closure_preflight');await preflightStoredServiceNowClose(scope,candidate,signal);}
    if(mode==='cancel')return store().cancel(scope,input);
    if(mode==='recover')return store().recover(scope,input.actionId);
@@ -217,7 +220,7 @@ export function createAssociatedTicketActionsService(repo:ReleaseOperationPlanRe
    const claim=await store().claim(scope,input.actionId);if(!claim.claimed)return claim.record;
    let result:{status:'confirmed'|'refused'|'unknown'};
    onPhase?.('provider_execution');
-   try{result=await ports.executeTransport(input.actionId,claim.candidate,signal,async(c,s,context)=>{s.throwIfAborted();if(sha256ContentHash(c)!==sha256ContentHash(claim.candidate))throw Error('ticket_action_changed');await (binding().ticket.provider==='servicenow'?sn.beforeDispatch(scope,input.actionId,context):jira.beforeDispatch(scope,input.actionId));s.throwIfAborted()},'siteId'in claim.candidate?jira:undefined)}catch{result={status:'unknown'}}
+   try{result=await ports.executeTransport(input.actionId,claim.candidate,signal,async(c,s,context)=>{s.throwIfAborted();if(sha256ContentHash(c)!==sha256ContentHash(claim.candidate))throw Error('ticket_action_changed');await (binding().ticket.provider==='servicenow'?sn.beforeDispatch(scope,input.actionId,context):jira.beforeDispatch(scope,input.actionId));s.throwIfAborted()},'siteId'in claim.candidate?jira:undefined,'instanceOrigin'in claim.candidate?sn:undefined)}catch{result={status:'unknown'}}
    onPhase?.('result_recording');
    try{return await store().finish(scope,input.actionId,result)}catch{return store().finish(scope,input.actionId,{status:'unknown'})}
   },

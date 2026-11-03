@@ -1,0 +1,116 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-servicenow-outbound-5580afdb
+
+ ❯ lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts (16 tests | 6 failed) 26ms
+     × persists the actual attempt before credential work and consumes committed intent once, never quiescent on success 6ms
+     × restart cannot reserve the same consumed/uncertain attempt or reset its persisted server nonce 1ms
+     × lost reservation acknowledgement never causes another reservation or retry within the request 2ms
+     × original authority revoked after intent commit withholds physical submission but retains the blocker 0ms
+     × caller cancellation and a changed issuer withhold private reuse without changing history 0ms
+     × does not accept a swapped plan, operation or original scope to adopt the slot 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts > link exact drain > persists the actual attempt before credential work and consumes committed intent once, never quiescent on success
+ZodError: [
+  {
+    "code": "custom",
+    "path": [],
+    "message": "Invalid input"
+  }
+]
+ ❯ parseServiceNowTicketActionCandidate lib/releaseops/serviceNowTicketLifecycleContract.ts:25:102
+
+ ❯ Object.beforeCredential lib/governance/intelligence/serviceNowOutboundDrain.ts:64:15
+ ❯ lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts:45:51
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts > link exact drain > restart cannot reserve the same consumed/uncertain attempt or reset its persisted server nonce
+ZodError: [
+  {
+    "code": "custom",
+    "path": [],
+    "message": "Invalid input"
+  }
+]
+ ❯ parseServiceNowTicketActionCandidate lib/releaseops/serviceNowTicketLifecycleContract.ts:25:102
+
+ ❯ Object.beforeCredential lib/governance/intelligence/serviceNowOutboundDrain.ts:64:15
+ ❯ lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts:62:47
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts > link exact drain > lost reservation acknowledgement never causes another reservation or retry within the request
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts:72:19
+     70|  // Callback represents a lost reply AFTER the transaction committed.
+     71|  // The same request never retries and a new one cannot remint that at…
+     72|  expect(f.rows()).toHaveLength(1);expect(f.rows()[0].currentStep).toBe…
+       |                   ^
+     73|  expect(f.events()).toHaveLength(1);expect(f.claimed).toHaveBeenCalled…
+     74| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts > link exact drain > original authority revoked after intent commit withholds physical submission but retains the blocker
+ZodError: [
+  {
+    "code": "custom",
+    "path": [],
+    "message": "Invalid input"
+  }
+]
+ ❯ parseServiceNowTicketActionCandidate lib/releaseops/serviceNowTicketLifecycleContract.ts:25:102
+
+ ❯ Object.beforeCredential lib/governance/intelligence/serviceNowOutboundDrain.ts:64:15
+ ❯ lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts:76:51
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts > link exact drain > caller cancellation and a changed issuer withhold private reuse without changing history
+ZodError: [
+  {
+    "code": "custom",
+    "path": [],
+    "message": "Invalid input"
+  }
+]
+ ❯ parseServiceNowTicketActionCandidate lib/releaseops/serviceNowTicketLifecycleContract.ts:25:102
+
+ ❯ Object.beforeCredential lib/governance/intelligence/serviceNowOutboundDrain.ts:64:15
+ ❯ lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts:82:80
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts > link exact drain > does not accept a swapped plan, operation or original scope to adopt the slot
+ZodError: [
+  {
+    "code": "custom",
+    "path": [],
+    "message": "Invalid input"
+  }
+]
+ ❯ parseServiceNowTicketActionCandidate lib/releaseops/serviceNowTicketLifecycleContract.ts:25:102
+
+ ❯ Object.beforeCredential lib/governance/intelligence/serviceNowOutboundDrain.ts:64:15
+ ❯ lib/governance/intelligence/__tests__/serviceNowOutboundDrain.test.ts:90:51
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  6 failed | 123 passed (129)
+   Start at  12:53:24
+   Duration  600ms (transform 719ms, setup 0ms, import 1.15s, tests 445ms, environment 0ms)
+

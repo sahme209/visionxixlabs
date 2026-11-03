@@ -1,0 +1,16 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-servicenow-outbound-5580afdb[39m
+
+ [32m✓[39m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts [2m([22m[2m16 tests[22m[2m | [22m[33m10 skipped[39m[2m)[22m[33m 1978[2mms[22m[39m
+       [33m[2m✓[22m[39m actual mounted exact write reserves before credential and commits one intent before unlocked PATCH [33m 582[2mms[22m[39m
+       [33m[2m✓[22m[39m actual reservation acknowledgement loss retains slot and blocks postclaim credential access [33m 334[2mms[22m[39m
+       [33m[2m✓[22m[39m actual enrollment appearing after claim refuses without slot or PATCH [33m 308[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m6 passed[39m[22m[2m | [22m[33m10 skipped[39m[90m (16)[39m
+[2m   Start at [22m 18:11:32
+[2m   Duration [22m 2.43s[2m (transform 253ms, setup 0ms, import 396ms, tests 1.98s, environment 0ms)[22m
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.

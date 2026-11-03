@@ -1,0 +1,113 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-servicenow-outbound-5580afdb[39m
+
+ [31m❯[39m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts [2m([22m[2m16 tests[22m[2m | [22m[31m4 failed[39m[2m)[22m[33m 3927[2mms[22m[39m
+       [32m✓[39m actual mounted exact write reserves before credential and commits one intent before unlocked PATCH[32m 270[2mms[22m[39m
+       [32m✓[39m actual canonical unavailable preserves independent approval without claim[32m 41[2mms[22m[39m
+       [32m✓[39m actual lost PATCH acknowledgement preserves unknown and never resends[32m 154[2mms[22m[39m
+[31m       [31m×[31m actual reservation acknowledgement loss retains slot and blocks postclaim credential access[39m[32m 86[2mms[22m[39m
+       [32m✓[39m actual revoked independent association refuses before claim[32m 44[2mms[22m[39m
+       [32m✓[39m actual native criterion refusal preserves reserved slot and withholds PATCH[32m 118[2mms[22m[39m
+       [32m✓[39m actual journal presence refuses a duplicate evidence append without PATCH[32m 116[2mms[22m[39m
+[31m       [31m×[31m actual enrollment appearing after claim refuses without slot or PATCH[39m[32m 67[2mms[22m[39m
+       [33m[2m✓[22m[39m actual mounted exact write reserves before credential and commits one intent before unlocked PATCH [33m 502[2mms[22m[39m
+       [32m✓[39m actual canonical unavailable preserves independent approval without claim[32m 266[2mms[22m[39m
+       [33m[2m✓[22m[39m actual lost PATCH acknowledgement preserves unknown and never resends [33m 450[2mms[22m[39m
+[31m       [31m×[31m actual reservation acknowledgement loss retains slot and blocks postclaim credential access[39m[33m 354[2mms[22m[39m
+       [32m✓[39m actual revoked independent association refuses before claim[32m 251[2mms[22m[39m
+       [33m[2m✓[22m[39m actual native criterion refusal preserves reserved slot and withholds PATCH [33m 388[2mms[22m[39m
+       [32m✓[39m actual revoked independent terminal policy refuses before claim[32m 247[2mms[22m[39m
+[31m       [31m×[31m actual enrollment appearing after claim refuses without slot or PATCH[39m[33m 325[2mms[22m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m12 passed[39m[22m[90m (16)[39m
+[2m   Start at [22m 18:05:00
+[2m   Duration [22m 4.29s[2m (transform 207ms, setup 0ms, import 316ms, tests 3.93s, environment 0ms)[22m
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+[90mstderr[2m | lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[2m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22m[2mlink[2m > [22m[2mactual native criterion refusal preserves reserved slot and withholds PATCH
+[22m[39maxiom_servicenow_transport_refused { phase: [32m'final_native_plan'[39m, aborted: [33mfalse[39m, deadlineExpired: [33mfalse[39m }
+
+[90mstderr[2m | lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[2m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22m[2mlink[2m > [22m[2mactual journal presence refuses a duplicate evidence append without PATCH
+[22m[39maxiom_servicenow_transport_refused { phase: [32m'journal_absence'[39m, aborted: [33mfalse[39m, deadlineExpired: [33mfalse[39m }
+
+[90mstderr[2m | lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[2m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22m[2mclose[2m > [22m[2mactual native criterion refusal preserves reserved slot and withholds PATCH
+[22m[39maxiom_servicenow_transport_refused { phase: [32m'native_plan'[39m, aborted: [33mfalse[39m, deadlineExpired: [33mfalse[39m }
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual reservation acknowledgement loss retains slot and blocks postclaim credential access
+[31m[1mAssertionError[22m: expected { …(17) } to match object { status: 'refused', attemptCount: 1 }
+(32 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "attemptCount": 1,[22m
+[32m-   "status": "refused",[39m
+[31m+   "status": "unknown",[39m
+[2m  }[22m
+
+[36m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m70:192[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mlink[2m > [22mactual enrollment appearing after claim refuses without slot or PATCH
+[31m[1mAssertionError[22m: expected { …(17) } to match object { status: 'refused', attemptCount: 1 }
+(32 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "attemptCount": 1,[22m
+[32m-   "status": "refused",[39m
+[31m+   "status": "unknown",[39m
+[2m  }[22m
+
+[36m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m75:168[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual reservation acknowledgement loss retains slot and blocks postclaim credential access
+[31m[1mAssertionError[22m: expected { …(17) } to match object { status: 'refused', attemptCount: 1 }
+(36 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "attemptCount": 1,[22m
+[32m-   "status": "refused",[39m
+[31m+   "status": "unknown",[39m
+[2m  }[22m
+
+[36m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m70:192[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts[2m > [22m[servicenow-outbound] mounted associated action owned PostgreSQL[2m > [22mclose[2m > [22mactual enrollment appearing after claim refuses without slot or PATCH
+[31m[1mAssertionError[22m: expected { …(17) } to match object { status: 'refused', attemptCount: 1 }
+(36 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "attemptCount": 1,[22m
+[32m-   "status": "refused",[39m
+[31m+   "status": "unknown",[39m
+[2m  }[22m
+
+[36m [2m❯[22m lib/desktop/__tests__/serviceNowAssociatedOutbound.pg.test.ts:[2m75:168[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+

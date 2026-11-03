@@ -9,7 +9,8 @@ const sysId=z.string().regex(/^[a-f0-9]{32}$/),number=z.string().regex(/^CHG[0-9
 /** Internal, server-verified permissions. These are not ServiceNow OAuth scope names. */
 export const serviceNowTicketCredentialSchema=z.object({organizationId:z.string().min(1),connectionId:z.string().min(1),connectionRevision:z.string().datetime(),instanceOrigin:serviceNowInstanceOriginSchema,accessToken:z.string().min(1).max(65536).refine(v=>!/[\x00-\x20\x7f]/.test(v)),expiresAt:z.number().finite(),permissions:z.object({read:z.boolean(),write:z.boolean(),journalRead:z.boolean()}).strict()}).strict();
 export interface ServiceNowTicketTransportDependencies{
- assertCurrent:(actionId:string,candidate:Readonly<ServiceNowTicketActionCandidate>,signal:AbortSignal,context?:{phase:'before_dispatch'|'confirm';issue?:{sysId:string;number:string}})=>Promise<void>;
+ assertCurrent:(actionId:string,candidate:Readonly<ServiceNowTicketActionCandidate>,signal:AbortSignal,context?:{phase:'before_dispatch'|'confirm';issue?:{sysId:string;number:string}})=>Promise<void|(()=>void)>;
+ beforeSubmission?:(actionId:string,candidate:Readonly<ServiceNowTicketActionCandidate>,signal:AbortSignal)=>Promise<()=>void>;
  readCredential:(candidate:Readonly<ServiceNowTicketActionCandidate>,signal:AbortSignal)=>Promise<unknown>;
  /** Re-read the instance's current supported schema/model/mandatory fields and transition criteria.
   * Candidate flags and caller-supplied metadata never satisfy this port. */
@@ -61,7 +62,8 @@ export function createServiceNowTicketTransport(deps:ServiceNowTicketTransportDe
    const deadline=Math.min(Date.now()+15000,Date.parse(c.expiresAt)),signal=AbortSignal.any([parent,AbortSignal.timeout(Math.max(0,deadline-Date.now()))]);
    observationDeadline=deadline;
    const ensure=()=>{signal.throwIfAborted();if(Date.now()>=deadline||!enabled())throw Error('servicenow_ticket_transport_stopped')};
-   const current=async(phase:'before_dispatch'|'confirm',issue?:{sysId:string;number:string})=>{ensure();await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal,{phase,...(issue?{issue}:{})}),signal);ensure()};
+   let currentFresh:(()=>void)|undefined;
+   const current=async(phase:'before_dispatch'|'confirm',issue?:{sysId:string;number:string})=>{ensure();const fresh=await untilAbort(deps.assertCurrent(actionId,structuredClone(c),signal,{phase,...(issue?{issue}:{})}),signal);if(fresh!==undefined&&typeof fresh!=='function')throw Error('servicenow_ticket_transport_stopped');if(typeof fresh==='function')currentFresh=fresh;currentFresh?.();ensure()};
    phase='authority';await current('before_dispatch');
    phase='credential';const auth=serviceNowTicketCredentialSchema.parse(await untilAbort(deps.readCredential(structuredClone(c),signal),signal));ensure();
    if(auth.organizationId!==c.organizationId||auth.connectionId!==c.connectionId||auth.connectionRevision!==c.connectionRevision||auth.instanceOrigin!==c.instanceOrigin||auth.expiresAt<=deadline||!auth.permissions.read||!auth.permissions.write||c.kind==='link'&&(!auth.permissions.journalRead||typeof deps.readJournalEvidence!=='function'))return refusal();
@@ -85,7 +87,8 @@ export function createServiceNowTicketTransport(deps:ServiceNowTicketTransportDe
    let path='',method='PATCH',payload:unknown=c.payload;
    if(c.kind==='publish'){method='POST';if(c.nativeProcess.kind==='type')path='/'+c.nativeProcess.typeId;else if(c.nativeProcess.kind==='standard')path='/standard/'+c.nativeProcess.templateSysId+'?'+new URLSearchParams({short_description:c.payload.short_description}).toString();else payload={...c.payload,chg_model:c.nativeProcess.label}}else path='/'+c.issue.sysId;
    const body=JSON.stringify(payload);if(Buffer.byteLength(body,'utf8')>24576)return refusal();
-   ensure();dispatched=true;const response=await request(path,{method,...(c.kind==='publish'&&c.nativeProcess.kind==='standard'?{}:{body})});
+   let intentFresh:(()=>void)|undefined;if(deps.beforeSubmission){intentFresh=await untilAbort(deps.beforeSubmission(actionId,structuredClone(c),signal),signal);if(typeof intentFresh!=='function')throw Error('servicenow_ticket_transport_stopped')}
+   ensure();currentFresh?.();intentFresh?.();dispatched=true;const response=await request(path,{method,...(c.kind==='publish'&&c.nativeProcess.kind==='standard'?{}:{body})});
    // The native Change Management create endpoint documents 200; retain
    // 201 compatibility only with the same exact identity and readback checks.
    if(c.kind==='publish'?![200,201].includes(response.status):response.status!==200){cancel(response);return{status:'unknown'}}
