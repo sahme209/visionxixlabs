@@ -1,6 +1,6 @@
 # Workforce Coding PR — private stage claim and durable physical effects
 
-Status: proposed LOCAL implementation, awaiting validation-first review. This is a workforce-specific authority/claim design, not reuse of Agent claims, Airflow rule authority or a production coverage grant. Existing issuer/runtime/fleet qualification remains unavailable. No provider calls, credentials, grants, schema migration, deployment or activation are requested here.
+Status: independently reviewed and USER-APPROVED LOCAL implementation via call_sGMQmSqLxtkCwsc279jLH60W item0. Code and isolated database tests only. This is a workforce-specific authority/claim design, not reuse of Agent claims, Airflow rule authority or a production coverage grant. Existing issuer/runtime/fleet qualification remains unavailable. No provider calls, credentials, grants, schema migration, deployment or activation are requested here.
 
 ## Exact existing source
 
