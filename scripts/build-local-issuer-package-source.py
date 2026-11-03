@@ -341,12 +341,23 @@ def verify_framework_declaration(stage):
  if body!=NEXT_APP_DECLARATION:fail('framework_type_file_bytes_changed')
  return {**profile,'sha256':sha(body),'size':len(body),'qualification':'derived_type_bytes_observed_only'}
 
+def native_overlay_inputs(stage,phase):
+ import sys,importlib
+ directory=str(Path(__file__).resolve().parent)
+ if directory not in sys.path:sys.path.insert(0,directory)
+ from governance_local_issuer.native_overlay import verify_overlay
+ try:return verify_overlay(stage,after_build=phase=='after_build')
+ except (RuntimeError,OSError,ValueError,subprocess.SubprocessError):fail('native_overlay_input_verification_failed')
+
 def verify_build_archive(stage,repo,revision,phase='before_build'):
  if phase not in {'before_build','after_build'}:fail('invalid_build_source_phase')
- stage=private_dir(stage);raw=git_bytes(repo,['archive','--format=tar',revision]);seen=set();folded=set();observed=[];total=paths=0;regular=links=0
+ stage=private_dir(stage);native_overlay=native_overlay_inputs(stage,phase)
+ if native_overlay is not None and native_overlay['sourceRevision']!=revision:fail('native_overlay_source_revision_mismatch')
+ raw=git_bytes(repo,['archive','--format=tar',revision]);seen=set();folded=set();observed=[];total=paths=0;regular=links=0
  with tarfile.open(fileobj=io.BytesIO(raw),mode='r:')as archive:
   for member in archive:
    name=rel(member.name.rstrip('/'));paths+=len(name)
+   if name in {'_axiom_native_overlay.json','packages/verified-issuer-runtime/native/origin_guard.node','packages/verified-issuer-runtime/native/origin-bootstrap'}:fail('native_overlay_outputs_must_be_generated_prebuild')
    if name in seen or name.casefold()in folded or len(seen)>=50000 or paths>32*1024*1024:fail('build_archive_duplicate_or_limit')
    if name.split('/')[0]in {'node_modules','.next'}:fail('reserved_build_archive_root')
    seen.add(name);folded.add(name.casefold());path=stage/name
@@ -379,11 +390,13 @@ def verify_build_archive(stage,repo,revision,phase='before_build'):
     continue
    if relative=='next-env.d.ts'and relative not in seen and phase=='after_build':
     verify_framework_declaration(stage);continue
+   if native_overlay and relative in {'_axiom_native_overlay.json',*native_overlay['stageArtifacts']}:continue
    if relative not in seen:fail('extra_build_source_entry')
    if name in dirs and not path.is_symlink():kept.append(name)
   dirs[:]=kept
  return {'archiveSha256':sha(raw),'verifiedRegularFiles':regular,'verifiedSymlinks':links,'sourceBytes':total,
-         'sourceObservationSha256':sha(json.dumps(sorted(observed),sort_keys=True,separators=(',',':')).encode())}
+         'sourceObservationSha256':sha(json.dumps(sorted(observed),sort_keys=True,separators=(',',':')).encode()),
+         **({'nativeOverlay':native_overlay}if native_overlay is not None else{})}
 
 def prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node,phase='before_build'):
  stage=private_dir(stage);generation_run=private_dir(generation_run)
@@ -470,6 +483,8 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
  if any(owned==p.resolve()or p.resolve()in owned.parents for p in protected):fail('build_output_boundary_overlap')
  if(stage/'.next').exists()or(stage/'.next').is_symlink():fail('fresh_next_output_required')
  node_identity=tool.stable_file_hash(node);inputs=prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node)
+ overlay=inputs.get('sourceArchive',{}).get('nativeOverlay')
+ if overlay is not None and overlay['plannedBuildRun']!=str(owned):fail('native_overlay_build_run_mismatch')
  names=['attempt.json','result.json','node-version.log','contract.log','next-build.log','tmp']
  if any((owned/name).exists()or(owned/name).is_symlink()for name in names):fail('fresh_build_logs_required')
  handles={}

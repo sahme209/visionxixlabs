@@ -95,7 +95,7 @@ def isolated_build_details(observation,build_run,stage,repo,cache,bound_dir,gene
               'originalObserverStatus':original.get('status'),'compilerExit':0,'compilerRerun':False,'generationRerun':False,
               'executingIssuerIdentity':'unavailable','executionAuthorized':False}
     details={'source':revision,'archiveSha256':archive['archiveSha256'],'verifiedRegularFiles':archive['verifiedRegularFiles'],
-             'exit':0,'nodeVersion':'v24.21.0','stage':str(stage)}
+             'exit':0,'nodeVersion':'v24.21.0','stage':str(stage),**({'nativeOverlay':archive['nativeOverlay']}if 'nativeOverlay'in archive else{})}
     return details,evidence
 
 def materialize_isolated(observation,build_run,stage,repo,cache,bound_dir,generation_run,node,destination):
@@ -124,6 +124,13 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         refuse("private_owned_output_parent_required")
     audit_path=parent/"materialization.json"
     if audit_path.exists() or audit_path.is_symlink():refuse("new_materialization_receipt_required")
+    native_overlay=details.get('nativeOverlay')
+    runtime_root=None
+    if native_overlay is not None:
+        from governance_local_issuer.native_overlay import verify_overlay,PACKAGE_PATH,PACKAGE_FILES,GENERATED_STAGE
+        if verify_overlay(stage,after_build=True)!=native_overlay:refuse('native_overlay_materialization_input_changed')
+        runtime_root=stage/PACKAGE_PATH
+        if runtime_root.is_symlink()or runtime_root.resolve()!=runtime_root:refuse('native_runtime_root_aliased')
     destination.mkdir(mode=0o700)
     destination = destination.resolve()
     selected, folds, links, transformations = {}, {}, [], []
@@ -133,6 +140,7 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
 
     def mapped(source):
         resolved = source.resolve(strict=True)
+        if native_overlay is not None and resolved==stage/GENERATED_STAGE[1]:return '__axiom_runtime__/origin-bootstrap'
         try: return "node_modules" if resolved==deps else "node_modules/"+resolved.relative_to(deps).as_posix()
         except ValueError: pass
         try: return resolved.relative_to(stage).as_posix()
@@ -145,6 +153,11 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         if target in active_targets: refuse("recursive_materialization_alias")
         source = Path(source)
         info = source.lstat()
+        if runtime_root is not None:
+            try: runtime_relative=source.resolve(strict=True).relative_to(runtime_root).as_posix()
+            except ValueError: runtime_relative=None
+            if runtime_relative not in (None,'.') and runtime_relative not in PACKAGE_FILES and not (source==stage/GENERATED_STAGE[1]and target=='__axiom_runtime__/origin-bootstrap'):
+                refuse('native_runtime_input_outside_explicit_distribution')
         identity = (str(source.absolute()),info.st_dev,info.st_ino)
         if target in selected:
             if selected[target] != identity: refuse("duplicate_destination_alias")
@@ -171,8 +184,11 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             out.mkdir(exist_ok=True)
             active_targets.add(target)
             try:
-                for child in sorted(source.iterdir(),key=lambda p:p.name):
-                    copy(child,target+"/"+child.name)
+                if runtime_root is not None and source.resolve()==runtime_root:
+                    for name in PACKAGE_FILES:copy(runtime_root/name,target+'/'+name)
+                else:
+                    for child in sorted(source.iterdir(),key=lambda p:p.name):
+                        copy(child,target+"/"+child.name)
             finally: active_targets.remove(target)
             out.chmod(stat.S_IMODE(info.st_mode))
         elif stat.S_ISREG(info.st_mode):
@@ -215,6 +231,7 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             elif name not in ["public","tsconfig.json"]: refuse("required_stage_input_missing")
         copy(deps,"node_modules")
         copy(node,"__axiom_runtime__/node")
+        if native_overlay is not None:copy(stage/GENERATED_STAGE[1],'__axiom_runtime__/origin-bootstrap')
         # Resolve ORIGINAL trace paths against the ORIGINAL build, map only the
         # two allowed stage/dependency roots, and retain source+packaged hashes.
         trace_count=trace_bytes=trace_entries=trace_path_bytes=0
@@ -251,6 +268,11 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
                "excluded":"source archive files outside fixed runtime inputs/traces; no required secret silently omitted",
                "nativePrerequisites":native,"executingIssuerIdentity":"unavailable",
                "privateBootstrapConsumer":"unavailable","executionAuthorized":False}
+        if native_overlay is not None:
+            audit['nativeOverlay']=native_overlay
+            audit['runtimeDistributionAllowlist']=list(PACKAGE_FILES)
+            audit['runtimeSourceFilesExcluded']=sorted(p.relative_to(runtime_root).as_posix()for p in runtime_root.rglob('*')if p.is_file()and p.relative_to(runtime_root).as_posix()not in PACKAGE_FILES)
+            audit['included']='fixed Next inputs/traces and dependency closure; issuer runtime uses explicit reviewed distribution allowlist and bootstrap relocation'
         if isolated_evidence is not None:
             audit['isolatedBuildEvidence']=isolated_evidence
             audit['packageProfile']=profile

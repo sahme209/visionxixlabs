@@ -17,7 +17,8 @@
     "index.cjs",
     "index.d.ts",
     "README.md",
-    "internal/*.cjs"
+    "internal/verify-package.cjs",
+    "native/origin_guard.node"
   ],
   "scripts": {
     "test": "node --test test/*.test.cjs"

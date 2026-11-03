@@ -1,42 +1,49 @@
-# Verified issuer runtime — unavailable foundation
+# Canonical local issuer runtime — unqualified
 
-Builtins-only local CommonJS package and one external-module consumer seam. It
-exports only `readIssuerIdentity()`, which currently returns an immutable
-unavailable result with no `issuerArtifactDigest`. Running its main entry fails
-closed before importing Next or application code. Direct import, another module
-instance, a worker, JSON and environment descriptors cannot initialize anything.
-There is no exported or unused fake initializer and no successful launch path.
+The public CommonJS package exports only `readIssuerIdentity()`. It currently
+returns an immutable **unavailable** result with no issuer-artifact authority.
+The local canonical-main/native-current-origin implementation may expose bounded
+package/native observations after its private checks, but runtime, issuer,
+fleet and legacy qualification remain unavailable and execution stays false.
+All TypeScript issuer readers continue refusing. No descriptor, caller flag,
+manifest, environment value or imported callback can enable qualification.
 
-The private launch registry, immutable-root mechanism, complete native/runtime
-closure and same-artifact compiled issuer acceptance remain NOT implemented.
-The internal file-set verifier described below is implemented; it is not a launch capability. Python `package_file_set_verified` is an observation, never
-a cross-language capability. Future main-only initialization must remain inside
-this canonical module after real verification/seal and before importing Next;
-it requires source review and acceptance, not a global/env/HTTP handoff.
+The actual controlled restriction-first, readonly package → canonical CJS → same
+compiled store/transport qualification is still pending. Source tests, native
+compilation, ad-hoc signatures and file-set observations do not establish that
+endpoint. Current-origin checks do not claim protection against a hostile host
+or malicious native code already executing inside the trusted runtime.
 
-This package is explicitly externalized from Next so a future compiled consumer
-can resolve the same module instance as its controlled launcher. Compilation or
-successful resolution does not prove that a process used a verified artifact.
-No provider/outbound path is wired to this package and no activation is enabled.
+## Explicit runtime distribution
 
-A running main cannot prevent Node preloads that execute before it. Current tests
-prove it remains unavailable even with a preload; they do not claim loader
-isolation. A future trusted launcher must reject loader/preload/path/cache attacks
-before child execution and establish the approved trusted-host constraints.
+The package `files` allowlist is exact: index/types/README, the internal full
+file-set verifier and the generated `native/origin_guard.node`. Diagnostic
+`origin-unit` code, unsafe historical capability initializers/classifiers and
+native tests are not production runtime files. The fixed bootstrap is a distinct
+prebuild artifact relocated to `__axiom_runtime__/origin-bootstrap`; the broker
+and controller belong to the separate control app, not this npm package.
 
-Tests are limited real subprocess/module mechanics: direct/main/duplicate/worker
-imports and forged descriptor rejection. They do not attest a package, launch a
-Next server, replace provider authority, or qualify fleet/legacy runtime state.
+A native overlay must be compiled and recorded **before** one fresh build
+attempt. Its source, fixed compiler configuration, unchanged build Node and
+headers, native outputs and signed broker/controller are rechecked by the build
+and materializer. A completed stage/receipt must never be patched. These are
+unqualified build-input observations, not runtime identity or publisher trust.
 
-The internal CJS `verify-package.cjs` now performs actual strict manifest/full
-file-set/NFT observation verification, with Python-produced canonical fixtures
-used only as data. It returns file-set observation with all execution/runtime/
-fleet/legacy states unavailable and never initializes the public consumer. It
-is not exported as a package subpath. Real sealed-launch identity remains absent.
+The outer control app binds the completed package manifest only after
+materialization, then seals its resource image and binding file. This avoids a
+broker/guard/package digest cycle. Actual image/service/restriction execution
+requires its own exact reviewed run; no packaging command installs a service,
+mounts an image, initializes identity or performs a provider action.
 
+## File observation and qualification limits
 
-The file observer recognizes explicit package profiles `/1` (250,000 trace entries)
-and `/2` (512,000), with the same remaining file/path/byte and qualification checks.
-Unknown profiles refuse; older profile descriptors do not silently acquire the
-larger bound. Python/CJS observations must agree. Neither profile initializes the
-public consumer or establishes dynamic/native loader search or running identity.
+The internal `verify-package.cjs` performs strict manifest/full-file-set/NFT
+observation verification and is not a package subpath export. Python/CJS
+`package_file_set_verified` is never a cross-language capability. Profiles `/1`
+and `/2` retain their explicit trace bounds and unavailable qualifications.
+
+The package is externalized from Next so the eventual compiled consumer can
+resolve the same actual canonical module instance. Resolution or compilation
+alone does not prove controlled execution. The full cache/alternate-main,
+worker, tamper, replay, current-origin and same-consumer matrix remains required.
+Historical failed restriction experiments and consumed attempts remain unchanged.

@@ -1,0 +1,13 @@
+{
+  "base": "4c6a46a2ead791ba2d3d848e1dc1167bc9b70c76",
+  "files": {
+    "packages/verified-issuer-runtime/package.json": "732bc4c5c946fad540589a2bdec4016c2ad67d793a55bf32d29cef4dcfc37d5b",
+    "packages/verified-issuer-runtime/README.md": "4e5f58154a2d190821494d1ab9711fd98497c630e113b019d5a2dd1ab7071ae8",
+    "scripts/build-local-issuer-package-source.py": "943540862e1a6ae825b9de585bac45ef6e90d10895d3863f8ab6b6f5559c1261",
+    "scripts/governance_local_issuer/materialize.py": "df8d584805723f69cc0ed91519f399e01fdbcbf227219964a8e730c80553cd0e",
+    "scripts/governance_local_issuer/native_overlay.py": "4201318ae62dc89c3eba6a4048896dede274b365fa0754ec8055cf51095373a6",
+    "scripts/governance_local_issuer/tests/test_native_overlay.py": "60fc0bec7c4bf11bd9de7ea67c7a019aa80df610bb4fc7c6e7e5ca99b94180c2"
+  },
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false
+}
