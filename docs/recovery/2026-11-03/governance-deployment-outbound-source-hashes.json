@@ -1,0 +1,11 @@
+{
+  "lib/governance/intelligence/deploymentOutboundDrain.ts": "2a4b8a816d1b97f8681b9c1bdfdb90679db012bc94d7a64fcb109c2d30235524",
+  "lib/governance/intelligence/deploymentOutboundIssuer.ts": "09d0b00faf9ecb49209271b4117608eaf43f5655b652ded5facd7ef479cc4f04",
+  "lib/governance/intelligence/__tests__/deploymentOutboundDrain.test.ts": "6fc0b32302b21fd5d4dc4de3a0b786413f6d4463cf38704e353504a744be0216",
+  "lib/governance/intelligence/__tests__/deploymentOutboundIssuer.test.ts": "29a036d7dc55545f52f462f8fed4146d1012adc1100490816963707a7d52ac83",
+  "lib/desktop/releaseDeploymentGovernanceCoordinator.ts": "ddde27cd8059bcaa3a0bea9c09920972dbbbe97f02f75761ec20945123ac05c0",
+  "lib/desktop/__tests__/releaseDeploymentGovernanceCoordinator.test.ts": "359964c49ad59563738901b7b493ba8c27feb741a2d63b8e68ccc0c6eb772ed2",
+  "lib/desktop/__tests__/releaseDeploymentGovernanceComposition.pg.test.ts": "9d59afb23e86f4560aee8b291507a2f1428bca848713654047f64502be841e21",
+  "lib/tauri/releaseDeploymentExecutionStore.ts": "062240b5440489c5cddaed26b8387b11fa3885ebfeefe62aad1461cd27d940cd",
+  "lib/tauri/__tests__/releaseDeploymentExecution.test.ts": "7d4d98b05b2c5d4c974ffe37208937e224c10f47e9cb6901f35a4cdd3ae97996"
+}

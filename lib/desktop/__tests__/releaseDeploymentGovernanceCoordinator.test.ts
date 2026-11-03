@@ -1,12 +1,13 @@
 import {beforeEach,it,expect,vi} from 'vitest';
-const m=vi.hoisted(()=>({binding:vi.fn(),governedRun:vi.fn(),makeGuard:vi.fn(),makeProvider:vi.fn(),uncovered:vi.fn(),post:vi.fn()}));
+const m=vi.hoisted(()=>({binding:vi.fn(),governedRun:vi.fn(),makeGuard:vi.fn(),makeProvider:vi.fn(),uncovered:vi.fn(),post:vi.fn(),outboundAvailable:vi.fn(),beforeCredential:vi.fn(),beforeSubmission:vi.fn(),makeGoverned:vi.fn(),makeTransport:vi.fn()}));
 vi.mock('@/lib/governance/intelligence/deploymentBindingReader',()=>({createGovernanceDeploymentBindingReader:()=>m.binding}));
 vi.mock('@/lib/governance/intelligence/deploymentRequestAdmission',()=>({createDeploymentProviderPreflight:m.makeProvider}));
 vi.mock('@/lib/governance/intelligence/deploymentRequestAdmissionV2',()=>({createGovernanceDeploymentRequestAdmissionV2:m.makeGuard}));
 vi.mock('@/lib/governance/intelligence/deploymentProviderEligibility',()=>({createDeploymentProviderEligibility:vi.fn(()=>({}))}));
-vi.mock('@/lib/governance/intelligence/governedReleaseDeployment',()=>({createGovernedReleaseDeploymentExecutor:()=>({run:m.governedRun})}));
+vi.mock('@/lib/governance/intelligence/governedReleaseDeployment',()=>({createGovernedReleaseDeploymentExecutor:(...args:any[])=>{m.makeGoverned(...args);return{run:m.governedRun}}}));
+vi.mock('@/lib/governance/intelligence/deploymentOutboundDrain',()=>({createDeploymentOutboundDrain:()=>({assertAvailable:m.outboundAvailable,beforeCredential:m.beforeCredential,beforeSubmission:m.beforeSubmission})}));
 vi.mock('@/lib/governance/intelligence/uncoveredExecution',()=>({assertNoUncoveredGovernanceExecution:m.uncovered}));
-vi.mock('@/lib/tauri/releaseDeploymentTransportGithub',()=>({createReleaseDeploymentGithubTransport:()=>({kind:'release_deployment_transport_v1',execute:async(input:any)=>{const proof=await input.assertCurrent();if(typeof proof==='function')proof();m.post();return{state:'refused'}}})}));
+vi.mock('@/lib/tauri/releaseDeploymentTransportGithub',()=>({createReleaseDeploymentGithubTransport:(deps:any)=>{m.makeTransport(deps);return{kind:'release_deployment_transport_v1',execute:async(input:any)=>{const proof=await input.assertCurrent();if(typeof proof==='function')proof();m.post();return{state:'refused'}}}}}));
 import {createReleaseDeploymentGovernanceCoordinator} from '../releaseDeploymentGovernanceCoordinator';
 const scope={organizationId:'org',actorUserId:'executor',sessionId:'session'};
 let service:any,store:any,repo:any,ports:any;
@@ -23,3 +24,18 @@ it.each([true,undefined])('refuses new or unknown enrollment %s under the claim 
 
 it('refuses an obsolete legacy store that omits the private authority publisher',async()=>{service.hasAnyEnrollment.mockResolvedValue(false);const p=legacyStore();store.beforeDispatchWithAdmission.mockImplementation(async()=>p);m.uncovered.mockResolvedValue(undefined);const coordinator=createReleaseDeploymentGovernanceCoordinator(new Request('https://fixture.test') as any,repo,scope,ports);expect(await coordinator.run(store,'operation',new AbortController().signal)).not.toMatchObject({state:'accepted'});expect(m.post).not.toHaveBeenCalled()});
 it('retains legacy private authority across final helper delivery before provider action',async()=>{service.hasAnyEnrollment.mockResolvedValue(false);const p=legacyStore();store.beforeDispatchWithAdmission.mockImplementation(async(_s:any,_id:any,verify:any,publish:any)=>{const check=await verify({},p);let expired=false;publish(()=>{check();if(expired)throw Error('authority expired')});queueMicrotask(()=>{expired=true});return p});m.uncovered.mockResolvedValue(undefined);const coordinator=createReleaseDeploymentGovernanceCoordinator(new Request('https://fixture.test') as any,repo,scope,ports);expect(await coordinator.run(store,'operation',new AbortController().signal)).not.toMatchObject({state:'accepted'});expect(m.post).not.toHaveBeenCalled()});
+
+it.each([true,false])('unavailable canonical issuer refuses before any deployment claim on enrollment %s',async enrolled=>{
+ service.hasAnyEnrollment.mockResolvedValue(enrolled);legacyStore();m.outboundAvailable.mockImplementationOnce(()=>{throw Error('actual issuer unavailable')});
+ const coordinator=createReleaseDeploymentGovernanceCoordinator(new Request('https://fixture.test') as any,repo,scope,ports);
+ await expect(coordinator.run(store,'operation',new AbortController().signal)).rejects.toThrow('actual issuer unavailable');
+ expect(store.claimWithAdmission).not.toHaveBeenCalled();expect(store.claim).not.toHaveBeenCalled();expect(m.governedRun).not.toHaveBeenCalled();expect(m.post).not.toHaveBeenCalled();
+});
+it('actual enrolled composition wraps the final credential and intent ports, not readonly eligibility',async()=>{
+ const readCredential=vi.fn(async()=>({token:'SIMULATED'}));ports.transport.readCredential=readCredential;
+ const coordinator=createReleaseDeploymentGovernanceCoordinator(new Request('https://fixture.test') as any,repo,scope,ports);await coordinator.run(store,'operation',new AbortController().signal);
+ const transport=m.makeGoverned.mock.calls[0][1].transport;expect(transport.beforeSubmission).toBe(m.beforeSubmission);expect(m.makeProvider.mock.calls[0][0].transport).toBe(transport);
+ const p:any={purpose:'fixture'},signal=new AbortController().signal;await transport.readCredential(p,signal);
+ expect(m.beforeCredential).toHaveBeenCalledWith(p,signal);expect(readCredential).toHaveBeenCalledWith(p,signal);
+ expect(m.beforeCredential.mock.invocationCallOrder[0]).toBeLessThan(readCredential.mock.invocationCallOrder[0]);
+});

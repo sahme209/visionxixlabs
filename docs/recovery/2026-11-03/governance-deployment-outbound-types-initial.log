@@ -1,0 +1,1 @@
+lib/governance/intelligence/enrollmentDrainStore.ts(90,183): error TS2353: Object literal may only specify known properties, and 'id' does not exist in type 'Record<string, string>[]'.

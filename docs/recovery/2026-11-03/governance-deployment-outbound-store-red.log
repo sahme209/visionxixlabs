@@ -1,0 +1,29 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-deployment-outbound-04923c23
+
+ ❯ lib/tauri/__tests__/releaseDeploymentExecution.test.ts (46 tests | 1 failed | 45 skipped) 10ms
+   × binds outbound metadata to the actual original claimed deployment without rewriting history 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/tauri/__tests__/releaseDeploymentExecution.test.ts > binds outbound metadata to the actual original claimed deployment without rewriting history
+TypeError: f.store.readClaimedOutboundLocked is not a function
+ ❯ lib/tauri/__tests__/releaseDeploymentExecution.test.ts:105:32
+    103| it('binds outbound metadata to the actual original claimed deployment …
+    104|  const f=fixture(),p=await f.store.prepare(f.scope,f.plan);
+    105|  await expect((f.store as any).readClaimedOutboundLocked(f.repo,f.scop…
+       |                                ^
+    106|  await f.store.claim(f.scope,p.id);const before=structuredClone({rows:…
+    107|  const proof=await (f.store as any).readClaimedOutboundLocked(f.repo,f…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 45 skipped (46)
+   Start at  09:27:07
+   Duration  137ms (transform 30ms, setup 0ms, import 75ms, tests 10ms, environment 0ms)
+

@@ -1,4 +1,5 @@
 import 'server-only';
+import {createDeploymentOutboundDrain} from '@/lib/governance/intelligence/deploymentOutboundDrain';
 import type {NextRequest} from 'next/server';
 import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
@@ -36,14 +37,16 @@ export function createReleaseDeploymentGovernanceCoordinator(request:NextRequest
   },
   async run(store:ReleaseDeploymentExecutionStore,id:string,parent:AbortSignal){
    const signal=AbortSignal.any([request.signal,parent,AbortSignal.timeout(25000)]),started=Date.now();ready(signal);
+   const outbound=createDeploymentOutboundDrain(repo,request,scope,id,store,{signal,isEnabled:ports.enabled});outbound.assertAvailable();
+   const transportPorts:ReleaseDeploymentGithubDependencies={...ports.transport,readCredential:async(plan,s)=>{await outbound.beforeCredential(plan,s);if(!ports.transport.readCredential)throw Error('release_deployment_credential_unavailable');return ports.transport.readCredential(plan,s)},beforeSubmission:outbound.beforeSubmission};
    if(await any(signal)){
     const readBinding=createGovernanceDeploymentBindingReader(repo,store,{readCurrentPlan:ports.authority.readCurrentPlan,assertCurrent:async(s,sig)=>{ready(sig);if(sha256ContentHash(s)!==sha256ContentHash(scope))throw Error('governance_deployment_identity_changed');await withGithubAbort(repo.$transaction(tx=>ports.authority.assertCurrent(tx,s,undefined)),sig);ready(sig)}});
-    const binding=await readBinding(scope,id,signal),provider=createDeploymentProviderPreflight({assertCurrent:ports.current,transport:ports.transport});
+    const binding=await readBinding(scope,id,signal),provider=createDeploymentProviderPreflight({assertCurrent:ports.current,transport:transportPorts});
     const eligibility=createDeploymentProviderEligibility({transport:ports.transport,assertCurrent:async(p,sig)=>{const fresh=await ports.providerCurrent(p,sig);fresh()},readEligibility:(p,sig)=>readReleaseInstallationEligibility({organizationId:p.organizationId,connectionId:p.connectionId,connectionRevision:p.connectionRevision,installationId:p.installationId,repositoryFullName:p.repositoryFullName,purpose:'dispatch',planDigest:sha256ContentHash(p),isEnabled:ports.enabled,assertCurrent:()=>ports.providerCurrent(p,sig),fetch:ports.transport.fetch??fetch},sig)});
     const guard=createGovernanceDeploymentRequestAdmissionV2(scope,id,binding,repo,store,ports.approvals,ports.service,{readBinding,provider,eligibility});
-    return withGithubAbort(createGovernedReleaseDeploymentExecutor(store,{guard,readBinding,transport:ports.transport}).run(scope,id,signal),signal);
+    return withGithubAbort(createGovernedReleaseDeploymentExecutor(store,{guard,readBinding,transport:transportPorts}).run(scope,id,signal),signal);
    }
-   const transport=createReleaseDeploymentGithubTransport(ports.transport);
+   const transport=createReleaseDeploymentGithubTransport(transportPorts);
    const freshLegacy=()=>{ready(signal);const at=Date.now();if(!Number.isFinite(at)||at<started||at>=started+25000)throw Error('governance_deployment_deadline')};
    const legacy={...fence(store,signal),claim:async(s:DeploymentScope,operationId:string)=>{
     freshLegacy();if(sha256ContentHash(s)!==sha256ContentHash(scope)||operationId!==id)throw Error('governance_deployment_identity_changed');

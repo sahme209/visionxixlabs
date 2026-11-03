@@ -99,3 +99,15 @@ it('publishes only the same postcommit-validated private freshness function with
 });
 it('requires actual canonical claimed operation for credential authority, refusing prepared and fabricated executing marker',async()=>{const f=fixture(),p=await f.store.prepare(f.scope,f.plan);await expect(f.repo.$transaction((tx:any)=>f.store.assertClaimedCredentialAuthority(tx,f.scope,f.plan))).rejects.toThrow();f.rows[0].currentStep='dispatching';await expect(f.repo.$transaction((tx:any)=>f.store.assertClaimedCredentialAuthority(tx,f.scope,f.plan))).rejects.toThrow();f.rows[0].currentStep='prepared';await f.store.claim(f.scope,p.id);const proof=await f.repo.$transaction((tx:any)=>f.store.assertClaimedCredentialAuthority(tx,f.scope,f.plan));expect(proof).toBeTypeOf('function');proof();f.advance();expect(()=>proof()).toThrow();});
 it('retains original eligibility through actual claim commit result delivery without undoing consumed history',async()=>{const f=fixture(),p=await f.store.prepare(f.scope,f.plan);let live=true;const original=f.repo.$transaction;f.repo.$transaction=async(fn:any)=>{const r=await original(fn);live=false;return r};await expect(f.store.claimWithAdmission(f.scope,p.id,async()=>()=>{if(!live)throw Error('claim_eligibility_expired')})).rejects.toThrow('claim_eligibility_expired');expect(f.rows[0]).toMatchObject({attemptCount:1,currentStep:'dispatching'});});
+
+it('binds outbound metadata to the actual original claimed deployment without rewriting history',async()=>{
+ const f=fixture(),p=await f.store.prepare(f.scope,f.plan);
+ await expect((f.store as any).readClaimedOutboundLocked(f.repo,f.scope,p.id,f.plan)).rejects.toThrow();
+ await f.store.claim(f.scope,p.id);const before=structuredClone({rows:f.rows,events:f.events});
+ const proof=await (f.store as any).readClaimedOutboundLocked(f.repo,f.scope,p.id,f.plan);
+ expect(proof).toMatchObject({attemptId:'release_deployment_attempt_'+sha256ContentHash({operationId:p.id,attemptCount:1}),connectionId:f.plan.connectionId,sourceDigest:sha256ContentHash(f.plan),targetDigest:sha256ContentHash({repositoryFullName:f.plan.repositoryFullName,workflowPath:f.plan.workflowPath,refKind:f.plan.refKind,ref:f.plan.ref,inputsDigest:sha256ContentHash(f.plan.inputs)})});
+ expect(proof.fresh()).toBeUndefined();expect({rows:f.rows,events:f.events}).toEqual(before);
+ await expect((f.store as any).readClaimedOutboundLocked(f.repo,f.scope,p.id,{...f.plan,connectionId:'other'})).rejects.toThrow();
+ await expect((f.store as any).readClaimedOutboundLocked(f.repo,{...f.scope,sessionId:'other'},p.id,f.plan)).rejects.toThrow();
+ f.advance();expect(()=>proof.fresh()).toThrow();
+});

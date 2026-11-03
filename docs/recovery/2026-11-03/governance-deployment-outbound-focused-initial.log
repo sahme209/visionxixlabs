@@ -1,0 +1,33 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-deployment-outbound-04923c23
+
+ ❯ lib/governance/intelligence/__tests__/deploymentOutboundIssuer.test.ts (1 test | 1 failed) 3ms
+   × actual canonical module is unavailable and cannot provide a digest for an outbound slot 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/intelligence/__tests__/deploymentOutboundIssuer.test.ts > actual canonical module is unavailable and cannot provide a digest for an outbound slot
+AssertionError: expected [Function] to throw error including 'governance_merge_outbound_issuer_unav…' but got 'governance_deployment_outbound_issuer…'
+
+Expected: "governance_merge_outbound_issuer_unavailable"
+Received: "governance_deployment_outbound_issuer_unavailable"
+
+ ❯ lib/governance/intelligence/__tests__/deploymentOutboundIssuer.test.ts:7:51
+      5|  expect(readLocalIssuerArtifactIdentity()).toMatchObject({status:'unav…
+      6|  expect(readLocalIssuerArtifactIdentity()).not.toHaveProperty('issuerA…
+      7|  expect(()=>readDeploymentOutboundIssuerDigest()).toThrow('governance_…
+       |                                                   ^
+      8| });
+      9|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  1 failed | 68 passed (69)
+   Start at  09:28:22
+   Duration  212ms (transform 208ms, setup 0ms, import 321ms, tests 120ms, environment 0ms)
+
