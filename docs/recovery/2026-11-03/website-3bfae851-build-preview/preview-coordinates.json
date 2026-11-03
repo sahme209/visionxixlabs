@@ -1,0 +1,19 @@
+{
+  "sourceRevision": "3bfae851aa17046db316b3408d687fe89e0a4e07",
+  "owned": "/private/tmp/axiom-website-3bfae851-98f91uvc",
+  "stage": "/private/tmp/axiom-website-3bfae851-98f91uvc/stage",
+  "backendPort": 5203,
+  "backendPid": 16591,
+  "backendSession": 61956,
+  "proxyPort": 5202,
+  "proxyPid": 16595,
+  "proxySession": 41643,
+  "previewUrl": "http://127.0.0.1:5202/__axiom_preview",
+  "oldPreviewPortsPreserved": [
+    5198,
+    5199,
+    5200,
+    5201
+  ],
+  "executionAuthorized": false
+}

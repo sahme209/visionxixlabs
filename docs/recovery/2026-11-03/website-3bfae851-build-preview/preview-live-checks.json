@@ -1,0 +1,162 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/docs/surfaces",
+      "status": 200,
+      "expectedText": true,
+      "sourceHeader": "3bfae851",
+      "setCookie": false
+    },
+    {
+      "method": "GET",
+      "path": "/docs/source-modes",
+      "status": 200,
+      "expectedText": true,
+      "sourceHeader": "3bfae851",
+      "setCookie": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/session",
+      "status": 403,
+      "expectedText": true,
+      "sourceHeader": "3bfae851",
+      "setCookie": false
+    },
+    {
+      "method": "POST",
+      "path": "/docs/surfaces",
+      "status": 403,
+      "expectedText": true,
+      "sourceHeader": "3bfae851",
+      "setCookie": false
+    }
+  ],
+  "initialDisclosureExpanded": false,
+  "assets": [
+    {
+      "path": "/fonts/e4af272ccee01ff0-s.p.woff2",
+      "status": 200,
+      "bytes": 48432,
+      "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/fonts/bb3ef058b751a6ad-s.p.woff2",
+      "status": 200,
+      "bytes": 40480,
+      "sha256": "1e06740a02a443fb7f3eeda8fcaa685a0f6c620e3f01e6666e847295469ce3ad",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/css/8c37078bd846f024.css",
+      "status": 200,
+      "bytes": 210358,
+      "sha256": "e4a1091bf8b5378e4ce6a99cd7e13c7783e1f3934c0282987efd6dc0e1350862",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/css/fd496917896bbbdc.css",
+      "status": 200,
+      "bytes": 5370,
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/webpack-69f14800859f0b85.js",
+      "status": 200,
+      "bytes": 3203,
+      "sha256": "e52ca52a44397d90c7f5d3341852bdcbda59fe566ed572736c34eb2fd00dd161",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/4bd1b696-9ce25231cbb0ecf2.js",
+      "status": 200,
+      "bytes": 203728,
+      "sha256": "07d3845ca7b65cf8c140e8d42130573f6e53327c18a2d9178bf3d4c27d46dad8",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/93794-7c5eb5b4643d7857.js",
+      "status": 200,
+      "bytes": 242806,
+      "sha256": "57657be1240b28db88b6bec0e614c7fe900f6335a14d715f1b2950f676bac6d9",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/main-app-60817082d530e1a7.js",
+      "status": 200,
+      "bytes": 530,
+      "sha256": "bfb0435dc81dced72e47b13fbecbec91881eef78caaff3bc7141dd792c54c6fd",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/98500-202fb27570ee6051.js",
+      "status": 200,
+      "bytes": 7675,
+      "sha256": "89482c98536997f67c9a6fc6322391963effbdaf429888d0b1cc9d3472f34bc4",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/37882-b9dc7f2fb9b2a293.js",
+      "status": 200,
+      "bytes": 31830,
+      "sha256": "b78a2a0ac5a9a13341e6ed4df15d672a3bb23f28bbf945c175df34c87c086946",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/93197-59c54cbbe39d027f.js",
+      "status": 200,
+      "bytes": 18019,
+      "sha256": "261bbd4ef0f23517cfa5c1d15adf18532a1c10ac6a83630decad8dcfaa82c97b",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/app/layout-d8e0b93c36a3d811.js",
+      "status": 200,
+      "bytes": 21868,
+      "sha256": "bae313b16685bca934401e53106049e0557edc5423cb736da114833595a215c5",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/38437-ab43c492a711661a.js",
+      "status": 200,
+      "bytes": 14428,
+      "sha256": "e98c9bf352b5dadec83a45b1d4a2581f6d1435091995e4c44bbaca1eb0f2832c",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/42191-341e64daad28af95.js",
+      "status": 200,
+      "bytes": 8929,
+      "sha256": "2bf6916e8885afbf605e6284f55053d693bd9d6b77e8adafb25542a90e5d942b",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/app/docs/layout-d744a1dd4b2813eb.js",
+      "status": 200,
+      "bytes": 13547,
+      "sha256": "b6dab79129bd047fbc24560ae8fdd0890522014efdb6706803e0b510d486ca25",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/app/docs/surfaces/page-3633acc95a2b923b.js",
+      "status": 200,
+      "bytes": 910,
+      "sha256": "594d7c711a6a4328da9f87025ba2a0e29b50bb32eebc45edbec47fc889a5ff4f",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "status": 200,
+      "bytes": 112594,
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683",
+      "exactBuiltStageBytes": true
+    },
+    {
+      "path": "/_next/static/chunks/axiom-missing-3bfae851.js",
+      "status": 404
+    }
+  ]
+}
