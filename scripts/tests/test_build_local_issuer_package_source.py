@@ -94,6 +94,16 @@ class PlannerTests(unittest.TestCase):
    (target/'index.js').write_bytes(b'tamper')
    with self.assertRaises(m.Unavailable):m.observe_generation_sources(stage,l,source)
 
+ def test_engine_gate_requires_local_binding_not_vendor_authentication(self):
+  p,l,cache,blob=fixture(self.base)
+  l['packages']['node_modules/@prisma/engines']={**l['packages']['node_modules/fixture-dep'],'version':'5.22.0'}
+  l['packages']['node_modules/@prisma/engines-version']={'version':'5.22.0-44.'+'a'*40}
+  result=m.engine_plan(l,cache)
+  self.assertEqual(result['reason'],'exact_local_engine_input_binding_required')
+  self.assertEqual(result['upstreamAuthenticity'],'unavailable')
+  self.assertEqual(result['engineCommitAuthenticity'],'unavailable')
+  self.assertNotIn('engineCommit',result)
+
  def test_clean_environment_has_no_credentials_or_module_overrides(self):
   with patch.dict(os.environ,{"NODE_OPTIONS":"untrusted","NPM_TOKEN":"DO_NOT_COPY"}):
    env=m.clean_environment("/fixed/node",self.base)

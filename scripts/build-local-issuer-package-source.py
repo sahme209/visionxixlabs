@@ -242,8 +242,8 @@ def engine_plan(lock,cache):
  with tarfile.open(blob,"r:*")as archive:
   for member in archive:
    if member.isfile()and member.name in {"package/libquery_engine-darwin-arm64.dylib.node","package/schema-engine-darwin-arm64"}:payloads.append(member.name)
- return {"status":"unavailable","reason":"native_engine_requires_independent_vendor_binding","engineCommit":commit,"platform":"darwin-arm64","payloadsInPinnedTarball":payloads,"mutableSidecarQualified":False,
-         "officialUncompressedChecksums":[f"https://binaries.prisma.sh/all_commits/{commit}/darwin-arm64/libquery_engine.dylib.node.sha256",f"https://binaries.prisma.sh/all_commits/{commit}/darwin-arm64/schema-engine.sha256"]}
+ return {"status":"unavailable","reason":"exact_local_engine_input_binding_required","requestedEngineCommit":commit,"upstreamAuthenticity":"unavailable","engineCommitAuthenticity":"unavailable","platform":"darwin-arm64","payloadsInPinnedTarball":payloads,"mutableSidecarQualified":False,
+         "optionalVendorChecksumUrls":[f"https://binaries.prisma.sh/all_commits/{commit}/darwin-arm64/libquery_engine.dylib.node.sha256",f"https://binaries.prisma.sh/all_commits/{commit}/darwin-arm64/schema-engine.sha256"]}
 def clean_environment(node,owned):
  owned=private_dir(owned);tmp=owned/"tmp";tmp.mkdir(mode=0o700,exist_ok=True)
  return {"PATH":str(Path(node).parent)+":/usr/bin:/bin:/usr/sbin:/sbin","LANG":"C","TZ":"UTC","TMPDIR":str(tmp),"PRISMA_GENERATE_SKIP_AUTOINSTALL":"true","NEXT_TELEMETRY_DISABLED":"1"}
