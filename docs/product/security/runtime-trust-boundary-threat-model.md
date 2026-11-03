@@ -1,6 +1,10 @@
 # Canonical issuer runtime: bounded threat model
 
-Snapshot: main `d34805d00dd0716d8b4a58f74eb7b3edd4af70ea`; proposed native core `97f24857` and packaging `fce7fd07` are separately reviewed, unmerged inputs. This document describes source mechanisms and open evidence gates, not qualified Governance enforcement or a security guarantee. Later fixes are not assumed present.
+Historical snapshot: main `d34805d00dd0716d8b4a58f74eb7b3edd4af70ea`; proposed native core `97f24857` and packaging `fce7fd07` are separately reviewed, unmerged inputs. This document describes source mechanisms and open evidence gates, not qualified Governance enforcement or a security guarantee. Later fixes are not assumed present.
+
+## Later reviewed source integration
+
+The snapshot findings below are preserved, not current unresolved defect claims. Native overlay/copy binding is now source-integrated and reviewed ([record](../../recovery/2026-11-03/materialization-recorded-copy-binding/integration-review.md)); broker/bootstrap deadlines, late-child cleanup, global revocation and fixed production environment are likewise source-integrated ([record](../../recovery/2026-11-03/canonical-broker-deadline/integration-review.md)). No actual final native artifact, service/restriction run or executing issuer is qualified by those corrections. Consumer validation and the remaining acceptance gates below remain outstanding.
 
 ## Objective and assumptions
 
