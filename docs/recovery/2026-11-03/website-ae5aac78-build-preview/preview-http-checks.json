@@ -1,0 +1,145 @@
+{
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/demo",
+      "status": 200,
+      "sourceHeader": "ae5aac78",
+      "setCookie": false,
+      "sha256": "3c8a172533be4d2b66ae2df5c54bc7f9fb71c5b6e51e82ac5f94828982c4ef85"
+    },
+    {
+      "method": "GET",
+      "path": "/product",
+      "status": 200,
+      "sourceHeader": "ae5aac78",
+      "setCookie": false,
+      "sha256": "224f0f99cf9e33f3fba5dc0801cbb4682f0c0f372766c3cc356e132e79195358"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/session",
+      "status": 403,
+      "sourceHeader": "ae5aac78",
+      "setCookie": false,
+      "sha256": "787a4671ae1285dd996777b87b92fd6946a72e20c46f3846da138b52723d19a2"
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 403,
+      "sourceHeader": "ae5aac78",
+      "setCookie": false,
+      "sha256": "13f0b79e61798d6a53db5bca6677941dc3ac2b0c65e3a1b57904a71c3109addb"
+    },
+    {
+      "method": "GET",
+      "path": "/demo/devops_pipeline",
+      "status": 403,
+      "sourceHeader": "ae5aac78",
+      "setCookie": false,
+      "sha256": "1674f8abd41f3cfe2b3beb962671be45443ad9a97b07c1ccae2b5a3705063ddb"
+    }
+  ],
+  "assets": [
+    {
+      "path": "/_next/static/chunks/1018-a830ec35d7e8e0f3.js",
+      "status": 200,
+      "bytes": 116356,
+      "sha256": "6e765375c887aa5dd40fe3c77a06305c210558acc48f3d8f785f1983088d07cc"
+    },
+    {
+      "path": "/_next/static/chunks/37882-b9dc7f2fb9b2a293.js",
+      "status": 200,
+      "bytes": 31830,
+      "sha256": "b78a2a0ac5a9a13341e6ed4df15d672a3bb23f28bbf945c175df34c87c086946"
+    },
+    {
+      "path": "/_next/static/chunks/38437-ab43c492a711661a.js",
+      "status": 200,
+      "bytes": 14428,
+      "sha256": "e98c9bf352b5dadec83a45b1d4a2581f6d1435091995e4c44bbaca1eb0f2832c"
+    },
+    {
+      "path": "/_next/static/chunks/42191-341e64daad28af95.js",
+      "status": 200,
+      "bytes": 8929,
+      "sha256": "2bf6916e8885afbf605e6284f55053d693bd9d6b77e8adafb25542a90e5d942b"
+    },
+    {
+      "path": "/_next/static/chunks/45155-0890b58db043e0da.js",
+      "status": 200,
+      "bytes": 27876,
+      "sha256": "8849a78185f16828d633931a43453cd7b8ba06d6dc94dab5a6d805cdae2a1926"
+    },
+    {
+      "path": "/_next/static/chunks/4bd1b696-9ce25231cbb0ecf2.js",
+      "status": 200,
+      "bytes": 203728,
+      "sha256": "07d3845ca7b65cf8c140e8d42130573f6e53327c18a2d9178bf3d4c27d46dad8"
+    },
+    {
+      "path": "/_next/static/chunks/93197-59c54cbbe39d027f.js",
+      "status": 200,
+      "bytes": 18019,
+      "sha256": "261bbd4ef0f23517cfa5c1d15adf18532a1c10ac6a83630decad8dcfaa82c97b"
+    },
+    {
+      "path": "/_next/static/chunks/93794-7c5eb5b4643d7857.js",
+      "status": 200,
+      "bytes": 242806,
+      "sha256": "57657be1240b28db88b6bec0e614c7fe900f6335a14d715f1b2950f676bac6d9"
+    },
+    {
+      "path": "/_next/static/chunks/98500-202fb27570ee6051.js",
+      "status": 200,
+      "bytes": 7675,
+      "sha256": "89482c98536997f67c9a6fc6322391963effbdaf429888d0b1cc9d3472f34bc4"
+    },
+    {
+      "path": "/_next/static/chunks/app/demo/page-7b39b68398bd5d54.js",
+      "status": 200,
+      "bytes": 350,
+      "sha256": "e816e000f5f3dc4c8159b30647376fb6a0ca6c54fc722ea0cb43f6f8aef86a07"
+    },
+    {
+      "path": "/_next/static/chunks/app/layout-80a9a245abcd010e.js",
+      "status": 200,
+      "bytes": 21868,
+      "sha256": "d681f4dff8b25720b56e79ce82abb31643bf5602b879860ddaf860a37ca188f3"
+    },
+    {
+      "path": "/_next/static/chunks/main-app-cd6e7a351a167cfb.js",
+      "status": 200,
+      "bytes": 532,
+      "sha256": "1eea594b7e57132094e5e355e664563e81333a06e5dcefffa2f1c3c8482feafd"
+    },
+    {
+      "path": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "status": 200,
+      "bytes": 112594,
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "path": "/_next/static/chunks/webpack-69f14800859f0b85.js",
+      "status": 200,
+      "bytes": 3203,
+      "sha256": "e52ca52a44397d90c7f5d3341852bdcbda59fe566ed572736c34eb2fd00dd161"
+    },
+    {
+      "path": "/_next/static/css/8c37078bd846f024.css",
+      "status": 200,
+      "bytes": 210358,
+      "sha256": "e4a1091bf8b5378e4ce6a99cd7e13c7783e1f3934c0282987efd6dc0e1350862"
+    },
+    {
+      "path": "/_next/static/css/fd496917896bbbdc.css",
+      "status": 200,
+      "bytes": 5370,
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e"
+    }
+  ],
+  "limitations": [
+    "Legacy /demo/[id] routes redirect and are deliberately refused by the preview proxy; changed legacy labels are not mounted public visual acceptance."
+  ]
+}

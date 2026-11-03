@@ -1,0 +1,42 @@
+{
+  "format": "axiom.exact-website-build-receipt/1",
+  "sourceRevision": "ae5aac781904dd95cb71df583034013cc93b5bb7",
+  "owned": "/private/tmp/axiom-website-demo-build-ae5aac78-6j_3u5b3",
+  "archiveSha256": "86a8111ac65d475789f95260c5e3b2e68d97ef98da1d171ed58db216efc4f4d6",
+  "archiveBytes": 76974080,
+  "verifiedRegularFiles": 6630,
+  "status": "build_outputs_observed_unqualified",
+  "exit": 0,
+  "buildOutputsVerified": true,
+  "executionAuthorized": false,
+  "runtimeQualification": "unavailable",
+  "executingIssuerIdentity": "unavailable",
+  "routeCount": 1104,
+  "traceCount": 1108,
+  "evidence": {
+    "preparation.json": {
+      "sha256": "d835c3148541f60014cb9eb182622f3a39ed59145f1baa0af2631e93c369074e",
+      "bytes": 1776
+    },
+    "binding.json": {
+      "sha256": "db84bf7f4db676d13abbe685762854ef53056a81fd4fe79691c1244a1d9c0e57",
+      "bytes": 1212
+    },
+    "build-run/attempt.json": {
+      "sha256": "0b810370930dd1edd1586fab15b02e3dfe0b21e7742346a6ceb03855cd6f409c",
+      "bytes": 7051
+    },
+    "build-run/result.json": {
+      "sha256": "c299a493c9348dd8360c0831a1431e462b1356076ebf4e5d52cfab5eaf340ff4",
+      "bytes": 180430
+    },
+    "build-run/next-build.log": {
+      "sha256": "fe884a120e6ea33d15a33c669ad9d5bbae31b3f7acd670cadce04afb0a160dab",
+      "bytes": 41909
+    },
+    "build-run/contract.log": {
+      "sha256": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+      "bytes": 185
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "backend": {
+    "pid": 34978,
+    "session": 75420,
+    "port": 5205,
+    "workingDirectory": "/private/tmp/axiom-website-demo-build-ae5aac78-6j_3u5b3/stage"
+  },
+  "proxy": {
+    "pid": 35018,
+    "session": 46081,
+    "port": 5204
+  },
+  "wrapperUrl": "http://127.0.0.1:5204/__axiom_preview",
+  "demoUrl": "http://127.0.0.1:5204/demo",
+  "codeChangesFromPriorPreview": "only exact source/coordinate and port substitutions",
+  "cookieAuthorizationNextActionStrippedByActualForwarder": true,
+  "files": {
+    "/private/tmp/axiom-start-preview-ae5aac78.py": "067fc7c606cb681e3502ad9ebfdde5bce0d44cd98301db3c783aa3a5f561d4be",
+    "/private/tmp/axiom-interactive-preview-proxy-ae5aac78.py": "5ced17a1988c00c42a4402625c0a1a452c02360e7168a18767fb7c70c6ba993e"
+  },
+  "browserAcceptance": false,
+  "changedLegacyScenarioMountedPublicly": false
+}
