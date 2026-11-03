@@ -1,0 +1,30 @@
+{
+  "sourceRevision": "b964992777d8c3c8601b7e151889e42ee2790d06",
+  "toolRevision": "d73fc3b23e68809e7fd7a843260b14c5bf58e826",
+  "result": {
+    "activationQualification": "unavailable",
+    "buildCompatibilityVerified": false,
+    "buildOutputsVerified": false,
+    "buildStarted": true,
+    "completeExecutableClosure": "unavailable",
+    "contractCheckStarted": true,
+    "descendantQuiescence": "unavailable",
+    "executingIssuerIdentity": "unavailable",
+    "executionAuthorized": false,
+    "format": "axiom.local-next-build-result/1",
+    "processBounds": "original_process_group_only",
+    "reason": "build_input_or_output_unavailable",
+    "runtimeQualification": "unavailable",
+    "status": "unavailable"
+  },
+  "concreteFailure": "next/font/google attempted Inter and JetBrains Mono downloads; kernel network denial retained; compilation failed",
+  "receipts": {
+    "attempt.json": "d4cb48d08393e03416cf61604ead36c631261e8558bed1f2af924a1b670d9b21",
+    "result.json": "bee7f3b7cb858f41b03091969dedbdf1ce4dae42f0f03bbc534db82eaa5f05f6",
+    "contract.log": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+    "next-build.log": "ba11cfb4e685ebc187d8965e7558b42e001c9d3feb6b8cf0ce653a4d067f4f18"
+  },
+  "nextStep": "Identify and bind existing local font assets with explicit family/license/source mapping before a fresh exact-source offline build. Do not use mocked font output as production acceptance.",
+  "providerReads": false,
+  "deployment": false
+}

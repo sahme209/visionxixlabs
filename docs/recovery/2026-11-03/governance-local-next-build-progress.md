@@ -1,4 +1,4 @@
-# Fixed offline Next build executor — not yet compiled
+# Fixed offline Next build executor — first compilation blocked by font downloads
 
 Root reviewed this implementation within the original approved trusted-host local
 build model. It is an ordinary fixed compiler recipe, not private issuer launch,
@@ -162,3 +162,19 @@ with this profile passes at
 No actual Next compile, Prisma execution, provider action, new network request,
 issuer identity or activation occurred. No child/session remains active. Final
 independent review/root cue is still required before actual compilation.
+
+## First actual compilation — November 3
+
+The reviewed executor ran once against the exact b964 stage. The contract check
+passed, then actual Next compilation failed: `next/font/google` in `app/layout.tsx`
+requests Inter and JetBrains Mono from fonts.googleapis.com. Kernel network denial
+remained enforced. The compiler performed its own bounded fetch retries, not new
+root-authorized build attempts. No Prisma regeneration, provider grant, database
+operation, publication or deployment occurred.
+
+The terminal result is unavailable with buildOutputsVerified false. Receipt hashes
+and the concrete diagnosis are in `isolated-next-build-first-result.json`; original
+logs remain under `/private/tmp/axiom-isolated-b9649927-a6uzltb3/build-run`.
+Cached WOFF2 files exist in an older local build, but source/family/license mapping
+must be established before any self-hosted source change. No mocked font response,
+network exception or weaker source verification is accepted as the repair.

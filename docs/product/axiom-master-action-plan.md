@@ -398,3 +398,14 @@ Fresh source b9649927 cache-only setup and the reviewed real Prisma format/gener
 The next core work is a fixed isolated Next contract-check/compile step without redundant Prisma generation, using this exact owned stage and fresh source/generated-input checks. Its local helper implementation/review is active; no Next compile or package launch is claimed yet. Native-bootstrap approval remains pending; the retired optional checksum diagnostic is not required or authorized by these local observations. All A1–A9/B1–B6 remain in scope.
 
 B1 also followed the verified expanded Models menu to the Evals page, bringing the partial Cursor sample to19 public pages. Metric controls were inventoried only; Axiom’s quality-adjusted token/cost program still requires its own matched-task measurements, not vendor benchmark adoption.
+
+## November 3 isolated compilation and visible research increment
+
+Actual offline Next compile of b964 ran once after reviewed tooling d73. Build
+contract passed; compilation failed on Google-hosted Inter/JetBrains font downloads
+under retained network denial. No build/runtime/issuer qualification or activation
+is claimed. See `../recovery/2026-11-03/isolated-next-build-first-result.json`.
+Next: prove local font family/license/source mapping and review self-hosted exact
+inputs; preserve the failed stage and no-regeneration limit. CursorBench Tokens/Steps
+controls were visibly tested and keyboard behavior recorded in the B1 walkthrough.
+Full A1–A9/B1–B6 scope and all acceptance gates remain open as enumerated above.

@@ -71,3 +71,25 @@ For the master plan’s responsive inspection, used the documented temporary vie
 Axiom inference: useful image detail should be discoverable without abandoning the article, with accurate alt text, a clear close action and focus restoration. Themes and narrow layouts should preserve the same explanation and state boundaries. Do not import another product’s retry, always-allow or reset semantics into Axiom’s independent-review/consumed-unknown rules; visual inspiration never grants execution authority.
 
 Also opened the second article screenshot and used Escape from its close control. The immediate observation still showed the closing dialog; a subsequent current-state check confirmed it gone and focus restored to the image trigger. This verifies that one keyboard-dismissal path after the UI transition, not a whole keyboard-accessibility audit.
+
+### November 3 — CursorBench metric controls
+
+Visible IAB tab18 recovered after the retained tab17 reported unavailable. On
+https://cursor.com/evals, selecting Tokens changed both aria-selected and the chart
+label from average cost to average output tokens per task. Selecting Steps changed
+both to average steps per task. Pressing ArrowRight on Tokens left focus/selection
+on Tokens: no arrow-key tab movement observed in that check. This is an observed
+interaction, not a full accessibility audit. Vendor benchmark numbers are not
+Axiom evidence and are not copied as comparative claims. The transferable design
+lesson is to keep quality, cost, output-token and action-step dimensions explicit,
+with the task definition, measurement method and uncertainty next to the results.
+Axiom's own quality-adjusted efficiency still requires its own reproducible tasks
+and measured evidence; a token-only comparison is insufficient.
+
+The methodology link opened `/blog/cursorbench` and displayed a dated research
+article with author, reading length, expandable table of contents, linked section
+headings, explanatory chart captions and explicit version-change notes. These are
+presentation observations only; vendor performance/security statements have not
+been independently validated. The current leaderboard and historical article use
+different version labels, reinforcing that Axiom evidence must bind its own task
+set/version rather than silently combining old screenshots and current numbers.
