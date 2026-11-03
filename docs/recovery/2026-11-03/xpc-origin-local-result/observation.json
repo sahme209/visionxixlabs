@@ -1,0 +1,27 @@
+{
+  "format": "axiom.origin-component-observed-result/1",
+  "sourceRevision": "21f4351f9e54ed6e9c121d6dba4eaac9b8b57563",
+  "approval": "call_qtabnZEYZAbWSo9KCH2XtfTM[0]",
+  "invocations": 1,
+  "manifestSha256": "6d0380e929d43d564ad5008c2ebea8f383fc6ad06f18a65c91f291420ffc8a94",
+  "driverExit": 1,
+  "stopPhase": "precondition_SMAppService_status",
+  "observedStatusCommand": {
+    "exit": 0,
+    "timeout": false,
+    "stdout": "3\n",
+    "stderr": ""
+  },
+  "sdkMeaning": "SMAppServiceStatusNotFound: An error occurred and no such service could be found",
+  "registrationAttempted": false,
+  "brokerOrControllerStarted": false,
+  "executingIssuerIdentity": "unavailable",
+  "retryAuthorized": false,
+  "driverResultFileCreated": false,
+  "observedArtifactExistence": {
+    "host-experiment-claim.json": false,
+    "host-experiment-result.json": false,
+    "unit-spawn-claim.json": false
+  },
+  "evidenceScope": "Root observation of actual one-run tool output and immediate file inspection, not a driver-generated success receipt"
+}
