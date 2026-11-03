@@ -2,6 +2,8 @@
 
 **Internal design options, not implementation approval or qualification.** Source `d410` (November 3, 2026). Source analysis only; no test, counterexample, exploit, runtime, credential or provider action. The previously blocked security test is neither reproduced nor proposed here.
 
+**Current review outcome:** option B is not implementation-ready in the present source topology. A concrete privileged-resource custody design is being prepared for review; no implementation decision or permission is recorded here.
+
 ## Original requirement and current gap
 
 The approved [artifact-binding proposal](../../2026-11-02/governance-issuer-artifact-binding-proposal.md) requires the **actual compiled issuer/store/transport composition from the same verified package**, not a second compile, source wrapper, module replacement, passed digest or descriptor. Its sections4–5 also require a private bootstrap-owned capability and refusal if the compiled topology cannot establish it. This proposal preserves that requirement, the existing genuine approval/claim/freshness/unknown-result rules, and the bounded local trust model. It does not add hostile-host or fleet-attestation requirements.
@@ -20,7 +22,7 @@ Current source separates three things that must not be conflated:
 | B. Private bootstrap binding inside the fixed compiled issuer process | One verified, controlled issuer process owns the existing compiled coordinator, claim, credential resolution and fixed send; frontend/worker requests supply data only. A bootstrap-owned private bridge selects the fixed compiled dispatcher and retains its capability through those resource seams. | Assumes the complete packaged JS/native closure is trusted and immutable for its running lifetime, controlled loader before imports, no unreviewed plugins/eval/code-loading in that authority process, and no alternative resource path. Requires explicit compiled-dispatch registration/ownership and closure review, not merely locating a module by filename. Current coordinator/DB/transport logic can largely remain together. | **Recommended minimal extension**, subject to design approval and proof that the supported Next compiled topology can establish this binding. No general-purpose exported “authorize caller” API. |
 | C. Separate fixed privileged effect service | A separately verified process owns claim/credential/final fixed transport. UI/Next sends bounded exact operation requests; the service independently resolves actual authority and never returns reusable credentials or execution permits. | Stronger separation from a general web loader, but moves/recomposes DB transactions, session validation, source freshness, credential leases, cancellation and audit. Requires versioned authenticated IPC and crash/unknown semantics. Native code cannot infer arbitrary JS business authority merely from a process identity. | Fallback if B cannot bind its actual compiled dispatcher without relaxing the original requirement. Larger migration and acceptance matrix; not an implicit approval to add a daemon/service. |
 
-## Recommended decision, including what the bridge must own
+## Initial direction — superseded by the independent-review refinement below
 
 Choose **B initially**, with **C as an explicit new design if B proves unavailable**. Keep issuer readers/default coverage refusing until the actual bridge and original matrix are qualified. Do not package repeatedly in place of making this ownership decision.
 
