@@ -1,0 +1,19 @@
+{
+  "packages/verified-issuer-runtime/native/cssm_policy_copy.c": "e3bd87182c7f1c07e845618d46c6e6f0192a9591b0eb887bee753b59fd568dde",
+  "packages/verified-issuer-runtime/native/cssm_policy_copy_test.c": "5be2a4dc5eba9d14607f08d92c6995933a64ae897bcc9ce23fc5a8375d9fb691",
+  "packages/verified-issuer-runtime/native/cssm_policy_copy.h": "3aa8ace9335dbc63fb20aafec7ba717fb0dc76f13035c0b31efa1b6b1d0a1574",
+  "packages/verified-issuer-runtime/native/cssm_policy_builder.c": "29b5b721bb202b5bc3ea4bf67e028a811e20b74efb38d3c82a18c9c763f5f9b5",
+  "/private/tmp/axiom-cssm-policy-artifacts/builder-never-run.bundle": "071207687c8e0353e56d11138a7acbfbe7d11732fe2f8505d8343eb1b6183e4e",
+  "/private/tmp/axiom-cssm-policy-artifacts/pure-test": "d136d3f7d7c8135a543161afd4fa5127772bd1c35f41ed45cc37bf8d513e6f5e",
+  "/private/tmp/axiom-cssm-policy-artifacts/builder.o": "c497d11459906e88c2d4bc253b4a5ca5312101a16f4ff717b7a8bbb491313616",
+  "/private/tmp/axiom-cssm-policy-artifacts/copy.o": "8a9766d4d599ec87ca321dd7beef1956dca530a7e5e3788ca6e8482267a59e9d",
+  "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/cssm-policy-preparation/brief.md": "cc85a351fb40ddad453d876ef57fcda99697a1a36b3ee1b467bef225d859498e",
+  "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-03/compiled-consumer-authority-bridge/apple-cssm-representation-findings.md": "c5049eb2e34121b9dba70333891e454937ede4665125186e5ca87ec9bff038ea",
+  "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/cssm-subject-extraction-candidate.md": "af1927e23879a68c7bb0cfea0327eb5b07298917524ea27e419ff2efa0c04550",
+  "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/apple-acl-source-findings.md": "2a06d5b18fed475b2b9898a4ef5605f3b34801c093c18e865f9632ab64654a8b",
+  "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/cssmtype.h": "647032d694ed3fd7aa394106ae1054f9ab384beb634f1f69efa2e4e094be4f56",
+  "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/cssmapple.h": "bfc789ab517801d43659f2b65fbd36fe69c7d935566994b83ba65173c4f2103c",
+  "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecAccess.h": "d5e0c72b94487373e44626da216f3558f0f4a2a055af2c7de658bc5f83434ffd",
+  "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecACL.h": "0858a8c826e98f4878a0ba39b63afc4a0610c14ecc0ff1e7fc333516ecd5c1a7",
+  "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecTrustedApplication.h": "a4db417faf378e02528175204c7fe2386ac4db1b6c81d08113de9c92b738dcb0"
+}

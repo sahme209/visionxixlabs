@@ -1,0 +1,14 @@
+Working directory: /private/tmp/axiom-cssm-policy-preparation-e69c
+RED (before copier existed; expected undefined ax_cssm_copy):
+clang -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations packages/verified-issuer-runtime/native/cssm_policy_copy_test.c -o /private/tmp/cssm-pure-red
+GREEN (only pure copier + tests; no Security framework):
+clang -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations -fsanitize=address,undefined packages/verified-issuer-runtime/native/cssm_policy_copy_test.c packages/verified-issuer-runtime/native/cssm_policy_copy.c -o /private/tmp/axiom-cssm-policy-artifacts/pure-test
+/private/tmp/axiom-cssm-policy-artifacts/pure-test
+Strict compile and framework link ONLY; never invoke or load bundle:
+clang -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations -c packages/verified-issuer-runtime/native/cssm_policy_builder.c -o /private/tmp/axiom-cssm-policy-artifacts/builder.o
+clang -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations -c packages/verified-issuer-runtime/native/cssm_policy_copy.c -o /private/tmp/axiom-cssm-policy-artifacts/copy.o
+clang -bundle /private/tmp/axiom-cssm-policy-artifacts/builder.o /private/tmp/axiom-cssm-policy-artifacts/copy.o -framework Security -framework CoreFoundation -o /private/tmp/axiom-cssm-policy-artifacts/builder-never-run.bundle
+chmod 600 /private/tmp/axiom-cssm-policy-artifacts/*
+Verification inspection: otool -L pure-test; nm -u builder-never-run.bundle; git diff --cached --check
+Initial builder compile errors corrected: nonexistent kSecACLAuthorizationDBRead replaced with SDK kSecACLAuthorizationKeychainItemRead; zero-count NULL nonnull mismatch replaced with unused static storage (no warning suppression retained).
+Earlier framework link with -Wl,-undefined,error passed but emitted deprecation warning; final link uses default undefined-symbol error behavior.
