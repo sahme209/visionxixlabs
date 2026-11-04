@@ -4,7 +4,22 @@
 #include "cssm_policy_once.h"
 #include <Security/Security.h>
 #include <stdlib.h>
+#ifndef AX_CSSM_PROFILE
+#define AX_CSSM_PROFILE 0
+#endif
+#if AX_CSSM_PROFILE == 0
 static const char proposed_path[] = "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/origin-broker";
+#elif AX_CSSM_PROFILE == 1
+static const char proposed_path[] = "/private/tmp/axiom-cssm-policy-artifacts/pure-test";
+#else
+#error Unsupported CSSM profile: only fixed literal profiles 0 and 1 exist
+#endif
+/* No caller-selected macro path; profile is configuration, never authority. */
+static unsigned ax_cssm_stage;
+static OSStatus ax_cssm_status;
+static const char *ax_cssm_phase="claim";
+#define AX_CALL(stage, expression) (ax_cssm_phase="security", ax_cssm_stage=(stage), ax_cssm_status=(expression))
+
 /* Proposed unallocated generation, not installation provenance. Review source if
  * actual installation differs. No runtime path argument/environment override. */
 static ax_cssm_policy arena;
@@ -36,17 +51,20 @@ int ax_cssm_prepare_once(void) {
  /* The SDK requires a nonnull acls pointer. Count zero supplies no entries;
   * this unused static storage only satisfies that declaration. */
  static CSSM_ACL_ENTRY_INFO unused_zero_count_storage;
- if(SecAccessCreateFromOwnerAndACL(&retained_owner,0,&unused_zero_count_storage,&temporary)!=errSecSuccess) return 0;
- if(SecTrustedApplicationCreateFromPath(proposed_path,&application)!=errSecSuccess) return 0;
+ if(AX_CALL(1,SecAccessCreateFromOwnerAndACL(&retained_owner,0,&unused_zero_count_storage,&temporary))!=errSecSuccess) return 0;
+ if(AX_CALL(2,SecTrustedApplicationCreateFromPath(proposed_path,&application))!=errSecSuccess) return 0;
  const void *values[]={application};
+ ax_cssm_phase="applications-array";
  applications=CFArrayCreate(NULL,values,1,&kCFTypeArrayCallBacks);
  if(!applications) return 0;
- if(SecACLCreateWithSimpleContents(temporary,applications,CFSTR("Axiom unbound policy preparation"),0,&acl)!=errSecSuccess) return 0;
+ if(AX_CALL(3,SecACLCreateWithSimpleContents(temporary,applications,CFSTR("Axiom unbound policy preparation"),0,&acl))!=errSecSuccess) return 0;
  const void *names[]={kSecACLAuthorizationDecrypt,kSecACLAuthorizationKeychainItemRead};
+ ax_cssm_phase="authorizations-array";
  authorizations=CFArrayCreate(NULL,names,2,&kCFTypeArrayCallBacks);
- if(!authorizations || SecACLUpdateAuthorizations(acl,authorizations)!=errSecSuccess) return 0;
+ if(!authorizations || AX_CALL(4,SecACLUpdateAuthorizations(acl,authorizations))!=errSecSuccess) return 0;
  uint32 count=0;
- if(SecAccessGetOwnerAndACL(temporary,&exported_owner,&count,&exported_entries)!=errSecSuccess) return 0;
+ if(AX_CALL(5,SecAccessGetOwnerAndACL(temporary,&exported_owner,&count,&exported_entries))!=errSecSuccess) return 0;
+ ax_cssm_phase="copy";
  if(!ax_cssm_copy_framework(exported_owner,count,exported_entries,&arena)) return 0;
- return SecAccessCreateFromOwnerAndACL(&arena.owner,1,&arena.entry,&prepared)==errSecSuccess;
+ return AX_CALL(6,SecAccessCreateFromOwnerAndACL(&arena.owner,1,&arena.entry,&prepared))==errSecSuccess;
 }
