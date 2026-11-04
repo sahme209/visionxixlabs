@@ -129,7 +129,11 @@ export async function settleCodingLedger(tx:Prisma.TransactionClient,workspaceRe
  if(calls.every(c=>c.status==='settled'||c.status==='released')){
   const total=calls.reduce((sum,c)=>sum+(c.status==='settled'?(c.providerCents??codingBudgetUnavailable()):0),0);
   if(!Number.isSafeInteger(total)||total<0)codingBudgetUnavailable();
-  await tx.pipelineStageRun.updateMany({where:{id:call.stageRunId,runId:call.runId},data:{costCents:total}});
+  const stage=await tx.pipelineStageRun.findUnique({where:{id:call.stageRunId}});
+  if(!stage||stage.runId!==call.runId)codingBudgetUnavailable();
+  const detail=stage.outputDetail&&typeof stage.outputDetail==='object'&&!Array.isArray(stage.outputDetail)?stage.outputDetail:{};
+  const cost=detail.cost&&typeof detail.cost==='object'&&!Array.isArray(detail.cost)?detail.cost:{};
+  await tx.pipelineStageRun.updateMany({where:{id:call.stageRunId,runId:call.runId},data:{costCents:total,outputDetail:{...detail,cost:{...cost,totalCents:total,pendingSettlement:false}} as Prisma.InputJsonObject}});
  }
 }
 export async function readCodingRunExposure(repo:Repo,organizationId:string,runId:string,currentStageId:string):Promise<number>{

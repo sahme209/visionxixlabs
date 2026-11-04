@@ -45,12 +45,12 @@ export async function ensurePublicEnrollment(tx: PublicSql, intent: Pick<PublicC
     return;
   }
   // No unresolved legacy call can be silently transferred into a new pool.
-  const held = await tx.$queryRawUnsafe<Array<{ id: string }>>(`SELECT id FROM "AIUsageReservation" WHERE "organizationId"=$1 AND
-    (status IN ('pending_settlement','dispatch_unknown') OR status='reserved' AND ("usageEventId" IS NOT NULL OR "expiresAt">clock_timestamp() AT TIME ZONE 'UTC')) LIMIT 1`, intent.organizationId);
+  const held = await tx.$queryRawUnsafe<Array<{ id: string }>>(`SELECT h.id FROM "AIUsageReservation" h WHERE h."organizationId"=$1 AND
+    (status IN ('pending_settlement','dispatch_unknown') OR status='reserved' AND ("usageEventId" IS NOT NULL OR "expiresAt">clock_timestamp() AT TIME ZONE 'UTC' OR EXISTS(SELECT 1 FROM "PipelineAICallReservation" c WHERE c."workspaceReservationId"=h.id AND c."organizationId"=h."organizationId"))) LIMIT 1`, intent.organizationId);
   if (held.length) throw Error("legacy_ai_reconciliation_required");
   const priorPurchases = await tx.$queryRawUnsafe<unknown[]>('SELECT id FROM "AddOnPurchase" WHERE "organizationId"=$1 AND "deliveredAICreditsCents">0 LIMIT 1',intent.organizationId);
   if (priorPurchases.length) throw Error("legacy_purchased_credit_reconciliation_required");
-  await tx.$executeRawUnsafe(`UPDATE "AIUsageReservation" SET status='expired',"releasedAt"=clock_timestamp() AT TIME ZONE 'UTC',"updatedAt"=clock_timestamp() AT TIME ZONE 'UTC' WHERE "organizationId"=$1 AND status='reserved' AND "usageEventId" IS NULL AND "expiresAt"<=clock_timestamp() AT TIME ZONE 'UTC'`, intent.organizationId);
+  await tx.$executeRawUnsafe(`UPDATE "AIUsageReservation" h SET status='expired',"releasedAt"=clock_timestamp() AT TIME ZONE 'UTC',"updatedAt"=clock_timestamp() AT TIME ZONE 'UTC' WHERE "organizationId"=$1 AND status='reserved' AND "usageEventId" IS NULL AND "expiresAt"<=clock_timestamp() AT TIME ZONE 'UTC' AND NOT EXISTS(SELECT 1 FROM "PipelineAICallReservation" c WHERE c."workspaceReservationId"=h.id AND c."organizationId"=h."organizationId")`, intent.organizationId);
   await tx.$executeRawUnsafe(`INSERT INTO "PublicBillingEnrollment" ("organizationId",id,"accountId",livemode,policy,"legacyFreeMonth","legacyFreeUsedCents")
     SELECT $1,$2,$3,$4,'axiom_public_anniversary_v1',to_char(clock_timestamp() AT TIME ZONE 'UTC','YYYY-MM'),
     COALESCE((SELECT sum("billedCents") FROM "UsageEvent" WHERE "organizationId"=$1 AND "eventKind"='ai_invocation' AND "createdAt">=date_trunc('month',clock_timestamp() AT TIME ZONE 'UTC')),0)::integer`, intent.organizationId, intent.enrollmentId, intent.accountId, intent.livemode);

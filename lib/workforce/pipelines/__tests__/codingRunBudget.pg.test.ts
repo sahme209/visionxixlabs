@@ -255,4 +255,21 @@ it('actual runner completion cannot overwrite a cost settled before the executor
  expect(await f.db.pipelineStageRun.findUnique({where:{id:ctx.stageRunId}})).toMatchObject({status:'succeeded',costCents:10});
 });
 
+it('public enrollment cannot expire the workspace half of an aged reserved coding hold',async()=>{
+ const ctx=await fixture(5000),held=await reserve(ctx,1000);
+ await f.db.aIUsageReservation.update({where:{id:held.reservation.id},data:{expiresAt:new Date(0)}});
+ const {ensurePublicEnrollment}=await import('@/lib/billing/publicBillingStore');
+ const error=await f.db.$transaction(tx=>ensurePublicEnrollment(tx,{organizationId:ctx.organizationId,enrollmentId:`synthetic_${randomUUID()}`,accountId:'acct_budget_fixture',livemode:false}),{isolationLevel:'Serializable'}).then(()=>null,e=>e instanceof Error?e.message:'unknown');
+ const workspace=await f.db.aIUsageReservation.findUniqueOrThrow({where:{id:held.reservation.id}});
+ const companion=await f.db.pipelineAICallReservation.findUniqueOrThrow({where:{id:held.callId}});
+ expect({error,workspace:workspace.status,companion:companion.status}).toEqual({error:'legacy_ai_reconciliation_required',workspace:'reserved',companion:'reserved'});
+});
+it('late settlement replaces already-terminal pending cost detail and preserves unrelated detail',async()=>{
+ const ctx=await fixture(2000),event=await admitted(ctx);
+ const {persistCodingStageResult}=await import('../codingRunReservation');
+ await persistCodingStageResult(f.db,ctx.organizationId,ctx.runId,ctx.stageRunId,{status:'succeeded',completedAt:new Date(),outputDetail:{retained:'synthetic detail',cost:{totalCents:null,pendingSettlement:true,recorded:true}}});
+ await settle(event,10);
+ const stage=await f.db.pipelineStageRun.findUniqueOrThrow({where:{id:ctx.stageRunId}});
+ expect(stage).toMatchObject({status:'succeeded',costCents:10,outputDetail:{retained:'synthetic detail',cost:{totalCents:10,pendingSettlement:false,recorded:true}}});
+});
 });
