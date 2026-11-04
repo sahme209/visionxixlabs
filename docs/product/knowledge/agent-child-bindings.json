@@ -1,0 +1,237 @@
+{
+  "format": "axiom.product-control-bindings/1",
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "41bf7dc4e33066d5eaea3d577f37da3702cf4f12",
+  "declarations": 19,
+  "countMethod": "Every intrinsic button/input/select/textarea/summary/a declaration in eight complete files, including local helper functions and Markdown render callbacks. Select options belong to the parent select; forms and display nodes are not independent controls.",
+  "files": [
+    {
+      "source": "desktop/src/components/ConversationRename.tsx",
+      "baselineSha256": "319f2858fb313910afaeca253ee3209c1e6f026f07265090d3a1d0c035f34c35",
+      "declarations": 5,
+      "tagCounts": {
+        "button": 4,
+        "input": 1
+      }
+    },
+    {
+      "source": "desktop/src/components/AgentModelSelector.tsx",
+      "baselineSha256": "7d9ce3d10aa28a41e8d41cef5b60f8916ccf55db5168529513d3705b2711120d",
+      "declarations": 2,
+      "tagCounts": {
+        "input": 1,
+        "select": 1
+      }
+    },
+    {
+      "source": "desktop/src/components/AgentMessageContent.tsx",
+      "baselineSha256": "7e85a6f2275bcd712a1fc4841d019adc50a8a68cb6b46a25f46ee49d06fa7ea3",
+      "declarations": 2,
+      "tagCounts": {
+        "button": 1,
+        "a": 1
+      }
+    },
+    {
+      "source": "desktop/src/components/FileDiff.tsx",
+      "baselineSha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3",
+      "declarations": 2,
+      "tagCounts": {
+        "button": 2
+      }
+    },
+    {
+      "source": "desktop/src/components/AgentApprovedActions.tsx",
+      "baselineSha256": "0e4484a9507baf5f7ef2743b38e101355800b02b863880a80f77a827f818e51f",
+      "declarations": 5,
+      "tagCounts": {
+        "button": 5
+      }
+    },
+    {
+      "source": "desktop/src/components/AgentGithubReceipts.tsx",
+      "baselineSha256": "1fb6a4b71f71fc592bd1498cf2a7c133a96ca0afeed0b504a135373cf69bf1a1",
+      "declarations": 1,
+      "tagCounts": {
+        "a": 1
+      }
+    },
+    {
+      "source": "desktop/src/components/AgentRestartReceipts.tsx",
+      "baselineSha256": "acedbffc1a56799cafde829ba058aa8694f9df7a729ad6d22276b8c51236d6fe",
+      "declarations": 1,
+      "tagCounts": {
+        "button": 1
+      }
+    },
+    {
+      "source": "desktop/src/components/Disclosure.tsx",
+      "baselineSha256": "8dc049048b429fdcb0f280d416730f5915dfd1ef71cf8b8fd656ccdd9c1806af",
+      "declarations": 1,
+      "tagCounts": {
+        "button": 1
+      }
+    }
+  ],
+  "unbound": [
+    "AgentChatView.tsx main 46 declarations and all its local helper components are outside this unit",
+    "Custom imported components and third-party Markdown internals are excluded; only locally authored render callbacks are included",
+    "Native external-link/clipboard implementations, settings destinations, provider/service/runtime state and generated select options have no new binding"
+  ],
+  "controls": [
+    {
+      "helpId": "agent.workspace.rename-open",
+      "source": "desktop/src/components/ConversationRename.tsx",
+      "tag": "button",
+      "guideSection": "Choose the conversation and scope",
+      "anchor": "<button type=\"button\" disabled={disabled || busy} onClick={() => {setEditing(value => !value); setNotice(null);}} className=\"rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 disabled:",
+      "nodeSha256": "e562cce75f8b628eeb08d81733469108ebde8dc708c5aa28b5cd13c57ae31fa6"
+    },
+    {
+      "helpId": "agent.workspace.rename-title",
+      "source": "desktop/src/components/ConversationRename.tsx",
+      "tag": "input",
+      "guideSection": "Choose the conversation and scope",
+      "anchor": "<input autoFocus aria-label=\"Conversation title\" maxLength={200} value={draft} disabled={busy} onChange={event => setDraft(event.target.value)} onKeyDown={event => {if (event.nativeEvent.isComposing |",
+      "nodeSha256": "67abb4cd64496588112f4795d027bc9fa9659fea4e8582fa46f6863c748ff971"
+    },
+    {
+      "helpId": "agent.workspace.rename-save",
+      "source": "desktop/src/components/ConversationRename.tsx",
+      "tag": "button",
+      "guideSection": "Choose the conversation and scope",
+      "anchor": "<button type=\"submit\" disabled={disabled || busy || !verified || !draft.trim()} className=\"rounded-md bg-white px-2 py-1.5 text-xs text-black disabled:opacity-40\">Save title</button>",
+      "nodeSha256": "9cb1d93c12a83f38b3a6400b30ce9e26ea6f783a24beb027caa7a3c539a88e2c"
+    },
+    {
+      "helpId": "agent.workspace.rename-refresh",
+      "source": "desktop/src/components/ConversationRename.tsx",
+      "tag": "button",
+      "guideSection": "Choose the conversation and scope",
+      "anchor": "<button type=\"button\" disabled={busy} onClick={() => void run(false)} className=\"text-xs text-zinc-400 underline\">Refresh title</button>",
+      "nodeSha256": "228ba0bf42e5528c14dac6dcc0daecec29ccfddaf88e63b4621a6111a64d24cf"
+    },
+    {
+      "helpId": "agent.workspace.rename-cancel",
+      "source": "desktop/src/components/ConversationRename.tsx",
+      "tag": "button",
+      "guideSection": "Choose the conversation and scope",
+      "anchor": "<button type=\"button\" disabled={busy} onClick={() => setEditing(false)} className=\"ml-auto text-xs text-zinc-500\">Cancel</button>",
+      "nodeSha256": "5a97f8f2f139ff4e6f2a32ba1f420770c4fb27f0f00eda25067b4c32ca7f324d"
+    },
+    {
+      "helpId": "agent.workspace.model-search",
+      "source": "desktop/src/components/AgentModelSelector.tsx",
+      "tag": "input",
+      "guideSection": "Compose and send deliberately",
+      "anchor": "<input type=\"search\" aria-label={`Search ${label} models`} placeholder=\"Search models\" value={query} onChange={event => setQuery(event.target.value)} disabled={disabled} className=\"w-32 rounded-md bor",
+      "nodeSha256": "da1490ee9cdfb961b89949e376e252e12e9248f5f999fd9cbbed42e8ccb76f55"
+    },
+    {
+      "helpId": "agent.workspace.model-select",
+      "source": "desktop/src/components/AgentModelSelector.tsx",
+      "tag": "select",
+      "guideSection": "Compose and send deliberately",
+      "anchor": "<select aria-label={`${label} model`} value={loading ? \"__checking__\" : value} onChange={event => { const option = options.find(item => item.key === event.target.value); if (option && !option.unavaila",
+      "nodeSha256": "2fcaacad2e2181d5e832b2614608ebff33e56036f15af6a4c6d9ac3782a36133"
+    },
+    {
+      "helpId": "agent.workspace.copy-code",
+      "source": "desktop/src/components/AgentMessageContent.tsx",
+      "tag": "button",
+      "guideSection": "Read evidence and receipts accurately",
+      "anchor": "<button type=\"button\" aria-label={copied?\"Code copied\":\"Copy code\"} disabled={text===null} onClick={()=>void copy()} className=\"text-zinc-400 hover:text-white disabled:opacity-40\">{copied?\"Copied\":\"Co",
+      "nodeSha256": "b6bf36ac710d9a785355e7cdb34d7ac280b5fb6706833dfdb112552b91844190"
+    },
+    {
+      "helpId": "agent.workspace.message-link",
+      "source": "desktop/src/components/AgentMessageContent.tsx",
+      "tag": "a",
+      "guideSection": "Read evidence and receipts accurately",
+      "anchor": "<a href={url} onClick={event=>{event.preventDefault();void openExternal(url);}} className=\"text-sky-300 underline decoration-sky-300/40 underline-offset-2 hover:text-sky-200\">{children}</a>",
+      "nodeSha256": "57f1e42bf982d9768817600e91aa73b0a4cbecb70e401485c9d7ee8e44e8546f"
+    },
+    {
+      "helpId": "shared.file-diff-previous",
+      "source": "desktop/src/components/FileDiff.tsx",
+      "tag": "button",
+      "guideSection": "Review proposals without collapsing the two decisions",
+      "anchor": "<button type=\"button\" aria-label=\"Previous diff page\" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)} className=\"btn-secondary disabled:opacity-40\">Previous</button>",
+      "nodeSha256": "80c1b5565facc0938c61cec8c7c658e5af70fb0174cb17562870b91877d19245"
+    },
+    {
+      "helpId": "shared.file-diff-next",
+      "source": "desktop/src/components/FileDiff.tsx",
+      "tag": "button",
+      "guideSection": "Review proposals without collapsing the two decisions",
+      "anchor": "<button type=\"button\" aria-label=\"Next diff page\" disabled={currentPage === pageCount - 1} onClick={() => setPage(currentPage + 1)} className=\"btn-secondary disabled:opacity-40\">Next</button>",
+      "nodeSha256": "46ae1761cdda16e533e6b31dfb2021a0e65ec5b342aafe4782085cdd04df6abc"
+    },
+    {
+      "helpId": "agent.workspace.action-outcome",
+      "source": "desktop/src/components/AgentApprovedActions.tsx",
+      "tag": "button",
+      "guideSection": "Approved actions: requester-only deliberate execution",
+      "anchor": "<button type=\"button\" disabled={busy!==null} onClick={()=>void check()} className=\"rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300 disabled:opacity-50\">{busy==='read'?'Checking sav",
+      "nodeSha256": "d7779898e4c1a336c7499cfeaf3691441131d241f4ae7e52ecf98a8377a39009"
+    },
+    {
+      "helpId": "agent.workspace.action-readiness",
+      "source": "desktop/src/components/AgentApprovedActions.tsx",
+      "tag": "button",
+      "guideSection": "Approved actions: requester-only deliberate execution",
+      "anchor": "<button type=\"button\" disabled={busy!==null} onClick={()=>void checkReady()} className=\"rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300 disabled:opacity-50\">{busy==='readiness'?'Ch",
+      "nodeSha256": "46db640deeb44a1f2f396244df2d20071dd41b5f74a9dfa57f3dd46f72ec6934"
+    },
+    {
+      "helpId": "agent.workspace.action-prepare",
+      "source": "desktop/src/components/AgentApprovedActions.tsx",
+      "tag": "button",
+      "guideSection": "Approved actions: requester-only deliberate execution",
+      "anchor": "<button type=\"button\" disabled={busy!==null} onClick={()=>void command({operation:'prepare',proposalId:action.id})} className=\"rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 disab",
+      "nodeSha256": "ba353f9f9a3dff250c1eaccfd308228ebc4166e798bd2fd38aaa9a810acccc54"
+    },
+    {
+      "helpId": "agent.workspace.action-execute",
+      "source": "desktop/src/components/AgentApprovedActions.tsx",
+      "tag": "button",
+      "guideSection": "Approved actions: requester-only deliberate execution",
+      "anchor": "<button type=\"button\" disabled={busy!==null} onClick={()=>void command({operation:'execute',id:saved!.id})} className=\"rounded-lg bg-zinc-100 px-3 py-1.5 text-xs font-medium text-zinc-950 disabled:opa",
+      "nodeSha256": "b345578dde81fd2e15792fab994fb2ad368108a866a28600fcb4acead95a2ada"
+    },
+    {
+      "helpId": "agent.workspace.action-cancel",
+      "source": "desktop/src/components/AgentApprovedActions.tsx",
+      "tag": "button",
+      "guideSection": "Approved actions: requester-only deliberate execution",
+      "anchor": "<button type=\"button\" disabled={busy!==null} onClick={()=>void command({operation:'cancel',id:saved!.id})} className=\"rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300 disabled:opaci",
+      "nodeSha256": "6ffab2e4a816fbb2ab6a67d19e2a02158791a8b35c148466f512b6e67547e070"
+    },
+    {
+      "helpId": "agent.workspace.github-receipt-link",
+      "source": "desktop/src/components/AgentGithubReceipts.tsx",
+      "tag": "a",
+      "guideSection": "Read evidence and receipts accurately",
+      "anchor": "<a className=\"mt-2 inline-block text-zinc-200 underline\" href={receipt.href} target=\"_blank\" rel=\"noopener noreferrer\">{receipt.label}</a>",
+      "nodeSha256": "992c3067564c61d80c8157de8ff587aa4becc586da2a79edd7b8828e5b58c2d9"
+    },
+    {
+      "helpId": "agent.workspace.workflow-receipt-refresh",
+      "source": "desktop/src/components/AgentRestartReceipts.tsx",
+      "tag": "button",
+      "guideSection": "Read evidence and receipts accurately",
+      "anchor": "<button type=\"button\" disabled={loading} onClick={() => void refresh()} className=\"mt-2 rounded-md border border-white/10 px-3 py-1.5 text-zinc-200 disabled:opacity-50\">{loading ? \"Reading workflow re",
+      "nodeSha256": "15dc1b142c5f141aeba9ee51a8e6e21bcda3056a759eaeeb7fe907b374326947"
+    },
+    {
+      "helpId": "shared.disclosure-toggle",
+      "source": "desktop/src/components/Disclosure.tsx",
+      "tag": "button",
+      "guideSection": "Qualification and remaining boundaries",
+      "anchor": "<button type=\"button\" aria-expanded={expanded} aria-controls={contentId} onClick={() => setExpanded(current => !current)} className={`flex w-full items-center gap-2 text-left focus-visible:outline foc",
+      "nodeSha256": "7e79fb10f12e18cba9e01ea52d5cfa56117c519431d00cd0a2a4a50a9d193258"
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+lib/billing/gatewayMetadataBodyBound.ts(11,24): error TS2304: Cannot find name 'ReadableStreamReadResult'.

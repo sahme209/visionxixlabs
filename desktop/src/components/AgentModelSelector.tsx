@@ -19,7 +19,7 @@ export function AgentModelSelector({ options, value, onChange, disabled, loading
   const vendors = [...new Set(filtered.map(option => option.vendor))];
 
   return <div className="ml-auto flex flex-wrap items-center gap-2 text-[11px] text-zinc-500">
-    <input
+    <input data-help-id="agent.workspace.model-search"
       type="search"
       aria-label={`Search ${label} models`}
       placeholder="Search models"
@@ -28,7 +28,7 @@ export function AgentModelSelector({ options, value, onChange, disabled, loading
       disabled={disabled}
       className="w-32 rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 disabled:opacity-50"
     />
-    <select
+    <select data-help-id="agent.workspace.model-select"
       aria-label={`${label} model`}
       value={loading ? "__checking__" : value}
       onChange={event => {

@@ -1,0 +1,35 @@
+{
+  "authorization": "call_6QNV8xixpi5HQH0ApCBRqJnt approved four official documentation reads",
+  "recorded_at": "2026-11-04T20:10:35.589898+00:00",
+  "pages": [
+    {
+      "title": "Vercel provider routing and fallbacks",
+      "url": "https://vercel.com/docs/ai-gateway/models-and-providers/provider-options",
+      "observed": "public HTML returned; relevant sections inspected"
+    },
+    {
+      "title": "Anthropic pricing",
+      "url": "https://platform.claude.com/docs/en/about-claude/pricing",
+      "observed": "public HTML returned; relevant sections inspected"
+    },
+    {
+      "title": "Anthropic web search tool",
+      "url": "https://platform.claude.com/docs/en/agents-and-tools/tool-use/web-search-tool",
+      "observed": "public HTML returned; relevant sections inspected"
+    },
+    {
+      "title": "Anthropic context windows",
+      "url": "https://platform.claude.com/docs/en/build-with-claude/context-windows",
+      "observed": "public HTML returned; relevant sections inspected"
+    }
+  ],
+  "discovery": "Vercel official-documentation search and official-domain web search",
+  "page_destinations": 4,
+  "remaining_page_allowance": 0,
+  "cached_section_inspection": "find on the same opened references; no extra destination",
+  "metadata_api_refetch": false,
+  "credentials_or_customer_content": false,
+  "inference_or_spend": false,
+  "fee_contract_approved": false,
+  "quote_qualification": false
+}

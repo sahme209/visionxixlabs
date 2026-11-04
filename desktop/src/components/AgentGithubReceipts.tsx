@@ -38,7 +38,7 @@ export function AgentGithubReceipts({ actions }: { actions: GithubAction[] }) {
       {receipt ? <>
         <p className="font-medium text-zinc-200">{receipt.identity}</p>
         <p className="mt-1 break-all">{receipt.detail}</p>
-        <a className="mt-2 inline-block text-zinc-200 underline" href={receipt.href} target="_blank" rel="noopener noreferrer">{receipt.label}</a>
+        <a data-help-id="agent.workspace.github-receipt-link" className="mt-2 inline-block text-zinc-200 underline" href={receipt.href} target="_blank" rel="noopener noreferrer">{receipt.label}</a>
         <p className="mt-1">Tests, merge and recovery are not verified by this receipt.</p>
       </> : <p>Recorded GitHub result unavailable. Reopen the conversation to read it again; do not execute the action again to recover a receipt.</p>}
     </section>;

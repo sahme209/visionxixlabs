@@ -1,4 +1,5 @@
 import "server-only";
+import { readGatewayMetadataText } from "./gatewayMetadataBodyBound";
 import { createHash } from "node:crypto";
 import { redact } from "@/lib/security/redaction";
 import { denyIsolatedExternalIO } from "./isolatedApplication/runtime";
@@ -76,10 +77,10 @@ export async function prepareSmallSonnetRequest(scope: Scope, request: { model: 
   const maximumPayloadBytes = [8192, 16384, SMALL_SONNET_BYTES].find(bytes => payloadBytes <= bytes)!;
   try {
     denyIsolatedExternalIO();
-    const response = await fetch(`https://ai-gateway.vercel.sh/v1/models/${SMALL_SONNET_MODEL}/endpoints`, { cache: "no-store", signal: abortSignal ? AbortSignal.any([abortSignal, AbortSignal.timeout(5000)]) : AbortSignal.timeout(5000) });
+    const metadataSignal = abortSignal ? AbortSignal.any([abortSignal, AbortSignal.timeout(5000)]) : AbortSignal.timeout(5000);
+    const response = await fetch(`https://ai-gateway.vercel.sh/v1/models/${SMALL_SONNET_MODEL}/endpoints`, { cache: "no-store", signal: metadataSignal });
     if (!response.ok) return undefined;
-    const text = await response.text();
-    if (Buffer.byteLength(text) > 128 * 1024) return undefined;
+    const text = await readGatewayMetadataText(response, metadataSignal);
     const data = row(row(JSON.parse(text)).data), reasoning = row(data.reasoning);
     if (data.id !== SMALL_SONNET_MODEL || reasoning.mandatory === true || reasoning.supports_max_tokens !== true || !Array.isArray(reasoning.supported_efforts) || !reasoning.supported_efforts.includes("none")) return undefined;
     if (!Array.isArray(data.endpoints) || data.endpoints.length > 64) return undefined;

@@ -1,0 +1,119 @@
+✔ finite unpublished inventory specifies all eight whole files and 19 unique control declarations (0.616417ms)
+✖ independently enumerates every intrinsic control and binds exact original JSX nodes (13.227792ms)
+✔ stripping only inserted attributes restores every complete baseline source file (0.321292ms)
+✖ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (12.012375ms)
+✖ rejects newly added unbound controls, metadata on display nodes and cross-file ID moves (7.413792ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 128.526541
+
+✖ failing tests:
+
+test at docs/product/knowledge/agent-child-bindings.test.cjs:41:1
+✖ independently enumerates every intrinsic control and binds exact original JSX nodes (13.227792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'missing or duplicate agent.workspace.rename-open',
+  +   'missing or duplicate agent.workspace.rename-title',
+  +   'missing or duplicate agent.workspace.rename-save',
+  +   'missing or duplicate agent.workspace.rename-refresh',
+  +   'missing or duplicate agent.workspace.rename-cancel',
+  +   'missing or duplicate agent.workspace.model-search',
+  +   'missing or duplicate agent.workspace.model-select',
+  +   'missing or duplicate agent.workspace.copy-code',
+  +   'missing or duplicate agent.workspace.message-link',
+  +   'missing or duplicate shared.file-diff-previous',
+  +   'missing or duplicate shared.file-diff-next',
+  +   'missing or duplicate agent.workspace.action-outcome',
+  +   'missing or duplicate agent.workspace.action-readiness',
+  +   'missing or duplicate agent.workspace.action-prepare',
+  +   'missing or duplicate agent.workspace.action-execute',
+  +   'missing or duplicate agent.workspace.action-cancel',
+  +   'missing or duplicate agent.workspace.github-receipt-link',
+  +   'missing or duplicate agent.workspace.workflow-receipt-refresh',
+  +   'missing or duplicate shared.disclosure-toggle'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/agent-child-bindings.test.cjs:41:103)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'missing or duplicate agent.workspace.rename-open', 'missing or duplicate agent.workspace.rename-title', 'missing or duplicate agent.workspace.rename-save', 'missing or duplicate agent.workspace.rename-refresh', 'missing or duplicate agent.workspace.rename-cancel', 'missing or duplicate agent.workspace.model-search', 'missing or duplicate agent.workspace.model-select', 'missing or duplicate agent.workspace.copy-code', 'missing or duplicate agent.workspace.message-link', 'missing or duplicate shared.file-diff-previous', 'missing or duplicate shared.file-diff-next', 'missing or duplicate agent.workspace.action-outcome', 'missing or duplicate agent.workspace.action-readiness', 'missing or duplicate agent.workspace.action-prepare', 'missing or duplicate agent.workspace.action-execute', 'missing or duplicate agent.workspace.action-cancel', 'missing or duplicate agent.workspace.github-receipt-link', 'missing or duplicate agent.workspace.workflow-receipt-refresh', 'missing or duplicate shared.disclosure-toggle' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/agent-child-bindings.test.cjs:45:1
+✖ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (12.012375ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(mutate(source.replace(attr,'data-help-id={"agent.workspace.rename-title"}'))).includes('nonliteral ID'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/agent-child-bindings.test.cjs:49:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/agent-child-bindings.test.cjs:55:1
+✖ rejects newly added unbound controls, metadata on display nodes and cross-file ID moves (7.413792ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(mutate(source.replace('data-help-id="shared.disclosure-toggle"','data-help-id="agent.workspace.rename-open"'))).includes('wrong file agent.workspace.rename-open'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/agent-child-bindings.test.cjs:59:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

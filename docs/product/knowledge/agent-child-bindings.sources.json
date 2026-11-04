@@ -1,0 +1,54 @@
+{
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "41bf7dc4e33066d5eaea3d577f37da3702cf4f12",
+  "bindingScope": "19 intrinsic interactive declarations in eight whole files; main AgentChatView and imported component internals excluded",
+  "sources": [
+    {
+      "path": "desktop/src/components/ConversationRename.tsx",
+      "sha256": "a7bea0ea6654a8f6e6fc636cc8aa54dd7701671dc9b01f99d94c61221596f0fd"
+    },
+    {
+      "path": "desktop/src/components/AgentModelSelector.tsx",
+      "sha256": "98fb0dfce33644cbbed97a7587df474cd6fe783cca4dd80ad61e010c5422ad35"
+    },
+    {
+      "path": "desktop/src/components/AgentMessageContent.tsx",
+      "sha256": "27a09376a40cafedea66011c59f0b12b324baf1b6dc478f6901e86ef0513a789"
+    },
+    {
+      "path": "desktop/src/components/FileDiff.tsx",
+      "sha256": "41871bd0feba9281c736e02faf2f461cb21d59b1b6a6f329a445502fd6c2b477"
+    },
+    {
+      "path": "desktop/src/components/AgentApprovedActions.tsx",
+      "sha256": "d6e86855399e31755d2e6e77d94d9a2f96cd9a10acdda68a5c7519a6b0421e95"
+    },
+    {
+      "path": "desktop/src/components/AgentGithubReceipts.tsx",
+      "sha256": "e1ef823f1e7bd708a21a2623153b9b3dcfddfd1bde827e7625d6a8daf6f5dc58"
+    },
+    {
+      "path": "desktop/src/components/AgentRestartReceipts.tsx",
+      "sha256": "a8f16fb9391b464706d2a0b1a4f7c6e7aaadf73cdf9d4dfe0a8b06c9b3d29fd8"
+    },
+    {
+      "path": "desktop/src/components/Disclosure.tsx",
+      "sha256": "9855b274ccd39211f1bc1a08eac3bc162d649df4f8eddeee076845838beb7589"
+    },
+    {
+      "path": "docs/product/knowledge/agent-child-bindings.json",
+      "sha256": "8df06ddd4a858338aba5b0bb088ac95032c6d9d94aacf7fa9769ae187dcda878"
+    },
+    {
+      "path": "docs/product/knowledge/agent-child-bindings.test.cjs",
+      "sha256": "ef0804209e7e8e125ce21c4964e1f73e6f2e6200e67d77b1a9620afb716dca19"
+    },
+    {
+      "path": "docs/product/knowledge/agent-child-bindings.md",
+      "sha256": "90a4b778c6d13e7330ae7f99087ef34d48e44a73e72664efd2ed600838a0e33c"
+    }
+  ],
+  "validation": "5 AST tests pass with kernel network denial, scrubbed environment and private-only writes; stripping 19 attributes independently equals eight Git baseline files. Main view unchanged. No native/customer acceptance."
+}

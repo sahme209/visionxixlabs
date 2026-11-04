@@ -1,0 +1,43 @@
+lib/billing/isolatedApplication/runtime.ts(5,24): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/isolatedApplication/runtime.ts(5,62): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/newTestSubscription/anniversaryWindow.ts(1,28): error TS2307: Cannot find module 'node:crypto' or its corresponding type declarations.
+lib/billing/ownedCheckoutBridge/configuration.ts(7,96): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/configuration.ts(20,124): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(1,57): error TS2307: Cannot find module 'node:crypto' or its corresponding type declarations.
+lib/billing/ownedCheckoutBridge/protocol.ts(15,308): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(20,165): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(21,17): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(43,7): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(48,128): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(51,36): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(52,17): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(54,107): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(60,24): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(60,58): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(63,34): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(63,43): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(63,124): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(63,184): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(64,46): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(65,18): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(65,62): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(67,17): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/ownedCheckoutBridge/protocol.ts(74,18): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/publicBillingConfig.ts(8,10): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/publicBillingConfig.ts(12,21): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/publicBillingConfig.ts(12,73): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/publicBillingConfig.ts(14,26): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/publicBillingConfig.ts(22,19): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/publicCheckoutService.ts(1,28): error TS2307: Cannot find module 'node:crypto' or its corresponding type declarations.
+lib/billing/publicCreditAllocation.ts(1,28): error TS2307: Cannot find module 'node:crypto' or its corresponding type declarations.
+lib/billing/publicPlanCatalog.ts(117,10): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/publicSubscriptionAllowance.ts(1,28): error TS2307: Cannot find module 'node:crypto' or its corresponding type declarations.
+lib/billing/publicSubscriptionEvidence.ts(1,28): error TS2307: Cannot find module 'node:crypto' or its corresponding type declarations.
+lib/billing/smallSonnet55Request.ts(3,28): error TS2307: Cannot find module 'node:crypto' or its corresponding type declarations.
+lib/billing/smallSonnet55Request.ts(72,83): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/smallSonnet55Request.ts(74,24): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/smallSonnet55Request.ts(74,60): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/smallSonnetRequest.ts(3,28): error TS2307: Cannot find module 'node:crypto' or its corresponding type declarations.
+lib/billing/smallSonnetRequest.ts(72,80): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/smallSonnetRequest.ts(74,24): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+lib/billing/smallSonnetRequest.ts(74,60): error TS2580: Cannot find name 'Buffer'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.

@@ -61,7 +61,7 @@ function RestartReceipt({ action }: { action: RestartAction }) {
       <p className="mt-1 break-all">{value.repositoryFullName} · environment {value.environmentId}</p>
       <p className="mt-1">{deploymentObservationState(value).label} · {observation ? "manually observed" : "recorded dispatch receipt"}</p>
       <DeploymentWorkflowEvidence execution={value} />
-      <button type="button" disabled={loading} onClick={() => void refresh()} className="mt-2 rounded-md border border-white/10 px-3 py-1.5 text-zinc-200 disabled:opacity-50">{loading ? "Reading workflow receipt…" : "Refresh workflow receipt"}</button>
+      <button data-help-id="agent.workspace.workflow-receipt-refresh" type="button" disabled={loading} onClick={() => void refresh()} className="mt-2 rounded-md border border-white/10 px-3 py-1.5 text-zinc-200 disabled:opacity-50">{loading ? "Reading workflow receipt…" : "Refresh workflow receipt"}</button>
     </> : <p className="mt-1">Workflow receipt unavailable. Reopen this conversation to retry its read; do not approve or dispatch again to recover status.</p>}
     {error && <p role="alert" className="mt-2 text-amber-200">{error}</p>}
   </section>;

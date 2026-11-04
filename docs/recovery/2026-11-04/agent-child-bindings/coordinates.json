@@ -1,0 +1,4 @@
+{
+  "owned": "/private/tmp/axiom-agent-child-bindings-4zg1gffo",
+  "profile": "(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-agent-child-bindings-4zg1gffo\"))"
+}

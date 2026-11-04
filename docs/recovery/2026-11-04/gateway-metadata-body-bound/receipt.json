@@ -1,0 +1,19 @@
+{
+  "sourceHashes": {
+    "lib/billing/gatewayMetadataBodyBound.ts": "06590933f27b5afc6550ceb6570d4e4834d5bee765fc4ba53b1931706d005f61",
+    "lib/billing/smallSonnetRequest.ts": "15f6a93c055e1af630c4e4e032acf7f90a26293ba05dbe43571c003394e5e862",
+    "lib/billing/smallSonnet55Request.ts": "da42288e859f637853e58682064a10f10cc78ab8055debee2046d8c8d932ff04",
+    "lib/billing/__tests__/gatewayMetadataBodyBound.test.ts": "16bf32ca08e75d42cee2fae84a96390d735598552f16a1a9df0383b5e5e4de1b"
+  },
+  "behavioralRed": "red.log:12failed/1passed against old full-body text() behavior",
+  "initialGreen": "green.log:13passed",
+  "finalGreen": "compat-green.log:71passed/3files (14new helper+actualcallsite,30existingSonnet5,27existingSonnet55)",
+  "types": "helper-types-final.log strict ES2017 with actual project DOM/esnext libs pass; first standalone types omitted DOM and failed missing ReadableStreamReadResult",
+  "network": "kernel denied; fetches synthetic only",
+  "limitBytes": 131072,
+  "timeouts": "same preexisting combined five-second signal for fetch and body; no added timeout",
+  "policyChanges": false,
+  "note": "bounds retained bytes before aggregation, not platform allocation of an individual already received chunk; fatal invalid UTF8 refusal, initialBOM stripped as Response.text",
+  "callerTransitiveTypesExit": 0,
+  "review": "independent source review clear; root source hash parity verified"
+}

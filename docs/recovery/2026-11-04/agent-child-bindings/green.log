@@ -1,0 +1,13 @@
+✔ finite unpublished inventory specifies all eight whole files and 19 unique control declarations (0.622833ms)
+✔ independently enumerates every intrinsic control and binds exact original JSX nodes (12.846416ms)
+✔ stripping only inserted attributes restores every complete baseline source file (0.135625ms)
+✔ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (20.338375ms)
+✔ rejects newly added unbound controls, metadata on display nodes and cross-file ID moves (6.666292ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 137.19825

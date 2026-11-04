@@ -1,0 +1,55 @@
+{
+  "baselineCommit": "41bf7dc4e33066d5eaea3d577f37da3702cf4f12",
+  "files": [
+    {
+      "path": "desktop/src/components/ConversationRename.tsx",
+      "attributeCount": 5,
+      "baselineSha256": "319f2858fb313910afaeca253ee3209c1e6f026f07265090d3a1d0c035f34c35",
+      "strippedEqualsGitBaseline": true
+    },
+    {
+      "path": "desktop/src/components/AgentModelSelector.tsx",
+      "attributeCount": 2,
+      "baselineSha256": "7d9ce3d10aa28a41e8d41cef5b60f8916ccf55db5168529513d3705b2711120d",
+      "strippedEqualsGitBaseline": true
+    },
+    {
+      "path": "desktop/src/components/AgentMessageContent.tsx",
+      "attributeCount": 2,
+      "baselineSha256": "7e85a6f2275bcd712a1fc4841d019adc50a8a68cb6b46a25f46ee49d06fa7ea3",
+      "strippedEqualsGitBaseline": true
+    },
+    {
+      "path": "desktop/src/components/FileDiff.tsx",
+      "attributeCount": 2,
+      "baselineSha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3",
+      "strippedEqualsGitBaseline": true
+    },
+    {
+      "path": "desktop/src/components/AgentApprovedActions.tsx",
+      "attributeCount": 5,
+      "baselineSha256": "0e4484a9507baf5f7ef2743b38e101355800b02b863880a80f77a827f818e51f",
+      "strippedEqualsGitBaseline": true
+    },
+    {
+      "path": "desktop/src/components/AgentGithubReceipts.tsx",
+      "attributeCount": 1,
+      "baselineSha256": "1fb6a4b71f71fc592bd1498cf2a7c133a96ca0afeed0b504a135373cf69bf1a1",
+      "strippedEqualsGitBaseline": true
+    },
+    {
+      "path": "desktop/src/components/AgentRestartReceipts.tsx",
+      "attributeCount": 1,
+      "baselineSha256": "acedbffc1a56799cafde829ba058aa8694f9df7a729ad6d22276b8c51236d6fe",
+      "strippedEqualsGitBaseline": true
+    },
+    {
+      "path": "desktop/src/components/Disclosure.tsx",
+      "attributeCount": 1,
+      "baselineSha256": "8dc049048b429fdcb0f280d416730f5915dfd1ef71cf8b8fd656ccdd9c1806af",
+      "strippedEqualsGitBaseline": true
+    }
+  ],
+  "mainViewUnchanged": true,
+  "mainViewSha256": "53bdefa6f6ee43e4d6244c86fb146a14cd1fb839cd6f4e919a0df6bbc2434e47"
+}

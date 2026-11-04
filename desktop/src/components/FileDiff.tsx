@@ -20,8 +20,8 @@ export function FileDiff({ before, after, label = "Proposed file diff", unchange
       {lines.length > 2000 && <div className="mb-2 space-y-2 text-xs text-amber-300">
         <p role="status">Diff display limited to 2,000 rows per page. Page {currentPage + 1} of {pageCount}; review every page before saving or approving.</p>
         <div className="flex gap-2">
-          <button type="button" aria-label="Previous diff page" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)} className="btn-secondary disabled:opacity-40">Previous</button>
-          <button type="button" aria-label="Next diff page" disabled={currentPage === pageCount - 1} onClick={() => setPage(currentPage + 1)} className="btn-secondary disabled:opacity-40">Next</button>
+          <button data-help-id="shared.file-diff-previous" type="button" aria-label="Previous diff page" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)} className="btn-secondary disabled:opacity-40">Previous</button>
+          <button data-help-id="shared.file-diff-next" type="button" aria-label="Next diff page" disabled={currentPage === pageCount - 1} onClick={() => setPage(currentPage + 1)} className="btn-secondary disabled:opacity-40">Next</button>
         </div>
       </div>}
       <div tabIndex={0} aria-label={label} className="max-h-80 overflow-auto rounded-lg border border-white/[0.06] bg-black/30 font-mono text-[11px] leading-5">
