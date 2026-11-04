@@ -239,12 +239,12 @@ export function HowItWorksClient() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[
             {
-              title: "Approval-only-no-execution",
-              body: "Every change becomes a packet for review. Axiom never auto-applies; it only stages.",
+              title: "Preparation, review, execution",
+              body: "Preparation and review are separate from execution. Supported operations can make real changes under their exact permission, approval and operation checks. A staged plan is not a completed action.",
             },
             {
-              title: "Closed-union types end-to-end",
-              body: "Agent roles, message kinds, severities — hallucinated values break the build, never reach prod.",
+              title: "Typed contracts and validation",
+              body: "Typed contracts describe supported roles, message kinds and severities, with runtime validation where implemented. Types alone do not validate every runtime input or prove production safety.",
             },
             {
               title: "Auditor sha256 stamps",

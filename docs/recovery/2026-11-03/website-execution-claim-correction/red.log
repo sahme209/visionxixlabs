@@ -1,0 +1,358 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-onprem-inventory-eb31221b
+
+stderr | app/(marketing)/__tests__/truthfulExecutionClaims.test.ts > mounted capabilities describes a pure policy decision without claiming signed approval or universal admission
+React does not recognize the `whileHover` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `whilehover` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+ ❯ app/(marketing)/__tests__/truthfulExecutionClaims.test.ts (2 tests | 2 failed) 36ms
+   × mounted walkthrough separates prepared review from real supported execution without type-safety absolutes 22ms
+   × mounted capabilities describes a pure policy decision without claiming signed approval or universal admission 13ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/(marketing)/__tests__/truthfulExecutionClaims.test.ts > mounted walkthrough separates prepared review from real supported execution without type-safety absolutes
+TestingLibraryElementError: Unable to find an element with the text: /supported operations can make real changes/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none fixed inset-0 z-0 overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"ambient-drift absolute top-[20%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]"[39m
+          [33mstyle[39m=[32m"animation-delay: -8s;"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-12"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mono-label inline-flex items-center gap-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-brand-coral/90 tabular-nums"[39m
+          [36m>[39m
+            [0mHW[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent"[39m
+          [36m/>[39m
+          [0mHow Axiom works[0m
+        [36m</p>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"font-display mt-5 text-4xl md:text-6xl font-bold leading-[1.04]"[39m
+        [36m>[39m
+          [0mTen agents.[0m
+          [0m [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"relative inline-block"[39m
+          [36m>[39m
+            [0mOne human gate.[0m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent"[39m
+            [36m/>[39m
+          [36m</span>[39m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-5 max-w-2xl text-[16px] text-zinc-400 leading-relaxed"[39m
+        [36m>[39m
+          [0mEvery action moves through a typed agent chain. Each agent has a single job. The council weighs them. The operator approves. The auditor stamps a sha-256 rationale row. Nothing ships without you.[0m
+        [36m</p>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-8"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"rounded-3xl border border-white/[0.06] bg-white/[0.02] p-4 md:p-8 overflow-hidden"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"aspect-[16/9] relative"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-label[39m=[32m"Agent communication diagram"[39m
+              [33mclass[39m=[32m"absolute inset-0 w-full h-full"[39m
+              [33mpreserveAspectRatio[39m=[32m"none"[39m
+              [33mrole[39m=[32m"img"[39m
+              [33mviewBox[39m=[32m"0 0 100 100"[39m
+            [36m>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"8"[39m
+                [33mx2[39m=[32m"22"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"28"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"22"[39m
+                [33mx2[39m=[32m"22"[39m
+                [33my1[39m=[32m"28"[39m
+                [33my2[39m=[32m"72"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"22"[39m
+                [33mx2[39m=[32m"42"[39m
+                [33my1[39m=[32m"28"[39m
+                [33my2[39m=[32m"20"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"22"[39m
+                [33mx2[39m=[32m"42"[39m
+                [33my1[39m=[32m"72"[39m
+                [33my2[39m=[32m"80"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"42"[39m
+                [33mx2[39m=[32m"62"[39m
+                [33my1[39m=[32m"20"[39m
+                [33my2[39m=[32m"50"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"42"[39m
+                [33mx2[39m=[32m"62"[39m
+                [33my1[39m=[32m"80"[39m
+                [33my2[39m=[32m"50"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"62"[39m
+                [33mx2[39m=[32m"80"[39m
+                [33my1[39m=[32m"50"[39m
+                [33my2[39m=[32m"28"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"80"[39m
+                [33mx2[39m=[32m"80"[39m
+                [33my1[39m=[32m"28"[39m
+                [33my2[39m=[32m"72"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [33mstroke[39m=[32m"rgba(165,180,252,0.85)"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-width[39m=[32m"0.4"[39m
+                [33mx1[39m=[32m"80"[39m
+                [33mx2[39m=[32m"93"[39m
+                [33my1[39m=[32m"72"[39m
+                [33my2[39m=[32m"50"[39m
+              [36m/>[39m
+              [36m<line[39m
+                [3...
+ ❯ Object.getElementError ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/(marketing)/__tests__/truthfulExecutionClaims.test.ts:12:16
+     10| it('mounted walkthrough separates prepared review from real supported …
+     11|  render(createElement(HowItWorksPage));
+     12|  expect(screen.getByText(/supported operations can make real changes/i…
+       |                ^
+     13|  expect(screen.getByText(/staged plan is not a completed action/i)).to…
+     14|  expect(screen.getByText(/runtime validation where implemented/i)).toB…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/(marketing)/__tests__/truthfulExecutionClaims.test.ts > mounted capabilities describes a pure policy decision without claiming signed approval or universal admission
+TestingLibraryElementError: Unable to find an element with the text: /supplied rules and context/i. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative isolate overflow-hidden"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none fixed inset-0 -z-20 bg-cover bg-center opacity-20"[39m
+        [33mstyle[39m=[32m"background-image: url(\"/images/axiom-hero-landscape-v1.png\");"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,12,11,0.8),rgba(11,12,11,0.94)_42%,#0c0d0c)]"[39m
+      [36m/>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-[1400px] px-6 md:px-10 pt-24 pb-10"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mono-label inline-flex items-center gap-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-orange-200 tabular-nums"[39m
+          [36m>[39m
+            [0mAX[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-px w-6 bg-gradient-to-r from-orange-200/60 to-transparent"[39m
+          [36m/>[39m
+          [0mAxiom Agent · deployment capabilities[0m
+        [36m</p>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"mt-5 max-w-4xl text-4xl font-medium leading-[1.02] tracking-[-0.045em] md:text-5xl"[39m
+        [36m>[39m
+          [0mDeployment capabilities, [0m
+          [0m [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"relative inline-block"[39m
+          [36m>[39m
+            [0mwith human control.[0m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-orange-200/80 to-transparent"[39m
+            [36m/>[39m
+          [36m</span>[39m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"[39m
+        [36m>[39m
+          [0mA focused inventory of the release-governance logic behind Axiom: assess a change, prepare evidence, require human approval, and verify the result. A listed capability proves application logic exists; it does not by itself claim a live integration or automated deployment.[0m
+        [36m</p>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"playbook-responsibilities-heading"[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"surface-glass rounded-2xl p-6 sm:p-8"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mono-label"[39m
+          [36m>[39m
+            [0mOne governed Playbook[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between"[39m
+          [36m>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"max-w-xl text-2xl font-medium tracking-[-0.04em] text-white sm:text-3xl"[39m
+              [33mid[39m=[32m"playbook-responsibilities-heading"[39m
+            [36m>[39m
+              [0mThe parts of Axiom are useful only when they support one release decision.[0m
+            [36m</h2>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"max-w-sm text-sm leading-6 text-zinc-400"[39m
+            [36m>[39m
+              [0mA capability is not a promise of autonomous execution or a live integration. It is a governed part of the workflow.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<ol[39m
+            [33mclass[39m=[32m"mt-8 grid gap-3 md:grid-cols-5"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-mono text-[10px] tracking-[0.16em] text-orange-200"[39m
+              [36m>[39m
+                [0m01[0m
+              [36m</p>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"mt-5 text-sm font-medium text-zinc-100"[39m
+              [36m>[39m
+                [0mUnderstand the change[0m
+              [36m</h3>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-2 text-xs leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mBring typed request, repository, environment, and signal context into a record people can review.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-mono text-[10px] tracking-[0.16em] text-orange-200"[39m
+              [36m>[39m
+                [0m02[0m
+              [36m</p>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"mt-5 text-sm font-medium text-zinc-100"[39m
+              [36m>[39m
+                [0mPrepare the playbook[0m
+              [36m</h3>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-2 text-xs leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mKeep intended steps, checks, recovery context, and evidence requirements close to the decision.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-mono text-[10px] tracking-[0.16em] text-orange-200"[39m
+              [36m>[39m
+                [0m03[0m
+              [36m</p>[39m
+              [36m<h3[39m
+                [33mclass[39m=[32m"mt-5 text-sm font-medium text-zinc-100"[39m
+              [36m>[39m
+                [0mExpose risk and authority[0m
+              [36m</h3>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-2 text-xs leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mMake policy limits and human approval requirements visible before an action is considered.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"[39m
+            [36m>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"font-mono text-[10px] tracking-[0.16em] text-orange-200"[39m
+              [36m>[39m
+                [0m04[0m
+              [36m</p>[39m
+              [36m<h3[39m
+           ...
+ ❯ Object.getElementError ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-website-demo-build-ae5aac78-6j_3u5b3/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/(marketing)/__tests__/truthfulExecutionClaims.test.ts:21:16
+     19| it('mounted capabilities describes a pure policy decision without clai…
+     20|  render(createElement(CapabilitiesClient));
+     21|  expect(screen.getByText(/supplied rules and context/i)).toBeDefined();
+       |                ^
+     22|  expect(screen.getByText(/not a signed approval or universal execution…
+     23|  expect(document.body.textContent).not.toMatch(/operator-signed scope|…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  19:20:22
+   Duration  598ms (transform 32ms, setup 0ms, import 107ms, tests 36ms, environment 391ms)
+

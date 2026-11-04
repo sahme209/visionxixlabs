@@ -1,0 +1,16 @@
+{
+  "base": "d410",
+  "files": {
+    "app/(marketing)/how-it-works/page.tsx": "dd63f254d92fe593ae25e43090858a750989459a6f1f5a73e7aafd1222ccdc92",
+    "app/(marketing)/how-it-works/HowItWorksClient.tsx": "e2947c390df6a3df1f9f783b29d0b90724f2b8cd50dd82caa8340e7a74c36e25",
+    "app/(marketing)/capabilities/CapabilitiesClient.tsx": "043fa24b80178151c12c88cc9348c3008a9704e07375e65f324cc00a93ba8a03",
+    "app/(marketing)/__tests__/truthfulExecutionClaims.test.ts": "067ef237d7d74778dae6de54ee062c6dffa4648a17591bb70321e5f1fe8bf5ba",
+    "lib/agents/policyGateEvaluator.ts": "c9af45b36f7cdee734e253f67ac5e7542f780c33376f77f87f0601139ffe36de"
+  },
+  "focusedRed": 2,
+  "focusedGreen": 2,
+  "sourceOnlyCopyChange": true,
+  "fullBuild": false,
+  "browserAcceptance": false,
+  "providerActions": false
+}
