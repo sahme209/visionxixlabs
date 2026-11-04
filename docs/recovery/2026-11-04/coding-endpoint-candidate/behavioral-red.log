@@ -1,0 +1,106 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [31m❯[39m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts [2m([22m[2m30 tests[22m[2m | [22m[31m7 failed[39m[2m)[22m[32m 6[2mms[22m[39m
+[31m   [31m×[31m retains real snapshot fee rejections without minting authority or security claims[39m[32m 2[2mms[22m[39m
+[31m   [31m×[31m normalizes only observational data even when synthetic fee rejections are absent[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m uses exact regional maxima independent of ordering without assuming a discount[39m[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed/unsupported prompt rate "0"[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed/unsupported prompt rate "-0.1"[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed/unsupported prompt rate "1e-6"[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed/unsupported prompt rate "0.0000000001"[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed/unsupported prompt rate " 0.000002"[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed/unsupported prompt rate "00.1"[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed/unsupported prompt rate 2[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unknown top fields[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unknown pricing fields[32m 0[2mms[22m[39m
+   [32m✓[39m rejects unknown region fields[32m 0[2mms[22m[39m
+   [32m✓[39m refuses unsupported endpoint contract model[32m 0[2mms[22m[39m
+   [32m✓[39m refuses unsupported endpoint contract duplicate[32m 0[2mms[22m[39m
+   [32m✓[39m refuses unsupported endpoint contract status[32m 0[2mms[22m[39m
+   [32m✓[39m refuses unsupported endpoint contract output[32m 0[2mms[22m[39m
+   [32m✓[39m refuses unsupported endpoint contract reasoning[32m 0[2mms[22m[39m
+   [32m✓[39m refuses unsupported endpoint contract params[32m 0[2mms[22m[39m
+   [32m✓[39m refuses unsupported endpoint contract region[32m 0[2mms[22m[39m
+   [32m✓[39m refuses unsupported endpoint contract implicit[32m 0[2mms[22m[39m
+   [32m✓[39m rejects missing billable dimensions rather than assuming zero[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects duplicate JSON keys before overwrite: {"data":1,"data":2}[39m[32m 1[2mms[22m[39m
+[31m   [31m×[31m rejects duplicate JSON keys before overwrite: {"data":{"id":"a","\u0069d":"b"}}[39m[32m 0[2mms[22m[39m
+[31m   [31m×[31m rejects duplicate JSON keys before overwrite: {"data":{"x":{"fee":0,"fee":1}}}[39m[32m 0[2mms[22m[39m
+   [32m✓[39m rejects oversized and deeply nested raw input[32m 0[2mms[22m[39m
+   [32m✓[39m rejects malformed UTF8, Unicode and BOM without replacement[32m 0[2mms[22m[39m
+   [32m✓[39m requires exact observed source and matching raw hash without granting freshness[32m 0[2mms[22m[39m
+   [32m✓[39m refuses shared-memory byte input instead of claiming a stable snapshot[32m 0[2mms[22m[39m
+[31m   [31m×[31m does not return mutable input views or raw metadata content[39m[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m > [22mretains real snapshot fee rejections without minting authority or security claims
+[31m[1mError[22m: candidate_not_implemented[39m
+[36m [2m❯[22m parseCodingEndpointMetadataCandidate lib/ai/codingEndpointMetadataCandidate.ts:[2m3:112[22m[39m
+    [90m  1|[39m [35mimport[39m [32m'server-only'[39m[33m;[39m
+    [90m  2|[39m export const CODING_ENDPOINT_OBSERVATION_URL='https://ai-gateway.verce…
+    [90m  3|[39m export function parseCodingEndpointMetadataCandidate(_raw:Uint8Array|s…
+    [90m   |[39m                                                                                                                [31m^[39m
+    [90m  4|[39m
+[90m [2m❯[22m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m12:101[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m > [22mnormalizes only observational data even when synthetic fee rejections are absent
+[31m[1mError[22m: candidate_not_implemented[39m
+[36m [2m❯[22m parseCodingEndpointMetadataCandidate lib/ai/codingEndpointMetadataCandidate.ts:[2m3:112[22m[39m
+    [90m  1|[39m [35mimport[39m [32m'server-only'[39m[33m;[39m
+    [90m  2|[39m export const CODING_ENDPOINT_OBSERVATION_URL='https://ai-gateway.verce…
+    [90m  3|[39m export function parseCodingEndpointMetadataCandidate(_raw:Uint8Array|s…
+    [90m   |[39m                                                                                                                [31m^[39m
+    [90m  4|[39m
+[90m [2m❯[22m parse lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m11:58[22m[39m
+[90m [2m❯[22m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m13:100[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m > [22muses exact regional maxima independent of ordering without assuming a discount
+[31m[1mError[22m: candidate_not_implemented[39m
+[36m [2m❯[22m parseCodingEndpointMetadataCandidate lib/ai/codingEndpointMetadataCandidate.ts:[2m3:112[22m[39m
+    [90m  1|[39m [35mimport[39m [32m'server-only'[39m[33m;[39m
+    [90m  2|[39m export const CODING_ENDPOINT_OBSERVATION_URL='https://ai-gateway.verce…
+    [90m  3|[39m export function parseCodingEndpointMetadataCandidate(_raw:Uint8Array|s…
+    [90m   |[39m                                                                                                                [31m^[39m
+    [90m  4|[39m
+[90m [2m❯[22m parse lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m11:58[22m[39m
+[90m [2m❯[22m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m14:317[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m > [22mrejects duplicate JSON keys before overwrite: {"data":1,"data":2}
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m > [22mrejects duplicate JSON keys before overwrite: {"data":{"id":"a","\u0069d":"b"}}
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m > [22mrejects duplicate JSON keys before overwrite: {"data":{"x":{"fee":0,"fee":1}}}
+[31m[1mAssertionError[22m: expected [Function] to throw error including 'duplicate_json_key' but got 'candidate_not_implemented'[39m
+
+Expected: [32m"duplicate_json_key"[39m
+Received: [31m"candidate_not_implemented"[39m
+
+[36m [2m❯[22m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m19:233[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m > [22mdoes not return mutable input views or raw metadata content
+[31m[1mError[22m: candidate_not_implemented[39m
+[36m [2m❯[22m parseCodingEndpointMetadataCandidate lib/ai/codingEndpointMetadataCandidate.ts:[2m3:112[22m[39m
+    [90m  1|[39m [35mimport[39m [32m'server-only'[39m[33m;[39m
+    [90m  2|[39m export const CODING_ENDPOINT_OBSERVATION_URL='https://ai-gateway.verce…
+    [90m  3|[39m export function parseCodingEndpointMetadataCandidate(_raw:Uint8Array|s…
+    [90m   |[39m                                                                                                                [31m^[39m
+    [90m  4|[39m
+[90m [2m❯[22m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m24:119[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m7 failed[39m[22m[2m | [22m[1m[32m23 passed[39m[22m[90m (30)[39m
+[2m   Start at [22m 14:44:26
+[2m   Duration [22m 107ms[2m (transform 13ms, setup 0ms, import 19ms, tests 6ms, environment 0ms)[22m
+

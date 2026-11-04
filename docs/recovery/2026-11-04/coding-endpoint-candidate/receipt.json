@@ -1,0 +1,16 @@
+{
+  "files": {
+    "lib/ai/codingEndpointMetadataCandidate.ts": "fa43270a7b68b7fd69b9f5a96b0d0bab4fc59d581f768be0a387082e386d4843",
+    "lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts": "7eb1b3a656f92f324842ebdd88b659e46546a1144abb56349bc0663699a6d66a",
+    "docs/recovery/2026-11-04/coding-quote-public-metadata/response.json": "5a97790330bcdb1fc8bd5aa1fda01b16f431edcf2514e9dd2bf057797fbd9075"
+  },
+  "setupFailure": "red.log: missing module (not behavioral RED)",
+  "behavioralRed": "behavioral-red.log: 7 failed /23 passed",
+  "green": "ordinal-green-full40.log:40passed exact current source",
+  "types": "types-ordinal-final.log:strictES2017modulePASS",
+  "execution": "kernel deny network and repository writes; scrubbed env and owned HOME/TMPDIR/cache; no providers/DB/network",
+  "qualification": false,
+  "quoteEligibility": false,
+  "callerIntegration": "none",
+  "ordinalRed": "ordinal-red.log:1failed/39excluded"
+}

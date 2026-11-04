@@ -1,0 +1,25 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [31m❯[39m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts [2m([22m[2m0 test[22m[2m)[22m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m [ lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts ][22m
+[31m[1mError[22m: Cannot find module '../codingEndpointMetadataCandidate' imported from /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[39m
+[36m [2m❯[22m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m4:1[22m[39m
+    [90m  2|[39m [35mimport[39m { readFileSync } [35mfrom[39m [32m'node:fs'[39m[33m;[39m
+    [90m  3|[39m [35mimport[39m { createHash } [35mfrom[39m [32m'node:crypto'[39m[33m;[39m
+    [90m  4|[39m import { parseCodingEndpointMetadataCandidate, CODING_ENDPOINT_OBSERVA…
+    [90m   |[39m [31m^[39m
+    [90m  5|[39m const saved=readFileSync('docs/recovery/2026-11-04/coding-quote-public…
+    [90m  6|[39m const sha=(v:Uint8Array|string)=>createHash('sha256').update(v).digest…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [2mno tests[22m
+[2m   Start at [22m 14:43:41
+[2m   Duration [22m 115ms[2m (transform 12ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)[22m
+

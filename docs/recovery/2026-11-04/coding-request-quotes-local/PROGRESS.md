@@ -36,3 +36,7 @@ No new visual work, root-client generation, full production build, real pricing 
 ## Later combined local build
 
 The ordinary exact4bf9082a website/backend build (same quoted runtime plus Product hierarchy changes) passed compilation, Next TypeScript,303static pages and output verification in a new isolated stage. See ../product-hierarchy/README.md. This supersedes the earlier missing-full-build limitation only. No quote pricing qualification, production migration/rollout or native issuer activation follows from it.
+
+## Observed metadata parser supplement
+
+The separately approved public snapshot now has a standalone strict candidate parser, verified by40focused cases, strict ES2017 module types and fresh-context review. See ../coding-endpoint-candidate/README.md. It snapshots/bounds/decodes raw bytes, rejects duplicate keys and unsupported schema, computes exact decimal nanodollar/regional observations, preserves all nonzero search/cache exclusions and sorts deterministically. Every output stays qualified:false/quoteEligible:false. No trusted pricing constructor, reader, estimator, quote/coordinator/manager/provider integration or activation was added. The40-case total supersedes the earlier39 for final source; do not sum them.

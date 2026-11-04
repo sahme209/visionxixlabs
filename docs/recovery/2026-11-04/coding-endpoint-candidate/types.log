@@ -1,0 +1,6 @@
+lib/ai/codingEndpointMetadataCandidate.ts(105,16): error TS2345: Argument of type 'Readonly<{ promptNanoDollars: string; completionNanoDollars: string; providerRegion?: string | undefined; scope: unknown; geoRegion: string; }>' is not assignable to parameter of type 'CodingEndpointRegionObservation'.
+  Types of property 'scope' are incompatible.
+    Type 'unknown' is not assignable to type '"zone" | "specific"'.
+lib/ai/codingEndpointMetadataCandidate.ts(109,2): error TS2322: Type 'Readonly<{ qualificationGaps: readonly string[]; normalizedDigest: string; model: string; upstream: "anthropic"; maxPromptNanoDollars: string; maxCompletionNanoDollars: string; contextLength: number; maxCompletionTokens: number; ... 8 more ...; source: Readonly<...>; }>' is not assignable to type 'CodingEndpointMetadataCandidate'.
+  Types of property 'model' are incompatible.
+    Type 'string' is not assignable to type '"anthropic/claude-sonnet-5"'.

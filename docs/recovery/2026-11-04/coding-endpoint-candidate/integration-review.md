@@ -1,0 +1,5 @@
+# Root integration and independent source review
+
+Root read the complete parser and focused tests, independently rehashed the final two source files and immutable saved response against receipt.json, and inspected final40GREEN/moduletypes evidence. Fresh-context reviewer found no important issues. Root identified locale-dependent region ordering after initial review; a genuine targeted RED and ordinal comparator correction followed. Independent delta review is clear. Final40 is the unique focused count, not39+40.
+
+The source is unmounted and has no quote/coordinator/manager/provider caller. No full build repeated for this standalone component. Observations are never trusted pricing or execution authority, even when fees are zero in a synthetic fixture. Actual saved data still reports three fee exclusions. Normalized price/region observations are not an exhaustive upstream pricing, validity, token-estimator or output-billing guarantee. No actual AI, database, network or production operation occurred in these tests.

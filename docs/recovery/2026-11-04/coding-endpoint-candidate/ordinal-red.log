@@ -1,0 +1,70 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [31m❯[39m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts [2m([22m[2m40 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m39 skipped[39m[2m)[22m[32m 8[2mms[22m[39m
+   [2m[90m↓[39m[22m retains real snapshot fee rejections without minting authority or security claims
+   [2m[90m↓[39m[22m normalizes only observational data even when synthetic fee rejections are absent
+   [2m[90m↓[39m[22m uses exact regional maxima independent of ordering without assuming a discount
+   [2m[90m↓[39m[22m rejects malformed/unsupported prompt rate "0"
+   [2m[90m↓[39m[22m rejects malformed/unsupported prompt rate "-0.1"
+   [2m[90m↓[39m[22m rejects malformed/unsupported prompt rate "1e-6"
+   [2m[90m↓[39m[22m rejects malformed/unsupported prompt rate "0.0000000001"
+   [2m[90m↓[39m[22m rejects malformed/unsupported prompt rate " 0.000002"
+   [2m[90m↓[39m[22m rejects malformed/unsupported prompt rate "00.1"
+   [2m[90m↓[39m[22m rejects malformed/unsupported prompt rate 2
+   [2m[90m↓[39m[22m rejects unknown top fields
+   [2m[90m↓[39m[22m rejects unknown pricing fields
+   [2m[90m↓[39m[22m rejects unknown region fields
+   [2m[90m↓[39m[22m refuses unsupported endpoint contract model
+   [2m[90m↓[39m[22m refuses unsupported endpoint contract duplicate
+   [2m[90m↓[39m[22m refuses unsupported endpoint contract status
+   [2m[90m↓[39m[22m refuses unsupported endpoint contract output
+   [2m[90m↓[39m[22m refuses unsupported endpoint contract reasoning
+   [2m[90m↓[39m[22m refuses unsupported endpoint contract params
+   [2m[90m↓[39m[22m refuses unsupported endpoint contract region
+   [2m[90m↓[39m[22m refuses unsupported endpoint contract implicit
+   [2m[90m↓[39m[22m rejects missing billable dimensions rather than assuming zero
+   [2m[90m↓[39m[22m rejects duplicate JSON keys before overwrite: {"data":1,"data":2}
+   [2m[90m↓[39m[22m rejects duplicate JSON keys before overwrite: {"data":{"id":"a","\u0069d":"b"}}
+   [2m[90m↓[39m[22m rejects duplicate JSON keys before overwrite: {"data":{"x":{"fee":0,"fee":1}}}
+   [2m[90m↓[39m[22m rejects oversized and deeply nested raw input
+   [2m[90m↓[39m[22m rejects malformed UTF8, Unicode and BOM without replacement
+   [2m[90m↓[39m[22m requires exact observed source and matching raw hash without granting freshness
+   [2m[90m↓[39m[22m refuses shared-memory byte input instead of claiming a stable snapshot
+   [2m[90m↓[39m[22m does not return mutable input views or raw metadata content
+   [2m[90m↓[39m[22m refuses incomplete selected regional prompt rates rather than filling zero
+   [2m[90m↓[39m[22m refuses incomplete selected regional completion rates rather than filling zero
+   [2m[90m↓[39m[22m retains nonzero base request rejection across all regions
+   [2m[90m↓[39m[22m retains nonzero base internal_reasoning rejection across all regions
+   [2m[90m↓[39m[22m rejects unknown selected endpoint fields
+   [2m[90m↓[39m[22m rejects invalid local observation clock null
+   [2m[90m↓[39m[22m rejects invalid local observation clock 1.5
+   [2m[90m↓[39m[22m rejects invalid local observation clock 9007199254740992
+   [2m[90m↓[39m[22m bounds a shallow large JSON graph before structural interpretation
+[31m   [31m×[31m orders region identifiers ordinally rather than using host collation[39m[32m 8[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts[2m > [22morders region identifiers ordinally rather than using host collation
+[31m[1mAssertionError[22m: expected [ 'test_1', 'test-1' ] to deeply equal [ 'test-1', 'test_1' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[32m-   "test-1",[39m
+[2m    "test_1",[22m
+[31m+   "test-1",[39m
+[2m  ][22m
+
+[36m [2m❯[22m lib/ai/__tests__/codingEndpointMetadataCandidate.test.ts:[2m30:429[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m39 skipped[39m[90m (40)[39m
+[2m   Start at [22m 14:48:41
+[2m   Duration [22m 151ms[2m (transform 17ms, setup 0ms, import 25ms, tests 8ms, environment 0ms)[22m
+
