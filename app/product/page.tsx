@@ -27,18 +27,24 @@ export default function ProductPage() {
     <div className="axiom-canvas min-h-screen text-zinc-100">
       <Navigation />
       <main className="overflow-hidden pt-16">
-        <section className="border-b border-white/[0.07] px-5 pb-20 pt-20 sm:px-8 sm:pt-28 lg:px-10 lg:pb-28">
+        <section className="border-b border-white/[0.07] px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-20">
           <div className="mx-auto max-w-[1280px]">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Axiom Agent · governed deployment operations</p>
-            <div className="mt-6 grid gap-12 lg:items-end">
+            <div className="grid gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
               <div>
-                <h1 className="max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.05em] text-zinc-100 sm:text-4xl lg:text-6xl">A quiet place to make releases clear.</h1>
-                <p className="mt-6 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg">Explore how repository context can lead to a clear proposal, independent review, deliberate execution, and an explainable outcome. Check the supported scope before relying on a workflow.</p>
-                <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Axiom Agent · deployment governance</p>
+                <h1 className="mt-6 max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.045em] text-zinc-100 sm:text-5xl lg:text-6xl">Deployment decisions.<span className="block text-zinc-400">Clear from the start.</span></h1>
+              </div>
+              <div className="max-w-xl">
+                <p className="text-base leading-7 text-zinc-300 sm:text-lg">A workspace for deployment proposals, review, and recorded outcomes. Explore the workflow, then check which controls your installed version supports.</p>
+                <div className="mt-7 flex flex-col gap-3 sm:flex-row lg:flex-wrap">
                   <Link href="/download" className="inline-flex min-h-12 items-center justify-center rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white">Download Axiom Agent</Link>
-                  <Link href="/plans" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/[0.14] bg-black/20 px-6 text-sm font-medium text-zinc-100 transition hover:bg-white/[0.08]">View plans</Link>
+                  <Link href="/docs/approval-workflow" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/[0.14] bg-black/20 px-6 text-sm font-medium text-zinc-100 transition hover:bg-white/[0.08]">Read the workflow guide</Link>
                 </div>
               </div>
+            </div>
+            <div aria-labelledby="workflow-overview">
+              <h2 id="workflow-overview" className="sr-only">Conceptual release workflow</h2>
+              <WorkflowEvidenceMap />
             </div>
           </div>
         </section>
@@ -49,10 +55,6 @@ export default function ProductPage() {
           <CinematicAxiomDemo variant="hero" />
         </section>
 
-        <section className="mx-auto max-w-[1280px] px-5 py-20 sm:px-8 lg:py-20">
-          <div className="max-w-xl"><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">The release, made legible</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">From repository context to a recorded outcome.</h2><p className="mt-5 text-sm leading-6 text-zinc-400">This is a conceptual sequence. Support depends on the installed version and enabled workflow; these steps do not establish complete coverage for every action.</p></div>
-          <WorkflowEvidenceMap />
-        </section>
 
         <section className="border-y border-white/[0.07] bg-[#141414] px-5 py-20 sm:px-8 lg:px-10 lg:py-20">
           <div className="mx-auto max-w-[1280px]">

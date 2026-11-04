@@ -1,0 +1,607 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ components/marketing/__tests__/ProductHierarchy.test.ts (2 tests | 2 failed) 83ms
+   × explains deployment decisions and puts the conceptual workflow before the scripted preview 78ms
+   × keeps conceptual scope and incomplete Governance visible beside the first workflow 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/ProductHierarchy.test.ts > explains deployment decisions and puts the conceptual workflow before the scripted preview
+TestingLibraryElementError: Unable to find an accessible element with the role "heading" and name `/Deployment decisions.*Clear from the start/i`
+
+Here are the accessible roles:
+
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33mclass[39m=[32m"overflow-hidden pt-16"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-[0.22em] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-6 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-3 max-w-2xl text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-[0.22em] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-5 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs leading-6 text-zinc-400"[39m
+    [33mid[39m=[32m"_r_0_-help"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-8 text-2xl font-medium tracking-[-0.035em] text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-3 font-mono text-[11px] leading-6 text-sky-200/80"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-5 text-sm leading-7 text-zinc-300"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-6 border-t border-dashed border-white/15 pt-5 text-xs leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p />[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-[0.22em] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-3 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-3 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-3 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-[0.22em] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-5 max-w-md text-base leading-7 text-zinc-300"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-2 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-2 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-2 text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-[10px] uppercase tracking-[0.22em] text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-4 max-w-2xl text-sm leading-6 text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  heading:
+
+  Name "A quiet place to make releases clear.":
+  [36m<h1[39m
+    [33mclass[39m=[32m"max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.05em] text-zinc-100 sm:text-4xl lg:text-6xl"[39m
+  [36m/>[39m
+
+  Name "Scripted interactive preview":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-xl font-medium tracking-[-0.03em] text-zinc-100"[39m
+    [33mid[39m=[32m"scripted-preview"[39m
+  [36m/>[39m
+
+  Name "From repository context to a recorded outcome.":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl"[39m
+  [36m/>[39m
+
+  Name "Repository context":
+  [36m<h3[39m
+    [33mclass[39m=[32m"m-0"[39m
+  [36m/>[39m
+
+  Name "Exact proposal":
+  [36m<h3[39m
+    [33mclass[39m=[32m"m-0"[39m
+  [36m/>[39m
+
+  Name "Independent review":
+  [36m<h3[39m
+    [33mclass[39m=[32m"m-0"[39m
+  [36m/>[39m
+
+  Name "Separate requester execution":
+  [36m<h3[39m
+    [33mclass[39m=[32m"m-0"[39m
+  [36m/>[39m
+
+  Name "Recorded outcome and recovery":
+  [36m<h3[39m
+    [33mclass[39m=[32m"m-0"[39m
+  [36m/>[39m
+
+  Name "Context for the agent. Control for your team.":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mt-4 max-w-2xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl"[39m
+  [36m/>[39m
+
+  Name "AI":
+  [36m<h3[39m
+    [33mclass[39m=[32m"text-lg font-medium tracking-[-0.02em] text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Governance":
+  [36m<h3[39m
+    [33mclass[39m=[32m"text-lg font-medium tracking-[-0.02em] text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Integrations":
+  [36m<h3[39m
+    [33mclass[39m=[32m"text-lg font-medium tracking-[-0.02em] text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "The right surface for each job.":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl"[39m
+  [36m/>[39m
+
+  Name "GitHub":
+  [36m<h3[39m
+    [33mclass[39m=[32m"text-lg font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Axiom Agent":
+  [36m<h3[39m
+    [33mclass[39m=[32m"text-lg font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Web companion":
+  [36m<h3[39m
+    [33mclass[39m=[32m"text-lg font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Prove the workflow before you depend on it.":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Download Axiom Agent":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-12 items-center justify-center rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white"[39m
+    [33mhref[39m=[32m"/download"[39m
+  [36m/>[39m
+
+  Name "View plans":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-12 items-center justify-center rounded-lg border border-white/[0.14] bg-black/20 px-6 text-sm font-medium text-zinc-100 transition hover:bg-white/[0.08]"[39m
+    [33mhref[39m=[32m"/plans"[39m
+  [36m/>[39m
+
+  Name "Get started":
+  [36m<a[39m
+    [33mclass[39m=[32m"shrink-0 rounded-lg bg-zinc-100 px-5 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-white"[39m
+    [33mhref[39m=[32m"/docs/getting-started"[39m
+  [36m/>[39m
+
+  Name "Read the approval guide":
+  [36m<a[39m
+    [33mclass[39m=[32m"underline underline-offset-4"[39m
+    [33mhref[39m=[32m"/docs/approval-workflow"[39m
+  [36m/>[39m
+
+  Name "Explore integrations":
+  [36m<a[39m
+    [33mclass[39m=[32m"underline underline-offset-4"[39m
+    [33mhref[39m=[32m"/integrations"[39m
+  [36m/>[39m
+
+  Name "Explore the scripted demo":
+  [36m<a[39m
+    [33mclass[39m=[32m"underline underline-offset-4"[39m
+    [33mhref[39m=[32m"/demo"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Scripted interactive preview":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"scripted-preview"[39m
+    [33mclass[39m=[32m"mx-auto max-w-[1280px] px-5 pt-12 sm:px-8 lg:px-10"[39m
+  [36m/>[39m
+
+  Name "Repository context":
+  [36m<div[39m
+    [33maria-labelledby[39m=[32m"_r_0_-stage-1"[39m
+    [33mclass[39m=[32m"flex min-w-0 flex-col border-t border-white/[0.1] bg-black/15 p-6 sm:p-8 lg:border-l lg:border-t-0"[39m
+    [33mid[39m=[32m"_r_0_-record"[39m
+    [33mrole[39m=[32m"region"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "Conceptual workflow":
+  [36m<ol[39m
+    [33maria-describedby[39m=[32m"_r_0_-help"[39m
+    [33maria-label[39m=[32m"Conceptual workflow"[39m
+    [33mclass[39m=[32m"m-0 list-none p-3 sm:p-5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"relative min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"relative min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"relative min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"relative min-w-0"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<li[39m
+    [33mclass[39m=[32m"relative min-w-0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Repository context":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_0_-record"[39m
+    [33maria-pressed[39m=[32m"true"[39m
+    [33mclass[39m=[32m"relative my-1 flex min-h-[60px] w-full items-center gap-4 rounded-lg border px-3 py-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 border-white/20 bg-white/[0.07] text-zinc-100"[39m
+    [33mid[39m=[32m"_r_0_-stage-1"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Exact proposal":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_0_-record"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"relative my-1 flex min-h-[60px] w-full items-center gap-4 rounded-lg border px-3 py-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 border-transparent text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"[39m
+    [33mid[39m=[32m"_r_0_-stage-2"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Independent review":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_0_-record"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"relative my-1 flex min-h-[60px] w-full items-center gap-4 rounded-lg border px-3 py-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 border-transparent text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"[39m
+    [33mid[39m=[32m"_r_0_-stage-3"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Separate requester execution":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_0_-record"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"relative my-1 flex min-h-[60px] w-full items-center gap-4 rounded-lg border px-3 py-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 border-transparent text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"[39m
+    [33mid[39m=[32m"_r_0_-stage-4"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Recorded outcome and recovery":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"_r_0_-record"[39m
+    [33maria-pressed[39m=[32m"false"[39m
+    [33mclass[39m=[32m"relative my-1 flex min-h-[60px] w-full items-center gap-4 rounded-lg border px-3 py-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 border-transparent text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200"[39m
+    [33mid[39m=[32m"_r_0_-stage-5"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"axiom-canvas min-h-screen text-zinc-100"[39m
+    [36m>[39m
+      [36m<main[39m
+        [33mclass[39m=[32m"overflow-hidden pt-16"[39m
+      [36m>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"border-b border-white/[0.07] px-5 pb-20 pt-20 sm:px-8 sm:pt-28 lg:px-10 lg:pb-28"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mx-auto max-w-[1280px]"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-[10px] uppercase tracking-[0.22em] text-zinc-400"[39m
+            [36m>[39m
+              [0mAxiom Agent · governed deployment operations[0m
+            [36m</p>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mt-6 grid gap-12 lg:items-end"[39m
+            [36m>[39m
+              [36m<div>[39m
+                [36m<h1[39m
+                  [33mclass[39m=[32m"max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.05em] text-zinc-100 sm:text-4xl lg:text-6xl"[39m
+                [36m>[39m
+                  [0mA quiet place to make releases clear.[0m
+                [36m</h1>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"mt-6 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg"[39m
+                [36m>[39m
+                  [0mExplore how repository context can lead to a clear proposal, independent review, deliberate execution, and an explainable outcome. Check the supported scope before relying on a workflow.[0m
+                [36m</p>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"mt-8 flex flex-col gap-3 sm:flex-row"[39m
+                [36m>[39m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"inline-flex min-h-12 items-center justify-center rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white"[39m
+                    [33mhref[39m=[32m"/download"[39m
+                  [36m>[39m
+                    [0mDownload Axiom Agent[0m
+                  [36m</a>[39m
+                  [36m<a[39m
+                    [33mclass[39m=[32m"inline-flex min-h-12 items-center justify-center rounded-lg border border-white/[0.14] bg-black/20 px-6 text-sm font-medium text-zinc-100 transition hover:bg-white/[0.08]"[39m
+                    [33mhref[39m=[32m"/plans"[39m
+                  [36m>[39m
+                    [0mView plans[0m
+                  [36m</a>[39m
+                [36m</div>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33maria-labelledby[39m=[32m"scripted-preview"[39m
+          [33mclass[39m=[32m"mx-auto max-w-[1280px] px-5 pt-12 sm:px-8 lg:px-10"[39m
+        [36m>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"text-xl font-medium tracking-[-0.03em] text-zinc-100"[39m
+            [33mid[39m=[32m"scripted-preview"[39m
+          [36m>[39m
+            [0mScripted interactive preview[0m
+          [36m</h2>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-3 max-w-2xl text-sm leading-6 text-zinc-400"[39m
+          [36m>[39m
+            [0mSample data illustrates the workflow. This preview does not run provider actions and does not establish released functionality.[0m
+          [36m</p>[39m
+          [36m<div>[39m
+            [0mScripted demo fixture[0m
+          [36m</div>[39m
+        [36m</section>[39m
+        [36m<section[39m
+          [33mclass[39m=[32m"mx-auto max-w-[1280px] px-5 py-20 sm:px-8 lg:py-20"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"max-w-xl"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-[10px] uppercase tracking-[0.22em] text-zinc-400"[39m
+            [36m>[39m
+              [0mThe release, made legible[0m
+            [36m</p>[39m
+            [36m<h2[39m
+              [33mclass[39m=[32m"mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl"[39m
+            [36m>[39m
+              [0mFrom repository context to a recorded outcome.[0m
+            [36m</h2>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"mt-5 text-sm leading-6 text-zinc-400"[39m
+            [36m>[39m
+              [0mThis is a conceptual sequence. Support depends on the installed version and enabled workflow; these steps do not establish complete coverage for every action.[0m
+            [36m</p>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mt-10 min-w-0"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-xs leading-6 text-zinc-400"[39m
+              [33mid[39m=[32m"_r_0_-help"[39m
+            [36m>[39m
+              [0mConceptual illustration · local explanation only. Choose a stage to inspect the record it describes.[0m
+            [36m</p>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"mt-5 grid min-w-0 overflow-hidden rounded-2xl border border-white/[0.12] bg-white/[0.02] lg:grid-cols-[1fr_1.1fr]"[39m
+            [36m>[39m
+              [36m<ol[39m
+                [33maria-describedby[39m=[32m"_r_0_-help"[39m
+                [33maria-label[39m=[32m"Conceptual workflow"[39m
+                [33mclass[39m=[32m"m-0 list-none p-3 sm:p-5"[39m
+              [36m>[39m
+                [36m<li[39m
+                  [33mclass[39m=[32m"relative min-w-0"[39m
+                [36m>[39m
+                  [36m<span[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"absolute bottom-0 left-[26px] top-12 w-px bg-white/[0.12]"[39m
+                  [36m/>[39m
+                  [36m<h3[39m
+                    [33mclass[39m=[32m"m-0"[39m
+                  [36m>[39m
+                    [36m<button[39m
+                      [33maria-controls[39m=[32m"_r_0_-record"[39m
+                      [33maria-pressed[39m=[32m"true"[39m
+                      [33mclass[39m=[32m"relative my-1 flex min-h-[60px] w-full items-center gap-4 rounded-lg border px-3 py-3 text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-300 border-white/20 bg-white/[0.07] text-zinc-100"[39m
+                      [33mid[39m=[32m"_r_0_-stage-1"[39m
+                      [33mtype[39m=[32m"button"[39m
+                    [36m>[39m
+                      [36m<span[39m
+                        [33maria-hidden[39m=[32m"true"[39m
+                        [33mclass[39m=[32m"flex h-7 w-7 shrink-0 items-center justify-center rounded-full border bg-[#141414] font-mono text-[10px] border-sky-300/60 text-sky-200"[39m
+                      [36m>[39m
+                        [0...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/marketing/__tests__/ProductHierarchy.test.ts:13:16
+     11| it('explains deployment decisions and puts the conceptual workflow bef…
+     12|  render(createElement(ProductPage));
+     13|  expect(screen.getByRole('heading',{level:1,name:/Deployment decisions…
+       |                ^
+     14|  const main=screen.getByRole('main'),first=main.querySelector('section…
+     15|  const workflow=screen.getByRole('list',{name:'Conceptual workflow'});
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  components/marketing/__tests__/ProductHierarchy.test.ts > keeps conceptual scope and incomplete Governance visible beside the first workflow
+TestingLibraryElementError: Unable to find an element with the text: /Conceptual illustration · local explanation only/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<section[39m
+  [33mclass[39m=[32m"border-b border-white/[0.07] px-5 pb-20 pt-20 sm:px-8 sm:pt-28 lg:px-10 lg:pb-28"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"mx-auto max-w-[1280px]"[39m
+  [36m>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"text-[10px] uppercase tracking-[0.22em] text-zinc-400"[39m
+    [36m>[39m
+      [0mAxiom Agent · governed deployment operations[0m
+    [36m</p>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"mt-6 grid gap-12 lg:items-end"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"max-w-3xl text-4xl font-medium leading-[1.02] tracking-[-0.05em] text-zinc-100 sm:text-4xl lg:text-6xl"[39m
+        [36m>[39m
+          [0mA quiet place to make releases clear.[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-6 max-w-xl text-base leading-7 text-zinc-300 sm:text-lg"[39m
+        [36m>[39m
+          [0mExplore how repository context can lead to a clear proposal, independent review, deliberate execution, and an explainable outcome. Check the supported scope before relying on a workflow.[0m
+        [36m</p>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-8 flex flex-col gap-3 sm:flex-row"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"inline-flex min-h-12 items-center justify-center rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white"[39m
+            [33mhref[39m=[32m"/download"[39m
+          [36m>[39m
+            [0mDownload Axiom Agent[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"inline-flex min-h-12 items-center justify-center rounded-lg border border-white/[0.14] bg-black/20 px-6 text-sm font-medium text-zinc-100 transition hover:bg-white/[0.08]"[39m
+            [33mhref[39m=[32m"/plans"[39m
+          [36m>[39m
+            [0mView plans[0m
+          [36m</a>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</section>[39m
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/marketing/__tests__/ProductHierarchy.test.ts:26:23
+     24|  render(createElement(ProductPage));
+     25|  const first=screen.getByRole('main').querySelector('section')!;
+     26|  expect(within(first).getByText(/Conceptual illustration · local expla…
+       |                       ^
+     27|  expect(within(first).getByText(/Check your installed version/)).toBeD…
+     28|  expect(within(first).getByText(/Governance Intelligence remains incom…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  14:16:32
+   Duration  628ms (transform 26ms, setup 0ms, import 93ms, tests 83ms, environment 356ms)
+
