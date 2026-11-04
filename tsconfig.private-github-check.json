@@ -6,6 +6,8 @@
   },
   "include": [
     "lib/connectors/github/githubAppAuthCore.ts",
+    "lib/connectors/github/githubReleaseAuthCore.ts",
+    "lib/connectors/github/__tests__/privateReleaseGithubAppAuth.test.ts",
     "lib/connectors/github/githubAppJwt.ts",
     "lib/connectors/github/privateGithubAppAuth.ts",
     "lib/connectors/github/privatePlatformGithubAppConfiguration.ts",
