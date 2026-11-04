@@ -1,0 +1,40 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a4-agent-keyboard-20261104[39m
+
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22muses one composer and derives a new title without uploading typing
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mrespects explicit and already saved titles
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mbounds auto titles by Unicode code points without truncating the instruction
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mretains oversized text visibly and cannot save the old bounded draft
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mfences another owner and blocks disabled edits
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mkeeps Send meaning visible and puts input limits in an explicit disclosure without initiating work
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22msends one exact valid draft with Enter while preserving Shift and IME input
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mnever bypasses disabled or invalid Bot sending with Enter (disabled=true)
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mnever bypasses disabled or invalid Bot sending with Enter (disabled=false)
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mshows current draft size including retained over-limit edits without sending
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Suites 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m [ lib/desktop/__tests__/agentStreamingApplication.test.ts ][22m
+[31m[1mError[22m: Failed to resolve import "server-only" from "lib/desktop/agentMessageHttpStream.ts". Does the file exist?[39m
+  Plugin: [35mvite:import-analysis[39m
+  File: [36m/private/tmp/axiom-a4-agent-keyboard-20261104/lib/desktop/agentMessageHttpStream.ts[39m:1:7
+[33m  1  |  import "server-only";
+     |          ^
+  2  |  import { AGENT_STREAM_CONTENT_TYPE, MAX_AGENT_STREAM_FRAME_BYTES, isAgentMessageReply, isAgentToolActivity } from "./...
+  3  |  /** Authentication/tenant/body validation occurs before this is constructed.[39m
+[90m [2m❯[22m TransformPluginContext._formatLog ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/vite/dist/node/chunks/node.js:[2m8736:39[22m[39m
+[90m [2m❯[22m TransformPluginContext.error ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/vite/dist/node/chunks/node.js:[2m8733:14[22m[39m
+[90m [2m❯[22m normalizeUrl ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/vite/dist/node/chunks/node.js:[2m26423:18[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/vite/dist/node/chunks/node.js:[2m26493:30[22m[39m
+[90m [2m❯[22m TransformPluginContext.transform ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/vite/dist/node/chunks/node.js:[2m26459:4[22m[39m
+[90m [2m❯[22m EnvironmentPluginContainer.transform ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/vite/dist/node/chunks/node.js:[2m8515:14[22m[39m
+[90m [2m❯[22m loadAndTransform ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/vite/dist/node/chunks/node.js:[2m19998:26[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[33m1 skipped[39m[90m (2)[39m
+[2m      Tests [22m [33m10 skipped[39m[90m (10)[39m
+[2m   Start at [22m 00:06:46
+[2m   Duration [22m 859ms[2m (transform 205ms, setup 0ms, import 35ms, tests 0ms, environment 357ms)[22m
+

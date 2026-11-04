@@ -1,0 +1,68 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a4-agent-keyboard-20261104[39m
+
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mconnects the actual chat composer over http without granting draft authority
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mconnects the actual code composer over http without granting draft authority
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mconnects the actual chat composer over native without granting draft authority
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mconnects the actual code composer over native without granting draft authority
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mrecovers a persisted interrupted http response through GET without resending or approving
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mrecovers a persisted interrupted native response through GET without resending or approving
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mstops a native composer response without accepting late proposal authority or sending again
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22msends selected coding profile through the rendered composer and streaming client
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22msends selected debugging profile through the rendered composer and streaming client
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22msends selected code_review profile through the rendered composer and streaming client
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22msends selected terraform profile through the rendered composer and streaming client
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22msends selected cloud_deployment profile through the rendered composer and streaming client
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22msends selected automation profile through the rendered composer and streaming client
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mretains an IME draft on Enter ({"isComposing":true}), then sends once on explicit Enter
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mretains an IME draft on Enter ({"keyCode":229}), then sends once on explicit Enter
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mrequires saved-state review before another request after http stream uncertainty
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mrequires saved-state review before another request after native stream uncertainty
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mretains recovery and an unsent draft when saved-state reload fails
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mblocks another submission after explicit http cancellation until review
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mblocks another submission after explicit native cancellation until review
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mdoes not clear recovery from a different conversation response
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mhands reviewed 'code' evidence to the real Agent composer only after explicit Send
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mhands reviewed 'verification' evidence to the real Agent composer only after explicit Send
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mrejects an editor handoff owned by a different sign-in without losing the draft
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mprepares a target-bound repair in Code mode without dispatch until Send
+ [2m[90m↓[39m[22m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mrefuses a repair target outside the verified catalog without changing the draft or dispatching
+ [31m×[39m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mretains a draft on Enter while queued work awaits canceled-response recovery[32m 143[2mms[22m[39m
+[31m   → expected <textarea …(8)></textarea> to have property "value" with value 'Keep this new draft'[39m
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22muses one composer and derives a new title without uploading typing
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mrespects explicit and already saved titles
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mbounds auto titles by Unicode code points without truncating the instruction
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mretains oversized text visibly and cannot save the old bounded draft
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mfences another owner and blocks disabled edits
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mkeeps Send meaning visible and puts input limits in an explicit disclosure without initiating work
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22msends one exact valid draft with Enter while preserving Shift and IME input
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mnever bypasses disabled or invalid Bot sending with Enter (disabled=true)
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mnever bypasses disabled or invalid Bot sending with Enter (disabled=false)
+ [2m[90m↓[39m[22m lib/desktop/__tests__/botTaskComposer.test.ts[2m > [22mshows current draft size including retained over-limit edits without sending
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/agentStreamingApplication.test.ts[2m > [22mretains a draft on Enter while queued work awaits canceled-response recovery
+[31m[1mAssertionError[22m: expected <textarea …(8)></textarea> to have property "value" with value 'Keep this new draft'[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Keep this new draft[39m
+
+[36m [2m❯[22m lib/desktop/__tests__/agentStreamingApplication.test.ts:[2m327:20[22m[39m
+    [90m325|[39m   expect(screen.getByRole("button", {name: "Queue message"})).toHavePr…
+    [90m326|[39m   fireEvent[33m.[39m[34mkeyDown[39m(composer[33m,[39m {key[33m:[39m [32m"Enter"[39m})[33m;[39m
+    [90m327|[39m   [34mexpect[39m(composer)[33m.[39m[34mtoHaveProperty[39m([32m"value"[39m[33m,[39m [32m"Keep this new draft"[39m)[33m;[39m
+    [90m   |[39m                    [31m^[39m
+    [90m328|[39m   [35mconst[39m queue [33m=[39m screen[33m.[39m[34mgetByLabelText[39m([32m"Queued Agent messages"[39m)[33m;[39m
+    [90m329|[39m   [34mexpect[39m(queue[33m.[39mtextContent)[33m.[39m[34mtoContain[39m([32m"Queued while sending"[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[33m1 skipped[39m[90m (2)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m36 skipped[39m[90m (37)[39m
+[2m   Start at [22m 00:06:55
+[2m   Duration [22m 974ms[2m (transform 203ms, setup 0ms, import 376ms, tests 144ms, environment 352ms)[22m
+

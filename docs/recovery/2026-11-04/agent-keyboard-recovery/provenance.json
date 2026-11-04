@@ -1,0 +1,80 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "c47d13bda095b4ad91fb438dd8414854ded2f474",
+  "branch": "codex/a4-agent-keyboard-recovery",
+  "worktree": "/private/tmp/axiom-a4-agent-keyboard-20261104",
+  "scope": "Existing Agent keyboard disabled-state repair; no new capability or authority",
+  "change": "Exact existing button disablement predicate is shared by button and submitDraft; queue/send guards and IME handling unchanged",
+  "behavioralRed": {
+    "log": "red.log",
+    "exitCode": 1,
+    "expectedFailure": "Enter clears draft despite disabled recovery-state Queue message button"
+  },
+  "green": {
+    "log": "green.log",
+    "exitCode": 0,
+    "files": 2,
+    "tests": 37
+  },
+  "scopedTypes": {
+    "log": "types.log",
+    "exitCode": 0,
+    "entryFiles": [
+      "lib/desktop/__tests__/agentStreamingApplication.test.ts",
+      "lib/desktop/__tests__/botTaskComposer.test.ts"
+    ],
+    "graphScope": "TypeScript follows transitive imports from both entry tests, including AgentChatView/BotTaskComposer, desktop client/transport and imported contracts; no full-project check"
+  },
+  "infrastructureAttempts": {
+    "infrastructure-missing-markdown": "Import failure, not behavioral RED; exit 1",
+    "infrastructure-stalled": "Own runner stopped after import stall; exit 143 inferred from SIGTERM; not behavioral RED",
+    "infrastructure-server-only": "Missing test stub alias; exit 1; not behavioral RED"
+  },
+  "environment": {
+    "cleared": true,
+    "syntheticDatabase": "127.0.0.1:1/synthetic",
+    "node": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "pinnedRootDependencies": "/private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules",
+    "readOnlyDesktopDependencies": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/node_modules",
+    "kernelNetworkDenied": true,
+    "kernelDependencyWritesDenied": true,
+    "optimizerDisabled": true
+  },
+  "runtimeAccepted": false,
+  "browserAccepted": false,
+  "nativeAccepted": false,
+  "sessionAccepted": false,
+  "releaseAccepted": false,
+  "fullSuiteRun": false,
+  "fullSuiteReason": "Explicit task forbids full suite/build; only scoped tests/types authorized",
+  "sourceSha256": {
+    "desktop/src/views/AgentChatView.tsx": "ad734ae3b5fc40b586d74a547f03ac90233991a41d90d7d9ad73514a77bd8313",
+    "lib/desktop/__tests__/agentStreamingApplication.test.ts": "30a674e4bc472572ef2046521a974187eedde69fa6bf50f2c5804c67613c72e6"
+  },
+  "evidenceSha256": {
+    "red.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "infrastructure-missing-markdown.log": "152a2959ddda4c1f3d3cce4cccf130398c997a72408a314befe245ccef92b253",
+    "red.log": "4354d229f742fbf4f804ff834f09665a0f08d3f7aa4093688da778a7e59b1f2d",
+    "green.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "infrastructure-stalled.exit": "9d9b18720961e9b4689fd763b85e7b6f36160ccd3a8a1c9ddc5103bb0f66c396",
+    "green.log": "5de1b619b51e8e44d53f63c6467e8c97b8469c0206b2db6ca3df1a207fb24b14",
+    "tsconfig.scoped.json": "3bff9eb269dc357dd07b6005c335aed25273f377e97a4869f993eadb91bb8ba7",
+    "types.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "run.sh": "c60547733ceb3975c98e1596a9696e6ad4ac67731ac2ce820c2fb39c33d51e0a",
+    "deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "infrastructure-missing-markdown.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "infrastructure-stalled.log": "3b7dc793afdcea52744ab51302be9bebdd60d7237b3baa1450c38134811496b0",
+    "infrastructure-server-only.exit": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "vitest.config.mjs": "9d6214695957eb9a0c73115101057df2d6e98213095142494f8c965b72ace202",
+    "infrastructure-server-only.log": "c584dd59c8445a8e5c98bb1123825e05e4b555caa0357ea5e813acd399a61b52",
+    "types.sh": "1d100875ed743f6b37af06ecd4e90f9d999a8f6f99a4814201908db824ea54c4"
+  },
+  "runnerCleanup": {
+    "stalledRunnerPid": 23006,
+    "workerPidObserved": 23007,
+    "termination": "SIGTERM sent only to owned test runner PID 23006 after no result; replacement run disabled dependency optimizer",
+    "terminalRuns": "Behavioral RED exited 1; GREEN exited 0; scoped types exited 0; no active test runner left",
+    "temporaryPathsRetained": "Owned worktree and evidence directory retained for independent review"
+  }
+}

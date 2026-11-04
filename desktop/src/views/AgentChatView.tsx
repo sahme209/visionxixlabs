@@ -879,6 +879,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   const selectedModelUnavailable = modelOptions.find(option => option.key === selectedModel)?.unavailableReason;
   const currentQueue = queuedMessages.filter(message => message.conversationId === conversationId);
   const retainedRequest = conversationId ? retainedRequests.get(conversationId) : undefined;
+  const submissionDisabled = renamingBusy || modelState !== "ready" || !selectedModel || Boolean(selectedModelUnavailable) || loadingConversation || (needsRecovery && !sending) || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()));
   const queuedConfigurationMatches = !currentQueue.length || currentQueue[0].requestKey === requestKey;
 
   useEffect(() => {
@@ -901,7 +902,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   }
 
   function submitDraft() {
-    if (selectedModelUnavailable) return;
+    if (submissionDisabled) return;
     if (sending || currentQueue.length) queueDraft();
     else void send();
   }
@@ -1331,7 +1332,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           <button
             type="button"
             onClick={submitDraft}
-            disabled={renamingBusy || modelState !== "ready" || !selectedModel || Boolean(selectedModelUnavailable) || loadingConversation || (needsRecovery && !sending) || !input.trim() || !conversationId || Boolean(pendingProposal) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))}
+            disabled={submissionDisabled}
             className="agent-send-button bg-zinc-100 text-sm font-semibold text-zinc-950 disabled:opacity-40"
           >
             {sending || currentQueue.length ? newMessageBehavior === "interrupt" && sending ? "Interrupt & queue" : "Queue message" : "Send"}

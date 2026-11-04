@@ -307,3 +307,26 @@ async function openAgentConfiguration() {
  const control = await screen.findByRole("button", { name: /Agent configuration ·/ });
  if (control.getAttribute("aria-expanded") === "false") fireEvent.click(control);
 }
+
+// Regression: keyboard submission must honor the visible recovery lock even with retained queued work.
+it("retains a draft on Enter while queued work awaits canceled-response recovery", async () => {
+  const wire = fixture(false, "http", false); await compose("chat");
+  const composer = screen.getByRole("textbox");
+  fireEvent.change(composer, {target: {value: "Queued while sending"}});
+  expect(screen.getByRole("button", {name: "Queue message"})).toHaveProperty("disabled", false);
+  fireEvent.keyDown(composer, {key: "Enter"});
+  expect(composer).toHaveProperty("value", "");
+  expect(screen.getByLabelText("Queued Agent messages").textContent).toContain("Queued while sending");
+  expect(wire.messages()).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", {name: "Stop response"}));
+  await act(async () => { wire.completion.release(); });
+  await screen.findByRole("button", {name: "Reload saved conversation"});
+  fireEvent.change(composer, {target: {value: "Keep this new draft"}});
+  expect(screen.getByRole("button", {name: "Queue message"})).toHaveProperty("disabled", true);
+  fireEvent.keyDown(composer, {key: "Enter"});
+  expect(composer).toHaveProperty("value", "Keep this new draft");
+  const queue = screen.getByLabelText("Queued Agent messages");
+  expect(queue.textContent).toContain("Queued while sending");
+  expect(queue.textContent).not.toContain("Keep this new draft");
+  expect(wire.messages()).toHaveLength(1);
+});
