@@ -1,0 +1,73 @@
+{
+  "status": "internal-source-draft",
+  "baselineCommit": "42ad141a428a2408f732ed8de3e9cacb11540fa7",
+  "customerEligible": false,
+  "runtimeAccepted": false,
+  "mediaAccepted": false,
+  "editorialAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "guide": {
+    "path": "docs/product/knowledge/native-documentation-controls.md",
+    "sha256": "a22d0e24befa86787b4bf64406dd40e5f1911ce581beee2ac6b78e58f1e08c74"
+  },
+  "rangeConvention": "inclusive1-based raw lines retaining newlines",
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "range": {
+        "startLine": 158,
+        "endLine": 188,
+        "sha256": "8498811db36330de8efd758d79dfe7d1869cfc993d34a1e6ee43ecd271899d48"
+      }
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "wholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "range": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+      }
+    },
+    {
+      "path": "desktop/src/views/DocsView.tsx",
+      "wholeFileSha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd",
+      "range": {
+        "startLine": 1,
+        "endLine": 101,
+        "sha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd"
+      }
+    },
+    {
+      "path": "lib/desktop/governedJourney.ts",
+      "wholeFileSha256": "c4c0a5eaeb16f6684d8a9fa0dca48837d0dffcbf6baab52be1382ec687c73d2e",
+      "range": {
+        "startLine": 1,
+        "endLine": 33,
+        "sha256": "c4c0a5eaeb16f6684d8a9fa0dca48837d0dffcbf6baab52be1382ec687c73d2e"
+      }
+    },
+    {
+      "path": "desktop/src/components/Primitives.tsx",
+      "wholeFileSha256": "1f7dc15b99807cc6eda5388d37d36d7d5fb3f698e623d751c5d3cd44353e3c5e",
+      "range": {
+        "startLine": 310,
+        "endLine": 347,
+        "sha256": "6a7dcb41be887a5f1ca6d9c5afa1c1faa55bbcf7c5fafb7b6223de4df5258401"
+      }
+    },
+    {
+      "path": "desktop/src/lib/notifications.ts",
+      "wholeFileSha256": "2b0d9b898cb988a4db7eb2d1cbcf17883a4d920fb4c47ea9dfb24bf28dabf5cf",
+      "range": {
+        "startLine": 149,
+        "endLine": 162,
+        "sha256": "694f2561316d3d725e49aacb2a5debdb66d70b27f91ec19eda2c06d7f285539c"
+      }
+    }
+  ],
+  "scope": "actual DocsView controls and direct call boundaries; no destination/OS/browser qualification",
+  "mutableMasterHash": false
+}

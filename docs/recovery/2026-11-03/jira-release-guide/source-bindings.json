@@ -1,0 +1,254 @@
+{
+  "format": 1,
+  "status": "READY",
+  "frozen": true,
+  "scope": "B4 internal source documentation only",
+  "baselineCommit": "25da6f2633d27e2e87d4b1aae80c10f1d895f4af",
+  "proposedHelpIds": [
+    "jira.release-controls"
+  ],
+  "runtimeBinding": false,
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "releaseAccepted": false,
+  "mediaEvidence": false,
+  "providerOutcomeVerified": false,
+  "sourceInspectionOnly": true,
+  "guide": {
+    "path": "docs/product/knowledge/jira-release-controls.md",
+    "sha256": "c204974ab27557d1271f3e5b21723afe69e878f8a165fe274c6559c3885bee24"
+  },
+  "rangeHashConvention": "SHA-256 of exact UTF-8 file bytes for inclusive one-based lines, retaining line endings",
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "wholeFileSha256": "0d51713c1193b657a364a829b29595b415e0f67ecb17ebfa8e7a490aea4b99ee",
+      "lineCount": 1304,
+      "ranges": [
+        {
+          "startLine": 5,
+          "endLine": 5,
+          "sha256": "a161a03d4609a8c0de3e64ca651ecd1995f62363de47dc80cd411026d4ea8cf7"
+        },
+        {
+          "startLine": 651,
+          "endLine": 651,
+          "sha256": "70e6128d70555ffb555cce50ddf89b5d0400293cfae4ca55eca796bd5c6ecfe4"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseTicketWorkspace.tsx",
+      "wholeFileSha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902",
+      "lineCount": 22,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 22,
+          "sha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/JiraTicketDiscovery.tsx",
+      "wholeFileSha256": "bc473956cef7a25c0450df7141ac721a4be233c1e7b730916ffde566a853b172",
+      "lineCount": 77,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 77,
+          "sha256": "bc473956cef7a25c0450df7141ac721a4be233c1e7b730916ffde566a853b172"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/JiraTicketLifecycle.tsx",
+      "wholeFileSha256": "ec200b2ce490ad4e40e611604906757c32ff86b3ece866157e9b940c8726fcc0",
+      "lineCount": 19,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 19,
+          "sha256": "ec200b2ce490ad4e40e611604906757c32ff86b3ece866157e9b940c8726fcc0"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/TicketGovernancePanel.tsx",
+      "wholeFileSha256": "3c8b8a7b901295450a5f5d78b1854a54935e6ad2ba4beb013200258d846a8a74",
+      "lineCount": 65,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 65,
+          "sha256": "3c8b8a7b901295450a5f5d78b1854a54935e6ad2ba4beb013200258d846a8a74"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/AssociatedTicketActionsPanel.tsx",
+      "wholeFileSha256": "93d3c27a2041648aba5973e15c91bcdc8e3cc7c892a8d2954df76ad07f01389a",
+      "lineCount": 75,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 75,
+          "sha256": "93d3c27a2041648aba5973e15c91bcdc8e3cc7c892a8d2954df76ad07f01389a"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/jiraTicketDiscovery.ts",
+      "wholeFileSha256": "40dc3ff717bfa16e58d848e685708944cdaaaf6e997267e5a492b21cade3b052",
+      "lineCount": 112,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 112,
+          "sha256": "40dc3ff717bfa16e58d848e685708944cdaaaf6e997267e5a492b21cade3b052"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/jiraTicketLifecycle.ts",
+      "wholeFileSha256": "511ddaa3948da91d958747bff5daa0fd6db00cd64e31560ce385a63dc28c8523",
+      "lineCount": 6,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 6,
+          "sha256": "511ddaa3948da91d958747bff5daa0fd6db00cd64e31560ce385a63dc28c8523"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/ticketGovernance.ts",
+      "wholeFileSha256": "e30ad3e939b22098d1a458e8ed5fe229a6962be296366903cd0ffbd8ef487d46",
+      "lineCount": 13,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 13,
+          "sha256": "e30ad3e939b22098d1a458e8ed5fe229a6962be296366903cd0ffbd8ef487d46"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/associatedTicketActions.ts",
+      "wholeFileSha256": "b366ca6a877a979ce1875e5bb1ed3d4e44c92de8d1ecd8931f524fa443899453",
+      "lineCount": 42,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 42,
+          "sha256": "b366ca6a877a979ce1875e5bb1ed3d4e44c92de8d1ecd8931f524fa443899453"
+        }
+      ]
+    },
+    {
+      "path": "lib/releaseops/jiraFieldSupport.ts",
+      "wholeFileSha256": "a8957050047a2c7e1bd213b52192b040a60dbe3a23e027d4a4eba5a5cb5731e2",
+      "lineCount": 30,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 30,
+          "sha256": "a8957050047a2c7e1bd213b52192b040a60dbe3a23e027d4a4eba5a5cb5731e2"
+        }
+      ]
+    },
+    {
+      "path": "lib/releaseops/jiraTicketLifecycleContract.ts",
+      "wholeFileSha256": "d0b4a485bcafd9551b9ab46ba8491c1512f5ffc407ecfcd6c3dace0f73e70569",
+      "lineCount": 23,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 23,
+          "sha256": "d0b4a485bcafd9551b9ab46ba8491c1512f5ffc407ecfcd6c3dace0f73e70569"
+        }
+      ]
+    },
+    {
+      "path": "lib/releaseops/jiraTicketLifecycleStore.ts",
+      "wholeFileSha256": "8dbb4a0ccf6de6af62e428c3691710a2babbabf374a0525b5d21c0ccce93adfd",
+      "lineCount": 106,
+      "ranges": [
+        {
+          "startLine": 13,
+          "endLine": 23,
+          "sha256": "5c2f245af435f8d6fa6fb90852ccae50bfcb18200bb2601a452b9711c97abf39"
+        },
+        {
+          "startLine": 79,
+          "endLine": 95,
+          "sha256": "6c5ecd10fdc9759e49f3b5b5757cf741d673423d85a9ebe251fd09b4d5e96e37"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ActionJourney.tsx",
+      "wholeFileSha256": "bfc20deab9249e82603ee05734732b299c0e03b93eb097b57afd37cce102f653",
+      "lineCount": 9,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 9,
+          "sha256": "bfc20deab9249e82603ee05734732b299c0e03b93eb097b57afd37cce102f653"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "lineCount": 2192,
+      "ranges": [
+        {
+          "startLine": 1593,
+          "endLine": 1604,
+          "sha256": "169287a6e8bafca49c38a3acd06509cd2f6e9b5efecfcc331966f2d54e084d70"
+        },
+        {
+          "startLine": 1681,
+          "endLine": 1713,
+          "sha256": "136d9adf604404b3642ea3e76fe2496388fa9684780db41c3f158e2aebff805f"
+        }
+      ]
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-controls.md",
+      "wholeFileSha256": "f96c4c62726961e8006475a54e8c7f8e2bac6014c299df078227ee239a4d719b",
+      "lineCount": 121,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 121,
+          "sha256": "f96c4c62726961e8006475a54e8c7f8e2bac6014c299df078227ee239a4d719b"
+        }
+      ]
+    },
+    {
+      "path": "docs/product/knowledge/servicenow-evidence-and-closure-controls.md",
+      "wholeFileSha256": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336",
+      "lineCount": 88,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 88,
+          "sha256": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336"
+        }
+      ]
+    }
+  ],
+  "historicalScopeConstraint": "KAN-4 link and close historically accepted; never repeat; not currently reread",
+  "omissions": [
+    "ServiceNow-specific nested controls and approvals",
+    "OAuth setup internals",
+    "Approval Center",
+    "workflow dispatch and evidence collection internals",
+    "complete backend route/store/provider coverage",
+    "runtime/browser/network/provider/database/native/security/media validation"
+  ],
+  "masterPlanMutableHashBound": false
+}

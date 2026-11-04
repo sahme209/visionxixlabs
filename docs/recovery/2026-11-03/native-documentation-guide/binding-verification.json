@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "sourceFiles": 6,
+  "inclusiveRanges": 6,
+  "guideSha256": "a22d0e24befa86787b4bf64406dd40e5f1911ce581beee2ac6b78e58f1e08c74",
+  "runtimeAcceptance": false
+}

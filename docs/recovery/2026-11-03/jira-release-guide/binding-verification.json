@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "sourceBindings": 17,
+  "distinctSourceFiles": 17,
+  "inclusiveRanges": 20,
+  "guideSha256": "c204974ab27557d1271f3e5b21723afe69e878f8a165fe274c6559c3885bee24",
+  "runtimeAcceptance": false
+}
