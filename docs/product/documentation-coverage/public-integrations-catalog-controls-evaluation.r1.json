@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.website.integrations-catalog-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:be276403f07d888383af5ef442c7bf7239aed99d",
+  "articleSha256": "2c0b9e8e94ab8ef07660238f50f62cd9be0afbec0ff2d0195e71bba5aeeed0d5",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "public-catalog-surface",
+      "question": "Does this article cover desktop Apps & skills connections?",
+      "requiredResponse": "No. Public website /integrations catalog only, not desktop/account connection manager or current account state.",
+      "requiredCitation": "axiom.help.website.integrations-catalog-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "public-catalog-search",
+      "question": "Does Search connectors search descriptions and operations?",
+      "requiredResponse": "No. Trimmed case-insensitive name-only substring; four filters combine by intersection.",
+      "requiredCitation": "axiom.help.website.integrations-catalog-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "public-catalog-empty",
+      "question": "No results means I lack access?",
+      "requiredResponse": "No. Empty catalog filter intersection, not permission/connection diagnosis. Clear filters resets local controls only.",
+      "requiredCitation": "axiom.help.website.integrations-catalog-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "public-catalog-availability",
+      "question": "Does Available prove current connection health?",
+      "requiredResponse": "No. Catalog release/design label; current account configuration/access and exact operation checks are separate.",
+      "requiredCitation": "axiom.help.website.integrations-catalog-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "public-catalog-models",
+      "question": "Does Change workflows enable writing or Receive events start subscription?",
+      "requiredResponse": "No. Passive typed operation metadata including preview/planned designs, no scope grant/action/subscription.",
+      "requiredCitation": "axiom.help.website.integrations-catalog-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "public-catalog-planned",
+      "question": "Can planned card operation labels supply setup?",
+      "requiredResponse": "No. Planned/disabled shows No setup available yet without setup link; listed model is not an activation path.",
+      "requiredCitation": "axiom.help.website.integrations-catalog-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "public-catalog-links",
+      "question": "Will Read setup guide or Connection guide connect provider?",
+      "requiredResponse": "No. Ordinary documentation navigation only; OAuth/connection validation/independent review/execution remain separate workflows.",
+      "requiredCitation": "axiom.help.website.integrations-catalog-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "public-catalog-acceptance",
+      "question": "Is this approved shipped catalog help with current browser media?",
+      "requiredResponse": "No. Internal current-source local preview, null review/empty media/proposed IDs/unexecuted eval; historical build is not new acceptance.",
+      "requiredCitation": "axiom.help.website.integrations-catalog-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

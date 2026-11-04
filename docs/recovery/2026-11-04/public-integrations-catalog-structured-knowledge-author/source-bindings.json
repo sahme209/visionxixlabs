@@ -1,0 +1,60 @@
+{
+  "status": "internal-current-source-authoring",
+  "baselineCommit": "be276403f07d888383af5ef442c7bf7239aed99d",
+  "historicalGuideSource": "479ac14adb602a78adae5d4af4829cac460390df",
+  "historicalGuidePreserved": true,
+  "guide": {
+    "path": "docs/product/knowledge/integrations-catalog-controls.md",
+    "sha256": "99ecc510a12027ff0130f55962c9981ed7bbf7c36d61bcfc915bbb91b6ff7cf6"
+  },
+  "comparison": "All4 embedded historical whole-file hashes match current source; new current inclusive ranges are recorded here. No historical range validation, current browser/build or connection-state acceptance inferred.",
+  "rangeConvention": "inclusive 1-based original raw lines retaining terminators",
+  "sources": [
+    {
+      "path": "app/integrations/page.tsx",
+      "wholeFileSha256": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce",
+      "range": {
+        "startLine": 1,
+        "endLine": 15,
+        "sha256": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce"
+      }
+    },
+    {
+      "path": "components/marketing/IntegrationCatalogBrowser.tsx",
+      "wholeFileSha256": "f0a4bc146b4cdac20ac3e48862145bb6ac855652059d87f966b05c5296e36f41",
+      "range": {
+        "startLine": 1,
+        "endLine": 35,
+        "sha256": "f0a4bc146b4cdac20ac3e48862145bb6ac855652059d87f966b05c5296e36f41"
+      }
+    },
+    {
+      "path": "lib/integrations/publicIntegrationCatalog.ts",
+      "wholeFileSha256": "e225d21bf0fedc57ed4fc3ba8a5c7ee9eb0cae57110d5167c3dbd9180f554f03",
+      "range": {
+        "startLine": 1,
+        "endLine": 35,
+        "sha256": "e225d21bf0fedc57ed4fc3ba8a5c7ee9eb0cae57110d5167c3dbd9180f554f03"
+      }
+    },
+    {
+      "path": "lib/integrations/integrationRegistry.ts",
+      "wholeFileSha256": "116398a2e8a6c8e41386fda17d7fc4601ca08283e4a42cac642786dfaf91733e",
+      "range": {
+        "startLine": 1,
+        "endLine": 253,
+        "sha256": "116398a2e8a6c8e41386fda17d7fc4601ca08283e4a42cac642786dfaf91733e"
+      }
+    }
+  ],
+  "surface": "Public website /integrations only, not desktop Apps & skills or account connection manager",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}

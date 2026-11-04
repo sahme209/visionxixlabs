@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "id": "axiom.help.website.integrations-catalog-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Public website Integrations catalog: local filters, availability and documentation navigation",
+  "productVersion": "local-source-preview:be276403f07d888383af5ef442c7bf7239aed99d",
+  "screenIds": [
+    "proposed.axiom.screen.website.integrations-catalog"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.website.catalog.search-name",
+    "proposed.axiom.control.website.catalog.job-filter",
+    "proposed.axiom.control.website.catalog.availability-filter",
+    "proposed.axiom.control.website.catalog.operation-filter",
+    "proposed.axiom.control.website.catalog.clear-filters",
+    "proposed.axiom.control.website.catalog.documentation-link",
+    "proposed.axiom.control.website.catalog.availability-disclosure",
+    "proposed.axiom.control.website.catalog.before-connect-links"
+  ],
+  "goal": "Browse the public /integrations catalog without treating descriptive availability or operation models as current account access, connection health, execution permission or provider action.",
+  "prerequisites": [
+    "Internal source-only draft for the public WEBSITE /integrations page. This is not desktop Apps & skills, Settings Integrations, account connection manager or a claim of their coverage.",
+    "No account identity/current connection/provider health/permission/runtime flag was read. Catalog metadata, not an account-status request, supplies cards and filters.",
+    "Historical479ac14a guide/build references remain historical context; this article binds currentbe276403 source only, without new browser/build/shipped acceptance."
+  ],
+  "permissions": [
+    "Catalog browsing starts no connection, grants no permission and performs no provider action. Search/select/reset/disclosure change local presentation state, not OAuth consent or capabilities.",
+    "Available/configuration/preview/review/planned labels describe catalog release/design limits. Existing workflows still need current account configuration and operation-specific checks; labels are not live account status/health or grants.",
+    "Read context/Change workflows/Receive events are passive metadata, not action buttons. A planned/reviewed card can list operation models without released execution.",
+    "Documentation/download navigation does not authenticate, validate connection, approve change or execute provider operation. Separate supported setup, genuine human review and execution controls retain their own authority."
+  ],
+  "steps": [
+    {
+      "instruction": "Open the public /integrations page; read the catalog-only header and limitation text.",
+      "effect": "read",
+      "expectedState": "This is a public catalog, not your signed-in account connection screen or desktop app. Shared site navigation/footer and destination workflows are outside this article."
+    },
+    {
+      "instruction": "Use Search connectors to enter a connector name.",
+      "effect": "local-preference",
+      "expectedState": "Case-insensitive name-only substring after trimming whitespace. Does not search descriptions, operation names, documentation, jobs or provider data. Typing sends no provider request."
+    },
+    {
+      "instruction": "Choose Job: All jobs, Cloud delivery, Source & CI, Work tracking, Communication, Orchestration & observability or Data.",
+      "effect": "local-preference",
+      "expectedState": "Catalog categories, not selected workspace/account scopes. Filter combines with search, availability and operation as intersection."
+    },
+    {
+      "instruction": "Choose Availability: All availability, Available workflows, Configuration required, Preview or review, Planned.",
+      "effect": "local-preference",
+      "expectedState": "Preview or review includes preview and implementation review. Filtering does not inspect account connection, change availability or enable setup."
+    },
+    {
+      "instruction": "Choose Operation model: All operation models, Read context, Change workflows, Receive events.",
+      "effect": "local-preference",
+      "expectedState": "Derived typed catalog descriptions only. Change workflows grants no write scope. Card Operation models group is passive text and may describe planned/review designs."
+    },
+    {
+      "instruction": "Read polite connectors shown/in catalog count and Job-grouped cards. Use Clear filters or empty-state Clear filters when appropriate.",
+      "effect": "local-preference",
+      "expectedState": "Reset clears search and all three selectors. No connectors match these filters means empty intersection, not permission failure/disconnection; reset does not change connector readiness."
+    },
+    {
+      "instruction": "Inspect name, availability and provider-specific limitation paragraph. Use Read setup guide, Read preview scope or Browse documentation only where offered.",
+      "effect": "read",
+      "expectedState": "Ordinary existing documentation/product navigation, not OAuth/connect/validation/execution. Planned/disabled entries say No setup available yet without setup link. Available remains conditional on current account and exact operation checks."
+    },
+    {
+      "instruction": "Expand How to read availability; inspect Before you connect and choose Connection guide, Permission model or Desktop downloads if needed.",
+      "effect": "read",
+      "expectedState": "Native HTML disclosure explains available/configuration/preview/implementation review/planned limits. Links target /docs/integration-setup, /docs/permissions-model and /download; no connection approval/provider action from catalog, and destination success is unverified."
+    }
+  ],
+  "expectedOutcome": "Find relevant catalog entries and next documentation destination while retaining the distinction between descriptive capability metadata and actual current supported, authorized account operations.",
+  "limitations": [
+    "Customer eligible:false; publication approved:false; editorial/media/native/runtime/release/shipped acceptance:false. Null review and empty media. Proposed IDs are authoring-only, not runtime anchors/help bindings.",
+    "Scope exclusively public WEBSITE /integrations filters/cards/availability disclosure/before-connect links. No desktop Apps & skills, account connection manager, Settings workflow, shared header/footer or all-site/backend coverage.",
+    "All4historical embedded whole-file hashes match currentbe276403; current receipt adds exact inclusive raw ranges. Historical479guide/build/HTTP evidence is preserved, not new current build/browser/runtime qualification.",
+    "Availability metadata is not current account connection, authentication, access, provider-health, permissions or flag state. A listed Change workflows model does not activate execution or grant scope; planned GitLab-style entry is not customer-ready sign-in/setup.",
+    "No destination OAuth/account signup/setup/permission validation/download/install outcome or provider delivery was exercised. Reading setup docs cannot make a required independent human decision or execute changes.",
+    "No current screenshot/media/browser keyboard/screen-reader/native acceptance or security certification. Source hashes/schema validation prove source identity/bundle integrity only, not semantic/runtime/shipped behavior.",
+    "Evaluation fixture is proposed-not-executed; no retrieval/model evaluation, customer ingestion, publication, feature/authority/activation or provider operation is created."
+  ],
+  "recovery": [
+    "For no matching entries clear/change intersecting filters; do not diagnose missing permission or disconnected account from an empty catalog result.",
+    "Read provider-specific limitation and availability explanation before navigating to a separate supported setup guide. A documentation link is not consent or current provider validation.",
+    "If an entry is planned/disabled there is no setup control here; do not infer an unpublished activation path or use another operation label to bypass absence.",
+    "For actual account/connection/permission problems use separately authorized account/desktop workflow; this public catalog cannot inspect, refresh or repair account state."
+  ],
+  "searchTerms": [
+    "public website Integrations",
+    "Search connectors",
+    "Job",
+    "Availability",
+    "Operation model",
+    "Clear filters",
+    "No connectors match these filters",
+    "No setup available yet",
+    "Read setup guide",
+    "Preview or review",
+    "How to read availability",
+    "not desktop Apps & skills"
+  ],
+  "sources": [
+    {
+      "path": "app/integrations/page.tsx",
+      "sha256": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce"
+    },
+    {
+      "path": "components/marketing/IntegrationCatalogBrowser.tsx",
+      "sha256": "f0a4bc146b4cdac20ac3e48862145bb6ac855652059d87f966b05c5296e36f41"
+    },
+    {
+      "path": "lib/integrations/publicIntegrationCatalog.ts",
+      "sha256": "e225d21bf0fedc57ed4fc3ba8a5c7ee9eb0cae57110d5167c3dbd9180f554f03"
+    },
+    {
+      "path": "lib/integrations/integrationRegistry.ts",
+      "sha256": "116398a2e8a6c8e41386fda17d7fc4601ca08283e4a42cac642786dfaf91733e"
+    },
+    {
+      "path": "docs/product/knowledge/integrations-catalog-controls.md",
+      "sha256": "99ecc510a12027ff0130f55962c9981ed7bbf7c36d61bcfc915bbb91b6ff7cf6"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/source-bindings.json",
+      "sha256": "17e17aaac0228aa30b360f77ed5c5c719a9e5670d2536d6912ce834d3c5caa92"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/integrations-catalog-controls.md",
+      "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/source-bindings.json"
+    ],
+    "verifiedVersion": "local-source-preview:be276403f07d888383af5ef442c7bf7239aed99d",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

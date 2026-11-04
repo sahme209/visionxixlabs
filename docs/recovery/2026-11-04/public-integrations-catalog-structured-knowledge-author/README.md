@@ -1,0 +1,9 @@
+# Public website Integrations catalog structured knowledge
+
+Internal r1 article and eight proposed-not-executed evaluation cases atbe276403f07d888383af5ef442c7bf7239aed99d. Scope is public WEBSITE /integrations only, not desktop Apps & skills, Settings/account connection manager or current account status. Historical479ac14a guide/build references remain unchanged historical context; no new browser/build/runtime/shipped acceptance.
+
+All4embedded guide whole-file SHA256 values match current code. NEW source receipt binds4valid current inclusive raw ranges. Article6unique sources:4code, preserved guide and current receipt. Unchanged validator integrity exit0; customer mode intentionally refuses exit1 (not approved/not public/local preview); current raw-binding integrity exit0. Null review/empty media/proposed IDs; all customer/editorial/media/native/runtime/release acceptance false.
+
+Search is name-only; Job/Availability/Operation model/search combine by intersection. Empty/count/reset describe local catalog filtering. Supported/configuration/preview/review/planned labels and passive operation descriptions are not current account access/connection/health, permission or grants. Documentation/download CTAs navigate existing destinations, not OAuth/connect/validate/approve/execute. No app-view coverage, feature or authority added.
+
+Only new-bundle schema/source/hash integrity and expected customer refusal ran under cleared environment/kernel-denied network and canonical/pinned-cache writes. No tests/retrieval/model/UI/browser/native/auth/provider/database/credential/Keychain/Security/helper/build/install/push/integration operations. Historical guide, schemas/validator and shared README/master unchanged. Raw logs/exits/runners/sandbox/provenance retained without mutable master hash.

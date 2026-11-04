@@ -1,0 +1,47 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "be276403f07d888383af5ef442c7bf7239aed99d",
+  "branch": "codex/b4-public-catalog-knowledge",
+  "worktree": "/private/tmp/axiom-b4-public-catalog-20261104",
+  "surface": "Public website /integrations only, not desktop Apps & skills/account connection manager",
+  "validation": {
+    "integrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 6,
+    "uniqueCodeFiles": 4,
+    "currentInclusiveRawRanges": 4,
+    "proposedEvaluationCases": 8,
+    "retrievalExecuted": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/integrations-catalog-controls.md": "99ecc510a12027ff0130f55962c9981ed7bbf7c36d61bcfc915bbb91b6ff7cf6"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-public-catalog-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-public-catalog-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-public-catalog-evidence/bindings.sh"
+  ],
+  "bundleSha256": {
+    "docs/product/documentation-coverage/articles/public-integrations-catalog-controls.r1.json": "2c0b9e8e94ab8ef07660238f50f62cd9be0afbec0ff2d0195e71bba5aeeed0d5",
+    "docs/product/documentation-coverage/public-integrations-catalog-controls-evaluation.r1.json": "117fe1a08cf97ab65ba328f3b87a30453aa53b05b00f209364046b3218454b7e"
+  },
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/validate.sh": "4d3b966b61b6974c9abc395c8415a96545d7596795365a6176060e8aa51cd328",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/bindings.sh": "911d3865263ecbe60375ed59aa2bfbbacd086f5d9d19f264402a2173398ccb95",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/binding-integrity.json": "50b13f4c038c5fa055f79ff01a07edfda126003f5ab012da5f7d8c2f8b78486b",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/validate.log": "f1cb0d7317bc224650af49bd530518671f1f0730337d3a923c6b346c812bf38e",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/README.md": "91d45ea2e3c89f29e5fef42e30fd69f7c3dbb49e34b71a18df10f490290f60e3",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/source-bindings.json": "17e17aaac0228aa30b360f77ed5c5c719a9e5670d2536d6912ce834d3c5caa92",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/binding-integrity.cjs": "9704e337f5877dc05878d2daa9d540b0ff37080d0f26fb220374bc5065644a82",
+    "docs/recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03"
+  },
+  "limits": "Internal source-only local preview; proposed IDs/null review/empty media; all customer/editorial/media/native/runtime/release acceptance false; no mutable master hash"
+}
