@@ -1,0 +1,82 @@
+{
+  "base": "45b6a021",
+  "scope": "source declarations and call map only; no API execution or custody qualification",
+  "files": [
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/AuthSession.h",
+      "sha256": "bae3953b5834e4966939d97a37f856dc4c291ff15b643dba718a724343ee9bc8"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/SecAccess.h",
+      "sha256": "d5e0c72b94487373e44626da216f3558f0f4a2a055af2c7de658bc5f83434ffd"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/SecACL.h",
+      "sha256": "0858a8c826e98f4878a0ba39b63afc4a0610c14ecc0ff1e7fc333516ecd5c1a7"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/SecTrustedApplication.h",
+      "sha256": "a4db417faf378e02528175204c7fe2386ac4db1b6c81d08113de9c92b738dcb0"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/SecKeychainItem.h",
+      "sha256": "15efcacad7fc40a5bfc60f2d385ce12e09dbe94d762b6e14d24f451086d1e729"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/SecKeychain.h",
+      "sha256": "7dd9966ba8769c1dd9ed29e52d04b5fceea16efc8c2f0ca20ead84a513d74d65"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/SecItem.h",
+      "sha256": "1a5a731dc52e85cf7fb6ebe26d75aa467113c07b6ec3389c98e183d75c651eaf"
+    },
+    {
+      "path": "docs/product/axiom-master-action-plan.md",
+      "sha256": "ac207b49d947986e78b459f0811d2fe6fda580125337872dc703b2c991b01f4a"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+      "sha256": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.h",
+      "sha256": "f53a323c24113587746d5d7db795d1ae888e51fdc23658f67b31d1727df0b68c"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_broker.c",
+      "sha256": "a5c3d95977343243a435913cf67abbb8fd1600d5c829eb8cd08a562427f6d9e3"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_session.c",
+      "sha256": "96e13398ccf85283ab9f07d0ff17e8cc3ff9677efc7729f5015d341f59163d4b"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_bootstrap.c",
+      "sha256": "0a7c214f2e3be10eaab98a8964dd889e2fa8aa410d23bcac3746e0a492f6bdc0"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_bootstrap_writer.c",
+      "sha256": "e3faf48fd6721cdc33db957625d7e75d24035d1c84dd31714fe778860c5ce4c9"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_guard.c",
+      "sha256": "7652869e0283985b78f25e75bb5201a764bb19023820c8e5234bee6ad4c9c963"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/index.cjs",
+      "sha256": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4"
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeBootstrap.ts",
+      "sha256": "ba74b3a38c57124b6b391f5adf11cfd542082ac77620cabfe80b07d1399aeff9"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/private-bootstrap-delivery-implementation-plan.md",
+      "sha256": "c22f88e4570139ac773ec89ec3e9bd191197dd175f0068b5f2988a669e042701"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/keychain-reference-findings.md",
+      "sha256": "e832ec6936049da058e5229ef719d30f09b291bbb37d1901ef777197dd1e944a"
+    }
+  ]
+}
