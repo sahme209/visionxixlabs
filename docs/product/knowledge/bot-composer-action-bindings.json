@@ -1,0 +1,140 @@
+{
+  "format": "axiom.product-control-bindings/1",
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "1814df6a11a95cd8622de9db27c447ef004b7ef1",
+  "guide": "docs/product/knowledge/axiom-bot-controls.md",
+  "declarations": 11,
+  "countMethod": "Every intrinsic button/input/select/textarea/summary/a in the two complete files; portaled metadata declarations count once; mapped provider buttons repeat family metadata.",
+  "files": [
+    {
+      "source": "desktop/src/components/BotTaskComposer.tsx",
+      "scopeFunction": "BotTaskComposer",
+      "baselineSha256": "b87aa9c4086801d34367dafee5baeabf934d90fa883612151e2d1ee4f3e95d5f",
+      "declarations": 6,
+      "tagCounts": {
+        "button": 2,
+        "input": 1,
+        "textarea": 2,
+        "summary": 1
+      }
+    },
+    {
+      "source": "desktop/src/components/BotAppActionLauncher.tsx",
+      "scopeFunction": "BotAppActionLauncher",
+      "baselineSha256": "db1972fc75e387591c071ff7d3b905b8690dfe0c79582db555e7e543a35ae3c4",
+      "declarations": 5,
+      "tagCounts": {
+        "button": 4,
+        "summary": 1
+      }
+    }
+  ],
+  "unbound": [
+    "ProviderLogo passive imported internals",
+    "Portal target implementation and enclosing workspace controls",
+    "Imported providers/services, external/native surfaces and recursively imported component internals"
+  ],
+  "controls": [
+    {
+      "helpId": "bot.composer.title",
+      "source": "desktop/src/components/BotTaskComposer.tsx",
+      "tag": "input",
+      "sourceFunction": "BotTaskComposer",
+      "guideSection": "Write and save",
+      "anchor": "<input aria-label=\"Bot task title\" className={fieldClass} value={value.title} disabled={editingDisabled} onChange={e=>edit('title',e.target.value)} aria-invalid={Boolean(error)} aria-describedby={erro",
+      "nodeSha256": "a8a7210efa1bbdca81e3a7f796a9ec5191225b0b2001787d56b3d6906a4849db"
+    },
+    {
+      "helpId": "bot.composer.context",
+      "source": "desktop/src/components/BotTaskComposer.tsx",
+      "tag": "textarea",
+      "sourceFunction": "BotTaskComposer",
+      "guideSection": "Write and save",
+      "anchor": "<textarea aria-label=\"Context to include\" className={fieldClass} rows={4} value={value.context} disabled={editingDisabled} onChange={e=>edit('context',e.target.value)} aria-invalid={Boolean(error)} ar",
+      "nodeSha256": "ed80e1a58d644390df13557bbf5e8954a6d87a5d66c9a891e40db28d8bf21b0b"
+    },
+    {
+      "helpId": "bot.composer.instruction",
+      "source": "desktop/src/components/BotTaskComposer.tsx",
+      "tag": "textarea",
+      "sourceFunction": "BotTaskComposer",
+      "guideSection": "Write and save",
+      "anchor": "<textarea ref={inputRef} id={`bot-instruction-${id}`} aria-label=\"What should Axiom Bot help with?\" placeholder=\"Give Axiom Bot a task…\" className=\"min-h-16 max-h-36 w-full resize-none overflow-y-auto",
+      "nodeSha256": "d11961c2cec4064a94c3a0a31ff216022bcbd277a3377a22a75bcd92c58a462f"
+    },
+    {
+      "helpId": "bot.composer.save",
+      "source": "desktop/src/components/BotTaskComposer.tsx",
+      "tag": "button",
+      "sourceFunction": "BotTaskComposer",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className={`${onSend?\"btn-secondary\":\"btn-primary\"} disabled:opacity-40`} disabled={editingDisabled||saveDisabled||Boolean(error)||!value.title.trim()||!value.task.trim()} onClic",
+      "nodeSha256": "4c63ed76d4f2fbfdbcb6b742b3c6df36cedc766af5bdd3bba80d73603f23c2ae"
+    },
+    {
+      "helpId": "bot.composer.send",
+      "source": "desktop/src/components/BotTaskComposer.tsx",
+      "tag": "button",
+      "sourceFunction": "BotTaskComposer",
+      "guideSection": "Ask for an AI response",
+      "anchor": "<button type=\"button\" className=\"btn-primary bot-send-button disabled:opacity-40\" disabled={!sendReady} onClick={sendDraft}>Send</button>",
+      "nodeSha256": "5cd8db9010be53f7d56a7f5d25f36a39eb2547f01e9aeafb132f1795dc3846aa"
+    },
+    {
+      "helpId": "bot.composer.details",
+      "source": "desktop/src/components/BotTaskComposer.tsx",
+      "tag": "summary",
+      "sourceFunction": "BotTaskComposer",
+      "guideSection": "Write and save",
+      "anchor": "<summary>Task details</summary>",
+      "nodeSha256": "eac943103444f00f7aebbbdcc30f45a0c6fa1e8a4e20485b6c4c308a99d752d4"
+    },
+    {
+      "helpId": "bot.app-launcher.workspace-report",
+      "source": "desktop/src/components/BotAppActionLauncher.tsx",
+      "tag": "button",
+      "sourceFunction": "BotAppActionLauncher",
+      "guideSection": "App actions: read context before preparing a change",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={disabled} onClick={()=>onOpen('report')}>Open workspace report</button>",
+      "nodeSha256": "30c3df4337f51568ee868c6d84d24f9e66923a64c3733d3ffe2a991a6694781d"
+    },
+    {
+      "helpId": "bot.app-launcher.github-evidence",
+      "source": "desktop/src/components/BotAppActionLauncher.tsx",
+      "tag": "button",
+      "sourceFunction": "BotAppActionLauncher",
+      "guideSection": "App actions: read context before preparing a change",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={disabled} onClick={()=>onOpen('evidence')}><span className=\"inline-flex items-center gap-2\"><ProviderLogo provider=\"github\"/>Open GitHub evide",
+      "nodeSha256": "d822b1d44c5d6f25086e8bf829b13f43d99dc4b067da5a25fbf0aa5ef4c90020"
+    },
+    {
+      "helpId": "bot.app-launcher.jira-form",
+      "source": "desktop/src/components/BotAppActionLauncher.tsx",
+      "tag": "button",
+      "sourceFunction": "BotAppActionLauncher",
+      "guideSection": "App actions: read context before preparing a change",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={disabled} onClick={()=>onOpen('jira')}><span className=\"inline-flex items-center gap-2\"><ProviderLogo provider=\"jira\"/>Explore Jira form</span",
+      "nodeSha256": "6cf0a1a9c3d591395c428d60fb89426346c744df84382e799dc26b4e2e20bd62"
+    },
+    {
+      "helpId": "bot.app-launcher.provider-panel",
+      "source": "desktop/src/components/BotAppActionLauncher.tsx",
+      "tag": "button",
+      "sourceFunction": "BotAppActionLauncher",
+      "guideSection": "App actions: read context before preparing a change",
+      "anchor": "<button key={provider} type=\"button\" className=\"btn-secondary\" disabled={disabled||!saved||dirty} onClick={()=>onOpen(provider)}><span className=\"inline-flex items-center gap-2\"><ProviderLogo provider",
+      "nodeSha256": "5e0b049d6f95193c776423242576df5ad887e05626f450e6f243a1d2bb80bdb9"
+    },
+    {
+      "helpId": "bot.app-launcher.workflow-details",
+      "source": "desktop/src/components/BotAppActionLauncher.tsx",
+      "tag": "summary",
+      "sourceFunction": "BotAppActionLauncher",
+      "guideSection": "App actions: read context before preparing a change",
+      "anchor": "<summary className=\"cursor-pointer\">Workflow access and evidence details</summary>",
+      "nodeSha256": "1bec39be2ef8071808e3dde1a85161489481984fe7f33236453559860087144e"
+    }
+  ]
+}

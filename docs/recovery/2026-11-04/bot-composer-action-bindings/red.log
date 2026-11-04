@@ -1,0 +1,103 @@
+✔ finite unpublished inventory specifies all two whole files and 11 unique control declarations (0.685458ms)
+✖ independently enumerates every intrinsic control and binds exact original JSX nodes (8.445042ms)
+✔ stripping only inserted attributes restores every complete baseline source file (0.278875ms)
+✖ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (6.435209ms)
+✖ rejects new unbound controls, display metadata, cross-file and outside-function bindings (3.4795ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 110.82175
+
+✖ failing tests:
+
+test at docs/product/knowledge/bot-composer-action-bindings.test.cjs:42:1
+✖ independently enumerates every intrinsic control and binds exact original JSX nodes (8.445042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'missing or duplicate bot.composer.title',
+  +   'missing or duplicate bot.composer.context',
+  +   'missing or duplicate bot.composer.instruction',
+  +   'missing or duplicate bot.composer.save',
+  +   'missing or duplicate bot.composer.send',
+  +   'missing or duplicate bot.composer.details',
+  +   'missing or duplicate bot.app-launcher.workspace-report',
+  +   'missing or duplicate bot.app-launcher.github-evidence',
+  +   'missing or duplicate bot.app-launcher.jira-form',
+  +   'missing or duplicate bot.app-launcher.provider-panel',
+  +   'missing or duplicate bot.app-launcher.workflow-details'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/bot-composer-action-bindings.test.cjs:42:103)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'missing or duplicate bot.composer.title', 'missing or duplicate bot.composer.context', 'missing or duplicate bot.composer.instruction', 'missing or duplicate bot.composer.save', 'missing or duplicate bot.composer.send', 'missing or duplicate bot.composer.details', 'missing or duplicate bot.app-launcher.workspace-report', 'missing or duplicate bot.app-launcher.github-evidence', 'missing or duplicate bot.app-launcher.jira-form', 'missing or duplicate bot.app-launcher.provider-panel', 'missing or duplicate bot.app-launcher.workflow-details' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/bot-composer-action-bindings.test.cjs:46:1
+✖ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (6.435209ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(mutate(source.replace(attr,'data-help-id={"bot.composer.title"}'))).includes('nonliteral ID'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/bot-composer-action-bindings.test.cjs:50:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/bot-composer-action-bindings.test.cjs:56:1
+✖ rejects new unbound controls, display metadata, cross-file and outside-function bindings (3.4795ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(mutate(source.replace('data-help-id="bot.app-launcher.workspace-report"','data-help-id="bot.composer.save"'))).includes('wrong file bot.composer.save'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/bot-composer-action-bindings.test.cjs:60:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

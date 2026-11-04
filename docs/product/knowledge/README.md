@@ -15,6 +15,7 @@
 | Configure device and workspace settings | [Settings controls](settings-workspace-controls.md) | Local preferences, server policy writes, credentials/native actions and browser handoffs have different effects and recovery. |
 | Work with a saved Bot task | [Bot controls](axiom-bot-controls.md) | Drafts, AI requests, recorded reads and reviewed changes are distinct. |
 | Map directly authored Bot workspace controls | [Bot static bindings](bot-workspace-bindings.md) |24source declarations/families only; composer/imported internals, native media and customer acceptance excluded. |
+| Map Bot composer and app-launcher controls | [Composer/action source bindings](bot-composer-action-bindings.md) |11declarations; portal/provider families, not unique runtime targets or customer qualification. |
 | Open or acquire repository source | [Repository acquisition](repository-acquisition-controls.md) | Local checkout and authorized clone; not a release approval. |
 | Inspect and edit repository text | [Editor controls](repository-editor-controls.md), [nested confirmations and diff pages](repository-editor-nested-controls.md) | Discard, cancellation, saving and uncertain outcomes differ. |
 | Map editor help metadata | [Static bindings](repository-editor-bindings.md) | Family attributes are not unique DOM identities or completed customer help. |

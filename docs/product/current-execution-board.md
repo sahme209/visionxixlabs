@@ -55,3 +55,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 finite Bot workspace source map
 ~~24direct intrinsic declarations bound~~ (22buttons1input1summary),5ASTcontracts with actualRED; root hashes/fullGitbaseline proof. [Map](knowledge/bot-workspace-bindings.md). Source families only; imported/composer/native/media/customer/editorial acceptance still open.
+
+### November4 Bot composer/action source map
+~~11direct declarations bound~~,5ASTcontracts with actualRED; fulltwofileGitbaseline/hash/rootreview+independentreview pass. [Map](knowledge/bot-composer-action-bindings.md). No native/customer/media/editorial/retrieval qualification.

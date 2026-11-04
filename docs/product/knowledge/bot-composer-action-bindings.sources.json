@@ -1,0 +1,30 @@
+{
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "1814df6a11a95cd8622de9db27c447ef004b7ef1",
+  "bindingScope": "11 intrinsic interactive declarations across the complete BotTaskComposer and BotAppActionLauncher files; imported internals excluded",
+  "sources": [
+    {
+      "path": "desktop/src/components/BotTaskComposer.tsx",
+      "sha256": "766f475f7d6a6f724d0495bba3abc9ed89cfabfb26d29b5c9191259003daf164"
+    },
+    {
+      "path": "desktop/src/components/BotAppActionLauncher.tsx",
+      "sha256": "c8ee74d08aca9c6204e2664265dc12056402c28d2485a7490693efff41e0ca8c"
+    },
+    {
+      "path": "docs/product/knowledge/bot-composer-action-bindings.json",
+      "sha256": "adf7416101c82ccde59e95fc6be918b3898cdcef94176f4ed6bb624d3e64ab57"
+    },
+    {
+      "path": "docs/product/knowledge/bot-composer-action-bindings.test.cjs",
+      "sha256": "36379b97cf4788bab28bdc2a858ad22e6154e6a169f75fb5e7493e61812f5d02"
+    },
+    {
+      "path": "docs/product/knowledge/bot-composer-action-bindings.md",
+      "sha256": "93173b2448e317c2d9e1fd5e56145a5fc2bdc401ce6e8d9847926e35679a2653"
+    }
+  ],
+  "validation": "5 focused AST checks pass under kernel network denial and private-only writes. Stripping all 11 literal attributes independently restores both complete Git baseline files. No native/customer acceptance."
+}

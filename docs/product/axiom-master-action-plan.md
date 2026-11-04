@@ -880,3 +880,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — finite Bot workspace control map
 
 ~~All24direct intrinsic Bot-workspace declarations have literal source help metadata and original-node/baseline validation~~ ([mapping](knowledge/bot-workspace-bindings.md), [evidence](../recovery/2026-11-04/bot-workspace-bindings/root-review.md)).22buttons1input1summary; repeated row/tab IDs are families. Actual3RED/2passes became5ASTpasses; root verifies4manifesthashes and complete strippedGitbaseline includingIMEguards. Imported/composer controls and native/media/editorial/customer/retrieval acceptance remain excluded. All15parents remain open.
+
+## November4 — finite Bot composer and launcher map
+
+~~All11direct composer/action-launcher declarations have literal metadata and original-node/baseline validation~~ ([mapping](knowledge/bot-composer-action-bindings.md), [review](../recovery/2026-11-04/bot-composer-action-bindings/root-review.md)). Actual3RED/2passes became5ASTpasses; root verifies4manifesthashes and complete strippedGitbaseline for both files; separate review clear. Portal fields/providerbuttons are source families, not runtime/action identities. Native/media/editorial/customer/retrieval acceptance remain absent. All15parents remain open.
