@@ -667,6 +667,6 @@ Actual helper compiled and independent source/metadata review passed; exact14 so
 ## November3 — exact privacy build and native sign-in source guide
 
 - [x] B4 bounded source documentation: mounted native sign-in/access controls and16exact source/range bindings independently reviewed. Internal only; A5 install/session and customer documentation acceptance remain open. See knowledge/native-signin-and-access-controls.md.
-- [x] B6 bounded offline build: source08400007 preparation/generation/production outputs verified; no execution authorization, deployment or browser/native acceptance. See ../recovery/2026-11-03/privacy-batch-production-build/README.md. Existing769preview retained.
+- [x] B6 bounded offline build: source08400007 preparation/generation/production outputs verified; no execution authorization, deployment or browser/native acceptance. See ../recovery/2026-11-03/privacy-batch-production-build/README.md. Updated084preview available at http://127.0.0.1:5220/__axiom_preview with four public pages, two exact CSS assets and three auth/action refusal HTTP checks; no browser acceptance.
 
 All A1–A9/B1–B6 parents remain open. Pending exact Governance experiment approval and browser availability remain separate; no permission inferred.
