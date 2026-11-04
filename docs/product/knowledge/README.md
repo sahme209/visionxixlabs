@@ -16,6 +16,7 @@
 | Prepare a Teams message or Linear issue | [Teams/Linear controls](teams-linear-controls.md) | Provider, target, task/version and connection binding matter; approvals are not interchangeable. |
 | Reconcile ServiceNow evidence and closure | [ServiceNow controls](servicenow-evidence-and-closure-controls.md) | Written unknown notes must not be resent. Native lifecycle, fresh human decisions and exact closure remain required. |
 | Inspect the execution-limit prototype | [Limits preview](governance-execution-limits.md) | Internal DEV preview; not completed or enabled Governance. |
+| Bypass the website header with a keyboard | [Skip control source guide](../../recovery/2026-11-03/marketing-keyboard-bypass/internal-source-guide.md) | Local focus change only; actual browser and assistive-technology acceptance remain pending. |
 | Understand the website workflow figure | [Workflow illustration](website-workflow-visual.md) | Conceptual illustration, not authentic execution footage. |
 
 Structured Agent, deployment, Bot and repository article drafts, evaluation requirements and validation rules are indexed separately in the [support-knowledge authoring queue](../documentation-coverage/README.md). Proposed evaluation cases are not executed retrieval results. None of this index approves a catalog, ingests customer data or activates a support assistant.
