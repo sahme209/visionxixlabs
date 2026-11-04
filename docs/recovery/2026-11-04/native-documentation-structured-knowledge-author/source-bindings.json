@@ -1,0 +1,109 @@
+{
+  "status": "internal-current-source-authoring",
+  "baselineCommit": "e0919cd33243db35345446bab3f4354be43280e3",
+  "historicalGuideBaseline": "42ad141a428a2408f732ed8de3e9cacb11540fa7",
+  "historicalGuideAndEvidencePreserved": true,
+  "comparison": "All6historical whole-file and inclusive-range bindings match current code. Two current Sidebar/Commands entry files additionally bound. Historical copy repair42ad and not-yet-rebuilt statements remain historical, not a current runtime/build receipt.",
+  "rangeConvention": "inclusive 1-based original raw lines retaining terminators",
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "range": {
+        "startLine": 158,
+        "endLine": 188,
+        "sha256": "8498811db36330de8efd758d79dfe7d1869cfc993d34a1e6ee43ecd271899d48"
+      }
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "wholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "range": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+      }
+    },
+    {
+      "path": "desktop/src/views/DocsView.tsx",
+      "wholeFileSha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd",
+      "range": {
+        "startLine": 1,
+        "endLine": 101,
+        "sha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd"
+      }
+    },
+    {
+      "path": "lib/desktop/governedJourney.ts",
+      "wholeFileSha256": "c4c0a5eaeb16f6684d8a9fa0dca48837d0dffcbf6baab52be1382ec687c73d2e",
+      "range": {
+        "startLine": 1,
+        "endLine": 33,
+        "sha256": "c4c0a5eaeb16f6684d8a9fa0dca48837d0dffcbf6baab52be1382ec687c73d2e"
+      }
+    },
+    {
+      "path": "desktop/src/components/Primitives.tsx",
+      "wholeFileSha256": "1f7dc15b99807cc6eda5388d37d36d7d5fb3f698e623d751c5d3cd44353e3c5e",
+      "range": {
+        "startLine": 310,
+        "endLine": 347,
+        "sha256": "6a7dcb41be887a5f1ca6d9c5afa1c1faa55bbcf7c5fafb7b6223de4df5258401"
+      }
+    },
+    {
+      "path": "desktop/src/lib/notifications.ts",
+      "wholeFileSha256": "2b0d9b898cb988a4db7eb2d1cbcf17883a4d920fb4c47ea9dfb24bf28dabf5cf",
+      "range": {
+        "startLine": 149,
+        "endLine": 162,
+        "sha256": "694f2561316d3d725e49aacb2a5debdb66d70b27f91ec19eda2c06d7f285539c"
+      }
+    },
+    {
+      "path": "desktop/src/components/Sidebar.tsx",
+      "wholeFileSha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf",
+      "range": {
+        "startLine": 1,
+        "endLine": 119,
+        "sha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf"
+      }
+    },
+    {
+      "path": "desktop/src/components/WorkspaceCommands.tsx",
+      "wholeFileSha256": "610a22e9b7917e913db7c70ee7d39cd4ba564741f1a46562971b0bfca72909b1",
+      "range": {
+        "startLine": 1,
+        "endLine": 55,
+        "sha256": "610a22e9b7917e913db7c70ee7d39cd4ba564741f1a46562971b0bfca72909b1"
+      }
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "path": "docs/product/knowledge/native-documentation-controls.md",
+      "sha256": "a22d0e24befa86787b4bf64406dd40e5f1911ce581beee2ac6b78e58f1e08c74"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/native-documentation-guide/source-bindings.json",
+      "sha256": "766af556d23b6471dda65657198fd1483a0638364597d929e44a565374c26f9a"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/native-documentation-guide/source-review.md",
+      "sha256": "e2e207b30f3a2672556607e397659e1bfd19934a056cde10d4671cee7f619698"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/native-documentation-guide/binding-verification.json",
+      "sha256": "72d52f3536d8a21ae2f9217515bc5ee6d774713d8f0ecb7e28abdc1b10e50efe"
+    }
+  ],
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}

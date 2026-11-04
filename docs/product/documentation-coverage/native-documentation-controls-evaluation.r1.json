@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.native.documentation-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:e0919cd33243db35345446bab3f4354be43280e3",
+  "articleSha256": "4f05575e6aac4472957a69d2b3bfbc33a6e4ef84fe027530f5a1718e675e7563",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "native-docs-entry",
+      "question": "Does Documentation entry verify provider access?",
+      "requiredResponse": "No. Mounted authenticated shell entry only; current provider health/installed availability/entitlement remains separate.",
+      "requiredCitation": "axiom.help.native.documentation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "native-docs-journey",
+      "question": "Does Open Airflow or Open Agent submit work?",
+      "requiredResponse": "No. Journey callback selects destination only; separate actual controls/authority required. Mount may load data.",
+      "requiredCitation": "axiom.help.native.documentation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "native-docs-progress",
+      "question": "Do five ordered stages prove a run completed?",
+      "requiredResponse": "No. Explanatory navigation with no saved progress/readiness gating; proposal/schedule/recovery plan is not successful execution.",
+      "requiredCitation": "axiom.help.native.documentation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "native-docs-links",
+      "question": "Does opening Permissions model grant permission?",
+      "requiredResponse": "No. Fixed HTTPS documentation handoff only, no consent/approval/provider action or proof installed-version applicability.",
+      "requiredCitation": "axiom.help.native.documentation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "native-docs-browser",
+      "question": "Does successful open call prove guide loaded?",
+      "requiredResponse": "No. Shell then window fallback, host determines outcome; no acknowledgement/link-health/popup error control here.",
+      "requiredCitation": "axiom.help.native.documentation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "native-docs-completeness",
+      "question": "Is customer help complete and AI ingestion enabled?",
+      "requiredResponse": "No. Intro requires version/availability checks; no globally complete help/AI retrieval/ingestion/customer publication is established.",
+      "requiredCitation": "axiom.help.native.documentation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "native-docs-acceptance",
+      "question": "Does42ad historical copy review qualify current native release?",
+      "requiredResponse": "No. Historical source/copy/binding receipts preserved, not new build/browser/native acceptance; current internal preview/null review/empty media/proposed eval.",
+      "requiredCitation": "axiom.help.native.documentation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

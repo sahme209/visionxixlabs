@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "id": "axiom.help.native.documentation-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Desktop Documentation: local journey navigation and fixed web-guide handoffs",
+  "productVersion": "local-source-preview:e0919cd33243db35345446bab3f4354be43280e3",
+  "screenIds": [
+    "proposed.axiom.screen.desktop.documentation"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.desktop.docs.sidebar-entry",
+    "proposed.axiom.control.desktop.docs.command-entry",
+    "proposed.axiom.control.desktop.docs.open-repository",
+    "proposed.axiom.control.desktop.docs.open-agent",
+    "proposed.axiom.control.desktop.docs.open-releases",
+    "proposed.axiom.control.desktop.docs.open-airflow",
+    "proposed.axiom.control.desktop.docs.review-evidence",
+    "proposed.axiom.control.desktop.docs.web-guide-links"
+  ],
+  "goal": "Use the mounted Documentation index without confusing explanatory journeys or external links with current installed availability, operational authority, globally complete customer help or accepted execution.",
+  "prerequisites": [
+    "Internal source-only local preview of mounted DocsView, not global customer documentation acceptance or all website/browser/native flow coverage.",
+    "Documentation mounts inside authenticated workspace after parent identity/access checks, not a provider-health or installed-feature acceptance probe. No current identity/account/connection/credential/flag was read.",
+    "Preserved42ad historical copy repair removes unsupported complete/authoritative wording and adds installed-version/availability qualification. Its earlier no-rebuild observation is historical; no new build/runtime/release acceptance is supplied here."
+  ],
+  "permissions": [
+    "Opening Documentation or a journey destination grants no permission, consent or independent approval and executes no provider action from this screen. Destination mounts can have their own reads/effects, so navigation does not promise zero network activity.",
+    "Availability depends on installed version, workspace policy, connected credentials and validated adapters. A guide/proposal/schedule/recovery plan is not end-to-end acceptance, successful verification or completed rollback.",
+    "External links are fixed documentation handoffs, not account/provider setup, downloads, operational commands or proof remote guide matches installed version. Separate supported destination authorities remain intact.",
+    "This page has no AI retrieval/ingestion, support chat, account editor, provider connection or permission-grant control. Offline source article validation does not enable ingestion or customer publication."
+  ],
+  "steps": [
+    {
+      "instruction": "Choose Documentation in sidebar utilities or Open documentation in Commands.",
+      "effect": "read",
+      "expectedState": "App selects docs and mounts DocsView. Entry navigation is not current provider access, completion of web guides or a separate consent/role edit."
+    },
+    {
+      "instruction": "Read introduction: check installed version and stated availability before following a web guide.",
+      "effect": "read",
+      "expectedState": "Do not treat documentation as globally complete/authoritative or identical to installed release. Historical copy repair is not an executed native walkthrough."
+    },
+    {
+      "instruction": "Under From code to governed deployment use Open repository or Open Agent.",
+      "effect": "read",
+      "expectedState": "Navigates to Repositories or Agent. Repository scope is not cloud authority; proposal is not applied code/check result. No AI submit, file edit or check execution occurs through these callbacks."
+    },
+    {
+      "instruction": "Use Open deployment requests, Open Airflow or Review deployment evidence when appropriate.",
+      "effect": "read",
+      "expectedState": "Navigates Releases, Batches or Releases respectively. Exact genuine human decisions and operation checks stay separate; schedule is not approval/success, recovery plan is not proof rollback ran."
+    },
+    {
+      "instruction": "Inspect ordered journey explanations as navigation guidance, not live progress.",
+      "effect": "read",
+      "expectedState": "No readiness-disabled stage, completion indicator, saved journey state, timer or previous/next controls. Return through ordinary shell navigation; destination failures/recovery belong to that workflow."
+    },
+    {
+      "instruction": "Choose Getting started group Product documentation, Getting started or Permissions model cards.",
+      "effect": "read",
+      "expectedState": "Fixed HTTPS destinations: https://visionxixlabs.com/docs ; https://visionxixlabs.com/docs/getting-started ; https://visionxixlabs.com/docs/permissions-model . Handoff does not establish current provider state/authority, consent or guide applicability; destination own effects are outside this guide."
+    },
+    {
+      "instruction": "Choose Deployment operations Approval workflow/Glossary or Troubleshooting Troubleshooting/Surfaces cards.",
+      "effect": "read",
+      "expectedState": "Fixed HTTPS destinations: https://visionxixlabs.com/docs/approval-workflow ; https://visionxixlabs.com/docs/glossary ; https://visionxixlabs.com/docs/troubleshooting ; https://visionxixlabs.com/docs/surfaces . These are seven total web-guide links, not downloads or execution commands."
+    },
+    {
+      "instruction": "If browser does not open, inspect the fixed destination and use it deliberately; retain destination workflow uncertainty.",
+      "effect": "recover",
+      "expectedState": "ExternalLink calls openExternal: Tauri shell attempt, otherwise/failure window.open blank target with noopener/noreferrer. OS/browser determines outcome; no link-health check, loading/result acknowledgement, popup-blocked error or dedicated retry. Opening return does not prove remote load or permission to repeat an operation."
+    }
+  ],
+  "expectedOutcome": "Navigate to the correct local workflow or fixed documentation URL while preserving installed-version, authority, provider-outcome and customer-help completeness limits.",
+  "limitations": [
+    "Customer eligible:false; publication approved:false; editorial/media/native/runtime/release/shipped acceptance:false. Null human review and empty media; proposed IDs are authoring labels, not installed runtime help/retrieval bindings.",
+    "All6historical source bindings match currente0919cd3; current receipt adds Sidebar/Commands for8code/range bindings.42ad guide/review/binding verification remain historical evidence, not newly executed native/browser/build acceptance.",
+    "Finite DocsView/journey/App entry/shared external-link boundary only. No linked website-content inspection, OS shell/browser qualification, auth/entitlement/provider destination acceptance, app-wide native flow or all backend coverage.",
+    "Journey cards navigate only and are not readiness-gated execution, live run/progress, successful check/approval/scheduling/rollback. Destination own reads/effects may occur; this is not zero-network guarantee.",
+    "No embedded Markdown reader/search/account menu/support chat/AI retrieval/recording/image/transcript/download-recording/provider action here. Customer help is not globally complete; offline AI ingestion remains unenabled by this authoring.",
+    "No current screenshot/browser/native keyboard/zoom/screen-reader/media acceptance. An approved card/source hash/local build elsewhere does not establish installed version, provider health or linked article applicability.",
+    "Evaluation proposed-not-executed only. Schema/hash checks are not retrieval/model execution, editorial/publication decision, customer ingestion, new consent/permission or release qualification."
+  ],
+  "recovery": [
+    "Use ordinary shell navigation to return from journey destinations; inspect destination-specific prerequisites/outcomes rather than assuming completed stages.",
+    "If external browser handoff fails, use inspected fixed documentation URL deliberately. No dedicated link-state/reconciliation control exists; do not replay unrelated consequential action because docs failed to open.",
+    "Check installed version/stated availability and separate actual authority before following a web guide. Preserve unknown operation state and required human decisions.",
+    "Missing/search/media/AI functionality is outside this page, not hidden provider permission or automatically enabled customer-help capability."
+  ],
+  "searchTerms": [
+    "Documentation",
+    "Open documentation",
+    "From code to governed deployment",
+    "Open repository",
+    "Open Agent",
+    "Open Airflow",
+    "Review deployment evidence",
+    "web guides",
+    "installed version",
+    "seven documentation links",
+    "not AI ingestion"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88"
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+    },
+    {
+      "path": "desktop/src/views/DocsView.tsx",
+      "sha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd"
+    },
+    {
+      "path": "lib/desktop/governedJourney.ts",
+      "sha256": "c4c0a5eaeb16f6684d8a9fa0dca48837d0dffcbf6baab52be1382ec687c73d2e"
+    },
+    {
+      "path": "desktop/src/components/Primitives.tsx",
+      "sha256": "1f7dc15b99807cc6eda5388d37d36d7d5fb3f698e623d751c5d3cd44353e3c5e"
+    },
+    {
+      "path": "desktop/src/lib/notifications.ts",
+      "sha256": "2b0d9b898cb988a4db7eb2d1cbcf17883a4d920fb4c47ea9dfb24bf28dabf5cf"
+    },
+    {
+      "path": "desktop/src/components/Sidebar.tsx",
+      "sha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf"
+    },
+    {
+      "path": "desktop/src/components/WorkspaceCommands.tsx",
+      "sha256": "610a22e9b7917e913db7c70ee7d39cd4ba564741f1a46562971b0bfca72909b1"
+    },
+    {
+      "path": "docs/product/knowledge/native-documentation-controls.md",
+      "sha256": "a22d0e24befa86787b4bf64406dd40e5f1911ce581beee2ac6b78e58f1e08c74"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/native-documentation-guide/source-bindings.json",
+      "sha256": "766af556d23b6471dda65657198fd1483a0638364597d929e44a565374c26f9a"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/native-documentation-guide/source-review.md",
+      "sha256": "e2e207b30f3a2672556607e397659e1bfd19934a056cde10d4671cee7f619698"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/native-documentation-guide/binding-verification.json",
+      "sha256": "72d52f3536d8a21ae2f9217515bc5ee6d774713d8f0ecb7e28abdc1b10e50efe"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/source-bindings.json",
+      "sha256": "95a370df940cc00b557f465893fa2355938c41b5bfe87903a24c51eaa526250a"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/native-documentation-controls.md",
+      "docs/recovery/2026-11-03/native-documentation-guide/source-bindings.json",
+      "docs/recovery/2026-11-03/native-documentation-guide/source-review.md",
+      "docs/recovery/2026-11-03/native-documentation-guide/binding-verification.json",
+      "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/source-bindings.json"
+    ],
+    "verifiedVersion": "local-source-preview:e0919cd33243db35345446bab3f4354be43280e3",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

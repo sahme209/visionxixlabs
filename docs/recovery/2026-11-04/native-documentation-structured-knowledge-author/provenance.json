@@ -1,0 +1,51 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "e0919cd33243db35345446bab3f4354be43280e3",
+  "branch": "codex/b4-native-docs-knowledge",
+  "worktree": "/private/tmp/axiom-b4-native-docs-20261104",
+  "validation": {
+    "integrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 13,
+    "uniqueCodeFiles": 8,
+    "currentInclusiveRawRanges": 8,
+    "historicalBindingEntriesMatching": 6,
+    "addedEntryPointBindings": 2,
+    "proposedEvaluationCases": 7,
+    "retrievalExecuted": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/native-documentation-controls.md": "a22d0e24befa86787b4bf64406dd40e5f1911ce581beee2ac6b78e58f1e08c74",
+    "docs/recovery/2026-11-03/native-documentation-guide/source-bindings.json": "766af556d23b6471dda65657198fd1483a0638364597d929e44a565374c26f9a",
+    "docs/recovery/2026-11-03/native-documentation-guide/source-review.md": "e2e207b30f3a2672556607e397659e1bfd19934a056cde10d4671cee7f619698",
+    "docs/recovery/2026-11-03/native-documentation-guide/binding-verification.json": "72d52f3536d8a21ae2f9217515bc5ee6d774713d8f0ecb7e28abdc1b10e50efe"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-native-docs-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-native-docs-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-native-docs-evidence/bindings.sh"
+  ],
+  "bundleSha256": {
+    "docs/product/documentation-coverage/articles/native-documentation-controls.r1.json": "4f05575e6aac4472957a69d2b3bfbc33a6e4ef84fe027530f5a1718e675e7563",
+    "docs/product/documentation-coverage/native-documentation-controls-evaluation.r1.json": "998c0709a51cbf6bb7729354cced3047d94031191f5bff3dd9d0e1d75bd3b6d2"
+  },
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/validate.sh": "0c80053e6181a20081cd23c1450912bc7c291703e4ff7872e7ef1ab8d92798eb",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/bindings.sh": "51fc505b25f621dc895c019762e7b8b4ca5839550849e5232fe82308621c1a32",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/binding-integrity.json": "b9580cd754d1f2f1a6f8d8e8a8c618901aab4bf3d894f8e0c1783b95b2970453",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/validate.log": "4765ae0427dc0e3c070eb7f395accf64d6366607e45dd3ba438ecd15eb4485d7",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/README.md": "2d763f5a78a349e680bc9f357fc39ecc2ad05a0c847a3568deca669cce9d18dd",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/source-bindings.json": "95a370df940cc00b557f465893fa2355938c41b5bfe87903a24c51eaa526250a",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/binding-integrity.cjs": "b36bcd73fd8513cd1ac06e679367c2129d0d86098e04fca61bfb7ec4ef0c6d7e",
+    "docs/recovery/2026-11-04/native-documentation-structured-knowledge-author/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03"
+  },
+  "limits": "Finite internal source-only local preview, null human review/empty media/proposed IDs; no zero-child-read guarantee or global help/AI-ingestion acceptance; all customer/editorial/media/native/runtime/release false; no mutable master hash"
+}

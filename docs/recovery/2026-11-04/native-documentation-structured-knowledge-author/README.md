@@ -1,0 +1,9 @@
+# Native Documentation structured knowledge authoring
+
+Internal r1 article and seven proposed-not-executed cases ate0919cd33243db35345446bab3f4354be43280e3. Historical42ad guide, source manifest, independent source review and binding verification remain unchanged. All6historical code/range hashes match current source; Sidebar/Commands add2current entry-point bindings. New receipt has8unique code files/8inclusive raw ranges. Article13unique sources include8code,4historical evidence files and current receipt.
+
+Historical42ad completeness-copy repair and then-not-yet-rebuilt observations remain historical source context. No current rebuild, native/browser opening, release or shipped qualification is inferred. Journey callbacks navigate only; destination components may perform their own status/data reads under their own guards. Opening a guide does not establish provider state, authority, consent or installed-version applicability. No actual click or external load performed.
+
+Unchanged validator integrity exit0; expected customer refusal exit1 (not approved/not public/local preview); current binding integrity exit0. Null human review/empty media/proposed IDs. All customer/editorial/media/native/runtime/release acceptance false. Finite mounted DocsView/App/Sidebar/Commands/journey/external-link source boundary only; no global complete customer help, all-site/native-browser flows or offline AI ingestion enabled.
+
+Only new-bundle schema/source/hash integrity and expected customer refusal ran under cleared environment/kernel network and canonical/pinned-cache write denial. No tests/retrieval/model/AI/UI/browser/native/provider/database/auth/credentials/Keychain/Security/helper/build/install/push/integration operations. Historical guide/evidence, schemas/validator and shared README/master unchanged. Raw logs/exits/runners/sandbox/provenance retained without mutable master hash.
