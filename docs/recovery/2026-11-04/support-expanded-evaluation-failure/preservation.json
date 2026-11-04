@@ -1,0 +1,15 @@
+{
+  "articleVersions": 24,
+  "articleBytesBeforeAfterIdentical": true,
+  "implementationSchemaFilesUnchanged": [
+    "scripts/support-knowledge/core.cjs",
+    "scripts/support-knowledge/tests/pipeline.test.cjs",
+    "scripts/support-knowledge/fixtures/make-fixture.cjs",
+    "scripts/support-knowledge/cli.cjs",
+    "scripts/support-knowledge/evaluate.cjs",
+    "docs/product/documentation-coverage/article-record.schema.json",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json"
+  ],
+  "ownedFixtureDirectoriesRemain": 0,
+  "noRerunAfterFailure": true
+}

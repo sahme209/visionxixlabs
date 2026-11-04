@@ -1,0 +1,126 @@
+{
+  "base": "0000ae1ef9060460a03789481b15b82a6bef5c24",
+  "articleVersions": 24,
+  "articles": [
+    {
+      "path": "docs/product/documentation-coverage/articles/agent-reviewed-action.r1.json",
+      "bytes": 8912,
+      "sha256": "40a20b6f51440b366e164b37023010e8cd0ca770db7b71419832096246f9f157"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/agent-reviewed-action.r2.json",
+      "bytes": 11670,
+      "sha256": "ba44726db4caecad47cf82d1b97542be6ac1b93f6b50f812dca50ed9de250701"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/agent-workspace-controls.r1.json",
+      "bytes": 16723,
+      "sha256": "221c5abf926a09e867ee488bc97cc368fabde1f0ba17834f283d5266019557e1"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/batches-airflow-controls.r1.json",
+      "bytes": 16125,
+      "sha256": "e8b69adf39ff6926bf10545614dcc93dd9dfa0d269b5d63e8579ed892fdcf54c"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/bot-workspace-controls.r1.json",
+      "bytes": 14911,
+      "sha256": "ded462d26b4f0da6fd0fea43806ff703904e7afd116ba418dfc24b38c6f86499"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/cloud-connection-controls.r1.json",
+      "bytes": 22557,
+      "sha256": "7fe8f569b93a48e4904e9013280fd7298439ab1bcaed6611e17323b0ba9240fd"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/desktop-apps-skills-controls.r1.json",
+      "bytes": 13351,
+      "sha256": "0e42d0fcae838e5a5fae81444f3dd86a6397debed73c1d20c3687e2e69ae2fd9"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/governance-execution-limits-prototype.r1.json",
+      "bytes": 14996,
+      "sha256": "2849e4b66188f064f7b1d20a21d5b1eecf36356978a829f8a5da673dc794ab00"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/home-settings-navigation-controls.r1.json",
+      "bytes": 15362,
+      "sha256": "25e06e3b9c52d1a16b4681be03f4969434b8a89e8046d75935a89d96dfec7a6f"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/jira-release-controls.r1.json",
+      "bytes": 16681,
+      "sha256": "e54fcc668cb24cf328fd4b512b28e9bf1ff1ab96547489a81a3eb4ede3ffc730"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/native-documentation-controls.r1.json",
+      "bytes": 11674,
+      "sha256": "4f05575e6aac4472957a69d2b3bfbc33a6e4ef84fe027530f5a1718e675e7563"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/native-signin-browser-pairing.r1.json",
+      "bytes": 18214,
+      "sha256": "f2edf56d98fcf897b27abb5579282c96ac886ffb3d1d7a1760da9e7867363301"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/outlook-controls.r1.json",
+      "bytes": 15901,
+      "sha256": "c17055c2864de0c64bd4d14d987ac66fdf1bd36215ed296da583442844598bb9"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/public-integrations-catalog-controls.r1.json",
+      "bytes": 10097,
+      "sha256": "2c0b9e8e94ab8ef07660238f50f62cd9be0afbec0ff2d0195e71bba5aeeed0d5"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/release-deployment-reviewed-action.r1.json",
+      "bytes": 17291,
+      "sha256": "bdb56601a5473f92e5e3c9149735b1de2a5f3d82d6a1172882894a390795b3d6"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/release-deployment-reviewed-action.r2.json",
+      "bytes": 19362,
+      "sha256": "72fcc6511dd8f8e735fe3a144073bd6595910da0ce8761e6f94b789835f1b4a9"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/release-deployment-reviewed-action.r3.json",
+      "bytes": 22290,
+      "sha256": "c3e760359a5383735e96e0c6b3fcbc54414ec1a2971a4ded3953b90937ca155a"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/releases-workspace-controls.r1.json",
+      "bytes": 19151,
+      "sha256": "425dfcddea71df63ccf80169afb3ce97d5db1879a70b867e08fe10fc10f04d97"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/repository-acquisition-base-editor-controls.r1.json",
+      "bytes": 16410,
+      "sha256": "7c615c0357e36039f273cc0c5591155f1b09f83366e948bf1a997a137b5a2358"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/repository-editor-nested-controls.r1.json",
+      "bytes": 10757,
+      "sha256": "1b579d2d9cedb54767bbcd1feb102abae228b56628f9b6266a76bec014ca39bb"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/servicenow-evidence-closure-controls.r1.json",
+      "bytes": 17058,
+      "sha256": "d36254609682435f02f3639921107a81e1efca5f756ac0cf234bd4835e047a66"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/slack-reviewed-action-controls.r1.json",
+      "bytes": 13926,
+      "sha256": "7956474759342b039931c0c94c15bf85dd40318cace866f08164f40a17862c6a"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/teams-linear-controls.r1.json",
+      "bytes": 13277,
+      "sha256": "86c1f196d2d2215bd5df8cd2af89fdd3b1b6e2649bf69431f65d5afd4fd016f7"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/website-teaching-navigation-controls.r1.json",
+      "bytes": 15004,
+      "sha256": "9c36778c9474fc6729bf4299147d850794060d948b283685a0459288c60d67c7"
+    }
+  ]
+}

@@ -773,3 +773,7 @@ Twenty-four stored revisions include history; all15parents remain open. Full sou
 
 
 - [x] Bounded indexed-guide linkage milestone:all26currentlyindexedguidepaths have a direct source reference among24draft/internal stored article revisions (history included). [Static receipt](../recovery/2026-11-04/indexed-guide-linkage/README.md). This closes only this authoring-reference gap, not every-control coverage/B4/B5 or runtime/customer acceptance.
+
+## November4 — expanded offline support evaluation failed, not accepted
+
+One selected invocation on unchanged source/article bytes returned zero passes and two failures: the synthetic positive control refused, and the real-draft loop stopped before observing its first article hash. It does not establish expanded 24-record coverage. Both sandbox layers remain intact; nested sandbox launch is a hypothesis, not a confirmed cause. No production reader, trust metadata or article was changed. See [preserved failure report](../recovery/2026-11-04/support-expanded-evaluation-failure/report.md). A1–A9 and B1–B6 remain open.

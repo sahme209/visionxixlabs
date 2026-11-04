@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /private/tmp/axiom-b5-offline-20261104 || exit 90
+exec /usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-b5-offline-evidence TMPDIR=/private/tmp/axiom-b5-offline-evidence/fixtures NODE_ENV=test NODE_COMPILE_CACHE=/private/tmp/axiom-b5-offline-evidence/node-cache /usr/bin/sandbox-exec -f /private/tmp/axiom-b5-offline-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node --test --test-name-pattern='synthetic exact extraction, canonical citation and determinism|all exact unchanged real drafts fail metadata gate and actual bounded byte pipeline' scripts/support-knowledge/tests/pipeline.test.cjs

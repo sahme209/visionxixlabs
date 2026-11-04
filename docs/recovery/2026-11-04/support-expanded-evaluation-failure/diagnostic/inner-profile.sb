@@ -1,0 +1,1 @@
+(version 1)(allow default)(deny network*)(deny file-write*)(deny file-read-data)(allow file-read-data (literal "/") (require-all (subpath "/private/tmp/axiom-b5-offline-evidence/diagnostic/synthetic-read-qC7waV") (literal "/private/tmp/axiom-b5-offline-evidence/diagnostic/synthetic-read-qC7waV/synthetic.txt") (vnode-type REGULAR-FILE)))

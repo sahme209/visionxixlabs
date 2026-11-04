@@ -1,0 +1,58 @@
+{
+  "runtimeReportedByDiagnostic": {
+    "node": "v24.21.0",
+    "unicode": "17.0"
+  },
+  "osMetadata": {
+    "system": "Darwin",
+    "release": "27.2.0",
+    "machine": "arm64"
+  },
+  "binaryIdentities": [
+    {
+      "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+      "bytes": 122129232
+    },
+    {
+      "path": "/usr/bin/sandbox-exec",
+      "sha256": "10cf4a46a575e4747d2419cf343800db0d11ae6e6e9b8415998d3d8f336b2a92",
+      "bytes": 135136
+    },
+    {
+      "path": "/bin/cat",
+      "sha256": "2d839ffe60c9119a8c30256a04dec5a84751d3c07c3a63aa3762215b7c27996d",
+      "bytes": 184336
+    }
+  ],
+  "dependencyLink": {
+    "path": "/private/tmp/axiom-b5-offline-20261104/node_modules",
+    "target": "/private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules",
+    "readOnlyByKernelProfile": true
+  },
+  "installedPackageManifests": [
+    {
+      "path": "/private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/ajv-formats/package.json",
+      "name": "ajv-formats",
+      "version": "3.0.1",
+      "sha256": "402fb4bcfa457f0226813f3976ac42839dd619907c075c108efba8600d7edb69"
+    },
+    {
+      "path": "/private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/ajv/package.json",
+      "name": "ajv",
+      "version": "6.15.0",
+      "sha256": "be4fd09eb4658674ed5ffb9da2786d2056fd78429192a3619e0458f84fe0ca6b"
+    },
+    {
+      "path": "/private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/ajv-formats/node_modules/ajv/package.json",
+      "name": "ajv",
+      "version": "8.20.0",
+      "sha256": "1f9033ee5a6515e7d76938b7072941862d1ed228a6879cc7fe10cdeb75107989"
+    }
+  ],
+  "outerProfileSha256": "9d7ff2d18d71fef5fd52b97aa2282e958bddd9c47edcb7404ffb36c01b64e29b",
+  "originalRunScriptSha256": "dce9174910f949c0455b643274414adf60f06a078950719de0db83457e467d62",
+  "failureLogStillSha256": "d7dfc20deb8f6a97953e1c70d0b9ff1afba83ef021cad289baf7cf0d10877c85",
+  "diagnosticOnlyOneInvocation": true,
+  "fixtureDirectoriesRemain": 0
+}

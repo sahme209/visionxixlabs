@@ -1,0 +1,3 @@
+# Independent failure-evidence review
+
+Read-only reviewer website_claims_current_audit inspected original failure evidence and subsequent synthetic diagnostic. Review passed for the bounded conclusion: inner policy application failed in the observed nested harness (status71,0/29bytes, matching profile SHA). Successful runner exit means diagnostic capture only. Original failures lack child stderr, so additional causes remain possible. No application defect, successful retrieval or24-draft coverage established. Reader restrictions unchanged; no execution by reviewer. Any harness correction must preserve containment and be concretely reviewed before rerun.

@@ -1,0 +1,15 @@
+{
+  "simulationOnly": true,
+  "customerEligible": false,
+  "node": "v24.21.0",
+  "unicode": "17.0",
+  "innerProfileSha256": "a30a39f5b33eb013fe26ad9b58671ebcc566d6865650292ca905c0b292e5c6b1",
+  "errorCode": null,
+  "status": 71,
+  "signal": null,
+  "expectedByteCount": 29,
+  "actualByteCount": 0,
+  "stderrByteCount": 53,
+  "stderrPrefix": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+  "stderrPrefixLimitBytes": 512
+}

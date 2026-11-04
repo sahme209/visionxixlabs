@@ -1,0 +1,56 @@
+✖ synthetic exact extraction, canonical citation and determinism (8.666875ms)
+✖ all exact unchanged real drafts fail metadata gate and actual bounded byte pipeline (8.466625ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 89.925625
+
+✖ failing tests:
+
+test at scripts/support-knowledge/tests/pipeline.test.cjs:38:1
+✖ synthetic exact extraction, canonical citation and determinism (8.666875ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'no_answer'
+  - 'selected'
+  
+      at TestContext.<anonymous> (/private/tmp/axiom-b5-offline-20261104/scripts/support-knowledge/tests/pipeline.test.cjs:41:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'no_answer',
+    expected: 'selected',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at scripts/support-knowledge/tests/pipeline.test.cjs:430:1
+✖ all exact unchanged real drafts fail metadata gate and actual bounded byte pipeline (8.466625ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(identity.bundle.files.some(x => x.path === 'real-article.json' && x.sha256 === hash(bytes)))
+  
+      at TestContext.<anonymous> (/private/tmp/axiom-b5-offline-20261104/scripts/support-knowledge/tests/pipeline.test.cjs:448:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at node:internal/test_runner/test:1305:31
+      at node:internal/process/task_queues:151:7
+      at AsyncResource.runInAsyncScope (node:async_hooks:227:14)
+      at AsyncResource.runMicrotask (node:internal/process/task_queues:148:8) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

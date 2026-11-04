@@ -1,0 +1,39 @@
+{
+  "files": [
+    {
+      "path": "scripts/support-knowledge/core.cjs",
+      "bytes": 17190,
+      "sha256": "377e90d5800eec1129e0aec6fe4cae6f8edccb7b60f0f2c685bc6719666bc2b1"
+    },
+    {
+      "path": "scripts/support-knowledge/tests/pipeline.test.cjs",
+      "bytes": 20975,
+      "sha256": "e0096d6e27994ceaf22b650ba2d30d1ebaedafde5ae7065deb5c0226ffdae46f"
+    },
+    {
+      "path": "scripts/support-knowledge/fixtures/make-fixture.cjs",
+      "bytes": 3580,
+      "sha256": "58f15fbc90ff6457dcc013033eef8c2750913e3cb534d75bed963a5b3076fd51"
+    },
+    {
+      "path": "scripts/support-knowledge/cli.cjs",
+      "bytes": 503,
+      "sha256": "fc393fe468796f6146ee8dd3796cfcbc2a9555ff07a6f04d5fc3cd4947a284dd"
+    },
+    {
+      "path": "scripts/support-knowledge/evaluate.cjs",
+      "bytes": 1503,
+      "sha256": "f5df25c22c02f4afcbf66a808c8037e0fcbcf84febd89c0a016c38eeb6467ada"
+    },
+    {
+      "path": "docs/product/documentation-coverage/article-record.schema.json",
+      "bytes": 6521,
+      "sha256": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21"
+    },
+    {
+      "path": "docs/product/documentation-coverage/retrieval-evaluation.schema.json",
+      "bytes": 1252,
+      "sha256": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242"
+    }
+  ]
+}

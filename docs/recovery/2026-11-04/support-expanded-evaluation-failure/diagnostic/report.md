@@ -1,0 +1,11 @@
+# Single authorized synthetic kernel-read diagnostic
+
+READY for independent evidence review. No test rerun or fix.
+
+Exact invocation: `sh /private/tmp/axiom-b5-offline-evidence/diagnostic/run.sh > /private/tmp/axiom-b5-offline-evidence/diagnostic/result.json 2> /private/tmp/axiom-b5-offline-evidence/diagnostic/runner-stderr.log`; captured runner exit0 in runner-exit.txt. Full script uses original outer env/profile unchanged, replacing only Node test target with owned synthetic diagnostic script. Worktree remains /private/tmp/axiom-b5-offline-20261104 at0000ae1ef9060460a03789481b15b82a6bef5c24, branchcodex/b5-expanded-offline-evidence; no source changes or commit.
+
+Actual tools.exec_command chunk9fbcc3 completed synchronously, shell exit0, no session handle. Exactly one inner spawnSync: fixed sandbox-exec→/bin/cat, env{}, timeout2000ms, maxBuffer1048577, encodingnull. Inner profile has identical unchanged core sandboxProfile semantics, only fresh owned synthetic root/filename substituted. No core import/article payload. Own synthetic file29bytes, cleanup completed in finally.
+
+Observed child status71/errorCodenull/signalnull, expected29bytes/actual0. Bounded stderr53bytes (limit512): sandbox-exec: sandbox_apply: Operation not permitted. Runner exit0 means diagnostic metadata capture succeeded, not child read success. This concretely demonstrates the nested reader child could not apply its sandbox under this exact outer setup. It does not independently prove every possible cause of the prior failed test, functioning containment outside nesting, full reader correctness or customer eligibility. No sandbox removed/relaxed and no retry performed.
+
+Original failed test log remains byte-identical. Dataset/implementation preservation manifests from first attempt remain intact. Scripts, outer/inner profiles, binary/runtime/OS/cache/package-manifest identities and results preserved here; sandbox-exec has no claimed semantic version, its exact binary SHA256 is recorded. No test/evaluator/data/metadata/trust-root/source edits, native909/private consumer, helper/Security/Keychain/provider/API/network/credential/AI operations. Stop after this diagnostic; next action requires root decision.
