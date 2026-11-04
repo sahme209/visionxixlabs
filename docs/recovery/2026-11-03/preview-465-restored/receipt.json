@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "465d4ef0946c312a8dd4764791ddecf8f511e1b5",
+  "reason": "prior localhost5210 connection refused; no listener at5210/5211",
+  "rebuilt": false,
+  "backendSession": 46695,
+  "proxySession": 44974,
+  "url": "http://127.0.0.1:5210/product",
+  "backendRoot": "/private/tmp/axiom-security-figure-build-465d4ef0-wvy83wwl/stage",
+  "loadedEnvFilesAbsent": true,
+  "ignoredEnvExamplePresent": true,
+  "backendNetworkOutboundDenied": true,
+  "backendFileWritesDenied": true,
+  "checks": {
+    "productGET": 200,
+    "productWorkflowPresent": true,
+    "authGET": 403,
+    "mutationPOST": 403,
+    "setsCookie": false,
+    "sourceHeader": "465d4ef0"
+  },
+  "browserVisualAcceptance": false,
+  "notNewerBackendSource": true,
+  "files": {
+    "/private/tmp/axiom-start-preview-465d4ef0.py": "dd92d6690417fb48bdea8f59866dc25b4381a33921a603cfbdfc8b6eb98070af",
+    "/private/tmp/axiom-interactive-preview-proxy-465d4ef0.py": "545c8f0fb6f9c92b1d864e791eb3711874cf612ec9782c64ee855cbfc828a0fe"
+  }
+}
