@@ -81,6 +81,18 @@
     {
       "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/SecBase.h",
       "sha256": "89fb27ba55c7139c7d3ca15054aa92380f897b6c95e36013efb740c8beb018c4"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/cssmtype.h",
+      "sha256": "647032d694ed3fd7aa394106ae1054f9ab384beb634f1f69efa2e4e094be4f56"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/cssmapple.h",
+      "sha256": "bfc789ab517801d43659f2b65fbd36fe69c7d935566994b83ba65173c4f2103c"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/cssmapi.h",
+      "sha256": "a34f84feaa56376657d0ff436756464a4d58962b7679dbcbb7b2c123e2b4fc3f"
     }
   ],
   "follow_on": "privileged-provisioning-writer-decision.md; same unchanged locally hashed API declarations, no external reads or API calls",
