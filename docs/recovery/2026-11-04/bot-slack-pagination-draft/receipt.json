@@ -1,0 +1,31 @@
+{
+  "status": "local real-composer rendered regression only",
+  "baselineCommit": "42889de2029c68c9fbb6bf5aaf27b09c2065b583",
+  "sources": [
+    {
+      "path": "desktop/src/components/BotConnectedActionsPanel.tsx",
+      "sha256": "3446982056b6ef5abecffc305a763ab7ee41acc4d2fb261dc2475a820522abac"
+    },
+    {
+      "path": "lib/desktop/__tests__/botConnectedActionsPanel.test.ts",
+      "sha256": "83495ba4ac8a58f5a8558c8a447d2e1de4331a368077dcf1d96cd2cfd0ca477f"
+    }
+  ],
+  "red": {
+    "failed": 2,
+    "passed": 7,
+    "exit": 1,
+    "cases": "Initial nine-case matrix on actual SlackNotificationPanel reproduced lost draft and lost renamed-channel draft."
+  },
+  "green": {
+    "passed": 12,
+    "failed": 0,
+    "exit": 0,
+    "cases": "Initial nine cases plus actual100-page bound, explicit deselection during pending read, and failed-page preservation."
+  },
+  "scope": "Current max100 server page plus at most one selected same-workspace/connection target. Fresh duplicate row wins; nonmember or changed boundary clears selection. Explicit full refresh continues to reset. No accumulated pages, extra automatic reads, mutation or retry.",
+  "realComposer": "SlackNotificationPanel is imported unmocked. Only desktopClient service methods and the unrelated non-Slack ConnectedActionsPanel are mocked. All notifications/approval/execution responses are local fixtures.",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache; file writes denied outside private temp directory",
+  "limits": "No native/provider/DB action, actual human approval, full build or runtime/customer acceptance. Server membership and exact approval authority remain separate."
+}

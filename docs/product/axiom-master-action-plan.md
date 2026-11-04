@@ -884,3 +884,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — finite Bot composer and launcher map
 
 ~~All11direct composer/action-launcher declarations have literal metadata and original-node/baseline validation~~ ([mapping](knowledge/bot-composer-action-bindings.md), [review](../recovery/2026-11-04/bot-composer-action-bindings/root-review.md)). Actual3RED/2passes became5ASTpasses; root verifies4manifesthashes and complete strippedGitbaseline for both files; separate review clear. Portal fields/providerbuttons are source families, not runtime/action identities. Native/media/editorial/customer/retrieval acceptance remain absent. All15parents remain open.
+
+## November4 — Slack channel pagination draft preservation
+
+~~Bot More channels preserves the real unsent message composer within the same verified workspace/connection~~ ([local evidence](../recovery/2026-11-04/bot-slack-pagination-draft/README.md)). Initial9-case RED2fail/7pass became12focused passes; desktoptypes and independent review pass. Bounded100-row page+1selection; fresh duplicate membership wins; changed scope/explicit refresh clears selection. No provider mutation/automatic retry or authority expansion; native/customer/session/publication acceptance remains unproven. All15parents remain open.

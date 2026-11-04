@@ -58,3 +58,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 Bot composer/action source map
 ~~11direct declarations bound~~,5ASTcontracts with actualRED; fulltwofileGitbaseline/hash/rootreview+independentreview pass. [Map](knowledge/bot-composer-action-bindings.md). No native/customer/media/editorial/retrieval qualification.
+
+### November4 Slack draft-loss repair
+~~Same-boundary More channels retains unsent real composer~~:12focused renderedcases, desktoptypes and independentreview pass. Scope/member invalidation and100+1bound verified with simulated service data; no provider mutation. [Evidence](../recovery/2026-11-04/bot-slack-pagination-draft/README.md). No native/customer/live qualification.
