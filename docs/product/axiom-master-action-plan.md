@@ -13,6 +13,10 @@ A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-targe
 
 ~~One full completed website/backend source snapshot deployed and HTTP/source-verified~~ ([receipt](../recovery/2026-11-04/combined-production-batch/COMPLETION.md)):READYdpl_9M9w,source d3e591b9,7971storedsource hashes,8public pages/3canonicalicons and app401 verified. Separately approved additive budget schema applied once with existing row hashes unchanged. Known old identity migration untouched. No paid GitHub CI/new desktop installer release, Governance enrollment or provider actions. Source/documents/receipts are included in the single authorized final private backup push. All15parent requirements remain open; local-only/support/customer/editorial/browser/native limits are preserved.
 
+## November 4 last-credit local quality batch
+
+~~Admin telemetry distinguishes pending/unknown cost from final zero~~ (40 focused mockedhandler/pure checks, scopedtypes) and ~~Docs active-page semantics corrected~~ (4 existing DOMinteraction checks) are independently reviewed and locally integrated ([bounded review](../recovery/2026-11-04/last-credit-local-batch/REVIEW.md)). No new deployment/push, realDBsnapshot/provider/browser/AT or fullGovernance acceptance. Currentproduction/remotebackup remain the prior authorized batch. Coreavailabilityaudit identifies custody/issuer/resource/channel/coverage gates and no substantive approved core implementation shortcut. All15parents remain open.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains

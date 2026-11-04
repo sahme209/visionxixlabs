@@ -1,0 +1,12 @@
+# Last-credit local repair batch
+
+Two finite existing-function repairs; no new feature authority, pricing calls or deployment.
+
+1. Docs navigation: exact active pathname now exposes aria-current=page. Existing title-filter/current-link interaction changed from styling-only lookup to accessible current-page lookup; observed RED1failed/3passed then GREEN4passed. Runtimeoneprop, destinations/filtering/styles unchanged. Sourceactor3210a04c integrated1a39e8ca. No browser/assistive-technology acceptance or freshbuild claimed.
+2. Admin pipeline telemetry: explicit recorded-cost metadata state (pending/unknown/final) and nullable final totals preserve zero versus uncertainty. Numeric cost fields remain recorded projections and adminallowlist remains unchanged. Run and whitelisted financial-marker reads share one RepeatableRead transaction; rawoutputDetail is not returned. Missing/malformed or active coding data stays unknown/pending; an active run cannot claim financial finality. Sourceactor49252ded/evidence8794a03c integratedca2cef41/b8effcbc. ActualGET mockedsession/Prisma plus purekernel40checks pass; scoped4roots/transitive types pass. These are not real PostgreSQL snapshot/ledger/provider or customer UI acceptance.
+
+A fresh independent reviewer read actual diffs/source/producer/tests with precise context (no inherited project history). No actionable findings in either repair; authority/DTO/privacy/parameterizedquery/snapshotcomposition/zero classification and exactpathname semantics checked. No passing suites rerun for review. Root compared all30source/test/rawreceipt files byte-for-byte against frozenactors, zero differences.
+
+Considered but outside these two repairs: actual PostgreSQL snapshot behavior; actual ledger/provider reconciliation and admission authority; browser/AT and broader accessibility coverage. These remain genuine program gates, not silently dropped requirements.
+
+Both repairs are LOCAL ONLY. The last authorized production source remainsd3e591b9/deploymentdpl_9M9w; the last remote backup remainsb80a85a9. No additional GitHubpush/Vercelbuild/paidCI/AI/provider/DB/native action. Paired apps/preview remain untouched. Save the final local commits and incremental recovery bundle; publishing needs a new specific authorization. FullGovernance remains blocked on real custody/issuer/resources/coverage, not solved by this batch; source-backed availability audit is ../core-enforcement-availability/AUDIT.md. All15masterparents remain open.
