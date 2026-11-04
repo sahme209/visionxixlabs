@@ -1,0 +1,12 @@
+# Unlaunched preview bundle archive preparation
+
+1. Outcome: turn the verified native debug artifact into a concrete reviewable local bundle archive, without installing or starting it.
+2. Owner/dependencies: root prepares standard plist/icon/executable layout and member hashes; help reviewed minimal currentTauri resources; adapter independently reviews. Standard plistlib/zipfile only, no dependency adoption.
+3. Baseline: HEAD06ba9e1a over runtime91651299; ARM64debug SHAfd3e51… current frontend embedded, not Developer-ID qualified. Existing old567plist is reference only. otool read-only output reports minOS11.0/system libraries plus weakSwiftConcurrency @rpath resolved by /usr/lib/swift; not runtime proof.
+4. Change/non-goals: create private generic bundle-layout directory, then zip members under Axiom Agent Local Preview.app. Current identifier/name/executable/version0.1.22/icon; minimum from actual binary rather than stale template. No old binary/signature/provisioning material, no app launch/registration, install, Tauri CLI, signing or publication. Preserve source native/service identifier; do not claim isolated pairing.
+5. Boundaries: local data packaging only. No credential/vault/provider/network/DB/OSservice or pending909 action. Same compiled identifier shares existing storage namespace; actual launch can migrate/delete legacy storage and requires separate safe-session/signature handling. Original artifact0600 and all existing apps/drafts unchanged.
+6. Acceptance: plist roundtrip/current config consistency; exact executable/icon digests; zip CRC/member paths/modes/hashes; no symlinks/traversal/stale signatures; retainedarchive0600. Record actual MachO/library metadata and inspect no nonsystem dylib paths requiring invented resources.
+7. Proof: static packaging/member verification and engineering review, not Gatekeeper/signature/nativeUI/dependency runtime/privacy/customer/Governance acceptance.
+8. Recovery: remove only owned layout/archive if desired; no external effect or installed app to undo. Do not open/extract-and-launch automatically.
+9. Spend/authority: $0 external, ordinary reversible local artifact preparation; no new operational, signingkey, credentials, providergrant or production exception.
+10. Evidence/next: store command/metadata/input/archive/member manifests and review; update board/derived views/local recovery. Any later sign/install/launch must establish exact existing authority, qualified provenance and preserve active sessions/drafts. All21parent gates remain open.

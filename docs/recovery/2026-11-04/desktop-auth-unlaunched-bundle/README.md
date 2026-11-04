@@ -1,0 +1,9 @@
+# Unlaunched local preview archive
+
+A concrete three-member review archive now contains the current verified ARM64 debug executable, current canonical icon and a current configuration-derived Info.plist. The executable SHAfd3e51… is unchanged from the offline native build. Zip CRC, every member hash/path/mode and plist roundtrip were checked. The final archive is retained as0600local data; its exact path and digest are in bundle-manifest.json. Staging used a generic bundle-layout directory, not an app opened or installed by this work.
+
+Metadata uses version0.1.22, the current executable/name/icon and the compiled identifier com.visionxixlabs.axiom. The old567plist was reference only; no old binary, signature or provisioning resource was copied. The actual binary declares minOS11.0, so the archive does not repeat the old template's10.15 value. This minimum/load-command observation is not runtime support qualification. Recorded dependencies are system paths and weak SwiftConcurrency through the recorded /usr/lib/swift rpath; actual dependency loading remains untested.
+
+The unchanged identifier deliberately shares the existing credential/deep-link namespace. It does not isolate or restore pairing. Normal startup can migrate/delete legacy storage and interact with existing app instances; this archive must not be opened as a routine static verification shortcut. Existing paired apps/drafts were untouched. No signing key, Tauri CLI bundler, installation, scheme/service registration request, launch, provider or vault action occurred. Developer-ID/Gatekeeper trust, native UI/current account, privacy behavior, installer publication and complete Governance remain open.
+
+This is an unlaunched local debug review artifact, not a published v0.1.22 installer or a substitute for protected human release approval. Static packaging review found no important issue within that limited scope.

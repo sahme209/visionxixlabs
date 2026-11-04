@@ -1,0 +1,39 @@
+{
+  "sourceHead": "06ba9e1a0c8f813c2a45401755b214e975a8d19b",
+  "layout": "/private/tmp/axiom-auth-bundle-s1r7fr0j/bundle-layout",
+  "archive": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/native-auth-91651299/Axiom-Agent-Local-Preview-91651299.unlaunched.zip",
+  "archiveMode": "0600",
+  "archiveSha256": "6b568f6c17a48e4986fe5315cb7f4b6909944ef2ab3806b6fe9c15bb0dab1596",
+  "members": [
+    {
+      "path": "Axiom Agent Local Preview.app/Contents/Info.plist",
+      "bytes": 1427,
+      "mode": "0o644",
+      "sha256": "a611a9266bc12efa53c87eb74cc1fabf95e590c7455cd8459371bdf42007285c"
+    },
+    {
+      "path": "Axiom Agent Local Preview.app/Contents/MacOS/axiom-desktop",
+      "bytes": 53613664,
+      "mode": "0o755",
+      "sha256": "fd3e51a064a3fb61a50f5a2aba3c7f650f2f295d8d9dca421e6789c61924a73c"
+    },
+    {
+      "path": "Axiom Agent Local Preview.app/Contents/Resources/icon.icns",
+      "bytes": 141670,
+      "mode": "0o644",
+      "sha256": "1d227b919c4bccbecbc60e6fb8891db148e9b3e97f54179aef6409c0bacd5f62"
+    }
+  ],
+  "binarySha256Preserved": "fd3e51a064a3fb61a50f5a2aba3c7f650f2f295d8d9dca421e6789c61924a73c",
+  "iconSha256": "1d227b919c4bccbecbc60e6fb8891db148e9b3e97f54179aef6409c0bacd5f62",
+  "plistMatchesCurrentConfig": true,
+  "declaredBinaryMinimumOS": "11.0",
+  "runtimeCompatibilityQualified": false,
+  "dependencyMetadata": "system paths plus weak SwiftConcurrency via /usr/lib/swift; runtime not exercised",
+  "zipCrcPathsModesAndReadbackVerified": true,
+  "oldSignatureOrProvisioningCopied": false,
+  "sameCompiledCredentialNamespace": "com.visionxixlabs.axiom",
+  "credentialIsolationClaim": false,
+  "requestedSigningInstallationRegistrationOrLaunch": false,
+  "nativeUIOrCustomerOrPublicationAcceptance": false
+}
