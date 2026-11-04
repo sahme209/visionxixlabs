@@ -1,0 +1,98 @@
+{
+  "status": "design-only-not-implementation-approved",
+  "sourceCommit": "6b337f5d29c0dc8ecc638adbf931642693a70b7b",
+  "sources": [
+    {
+      "path": "lib/workforce/pipelines/pipelineRunner.ts",
+      "sha256": "b6a2f38c6792d68786d74366e1fa3a02f0f033b6ca0a1560c81e6ca691c27b08"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeProposeRealExecutor.ts",
+      "sha256": "cd90726bbab4cfdfb705d94f9345dd5fdef6ae4f0fa56e5c6b4773e01e1f226f"
+    },
+    {
+      "path": "lib/workforce/pipelines/extractStageTelemetry.ts",
+      "sha256": "fab28ee2ad40d87f844178d1419bd7c7e59196993e893e851f65c840f3002a6d"
+    },
+    {
+      "path": "lib/workforce/pipelines/resolveRunBudgetCap.ts",
+      "sha256": "9c1a92dfad0b234d9b276812e0274a09a5f0aedbce10c4ad618dbfc416f37e77"
+    },
+    {
+      "path": "lib/workforce/pipelines/budgetConfigStore.ts",
+      "sha256": "d33e89f1de27fa554979b2b301445503422a97905423805eeebf6a1eb30e389f"
+    },
+    {
+      "path": "lib/workforce/pipelines/stageExecutorRegistry.ts",
+      "sha256": "fefcc69f94c69bd949d303dab46b4c8474b8679bcf27c29f446dd54a77e41c46"
+    },
+    {
+      "path": "lib/workforce/pipelines/codingStageExecutionClaim.ts",
+      "sha256": "735bc0fa9603680444314ee0b4ae63ad96caed2a17eee38933885034655f48e7"
+    },
+    {
+      "path": "lib/workforce/pipelines/codingDryRunExecutors.ts",
+      "sha256": "55605357bb023ebd76f3bb104f78d37c05c6ac08f46795575463f162cdb83fd7"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeReadRealExecutor.ts",
+      "sha256": "31a24fa915f159ee04b1e7625df6e98db0e9a6075c30d50c5085370fbb3857b7"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeLintRealExecutor.ts",
+      "sha256": "1e59899ab78ad234ba88b4286eba0875ea83125e8cee064661041f36be4c70c9"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeTestRealExecutor.ts",
+      "sha256": "2feed1636618b728967ef11d87af933a98815ce81a6e769e6b161a9fa311c20c"
+    },
+    {
+      "path": "lib/workforce/pipelines/codePrOpenRealExecutor.ts",
+      "sha256": "6c64ca5af602dc41971eb5f1de42228281e438e150405a4326e428b5e3238663"
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "b284bfdf36101a4c99ed6aa5c77d79de83d800814f4735e3882a7a74a7d9e72b"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "ad269c91278bc87f56210d3d0056854bd9cb9546a42ed673c66a92cf6381bda5"
+    },
+    {
+      "path": "lib/billing/requestReservationCents.ts",
+      "sha256": "2da0a4dffd8a92d655044421e6ea90ac1439924a521cab7b56a1d9b57f318281"
+    },
+    {
+      "path": "lib/billing/reconcileGatewayUsage.ts",
+      "sha256": "65efff13fdf74685a843489f85361d75ebce21944a1071be1c2f5244eacb4568"
+    },
+    {
+      "path": "lib/billing/smallSonnetRequest.ts",
+      "sha256": "d22ac387fb96e5549bd8c49bc46de1e3d28cae91f63cdb2576ec08e5d1757de0"
+    },
+    {
+      "path": "lib/billing/smallSonnet55Request.ts",
+      "sha256": "14050b1aeae6fbf68843a764883fadbb0c30297063456720489510464e34ac4d"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "4e35ea3c8645656dbdae19c1ee6427bf526d9b82527de6ef046048dcdb6e617a"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+      "sha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928"
+    },
+    {
+      "path": "lib/billing/publicCreditAuthority.ts",
+      "sha256": "643caa6e3d0dfd89e9e7a814444a4071306f3ff6901ba4f4d3a3ea584506d9c3"
+    },
+    {
+      "path": "lib/ai/effectiveGatewayModel.ts",
+      "sha256": "0d5e98ffb64197ae34546bfe81f7835f2468f9da7a737b0ccd5470c63ff11f3e"
+    },
+    {
+      "path": "lib/ai/inputByteBound.ts",
+      "sha256": "8f0c16847304a5b9a228923d3dcd69de8ec25219b3bd16dee02c52108cbdefab"
+    }
+  ]
+}
