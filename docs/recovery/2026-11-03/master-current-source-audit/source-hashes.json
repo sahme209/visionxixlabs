@@ -1,0 +1,12 @@
+{
+  "app/product/page.tsx": "62f9294c64e2703754733f9829e4d0d8e2ef6057dc90ef4ded246017ead70e21",
+  "app/security/page.tsx": "c449cb38d23eba652b7738f59dc6e8515167f6de4247de9e175e99468d736639",
+  "app/integrations/page.tsx": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce",
+  "app/docs/page.tsx": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+  "app/demo/page.tsx": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a",
+  "components/marketing/BotAiDataFlow.tsx": "ea2c279c7fe4ea42a3e9d6c86cd18ffdc266c254e4295090fd35987d1278a93b",
+  "components/marketing/WorkflowEvidenceMap.tsx": "f4ecd54f06113b71865e1e2cd4d1e29808bdf7e392a5e42a65dbd9a7b6bd9210",
+  "components/marketing/IntegrationCatalogBrowser.tsx": "f0a4bc146b4cdac20ac3e48862145bb6ac855652059d87f966b05c5296e36f41",
+  "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca",
+  "packages/verified-issuer-runtime/index.cjs": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4"
+}
