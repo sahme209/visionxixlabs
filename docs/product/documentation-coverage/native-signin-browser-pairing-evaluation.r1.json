@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.native-signin.browser-pairing",
+  "revision": 1,
+  "productVersion": "local-source-preview:c828ff9ee4d3181e8073398fb82adc489225c25e",
+  "articleSha256": "f2edf56d98fcf897b27abb5579282c96ac886ffb3d1d7a1760da9e7867363301",
+  "status": "proposed-not-executed",
+  "scope": "Proposed schema companion response criteria only; no retrieval/model execution or customer content authority.",
+  "cases": [
+    {
+      "id": "signin-pairing-http",
+      "question": "Browser says authorized. Is my identity saved on the desktop?",
+      "requiredResponse": "No. HTTP success can acknowledge existing approval; native metadata/service verification/durable selection and transport activation remain separate, unverified here.",
+      "requiredCitation": "axiom.help.native-signin.browser-pairing revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "signin-pairing-cancel",
+      "question": "Does browser Cancel revoke or stop approved pairing?",
+      "requiredResponse": "No. Link navigates home, no revoke/abort; native Cancel is offered before commit only, not undo persistence.",
+      "requiredCitation": "axiom.help.native-signin.browser-pairing revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "signin-pairing-account",
+      "question": "Does Use another account switch all paired desktops?",
+      "requiredResponse": "Browser handler switches browser only, preserves existing desktop sessions and cannot reassign already approved challenge; native account change is distinct.",
+      "requiredCitation": "axiom.help.native-signin.browser-pairing revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "signin-pairing-expiry",
+      "question": "Can old desktop poll with challenge only after426?",
+      "requiredResponse": "No. Device-bound fingerprint required; follow existing signed-installer/new-sign-in guidance. Expired/consumed/invalid challenge needs new explicit native attempt, not bypass.",
+      "requiredCitation": "axiom.help.native-signin.browser-pairing revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "signin-pairing-retry",
+      "question": "Does Retry saved sign-in create a new pairing?",
+      "requiredResponse": "No. Only unavailable verification recovery; verifies current selected saved credential without writing selection. Rejected/invalid/expired credentials need explicit sign-in.",
+      "requiredCitation": "axiom.help.native-signin.browser-pairing revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "signin-pairing-entitlement",
+      "question": "Identity verified means paid operations are enabled?",
+      "requiredResponse": "No. Current entitlement and each operation authority remain separate; account creation/billing navigation/browser return grant no access.",
+      "requiredCitation": "axiom.help.native-signin.browser-pairing revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "signin-pairing-storage",
+      "question": "Does this guide prove Keychain persistence on clean host?",
+      "requiredResponse": "No. Source-only draft with no native/OS/storage/restart/installer acceptance; memory outside Tauri is not durable proof. Never include passwords/keys/tokens/challenges.",
+      "requiredCitation": "axiom.help.native-signin.browser-pairing revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "signin-pairing-scope",
+      "question": "Can this answer all signup and MFA screens as approved customer help?",
+      "requiredResponse": "No. Finite mounted controls only, excludes full signup/password/reset/MFA/backends. Draft/internal/local-preview/null review/empty media; no customer authority or executed retrieval.",
+      "requiredCitation": "axiom.help.native-signin.browser-pairing revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

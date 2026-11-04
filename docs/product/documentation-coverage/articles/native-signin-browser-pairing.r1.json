@@ -1,0 +1,279 @@
+{
+  "schema": 1,
+  "id": "axiom.help.native-signin.browser-pairing",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Native sign-in and browser pairing: separate approval, saved identity and access",
+  "productVersion": "local-source-preview:c828ff9ee4d3181e8073398fb82adc489225c25e",
+  "screenIds": [
+    "proposed.axiom.screen.native-signin",
+    "proposed.axiom.screen.browser-desktop-pairing",
+    "proposed.axiom.screen.native-access-required"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.signin.continue-without-saved",
+    "proposed.axiom.control.signin.login",
+    "proposed.axiom.control.signin.create-account",
+    "proposed.axiom.control.signin.native-cancel",
+    "proposed.axiom.control.signin.saved-retry",
+    "proposed.axiom.control.signin.enterprise-recovery",
+    "proposed.axiom.control.signin.browser-continue",
+    "proposed.axiom.control.signin.browser-cancel",
+    "proposed.axiom.control.signin.browser-switch-account",
+    "proposed.axiom.control.signin.open-native",
+    "proposed.axiom.control.signin.check-access",
+    "proposed.axiom.control.signin.native-switch-account"
+  ],
+  "goal": "Navigate the finite native/browser sign-in controls without confusing HTTP approval, selected saved credentials, secure-storage persistence, entitlement or current operation authority.",
+  "prerequisites": [
+    "Internal source-only draft; A5 clean-host acceptance remains unfinished. Current installed-version/platform support, current service and entitlement require separate evidence.",
+    "Native handoff requires validated HTTPS service origin (loopback HTTP development exception only), exact connect origin/challenge/intent and stored device fingerprint. No credentials, passwords, live challenges, codes or tokens belong in this record.",
+    "Browser approval requires current signed-in user/organization and inspected pairing policy: valid nonplaceholder device fingerprint/label and active-session limit. Policy asks revoking an existing pairing at session cap, but no revocation control is documented here."
+  ],
+  "permissions": [
+    "Browser identity pairing, native candidate verification/durable selected credential and commercial entitlement are distinct; none supplies provider-wide approval/execution permission.",
+    "Native candidate verifies before committing credential plus selection in one vault value, then activates transport. Explicit selection prevents cross-identity fallback; selected missing/invalid/expired credential requires sign-in. Only installations lacking selection metadata retain legacy API-key-first compatibility.",
+    "Rejected identity locks transport/clears displayed identity but retains vault data; unavailable failures can expose saved retry. Current context/generation and cancellation guards discard stale results.",
+    "Source secureStorage delegates packaged calls to native commands; outside Tauri memory-only. This article does not invoke or qualify OS storage consent, Keychain, clean-host behavior or restart durability."
+  ],
+  "steps": [
+    {
+      "instruction": "During Opening secure sign-in\u2026, review any OS storage prompt. After15seconds Continue to sign in may appear; it aborts hydration and proceeds without saved identity.",
+      "effect": "read",
+      "expectedState": "Workspace stays locked; no embedded Keychain approval button. Verifying saved sign-in/Loading verified identity are checks, not fresh persistence acceptance."
+    },
+    {
+      "instruction": "Choose Log in or Create account for an explicit sign_in/sign_up browser handoff while idle and not checking a key.",
+      "effect": "propose",
+      "expectedState": "States show Opening secure browser\u2026, Waiting for browser approval\u2026, Saving secure sign-in\u2026 or Checking saved sign-in\u2026. No manual pairing-code input exists in this native view."
+    },
+    {
+      "instruction": "Use native Cancel while opening, waiting or retrying if offered.",
+      "effect": "recover",
+      "expectedState": "Aborts/reset idle before commit, not mounted during saving and committing guard refuses cancellation after persistence begins. Unmount aborts active controller; cancellation does not revoke remote approval or undo persistence already begun."
+    },
+    {
+      "instruction": "In the browser pairing page, review current browser email, device label, platform, app version and request expiry; approve only if this is your desktop.",
+      "effect": "read",
+      "expectedState": "Rows are read-only request metadata, not an independent physical-device guarantee. Missing/expired/consumed link shows Pairing link invalid and instructs a new native sign-in; no retry form."
+    },
+    {
+      "instruction": "Use Continue only after reviewing the device/current browser context. Connecting\u2026 disables competing Continue/account-switch.",
+      "effect": "propose",
+      "expectedState": "POST approval uses current authenticated browser user/organization and policy, guarded pending claim and session creation. HTTP success also covers an existing approved/consumed session, so it does not prove current account created/replaced original identity."
+    },
+    {
+      "instruction": "For account mismatch before approval, Use another account switches the browser sign-in using a validated same-challenge sign_in callback; review the device again after signing in.",
+      "effect": "recover",
+      "expectedState": "Existing paired desktops remain signed in; handler neither changes selected native identity nor revokes desktop sessions nor reassigns an already approved challenge. Browser Cancel links home even while busy; it does not abort dispatched approval or revoke challenge/session."
+    },
+    {
+      "instruction": "After Axiom Agent is authorized, return through the attempted deep link or Open Axiom Agent manual link.",
+      "effect": "read",
+      "expectedState": "Client shows this on HTTP success without specific response-body/native-state validation;450ms handoff attempt has no OS success/error observation. Browser success is not native identity-save success."
+    },
+    {
+      "instruction": "Let the installed app poll using challenge plus stored device fingerprint and verify the approved credential/session before durable selection.",
+      "effect": "read",
+      "expectedState": "Pending202continues; local10minute deadline expires; requests30second timeout/poll2seconds. Service origin and matching device remain required. Unknown/unapproved state never unlocks; no challenge-only completion."
+    },
+    {
+      "instruction": "Follow existing latest signed-installer/new-sign-in guidance for426desktop_update_required when device binding is missing. For expired/consumed/invalid challenges start a new native attempt.",
+      "effect": "recover",
+      "expectedState": "Wrong device403, missing challenge404, expired/inactive410, consumed/lost claim409, unavailable503 remain errors; no bypass or qualified upgrade success claimed."
+    },
+    {
+      "instruction": "If Retry saved sign-in is offered for an unavailable verification failure, use it to check the selected saved credential. Otherwise start an explicit new sign-in or authorized enterprise recovery.",
+      "effect": "recover",
+      "expectedState": "Retry rechecks current credential/durable selection/context and does not write a new selection. Rejected/invalid/expired credentials are not silently replaced by another stored identity. New pairing is distinct from saved-credential retry."
+    },
+    {
+      "instruction": "Only use Enterprise recovery sign-in / Workspace API key when an administrator has issued it. Keep the key out of support records; Use administrator key or Enter requires nonempty input and idle/nonchecking state.",
+      "effect": "propose",
+      "expectedState": "Candidate verification plus durable save must succeed before sign-in callback/input clearing. Password-type input/autocomplete off is not evidence of storage/OS acceptance. Recovery still needs approved entitlement."
+    },
+    {
+      "instruction": "On Identity verified/access-required, inspect workspace/billing status. Use Check access again to verify current credential; Request pilot access/Review access model or eligible Manage billing open separate browser flows.",
+      "effect": "read",
+      "expectedState": "Identity and entitlement differ; browser return/account creation/payment navigation is not operational permission. Billing destinations require HTTPS Stripe domain checks; no purchase/provisioning completion claim."
+    },
+    {
+      "instruction": "Use another account on native access-required when needed; it locks transport and saves signed_out selection before legacy cleanup. In Settings, Log out opens a confirmation dialog; Cancel closes it.",
+      "effect": "recover",
+      "expectedState": "Failed cleanup can report sign-out saved but older credentials remain. External workflows are not canceled. Settings identity rows are read-only; Hide email address affects local display only."
+    },
+    {
+      "instruction": "If preference save is unconfirmed, reopen Settings before changing it again. Inspect plan/usage separately using Refresh plan and usage and eligible billing controls.",
+      "effect": "recover",
+      "expectedState": "Preference editing is disabled while saving/unknown, prior UI values restored on save failure. Preferences/plan snapshots are not identity changes, execution approval or fresh purchase receipts."
+    }
+  ],
+  "expectedOutcome": "Identify which boundary and current explicit recovery control applies while keeping native identity, entitlement and uncertain storage/approval outcomes separate.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial accepted:false. Media accepted:false. Native accepted:false. Runtime accepted:false. Release accepted:false. Shipped accepted:false. Human review null; media empty; no authentic login/native/persistence/clean-host acceptance claimed.",
+    "All proposed. identifiers are authoring-only candidates, not installed runtime/help bindings. No ingestion, retrieval activation, customer approval, new capability or authority is created.",
+    "Historical native08400007 and browser7193de93 guides/manifests/reviews remain unchanged.25historic bindings deduplicate to22current code files plus6supporting records=28sources atc828ff9e. Source/hash identity is not semantic/runtime validation.",
+    "Scope excludes full browser sign-in/signup/account creation/password/reset/MFA/verification flows, all auth backends, identity providers/browser internals, complete revocation/account controls, billing completion and every Settings category.",
+    "HTTP success may acknowledge existing approved/consumed record. Account-switch callback is navigation-only; browser current email/device details do not prove native identity choice or current access.",
+    "No OS prompt/secure-storage denial acceptance, signed installer qualification, restart persistence, device/platform coverage or live pairing has been exercised. Existing update instructions are not proof an upgrade succeeded.",
+    "Fixture is proposed-not-executed response criteria only, no retrieval/model/AI evaluation. Source authoring does not certify security, entitlement, provider permission or current service availability."
+  ],
+  "recovery": [
+    "Invalid/expired/consumed challenge: return to Agent for a new explicit sign-in. Do not bypass device binding or infer challenge-only success;426requires existing signed-installer guidance/new attempt.",
+    "Browser account mismatch: explicit Use another account affects browser only, then review again; cannot replace an already approved challenge. Browser Cancel is navigation, not revocation/abort.",
+    "HTTP authorized/deep-link failure: Open Axiom Agent is manual fallback, then independently verify native selected identity/save. Do not treat HTTP/deep-link attempt as durable success.",
+    "Saved retry is only offered for unavailable verification; preserves selected identity, does not create pairing/write selection. Rejected/invalid/expired saved identity requires explicit sign-in rather than fallback.",
+    "Review legitimate OS prompt without sharing keys in support; no embedded Keychain button. Storage/save failure remains unconfirmed and requires displayed guidance, not unsupported persistence claims.",
+    "Current verified identity may still lack entitlement. Check access again or follow separate legitimate access/billing process; navigation/focus is not access grant.",
+    "Logout/account-change cleanup failure preserves signed_out selection but can leave older values. Retry legitimate cleanup when storage available; no external workflow rollback claim."
+  ],
+  "searchTerms": [
+    "Log in",
+    "Create account",
+    "Retry saved sign-in",
+    "Continue to sign in",
+    "Enterprise recovery sign-in",
+    "Use administrator key",
+    "Authorize Axiom Agent",
+    "Axiom Agent is authorized",
+    "Use another account",
+    "Open Axiom Agent",
+    "desktop_update_required",
+    "Check access again",
+    "Cancel"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/main.tsx",
+      "sha256": "10b26cd6b2ce8663fc858188546d7dc079ccce62726e2c9c3c3ce72c2abe98a4"
+    },
+    {
+      "path": "desktop/src/DesktopStartupGate.tsx",
+      "sha256": "287027d9a6cfd277191f2d9154c9c1b7e11feb8c3fd560a321ae8dd449fee697"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88"
+    },
+    {
+      "path": "desktop/src/views/DesktopSignInView.tsx",
+      "sha256": "2aee4c84ac43c916291f440afea94f2d3d2a24209c146cc69e2f236b8642d428"
+    },
+    {
+      "path": "desktop/src/views/DesktopAccessRequiredView.tsx",
+      "sha256": "f99cba1c0393acff7a85ceaafdc847378a448d8ad0f7011323f6a60506dde812"
+    },
+    {
+      "path": "desktop/src/lib/desktopPairing.ts",
+      "sha256": "9ad3be89fbd502548c8ba3c0f89819f761bebb236b49f93c305a9cbacd429776"
+    },
+    {
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229"
+    },
+    {
+      "path": "desktop/src/lib/credentialVerificationCoordinator.ts",
+      "sha256": "686b23af528b7c56875ed41f46ef920279ca193f9ebc58749ea3ebc80995ac30"
+    },
+    {
+      "path": "desktop/src/lib/apiKeyStore.ts",
+      "sha256": "595c1052a5fd75c10e82faa806f08bb22a85bf39efbe99a2869bbad2073a41ae"
+    },
+    {
+      "path": "desktop/src/lib/authSession.ts",
+      "sha256": "057a1e2aace64bae20bccf653a74381229ba75c34e218d8d6366cadd9a628079"
+    },
+    {
+      "path": "desktop/src/lib/secureStorage.ts",
+      "sha256": "05172821df0bc57f30213072de58eda9854ec26ae28fba6c2f81f1d5c13d59f8"
+    },
+    {
+      "path": "desktop/src/lib/preferences.ts",
+      "sha256": "fbcee4bbb8eb377c3f2f50c46d4908b57d46ea29d831f9936a02122666142a0f"
+    },
+    {
+      "path": "desktop/src/lib/desktopIdentityResponse.ts",
+      "sha256": "3c6854f418e4e057430c40c7d637cd24b696a024ee6215649c12fd62a242ead4"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029"
+    },
+    {
+      "path": "app/api/desktop/pair/status/route.ts",
+      "sha256": "37e506d11f2075b5ac2d085cf4de5427bc5c85921e006ce7afe62135edecbae4"
+    },
+    {
+      "path": "app/desktop/connect/page.tsx",
+      "sha256": "dc2f45b292875d74d6b4cf4f0e0cc44b0137a895e89d9769c0176a9094572521"
+    },
+    {
+      "path": "app/desktop/connect/PairDesktopClient.tsx",
+      "sha256": "34806d3d7220a587e9c51ff61373531eb462c2460d094ed27be314365c614224"
+    },
+    {
+      "path": "app/api/desktop/pair/start/route.ts",
+      "sha256": "ae66fd115976160c4da416146fcc46aebcbeb852d8940834d7977b2d4084a213"
+    },
+    {
+      "path": "app/api/desktop/pair/approve/route.ts",
+      "sha256": "e905953d33c955e08cc5f3eb2239796e3ff0ed994b520f227f013db488d963bd"
+    },
+    {
+      "path": "lib/auth/verificationCallback.ts",
+      "sha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230"
+    },
+    {
+      "path": "lib/desktop/desktopAuthPolicy.ts",
+      "sha256": "169861f10a34642d37788ae0632d67196347ae9140444468fd203d64ce843f45"
+    },
+    {
+      "path": "docs/product/knowledge/native-signin-and-access-controls.md",
+      "sha256": "a86b59423aabef856207f2609cca6ed430b268e551a1a88dfb688df159dedbad"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/native-signin-guide/source-bindings.json",
+      "sha256": "2c21d30b484e0ae240283f20977b809ab2e5f8eecad90f145bd3d9a3ce801c85"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/native-signin-guide/review.md",
+      "sha256": "895f610b11a1a6c65053f8f8707c7feaace5c2cadb095197a67103bd07741b95"
+    },
+    {
+      "path": "docs/product/knowledge/browser-desktop-pairing-controls.md",
+      "sha256": "2306bbc90732e563cb0ab25cf931f87192c1c9001bdbbc4e1f86d3c0c95b0228"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/browser-desktop-pairing-guide/source-bindings.json",
+      "sha256": "5c171b41f6fe09d03ab3dca557b3398f9a55dabe4cca770efb3a80fe1ffc4d01"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/browser-desktop-pairing-guide/review.md",
+      "sha256": "a6d32e788f212e71a7f37ed3f41e3af98eff908dd71e20c6922cd6759f379f9c"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/native-signin-and-access-controls.md",
+      "docs/recovery/2026-11-03/native-signin-guide/source-bindings.json",
+      "docs/recovery/2026-11-03/native-signin-guide/review.md",
+      "docs/product/knowledge/browser-desktop-pairing-controls.md",
+      "docs/recovery/2026-11-04/browser-desktop-pairing-guide/source-bindings.json",
+      "docs/recovery/2026-11-04/browser-desktop-pairing-guide/review.md"
+    ],
+    "verifiedVersion": "local-source-preview:c828ff9ee4d3181e8073398fb82adc489225c25e",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
