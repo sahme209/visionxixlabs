@@ -8,7 +8,7 @@ const names=['Repository context','Exact proposal','Independent review','Separat
 it('keeps five ordered concepts and deliberate selection connected to the explanation',()=>{
  render(createElement(WorkflowEvidenceMap));
  const list=screen.getByRole('list',{name:'Conceptual workflow'});
- expect(within(list).getAllByRole('heading')).toEqual(names.map(name=>within(list).getByRole('heading',{name,exact:true}))); 
+ expect(within(list).getAllByRole('heading')).toEqual(names.map(name=>within(list).getByRole('heading',{name})));
  const controls=within(list).getAllByRole('button');
  controls.forEach((button,index)=>{
   fireEvent.click(button);

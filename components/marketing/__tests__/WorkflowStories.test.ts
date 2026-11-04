@@ -28,7 +28,8 @@ it("keeps the linked approval documentation distinct from verified ECS execution
   expect(container.textContent).not.toContain("restores the prior definition if stabilization fails");
   expect(container.textContent).not.toContain("automatic rollback applies to the released ECS workflow");
   expect(screen.getByText(/The Agent cannot approve its own request/)).toBeDefined();
-  expect(screen.getByText(/A workspace administrator must approve the persisted proposal/)).toBeDefined();
+  expect(screen.getByText(/An authorized independent human reviewer must approve the exact persisted proposal\. Approval permission is distinct from execution permission\./)).toBeDefined();
+  expect(screen.getByText(/Separate requester execution is a local preview and is not production-activated\./)).toBeDefined();
 });
 
 it("links every story to working approval documentation without promising a retired full walkthrough", () => {

@@ -26,6 +26,7 @@ export function WorkflowEvidenceMap() {
   const controls = useRef<(HTMLButtonElement | null)[]>([]);
   const panelId = `${prefix}-record`;
   function navigate(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
     let next: number;
     switch (event.key) {
       case "ArrowRight": case "ArrowDown": next = (index + 1) % WORKFLOW.length; break;

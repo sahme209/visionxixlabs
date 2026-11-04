@@ -20,6 +20,7 @@ export function CinematicAxiomDemo({ variant = "section" }: { variant?: "section
   function choose(index: number) { setDecision(null); playback.choose(index); }
   function changeContext(key: keyof StoryContext, value: string) { setContext(current => ({ ...current, [key]: value })); setDecision(null); playback.reset(); }
   function keyboard(event: KeyboardEvent<HTMLDivElement>) {
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
     if (event.target instanceof HTMLSelectElement || event.target instanceof HTMLInputElement) return;
     if (event.key === "ArrowRight") { event.preventDefault(); choose(playback.index + 1); }
     if (event.key === "ArrowLeft") { event.preventDefault(); choose(playback.index - 1); }
