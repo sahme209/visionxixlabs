@@ -1,11 +1,11 @@
 {
   "format": "axiom.master-plan-reconciliation/1",
-  "recorded_at": "2026-11-04T22:45:47.620325+00:00",
+  "recorded_at": "2026-11-04T22:56:40.202215+00:00",
   "master_path": "docs/product/axiom-master-action-plan.md",
   "master_sha256": "322efc9625b7d54960fd5f355cadb8ef6fffd8984759df03e0354ddafb081e5f",
   "master_git_blob": "2406f253d93820e3cdd786c03c88c146141330f4",
   "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
-  "current_method": "New16line user execution-contract section fully read and exact insertion preserved; current unit packet required before runtime edit.",
+  "current_method": "New user execution contract exact insertion preserved; local context repair and derived reporting views verified, updated objective retains all21parents and no new operational authority.",
   "open_parents": [
     "A1",
     "A2",
@@ -71,6 +71,7 @@
   "execution_contract": {
     "evidence": "docs/recovery/2026-11-04/master-execution-contract-reconciliation/receipt.json",
     "scope": "execution/plan-quality acceptance, not new operations authority",
-    "views": "source-derived capability/dependency/brief/adoption views required; not yet complete"
+    "views": "Four source-derived reporting views implemented locally with5puretests, drift/local-link checks and independent review; classification is bounded reported evidence, not full capability/adoption qualification.",
+    "view_evidence": "docs/recovery/2026-11-04/master-execution-contract-reconciliation/plan-views/root-final-receipt.json"
   }
 }
