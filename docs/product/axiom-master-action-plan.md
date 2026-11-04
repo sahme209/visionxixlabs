@@ -662,3 +662,11 @@ One structured [nested repository-control draft](documentation-coverage/articles
 ## November3 — concrete in-memory qualification packet prepared
 
 Actual helper compiled and independent source/metadata review passed; exact14 source/artifact bindings independently matched. [Execution instruction](../recovery/2026-11-03/compiled-consumer-authority-bridge/in-memory-policy-qualification-execution-instruction.md) identifies packet909cbd48/helper098736e9/controller6c4ca381. It is a one-shot framework-serialization test, not Keychain custody/installed identity or the original compiled-consumer gate. No actual Security API execution has occurred. A specific one-run approval is pending; do not infer consent or repeat the prompt. The failed circular packet proposal and corrected source/test/compile history remain preserved. Outlook documentation is an internal source draft only; no provider/status reads or native interaction occurred.
+
+
+## November3 — exact privacy build and native sign-in source guide
+
+- [x] B4 bounded source documentation: mounted native sign-in/access controls and16exact source/range bindings independently reviewed. Internal only; A5 install/session and customer documentation acceptance remain open. See knowledge/native-signin-and-access-controls.md.
+- [x] B6 bounded offline build: source08400007 preparation/generation/production outputs verified; no execution authorization, deployment or browser/native acceptance. See ../recovery/2026-11-03/privacy-batch-production-build/README.md. Existing769preview retained.
+
+All A1–A9/B1–B6 parents remain open. Pending exact Governance experiment approval and browser availability remain separate; no permission inferred.

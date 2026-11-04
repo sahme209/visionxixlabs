@@ -1,0 +1,164 @@
+{
+  "status": "frozen-READY-internal-source-draft",
+  "baselineCommit": "08400007deba2b24bb11b754e6658bfabe304b66",
+  "customerEligible": false,
+  "runtimeAccepted": false,
+  "mediaAccepted": false,
+  "editorialAccepted": false,
+  "releaseAccepted": false,
+  "cleanHostA5Acceptance": "UNFINISHED",
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false,
+  "guide": {
+    "path": "docs/product/knowledge/native-signin-and-access-controls.md",
+    "sha256": "a86b59423aabef856207f2609cca6ed430b268e551a1a88dfb688df159dedbad"
+  },
+  "rangeConvention": "inclusive 1-based raw lines retaining newlines",
+  "sources": [
+    {
+      "path": "desktop/src/main.tsx",
+      "wholeFileSha256": "10b26cd6b2ce8663fc858188546d7dc079ccce62726e2c9c3c3ce72c2abe98a4",
+      "range": {
+        "startLine": 1,
+        "endLine": 15,
+        "sha256": "10b26cd6b2ce8663fc858188546d7dc079ccce62726e2c9c3c3ce72c2abe98a4"
+      }
+    },
+    {
+      "path": "desktop/src/DesktopStartupGate.tsx",
+      "wholeFileSha256": "287027d9a6cfd277191f2d9154c9c1b7e11feb8c3fd560a321ae8dd449fee697",
+      "range": {
+        "startLine": 1,
+        "endLine": 30,
+        "sha256": "287027d9a6cfd277191f2d9154c9c1b7e11feb8c3fd560a321ae8dd449fee697"
+      }
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "range": {
+        "startLine": 44,
+        "endLine": 120,
+        "sha256": "16bd08dacfd6d28f97f298a13c181fa5b92f2cb42c5f27345b2f21b883a85353"
+      }
+    },
+    {
+      "path": "desktop/src/views/DesktopSignInView.tsx",
+      "wholeFileSha256": "2aee4c84ac43c916291f440afea94f2d3d2a24209c146cc69e2f236b8642d428",
+      "range": {
+        "startLine": 1,
+        "endLine": 157,
+        "sha256": "2aee4c84ac43c916291f440afea94f2d3d2a24209c146cc69e2f236b8642d428"
+      }
+    },
+    {
+      "path": "desktop/src/views/DesktopAccessRequiredView.tsx",
+      "wholeFileSha256": "f99cba1c0393acff7a85ceaafdc847378a448d8ad0f7011323f6a60506dde812",
+      "range": {
+        "startLine": 1,
+        "endLine": 126,
+        "sha256": "f99cba1c0393acff7a85ceaafdc847378a448d8ad0f7011323f6a60506dde812"
+      }
+    },
+    {
+      "path": "desktop/src/lib/desktopPairing.ts",
+      "wholeFileSha256": "9ad3be89fbd502548c8ba3c0f89819f761bebb236b49f93c305a9cbacd429776",
+      "range": {
+        "startLine": 1,
+        "endLine": 166,
+        "sha256": "9ad3be89fbd502548c8ba3c0f89819f761bebb236b49f93c305a9cbacd429776"
+      }
+    },
+    {
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "wholeFileSha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229",
+      "range": {
+        "startLine": 1,
+        "endLine": 150,
+        "sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229"
+      }
+    },
+    {
+      "path": "desktop/src/lib/credentialVerificationCoordinator.ts",
+      "wholeFileSha256": "686b23af528b7c56875ed41f46ef920279ca193f9ebc58749ea3ebc80995ac30",
+      "range": {
+        "startLine": 1,
+        "endLine": 41,
+        "sha256": "686b23af528b7c56875ed41f46ef920279ca193f9ebc58749ea3ebc80995ac30"
+      }
+    },
+    {
+      "path": "desktop/src/lib/apiKeyStore.ts",
+      "wholeFileSha256": "595c1052a5fd75c10e82faa806f08bb22a85bf39efbe99a2869bbad2073a41ae",
+      "range": {
+        "startLine": 1,
+        "endLine": 64,
+        "sha256": "595c1052a5fd75c10e82faa806f08bb22a85bf39efbe99a2869bbad2073a41ae"
+      }
+    },
+    {
+      "path": "desktop/src/lib/authSession.ts",
+      "wholeFileSha256": "057a1e2aace64bae20bccf653a74381229ba75c34e218d8d6366cadd9a628079",
+      "range": {
+        "startLine": 1,
+        "endLine": 70,
+        "sha256": "057a1e2aace64bae20bccf653a74381229ba75c34e218d8d6366cadd9a628079"
+      }
+    },
+    {
+      "path": "desktop/src/lib/secureStorage.ts",
+      "wholeFileSha256": "05172821df0bc57f30213072de58eda9854ec26ae28fba6c2f81f1d5c13d59f8",
+      "range": {
+        "startLine": 1,
+        "endLine": 42,
+        "sha256": "05172821df0bc57f30213072de58eda9854ec26ae28fba6c2f81f1d5c13d59f8"
+      }
+    },
+    {
+      "path": "desktop/src/lib/preferences.ts",
+      "wholeFileSha256": "fbcee4bbb8eb377c3f2f50c46d4908b57d46ea29d831f9936a02122666142a0f",
+      "range": {
+        "startLine": 1,
+        "endLine": 66,
+        "sha256": "fbcee4bbb8eb377c3f2f50c46d4908b57d46ea29d831f9936a02122666142a0f"
+      }
+    },
+    {
+      "path": "desktop/src/lib/desktopIdentityResponse.ts",
+      "wholeFileSha256": "3c6854f418e4e057430c40c7d637cd24b696a024ee6215649c12fd62a242ead4",
+      "range": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "3c6854f418e4e057430c40c7d637cd24b696a024ee6215649c12fd62a242ead4"
+      }
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "range": {
+        "startLine": 638,
+        "endLine": 682,
+        "sha256": "acc9d0db676b8e65d35590050ea1f433624b655a4d10fdb4b4e53e24d3969fdd"
+      }
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "wholeFileSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "range": {
+        "startLine": 112,
+        "endLine": 380,
+        "sha256": "c445abb67148f20fabc99d1a6947f76fcfa4967c14c8be70d3cc79f939199644"
+      }
+    },
+    {
+      "path": "app/api/desktop/pair/status/route.ts",
+      "wholeFileSha256": "37e506d11f2075b5ac2d085cf4de5427bc5c85921e006ce7afe62135edecbae4",
+      "range": {
+        "startLine": 1,
+        "endLine": 88,
+        "sha256": "37e506d11f2075b5ac2d085cf4de5427bc5c85921e006ce7afe62135edecbae4"
+      }
+    }
+  ],
+  "scope": "Finite mounted native sign-in/access and account/preferences direct source boundaries only; no runtime qualification"
+}
