@@ -1,0 +1,13 @@
+✔ finite unpublished inventory specifies one complete source file and 29 unique control declarations (0.995625ms)
+✔ independently enumerates every intrinsic control and binds exact original JSX nodes (18.736083ms)
+✔ registered metadata stripping preserves the exact requalified functional baseline and raw source custody (2.160958ms)
+✔ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (36.247959ms)
+✔ rejects new unbound controls, display metadata, cross-function and outside-function bindings (16.785125ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 172.585167

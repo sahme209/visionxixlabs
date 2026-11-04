@@ -2,7 +2,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const inventory=require('./releases-workspace-bindings.json'),root=path.resolve(__dirname,'../../..');
 const sources=Object.fromEntries(inventory.files.map(f=>[f.source,fs.readFileSync(path.join(root,f.source),'utf8')]));
 const sha=text=>crypto.createHash('sha256').update(text).digest('hex');
-const strip=text=>text.replace(/ data-help-id="(?:releases\.workspace)\.[a-z-]+"/g,'');
+const registeredAttributes=inventory.controls.map(c=>' data-help-id="'+c.helpId+'"');
+const strip=text=>registeredAttributes.reduce((current,attr)=>current.split(attr).join(''),text);
 const tags=['button','input','select','textarea','summary','a'];
 function issues(texts){
  const errors=[],found=new Map();let total=0;
@@ -41,8 +42,12 @@ test('finite unpublished inventory specifies one complete source file and 29 uni
  const headings=new Set(fs.readFileSync(path.join(root,inventory.guide),'utf8').split('\n').filter(line=>/^#{2,3} /.test(line)).map(line=>line.replace(/^#{2,3} /,'')));for(const c of inventory.controls)assert(headings.has(c.guideSection));
 });
 test('independently enumerates every intrinsic control and binds exact original JSX nodes',()=>assert.deepEqual(issues(sources),[]));
-test('stripping only inserted attributes restores every complete baseline source file',()=>{
- for(const f of inventory.files)assert.equal(sha(strip(sources[f.source])),f.baselineSha256,f.source);
+test('registered metadata stripping preserves the exact requalified functional baseline and raw source custody',()=>{
+ assert.equal(inventory.baselineDerivation.method,'strip registered metadata from functional source commit');assert.equal(inventory.baselineDerivation.metadataAlreadyPresent,true);assert.equal(inventory.baselineDerivation.registeredAttributeCount,29);assert.equal(inventory.baselineDerivation.sourceCommit,inventory.baselineCommit);
+ assert.equal(inventory.metadataOrigin.unboundSourceCommit,'88e937510aeaf7d547a75227a1187d2bd60edc15');assert.equal(inventory.metadataOrigin.mappingCommit,'f182d990e0e78555e8597705189507724a617221');
+ for(const f of inventory.files){assert.equal(sha(sources[f.source]),f.functionalSourceSha256);assert.equal(f.functionalSourceSha256,inventory.baselineDerivation.rawSourceSha256);assert.equal(sha(strip(sources[f.source])),f.baselineSha256,f.source);assert.equal(f.baselineSha256,inventory.baselineDerivation.strippedSourceSha256);
+ const guard='if (submissionFlight.current || !intakeMounted.current) return;';assert(sources[f.source].includes(guard));assert.notEqual(sha(strip(sources[f.source].replace(guard,'if (false) return;'))),f.baselineSha256);
+ }
 });
 test('rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata',()=>{
  const file='desktop/src/views/DeploymentRequestsView.tsx',attr='data-help-id="releases.workspace.closure-reference"',mutate=text=>({...sources,[file]:text}),source=sources[file];

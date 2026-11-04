@@ -1,0 +1,41 @@
+{
+  "baselineCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "sourceSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
+  "runtimeEqualsRawGitBaseline": true,
+  "existingRuntimeHelpAttributes": 29,
+  "fieldCallsites": 52,
+  "all52SourceIdsPurposesNodeHashesUnchanged": true,
+  "staleAfterPendingFix": {
+    "failed": 2,
+    "passed": 3,
+    "log": "stale-after-pending-fix.log"
+  },
+  "requalifiedGreen": {
+    "passed": 5,
+    "failed": 0,
+    "log": "requalified-green.log"
+  },
+  "originalIncompleteInventoryTdd": "Historical RED2fail3pass\u2192GREEN5/5 retained under superseded-pre-pending-fix; not acceptance of current source.",
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.json",
+      "sha256": "13a717644029417818b10db1961b8870504d6b67fea1cb505370557f0d79ef8b"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.md",
+      "sha256": "3f29ffaba6e436a325a995da4600a0e24df4182af0a3e2e1e28acb32afd69c34"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
+      "sha256": "6ce2df63323e73865b4a0592c3f994447cb99cb421de9e4d1736e15b132488eb"
+    }
+  ],
+  "cjsSha256": "6ce2df63323e73865b4a0592c3f994447cb99cb421de9e4d1736e15b132488eb",
+  "scope": "Documentation-only requalification. Current pending fieldset and guards accurately described; no runtime integration.",
+  "network": "kernel denied; scrubbed environment/private-only writes",
+  "limits": "No runtime edits, behavioral/native/browser/provider/DB/media/editorial/customer evidence or test registry edits."
+}

@@ -1,0 +1,38 @@
+{
+  "baselineCommit": "df3609b9c61d80f3f93be34db09930da649d24ed",
+  "sourceSha256": "4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31",
+  "runtimeEqualsGitBaseline": true,
+  "existingRuntimeHelpAttributes": 29,
+  "fieldCallsites": 52,
+  "red": {
+    "failed": 2,
+    "passed": 3,
+    "exit": 1
+  },
+  "green": {
+    "passed": 5,
+    "failed": 0,
+    "exit": 0
+  },
+  "sourceFiles": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.json",
+      "sha256": "d6ee5bb85d9c8a9892d403168c1d3117803fc58b7f6eee60d94fddc918127458"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.md",
+      "sha256": "911b869dadc884a28802d75edf7b7a674e85702e293c5624096069843325ce16"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
+      "sha256": "f0861a24fec7a37a16c754b2a0f30abf7c4fd141ddc1d69c0216aa5a59a20050"
+    }
+  ],
+  "scope": "Documentation-only source-callsite records; no runtime metadata or integration. Required-prop, step presence, final service validation separated.",
+  "network": "kernel denied; scrubbed environment and private-only writes",
+  "limits": "No behavioral/native/browser/provider/DB/media/editorial/customer evidence."
+}

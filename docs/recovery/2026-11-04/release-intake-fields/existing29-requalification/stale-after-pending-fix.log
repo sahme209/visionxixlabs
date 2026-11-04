@@ -1,0 +1,38 @@
+✔ finite unpublished inventory specifies one complete source file and 29 unique control declarations (0.735916ms)
+✔ independently enumerates every intrinsic control and binds exact original JSX nodes (20.166792ms)
+✖ stripping only inserted attributes restores every complete baseline source file (0.532708ms)
+✔ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (33.717792ms)
+✔ rejects new unbound controls, display metadata, cross-function and outside-function bindings (16.084125ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 167.457417
+
+✖ failing tests:
+
+test at docs/product/knowledge/releases-workspace-bindings.test.cjs:44:1
+✖ stripping only inserted attributes restores every complete baseline source file (0.532708ms)
+  AssertionError [ERR_ASSERTION]: desktop/src/views/DeploymentRequestsView.tsx
+  + actual - expected
+  
+  + '514fd74af81c6bf7d1edac75fb971444c8047474c65acac152a82aa947d9cb61'
+  - 'a8b0f8f100ca14729a1e6c60a4967c43b3c972e9bf3ae605604a5d14dd94ad42'
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/releases-workspace-bindings.test.cjs:45:40)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '514fd74af81c6bf7d1edac75fb971444c8047474c65acac152a82aa947d9cb61',
+    expected: 'a8b0f8f100ca14729a1e6c60a4967c43b3c972e9bf3ae605604a5d14dd94ad42',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

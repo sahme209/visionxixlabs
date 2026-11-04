@@ -1,0 +1,114 @@
+✔ source-only inventory describes all 52 named callsites with finite helper counts and real guide headings (0.744ms)
+✖ independently discovers every actual named helper callsite and verifies exact props and enclosing conditions (19.350208ms)
+✖ source custody and constraint/recovery function references bind actual unchanged source bytes (0.206208ms)
+✔ rejects changed label, value, update, required flag, condition and declared options (32.71025ms)
+✔ rejects incomplete/duplicate/unknown/swapped records and an extra actual field callsite (21.409083ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 3
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 169.526084
+
+✖ failing tests:
+
+test at docs/product/knowledge/releases-intake-bindings.test.cjs:32:1
+✖ independently discovers every actual named helper callsite and verifies exact props and enclosing conditions (19.350208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'source locator drift releases.intake.title',
+  +   'source locator drift releases.intake.request-class',
+  +   'source locator drift releases.intake.ad-hoc-reason',
+  +   'source locator drift releases.intake.ad-hoc-priority',
+  +   'source locator drift releases.intake.business-impact',
+  +   'source locator drift releases.intake.schedule-exception-reason',
+  +   'source locator drift releases.intake.window-start',
+  +   'source locator drift releases.intake.window-end',
+  +   'source locator drift releases.intake.display-time-zone',
+  +   'source locator drift releases.intake.change-type',
+  +   'source locator drift releases.intake.applications',
+  +   'source locator drift releases.intake.clients',
+  +   'source locator drift releases.intake.deployment-contact',
+  +   'source locator drift releases.intake.application-contact',
+  +   'source locator drift releases.intake.escalation-contact',
+  +   'source locator drift releases.intake.repository-urls',
+  +   'source locator drift releases.intake.no-pr-required',
+  +   'source locator drift releases.intake.production-pr-urls',
+  +   'source locator drift releases.intake.pr-approval-status',
+  +   'source locator drift releases.intake.source-branch',
+  +   'source locator drift releases.intake.target-branch',
+  +   'source locator drift releases.intake.deployment-method',
+  +   'source locator drift releases.intake.workflow-name',
+  +   'source locator drift releases.intake.target-environment',
+  +   'source locator drift releases.intake.workflow-ref',
+  +   'source locator drift releases.intake.manual-instruction',
+  +   'source locator drift releases.intake.manual-owner',
+  +   'source locator drift releases.intake.manual-validation-instruction',
+  +   'source locator drift releases.intake.lower-environments',
+  +   'source locator drift releases.intake.development-ready',
+  +   'source locator drift releases.intake.production-ready',
+  +   'source locator drift releases.intake.validation-instruction',
+  +   'source locator drift releases.intake.validation-owner',
+  +   'source locator drift releases.intake.functional-validation-required',
+  +   'source locator drift releases.intake.functional-validation-instruction',
+  +   'source locator drift releases.intake.functional-validation-owner',
+  +   'source locator drift releases.intake.expected-production-result',
+  +   'source locator drift releases.intake.deferred-validation',
+  +   'source locator drift releases.intake.deferred-reason',
+  +   'source locator drift releases.intake.deferred-trigger',
+  +   'source locator drift releases.intake.deferred-date',
+  +   'source locator drift releases.intake.deferred-owner',
+  +   'source locator drift releases.intake.monitoring-plan',
+  +   'source locator drift releases.intake.rollback-availability',
+  +   'source locator drift releases.intake.rollback-instruction',
+  +   'source locator drift releases.intake.rollback-owner',
+  +   'source locator drift releases.intake.backup-required',
+  +   'source locator drift releases.intake.backup-evidence-ids',
+  +   'source locator drift releases.intake.change-creation-method',
+  +   'source locator drift releases.intake.confirmed-fact',
+  +   'source locator drift releases.intake.source-evidence-id',
+  +   'source locator drift releases.intake.fact-confirmed-by'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/releases-intake-bindings.test.cjs:32:128)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'source locator drift releases.intake.title', 'source locator drift releases.intake.request-class', 'source locator drift releases.intake.ad-hoc-reason', 'source locator drift releases.intake.ad-hoc-priority', 'source locator drift releases.intake.business-impact', 'source locator drift releases.intake.schedule-exception-reason', 'source locator drift releases.intake.window-start', 'source locator drift releases.intake.window-end', 'source locator drift releases.intake.display-time-zone', 'source locator drift releases.intake.change-type', 'source locator drift releases.intake.applications', 'source locator drift releases.intake.clients', 'source locator drift releases.intake.deployment-contact', 'source locator drift releases.intake.application-contact', 'source locator drift releases.intake.escalation-contact', 'source locator drift releases.intake.repository-urls', 'source locator drift releases.intake.no-pr-required', 'source locator drift releases.intake.production-pr-urls', 'source locator drift releases.intake.pr-approval-status', 'source locator drift releases.intake.source-branch', 'source locator drift releases.intake.target-branch', 'source locator drift releases.intake.deployment-method', 'source locator drift releases.intake.workflow-name', 'source locator drift releases.intake.target-environment', 'source locator drift releases.intake.workflow-ref', 'source locator drift releases.intake.manual-instruction', 'source locator drift releases.intake.manual-owner', 'source locator drift releases.intake.manual-validation-instruction', 'source locator drift releases.intake.lower-environments', 'source locator drift releases.intake.development-ready', 'source locator drift releases.intake.production-ready', 'source locator drift releases.intake.validation-instruction', 'source locator drift releases.intake.validation-owner', 'source locator drift releases.intake.functional-validation-required', 'source locator drift releases.intake.functional-validation-instruction', 'source locator drift releases.intake.functional-validation-owner', 'source locator drift releases.intake.expected-production-result', 'source locator drift releases.intake.deferred-validation', 'source locator drift releases.intake.deferred-reason', 'source locator drift releases.intake.deferred-trigger', 'source locator drift releases.intake.deferred-date', 'source locator drift releases.intake.deferred-owner', 'source locator drift releases.intake.monitoring-plan', 'source locator drift releases.intake.rollback-availability', 'source locator drift releases.intake.rollback-instruction', 'source locator drift releases.intake.rollback-owner', 'source locator drift releases.intake.backup-required', 'source locator drift releases.intake.backup-evidence-ids', 'source locator drift releases.intake.change-creation-method', 'source locator drift releases.intake.confirmed-fact', 'source locator drift releases.intake.source-evidence-id', 'source locator drift releases.intake.fact-confirmed-by' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/releases-intake-bindings.test.cjs:33:1
+✖ source custody and constraint/recovery function references bind actual unchanged source bytes (0.206208ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870'
+  - '4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31'
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/releases-intake-bindings.test.cjs:34:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870',
+    expected: '4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

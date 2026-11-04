@@ -1,0 +1,31 @@
+{
+  "functionalSourceCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "baselineDerivation": {
+    "method": "strip registered metadata from functional source commit",
+    "sourceCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+    "metadataAlreadyPresent": true,
+    "registeredAttributeCount": 29,
+    "rawSourceSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
+    "strippedSourceSha256": "514fd74af81c6bf7d1edac75fb971444c8047474c65acac152a82aa947d9cb61"
+  },
+  "rawCurrentEqualsRawGitFunctionalSource": true,
+  "metadataOrigin": {
+    "unboundSourceCommit": "88e937510aeaf7d547a75227a1187d2bd60edc15",
+    "unboundSourceSha256": "a8b0f8f100ca14729a1e6c60a4967c43b3c972e9bf3ae605604a5d14dd94ad42",
+    "mappingCommit": "f182d990e0e78555e8597705189507724a617221",
+    "mappedSourceSha256": "4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31",
+    "originalNodeHashesPreserved": true
+  },
+  "all29OriginalIdsAndNodeHashesUnchanged": true,
+  "noRuntimeEdits": true,
+  "staleContracts": {
+    "failed": 1,
+    "passed": 4
+  },
+  "currentContracts": {
+    "passed": 5,
+    "failed": 0
+  },
+  "cjsSha256": "2594a07ce1ebbb8ec2d1eeca6fc625ce7c29432ce5a89a5049f9d075bbb3cca0",
+  "network": "kernel denied; scrubbed/private-only test writes"
+}

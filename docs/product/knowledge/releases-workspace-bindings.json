@@ -3,14 +3,14 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "88e937510aeaf7d547a75227a1187d2bd60edc15",
+  "baselineCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
   "guide": "docs/product/knowledge/releases-workspace-controls.md",
   "declarations": 29,
   "countMethod": "All intrinsic button/input/select/textarea/summary/a in the complete DeploymentRequestsView.tsx, including local helper declarations; mapped instances repeat family metadata, custom/imported internals excluded.",
   "files": [
     {
       "source": "desktop/src/views/DeploymentRequestsView.tsx",
-      "baselineSha256": "a8b0f8f100ca14729a1e6c60a4967c43b3c972e9bf3ae605604a5d14dd94ad42",
+      "baselineSha256": "514fd74af81c6bf7d1edac75fb971444c8047474c65acac152a82aa947d9cb61",
       "declarations": 29,
       "tagCounts": {
         "button": 19,
@@ -18,7 +18,8 @@
         "select": 1,
         "textarea": 1,
         "summary": 4
-      }
+      },
+      "functionalSourceSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870"
     }
   ],
   "unbound": [
@@ -86,7 +87,7 @@
       "sourceFunction": "DeploymentRequestsView",
       "tag": "button",
       "guideSection": "Create or complete a request",
-      "anchor": "<button type=\"button\" className=\"btn-primary\" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? \"Opening…\" : \"Complete release detail",
+      "anchor": "<button type=\"button\" className=\"btn-primary\" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? \"Opening\u2026\" : \"Complete release detail",
       "nodeSha256": "a37401ca68bde1558babcbb9b8df2235259ac2620166da030dbe1dbf013c25ce"
     },
     {
@@ -194,7 +195,7 @@
       "sourceFunction": "DeploymentRequestsView",
       "tag": "button",
       "guideSection": "Tickets and recording an external outcome",
-      "anchor": "<button type=\"button\" disabled={closingBusy} onClick={() => void closeRequest(request)} className=\"btn-primary disabled:opacity-50\">{closingBusy ? \"Recording…\" : \"Record closure\"}</button>",
+      "anchor": "<button type=\"button\" disabled={closingBusy} onClick={() => void closeRequest(request)} className=\"btn-primary disabled:opacity-50\">{closingBusy ? \"Recording\u2026\" : \"Record closure\"}</button>",
       "nodeSha256": "d11d2acee7b06be8a6cf2482ba02ff5203577f4999abe3a768fbcc8e0d01d508"
     },
     {
@@ -257,7 +258,7 @@
       "sourceFunction": "DeploymentIntakeForm",
       "tag": "button",
       "guideSection": "Create or complete a request",
-      "anchor": "<button key=\"submit-request\" type=\"submit\" disabled={submitting} className=\"btn-primary disabled:opacity-50\"> {submitting ? (completingResolutionDraft ? \"Submitting…\" : revision ? \"Saving revision…\" : \"Submitti",
+      "anchor": "<button key=\"submit-request\" type=\"submit\" disabled={submitting} className=\"btn-primary disabled:opacity-50\"> {submitting ? (completingResolutionDraft ? \"Submitting\u2026\" : revision ? \"Saving revision\u2026\" : \"Submitti",
       "nodeSha256": "3e1ca035efe9b18a2ff372f202d120d22484ab015a1c2a911d642e4dd63b6098"
     },
     {
@@ -296,5 +297,20 @@
       "anchor": "<input type=\"checkbox\" checked={checked} onChange={(event) => onChange(event.target.checked)} />",
       "nodeSha256": "b8988d4bf7c3b1a128149c3e9be486928c236c40471ac8f99a500431b90bf6bb"
     }
-  ]
+  ],
+  "metadataOrigin": {
+    "unboundSourceCommit": "88e937510aeaf7d547a75227a1187d2bd60edc15",
+    "unboundSourceSha256": "a8b0f8f100ca14729a1e6c60a4967c43b3c972e9bf3ae605604a5d14dd94ad42",
+    "mappingCommit": "f182d990e0e78555e8597705189507724a617221",
+    "mappedSourceSha256": "4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31",
+    "originalNodeHashesPreserved": true
+  },
+  "baselineDerivation": {
+    "method": "strip registered metadata from functional source commit",
+    "sourceCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+    "metadataAlreadyPresent": true,
+    "registeredAttributeCount": 29,
+    "rawSourceSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
+    "strippedSourceSha256": "514fd74af81c6bf7d1edac75fb971444c8047474c65acac152a82aa947d9cb61"
+  }
 }

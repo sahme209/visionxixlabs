@@ -20,8 +20,12 @@
       "sha256": "4b5b48467970c98bdd8ccc684ff29e0a2fead8a777d020e4465d3df8dd359f73"
     },
     {
+      "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
+      "sha256": "6ce2df63323e73865b4a0592c3f994447cb99cb421de9e4d1736e15b132488eb"
+    },
+    {
       "path": "docs/product/knowledge/releases-workspace-bindings.test.cjs",
-      "sha256": "b3d9c0ac72a19b03ae7ee032d0aaf4a7d7fc4f7d63d43ca4d0dee6fb233e3e8e"
+      "sha256": "2594a07ce1ebbb8ec2d1eeca6fc625ce7c29432ce5a89a5049f9d075bbb3cca0"
     },
     {
       "path": "docs/product/knowledge/repository-editor-bindings.test.cjs",

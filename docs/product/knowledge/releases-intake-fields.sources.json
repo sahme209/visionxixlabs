@@ -1,0 +1,28 @@
+{
+  "status": "INTERNAL SOURCE MAPPING",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "domBinding": false,
+  "runtimeMetadataAdded": false,
+  "baselineCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "scope": "All52 named Field/TextArea/SelectField/Check callsites in DeploymentIntakeForm only; source-only IDs and imported dynamic fields excluded.",
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.json",
+      "sha256": "13a717644029417818b10db1961b8870504d6b67fea1cb505370557f0d79ef8b"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.md",
+      "sha256": "3f29ffaba6e436a325a995da4600a0e24df4182af0a3e2e1e28acb32afd69c34"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
+      "sha256": "6ce2df63323e73865b4a0592c3f994447cb99cb421de9e4d1736e15b132488eb"
+    }
+  ],
+  "validation": "Old prepared source contracts failed2/5 on pending-save repair; requalified five-check AST suite passes. All52 source IDs, purposes and callsite node hashes preserved. Disabled ancestor context and current constraint/serializer refs now bound. Runtime source equals raw Git19821435; no native/customer acceptance."
+}

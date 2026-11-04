@@ -1,0 +1,6 @@
+{
+  "status": "prepared but unaccepted; superseded pending behavior fix",
+  "reason": "Pending field edits and late save completion require source fix before requalification.",
+  "preserve": "All52 authored purposes/source IDs/constraint explanations and old logs retained; no runtime edit or test rerun.",
+  "futureBaseline": "Root will supply exact behavior-fix commit. Existing29 baseline derivation must strip existing metadata from post-fix Git source explicitly; prior88e raw baseline remains historical."
+}

@@ -1,0 +1,60 @@
+✖ source-only inventory describes all52 named callsites with finite helper counts and real guide headings (0.5455ms)
+✖ independently discovers every actual named helper callsite and verifies exact props and enclosing conditions (21.233ms)
+✔ source custody and constraint/recovery function references bind actual unchanged source bytes (8.616708ms)
+✔ rejects changed label, value, update, required flag, condition and declared options (32.390958ms)
+✔ rejects incomplete/duplicate/unknown/swapped records and an extra actual field callsite (17.801584ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 3
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 175.747291
+
+✖ failing tests:
+
+test at docs/product/knowledge/releases-intake-bindings.test.cjs:25:1
+✖ source-only inventory describes all52 named callsites with finite helper counts and real guide headings (0.5455ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  51 !== 52
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/releases-intake-bindings.test.cjs:26:198)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 51,
+    expected: 52,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/releases-intake-bindings.test.cjs:30:1
+✖ independently discovers every actual named helper callsite and verifies exact props and enclosing conditions (21.233ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'incomplete inventory',
+  +   'unmapped callsite releases.intake.fact-confirmed-by'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/releases-intake-bindings.test.cjs:30:128)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'incomplete inventory', 'unmapped callsite releases.intake.fact-confirmed-by' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

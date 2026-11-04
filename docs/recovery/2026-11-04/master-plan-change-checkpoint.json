@@ -1,11 +1,11 @@
 {
   "format": "axiom.master-plan-reconciliation/1",
-  "recorded_at": "2026-11-04T22:10:36.747343+00:00",
+  "recorded_at": "2026-11-04T22:12:19.764536+00:00",
   "master_path": "docs/product/axiom-master-action-plan.md",
-  "master_sha256": "ab56e81818fa20bb848897930c0ef34d55e9b080f1519002b650298d3b1799f6",
-  "master_git_blob": "59d4523fb4e71736fc35164027d2210ab3e56d07",
+  "master_sha256": "3fce148be8799a72649df03464b0e091011a645cfa69ca9833495c0c9fc4962d",
+  "master_git_blob": "932471dd6db290c8adb7b70e051ef0252827df68",
   "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
-  "current_method": "Detected and completely read user-added C1\u2013C6; verified removing only inserted section restores previous master byte-for-byte. Existing15A/B priorities preserved; six future items recorded without implementation/permission inference.",
+  "current_method": "User-added C1\u2013C6 fully reconciled and preserved; known named-field/requalified-source milestone appended. Existing15A/B open and six C future items retained.",
   "open_parents": [
     "A1",
     "A2",
@@ -41,7 +41,7 @@
     ]
   },
   "future_check": "At each batch boundary compare current master bytes against checkpoint; read changed requirements and reconcile numbered board before selecting next work; preserve unexpected user edits before any plan write. No new scheduler.",
-  "base_head_at_reconciliation": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "base_head_at_reconciliation": "469b17b27a0c85eed3a8b5a146c3977109d85a6f",
   "future_open_parents": [
     "C1",
     "C2",

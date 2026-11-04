@@ -2,7 +2,7 @@
 
 **Internal source tooling. Customer eligible: false. Publication approved: false.**
 
-The [explicit registry](control-binding-checks.json) lists the seven existing `*bindings.test.cjs` suites and their SHA-256 values. The hashes identify reviewed test bytes; they are not approval authority. This registry does not replace the suites' own exact-node/baseline contracts, alter their pass/fail behavior or establish whole-product coverage.
+The [explicit registry](control-binding-checks.json) lists the eight registered `*bindings.test.cjs` suites and their SHA-256 values. The hashes identify reviewed test bytes; they are not approval authority. This registry does not replace the suites' own exact-node/baseline contracts, alter their pass/fail behavior or establish whole-product coverage.
 
 Run the local checker from the repository:
 
@@ -19,6 +19,6 @@ Execution requires the existing canonical Node `/Users/samirahmed/.nvm/versions/
 
 The child owns a new process group. A 60-second deadline and 2 MiB output bound apply, including a child kernel file-size limit between parent checks. Timeout/output cleanup signals the owned group only while its parent is still unreaped, then waits for that parent. A normally reaped parent is never used for a later group signal; Node waits for its test workers. Arbitrary orphan/descendant containment is not claimed. Logs remain in the printed private directory; source-check failures retain their nonzero exit. This is an ordinary local test runner, not an issuer/runtime sandbox qualification, complete executable-closure proof or platform-security certification. Preflight hashes are provenance checks, not immutable file custody across execution.
 
-The runner's own focused tests exercise pure filesystem fixtures and mocked subprocess boundaries, including refusal, scrubbed arguments/environment and process-group cleanup. They do **not** execute the seven binding suites. Any actual combined run has its own separate result; no combined success is inferred from runner tests or earlier individual suite receipts.
+The runner's own focused tests exercise pure filesystem fixtures and mocked subprocess boundaries, including refusal, scrubbed arguments/environment and process-group cleanup. They do **not** execute the registered binding suites. Any actual combined run has its own separate result; no combined success is inferred from runner tests or earlier individual suite receipts.
 
 Passing these checks means only that the registered static source mappings satisfy their existing contracts at that invocation. It does not establish complete control/state inventory, genuine native/browser/keyboard/assistive-technology behavior, accepted media, editorial authority, release support, customer eligibility, retrieval quality or B4 completion. No percentage or global control-coverage total is derived.

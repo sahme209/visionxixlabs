@@ -1,0 +1,4215 @@
+{
+  "format": "axiom.source-callsite-fields/1",
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "domBinding": false,
+  "runtimeMetadataAdded": false,
+  "baselineCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "source": "desktop/src/views/DeploymentRequestsView.tsx",
+  "sourceSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
+  "scopeFunction": "DeploymentIntakeForm",
+  "guide": "docs/product/knowledge/releases-workspace-controls.md",
+  "declarations": 52,
+  "helperCounts": {
+    "Field": 30,
+    "TextArea": 8,
+    "SelectField": 8,
+    "Check": 6
+  },
+  "constraintsScope": "Current local draft, helper props, validateStep and submit only; no exhaustive server/provider validation or approval evidence.",
+  "exclusions": [
+    "WorkflowCatalogue",
+    "WorkflowDefinitionInputs (including workflowInputs custom fields)",
+    "ReleaseBatchSelection (including selected Airflow dependencies)",
+    "Local intrinsic navigation/submit controls and generic helper DOM declarations already mapped separately",
+    "Imported child internals, runtime field instances, external/native/provider surfaces"
+  ],
+  "fields": [
+    {
+      "sourceId": "releases.intake.title",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Request title",
+      "modelKey": "title",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.title",
+      "updateBinding": "(value) => update(\"title\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Names the release request.",
+      "constraintsAndRecovery": "Required text; local completeness does not establish release approval. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Request title\" value={draft.title} onChange={(value) => update(\"title\", value)} required />",
+      "nodeSha256": "9bbb7d413ac6f6ad865b745ee115fb2a73c3f237dd15d25605854c691203c186",
+      "stepPresenceValidation": {
+        "step": 0,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1135,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.request-class",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "SelectField",
+      "label": "Request class",
+      "modelKey": "requestClass",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.requestClass",
+      "updateBinding": "(value) => update(\"requestClass\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "select",
+      "optionsExpression": "[\"planned_biweekly_release\", \"planned_release\", \"ad_hoc\", \"emergency\", \"maintenance\", \"other\"]",
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the request classification.",
+      "constraintsAndRecovery": "Ad hoc/emergency exposes additional required context; options are the literal declared list. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "SelectField",
+          "startLine": 1293,
+          "endLine": 1305,
+          "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
+        }
+      ],
+      "anchor": "<SelectField label=\"Request class\" value={draft.requestClass} onChange={(value) => update(\"requestClass\", value)} options={[\"planned_biweekly_release\", \"planned_release\", \"ad_hoc\", \"emergency\", \"maintenance\", \"other\"]} />",
+      "nodeSha256": "79a1fc2f542167eb49626eb8920858c2a633b2497382fc680b898ff0bb6139d3",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1136,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.ad-hoc-reason",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Reason",
+      "modelKey": "adHocReason",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.adHocReason",
+      "updateBinding": "(value) => update(\"adHocReason\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        },
+        {
+          "kind": "render-if",
+          "expression": "isAdHoc"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Explains the ad hoc/emergency request.",
+      "constraintsAndRecovery": "Required while isAdHoc; this explanation is not an exception approval. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Reason\" value={draft.adHocReason} onChange={(value) => update(\"adHocReason\", value)} required />",
+      "nodeSha256": "ac8e4621365fd763c4cbe0698f593ce883c910d840446109974478eeecb61803",
+      "stepPresenceValidation": {
+        "step": 0,
+        "appliesWhen": "draft.requestClass === \"ad_hoc\" || draft.requestClass === \"emergency\"",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1140,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.ad-hoc-priority",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Priority",
+      "modelKey": "adHocPriority",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.adHocPriority",
+      "updateBinding": "(value) => update(\"adHocPriority\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        },
+        {
+          "kind": "render-if",
+          "expression": "isAdHoc"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the ad hoc/emergency priority.",
+      "constraintsAndRecovery": "Required while isAdHoc; no independent priority validation is implied. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Priority\" value={draft.adHocPriority} onChange={(value) => update(\"adHocPriority\", value)} required />",
+      "nodeSha256": "21f3f041ba62f6ffd6b82f0db38fb2d535dbae6526fb3643784c6a38c119ff1a",
+      "stepPresenceValidation": {
+        "step": 0,
+        "appliesWhen": "draft.requestClass === \"ad_hoc\" || draft.requestClass === \"emergency\"",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1141,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.business-impact",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Business impact",
+      "modelKey": "businessImpact",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.businessImpact",
+      "updateBinding": "(value) => update(\"businessImpact\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        },
+        {
+          "kind": "render-if",
+          "expression": "isAdHoc"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Describes the ad hoc/emergency business impact.",
+      "constraintsAndRecovery": "Required while isAdHoc; entered impact is reported context. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Business impact\" value={draft.businessImpact} onChange={(value) => update(\"businessImpact\", value)} required />",
+      "nodeSha256": "11dcbd5c1c3a32db92f8a47f05824b8b095c3f646173062f396c3f0cd61e833a",
+      "stepPresenceValidation": {
+        "step": 0,
+        "appliesWhen": "draft.requestClass === \"ad_hoc\" || draft.requestClass === \"emergency\"",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1142,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.schedule-exception-reason",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Schedule exception",
+      "modelKey": "scheduleExceptionReason",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.scheduleExceptionReason",
+      "updateBinding": "(value) => update(\"scheduleExceptionReason\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        },
+        {
+          "kind": "render-if",
+          "expression": "isAdHoc"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the requested scheduling exception reason.",
+      "constraintsAndRecovery": "Required while isAdHoc; supplying a reason grants no exception authority. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Schedule exception\" value={draft.scheduleExceptionReason} onChange={(value) => update(\"scheduleExceptionReason\", value)} required />",
+      "nodeSha256": "417acfc4f0c6757108b6b480d962a78b0980ffce29b6b57a974cecdd3fdc4c93",
+      "stepPresenceValidation": {
+        "step": 0,
+        "appliesWhen": "draft.requestClass === \"ad_hoc\" || draft.requestClass === \"emergency\"",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1143,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.window-start",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Window start",
+      "modelKey": "windowStart",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.windowStart",
+      "updateBinding": "(value) => update(\"windowStart\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "datetime-local",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the proposed deployment-window start.",
+      "constraintsAndRecovery": "datetime-local is parsed by localToIso using machine date parsing; displayTimeZone does not convert this input. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "localToIso",
+          "startLine": 242,
+          "endLine": 246,
+          "nodeSha256": "511b4e700c3e868054dba44d028bd0b1f34bbc73f7b186a00b37fd8372714395"
+        }
+      ],
+      "anchor": "<Field label=\"Window start\" type=\"datetime-local\" value={draft.windowStart} onChange={(value) => update(\"windowStart\", value)} required />",
+      "nodeSha256": "d566021a17d5634d21799246434a450bacc852bf86384ad91da7b8d25adb4e66",
+      "stepPresenceValidation": {
+        "step": 0,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1146,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.window-end",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Window end",
+      "modelKey": "windowEnd",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.windowEnd",
+      "updateBinding": "(value) => update(\"windowEnd\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "datetime-local",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the proposed deployment-window end.",
+      "constraintsAndRecovery": "datetime-local is parsed by localToIso; submit refuses an invalid start/end instant. This does not certify an approved window. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "localToIso",
+          "startLine": 242,
+          "endLine": 246,
+          "nodeSha256": "511b4e700c3e868054dba44d028bd0b1f34bbc73f7b186a00b37fd8372714395"
+        }
+      ],
+      "anchor": "<Field label=\"Window end\" type=\"datetime-local\" value={draft.windowEnd} onChange={(value) => update(\"windowEnd\", value)} required />",
+      "nodeSha256": "8f8db2ba366142bca3f4e4b432b19855f9cc526f5dd36b39b860c29cb4e1fdff",
+      "stepPresenceValidation": {
+        "step": 0,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1147,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.display-time-zone",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "SelectField",
+      "label": "Display time zone",
+      "modelKey": "displayTimeZone",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.displayTimeZone",
+      "updateBinding": "(value) => update(\"displayTimeZone\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "select",
+      "optionsExpression": "[\"ET\", \"CT\", \"MT\", \"PT\", \"UTC\", \"Other\"]",
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the display-zone label.",
+      "constraintsAndRecovery": "Separate from machine-local datetime parsing; choosing a zone is not an input conversion. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "SelectField",
+          "startLine": 1293,
+          "endLine": 1305,
+          "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
+        }
+      ],
+      "anchor": "<SelectField label=\"Display time zone\" value={draft.displayTimeZone} onChange={(value) => update(\"displayTimeZone\", value)} options={[\"ET\", \"CT\", \"MT\", \"PT\", \"UTC\", \"Other\"]} />",
+      "nodeSha256": "428e5126b0c115780f4a8e76d62ec05372ab66552eff1f50bfc61cb8a94aa8db",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1148,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.change-type",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "SelectField",
+      "label": "Change type",
+      "modelKey": "changeType",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.changeType",
+      "updateBinding": "(value) => update(\"changeType\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "select",
+      "optionsExpression": "[\"enhancement\", \"new_feature\", \"new_client_implementation\", \"configuration_change\", \"infrastructure_change\", \"database_change\", \"security_image_refresh\", \"credential_rotation\", \"workflow_change\", \"manual_configuration\", \"bug_fix\", \"other\"]",
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 0"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records one change classification.",
+      "constraintsAndRecovery": "Saved as a one-element changeTypes array, not an enabled execution capability. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "SelectField",
+          "startLine": 1293,
+          "endLine": 1305,
+          "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
+        }
+      ],
+      "anchor": "<SelectField label=\"Change type\" value={draft.changeType} onChange={(value) => update(\"changeType\", value)} options={[\"enhancement\", \"new_feature\", \"new_client_implementation\", \"configuration_change\", \"infrastructure_change\", \"database_change\", \"security_image_refresh\", \"credential_rotation\", \"workflow_change\", \"manual_configuration\", \"bug_fix\", \"other\"]} />",
+      "nodeSha256": "05dc017513bb9457332ecb12c47505fef6427a6eccb2e4aeaddb5e43764a834e",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1150,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.applications",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Applications (comma or line separated)",
+      "modelKey": "applications",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.applications",
+      "updateBinding": "(value) => update(\"applications\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records applications in scope.",
+      "constraintsAndRecovery": "Required; splitLines separates comma/newline values, trims them and removes empty entries. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "splitLines",
+          "startLine": 238,
+          "endLine": 240,
+          "nodeSha256": "2a1808c574d0bab8902a2b190c427758527f32367eb0ade31f882a83c5487837"
+        }
+      ],
+      "anchor": "<Field label=\"Applications (comma or line separated)\" value={draft.applications} onChange={(value) => update(\"applications\", value)} required />",
+      "nodeSha256": "1fb553674f4cde6a43c49342d7fb60720c1382680a8ded6608c5f93bc3ab26c8",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1155,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.clients",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Clients (comma or line separated)",
+      "modelKey": "clients",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.clients",
+      "updateBinding": "(value) => update(\"clients\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records affected clients.",
+      "constraintsAndRecovery": "Required; splitLines separates comma/newline values; recorded scope is not independently verified. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "splitLines",
+          "startLine": 238,
+          "endLine": 240,
+          "nodeSha256": "2a1808c574d0bab8902a2b190c427758527f32367eb0ade31f882a83c5487837"
+        }
+      ],
+      "anchor": "<Field label=\"Clients (comma or line separated)\" value={draft.clients} onChange={(value) => update(\"clients\", value)} required />",
+      "nodeSha256": "a859c33dc66ed21639fbac78f8ee9aa60f5488d47e5df77354cee14f0f7aa877",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1156,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.deployment-contact",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Deployment owner",
+      "modelKey": "deploymentContact",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.deploymentContact",
+      "updateBinding": "(value) => update(\"deploymentContact\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the deployment owner/contact.",
+      "constraintsAndRecovery": "Required entered ownership; no membership, permission or execution authority is assigned. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Deployment owner\" value={draft.deploymentContact} onChange={(value) => update(\"deploymentContact\", value)} required />",
+      "nodeSha256": "1d564672838998f67ea998e0b3a81e0d34ea1a506773d6f9b71d8f667047a126",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1157,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.application-contact",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Application owner",
+      "modelKey": "applicationContact",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.applicationContact",
+      "updateBinding": "(value) => update(\"applicationContact\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the application owner/contact.",
+      "constraintsAndRecovery": "Required entered ownership, not independent approval or identity verification. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Application owner\" value={draft.applicationContact} onChange={(value) => update(\"applicationContact\", value)} required />",
+      "nodeSha256": "d6ea2f63d4334d1b046ad11faecbe8588611133fe8d4648b00ebcd5edc5a03b6",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1158,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.escalation-contact",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Escalation owner",
+      "modelKey": "escalationContact",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.escalationContact",
+      "updateBinding": "(value) => update(\"escalationContact\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the escalation owner/contact.",
+      "constraintsAndRecovery": "Required entered contact, not a notification or escalation dispatch. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Escalation owner\" value={draft.escalationContact} onChange={(value) => update(\"escalationContact\", value)} required />",
+      "nodeSha256": "820e4d9ad1544237b1d260c68a238b4e2af2a8c91f2a4df87468f7461f86689a",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1159,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.repository-urls",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Repository URLs",
+      "modelKey": "repositoryUrls",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.repositoryUrls",
+      "updateBinding": "(value) => update(\"repositoryUrls\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records repository URLs for the request.",
+      "constraintsAndRecovery": "Required comma/newline list; supported discovery separately requires a single recognized GitHub repository. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "splitLines",
+          "startLine": 238,
+          "endLine": 240,
+          "nodeSha256": "2a1808c574d0bab8902a2b190c427758527f32367eb0ade31f882a83c5487837"
+        }
+      ],
+      "anchor": "<Field label=\"Repository URLs\" value={draft.repositoryUrls} onChange={(value) => update(\"repositoryUrls\", value)} required />",
+      "nodeSha256": "597ead17c8767b4e60fa80dcf3b3409bc38c05c0e96f08146c185de34ca07c1e",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1160,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.no-pr-required",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Check",
+      "label": "No production PR required",
+      "modelKey": "noPrRequired",
+      "localState": null,
+      "valueAttribute": "checked",
+      "valueBinding": "draft.noPrRequired",
+      "updateBinding": "(value) => update(\"noPrRequired\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "checkbox",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the assertion that no production PR is required.",
+      "constraintsAndRecovery": "Hides PR URL/approval fields and saves not_applicable for prApprovalStatus; it does not waive independent downstream policy. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Check",
+          "startLine": 1307,
+          "endLine": 1316,
+          "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
+        }
+      ],
+      "anchor": "<Check label=\"No production PR required\" checked={draft.noPrRequired} onChange={(value) => update(\"noPrRequired\", value)} />",
+      "nodeSha256": "fea88f9ae98a5d90112630b51180cbfca022b60b57669d650099b127d0b75049",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1161,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.production-pr-urls",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Production PR URLs",
+      "modelKey": "productionPrUrls",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.productionPrUrls",
+      "updateBinding": "(value) => update(\"productionPrUrls\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        },
+        {
+          "kind": "render-if",
+          "expression": "!draft.noPrRequired"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records production PR URLs.",
+      "constraintsAndRecovery": "Required when noPrRequired is false; comma/newline values are stored, not approved or merged. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "splitLines",
+          "startLine": 238,
+          "endLine": 240,
+          "nodeSha256": "2a1808c574d0bab8902a2b190c427758527f32367eb0ade31f882a83c5487837"
+        }
+      ],
+      "anchor": "<Field label=\"Production PR URLs\" value={draft.productionPrUrls} onChange={(value) => update(\"productionPrUrls\", value)} required />",
+      "nodeSha256": "35c3069282d53282e6ebd7de5dced9fb1c2801d99c3ae55fb7e1dd34e9f8e1f0",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "!draft.noPrRequired",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1164,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.pr-approval-status",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "SelectField",
+      "label": "PR approval",
+      "modelKey": "prApprovalStatus",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.prApprovalStatus",
+      "updateBinding": "(value) => update(\"prApprovalStatus\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "select",
+      "optionsExpression": "[\"pending\", \"approved\"]",
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        },
+        {
+          "kind": "render-if",
+          "expression": "!draft.noPrRequired"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the reported PR approval status.",
+      "constraintsAndRecovery": "pending/approved are self-reported intake values, not a genuine independent provider decision. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "SelectField",
+          "startLine": 1293,
+          "endLine": 1305,
+          "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
+        }
+      ],
+      "anchor": "<SelectField label=\"PR approval\" value={draft.prApprovalStatus} onChange={(value) => update(\"prApprovalStatus\", value)} options={[\"pending\", \"approved\"]} />",
+      "nodeSha256": "6ea8881f2f6bd3fc164559c149ce8e4130ad4b8af51a73b8a8e3d7d2b4bee4e6",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1165,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.source-branch",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Source branch",
+      "modelKey": "sourceBranch",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.sourceBranch",
+      "updateBinding": "(value) => update(\"sourceBranch\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the source branch.",
+      "constraintsAndRecovery": "Required; also supplies workflow source ref when the separate workflowRef is blank. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Source branch\" value={draft.sourceBranch} onChange={(value) => update(\"sourceBranch\", value)} required />",
+      "nodeSha256": "56f3de306d35ec225435529578931c50af7a7f20b76df8fc2897c07d499ae0b1",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1169,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.target-branch",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Target branch",
+      "modelKey": "targetBranch",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.targetBranch",
+      "updateBinding": "(value) => update(\"targetBranch\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 1"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the target branch.",
+      "constraintsAndRecovery": "Required input; selecting a name does not verify protection, mergeability or target authority. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Target branch\" value={draft.targetBranch} onChange={(value) => update(\"targetBranch\", value)} required />",
+      "nodeSha256": "33b61b24e0a2decb028835c052b09cb4777a321b47739d2e88c97736bbb25191",
+      "stepPresenceValidation": {
+        "step": 1,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1170,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.deployment-method",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Deployment method",
+      "modelKey": "deploymentMethod",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.deploymentMethod",
+      "updateBinding": "(value) => update(\"deploymentMethod\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "ancestor-hidden",
+          "expression": "step !== 2"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Describes the intended deployment method.",
+      "constraintsAndRecovery": "Required description; does not run a method or enable dispatch. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Deployment method\" value={draft.deploymentMethod} onChange={(value) => update(\"deploymentMethod\", value)} required />",
+      "nodeSha256": "73a679710d2e58bfc936a46f1109da69d57451eafe9183d51d17808fb2b9ad23",
+      "stepPresenceValidation": {
+        "step": 2,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1174,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.workflow-name",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Workflow name / trigger",
+      "modelKey": "workflowName",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.workflowName",
+      "updateBinding": "(value) => update(\"workflowName\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "ancestor-hidden",
+          "expression": "step !== 2"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the workflow name/path/trigger.",
+      "constraintsAndRecovery": "Required; imported discovery checks workflow fields separately and may block advancement. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Workflow name / trigger\" value={draft.workflowName} onChange={(value) => update(\"workflowName\", value)} required />",
+      "nodeSha256": "7d975be609244583414d70e76c8dfd030e1d1f6194dd0cd5e8dbf6078758556c",
+      "stepPresenceValidation": {
+        "step": 2,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1175,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.target-environment",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Target environment",
+      "modelKey": "targetEnvironment",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.targetEnvironment",
+      "updateBinding": "(value) => update(\"targetEnvironment\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "ancestor-hidden",
+          "expression": "step !== 2"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the intended environment.",
+      "constraintsAndRecovery": "Required name, not proof of current environment access or deployment readiness. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Target environment\" value={draft.targetEnvironment} onChange={(value) => update(\"targetEnvironment\", value)} required />",
+      "nodeSha256": "7046d5d5afc88124f9c0cb687e87498e1bbff636c3052775dfc7f37e6648a425",
+      "stepPresenceValidation": {
+        "step": 2,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1176,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.workflow-ref",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Workflow source ref (branch or tag)",
+      "modelKey": null,
+      "localState": "workflowRef",
+      "valueAttribute": "value",
+      "valueBinding": "workflowRef",
+      "updateBinding": "setWorkflowRef",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "ancestor-hidden",
+          "expression": "step !== 2"
+        }
+      ],
+      "guideSection": "Discover workflow fields and select exact batch dependencies",
+      "purpose": "Selects the separate workflow source branch/tag used for discovery.",
+      "constraintsAndRecovery": "Local workflowRef state, not draft.sourceBranch; blank uses sourceBranch. Only matching observed workflowSource is included in payload. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Workflow source ref (branch or tag)\" value={workflowRef} onChange={setWorkflowRef} />",
+      "nodeSha256": "18138835e377876e6270a8a69acbc6784394a45df3f1702d9633f5745beea6ff",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1177,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.manual-instruction",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "TextArea",
+      "label": "Optional manual instruction",
+      "modelKey": "manualInstruction",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.manualInstruction",
+      "updateBinding": "(value) => update(\"manualInstruction\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "textarea",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "ancestor-hidden",
+          "expression": "step !== 2"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records an optional manual step.",
+      "constraintsAndRecovery": "Trimmed nonempty text creates a planned manual step with completed:false and evidenceRequired:true; no instruction executes. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "TextArea",
+          "startLine": 1281,
+          "endLine": 1291,
+          "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
+        }
+      ],
+      "anchor": "<TextArea label=\"Optional manual instruction\" value={draft.manualInstruction} onChange={(value) => update(\"manualInstruction\", value)} />",
+      "nodeSha256": "b08e969b12b7e97b3e956a99dec638e86ac92329ebee214d5a2cd5ec91989703",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1182,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.manual-owner",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Manual-step owner",
+      "modelKey": "manualOwner",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.manualOwner",
+      "updateBinding": "(value) => update(\"manualOwner\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "ancestor-hidden",
+          "expression": "step !== 2"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.manualInstruction"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the manual-step owner.",
+      "constraintsAndRecovery": "Required while raw manualInstruction is truthy; validateStep requires owner when instruction.trim() is nonempty. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Manual-step owner\" value={draft.manualOwner} onChange={(value) => update(\"manualOwner\", value)} required />",
+      "nodeSha256": "bb8bc4e72b2d945a01f9d4a9bdf8087fafd2ab03e41c25a8f55d5c37f9f94bac",
+      "stepPresenceValidation": {
+        "step": 2,
+        "appliesWhen": "draft.manualInstruction.trim()",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1185,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.manual-validation-instruction",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "TextArea",
+      "label": "How to validate the manual step",
+      "modelKey": "manualValidationInstruction",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.manualValidationInstruction",
+      "updateBinding": "(value) => update(\"manualValidationInstruction\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "textarea",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "ancestor-hidden",
+          "expression": "step !== 2"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.manualInstruction"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records how the planned manual step should be validated.",
+      "constraintsAndRecovery": "Required in the visible manual-step branch; planned validation does not establish completion or evidence. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "TextArea",
+          "startLine": 1281,
+          "endLine": 1291,
+          "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
+        }
+      ],
+      "anchor": "<TextArea label=\"How to validate the manual step\" value={draft.manualValidationInstruction} onChange={(value) => update(\"manualValidationInstruction\", value)} required />",
+      "nodeSha256": "3c3628cee719d99efc7c29cf4891bf61a8a28d833f8603da0d073a8ab537519e",
+      "stepPresenceValidation": {
+        "step": 2,
+        "appliesWhen": "draft.manualInstruction.trim()",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1186,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.lower-environments",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Tested lower environments",
+      "modelKey": "lowerEnvironments",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.lowerEnvironments",
+      "updateBinding": "(value) => update(\"lowerEnvironments\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records tested lower environments.",
+      "constraintsAndRecovery": "Required comma/newline list; reported testing is not a current test receipt. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "splitLines",
+          "startLine": 238,
+          "endLine": 240,
+          "nodeSha256": "2a1808c574d0bab8902a2b190c427758527f32367eb0ade31f882a83c5487837"
+        }
+      ],
+      "anchor": "<Field label=\"Tested lower environments\" value={draft.lowerEnvironments} onChange={(value) => update(\"lowerEnvironments\", value)} required />",
+      "nodeSha256": "113c09e66e427a0c174c0ff52f49681d5b7ca236ff8739e8ae927be2b920ad04",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1192,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.development-ready",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Check",
+      "label": "Development ready",
+      "modelKey": "developmentReady",
+      "localState": null,
+      "valueAttribute": "checked",
+      "valueBinding": "draft.developmentReady",
+      "updateBinding": "(value) => update(\"developmentReady\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "checkbox",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the development-readiness assertion.",
+      "constraintsAndRecovery": "Self-reported checkbox; does not grant approval or establish independent checks. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Check",
+          "startLine": 1307,
+          "endLine": 1316,
+          "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
+        }
+      ],
+      "anchor": "<Check label=\"Development ready\" checked={draft.developmentReady} onChange={(value) => update(\"developmentReady\", value)} />",
+      "nodeSha256": "7b186e96d77b3a1d3a253f26871122da3075a58a64560f0c11f770971f3d5f22",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1193,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.production-ready",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Check",
+      "label": "Production ready",
+      "modelKey": "productionReady",
+      "localState": null,
+      "valueAttribute": "checked",
+      "valueBinding": "draft.productionReady",
+      "updateBinding": "(value) => update(\"productionReady\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "checkbox",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the production-readiness assertion.",
+      "constraintsAndRecovery": "Self-reported checkbox; does not authorize deployment. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Check",
+          "startLine": 1307,
+          "endLine": 1316,
+          "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
+        }
+      ],
+      "anchor": "<Check label=\"Production ready\" checked={draft.productionReady} onChange={(value) => update(\"productionReady\", value)} />",
+      "nodeSha256": "f0ab30a386276e674fb855f353c7d99b5a2b00c650e9c0dc2a22215f42c12eff",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1194,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.validation-instruction",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "TextArea",
+      "label": "Exact technical production validation",
+      "modelKey": "validationInstruction",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.validationInstruction",
+      "updateBinding": "(value) => update(\"validationInstruction\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "textarea",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records exact planned technical production validation.",
+      "constraintsAndRecovery": "Required planned instruction; saved validation step has completed:false and evidenceRequired:true. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "TextArea",
+          "startLine": 1281,
+          "endLine": 1291,
+          "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
+        }
+      ],
+      "anchor": "<TextArea label=\"Exact technical production validation\" value={draft.validationInstruction} onChange={(value) => update(\"validationInstruction\", value)} required />",
+      "nodeSha256": "d9090fecfb8f444e3ea5ecac361a79c3763e3ad15d2496a79d6f1e0c836d303b",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1195,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.validation-owner",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "SelectField",
+      "label": "Technical validation owner",
+      "modelKey": "validationOwner",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.validationOwner",
+      "updateBinding": "(value) => update(\"validationOwner\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "select",
+      "optionsExpression": "[\"devops\", \"application_team\", \"shared\", \"l1\", \"dba\", \"other\"]",
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the technical validation owner category.",
+      "constraintsAndRecovery": "Literal role-category choices are planned responsibility, not an actual reviewer assignment or permission. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "SelectField",
+          "startLine": 1293,
+          "endLine": 1305,
+          "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
+        }
+      ],
+      "anchor": "<SelectField label=\"Technical validation owner\" value={draft.validationOwner} onChange={(value) => update(\"validationOwner\", value)} options={[\"devops\", \"application_team\", \"shared\", \"l1\", \"dba\", \"other\"]} />",
+      "nodeSha256": "7fccb241fe62712490e983bb98af21ed435fbd84cd907d230c19cdbec3496045",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1196,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.functional-validation-required",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Check",
+      "label": "Application-specific functional validation required",
+      "modelKey": "functionalValidationRequired",
+      "localState": null,
+      "valueAttribute": "checked",
+      "valueBinding": "draft.functionalValidationRequired",
+      "updateBinding": "(value) => update(\"functionalValidationRequired\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "checkbox",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records whether functional validation is planned.",
+      "constraintsAndRecovery": "Shows functional instruction/owner and adds a planned validation step when checked. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Check",
+          "startLine": 1307,
+          "endLine": 1316,
+          "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
+        }
+      ],
+      "anchor": "<Check label=\"Application-specific functional validation required\" checked={draft.functionalValidationRequired} onChange={(value) => update(\"functionalValidationRequired\", value)} />",
+      "nodeSha256": "c66ee55bfb4cdc68ae655178b5003ddaf52750481b44aa81cf4f073fbb87f88a",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1198,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.functional-validation-instruction",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "TextArea",
+      "label": "Exact functional validation instruction",
+      "modelKey": "functionalValidationInstruction",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.functionalValidationInstruction",
+      "updateBinding": "(value) => update(\"functionalValidationInstruction\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "textarea",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.functionalValidationRequired"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records planned functional validation.",
+      "constraintsAndRecovery": "Required when functionalValidationRequired; does not execute or prove validation. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "TextArea",
+          "startLine": 1281,
+          "endLine": 1291,
+          "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
+        }
+      ],
+      "anchor": "<TextArea label=\"Exact functional validation instruction\" value={draft.functionalValidationInstruction} onChange={(value) => update(\"functionalValidationInstruction\", value)} required />",
+      "nodeSha256": "820cacf7a93d53f001141dd8e0f368944edad0af96f8c2e8bfe80c8c87d0ab07",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "draft.functionalValidationRequired",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1201,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.functional-validation-owner",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "SelectField",
+      "label": "Functional validation owner",
+      "modelKey": "functionalValidationOwner",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.functionalValidationOwner",
+      "updateBinding": "(value) => update(\"functionalValidationOwner\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "select",
+      "optionsExpression": "[\"application_team\", \"devops\", \"shared\", \"l1\", \"dba\", \"other\"]",
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.functionalValidationRequired"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the functional validation owner category.",
+      "constraintsAndRecovery": "Literal planned responsibility; no current role or independent approval follows. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "SelectField",
+          "startLine": 1293,
+          "endLine": 1305,
+          "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
+        }
+      ],
+      "anchor": "<SelectField label=\"Functional validation owner\" value={draft.functionalValidationOwner} onChange={(value) => update(\"functionalValidationOwner\", value)} options={[\"application_team\", \"devops\", \"shared\", \"l1\", \"dba\", \"other\"]} />",
+      "nodeSha256": "d1b2a2b53d3e2198bdae718e808c09ae70be9cc2c00f5b41abd045c72a240bcc",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1202,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.expected-production-result",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "TextArea",
+      "label": "Expected production result",
+      "modelKey": "expectedProductionResult",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.expectedProductionResult",
+      "updateBinding": "(value) => update(\"expectedProductionResult\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "textarea",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the expected production result.",
+      "constraintsAndRecovery": "Required expectation, not an observed health or success result. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "TextArea",
+          "startLine": 1281,
+          "endLine": 1291,
+          "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
+        }
+      ],
+      "anchor": "<TextArea label=\"Expected production result\" value={draft.expectedProductionResult} onChange={(value) => update(\"expectedProductionResult\", value)} required />",
+      "nodeSha256": "6f2d7e5ce36814e7046d8dbe2148a72ceeeba15b55ad96decd5827c70bf468ce",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1206,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.deferred-validation",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Check",
+      "label": "Validation must be deferred",
+      "modelKey": "deferredValidation",
+      "localState": null,
+      "valueAttribute": "checked",
+      "valueBinding": "draft.deferredValidation",
+      "updateBinding": "(value) => update(\"deferredValidation\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "checkbox",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records a proposed validation deferral.",
+      "constraintsAndRecovery": "Shows and requires follow-up details; does not grant approval to defer. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Check",
+          "startLine": 1307,
+          "endLine": 1316,
+          "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
+        }
+      ],
+      "anchor": "<Check label=\"Validation must be deferred\" checked={draft.deferredValidation} onChange={(value) => update(\"deferredValidation\", value)} />",
+      "nodeSha256": "71ba50750e9432ae434132384e9488074371d8188ad5b9caa379024468b47114",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1207,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.deferred-reason",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Deferral reason",
+      "modelKey": "deferredReason",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.deferredReason",
+      "updateBinding": "(value) => update(\"deferredReason\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.deferredValidation"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records why validation is deferred.",
+      "constraintsAndRecovery": "Required when deferredValidation; reported rationale is not an accepted exception. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Deferral reason\" value={draft.deferredReason} onChange={(value) => update(\"deferredReason\", value)} required />",
+      "nodeSha256": "283218e080c38a318922ec0bffbcd15829d1789723a703f4c306daea60de7428",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "draft.deferredValidation",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1210,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.deferred-trigger",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Follow-up trigger",
+      "modelKey": "deferredTrigger",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.deferredTrigger",
+      "updateBinding": "(value) => update(\"deferredTrigger\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.deferredValidation"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the planned follow-up trigger.",
+      "constraintsAndRecovery": "Required when deferredValidation; no automation is scheduled by this field. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Follow-up trigger\" value={draft.deferredTrigger} onChange={(value) => update(\"deferredTrigger\", value)} required />",
+      "nodeSha256": "fdfc64ac4421e4ea464ab31b3befae496138c32abc53d440a01d26bd49dbd697",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "draft.deferredValidation",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1211,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.deferred-date",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Expected follow-up date",
+      "modelKey": "deferredDate",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.deferredDate",
+      "updateBinding": "(value) => update(\"deferredDate\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "datetime-local",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.deferredValidation"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the expected follow-up date.",
+      "constraintsAndRecovery": "Required datetime-local when deferredValidation; localToIso uses machine date parsing, not the display-zone label. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "localToIso",
+          "startLine": 242,
+          "endLine": 246,
+          "nodeSha256": "511b4e700c3e868054dba44d028bd0b1f34bbc73f7b186a00b37fd8372714395"
+        }
+      ],
+      "anchor": "<Field label=\"Expected follow-up date\" type=\"datetime-local\" value={draft.deferredDate} onChange={(value) => update(\"deferredDate\", value)} required />",
+      "nodeSha256": "a2c18a9d5d3d48aa54891bb6d1fb32a348c0ef46ed09334c980ddf3830904bf0",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "draft.deferredValidation",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1212,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.deferred-owner",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Follow-up owner",
+      "modelKey": "deferredOwner",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.deferredOwner",
+      "updateBinding": "(value) => update(\"deferredOwner\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.deferredValidation"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the follow-up owner.",
+      "constraintsAndRecovery": "Required when deferredValidation; entered ownership grants no access or assignment. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Follow-up owner\" value={draft.deferredOwner} onChange={(value) => update(\"deferredOwner\", value)} required />",
+      "nodeSha256": "650887c6d21196b847932f5250a91144897b1b9358d31d638621fc62751196e2",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "draft.deferredValidation",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1213,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.monitoring-plan",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "TextArea",
+      "label": "Monitoring plan",
+      "modelKey": "monitoringPlan",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.monitoringPlan",
+      "updateBinding": "(value) => update(\"monitoringPlan\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "textarea",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 3"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.deferredValidation"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Describes the monitoring plan during deferral.",
+      "constraintsAndRecovery": "Required when deferredValidation; no monitoring connection or observation is established. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "TextArea",
+          "startLine": 1281,
+          "endLine": 1291,
+          "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
+        }
+      ],
+      "anchor": "<TextArea label=\"Monitoring plan\" value={draft.monitoringPlan} onChange={(value) => update(\"monitoringPlan\", value)} required />",
+      "nodeSha256": "28c5307e1a8879bcb02b26b8b8ce01c234770c94f15732c78d1884793d9e0731",
+      "stepPresenceValidation": {
+        "step": 3,
+        "appliesWhen": "draft.deferredValidation",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1214,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.rollback-availability",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "SelectField",
+      "label": "Rollback availability",
+      "modelKey": "rollbackAvailability",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.rollbackAvailability",
+      "updateBinding": "(value) => update(\"rollbackAvailability\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "select",
+      "optionsExpression": "[\"yes\", \"no\", \"not_applicable\"]",
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records reported rollback availability.",
+      "constraintsAndRecovery": "yes exposes required rollback instruction/owner; no/not_applicable does not establish verified recovery. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "SelectField",
+          "startLine": 1293,
+          "endLine": 1305,
+          "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
+        }
+      ],
+      "anchor": "<SelectField label=\"Rollback availability\" value={draft.rollbackAvailability} onChange={(value) => update(\"rollbackAvailability\", value)} options={[\"yes\", \"no\", \"not_applicable\"]} />",
+      "nodeSha256": "a026b6cb45e5c190534b1297b0498a47ebd5f168ca5c08093d9707360e61c0fe",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1220,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.rollback-instruction",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "TextArea",
+      "label": "Exact rollback instruction",
+      "modelKey": "rollbackInstruction",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.rollbackInstruction",
+      "updateBinding": "(value) => update(\"rollbackInstruction\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "textarea",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.rollbackAvailability === \"yes\""
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records planned rollback instructions.",
+      "constraintsAndRecovery": "Required when rollbackAvailability is yes; saved step has completed:false and evidenceRequired:true, not executed recovery. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "TextArea",
+          "startLine": 1281,
+          "endLine": 1291,
+          "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
+        }
+      ],
+      "anchor": "<TextArea label=\"Exact rollback instruction\" value={draft.rollbackInstruction} onChange={(value) => update(\"rollbackInstruction\", value)} required />",
+      "nodeSha256": "fa93bdc6cebfd25721a1fa4e3ab7ce09ca6fd2ffacdab026f95e51b9b31b0bc3",
+      "stepPresenceValidation": {
+        "step": 4,
+        "appliesWhen": "draft.rollbackAvailability === \"yes\"",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1224,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.rollback-owner",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Rollback owner",
+      "modelKey": "rollbackOwner",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.rollbackOwner",
+      "updateBinding": "(value) => update(\"rollbackOwner\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.rollbackAvailability === \"yes\""
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the planned rollback owner.",
+      "constraintsAndRecovery": "Required with rollbackAvailability yes; entered owner is not execution authority. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Rollback owner\" value={draft.rollbackOwner} onChange={(value) => update(\"rollbackOwner\", value)} required />",
+      "nodeSha256": "4ed5a06d25ecf2f7aacb3cf89fb9e2ac97edb7fc133b0a1078d5ed60506577ff",
+      "stepPresenceValidation": {
+        "step": 4,
+        "appliesWhen": "draft.rollbackAvailability === \"yes\"",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1225,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.backup-required",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Check",
+      "label": "Backup required",
+      "modelKey": "backupRequired",
+      "localState": null,
+      "valueAttribute": "checked",
+      "valueBinding": "draft.backupRequired",
+      "updateBinding": "(value) => update(\"backupRequired\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "checkbox",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records whether backup evidence is required.",
+      "constraintsAndRecovery": "Shows evidence identifiers; does not perform a backup. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Check",
+          "startLine": 1307,
+          "endLine": 1316,
+          "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
+        }
+      ],
+      "anchor": "<Check label=\"Backup required\" checked={draft.backupRequired} onChange={(value) => update(\"backupRequired\", value)} />",
+      "nodeSha256": "411c238245573c2048ebed41b056b874470ea4ca1d3355b520a18b868a892d38",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1228,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.backup-evidence-ids",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Backup evidence identifiers",
+      "modelKey": "backupEvidenceIds",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.backupEvidenceIds",
+      "updateBinding": "(value) => update(\"backupEvidenceIds\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        },
+        {
+          "kind": "render-if",
+          "expression": "draft.backupRequired"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records cited backup evidence identifiers.",
+      "constraintsAndRecovery": "Required when backupRequired; splitLines parses references without proving evidence exists or is accepted. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "splitLines",
+          "startLine": 238,
+          "endLine": 240,
+          "nodeSha256": "2a1808c574d0bab8902a2b190c427758527f32367eb0ade31f882a83c5487837"
+        }
+      ],
+      "anchor": "<Field label=\"Backup evidence identifiers\" value={draft.backupEvidenceIds} onChange={(value) => update(\"backupEvidenceIds\", value)} required />",
+      "nodeSha256": "7f0d3ec4e61e78f9cba9846ba35224d4c4a0e00e479686a21988313252bf1896",
+      "stepPresenceValidation": {
+        "step": 4,
+        "appliesWhen": "draft.backupRequired",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1229,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.change-creation-method",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "SelectField",
+      "label": "Change creation",
+      "modelKey": "changeCreationMethod",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.changeCreationMethod",
+      "updateBinding": "(value) => update(\"changeCreationMethod\", value)",
+      "staticRequired": false,
+      "requiredAttribute": null,
+      "inputType": "select",
+      "optionsExpression": "[\"rca_workflow\", \"dbployer_automatic\", \"manual_servicenow\", \"existing_change\", \"not_applicable\", \"other\"]",
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the intended change-creation method.",
+      "constraintsAndRecovery": "Selecting rca_workflow/dbployer_automatic/manual_servicenow/etc. does not create a native change or enable those tools. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "SelectField",
+          "startLine": 1293,
+          "endLine": 1305,
+          "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
+        }
+      ],
+      "anchor": "<SelectField label=\"Change creation\" value={draft.changeCreationMethod} onChange={(value) => update(\"changeCreationMethod\", value)} options={[\"rca_workflow\", \"dbployer_automatic\", \"manual_servicenow\", \"existing_change\", \"not_applicable\", \"other\"]} />",
+      "nodeSha256": "acf012f62d25a9c3f4026d926fdf16b8f6a592f6520c1f2a96f3959854c9e947",
+      "stepPresenceValidation": null,
+      "requiredSemantics": "no required prop supplied at this callsite",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1230,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.confirmed-fact",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "TextArea",
+      "label": "Confirmed operational fact",
+      "modelKey": "confirmedFact",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.confirmedFact",
+      "updateBinding": "(value) => update(\"confirmedFact\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "textarea",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the claimed confirmed operational fact.",
+      "constraintsAndRecovery": "Required statement saved with classification confirmed; the entered classification is not independent fact verification. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "TextArea",
+          "startLine": 1281,
+          "endLine": 1291,
+          "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
+        }
+      ],
+      "anchor": "<TextArea label=\"Confirmed operational fact\" value={draft.confirmedFact} onChange={(value) => update(\"confirmedFact\", value)} required />",
+      "nodeSha256": "d34edff6f15307af668a7ba0a2d8ad982545709bbecdae9ef0be90188f7839df",
+      "stepPresenceValidation": {
+        "step": 4,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1232,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.source-evidence-id",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Source evidence identifier",
+      "modelKey": "sourceEvidenceId",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.sourceEvidenceId",
+      "updateBinding": "(value) => update(\"sourceEvidenceId\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records the fact source evidence identifier.",
+      "constraintsAndRecovery": "Required citation; this field does not fetch, validate or accept the cited evidence. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Source evidence identifier\" value={draft.sourceEvidenceId} onChange={(value) => update(\"sourceEvidenceId\", value)} required />",
+      "nodeSha256": "b1111ffb721c43684a8ce87a5cf7a3c018c589705b28673f4be79547ab8624cc",
+      "stepPresenceValidation": {
+        "step": 4,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1233,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    },
+    {
+      "sourceId": "releases.intake.fact-confirmed-by",
+      "mappingKind": "source-callsite-only",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "helper": "Field",
+      "label": "Confirmed by",
+      "modelKey": "factConfirmedBy",
+      "localState": null,
+      "valueAttribute": "value",
+      "valueBinding": "draft.factConfirmedBy",
+      "updateBinding": "(value) => update(\"factConfirmedBy\", value)",
+      "staticRequired": true,
+      "requiredAttribute": true,
+      "inputType": "text",
+      "optionsExpression": null,
+      "visibleContext": [
+        {
+          "kind": "render-if",
+          "expression": "step === 4"
+        }
+      ],
+      "guideSection": "Create or complete a request",
+      "purpose": "Records who reportedly confirmed the fact.",
+      "constraintsAndRecovery": "Required attribution, not identity verification or an independent approval record. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate.",
+      "sourceRefs": [
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "draftFromIntake",
+          "startLine": 187,
+          "endLine": 210,
+          "nodeSha256": "1382a3435ea2ebaa7cbbb73c20b061040581626a4d1d5601f2fac894aa1fda14"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "update",
+          "startLine": 956,
+          "endLine": 959,
+          "nodeSha256": "4f89fca2899dab0b0e7c43082e494fbc1e37936d8bc8d3809a13456ea73c0b2c"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "validateStep",
+          "startLine": 212,
+          "endLine": 236,
+          "nodeSha256": "95cb9c16a75118f473e2505247d28f93af18fc4ff1985ec5e2502eecb6d22147"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "submit",
+          "startLine": 961,
+          "endLine": 1110,
+          "nodeSha256": "02153b9010a08e08afde7e82a1b388095d81665006b64283f61c1eabddbde3ff"
+        },
+        {
+          "source": "desktop/src/views/DeploymentRequestsView.tsx",
+          "role": "Field",
+          "startLine": 1269,
+          "endLine": 1279,
+          "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
+        }
+      ],
+      "anchor": "<Field label=\"Confirmed by\" value={draft.factConfirmedBy} onChange={(value) => update(\"factConfirmedBy\", value)} required />",
+      "nodeSha256": "2715845bb6664bcc3950e01e56097c4088da657b7f574a5bba5e02f87ed680f4",
+      "stepPresenceValidation": {
+        "step": 4,
+        "appliesWhen": "always within this validation step",
+        "test": "nonempty trimmed string only; no URL format, date ordering, owner identity or provider permission validation is established by this check"
+      },
+      "requiredSemantics": "static required prop forwarded by local helper to native field",
+      "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
+      "sourceLine": 1234,
+      "disabledContext": [
+        {
+          "ancestor": "fieldset",
+          "expression": "submitting"
+        }
+      ]
+    }
+  ],
+  "pendingEditSemantics": "The native Release intake fields fieldset is disabled while submitting. update and submit synchronously refuse while submissionFlight is held or intakeMounted is false. submit captures the payload before dispatch, holds the flight across the request, and calls onCreated only while the original form remains mounted. Leaving does not cancel or prove failure of the captured save; check saved requests before another submission. This source mapping does not assert server idempotency or acceptance.",
+  "previousPreparedSource": {
+    "commit": "df3609b9c61d80f3f93be34db09930da649d24ed",
+    "sha256": "4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31",
+    "status": "superseded and unaccepted; retained in work/release-intake-fields/superseded-pre-pending-fix/"
+  }
+}

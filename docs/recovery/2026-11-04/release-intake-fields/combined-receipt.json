@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "runtimeSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
+  "actualCombinedInvocations": 1,
+  "registeredFiles": 8,
+  "passed": 39,
+  "failed": 0,
+  "skipped": 0,
+  "registrySha256": "d9ae324561b380c55cebb61ea25f9393d0eeaf5b82adfd0063a102bb21fe7671",
+  "newFieldTestSha256": "6ce2df63323e73865b4a0592c3f994447cb99cb421de9e4d1736e15b132488eb",
+  "requalified29TestSha256": "2594a07ce1ebbb8ec2d1eeca6fc625ce7c29432ce5a89a5049f9d075bbb3cca0",
+  "independentReview": "clear, read only; no tests rerun by reviewer",
+  "claims": "finite source contracts only"
+}
