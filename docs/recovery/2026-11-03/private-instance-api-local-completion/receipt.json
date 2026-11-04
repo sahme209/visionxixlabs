@@ -1,0 +1,41 @@
+{
+  "baseRevision": "8c722232ec706ab7dfcecf1c8b79a6212d24c178",
+  "runtimeRevision": "4ae2b0406d57818ac2a938ab79ec6b8fd8fbbb63",
+  "approval": "call_tjz4QDq9ZpUsNvJTtxUAE4Iw[0]",
+  "sliceReviews": "pass",
+  "integratedReview": "pass",
+  "combinedScopedTypes": "pass including affected legacy wrappers and actual Prisma assignments",
+  "rootRealCryptoCompositionTests": 1,
+  "providerTransport": "simulated, kernel network denied",
+  "databaseQueries": 0,
+  "serviceInstallations": 0,
+  "authorityEnabled": false,
+  "fullGovernanceComplete": false,
+  "failedBuild": {
+    "root": "/private/tmp/axiom-private-instance-build-e9b5e738-612pr2n4",
+    "terminal": {
+      "sourceRevision": "e9b5e73856af29427633e5f9b47f16c23b65dbb6",
+      "phase": "build",
+      "status": "failed",
+      "errorType": "Unavailable",
+      "error": "fixed_build_command_failed",
+      "executionAuthorized": false
+    },
+    "logSha256": "9bac7b2005f28027db0ee27217b2191e0a30e4aba01213b42e34a9084c0d1195"
+  },
+  "correctedBuild": {
+    "root": "/private/tmp/axiom-private-instance-build-4ae2b040-637em5hg",
+    "status": "passed",
+    "session": 40268,
+    "exit": 0,
+    "terminal": {
+      "sourceRevision": "4ae2b0406d57818ac2a938ab79ec6b8fd8fbbb63",
+      "phase": "build",
+      "status": "build_outputs_observed_unqualified",
+      "buildOutputsVerified": true,
+      "executionAuthorized": false
+    },
+    "resultSha256": "983d89c5ba233c10e8db62a945d5686faf81a701f194ec81a27912373f0e3242",
+    "logSha256": "e9d722aff8b567cf2d9032879a583edd56dcd992d73363d76c875456ec8523bd"
+  }
+}
