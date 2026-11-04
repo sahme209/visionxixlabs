@@ -1,0 +1,245 @@
+{
+  "status": "internal-current-source-authoring",
+  "baselineCommit": "f7b1cbc00387564423c47201eaa586395380ac84",
+  "historicalGuideSource": "b6e569e0454bf29472b37decd10803c3ad3fe31b",
+  "historicalGuidePreserved": true,
+  "guide": {
+    "path": "docs/product/knowledge/servicenow-evidence-and-closure-controls.md",
+    "sha256": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336"
+  },
+  "comparison": {
+    "method": "git diff --name-only historicalGuideSource baselineCommit -- listed cited code files",
+    "changedListedCodeFiles": [],
+    "unchangedUniqueCitedCodeFiles": 24,
+    "limits": "Finite cited files only, not complete transitive/deployed equivalence. No current provider/ticket/note/session/credential/flag read."
+  },
+  "historicalLocatorQualification": "Some historical guide ranges overrun actual unchanged files (ReleaseTicketWorkspace8\u201326 versus22lines; WrittenObservationFacts3\u201313 versus11lines). Current receipt uses valid exact full-file ranges except finite desktopClient methods; guide/history remains unchanged. This is locator correction, not changed source semantics or provider proof.",
+  "rangeConvention": "inclusive 1-based raw lines retaining original terminators",
+  "sources": [
+    {
+      "path": "desktop/src/components/ReleaseTicketWorkspace.tsx",
+      "wholeFileSha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902",
+      "range": {
+        "startLine": 1,
+        "endLine": 22,
+        "sha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902"
+      }
+    },
+    {
+      "path": "desktop/src/components/ServiceNowTicketLifecycle.tsx",
+      "wholeFileSha256": "eca2cef59199780e77dd51ab5459aab7aeb8f58b88a1565ebbf8a19731b0883e",
+      "range": {
+        "startLine": 1,
+        "endLine": 41,
+        "sha256": "eca2cef59199780e77dd51ab5459aab7aeb8f58b88a1565ebbf8a19731b0883e"
+      }
+    },
+    {
+      "path": "desktop/src/components/TicketGovernancePanel.tsx",
+      "wholeFileSha256": "3c8b8a7b901295450a5f5d78b1854a54935e6ad2ba4beb013200258d846a8a74",
+      "range": {
+        "startLine": 1,
+        "endLine": 65,
+        "sha256": "3c8b8a7b901295450a5f5d78b1854a54935e6ad2ba4beb013200258d846a8a74"
+      }
+    },
+    {
+      "path": "desktop/src/components/ServiceNowWrittenObservationCreator.tsx",
+      "wholeFileSha256": "95d473b32b125cfd6731150811127edc914e936a0fbf7dc5a959c3f9bca82907",
+      "range": {
+        "startLine": 1,
+        "endLine": 22,
+        "sha256": "95d473b32b125cfd6731150811127edc914e936a0fbf7dc5a959c3f9bca82907"
+      }
+    },
+    {
+      "path": "desktop/src/components/ServiceNowWrittenObservationFacts.tsx",
+      "wholeFileSha256": "e5d0a22e2dca91218ef798d7f38f7d2905d3085b3309b13cc5655c85413109cf",
+      "range": {
+        "startLine": 1,
+        "endLine": 11,
+        "sha256": "e5d0a22e2dca91218ef798d7f38f7d2905d3085b3309b13cc5655c85413109cf"
+      }
+    },
+    {
+      "path": "desktop/src/components/ServiceNowTerminalPolicyCreator.tsx",
+      "wholeFileSha256": "214d308cfe5f236e63267f2506f035a9ae5c78d905882b2dc7df366992165f08",
+      "range": {
+        "startLine": 1,
+        "endLine": 24,
+        "sha256": "214d308cfe5f236e63267f2506f035a9ae5c78d905882b2dc7df366992165f08"
+      }
+    },
+    {
+      "path": "desktop/src/components/AssociatedTicketActionsPanel.tsx",
+      "wholeFileSha256": "93d3c27a2041648aba5973e15c91bcdc8e3cc7c892a8d2954df76ad07f01389a",
+      "range": {
+        "startLine": 1,
+        "endLine": 75,
+        "sha256": "93d3c27a2041648aba5973e15c91bcdc8e3cc7c892a8d2954df76ad07f01389a"
+      }
+    },
+    {
+      "path": "desktop/src/components/ServiceNowRecoveryPanel.tsx",
+      "wholeFileSha256": "e000aa4765abc16e18aa18973fb9b4a19f0c118a741b22b89dffac97def0e85a",
+      "range": {
+        "startLine": 1,
+        "endLine": 10,
+        "sha256": "e000aa4765abc16e18aa18973fb9b4a19f0c118a741b22b89dffac97def0e85a"
+      }
+    },
+    {
+      "path": "desktop/src/views/ChangeTicketsView.tsx",
+      "wholeFileSha256": "16ddbba29ae053ffdbd0ce59b5a174d0e903b14eb74425d8fb7dce5e805f972d",
+      "range": {
+        "startLine": 1,
+        "endLine": 51,
+        "sha256": "16ddbba29ae053ffdbd0ce59b5a174d0e903b14eb74425d8fb7dce5e805f972d"
+      }
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "range": {
+        "startLine": 1690,
+        "endLine": 1700,
+        "sha256": "cbd5211d8c0f601fe9d55c5d6c94e89e6c111f15eeec5c53a5f192f2072c4a84"
+      }
+    },
+    {
+      "path": "desktop/src/lib/associatedTicketActions.ts",
+      "wholeFileSha256": "b366ca6a877a979ce1875e5bb1ed3d4e44c92de8d1ecd8931f524fa443899453",
+      "range": {
+        "startLine": 1,
+        "endLine": 42,
+        "sha256": "b366ca6a877a979ce1875e5bb1ed3d4e44c92de8d1ecd8931f524fa443899453"
+      }
+    },
+    {
+      "path": "lib/desktop/ticketAssociationProposal.ts",
+      "wholeFileSha256": "8514b3c87163d412d069f3a9d56fb1fab5b2b3bcb9cb7542e1437f2dcc0d01d4",
+      "range": {
+        "startLine": 1,
+        "endLine": 43,
+        "sha256": "8514b3c87163d412d069f3a9d56fb1fab5b2b3bcb9cb7542e1437f2dcc0d01d4"
+      }
+    },
+    {
+      "path": "lib/desktop/ticketGovernanceAuthority.ts",
+      "wholeFileSha256": "c918db6ba82df6276ad7b94afd4e6b995fa3b7620ce01e931cc12608ad14213d",
+      "range": {
+        "startLine": 1,
+        "endLine": 19,
+        "sha256": "c918db6ba82df6276ad7b94afd4e6b995fa3b7620ce01e931cc12608ad14213d"
+      }
+    },
+    {
+      "path": "lib/desktop/serviceNowWrittenObservationProposal.ts",
+      "wholeFileSha256": "caf419e211c7fd6ffc972a866acfebcb62485f3311e2c063f4d14c4ebcd789f5",
+      "range": {
+        "startLine": 1,
+        "endLine": 33,
+        "sha256": "caf419e211c7fd6ffc972a866acfebcb62485f3311e2c063f4d14c4ebcd789f5"
+      }
+    },
+    {
+      "path": "lib/desktop/serviceNowWrittenObservationRead.ts",
+      "wholeFileSha256": "ed86834626bfa008a98e56005968da91c936d59de7a37bec371430518eb01c75",
+      "range": {
+        "startLine": 1,
+        "endLine": 24,
+        "sha256": "ed86834626bfa008a98e56005968da91c936d59de7a37bec371430518eb01c75"
+      }
+    },
+    {
+      "path": "lib/desktop/serviceNowTerminalPolicyProposal.ts",
+      "wholeFileSha256": "b6b832f2de5619b926af16dcf6f98ad21e49b59930468e465eae791da8b6b996",
+      "range": {
+        "startLine": 1,
+        "endLine": 10,
+        "sha256": "b6b832f2de5619b926af16dcf6f98ad21e49b59930468e465eae791da8b6b996"
+      }
+    },
+    {
+      "path": "lib/desktop/serviceNowGovernedCloseReader.ts",
+      "wholeFileSha256": "9385558ae8c95d72189bfe2b9e6c8b9fab43b0accb2a19710a1813e33f185d0a",
+      "range": {
+        "startLine": 1,
+        "endLine": 42,
+        "sha256": "9385558ae8c95d72189bfe2b9e6c8b9fab43b0accb2a19710a1813e33f185d0a"
+      }
+    },
+    {
+      "path": "lib/desktop/associatedTicketActionsService.ts",
+      "wholeFileSha256": "2e163e07bd015cc01687b1cae642251e10bbf80b67024784d6adb2fc6a779fd6",
+      "range": {
+        "startLine": 1,
+        "endLine": 228,
+        "sha256": "2e163e07bd015cc01687b1cae642251e10bbf80b67024784d6adb2fc6a779fd6"
+      }
+    },
+    {
+      "path": "lib/desktop/associatedTicketRequestService.ts",
+      "wholeFileSha256": "1789057b958e9bd0d35f9cb71eb8f51212a1ff04c7886cd26123ba08013729eb",
+      "range": {
+        "startLine": 1,
+        "endLine": 99,
+        "sha256": "1789057b958e9bd0d35f9cb71eb8f51212a1ff04c7886cd26123ba08013729eb"
+      }
+    },
+    {
+      "path": "lib/releaseops/ticketGovernanceReviewStore.ts",
+      "wholeFileSha256": "e3f6a951fcee93612a69e6be18ce27f08d986ace1ef7ca7376cc3e6edca583e3",
+      "range": {
+        "startLine": 1,
+        "endLine": 121,
+        "sha256": "e3f6a951fcee93612a69e6be18ce27f08d986ace1ef7ca7376cc3e6edca583e3"
+      }
+    },
+    {
+      "path": "lib/releaseops/serviceNowWrittenLinkObservation.ts",
+      "wholeFileSha256": "e0b21ca5578c67dd54a79072d11315378142e16b5c6e91d4664efd096d4062c2",
+      "range": {
+        "startLine": 1,
+        "endLine": 21,
+        "sha256": "e0b21ca5578c67dd54a79072d11315378142e16b5c6e91d4664efd096d4062c2"
+      }
+    },
+    {
+      "path": "lib/releaseops/serviceNowTicketTransport.ts",
+      "wholeFileSha256": "e6de428b44e9f98a5c2ed4536e8bd3caa4a4b63ebddd0d65c31fc2a9076daa92",
+      "range": {
+        "startLine": 1,
+        "endLine": 108,
+        "sha256": "e6de428b44e9f98a5c2ed4536e8bd3caa4a4b63ebddd0d65c31fc2a9076daa92"
+      }
+    },
+    {
+      "path": "lib/releaseops/serviceNowAssociatedCloseProof.ts",
+      "wholeFileSha256": "71ffe89fa02a128dd250ca2b494dcb12ebe33321f41753fb6a029ae894917c2c",
+      "range": {
+        "startLine": 1,
+        "endLine": 30,
+        "sha256": "71ffe89fa02a128dd250ca2b494dcb12ebe33321f41753fb6a029ae894917c2c"
+      }
+    },
+    {
+      "path": "lib/releaseops/serviceNowTicketLifecycleStore.ts",
+      "wholeFileSha256": "0c8ae2b33096c280eaac3082564b5879ef0498e784f0006c97b37feb302c6e36",
+      "range": {
+        "startLine": 1,
+        "endLine": 133,
+        "sha256": "0c8ae2b33096c280eaac3082564b5879ef0498e784f0006c97b37feb302c6e36"
+      }
+    }
+  ],
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}

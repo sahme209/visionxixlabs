@@ -1,0 +1,47 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "f7b1cbc00387564423c47201eaa586395380ac84",
+  "branch": "codex/b4-servicenow-structured-knowledge",
+  "worktree": "/private/tmp/axiom-b4-servicenow-20261104",
+  "validation": {
+    "integrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 26,
+    "unchangedCitedCodeFiles": 24,
+    "currentInclusiveRawRanges": 24,
+    "historicalGuideRangesAllValidated": false,
+    "proposedEvaluationCases": 10,
+    "retrievalExecuted": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/servicenow-evidence-and-closure-controls.md": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-servicenow-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-servicenow-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-servicenow-evidence/bindings.sh"
+  ],
+  "bundleSha256": {
+    "docs/product/documentation-coverage/articles/servicenow-evidence-closure-controls.r1.json": "d36254609682435f02f3639921107a81e1efca5f756ac0cf234bd4835e047a66",
+    "docs/product/documentation-coverage/servicenow-evidence-closure-controls-evaluation.r1.json": "95d138719ecc14f0edd9de62ddf6821217101124b7270d12f61217469a1d20e8"
+  },
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/validate.sh": "652028eb92674e55ba5f3dd634ceba3f8b27c81d79c721b36f201cfd3fa919c0",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/bindings.sh": "042e8723cf855abc8cc58d26d7e66d2a9a979bedb9629430e1a5a14d53b45477",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/binding-integrity.json": "fc3e716c017e8885cb9bfe4aa663a4b65d68a18e6c323e0b50bd28c4afe193bb",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/validate.log": "b3920ccd880f018b806c7cb216f97b3cc9ac8fa3dbc4fa0fd63c2d719ee2fbfb",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/README.md": "b4f4fa932812eef07af71f9cb98ba5d32e169a88d08f9e3567cd2f1cad81cf3b",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/source-bindings.json": "1df98aa0c50f0f4f4a4e2548ce40a4cb6e1efb3673e04b76865250a838e7ed06",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/binding-integrity.cjs": "5a3ff1fb3dcf438b60e57a60f192193413b5037eef193f9c64e7e74680be31c4",
+    "docs/recovery/2026-11-04/servicenow-structured-knowledge-author/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03"
+  },
+  "limits": "Internal source-only/local preview, no provider proof, null human review/empty media/proposed IDs; all customer/editorial/media/native/runtime/release acceptance false; no mutable master hash"
+}

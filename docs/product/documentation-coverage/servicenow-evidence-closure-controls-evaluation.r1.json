@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.servicenow.evidence-closure-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:f7b1cbc00387564423c47201eaa586395380ac84",
+  "articleSha256": "d36254609682435f02f3639921107a81e1efca5f756ac0cf234bd4835e047a66",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "servicenow-unknown-parent",
+      "question": "Can I resend a written note with unknown result?",
+      "requiredResponse": "No. Original consumed UNKNOWN stays; never reset/renew/resend/descend. Separate written observation is read-only evidence review.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-empty-notes",
+      "question": "Does empty work_notes prove absence?",
+      "requiredResponse": "No. Exact current scoped journal entry/digest/time proof is required; empty field proves neither journal access nor absence.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-association",
+      "question": "Can I attach any successful run URL?",
+      "requiredResponse": "No. Actual saved original action/deployment evidence/current head/source bindings and independent human review are required; original/deployed requests stay distinct.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-observation",
+      "question": "Does observation approval confirm parent or close ticket?",
+      "requiredResponse": "No. Parent remains unknown/consumed; observation neither rewrites transport nor approves closure. Separate native policy/lifecycle/action review required.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-normal-new",
+      "question": "Can Axiom force Normal New to Closed?",
+      "requiredResponse": "No. Genuine instance lifecycle/approvals and supported current terminal transition must pass; Axiom association/policy/observation never bypass native rules.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-policy-hash",
+      "question": "Does source SHA256 prove terminal policy approval?",
+      "requiredResponse": "No. Genuine administrator declaration/provenance/model/fields and distinct human approval are required; hash alone is not authenticity or permission.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-post",
+      "question": "Does every POST write ServiceNow?",
+      "requiredResponse": "No. Some prepare/read/lookup/reconcile Axiom records; deliberate fixed transport dispatch has separate current-authority/one-attempt gates.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-closure",
+      "question": "Does HTTP dispatch or approved card prove closure?",
+      "requiredResponse": "No. Authorized requester separately executes exact independently reviewed action; confirmed requires exact native record/state/declared-field readback.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-save-recovery",
+      "question": "Can unconfirmed observation be replaced?",
+      "requiredResponse": "No. Lookup original saved review with retained request ID; missing result keeps hold, no replacement nonce or replay.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "servicenow-acceptance",
+      "question": "Is project note newly verified or live closure accepted?",
+      "requiredResponse": "No. Historical already-written instruction is preserved, not fresh provider proof. Internal source-only/null review/empty media/proposed IDs/unexecuted eval, acceptance false.",
+      "requiredCitation": "axiom.help.servicenow.evidence-closure-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}
