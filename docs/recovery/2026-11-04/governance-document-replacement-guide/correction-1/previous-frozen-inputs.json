@@ -1,0 +1,22 @@
+{
+  "status": "frozen-before-newbundle-validation",
+  "base": "e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+  "files": [
+    {
+      "path": "docs/product/knowledge/governance-document-replacement-controls.md",
+      "sha256": "cee7c2f20e1ce1206da843cdd36eba686e0afa109d1ec5678a6ab2348b005c0d"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/governance-document-replacement-guide/source-bindings.json",
+      "sha256": "65709f778200c6bb1e062fc2c04a381cce8db4c9291b169f8620ec4d759bdbcd"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/governance-document-replacement-controls.r1.json",
+      "sha256": "b375b75677dbe0a4952bc88a441e0d3e610e7f98e2b8f2a2658a0dcc81bbb479"
+    },
+    {
+      "path": "docs/product/documentation-coverage/governance-document-replacement-controls-evaluation.r1.json",
+      "sha256": "ad9d867fa055910eb99c4f89568ad105ce725f97e53238e9035163dc5031f7f6"
+    }
+  ]
+}

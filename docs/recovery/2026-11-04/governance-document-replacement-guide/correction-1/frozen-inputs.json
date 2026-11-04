@@ -1,0 +1,23 @@
+{
+  "status": "correction-1-frozen-before-newbundle-validation",
+  "previousPhaseCommit": "48ec7d82dc681a0c50c9e13b2b34b011039c4455",
+  "scope": "Only recovery/searchTerms content and dependent article/evaluation hashes; guide/code/sourcebindings unchanged",
+  "files": [
+    {
+      "path": "docs/product/knowledge/governance-document-replacement-controls.md",
+      "sha256": "cee7c2f20e1ce1206da843cdd36eba686e0afa109d1ec5678a6ab2348b005c0d"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/governance-document-replacement-guide/source-bindings.json",
+      "sha256": "65709f778200c6bb1e062fc2c04a381cce8db4c9291b169f8620ec4d759bdbcd"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/governance-document-replacement-controls.r1.json",
+      "sha256": "ace4b45554a3125deb268e5e330b0d72a184790ace9fd11470952f938ff4872f"
+    },
+    {
+      "path": "docs/product/documentation-coverage/governance-document-replacement-controls-evaluation.r1.json",
+      "sha256": "409b5c78c89015586bf05e56440e9e5b989a3ac3cd5310e4cb465488fb065c7e"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.governance.document-replacement",
+  "revision": 1,
+  "productVersion": "local-source-preview:e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+  "sourceFiles": 18,
+  "evaluationCases": 10,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

@@ -1,0 +1,18 @@
+{
+  "status": "corrected-frozen-READY",
+  "previousPhaseCommit": "48ec7d82dc681a0c50c9e13b2b34b011039c4455",
+  "contentFieldsChanged": [
+    "recovery",
+    "searchTerms"
+  ],
+  "evaluationOnlyArticleHashChanged": true,
+  "articleSha256": "ace4b45554a3125deb268e5e330b0d72a184790ace9fd11470952f938ff4872f",
+  "evaluationSha256": "409b5c78c89015586bf05e56440e9e5b989a3ac3cd5310e4cb465488fb065c7e",
+  "sourceBindingsRerun": false,
+  "sourceGuideCodeHashesUnchanged": true,
+  "validationExit": 0,
+  "customerRefusalExit": 1,
+  "customerEligible": false,
+  "humanReview": null,
+  "media": []
+}

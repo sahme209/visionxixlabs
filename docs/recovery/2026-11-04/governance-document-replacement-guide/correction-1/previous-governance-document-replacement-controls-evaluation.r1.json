@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.governance.document-replacement",
+  "revision": 1,
+  "productVersion": "local-source-preview:e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+  "articleSha256": "b375b75677dbe0a4952bc88a441e0d3e610e7f98e2b8f2a2658a0dcc81bbb479",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/runtime/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "governance-document-replacement-availability",
+      "question": "Where can I use replacement in Settings?",
+      "requiredResponse": "Actual registered DEV wrapper remains records-read-only/narrow identity; replacement exists only separate broad-identity composition. Do not remount or enable flags.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-head",
+      "question": "Can I type a saved version to replace?",
+      "requiredResponse": "No. Deliberately validate stored artifact and read current head; only artifactDigest sent. Historical list revision is not CAS authority.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-digest",
+      "question": "Matching old/current content digests mean fresh?",
+      "requiredResponse": "No. Matching bytes can recur at a later version; last-update time is not renewed observation/expiry and old artifact remains historical.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-file",
+      "question": "Can a different replacement filename rename target?",
+      "requiredResponse": "No. New local filename is presentation; fixed saved head name/scope remain upload target. Bounded local text only, no URLs or oldbody read.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-limit",
+      "question": "How do I replace version999?",
+      "requiredResponse": "Read-only supported version limit; no bypass, typed1000 or initial-create fallback.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-review",
+      "question": "What clears review?",
+      "requiredResponse": "File change, head reload and target change clear file/review as applicable. Review is local exact target/version/newfile acknowledgment, not independent policy approval.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-unknown",
+      "question": "409 or lost response means retry save?",
+      "requiredResponse": "No. Held immutable UUID/bytes/version; only original read lookup. Foundfalse/error stays held; never infer rollback or resend.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-history",
+      "question": "Original lookup found true proves current head?",
+      "requiredResponse": "No. It confirms historical original after possible head advancement; reload evidence deliberately, no write replay/current-head/activation grant.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-context",
+      "question": "Does switching account cancel server write and recover after restart?",
+      "requiredResponse": "It aborts/disowns UI responses and clears private memory, not dispatched server write. No durable rawbytes or restart-recovery promise; parent locks prevent pending tuple discard via refresh.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-document-replacement-authority",
+      "question": "Is this accepted customer/native Governance help?",
+      "requiredResponse": "No. Internal source-only draft/null humanreview/empty media/proposedcases not executed; source storage is not proposal/review/activation/enrollment/provider authority.",
+      "requiredCitation": "axiom.help.governance.document-replacement revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}
