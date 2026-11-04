@@ -1,0 +1,8 @@
+{
+  "sourceRevision": "4087adb589d65d7e1165d29d17e6cab496bbf1fb",
+  "bundleSha256": "72b45acdeeccb92f8bf1768e2f0a5f5b60f032bbf0ea55f49ddaf5da594a3794",
+  "exit": 0,
+  "stdout": "{\"actualEmittedInitializer\":true,\"constructionAndClose\":true,\"stagingWiped\":true,\"idempotentClose\":true,\"nativeExecuted\":false,\"sqlExecuted\":false,\"issuerQualified\":false}\n",
+  "stderr": "",
+  "scope": "ordinary synthetic initializer construction only; no canonical main/native execution"
+}
