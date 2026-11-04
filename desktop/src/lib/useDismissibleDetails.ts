@@ -13,6 +13,7 @@ export function useDismissibleDetails(){
   return()=>document.removeEventListener('pointerdown',outside,true);
  },[]);
  const onKeyDown=(event:KeyboardEvent<HTMLDetailsElement>)=>{
+  if(event.nativeEvent.isComposing||event.nativeEvent.keyCode===229)return;
   if(event.key==='Escape'&&event.currentTarget.open){
    event.preventDefault();event.stopPropagation();event.currentTarget.open=false;
    event.currentTarget.querySelector('summary')?.focus();

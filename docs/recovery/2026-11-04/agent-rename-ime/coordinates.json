@@ -1,0 +1,4 @@
+{
+  "owned": "/private/tmp/axiom-agent-rename-ime-eh2cw9f_",
+  "profile": "(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-agent-rename-ime-eh2cw9f_\"))"
+}

@@ -1,0 +1,39 @@
+{
+  "status": "local-rendered-tests-only",
+  "customerAcceptance": false,
+  "nativeAcceptance": false,
+  "sourceFiles": [
+    {
+      "path": "desktop/src/components/ConversationRename.tsx",
+      "sha256": "319f2858fb313910afaeca253ee3209c1e6f026f07265090d3a1d0c035f34c35"
+    },
+    {
+      "path": "desktop/src/lib/useDismissibleDetails.ts",
+      "sha256": "471bcf622601c4aa11a5de33f60021370b6c02c8967b0b78799db83f1b9b811d"
+    },
+    {
+      "path": "lib/desktop/__tests__/conversationRename.test.ts",
+      "sha256": "296e269ccda5e63241caced74d4701ccbed7730815b77abf2c8f189a6077f95e"
+    },
+    {
+      "path": "lib/desktop/__tests__/dismissibleDetails.test.ts",
+      "sha256": "36c8af94ae12d5315bcec6984cbff09d7206df618ca66bfdf5752dc8ebe21a9b"
+    }
+  ],
+  "red": {
+    "failed": 5,
+    "passed": 9,
+    "exit": 1
+  },
+  "green": {
+    "passed": 14,
+    "failed": 0,
+    "exit": 0
+  },
+  "network": "kernel denied",
+  "environment": "scrubbed, dedicated private HOME/TMPDIR/cache; writes denied outside private test directory",
+  "harnessError": "First config-loader runner attempt hit repository config __dirname; preserved separately, not RED. Minimal external config uses root and React dedupe with no runtime/provider aliases needed by these mocked tests.",
+  "limits": "DOM keyboard events prove handler/default cancellation behavior. jsdom does not synthesize Enter implicit form submission; real native IME acceptance remains open.",
+  "scopedTypesExit": 0,
+  "review": "fresh-context independent source review clear"
+}
