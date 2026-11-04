@@ -6,7 +6,7 @@ The same builder and copier are retained. Builder changes only select two source
 
 Inspector checks root-process owner, one application-only entry, two exact nonduplicate rights, delegation, validity/tag/handle representation, complete typed signature subject and all opaque bytes. Both graphs validate before comparison; input bounds are256 nodes,64KiB datum bytes, no nested application sublists, with pointer/range/alignment/cycle/overlap checks for synthetic inputs. Trusted framework traversal assumes the seventh export supplies readable framework pointers, as the existing copier does; this is not an arbitrary pointer validator. Handle equality is deliberately conservative and may refuse an otherwise compatible reconstructed handle. No final form is fed to the threshold-input copier.
 
-Watchdog source is fail-closed: its module entrypoint refuses every invocation, and reviewed packet hash is an unset sentinel. RUN was never called, including through mocks. Pure tests only exercise deadline/output precedence and mocked preflight refusal. The eventual RUN implementation launches exactly one helper with fixed argv/environment/session, combines stdout/stderr, bounds captured bytes with a single overflow sentinel, uses a10-second monotonic deadline, kills only its created process group, allows one second to confirm reaping, and returns unknown for timeout/overflow/crash/file changes. No retry. Unreaped child is explicitly reported. The one-second reap confirmation is after the10-second observation deadline. The watchdog cannot bound synchronous framework work internally or guarantee Popen creation duration. No service/process discovery exists.
+Watchdog source is fail-closed while its reviewed packet hash remains an unset compile-packet sentinel. Only explicit `--run-reviewed-once` selects the future RUN branch; that flag is an operator instruction, never approval/Governance authority. RUN was never called, including through mocks. Pure tests exercise deadline/output precedence, mocked preflight refusal, acyclic-record validation, stable metadata and mocked helper-mode transitions. The eventual RUN implementation launches exactly one helper with fixed argv/environment/session, combines stdout/stderr, bounds captured bytes with a single overflow sentinel, uses a10-second monotonic deadline, kills only its created process group, allows one second to confirm reaping, and returns unknown for timeout/overflow/crash/file changes. No retry. Unreaped child is explicitly reported. The one-second reap confirmation is after the10-second observation deadline. The watchdog cannot bound synchronous framework work internally or guarantee Popen creation duration. No service/process discovery exists.
 
 Pinned fixture was read only (metadata + bytes), never executed. Observed UID501, mode0600, size138024, Mach-O64 little-endian magic `cffaedfe`, SHA256 `d136d3f7d7c8135a543161afd4fa5127772bd1c35f41ed45cc37bf8d513e6f5e`. Full file identity is in the draft manifest. No chmod/sign/replacement/install occurred. **Test-only path/profile differs from canonical installation; no installed-path, code-identity exclusivity, custody or executing-issuer qualification follows.**
 
@@ -21,11 +21,11 @@ nm -u /private/tmp/axiom-cssm-inspect-pure-test
 python3 -m unittest discover -s packages/verified-issuer-runtime/native -p cssm_policy_watchdog_test.py
 ```
 
-Results: pure inspector passes relocated application-only equality,18 malformed/mismatch refusals, node/range/count bounds. Pure controller2 tests pass. `nm -u` lists only libc/compiler support: assert, stack probes/checks, memcpy/memset/bzero/memcmp/puts; no Security symbols/linkage. No full existing suites repeated. No honest TDD RED run was recorded before implementation; do not claim one. Source review must decide whether further pure negative testing is required.
+Results: pure inspector passes relocated application-only equality,18 malformed/mismatch refusals, node/range/count bounds. Original pure controller2 tests passed; round1 now has8 passing pure tests. `nm -u` lists only libc/compiler support: assert, stack probes/checks, memcpy/memset/bzero/memcmp/puts; no Security symbols/linkage. No full existing suites repeated. No honest TDD RED run was recorded before implementation; do not claim one. Source review must decide whether further pure negative testing is required.
 
 ## Required before compile or execution
 
-Independent source review/freeze comes first. Root may then authorize compile-only linking already within preparation scope, record exact compiler/SDK/link and binary hashes, store helper mode0600 without loading, and update receipt. Draft manifest is intentionally not launchable and must be replaced with exact reviewed source/controller/helper/fixture bindings. A future separately approved execution preparation would explicitly make the helper executable and bind the resulting mode/ctime; this preparation has not done so. The fail-closed controller main and sentinel must remain until that specific review. The manifest/source hashes are provenance only, not operational approval or grant inputs. An execution request still requires fresh explicit one-attempt authorization after the concrete compile packet exists.
+Independent source review/freeze comes first. Root may then authorize compile-only linking already within preparation scope, record exact compiler/SDK/link and binary hashes, store helper mode0600 without loading, and update receipt. Draft manifest is intentionally not launchable and must be replaced with exact reviewed source/controller/helper/fixture bindings. After compilation, finalize a packet excluding the controller and the packet itself, then put its digest in the controller and externally bind that final controller hash plus packet digest in the reviewed execution instruction. This dependency order has no hash cycle. The future approved RUN branch already implements helper600→700→600 through its held descriptor: bind the initial600 metadata, observe700 ctime after chmod, verify immutable identity/hash fields, launch once, restore600 and observe final ctime. No future timestamp is predicted. Preparation has performed no helper chmod; the fixture always remains600 and never executes. No controller behavior rewrite is needed after approval; only the external receipt authorizes the reviewed concrete invocation. The manifest/source hashes are provenance only, not operational approval or grant inputs. An execution request still requires fresh explicit one-attempt authorization after the concrete compile packet exists.
 
 Compile command proposed for review only, **NOT RUN**:
 
@@ -51,5 +51,27 @@ No helper/controller --help, fixture execution, Security API, Keychain item call
 | `cssm_policy_once_test.c` | `6cb5c1839b61afe16a378c07a4e2f8502ecb6a2ec9017937a4a464093499b387` |
 | `cssm_policy_qualification.c` | `087fbe77b01d74997c892abd3c2337ffec8cfcfae634b22eb840ee170a791855` |
 | `cssm_policy_qualification_receipt.h` | `8bab8b1f4fcbbf5e6b173d97fccd7ba1f68ea132c320a5322dfed29eb97818ac` |
-| `cssm_policy_watchdog.py` | `75c78392451fd71c6b2f7eee5254a8cfccf9cc4220a93527b15ccfb64ffc7843` |
-| `cssm_policy_watchdog_test.py` | `76f9c3b9b76ddb74d8ff6974a3696a7e5a4e882615763e309d849582bf3c9f7d` |
+| `cssm_policy_watchdog.py` | `c8c31248ececfc4a8c5a721527e1dfe1464c0b805efe48157a3bccf5756df630` |
+| `cssm_policy_watchdog_test.py` | `e1652445e31d4a0151ea73afb412cf8b1707333188326fedfc962381d396627c` |
+
+## Independent review fix round1 of5: acyclic packet/controller binding
+
+Addressed P2: the previous draft put the controller hash into the packet while controller source embedded packet hash. The packet now rejects controller/self records. Finalization order is helper/source/fixture bindings → packet bytes/hash → controller packet-digest literal → external reviewed instruction containing the final controller hash and packet hash. Editing controller digest never changes packet bytes. The controller is protected by the independently reviewed external invocation receipt, not by a circular self-proof.
+
+Actual RED command (before adding requested APIs):
+
+```sh
+python3 -m unittest discover -s packages/verified-issuer-runtime/native -p cssm_policy_watchdog_test.py
+```
+
+Result: `FAILED (errors=4)` across6 tests, missing `stable_stat`, `validate_records`, `mode_transition_matches`, `main`. After implementation the same command passed6 tests. Added fully mocked held-descriptor mode restoration success/exception tests, then the same command passed8 tests. No real filesystem mode change, helper/controller RUN, Popen, Security API or helper link occurred. Earlier missing inspector RED remains disclosed; it is not retroactively claimed. Inspector source/tests unchanged and not rerun in this round.
+
+Stable identity comparison explicitly ignores atime, while comparing dev/inode/uid/gid/mode/linkcount/size/mtime/ctime within each read. Declared helper chmod transitions alone may change mode/ctime; every other recorded field must remain equal. Exceptional restoration preserves an outstanding owned PID in the unknown response. The mode transition tests patch all open/fstat/fchmod/close/binding calls and assert Popen never ran.
+
+Concrete future invocation, **NOT RUN; not authorized by this document**:
+
+```sh
+/usr/bin/env -i PATH=/usr/bin:/bin LANG=C LC_ALL=C HOME=/var/empty TMPDIR=/private/tmp /usr/bin/python3 /private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_watchdog.py --run-reviewed-once
+```
+
+Before presenting the actual approval question, compile-only receipt must provide final packet digest and controller source SHA256, and the operator must verify them against that external receipt. The literal source/controller and exact helper/fixture binding must be those already independently reviewed. This source flag confers no execution authorization. Helper stays0600 throughout current preparation. No source behavior rewrite is required after execution approval.

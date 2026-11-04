@@ -127,26 +127,15 @@
       "sha256": "8bab8b1f4fcbbf5e6b173d97fccd7ba1f68ea132c320a5322dfed29eb97818ac"
     },
     {
-      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_watchdog.py",
-      "uid": 501,
-      "mode": 420,
-      "dev": 16777233,
-      "ino": 12760795,
-      "size": 7529,
-      "mtime_ns": 1793761205443790749,
-      "ctime_ns": 1793761205443790749,
-      "sha256": "75c78392451fd71c6b2f7eee5254a8cfccf9cc4220a93527b15ccfb64ffc7843"
-    },
-    {
       "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_watchdog_test.py",
       "uid": 501,
       "mode": 420,
       "dev": 16777233,
       "ino": 12760797,
-      "size": 1023,
-      "mtime_ns": 1793761171897445797,
-      "ctime_ns": 1793761171897445797,
-      "sha256": "76f9c3b9b76ddb74d8ff6974a3696a7e5a4e882615763e309d849582bf3c9f7d"
+      "size": 4491,
+      "mtime_ns": 1793761591568560629,
+      "ctime_ns": 1793761591568560629,
+      "sha256": "e1652445e31d4a0151ea73afb412cf8b1707333188326fedfc962381d396627c"
     },
     {
       "path": "/private/tmp/axiom-cssm-policy-artifacts/pure-test",
@@ -163,5 +152,7 @@
   "limit_seconds": 10,
   "output_limit_bytes": 2048,
   "source_profile": "fixed-fixture-1",
-  "notice": "Test-only path differs from canonical installation; no installed-path, code-identity exclusivity, custody or executing-issuer qualification follows."
+  "notice": "Test-only path differs from canonical installation; no installed-path, code-identity exclusivity, custody or executing-issuer qualification follows.",
+  "controller_binding": "EXTERNAL_REVIEW_INSTRUCTION_ONLY; intentionally excluded from packet files",
+  "helper_mode_transition": "After specific approval only: verify600 binding; held-descriptor chmod700; record resulting ctime; verify all other identity/hash fields; one launch; chmod600 and record resulting ctime. Fixture never changes."
 }
