@@ -1,0 +1,35 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-b6-installer-copy-20261104[39m
+
+ [32m✓[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mexplains unavailable storage checks without implying verified installation or end-to-end sign-in[32m 45[2mms[22m[39m
+ [32m✓[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mkeeps the recovered runtime branch redirect to downloads[32m 0[2mms[22m[39m
+ [32m✓[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mkeeps missing-asset guidance separate from the runtime fallback[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRuntimeReadiness.test.ts[2m > [22mdesktop runtime readiness[2m > [22mallows distribution when every required store is queryable, even when empty[32m 1[2mms[22m[39m
+ [31m×[39m lib/desktop/__tests__/desktopRuntimeReadiness.test.ts[2m > [22mdesktop runtime readiness[2m > [22mfails closed without exposing database details when any required store is unavailable[32m 2[2mms[22m[39m
+[31m   → expected 'Installers are built, but new desktop…' to contain 'Required service storage checks are u…'[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/desktopRuntimeReadiness.test.ts[2m > [22mdesktop runtime readiness[2m > [22mfails closed without exposing database details when any required store is unavailable
+[31m[1mAssertionError[22m: expected 'Installers are built, but new desktop…' to contain 'Required service storage checks are u…'[39m
+
+Expected: [32m"Required service storage checks are unavailable"[39m
+Received: [31m"Installers are built, but new desktop sign-in is temporarily unavailable while production storage is being prepared."[39m
+
+[36m [2m❯[22m lib/desktop/__tests__/desktopRuntimeReadiness.test.ts:[2m45:28[22m[39m
+    [90m 43|[39m
+    [90m 44|[39m     [34mexpect[39m(result[33m.[39mready)[33m.[39m[34mtoBe[39m([35mfalse[39m)[33m;[39m
+    [90m 45|[39m     expect(result.message).toContain("Required service storage checks …
+    [90m   |[39m                            [31m^[39m
+    [90m 46|[39m     expect(result.message).toContain("Installation, sign-in, and entit…
+    [90m 47|[39m     [34mexpect[39m(result[33m.[39mmessage)[33m.[39mnot[33m.[39m[34mtoContain[39m([32m"storage is being prepared"[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 01:37:09
+[2m   Duration [22m 431ms[2m (transform 22ms, setup 0ms, import 101ms, tests 54ms, environment 177ms)[22m
+

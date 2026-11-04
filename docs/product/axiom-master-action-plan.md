@@ -777,3 +777,7 @@ Twenty-four stored revisions include history; all15parents remain open. Full sou
 ## November4 — expanded offline support evaluation failed, not accepted
 
 One selected invocation on unchanged source/article bytes returned zero passes and two failures: the synthetic positive control refused, and the real-draft loop stopped before observing its first article hash. It does not establish expanded 24-record coverage. Both sandbox layers remain intact; nested sandbox launch is a hypothesis, not a confirmed cause. No production reader, trust metadata or article was changed. See [preserved failure report](../recovery/2026-11-04/support-expanded-evaluation-failure/report.md). A1–A9 and B1–B6 remain open.
+
+## November4 — bounded installer-availability claims corrected
+
+~~Preview/download fallback wording no longer claims that table-access checks verify installation, sign-in or entitlement~~ ([evidence](../recovery/2026-11-04/installer-storage-availability-copy/README.md)). Three public strings only; actual rendered/helper RED→five focused GREEN checks, scoped types, exact canonical source parity and independent review passed. Queries/gates/auth/redirects unchanged; providers/storage mocked. No full build, browser, live installation or deployment acceptance inferred. All15parent requirements remain open.

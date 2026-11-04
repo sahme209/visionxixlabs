@@ -1,0 +1,33 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-b6-installer-copy-20261104[39m
+
+ [31m×[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mexplains unavailable storage checks without implying verified installation or end-to-end sign-in[32m 46[2mms[22m[39m
+[31m   → expected 'Installer availabilityDesktop downloa…' to contain 'Required service storage-access check…'[39m
+ [32m✓[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mkeeps the recovered runtime branch redirect to downloads[32m 0[2mms[22m[39m
+ [32m✓[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mkeeps missing-asset guidance separate from the runtime fallback[32m 4[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mexplains unavailable storage checks without implying verified installation or end-to-end sign-in
+[31m[1mAssertionError[22m: expected 'Installer availabilityDesktop downloa…' to contain 'Required service storage-access check…'[39m
+
+Expected: [32m"Required service storage-access checks are currently unavailable"[39m
+Received: [31m"Installer availabilityDesktop downloads are temporarily paused.Installers have been built, but new desktop sign-in is unavailable while production storage is being prepared. Downloads will resume only after the complete sign-in and entitlement path is verified.Why the download is pausedPublishing an installer is not enough: account pairing, access entitlement, and the first authenticated request must also work. The website now fails closed when that service path cannot be verified. Return to downloads Contact support"[39m
+
+[36m [2m❯[22m app/download/preview/__tests__/availabilityBoundary.test.ts:[2m21:16[22m[39m
+    [90m 19|[39m   expect(screen.getByRole("heading", { name: "Desktop downloads are te…
+    [90m 20|[39m   [35mconst[39m text [33m=[39m screen[33m.[39m[34mgetByRole[39m([32m"main"[39m)[33m.[39mtextContent[33m![39m[33m;[39m
+    [90m 21|[39m   expect(text).toContain("Required service storage-access checks are c…
+    [90m   |[39m                [31m^[39m
+    [90m 22|[39m   expect(text).toContain("Successful storage checks do not verify inst…
+    [90m 23|[39m   expect(text).not.toContain("complete sign-in and entitlement path is…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 01:36:27
+[2m   Duration [22m 407ms[2m (transform 19ms, setup 0ms, import 93ms, tests 51ms, environment 205ms)[22m
+

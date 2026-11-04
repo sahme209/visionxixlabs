@@ -1,0 +1,13 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-b6-installer-copy-20261104[39m
+
+ [32m✓[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mexplains unavailable storage checks without implying verified installation or end-to-end sign-in[32m 46[2mms[22m[39m
+ [32m✓[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mkeeps the recovered runtime branch redirect to downloads[32m 0[2mms[22m[39m
+ [32m✓[39m app/download/preview/__tests__/availabilityBoundary.test.ts[2m > [22mkeeps missing-asset guidance separate from the runtime fallback[32m 4[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 01:36:45
+[2m   Duration [22m 373ms[2m (transform 16ms, setup 0ms, import 87ms, tests 50ms, environment 183ms)[22m
+
