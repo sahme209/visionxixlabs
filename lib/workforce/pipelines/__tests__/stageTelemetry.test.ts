@@ -102,6 +102,7 @@ function row(overrides: Partial<StageTelemetryRow>): StageTelemetryRow {
     tokensInput: overrides.tokensInput ?? 0,
     tokensOutput: overrides.tokensOutput ?? 0,
     latencyMs: overrides.latencyMs ?? 0,
+    ...(overrides.costState === undefined ? {} : {costState: overrides.costState, finalCostCents: overrides.finalCostCents}),
   };
 }
 
@@ -210,4 +211,18 @@ describe("DEFAULT_RUN_MAX_CENTS", () => {
   it("is set to a sensible default ($5)", () => {
     expect(DEFAULT_RUN_MAX_CENTS).toBe(500);
   });
+});
+
+describe('rollup financial completeness is separate from recorded projections',()=>{
+ it('does not label legacy callers without financial state final',()=>{
+  expect(rollupStageTelemetry([row({costCents:0})])).toMatchObject({totalCostCents:0,hasCost:false,costState:'unknown',finalTotalCostCents:null});
+ });
+ it('finalizes only matching explicit final cents across every stage',()=>{
+  expect(rollupStageTelemetry([row({costCents:0,costState:'final',finalCostCents:0}),row({costCents:7,costState:'final',finalCostCents:7})])).toMatchObject({totalCostCents:7,costState:'final',finalTotalCostCents:7});
+ });
+ it('unknown dominates pending and malformed final amounts cannot certify totals',()=>{
+  for(const last of [row({costCents:0}),row({costCents:1,costState:'final',finalCostCents:2})]){
+   expect(rollupStageTelemetry([row({costCents:0,costState:'pending',finalCostCents:null}),last])).toMatchObject({costState:'unknown',finalTotalCostCents:null});
+  }
+ });
 });

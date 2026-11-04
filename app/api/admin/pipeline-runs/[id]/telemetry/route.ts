@@ -10,6 +10,9 @@
  *   - per-pipeline cost trend (call this for every recent run)
  *   - billing reconciliation (cross-check vs. AI provider invoice)
  *
+ * Numeric cost fields and hasCost are recorded stage projections, not final
+ * provider totals or ledger allowance. costState/finalCostCents (and run
+ * finalTotalCostCents) explicitly describe projection completeness.
  * Gated by ADMIN_EMAILS.
  */
 
@@ -20,6 +23,8 @@ import { isAdminEmail } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
 import {
   rollupStageTelemetry,
+  classifyStageCost,
+  type FinancialCostMarker,
   type StageTelemetryRow,
 } from "@/lib/workforce/pipelines/rollupStageTelemetry";
 
@@ -36,7 +41,8 @@ export async function GET(
 
   const { id: runId } = await context.params;
 
-  const run = await prisma.pipelineRun.findUnique({
+  const {run, markers} = await prisma.$transaction(async tx => {
+  const run = await tx.pipelineRun.findUnique({
     where: { id: runId },
     select: {
       id: true,
@@ -65,12 +71,19 @@ export async function GET(
       },
     },
   });
+  const markers = run ? await tx.$queryRawUnsafe<FinancialCostMarker[]>(
+    `SELECT id, jsonb_typeof("outputDetail"->'cost') AS "costShape", "outputDetail"->'cost'->'totalCents' AS "totalCents", "outputDetail"->'cost'->'pendingSettlement' AS "pendingSettlement" FROM "PipelineStageRun" WHERE "runId"=$1`, run.id,
+  ) : [];
+  return {run, markers};
+  }, {isolationLevel: "RepeatableRead"});
 
   if (!run) {
     return NextResponse.json({ ok: false, reason: "run_not_found" }, { status: 404 });
   }
 
+  const financial = new Map(markers.map(marker => [marker.id, marker]));
   const rows: StageTelemetryRow[] = run.stages.map((s) => ({
+    ...classifyStageCost(s, financial.get(s.id)),
     stageId: s.stageId,
     stageKind: s.stageKind,
     status: s.status,
@@ -81,7 +94,7 @@ export async function GET(
     latencyMs: s.latencyMs,
   }));
 
-  const rollup = rollupStageTelemetry(rows);
+  const rollup = rollupStageTelemetry(rows, {runStatus: run.status});
 
   return NextResponse.json({
     ok: true,
@@ -96,7 +109,9 @@ export async function GET(
       errorSummary: run.errorSummary,
     },
     rollup,
-    stages: run.stages.map((s) => ({
+    stages: run.stages.map((s, index) => ({
+      costState: rows[index].costState,
+      finalCostCents: rows[index].finalCostCents,
       id: s.id,
       stageId: s.stageId,
       stageKind: s.stageKind,
