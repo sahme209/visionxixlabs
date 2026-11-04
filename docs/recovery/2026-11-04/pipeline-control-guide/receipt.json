@@ -1,0 +1,18 @@
+{
+  "status": "frozen-READY-for-independent-review",
+  "base": "4d75522a6a0c5207eb91d42b319395887f2db28b",
+  "uniqueCodeFiles": 22,
+  "inclusiveRawRanges": 28,
+  "articleSourceReferences": 24,
+  "directControlFamilies": 5,
+  "proposedCases": 10,
+  "integrityExit": 0,
+  "customerRefusalExit": 1,
+  "sourceBindingsExit": 0,
+  "humanReview": null,
+  "media": [],
+  "customerAcceptance": false,
+  "runtimeAcceptance": false,
+  "nativeAcceptance": false,
+  "releaseAcceptance": false
+}

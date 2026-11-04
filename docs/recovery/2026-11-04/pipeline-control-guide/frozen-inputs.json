@@ -1,0 +1,22 @@
+{
+  "base": "4d75522a6a0c5207eb91d42b319395887f2db28b",
+  "status": "frozen-before-newbundle-validation",
+  "files": [
+    {
+      "path": "docs/product/knowledge/pipeline-workspace-controls.md",
+      "sha256": "271d032185b30d6b49f7f3d08ba6a70ebe8980796307c89f6086198d9362d81c"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/pipeline-control-guide/source-bindings.json",
+      "sha256": "aca1ca7df71ecc307a1951333f597acfcdb8347a04be9d45c91311ae2d890c18"
+    },
+    {
+      "path": "docs/product/documentation-coverage/articles/pipeline-workspace-controls.r1.json",
+      "sha256": "fae9315a9bd69da80f572a023c5271e3bacd66d87048647145e41ff2e739b8a3"
+    },
+    {
+      "path": "docs/product/documentation-coverage/pipeline-workspace-controls-evaluation.r1.json",
+      "sha256": "f22c01c853fc6eb1e0218775aa24ebb675b78c309a16ce4d103e03fe7f0ba884"
+    }
+  ]
+}

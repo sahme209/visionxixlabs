@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.workforce.pipeline-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:4d75522a6a0c5207eb91d42b319395887f2db28b",
+  "sourceFiles": 24,
+  "evaluationCases": 10,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

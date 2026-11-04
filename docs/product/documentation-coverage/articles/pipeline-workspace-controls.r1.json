@@ -1,0 +1,219 @@
+{
+  "schema": 1,
+  "id": "axiom.help.workforce.pipeline-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Registered pipeline catalog, start and run timeline controls",
+  "productVersion": "local-source-preview:4d75522a6a0c5207eb91d42b319395887f2db28b",
+  "screenIds": [
+    "proposed.axiom.screen.workforce.pipeline-catalog",
+    "proposed.axiom.screen.workforce.pipeline-run"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.workforce.pipeline.back-workforce",
+    "proposed.axiom.control.workforce.pipeline.start",
+    "proposed.axiom.control.workforce.pipeline.recent-run",
+    "proposed.axiom.control.workforce.pipeline.back-catalog",
+    "proposed.axiom.control.workforce.pipeline.approval-link"
+  ],
+  "goal": "Understand actual registered pipeline controls and saved statuses while preserving current authority, exact approval, budget and uncertain-outcome boundaries.",
+  "prerequisites": [
+    "Authenticated workspace for pages; session start requires same-origin/currentsessionuser/actions:apply. Visible button does not establish role or provider readiness.",
+    "Catalog Start sends emptybody: required coding repository/instruction metadata must come from an existing appropriate task workflow; no new input capability invented.",
+    "Internal local source snapshot only; no live runtime/provider/AI/DB/account/configuration checked."
+  ],
+  "permissions": [
+    "Start/write/decision authorization belongs to existing server checks, not article/control labels. API-key v1 scopes are separate from cookie UI.",
+    "Exact coding stage artifact approval and quorum do not establish distinct humans or universal provider authorization; original requester/current role and per-provider write guards remain.",
+    "No cap/model/policy changes, provider credentials, native actions or automatic retry permission is granted."
+  ],
+  "steps": [
+    {
+      "instruction": "Read catalog within authenticated workspace.",
+      "effect": "read",
+      "expectedState": "Registry cards and last20runs/counts are saved presentation; caught read failures can look empty, not proof of absent runs."
+    },
+    {
+      "instruction": "Use Back to Workforce or open an existing recent run.",
+      "effect": "read",
+      "expectedState": "Navigation only; no role/provider permission granted."
+    },
+    {
+      "instruction": "Start only through an intended authorized workflow with its prerequisites.",
+      "effect": "execute",
+      "expectedState": "Run pipeline sends emptybody/cookiePOST, Starting disables and returnedrunId redirects. No repo/instruction/cap/model fields or originalnonce control; errors reenable but lost acknowledgement may follow committed start."
+    },
+    {
+      "instruction": "Inspect exact run summary and ordered stage timeline.",
+      "effect": "read",
+      "expectedState": "Queued/running/succeeded/failed/skipped/awaitingapproval are saved state; run success, duration/dryrun copy and static coding test review are not provider/test/deployment acceptance."
+    },
+    {
+      "instruction": "Follow stage approval ID to the separate approval workflow when present.",
+      "effect": "read",
+      "expectedState": "Link itself does not vote/execute. Exactartifact review/current role/tenant/principal/quorum remain server guards; terminal quorum may autoresume, best-effort."
+    },
+    {
+      "instruction": "Keep stage approval, generic approval execution and coding PR authority distinct.",
+      "effect": "read",
+      "expectedState": "Originalrequester/currentapply/access/exactartifact/oneattemptprovider guards still apply; APIkey votes are machine principals, not twohumanreview proof; no automerge."
+    },
+    {
+      "instruction": "Preserve default1000requesthold versus500runcap refusal.",
+      "effect": "recover",
+      "expectedState": "No automatic capraise/modelchange/holdreduction/retry; unresolvedholds full exposure, not zero or expiredrefund."
+    },
+    {
+      "instruction": "After unknown acknowledgement inspect existing run/approval/history deliberately.",
+      "effect": "recover",
+      "expectedState": "No documented detail Retry/Resume/Cancel action, no originalstartlookup or automaticresend. Provider unknown does not authorize reset/replay."
+    },
+    {
+      "instruction": "Treat global-admin telemetry as separate cost projection.",
+      "effect": "read",
+      "expectedState": "Configured-admin-only endpoint, nottenant UI; pending/unknown/zero is not finalinvoice or budgetauthority; localnewsource notlive acceptance."
+    }
+  ],
+  "expectedOutcome": "Identify the five direct control families, ordinary saved-status next steps and safe refusal/uncertainty interpretation without claiming generic pipeline/provider success.",
+  "limitations": [
+    "Finite catalog/run controls, not full nested approval/codingtask/provider/API/admin/native coverage.",
+    "Empty catalog/counts can be caught backend read failures; no explicit UI error distinction or polling/retry control is invented.",
+    "No customer/editorial/media/native/runtime/release/liveprovider acceptance; reviewnull/mediaempty; proposedIDs authoring-only.",
+    "Current1000fixedhold may refuse500defaultcap; usefulquotes/defaultcompletion unfinished, no automatic allowance/model/estimate bypass.",
+    "Globaladmin telemetry local pending/unknown/final projection is not tenant UI, credit authority or provider invoice verification."
+  ],
+  "recovery": [
+    "For lost start response inspect existing recent history before considering a new authorized action; button has no persisted idempotency key/originallookup and reenabled is not rollback proof.",
+    "For stage approval uncertainty inspect saved approval and run. Duplicate vote or terminalapproval is not a resume repair; no run-detail Retry/Resume/Cancel control exists.",
+    "For role/metadata/connection/executor/artifact/budget refusal preserve prerequisite and use responsible existing workflow/admin review; never automatically raise cap/change model/replay.",
+    "Dispatchedunknown/pending calls retain full exposure; missingusage/timeout/lostproviderwrite is not refund/expiryrelease/secondattempt.",
+    "Exact provider approval and requester execution boundaries must be reviewed in the relevant existing action workflow; sourceguide or generic stage success cannot substitute."
+  ],
+  "searchTerms": [
+    "Run pipeline",
+    "Starting",
+    "pipeline recent runs",
+    "Back to pipelines",
+    "awaiting approval",
+    "exact coding artifact",
+    "machine approval principal",
+    "requester actions apply",
+    "1000 request hold 500 run cap",
+    "dispatch unknown no resend",
+    "global admin telemetry pending unknown final"
+  ],
+  "sources": [
+    {
+      "path": "app/dashboard/workforce/pipelines/page.tsx",
+      "sha256": "a9588102cee1a0366a486e31fb7b341f839577fa4c871b7b488c4339e331a4a5"
+    },
+    {
+      "path": "app/dashboard/workforce/pipelines/runs/[runId]/page.tsx",
+      "sha256": "d59e4cc698f0211481cd5e0d65e6b5f9a7855863ac6d71cf5e67969993a571d7"
+    },
+    {
+      "path": "components/workforce/StartPipelineButton.tsx",
+      "sha256": "b09d18ca1939890015273831c4e01ba33ec6fb9068bf1f45d67639553a381ddc"
+    },
+    {
+      "path": "app/api/workforce/pipelines/[id]/start/route.ts",
+      "sha256": "51cd0801ddbe0b829a1051b9e5a83d6795881fa817635debca4f12b993ec88f7"
+    },
+    {
+      "path": "app/api/v1/pipelines/runs/route.ts",
+      "sha256": "d4c47029f4b54d157e48a92ca3ace3a37c9fb0b3e33d679640d0cceeadc229ee"
+    },
+    {
+      "path": "app/api/v1/pipelines/runs/[id]/route.ts",
+      "sha256": "e5128d31352be21b2dd883e711c3207b9b4073ded124489efae8ee98e8b60745"
+    },
+    {
+      "path": "app/api/v1/pipelines/runs/[id]/decide/route.ts",
+      "sha256": "b77dc9ffc6e5e6124a56dd1e1ce58c6486862ca80474d293f3fabf91dedec70e"
+    },
+    {
+      "path": "app/api/workforce/approvals/[id]/decide/route.ts",
+      "sha256": "784d62469c6f54f8c55ba874bcac0f8f68e70498692eefd7cc1713dfafa9b856"
+    },
+    {
+      "path": "app/api/workforce/approvals/[id]/execute/route.ts",
+      "sha256": "67140b1d3d9ae7115ed4aa5d7f2637d57092437e0ce681705c05c9d2c3b996c6"
+    },
+    {
+      "path": "lib/workforce/persistApprovalVote.ts",
+      "sha256": "5169ef1fee6940bd8ecfbe7cc3249a884756683dac44f1cf3ca4759dd3d5c14f"
+    },
+    {
+      "path": "lib/workforce/pipelines/pipelineRunner.ts",
+      "sha256": "fcda7302e01f8e4077551415a7340c4b69ec5c2783622e432017fce895270a4c"
+    },
+    {
+      "path": "lib/workforce/pipelines/pipelineRegistry.ts",
+      "sha256": "c53b79e975d5514c0dcaa943afbcf51c657d0af570f14ed617def14aa876502f"
+    },
+    {
+      "path": "lib/workforce/pipelines/stageExecutorRegistry.ts",
+      "sha256": "21902285dfce2b1817c89f6608590b32b124b3fe0ee937e0326dd8c617110504"
+    },
+    {
+      "path": "lib/workforce/pipelines/codingDryRunExecutors.ts",
+      "sha256": "55605357bb023ebd76f3bb104f78d37c05c6ac08f46795575463f162cdb83fd7"
+    },
+    {
+      "path": "lib/workforce/pipelines/approvedCodingArtifact.ts",
+      "sha256": "ba892ccfd149f8828f211abd80b1aa17b655c264811a8dd6dff24efa479468af"
+    },
+    {
+      "path": "lib/workforce/pipelines/codePrOpenRealExecutor.ts",
+      "sha256": "6c64ca5af602dc41971eb5f1de42228281e438e150405a4326e428b5e3238663"
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunReservation.ts",
+      "sha256": "d4eb3403f2d392195c998c6bc3413441cf4e16146a4b541ea8801600732ecfdd"
+    },
+    {
+      "path": "lib/workforce/pipelines/resolveRunBudgetCap.ts",
+      "sha256": "9c1a92dfad0b234d9b276812e0274a09a5f0aedbce10c4ad618dbfc416f37e77"
+    },
+    {
+      "path": "lib/workforce/pipelines/assertRunCostBudget.ts",
+      "sha256": "04c8cd9b1393fdadb4372f82c5b199a7828c09b6c28a8d81a76106319d996ff9"
+    },
+    {
+      "path": "lib/billing/requestReservationCents.ts",
+      "sha256": "2da0a4dffd8a92d655044421e6ea90ac1439924a521cab7b56a1d9b57f318281"
+    },
+    {
+      "path": "app/api/admin/pipeline-runs/[id]/telemetry/route.ts",
+      "sha256": "75cd3010ce5e648272b6460d28b4184c6a9355602071484c736a20527362117e"
+    },
+    {
+      "path": "lib/workforce/pipelines/rollupStageTelemetry.ts",
+      "sha256": "1b578df48a28bb4a7f61ea39c5b4a3cd68d13131e42caca7f61dcf23aa8f5e97"
+    },
+    {
+      "path": "docs/product/knowledge/pipeline-workspace-controls.md",
+      "sha256": "271d032185b30d6b49f7f3d08ba6a70ebe8980796307c89f6086198d9362d81c"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/pipeline-control-guide/source-bindings.json",
+      "sha256": "aca1ca7df71ecc307a1951333f597acfcdb8347a04be9d45c91311ae2d890c18"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/pipeline-workspace-controls.md",
+      "docs/recovery/2026-11-04/pipeline-control-guide/source-bindings.json"
+    ],
+    "verifiedVersion": "local-source-preview:4d75522a6a0c5207eb91d42b319395887f2db28b",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

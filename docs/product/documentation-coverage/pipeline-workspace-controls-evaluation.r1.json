@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.workforce.pipeline-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:4d75522a6a0c5207eb91d42b319395887f2db28b",
+  "articleSha256": "fae9315a9bd69da80f572a023c5271e3bacd66d87048647145e41ff2e739b8a3",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future responses/citations only; no retrieval/model evaluation executed.",
+  "cases": [
+    {
+      "id": "pipeline-empty",
+      "question": "No runs yet proves no history?",
+      "requiredResponse": "No: recent/count reads catch failures as empty; latest20 is not full audit.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-start",
+      "question": "Does Run pipeline gather coding instructions and repository?",
+      "requiredResponse": "No: emptybody button, no such fields. Existing authorized coding task workflow/prerequisites separate.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-unknown",
+      "question": "Start errored; repeat it automatically?",
+      "requiredResponse": "No: may already create run, no original nonce lookup in button; inspect history first.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-states",
+      "question": "Succeeded means provider/tests/deploy accepted?",
+      "requiredResponse": "No: savedstatus, catalogcopy and static patch/testreview not allprovider/testexecution acceptance.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-approval",
+      "question": "Approval link executes?",
+      "requiredResponse": "No: navigation to separate workflow; currentrole/exactartifact/quorum/requesterauthority separate. Terminal vote may autoresume best-effort.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-machine",
+      "question": "Two keys mean two independent humans?",
+      "requiredResponse": "No: distinct machine principals, legacyapproverlabels ignored; do not assert humanreview.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-budget",
+      "question": "1000hold refused500cap; raise limit or change model?",
+      "requiredResponse": "Do not automate bypass. Preserve saved allowance/refusal, no cheaperquote invented.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-ledger",
+      "question": "Timeout makes unknown hold expire?",
+      "requiredResponse": "No: dispatchedunknown/pending retainsfull exposure; notrefund/TTLrelease/refinementretry.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-telemetry",
+      "question": "Admin cost zero proves final free run?",
+      "requiredResponse": "No: globaladmin-only separate endpoint; pending/unknown/final projection notproviderinvoice/budgetauthority/tenantUI.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    },
+    {
+      "id": "pipeline-acceptance",
+      "question": "Is this customer/live walkthrough with retry controls?",
+      "requiredResponse": "No: internal source draft proposedcases/nullreview/emptymedia, finite5controlfamilies and no invented run-detail Retry/Resume/Cancel.",
+      "requiredCitation": "axiom.help.workforce.pipeline-controls revision1 only after genuine approval and applicable exact source/version validation; otherwise disclose unavailable approved evidence"
+    }
+  ]
+}

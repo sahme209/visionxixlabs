@@ -1,0 +1,301 @@
+{
+  "status": "frozen-internal-source-preview",
+  "baselineCommit": "4d75522a6a0c5207eb91d42b319395887f2db28b",
+  "guide": {
+    "path": "docs/product/knowledge/pipeline-workspace-controls.md",
+    "sha256": "271d032185b30d6b49f7f3d08ba6a70ebe8980796307c89f6086198d9362d81c"
+  },
+  "rangeConvention": "inclusive 1-based raw lines retaining terminators",
+  "sources": [
+    {
+      "path": "app/dashboard/workforce/pipelines/page.tsx",
+      "wholeFileSha256": "a9588102cee1a0366a486e31fb7b341f839577fa4c871b7b488c4339e331a4a5",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 197,
+          "sha256": "a9588102cee1a0366a486e31fb7b341f839577fa4c871b7b488c4339e331a4a5"
+        }
+      ]
+    },
+    {
+      "path": "app/dashboard/workforce/pipelines/runs/[runId]/page.tsx",
+      "wholeFileSha256": "d59e4cc698f0211481cd5e0d65e6b5f9a7855863ac6d71cf5e67969993a571d7",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 174,
+          "sha256": "d59e4cc698f0211481cd5e0d65e6b5f9a7855863ac6d71cf5e67969993a571d7"
+        }
+      ]
+    },
+    {
+      "path": "components/workforce/StartPipelineButton.tsx",
+      "wholeFileSha256": "b09d18ca1939890015273831c4e01ba33ec6fb9068bf1f45d67639553a381ddc",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 63,
+          "sha256": "b09d18ca1939890015273831c4e01ba33ec6fb9068bf1f45d67639553a381ddc"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workforce/pipelines/[id]/start/route.ts",
+      "wholeFileSha256": "51cd0801ddbe0b829a1051b9e5a83d6795881fa817635debca4f12b993ec88f7",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 50,
+          "sha256": "51cd0801ddbe0b829a1051b9e5a83d6795881fa817635debca4f12b993ec88f7"
+        }
+      ]
+    },
+    {
+      "path": "app/api/v1/pipelines/runs/route.ts",
+      "wholeFileSha256": "d4c47029f4b54d157e48a92ca3ace3a37c9fb0b3e33d679640d0cceeadc229ee",
+      "ranges": [
+        {
+          "startLine": 49,
+          "endLine": 95,
+          "sha256": "a2fac4862b5ca25f41d2367f2a0fdbb1437b51b9ec95e5e7568c505783eb6b27"
+        }
+      ]
+    },
+    {
+      "path": "app/api/v1/pipelines/runs/[id]/route.ts",
+      "wholeFileSha256": "e5128d31352be21b2dd883e711c3207b9b4073ded124489efae8ee98e8b60745",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 97,
+          "sha256": "e5128d31352be21b2dd883e711c3207b9b4073ded124489efae8ee98e8b60745"
+        }
+      ]
+    },
+    {
+      "path": "app/api/v1/pipelines/runs/[id]/decide/route.ts",
+      "wholeFileSha256": "b77dc9ffc6e5e6124a56dd1e1ce58c6486862ca80474d293f3fabf91dedec70e",
+      "ranges": [
+        {
+          "startLine": 96,
+          "endLine": 160,
+          "sha256": "754ea59833c3dfacc6b14ca378c2fa594ab393d08d5072b2ad789b79fdf9dc06"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workforce/approvals/[id]/decide/route.ts",
+      "wholeFileSha256": "784d62469c6f54f8c55ba874bcac0f8f68e70498692eefd7cc1713dfafa9b856",
+      "ranges": [
+        {
+          "startLine": 42,
+          "endLine": 125,
+          "sha256": "cc8ce6f728ffd5aca9a089b8e21be8e47ad8ede3b1dd526d90d5de6eb4b0fbf2"
+        }
+      ]
+    },
+    {
+      "path": "app/api/workforce/approvals/[id]/execute/route.ts",
+      "wholeFileSha256": "67140b1d3d9ae7115ed4aa5d7f2637d57092437e0ce681705c05c9d2c3b996c6",
+      "ranges": [
+        {
+          "startLine": 49,
+          "endLine": 124,
+          "sha256": "949ff76eeec3f78733cf5cd809d31090d3d2ed7b800c432ce73bf523610acfaa"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/persistApprovalVote.ts",
+      "wholeFileSha256": "5169ef1fee6940bd8ecfbe7cc3249a884756683dac44f1cf3ca4759dd3d5c14f",
+      "ranges": [
+        {
+          "startLine": 29,
+          "endLine": 70,
+          "sha256": "e4031c8b9917e78029301fd84afa6e9e1c08b8540b2e7cef43c65ab21704232d"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/pipelineRunner.ts",
+      "wholeFileSha256": "fcda7302e01f8e4077551415a7340c4b69ec5c2783622e432017fce895270a4c",
+      "ranges": [
+        {
+          "startLine": 44,
+          "endLine": 75,
+          "sha256": "92d4052cae8312ead8706b7de8d4de4f355bea32f6f43ab424d716c624816e0f"
+        },
+        {
+          "startLine": 115,
+          "endLine": 121,
+          "sha256": "667edac1ca3f977b56dd3af843cfb4acefb6bd03faade2aa88c91592a0cc852c"
+        },
+        {
+          "startLine": 210,
+          "endLine": 300,
+          "sha256": "5058f384562151ffd4576480443c17cd8cfefea32e60e6fa5481c96b74fcc65c"
+        },
+        {
+          "startLine": 312,
+          "endLine": 330,
+          "sha256": "14560e33e12e687946b7d859b2a17c7be0ba384efe1fb47166c728cc7fc6738e"
+        },
+        {
+          "startLine": 390,
+          "endLine": 455,
+          "sha256": "3885e93fa855e5695a59cf76dea803670d296b0d7aeb75c53f92425e3f206ef4"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/pipelineRegistry.ts",
+      "wholeFileSha256": "c53b79e975d5514c0dcaa943afbcf51c657d0af570f14ed617def14aa876502f",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 134,
+          "sha256": "c53b79e975d5514c0dcaa943afbcf51c657d0af570f14ed617def14aa876502f"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/stageExecutorRegistry.ts",
+      "wholeFileSha256": "21902285dfce2b1817c89f6608590b32b124b3fe0ee937e0326dd8c617110504",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 101,
+          "sha256": "21902285dfce2b1817c89f6608590b32b124b3fe0ee937e0326dd8c617110504"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/codingDryRunExecutors.ts",
+      "wholeFileSha256": "55605357bb023ebd76f3bb104f78d37c05c6ac08f46795575463f162cdb83fd7",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 41,
+          "sha256": "55605357bb023ebd76f3bb104f78d37c05c6ac08f46795575463f162cdb83fd7"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/approvedCodingArtifact.ts",
+      "wholeFileSha256": "ba892ccfd149f8828f211abd80b1aa17b655c264811a8dd6dff24efa479468af",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 33,
+          "sha256": "ba892ccfd149f8828f211abd80b1aa17b655c264811a8dd6dff24efa479468af"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/codePrOpenRealExecutor.ts",
+      "wholeFileSha256": "6c64ca5af602dc41971eb5f1de42228281e438e150405a4326e428b5e3238663",
+      "ranges": [
+        {
+          "startLine": 55,
+          "endLine": 75,
+          "sha256": "84da1975f15d3283ff0bb7b8759ba94e98bde8a9b3135e78223dd9309df73752"
+        },
+        {
+          "startLine": 125,
+          "endLine": 135,
+          "sha256": "4c6dc3cee454521f53d8dc94be9c29b1500b9a26d69197eaa73647f31bc39f73"
+        },
+        {
+          "startLine": 170,
+          "endLine": 186,
+          "sha256": "000bd794cf392de71251ad570ba8d72cdfb6db3234f91ad9ccb06506f44f81ab"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunReservation.ts",
+      "wholeFileSha256": "d4eb3403f2d392195c998c6bc3413441cf4e16146a4b541ea8801600732ecfdd",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 191,
+          "sha256": "d4eb3403f2d392195c998c6bc3413441cf4e16146a4b541ea8801600732ecfdd"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/resolveRunBudgetCap.ts",
+      "wholeFileSha256": "9c1a92dfad0b234d9b276812e0274a09a5f0aedbce10c4ad618dbfc416f37e77",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 106,
+          "sha256": "9c1a92dfad0b234d9b276812e0274a09a5f0aedbce10c4ad618dbfc416f37e77"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/assertRunCostBudget.ts",
+      "wholeFileSha256": "04c8cd9b1393fdadb4372f82c5b199a7828c09b6c28a8d81a76106319d996ff9",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 141,
+          "sha256": "04c8cd9b1393fdadb4372f82c5b199a7828c09b6c28a8d81a76106319d996ff9"
+        }
+      ]
+    },
+    {
+      "path": "lib/billing/requestReservationCents.ts",
+      "wholeFileSha256": "2da0a4dffd8a92d655044421e6ea90ac1439924a521cab7b56a1d9b57f318281",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 20,
+          "sha256": "2da0a4dffd8a92d655044421e6ea90ac1439924a521cab7b56a1d9b57f318281"
+        }
+      ]
+    },
+    {
+      "path": "app/api/admin/pipeline-runs/[id]/telemetry/route.ts",
+      "wholeFileSha256": "75cd3010ce5e648272b6460d28b4184c6a9355602071484c736a20527362117e",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 128,
+          "sha256": "75cd3010ce5e648272b6460d28b4184c6a9355602071484c736a20527362117e"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/rollupStageTelemetry.ts",
+      "wholeFileSha256": "1b578df48a28bb4a7f61ea39c5b4a3cd68d13131e42caca7f61dcf23aa8f5e97",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 112,
+          "sha256": "1b578df48a28bb4a7f61ea39c5b4a3cd68d13131e42caca7f61dcf23aa8f5e97"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "uniqueCodeFiles": 22,
+    "inclusiveRanges": 28,
+    "directControlFamilies": 5
+  },
+  "scope": "Registered catalog/run direct controls; narrowly traced API/approval/budget/PR/telemetry boundaries, not all pipeline controls/backends",
+  "historicalArtifactsChanged": false,
+  "proposedIdsAreRuntimeBindings": false,
+  "acceptance": {
+    "customer": false,
+    "editorial": false,
+    "media": false,
+    "native": false,
+    "runtime": false,
+    "release": false,
+    "liveProvider": false,
+    "retrievalEvaluation": false
+  }
+}
