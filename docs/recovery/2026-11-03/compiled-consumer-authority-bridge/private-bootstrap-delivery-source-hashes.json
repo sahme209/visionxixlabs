@@ -1,0 +1,22 @@
+{
+  "baseCommit": "e74052c8a49886ee4ca47c1f6ca7dd2a7d3bd0b7",
+  "purpose": "Source review identity only; no runtime/custody qualification",
+  "sha256": {
+    "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/role-and-initialization-graph.md": "12df9dd0212d260b7059cdcffecf685659dd695fbeba4237280146c83edc8baf",
+    "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/process-placement-and-request-channel.md": "e96b4ba35cab336c2d1f5448eb3a61ef7afc976f99184b38bc4a413a8211af90",
+    "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/owned-message-resource-authentication.md": "5d1896ff839c4eb92537ed08c436e43cba4f349fe1db23afd1427d80604db102",
+    "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/custody-profile-decision.md": "54c86355cd45000316ac62630647c54c221982fc884e34c5085c8fd48ff12794",
+    "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/apple-reference-findings.md": "b3c963bf29f2aa1af5da809a1c0aa101bacd1221f9470c85f0191d75e5d8c993",
+    "packages/verified-issuer-runtime/index.cjs": "a9152cbf65c8b1516c2506dc7d37250ed1ea0057ca11feabbfba08cb47de8c1f",
+    "packages/verified-issuer-runtime/native/origin_bootstrap.c": "d2d711f94ac6d8bbf86f0b2a643ce97f05b93d4c2a339bb769d6ab0223b81be8",
+    "packages/verified-issuer-runtime/native/origin_guard.c": "c51cea129b2e0865091adf051fc79b9a94ceff5d7c3ce29df78f816c2f746fe7",
+    "packages/verified-issuer-runtime/native/origin_broker.c": "f4d0c99b793b5bd68c7cdbf6ddbd156f41b888c5d90ad98d6968f36acc0dbe6b",
+    "packages/verified-issuer-runtime/native/origin_config.h": "de02b11bfc8562fbe735e27a8f9ec989e56c781caf7e72cdc1678ffe0021ee72",
+    "packages/verified-issuer-runtime/origin-unit/controller.m": "bca6f79019f23b1bd82c5eeafd5c0f5c4d0d24e9ff58eff4f0ddae86af1b99d3",
+    "packages/verified-issuer-runtime/origin-unit/broker.c": "9725c24ccf3f27b844b964307e32c3e5db97b1991b237a64cedbb9ee0addb4ca",
+    "lib/desktop/privateReleaseMergeComposition.ts": "52d0297aff96d8857ae9f19331204606659afe66ba56de8ae4ee252ed53fbe5c",
+    "lib/security/privateCredentialVault.ts": "4e0e93c0eefc21503a7c7f9aa008f656a8e2db5b61ace260cdee602ca71a2541",
+    "lib/security/privateAuthorityDatabase.ts": "0baf90d2d6624d56c5ec6be220e33f53be7dbd48480bf5758ba7aa70752f07cd",
+    "lib/desktop/privateDesktopCommercialAccess.ts": "e4b1bf349066d605d963f97dce8814c01593a9aee5ba654b7704446de665e622"
+  }
+}
