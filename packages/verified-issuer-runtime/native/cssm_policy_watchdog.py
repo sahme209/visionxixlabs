@@ -14,7 +14,7 @@ import time
 import sys
 
 PACKET = Path('/private/tmp/axiom-cssm-policy-artifacts/qualification-manifest.json')
-PACKET_SHA256 = 'UNCOMPILED_UNEXECUTED_REQUIRES_REVIEW'
+PACKET_SHA256 = '909cbd489d59046afe88e7e397de0d6e7b01fc0cd15471fd526e6178d46c91df'
 HELPER = '/private/tmp/axiom-cssm-policy-artifacts/qualification-helper'
 FIXTURE = '/private/tmp/axiom-cssm-policy-artifacts/pure-test'
 FIXTURE_SHA256 = 'd136d3f7d7c8135a543161afd4fa5127772bd1c35f41ed45cc37bf8d513e6f5e'

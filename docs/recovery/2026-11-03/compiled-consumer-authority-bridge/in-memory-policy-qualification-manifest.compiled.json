@@ -1,0 +1,205 @@
+{
+  "state": "compile-reviewed-execution-still-requires-specific-approval",
+  "source": "compiled-reviewed-actualexecutionUNAUTHORIZED",
+  "behavior_source_freeze": "9bda7ee0",
+  "execution_authorized": false,
+  "files": [
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_builder.c",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12759742,
+      "size": 4132,
+      "mtime_ns": 1793761205442678540,
+      "ctime_ns": 1793761205442678540,
+      "sha256": "73b9b9e8683414608fd7ab2545d6a7342270ed6cf6e73627376d5d1989110f0a"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_copy.c",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12759743,
+      "size": 8089,
+      "mtime_ns": 1793760999723725640,
+      "ctime_ns": 1793760999723725640,
+      "sha256": "e3bd87182c7f1c07e845618d46c6e6f0192a9591b0eb887bee753b59fd568dde"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_copy.h",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12759744,
+      "size": 1035,
+      "mtime_ns": 1793760999723813556,
+      "ctime_ns": 1793760999723813556,
+      "sha256": "3aa8ace9335dbc63fb20aafec7ba717fb0dc76f13035c0b31efa1b6b1d0a1574"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_copy_test.c",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12759745,
+      "size": 6324,
+      "mtime_ns": 1793760999723915307,
+      "ctime_ns": 1793760999723915307,
+      "sha256": "5be2a4dc5eba9d14607f08d92c6995933a64ae897bcc9ce23fc5a8375d9fb691"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_inspect.c",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12760638,
+      "size": 4807,
+      "mtime_ns": 1793761095693683338,
+      "ctime_ns": 1793761095693683338,
+      "sha256": "bd4489741875db3522090ce54d741706eaedb4547c14cf246ed8f99c0b674ee9"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_inspect.h",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12760637,
+      "size": 625,
+      "mtime_ns": 1793761095693595130,
+      "ctime_ns": 1793761095693595130,
+      "sha256": "b0430cf1cfc4b24759d95b3f60f6dd7bf24c58585ff75a89c1b918e9e99c0902"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_inspect_test.c",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12760639,
+      "size": 4973,
+      "mtime_ns": 1793761221289039648,
+      "ctime_ns": 1793761221289039648,
+      "sha256": "d121e6553b3afefcb5be79ed74ea1cc65967adac16c48af12091be4a9915bd90"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_once.h",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12759746,
+      "size": 362,
+      "mtime_ns": 1793760999724000806,
+      "ctime_ns": 1793760999724000806,
+      "sha256": "573d53fccd0fd6861c5da42d388c790166f10b864e3b2f9687f419ebbe133d88"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_once_test.c",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12759747,
+      "size": 1122,
+      "mtime_ns": 1793760999724082140,
+      "ctime_ns": 1793760999724082140,
+      "sha256": "6cb5c1839b61afe16a378c07a4e2f8502ecb6a2ec9017937a4a464093499b387"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_qualification.c",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12760731,
+      "size": 1362,
+      "mtime_ns": 1793761205443691915,
+      "ctime_ns": 1793761205443691915,
+      "sha256": "087fbe77b01d74997c892abd3c2337ffec8cfcfae634b22eb840ee170a791855"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_qualification_receipt.h",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12760855,
+      "size": 322,
+      "mtime_ns": 1793761205443588624,
+      "ctime_ns": 1793761205443588624,
+      "sha256": "8bab8b1f4fcbbf5e6b173d97fccd7ba1f68ea132c320a5322dfed29eb97818ac"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_watchdog_test.py",
+      "uid": 501,
+      "mode": 420,
+      "dev": 16777233,
+      "ino": 12760797,
+      "size": 4491,
+      "mtime_ns": 1793761591568560629,
+      "ctime_ns": 1793761591568560629,
+      "sha256": "e1652445e31d4a0151ea73afb412cf8b1707333188326fedfc962381d396627c"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-policy-artifacts/qualification-helper",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777233,
+      "ino": 12763770,
+      "size": 52776,
+      "mtime_ns": 1793761837793578219,
+      "ctime_ns": 1793761837793578219,
+      "sha256": "098736e957189c4c9abd37b2e36662c5b97277f69f0787278a6470428f8d4f3b"
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-policy-artifacts/pure-test",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777233,
+      "ino": 12744998,
+      "size": 138024,
+      "mtime_ns": 1793760364239702164,
+      "ctime_ns": 1793760364362690548,
+      "sha256": "d136d3f7d7c8135a543161afd4fa5127772bd1c35f41ed45cc37bf8d513e6f5e"
+    }
+  ],
+  "limits": {
+    "wall_deadline_seconds": 10,
+    "output_limit_bytes": 2048,
+    "owned_children": 1,
+    "retries": 0,
+    "reap_confirmation_seconds": 1
+  },
+  "build": {
+    "cwd": "/private/tmp/axiom-cssm-qualification-preparation-5fb1",
+    "command": "clang -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations -DAX_CSSM_PROFILE=1 -I packages/verified-issuer-runtime/native packages/verified-issuer-runtime/native/cssm_policy_qualification.c packages/verified-issuer-runtime/native/cssm_policy_copy.c packages/verified-issuer-runtime/native/cssm_policy_inspect.c -framework Security -framework CoreFoundation -o /private/tmp/axiom-cssm-policy-artifacts/qualification-helper",
+    "umask": "0177",
+    "compiler": "Apple clang21.0.0(clang-2100.1.1.101)",
+    "target": "arm64-apple-darwin27.2.0",
+    "sdk_path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+    "sdk_version": "26.5",
+    "helper_profile": 1,
+    "canonical_profile_default": 0
+  },
+  "controller_binding": "EXTERNAL REVIEW INSTRUCTION ONLY; controller and packet/self and external receipt excluded from files",
+  "source_fingerprint": {
+    "sha256": "86f79ef1efb1fd05486eabb0df99d3173ea75c157ad2a3bccf8a62acc4b888d9",
+    "ordered_files": [
+      "cssm_policy_builder.c",
+      "cssm_policy_copy.c",
+      "cssm_policy_copy.h",
+      "cssm_policy_once.h",
+      "cssm_policy_inspect.c",
+      "cssm_policy_inspect.h"
+    ],
+    "self_exclusions": "Fingerprint excludes generated receipt header, helper main, controller, packet and external receipt to avoid circular code hashes. Those source bytes are separately packet-bound except externally bound controller."
+  },
+  "mode_transition": "Future specifically approved RUN only: helper0600\u21920700\u21920600; capture post-chmod ctime, compare all other bound identity/hash fields; immutable fixture remains0600 and never executes. No chmod in current preparation.",
+  "security_trace": [
+    "SecAccessCreateFromOwnerAndACL",
+    "SecTrustedApplicationCreateFromPath",
+    "SecACLCreateWithSimpleContents",
+    "SecACLUpdateAuthorizations",
+    "SecAccessGetOwnerAndACL",
+    "SecAccessCreateFromOwnerAndACL",
+    "SecAccessGetOwnerAndACL"
+  ],
+  "cfarraycreate_success_calls": 2,
+  "notice": "Serialization compatibility preparation only. Test-only path/profile differs from canonical installation path; no installed-path, code-identity exclusivity, custody or executing-issuer qualification follows. Supplier gate false; private business channel unmounted."
+}

@@ -75,3 +75,32 @@ Concrete future invocation, **NOT RUN; not authorized by this document**:
 ```
 
 Before presenting the actual approval question, compile-only receipt must provide final packet digest and controller source SHA256, and the operator must verify them against that external receipt. The literal source/controller and exact helper/fixture binding must be those already independently reviewed. This source flag confers no execution authorization. Helper stays0600 throughout current preparation. No source behavior rewrite is required after execution approval.
+
+## Reviewed compile-only finalization
+
+Independent review accepted round1 spec/quality and the acyclic fix. Authorized compile-only source behavior remains `9bda7ee0`; the only controller edit after that freeze replaces the packet digest sentinel with finalized packet SHA256. State is `compiled-reviewed-actualexecutionUNAUTHORIZED` (packet source field); machine preflight state remains its reviewed `compile-reviewed-execution-still-requires-specific-approval` value. Actual execution remains forbidden pending root packet verification and fresh specific user approval.
+
+Exact successful final build commands (no helper invocation):
+
+```sh
+umask 177
+clang -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations -DAX_CSSM_PROFILE=1 -I packages/verified-issuer-runtime/native packages/verified-issuer-runtime/native/cssm_policy_qualification.c packages/verified-issuer-runtime/native/cssm_policy_copy.c packages/verified-issuer-runtime/native/cssm_policy_inspect.c -framework Security -framework CoreFoundation -o /private/tmp/axiom-cssm-policy-artifacts/qualification-helper
+stat -f '%Lp %z %u' /private/tmp/axiom-cssm-policy-artifacts/qualification-helper
+clang --version
+xcrun --show-sdk-path
+xcrun --show-sdk-version
+nm -u /private/tmp/axiom-cssm-policy-artifacts/qualification-helper
+python3 -m py_compile packages/verified-issuer-runtime/native/cssm_policy_watchdog.py
+```
+
+Final build exit0, no compiler diagnostics. Apple clang21.0.0(clang-2100.1.1.101), target arm64-apple-darwin27.2.0, SDK `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk` version26.5. Final stat `600 52776 501`. Initial link used umask077 and created0700; immediately inspected and removed that unexecuted artifact, then relinked with umask0177 to create0600 directly. No chmod, explicit signing command/private-key operation, load or invocation occurred; ordinary linker output is not claimed to lack linker-generated metadata. This is disclosed rather than claiming every transient output had600 mode.
+
+`nm -u` shows exactly five unique Security function imports: SecAccessCreateFromOwnerAndACL, SecTrustedApplicationCreateFromPath, SecACLCreateWithSimpleContents, SecACLUpdateAuthorizations, SecAccessGetOwnerAndACL; CFArrayCreate is the sole CF function import. Other imports are CF string/callback objects, the two authorization constants, libc printf/memory and compiler stack checks/probes. Source fixes successful trace to7 Security calls and2 CFArrayCreate calls; symbol inspection alone does not establish dynamic call counts. No forbidden item/search/default-keychain/credential/restriction/provider/DB/service symbols appear.
+
+Read-only preflight used importlib.spec_from_file_location/exec_module (module `__main__` guard false), then only `records,packet=w.preflight()`. Output: `PASS: read-only preflight;14 regular owned file bindings; no RUN/Popen/chmod/helper execution`. py_compile passed. No earlier pure suite rerun for literal/metadata-only finalization. The finalized runtime packet was created0600 with os.open O_CREAT|O_EXCL and identical tracked compiled packet bytes; hashes and concrete future invocation are in `in-memory-policy-qualification-execution-instruction.md`. Controller, packet/self and external receipt are excluded from packet files.
+
+Final helper/controller/packet hashes:
+
+- Helper `098736e957189c4c9abd37b2e36662c5b97277f69f0787278a6470428f8d4f3b`
+- Controller `6c4ca38130b23351eca4419a38ed77caa1f091a564439217bb3c01946b8afc83`
+- Packet `909cbd489d59046afe88e7e397de0d6e7b01fc0cd15471fd526e6178d46c91df`
