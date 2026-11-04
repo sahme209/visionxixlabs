@@ -118,3 +118,13 @@ For the human-readable source-guide queue, see the [internal task index](../know
 [Combined article revision1](articles/home-settings-navigation-controls.r1.json) and [nine proposed cases](home-settings-navigation-controls-evaluation.r1.json) retain navigation/effects, preferences uncertainty, incomplete Governance preview and external billing boundaries. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/home-settings-structured-knowledge-author/independent-review.md). No executed retrieval/runtime/customer acceptance.
 
 The [guide-to-article source linkage queue](guide-article-linkage.md) maps indexed guide paths to direct article source references; it is not a control-coverage or customer-eligibility score.
+
+
+## Releases workspace internal structured draft (November4)
+
+[Article revision1](articles/releases-workspace-controls.r1.json) and [ten proposed cases](releases-workspace-controls-evaluation.r1.json) preserve scope/review/execution/evidence/recovery and Axiom-versus-provider closure. Newbundle integrity passed; customer mode refused. [Evidence](../../recovery/2026-11-04/releases-workspace-structured-knowledge/README.md). No executed retrieval or runtime/customer acceptance.
+
+
+## Batches/Airflow internal structured draft (November4)
+
+[Article revision1](articles/batches-airflow-controls.r1.json) and [nine proposed cases](batches-airflow-controls-evaluation.r1.json) retain distinct read/run/automation/combined approval and uncertain dispatch semantics. Two known privacy-only route changes are explicitly reviewed, not silently rebound. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/batches-structured-knowledge-author/independent-review.md). No live Airflow, on-prem, Temporal, retrieval or runtime acceptance.

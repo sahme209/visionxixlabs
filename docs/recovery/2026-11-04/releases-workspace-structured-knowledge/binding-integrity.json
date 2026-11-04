@@ -1,0 +1,38 @@
+{
+  "result": "PASS",
+  "wholeFileBindings": 24,
+  "rawRanges": 31,
+  "uniqueCodeFiles": 24,
+  "paths": [
+    "desktop/src/App.tsx",
+    "desktop/src/lib/customerNavigation.ts",
+    "desktop/src/views/DeploymentRequestsView.tsx",
+    "desktop/src/lib/desktopClient.ts",
+    "desktop/src/components/FocusedReleaseWorkspace.tsx",
+    "desktop/src/components/ResolutionDraftForm.tsx",
+    "desktop/src/components/WorkflowCatalogue.tsx",
+    "desktop/src/components/WorkflowDefinitionInputs.tsx",
+    "desktop/src/components/ReleaseBatchSelection.tsx",
+    "desktop/src/components/DeploymentWorkflowEvidence.tsx",
+    "desktop/src/components/TerraformPlanReview.tsx",
+    "desktop/src/components/TerraformCustomerPlanProfile.tsx",
+    "desktop/src/components/ReleaseMergeReview.tsx",
+    "desktop/src/components/ReleaseOperationPlans.tsx",
+    "desktop/src/components/ReleaseExecutionApproval.tsx",
+    "desktop/src/components/ReleaseProviderMergeApproval.tsx",
+    "desktop/src/components/ReleaseProviderMergeExecution.tsx",
+    "desktop/src/components/ReleaseDeploymentApproval.tsx",
+    "desktop/src/components/ReleaseDeploymentExecution.tsx",
+    "desktop/src/components/ReleaseWorkflowEvidence.tsx",
+    "desktop/src/components/ReleaseBatchReadiness.tsx",
+    "desktop/src/components/ReleaseBatchMonitor.tsx",
+    "desktop/src/components/ReleaseTicketWorkspace.tsx",
+    "docs/product/knowledge/servicenow-evidence-and-closure-controls.md"
+  ],
+  "supportingPaths": [
+    "docs/product/knowledge/releases-workspace-controls.md",
+    "docs/recovery/2026-11-03/releases-workspace-guide/source-bindings.json",
+    "docs/recovery/2026-11-03/releases-workspace-guide/source-review.md",
+    "docs/recovery/2026-11-03/releases-workspace-guide/binding-verification.json"
+  ]
+}

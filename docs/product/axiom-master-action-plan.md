@@ -720,3 +720,11 @@ All15parents remain open;10stored article revisions include history and are not1
 - [x] Authoring linkage queue reconciles25indexed source-guide paths against12stored article revisions including history; direct references are not complete control coverage. [Queue](documentation-coverage/guide-article-linkage.md).
 
 All15parents remain open. No customer/editorial/media/native/runtime/production acceptance or new authority is created by these drafts.
+
+
+## November4 — Releases and Batches knowledge batch
+
+- [x] B4/B5 bounded Releases structured draft:24historicfiles/31ranges unchanged,28unique sources/ten proposed cases; newbundle integrity/customer-refusal checks and independent source review pass. [Evidence](../recovery/2026-11-04/releases-workspace-structured-knowledge/README.md). Axiom record closure remains distinct from ticket/provider closure.
+- [x] B4/B5 bounded Batches draft:20historicentries unchanged/twoknownprivacy-onlyroutechanges explicitly reviewed;24sources/23currentranges/nine proposed cases. Newbundle integrity/customer-refusal checks and independent source review pass. [Evidence](../recovery/2026-11-04/batches-structured-knowledge-author/independent-review.md). Preserve actual combined approval and bounded predispatch retries versus unknown postdispatch hold; no Agent-flow substitution.
+
+Fourteen stored article revisions include history; none of this establishes customer eligibility, executed retrieval, authentic media, runtime/Governance/provider or on-prem acceptance. All15parents remain open.
