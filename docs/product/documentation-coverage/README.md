@@ -6,6 +6,10 @@ Run `node scripts/inventory-documentation-controls.mjs` from the repository. It 
 
 The initial extraction set includes buttons, fields, links and common Axiom wrapper components. Native Swift/Rust/OS controls, custom wrappers not in the set, generated actions, responsive variants and conditional states require manual/runtime inventory. Repeated component use can produce both duplicates and unexpanded instances. Candidate IDs are matching aids; assign a permanent help ID during review, rather than treating offsets or generated IDs as a stable public API.
 
+## Separate current extraction
+
+A newer [c4d94cb3 extraction](../../recovery/2026-11-04/current-control-inventory/README.md) records757files/2688source candidates (989desktop/1699website),1271dynamic labels. It is saved separately; the historical snapshot above is unchanged. All new candidates remain unreviewed, and the extractor intentionally does not populate mounted stable help IDs. Neither set measures unique rendered controls or customer coverage. Do not combine revision counts or infer current authority from an older file hash.
+
 ## Review each candidate
 
 1. Confirm the actual screen, accessible label, purpose and supported product version. Resolve dynamic/generated variants and group duplicate source instances deliberately.

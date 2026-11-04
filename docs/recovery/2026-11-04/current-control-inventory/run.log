@@ -1,0 +1,29 @@
+fatal: could not open '/dev/null' for reading and writing: Operation not permitted
+node:internal/errors:986
+  const err = new Error(message);
+              ^
+
+Error: Command failed: git ls-files -z app components desktop/src
+fatal: could not open '/dev/null' for reading and writing: Operation not permitted
+
+    at genericNodeError (node:internal/errors:986:15)
+    at wrappedFn (node:internal/errors:540:14)
+    at checkExecSyncError (node:child_process:942:11)
+    at execFileSync (node:child_process:978:15)
+    at file:///private/tmp/axiom-current-control-inventory-gd1odm7h/inventory-documentation-controls.mjs:9:13
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  status: 128,
+  signal: null,
+  output: [
+    null,
+    '',
+    "fatal: could not open '/dev/null' for reading and writing: Operation not permitted\n"
+  ],
+  pid: 23829,
+  stdout: '',
+  stderr: "fatal: could not open '/dev/null' for reading and writing: Operation not permitted\n"
+}
+
+Node.js v24.21.0

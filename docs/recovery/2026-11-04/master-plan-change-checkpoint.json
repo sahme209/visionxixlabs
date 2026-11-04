@@ -2,11 +2,10 @@
   "format": "axiom.master-plan-reconciliation/1",
   "recorded_at": "2026-11-04T20:15:06.430421+00:00",
   "master_path": "docs/product/axiom-master-action-plan.md",
-  "reconciled_source_commit": "a78473efbf443750c09169c827028809c607bf04",
-  "master_sha256": "21a93513fc32fdb7ce072ce259b88990966d56cb3b29205fe229a41a781b69c9",
-  "master_git_blob": "72d744620b3b78fbdc8dfb070691a8b8d8b5f201",
+  "master_sha256": "b294473893991eb094d283f4097a8bacf94ed088af55c8173896d7ae6f40cfbf",
+  "master_git_blob": "28faf46526700929439a541c46216902c257c0b7",
   "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
-  "current_method": "B2 fully reread; requirement additions compared against09c12406 after prior complete847-line read; later implementation milestones remain scope-limited",
+  "current_method": "No new user requirements since prior checkpoint; own verified current-source inventory milestone appended and reconciled before commit. Full B2 including Prompt Motion remains retained.",
   "open_parents": [
     "A1",
     "A2",
@@ -41,5 +40,6 @@
       "deployment"
     ]
   },
-  "future_check": "At each batch boundary compare current master bytes against checkpoint; read changed requirements and reconcile numbered board before selecting next work; preserve unexpected user edits before any plan write. No new scheduler."
+  "future_check": "At each batch boundary compare current master bytes against checkpoint; read changed requirements and reconcile numbered board before selecting next work; preserve unexpected user edits before any plan write. No new scheduler.",
+  "base_head_at_reconciliation": "c4d94cb3a2816e2ffd98eb4a03dcf6ad0dfa5d36"
 }

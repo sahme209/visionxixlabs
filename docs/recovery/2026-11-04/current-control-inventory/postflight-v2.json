@@ -1,0 +1,19 @@
+{
+  "exit_code": 0,
+  "head_after": "c4d94cb3a2816e2ffd98eb4a03dcf6ad0dfa5d36",
+  "original_script_unchanged": true,
+  "historical_inventory_unchanged": true,
+  "head_unchanged": true,
+  "counts": {
+    "files": 757,
+    "controls": 2688,
+    "dynamicLabels": 1271,
+    "desktop": 989,
+    "website": 1699
+  },
+  "output_sha256": "0d7de5bb58d00af70fd7fdafc20a2208eb5ceb348cd8bd81526dc10f00581e79",
+  "source_hash_mismatches": [],
+  "record_count_matches": true,
+  "source_commit_matches": true,
+  "consistent_snapshot_observed": true
+}

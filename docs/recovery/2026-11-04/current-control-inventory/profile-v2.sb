@@ -1,0 +1,6 @@
+(version 1)
+(allow default)
+(deny network*)
+(deny file-write*)
+(allow file-write* (subpath "/private/tmp/axiom-current-control-inventory-gd1odm7h"))
+(allow file-write* (literal "/dev/null"))

@@ -1,0 +1,116 @@
+{
+  "current_source_commit": "c4d94cb3a2816e2ffd98eb4a03dcf6ad0dfa5d36",
+  "counts": {
+    "files": 757,
+    "controls": 2688,
+    "dynamicLabels": 1271,
+    "desktop": 989,
+    "website": 1699
+  },
+  "old_counts": {
+    "files": 749,
+    "controls": 2602,
+    "dynamicLabels": 1251,
+    "desktop": 953,
+    "website": 1649
+  },
+  "source_files_new_since_historical": 8,
+  "source_files_changed_since_historical": 47,
+  "largest_desktop_candidate_files": [
+    {
+      "file": "desktop/src/views/SettingsView.tsx",
+      "candidates": 107
+    },
+    {
+      "file": "desktop/src/views/AgentChatView.tsx",
+      "candidates": 50
+    },
+    {
+      "file": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "candidates": 50
+    },
+    {
+      "file": "desktop/src/views/AirflowAutomationView.tsx",
+      "candidates": 36
+    },
+    {
+      "file": "desktop/src/components/AssociatedTicketActionsPanel.tsx",
+      "candidates": 35
+    },
+    {
+      "file": "desktop/src/views/PluginsSkillsView.tsx",
+      "candidates": 27
+    },
+    {
+      "file": "desktop/src/views/DeploymentRequestsView.tsx",
+      "candidates": 25
+    },
+    {
+      "file": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "candidates": 23
+    },
+    {
+      "file": "desktop/src/components/ServiceNowTicketLifecycle.tsx",
+      "candidates": 18
+    },
+    {
+      "file": "desktop/src/components/ConnectedActionsPanel.tsx",
+      "candidates": 17
+    },
+    {
+      "file": "desktop/src/components/ServiceNowTerminalPolicyCreator.tsx",
+      "candidates": 15
+    },
+    {
+      "file": "desktop/src/components/AwsReadOnlyEnrollment.tsx",
+      "candidates": 14
+    }
+  ],
+  "largest_website_candidate_files": [
+    {
+      "file": "app/dashboard/workforce/page.tsx",
+      "candidates": 29
+    },
+    {
+      "file": "app/dashboard/workforce/[id]/page.tsx",
+      "candidates": 27
+    },
+    {
+      "file": "app/dashboard/command-center/CommandCenterClient.tsx",
+      "candidates": 19
+    },
+    {
+      "file": "app/dashboard/workforce/integrations/page.tsx",
+      "candidates": 17
+    },
+    {
+      "file": "app/dashboard/agi-memory/page.tsx",
+      "candidates": 15
+    },
+    {
+      "file": "app/dashboard/workforce/monitoring-webhook/page.tsx",
+      "candidates": 15
+    },
+    {
+      "file": "app/operator/onboarding/AwsKeyConnect.tsx",
+      "candidates": 15
+    },
+    {
+      "file": "app/control/ai-agents/AIGovernancePanel.tsx",
+      "candidates": 14
+    },
+    {
+      "file": "app/auth/signup/AuthFormClient.tsx",
+      "candidates": 13
+    },
+    {
+      "file": "app/dashboard/tauri/page.tsx",
+      "candidates": 13
+    }
+  ],
+  "candidate_statuses": {
+    "needs_runtime_and_documentation_review": 2688
+  },
+  "stable_help_id_non_null": 0,
+  "interpretation": "extractor ignores mounted help attributes; null does not mean no binding exists; no completion inferred"
+}

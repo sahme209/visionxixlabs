@@ -1,0 +1,9 @@
+{
+  "priorAttempt": "startup failure preserved in run.log and postflight.json",
+  "profile_sha256": "caedf24e5378ed459187f63ae898715dfe7731aac71163e3fe375f0d4f29efff",
+  "null_device_root_owned_character": true,
+  "null_device_inode": 336,
+  "output_absent": true,
+  "script_unchanged": true,
+  "root_source_commit": "c4d94cb3a2816e2ffd98eb4a03dcf6ad0dfa5d36"
+}

@@ -1,0 +1,11 @@
+{
+  "head": "c4d94cb3a2816e2ffd98eb4a03dcf6ad0dfa5d36",
+  "originalScript": "scripts/inventory-documentation-controls.mjs",
+  "originalScriptSha256": "13d907ea209c43824b857f09578a9cf91990bb84bee315b174406ed4f149ec0e",
+  "preparedScriptSha256": "8e20fffdeb3f5520afb6397310ad03052ea95df9c7071cfbb8784ae9bf30c3e4",
+  "normalizationExactlyMatchesOriginal": true,
+  "historicalInventory": "docs/product/documentation-coverage/source-control-candidates.json",
+  "historicalSha256": "8ee9e8e4c2e5d1fe2f4f0cf0636fd876831ac8ff2f81ea3b6c0414a2a82fdb7e",
+  "owned": "/private/tmp/axiom-current-control-inventory-gd1odm7h",
+  "execution": "not_run"
+}
