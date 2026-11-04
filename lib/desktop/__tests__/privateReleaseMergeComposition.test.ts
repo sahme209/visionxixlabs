@@ -12,7 +12,7 @@ it("uses actual private session resources and preserves the canonical issuer ref
   const now = Date.parse("2026-11-03T00:00:00Z");
   const key = new Uint8Array(32).fill(7);
   const token = createPrivateDesktopTokenCodec(key).mintDesktopToken("dsk_owned");
-  const session = vi.spyOn(client.desktopSessionRecord, "findUnique").mockResolvedValue({ id: "dsk_owned", userId: "user", organizationId: "org", deviceFingerprint: "owned", deviceLabel: "Owned test", platform: "unknown", desktopVersion: null, issuedAt: new Date(now), expiresAt: new Date(now + 60_000), lastSeenAt: new Date(now), revokedAt: null, revokeReason: null });
+  const session = vi.spyOn(client.desktopSessionRecord, "findUnique").mockResolvedValue({ id: "dsk_owned", userId: "user", organizationId: "org", deviceFingerprint: "owned", deviceLabel: "Owned test", platform: "unknown", desktopVersion: null, createdAt: new Date(now), issuedAt: new Date(now), expiresAt: new Date(now + 60_000), lastSeenAt: new Date(now), revokedAt: null, revokeReason: null });
   const membership = vi.spyOn(client.orgMembership, "findUnique").mockResolvedValue({ role: "admin", acceptedAt: new Date(now) } as never);
   vi.spyOn(client.tenantBillingPlan, "findUnique").mockResolvedValue({ organizationId: "org", tier: "growth", status: "active", trialEndsAt: null, currentPeriodEndsAt: null, stripeCustomerId: null, stripeSubscriptionId: null, cancelAtPeriodEnd: false } as never);
   const transaction = vi.spyOn(client, "$transaction");
