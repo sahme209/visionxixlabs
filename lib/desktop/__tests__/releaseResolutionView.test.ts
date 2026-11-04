@@ -2,8 +2,8 @@
 import {createElement} from 'react';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,act} from '@testing-library/react';
-const m=vi.hoisted(()=>({observe:vi.fn(),requests:vi.fn(),executions:vi.fn(),revision:vi.fn(),config:{}}));
-vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{deploymentRequests:m.requests,listDeploymentExecutions:m.executions,observeDeploymentExecution:m.observe,deploymentRequestForRevision:m.revision,config:m.config,subscribeContext:()=>()=>{},getContextRevision:()=>0}}));
+const m=vi.hoisted(()=>({create:vi.fn(),revise:vi.fn(),observe:vi.fn(),requests:vi.fn(),executions:vi.fn(),revision:vi.fn(),config:{}}));
+vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{deploymentRequests:m.requests,listDeploymentExecutions:m.executions,observeDeploymentExecution:m.observe,deploymentRequestForRevision:m.revision,createDeploymentRequest:m.create,reviseDeploymentRequest:m.revise,config:m.config,subscribeContext:()=>()=>{},getContextRevision:()=>0}}));
 const releaseContext={window:null,scope:{applicationCount:1,repositoryCount:0,targetEnvironment:null},approval:{prStatus:'pending',noPrRequired:false},readiness:{developmentReady:false,productionReady:false,validationStepCount:0,deferredValidation:false,approvalDecision:'needs_attention',blockers:['Resolve release details']},recovery:{rollbackAvailability:'unknown',backupRequired:false,evidenceCount:0},observation:{status:'not_connected',recordedMonitoringPlan:false}};
 import {DeploymentRequestsView} from '../../../desktop/src/views/DeploymentRequestsView';
 beforeEach(()=>{vi.clearAllMocks();m.observe.mockResolvedValue({ok:false,error:"Unavailable"});m.requests.mockResolvedValue({ok:true,data:[]});m.executions.mockResolvedValue({ok:true,data:{executions:[]}})});afterEach(()=>{cleanup();vi.useRealTimers()});
@@ -97,4 +97,46 @@ it('discards a replaced effect’s delayed completed result while the newer save
 });
 it('never polls completed or tracking-unavailable workflow records',async()=>{
  await mountExecutions([{...workflow,status:'completed'},{...workflow,id:'execution-b',status:'tracking_unavailable'}]);await act(async()=>vi.advanceTimersByTime(30000));expect(m.observe).not.toHaveBeenCalled();expect(screen.getByText('GitHub workflow: completed')).toBeTruthy();expect(screen.getByText('GitHub workflow: tracking unavailable')).toBeTruthy();
+});
+
+async function openFilledIntake(mode:'create'|'revise'){
+ if(mode==='revise'){
+  m.requests.mockResolvedValue({ok:true,data:[{id:'request-existing',title:'Existing pending fixture',status:'submitted',version:3,correlationId:'fixture',updatedAt:'2030-01-01T00:00:00Z',latestPlaybook:null,releaseContext}]});
+  m.revision.mockResolvedValue({ok:true,data:{id:'request-existing',version:3,intake:{}}});
+ }
+ const view=render(createElement(DeploymentRequestsView));
+ if(mode==='revise'){await screen.findByRole('button',{name:/^Existing pending fixture/});fireEvent.click(screen.getByRole('button',{name:'Revise'}));await screen.findByText('Revise release request · v3 → v4')}
+ else{await screen.findByText(/No deployment requests exist/);fireEvent.click(screen.getByRole('button',{name:'New release'}))}
+ const fill=(label:string,value:string)=>fireEvent.change(screen.getByLabelText(label),{target:{value}}),next=()=>fireEvent.click(screen.getByRole('button',{name:'Continue'}));
+ fill('Request title','Captured intake fixture');fill('Window start','2030-01-01T12:00');fill('Window end','2030-01-01T13:00');next();
+ for(const [label,value] of [['Applications (comma or line separated)','Fixture app'],['Clients (comma or line separated)','Fixture client'],['Deployment owner','Fixture owner'],['Application owner','Fixture app owner'],['Escalation owner','Fixture escalation'],['Repository URLs','https://github.com/fixture/repository'],['Production PR URLs','https://github.com/fixture/repository/pull/1'],['Source branch','fixture-branch']])fill(label,value);
+ next();fill('Deployment method','Fixture method');fill('Workflow name / trigger','fixture.yml');next();
+ fill('Tested lower environments','Fixture testing');fill('Exact technical production validation','Fixture validation only');fill('Expected production result','No real deployment');next();
+ fill('Exact rollback instruction','Fixture rollback only');fill('Rollback owner','Fixture rollback owner');fill('Confirmed operational fact','Captured exact fact');fill('Source evidence identifier','fixture-evidence');fill('Confirmed by','Fixture author');
+ return{view,form:screen.getByRole('button',{name:mode==='revise'?'Save revision':'Submit release request'}).closest('form')!};
+}
+it.each(['create','revise'] as const)('freezes the captured %s intake synchronously and sends only one immutable request',async mode=>{
+ const pending=observationDeferred(),save=mode==='create'?m.create:m.revise;save.mockReturnValue(pending.promise);const{form}=await openFilledIntake(mode);
+ const fact=screen.getByLabelText('Confirmed operational fact'),source=screen.getByLabelText('Source evidence identifier');
+ act(()=>{fireEvent.submit(form);fireEvent.change(fact,{target:{value:'Later edit must not enter captured form'}});fireEvent.change(source,{target:{value:'later-source'}});fireEvent.submit(form)});
+ expect(save).toHaveBeenCalledTimes(1);expect(fact.matches(':disabled')).toBe(true);expect(source.matches(':disabled')).toBe(true);expect(screen.getByLabelText('Backup required').matches(':disabled')).toBe(true);expect(screen.getByLabelText('Rollback availability').matches(':disabled')).toBe(true);
+ expect(fact).toHaveProperty('value','Captured exact fact');expect(source).toHaveProperty('value','fixture-evidence');expect(screen.getByText(/Saving release details/).textContent).toContain('Leaving does not cancel this save');
+ const payload=save.mock.calls[0][mode==='create'?0:2];expect(payload.facts[0]).toMatchObject({value:'Captured exact fact',sourceEvidenceId:'fixture-evidence'});if(mode==='create')expect(save.mock.calls[0][1]).toEqual(expect.any(String));else expect(save.mock.calls[0].slice(0,2)).toEqual(['request-existing',3]);
+ await act(async()=>pending.resolve({ok:true,data:{id:'fixture-saved'}}));expect(screen.queryByLabelText('Confirmed operational fact')).toBeNull();expect(save).toHaveBeenCalledTimes(1);
+});
+it.each(['create','revise'] as const)('does not close a replacement draft after an abandoned %s intake succeeds',async mode=>{
+ const pending=observationDeferred(),save=mode==='create'?m.create:m.revise;save.mockReturnValue(pending.promise);const{form}=await openFilledIntake(mode);fireEvent.submit(form);
+ fireEvent.click(screen.getByRole('button',{name:'Cancel intake'}));fireEvent.click(screen.getByRole('button',{name:'New release'}));fireEvent.change(screen.getByLabelText('Request title'),{target:{value:'Keep this replacement draft'}});
+ const reads=m.requests.mock.calls.length;await act(async()=>pending.resolve({ok:true,data:{id:'old-saved'}}));expect(screen.getByLabelText('Request title')).toHaveProperty('value','Keep this replacement draft');expect(m.requests).toHaveBeenCalledTimes(reads);expect(save).toHaveBeenCalledTimes(1);
+});
+it.each(['response','rejection'] as const)('retains and unlocks the captured form after save %s without automatic replay',async kind=>{
+ const pending=observationDeferred();m.create.mockReturnValue(pending.promise);const{form}=await openFilledIntake('create');fireEvent.submit(form);
+ await act(async()=>{if(kind==='response')pending.resolve({ok:false,error:'Fixture save unavailable'});else pending.reject(new Error('Synthetic thrown save failure'))});
+ expect(screen.getByRole('alert').textContent).toContain(kind==='response'?'Fixture save unavailable':'The save could not be confirmed');expect(screen.getByLabelText('Confirmed operational fact')).toHaveProperty('value','Captured exact fact');expect(screen.getByLabelText('Confirmed operational fact').matches(':disabled')).toBe(false);expect(m.create).toHaveBeenCalledTimes(1);
+});
+it('closes the form only after its own ordinary successful save',async()=>{
+ m.create.mockResolvedValue({ok:true,data:{id:'fixture-saved'}});const{form}=await openFilledIntake('create');await act(async()=>fireEvent.submit(form));expect(screen.queryByLabelText('Confirmed operational fact')).toBeNull();expect(m.create).toHaveBeenCalledTimes(1);
+});
+it('does not refresh or apply a late successful save after the intake view unmounts',async()=>{
+ const pending=observationDeferred();m.create.mockReturnValue(pending.promise);const{view,form}=await openFilledIntake('create');fireEvent.submit(form);const reads=m.requests.mock.calls.length;view.unmount();await act(async()=>pending.resolve({ok:true,data:{id:'old-saved'}}));expect(m.requests).toHaveBeenCalledTimes(reads);expect(m.create).toHaveBeenCalledTimes(1);
 });

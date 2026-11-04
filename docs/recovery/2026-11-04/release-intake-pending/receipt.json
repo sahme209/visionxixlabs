@@ -1,0 +1,36 @@
+{
+  "status": "local same-session intake draft ownership repair",
+  "baselineCommit": "df3609b9c61d80f3f93be34db09930da649d24ed",
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870"
+    },
+    {
+      "path": "lib/desktop/__tests__/releaseResolutionView.test.ts",
+      "sha256": "9f3dd0f6866f32da07cd7e11d7cc3a2fbbbd741ffa96dba099a972b47eb3107d"
+    }
+  ],
+  "red": {
+    "failed": 6,
+    "passed": 14,
+    "unhandledErrors": 1,
+    "exit": 1
+  },
+  "diagnostic": "First post-fix run had two ambiguous status-query test failures; saved separately, exact pending text selector corrected. Prior-copy20pass green preserved separately before root copy refinement.",
+  "green": {
+    "passed": 20,
+    "failed": 0,
+    "unhandledErrors": 0,
+    "exit": 0
+  },
+  "preservedContracts": {
+    "payload": true,
+    "validateStep": true,
+    "submissionId": true,
+    "createAndReviseCalls": true,
+    "sha256": "a50123a1fa52335aa28f19b846c0902f3e94f158640ee54f3c3b016755f6053c"
+  },
+  "scope": "Synchronous mounted-form/flight checks; pending native fieldset freeze; completion only from its mounted form; failed response/rejection retains captured form and unlocks without automatic replay. Leaving remains possible and does not cancel sent save.",
+  "limits": "No new authority, API, requester/session model, abort transport or durable unknown-outcome recovery. Mock service responses only; no actual persistence/provider/native/DB action or full build. Existing29binding contracts and prepared52field guide intentionally untouched; explicit source requalification required."
+}

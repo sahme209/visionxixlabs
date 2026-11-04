@@ -940,6 +940,8 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
   const recordWorkflowSource = useCallback((value: WorkflowSourceObservation) => setSourceObservation({ value, config: desktopClient.config, revision: contextRevision }), [contextRevision]);
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
+  const submissionFlight = useRef(false), intakeMounted = useRef(true);
+  useEffect(() => { intakeMounted.current = true; return () => { intakeMounted.current = false; }; }, []);
   const [error, setError] = useState<string>();
   const [submissionId] = useState(() => crypto.randomUUID());
   const [workflowInputIssue, setWorkflowInputIssue] = useState<string>();
@@ -952,11 +954,13 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
   const isAdHoc = draft.requestClass === "ad_hoc" || draft.requestClass === "emergency";
 
   function update<K extends keyof typeof draft>(key: K, value: (typeof draft)[K]) {
+    if (submissionFlight.current || !intakeMounted.current) return;
     setDraft((current) => ({ ...current, [key]: value }));
   }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
+    if (submissionFlight.current || !intakeMounted.current) return;
     setError(undefined);
 
     if (workflowInputIssue || batchIssue) { setStep(2); setError(workflowInputIssue ?? batchIssue); return; }
@@ -1085,20 +1089,30 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
       }],
     };
 
+    submissionFlight.current = true;
     setSubmitting(true);
-    const result = revision
-      ? await desktopClient.reviseDeploymentRequest(revision.id, revision.version, payload)
-      : await desktopClient.createDeploymentRequest(payload, submissionId);
-    setSubmitting(false);
-    if (!result.ok) {
-      setError(result.error);
-      return;
+    try {
+      const result = revision
+        ? await desktopClient.reviseDeploymentRequest(revision.id, revision.version, payload)
+        : await desktopClient.createDeploymentRequest(payload, submissionId);
+      if (!intakeMounted.current) return;
+      if (!result.ok) {
+        setError(result.error);
+        return;
+      }
+      onCreated();
+    } catch {
+      if (intakeMounted.current) setError("The save could not be confirmed. Your captured form is retained. Check saved requests before submitting again.");
+    } finally {
+      submissionFlight.current = false;
+      if (intakeMounted.current) setSubmitting(false);
     }
-    onCreated();
   }
 
   return (
-    <form onSubmit={(event) => void submit(event)} className="glass-card p-5 space-y-5">
+    <form onSubmit={(event) => void submit(event)} aria-busy={submitting} className="glass-card p-5 space-y-5">
+      {submitting && <p role="status" className="text-sm text-zinc-300">Saving release details. Editing is paused. Leaving does not cancel this save; check saved requests before starting another.</p>}
+      <fieldset disabled={submitting} aria-label="Release intake fields" className="min-w-0 space-y-5 border-0 p-0">
       {revision?.intake.kind === "resolution_draft" && <aside className="rounded-lg border border-white/10 p-3 text-xs text-zinc-300"><p className="font-semibold">Original ticket request</p><p className="mt-1 whitespace-pre-wrap">{textValue(revision.intake.requestDetails)}</p>{textValue(revision.intake.ticketUrl) && <p className="mt-1 break-all">{textValue(revision.intake.ticketUrl)}</p>}<p className="mt-2 text-zinc-500">The original draft remains in the immutable record. Complete every required release control before submission.</p></aside>}
       <div>
         <div className="flex items-center justify-between gap-3">
@@ -1238,6 +1252,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
           </button>
         )}
       </div>
+      </fieldset>
     </form>
   );
 }

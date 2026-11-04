@@ -904,3 +904,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — consolidated registered source checks
 
 ~~One bounded offline command verifies all7registered mapping test files without silently skipping new/missing/hash-changed suites~~ ([evidence](../recovery/2026-11-04/documentation-binding-runner/README.md)).10pure/mockrunner tests, explicit preflight and ONEactualcombined run34passed/0failed/0skipped; independentreview/rootpins/set/hashchecks pass. Existing contracts unchanged; no install/CI/deploy/customer/provider/DB or security/issuer qualification. Two light-theme source text surfaces had no definite failing literal pair ([limited spot check](../recovery/2026-11-04/light-theme-source-spotcheck/README.md)); no stylesheet changed and rendered/AT contrast remains open. All15parents remain open.
+
+## November4 — release intake pending draft preservation
+
+~~Saving intake freezes the captured form and late completion cannot close a replacement draft~~ ([local evidence](../recovery/2026-11-04/release-intake-pending/README.md)). Actual6RED/14passes+1unhandled became20focused passes/0unhandled; desktoptypes/rootpayload-validation-nonce-call AST proof and independentreview pass. No newAPI/CAS/retry/authority/durableunknownrecovery; same-session DOM mocks only. Existing29mapping and prepared52namedfields require explicit new-source requalification; no currentnative/customer/publication acceptance. All15parents remain open.

@@ -70,3 +70,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 finite Releases control map
 ~~29direct intrinsic declarations mapped~~:5ASTcontracts with actualRED/root4hashes/fullGit88ebaseline proof/independentreview. [Map](knowledge/releases-workspace-bindings.md). Helper/mapped families not unique fields; imported/native/customer/media/editorial/retrieval acceptance excluded.
+
+### November4 pending intake preservation
+~~Captured intake freezes during save; old completion cannot close replacement~~:20focused cases, desktoptypes and independentreview pass. [Evidence/limits](../recovery/2026-11-04/release-intake-pending/README.md). Existing29mapping/prepared52fields require new-source requalification; no actual persistence/native/customer acceptance.

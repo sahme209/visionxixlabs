@@ -1,0 +1,730 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22moffers a ticket-first path without opening full execution intake[32m 74[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mkeeps draft actions limited to completion and history[32m 20[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mshows the original ticket details while completing the guarded intake[32m 31[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdoes not replace a newly opened ticket draft with a delayed completion read[32m 22[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mmarks future intake steps unavailable and keeps prior steps navigable without losing input[32m 31[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mseparates the final Continue click from the submit control[32m 55[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains the exact batch selection when opening an immutable revision[32m 26[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mkeeps one observation batch in flight across multiple five-second ticks and resumes on the next tick after settlement[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains a rejected execution record and keeps the batch held until its delayed sibling settles[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22msettles a synchronous observer throw without skipping its sibling or falsely completing a run[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdiscards a replaced effect’s delayed completed result while the newer saved status remains current[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mnever polls completed or tracking-unavailable workflow records[32m 2[2mms[22m[39m
+ [31m×[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mfreezes the captured create intake synchronously and sends only one immutable request[32m 67[2mms[22m[39m
+[31m   → Found multiple elements with the role "status"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<p[31m
+  [33mclass[31m=[32m"text-sm text-zinc-300"[31m
+  [33mrole[31m=[32m"status"[31m
+[36m>[31m
+  [0mSaving the captured request. Editing is paused. Leaving this form does not cancel a save already sent. Check saved requests before submitting again.[0m
+[36m</p>[31m
+
+Ignored nodes: comments, script, style
+[36m<p[31m
+  [33mclass[31m=[32m"text-[11px] text-zinc-500"[31m
+  [33mrole[31m=[32m"status"[31m
+[36m>[31m
+  [0mService last responded [0m
+  [0m11/4/2026, 4:59:58 PM[0m
+  [0m.[0m
+[36m</p>[31m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"workspace-view flex-1 overflow-y-auto bg-axiom-bg"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"aurora-bg"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"workspace-content relative z-10 w-full px-6 py-8 space-y-6 sm:px-8"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"release-workspace-heading flex flex-wrap items-start justify-between gap-4"[31m
+          [36m>[31m
+            [36m<div>[31m
+              [36m<h1[31m
+                [33mclass[31m=[32m"text-2xl font-semibold tracking-tight"[31m
+              [36m>[31m
+                [0mReleases[0m
+              [36m</h1>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"text-sm text-zinc-500 mt-0.5"[31m
+              [36m>[31m
+                [0mPrepare the scope. Review the actions. Follow the verified outcome.[0m
+              [36m</p>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex flex-wrap gap-2"[31m
+            [36m>[31m
+              [36m<button[31m
+                [33mclass[31m=[32m"btn-secondary"[31m
+                [33mdata-help-id[31m=[32m"releases.workspace.refresh"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mRefresh[0m
+              [36m</button>[31m
+              [36m<button[31m
+                [33mclass[31m=[32m"btn-secondary"[31m
+                [33mdata-help-id[31m=[32m"releases.workspace.ticket-draft-toggle"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mStart from ticket[0m
+              [36m</button>[31m
+              [36m<button[31m
+                [33mclass[31m=[32m"btn-primary"[31m
+                [33mdata-help-id[31m=[32m"releases.workspace.intake-toggle"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mCancel intake[0m
+              [36m</button>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<form[31m
+            [33maria-busy[31m=[32m"true"[31m
+            [33mclass[31m=[32m"glass-card p-5 space-y-5"[31m
+          [36m>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-sm text-zinc-300"[31m
+              [33mrole[31m=[32m"status"[31m
+            [36m>[31m
+              [0mSaving the captured request. Editing is paused. Leaving this form does not cancel a save already sent. Check saved requests before submitting again.[0m
+            [36m</p>[31m
+            [36m<fieldset[31m
+              [33maria-label[31m=[32m"Captured release intake"[31m
+              [33mclass[31m=[32m"min-w-0 space-y-5 border-0 p-0"[31m
+              [33mdisabled[31m=[32m""[31m
+            [36m>[31m
+              [36m<div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex items-center justify-between gap-3"[31m
+                [36m>[31m
+                  [36m<div>[31m
+                    [36m<p[31m
+                      [33mclass[31m=[32m"text-sm font-semibold text-white"[31m
+                    [36m>[31m
+                      [0mNew release request[0m
+                    [36m</p>[31m
+                    [36m<p[31m
+                      [33mclass[31m=[32m"mt-1 text-xs text-zinc-500"[31m
+                    [36m>[31m
+                      [0mStep [0m
+                      [0m5[0m
+                      [0m of [0m
+                      [0m5[0m
+                      [0m · [0m
+                      [0mRecovery[0m
+                    [36m</p>[31m
+                  [36m</div>[31m
+                  [36m<span[31m
+                    [33mclass[31m=[32m"text-[10px] font-mono uppercase tracking-wider text-zinc-500"[31m
+                  [36m>[31m
+                    [0mComplete each step before submitting[0m
+                  [36m</span>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33maria-label[31m=[32m"Intake progress"[31m
+                  [33mclass[31m=[32m"mt-4 grid grid-cols-5 gap-2"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0m1[0m
+                    [0m. [0m
+                    [0mWindow[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0m2[0m
+                    [0m. [0m
+                    [0mScope[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0m3[0m
+                    [0m. [0m
+                    [0mExecution[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0m4[0m
+                    [0m. [0m
+                    [0mValidation[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-current[31m=[32m"step"[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-violet-500/40 bg-violet-500/10 text-violet-200"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+              ...[39m
+ [31m×[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mfreezes the captured revise intake synchronously and sends only one immutable request[32m 77[2mms[22m[39m
+[31m   → Found multiple elements with the role "status"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<p[31m
+  [33mclass[31m=[32m"text-sm text-zinc-300"[31m
+  [33mrole[31m=[32m"status"[31m
+[36m>[31m
+  [0mSaving the captured request. Editing is paused. Leaving this form does not cancel a save already sent. Check saved requests before submitting again.[0m
+[36m</p>[31m
+
+Ignored nodes: comments, script, style
+[36m<p[31m
+  [33mclass[31m=[32m"text-[11px] text-zinc-500"[31m
+  [33mrole[31m=[32m"status"[31m
+[36m>[31m
+  [0mService last responded [0m
+  [0m11/4/2026, 4:59:58 PM[0m
+  [0m.[0m
+[36m</p>[31m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"workspace-view flex-1 overflow-y-auto bg-axiom-bg"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"aurora-bg"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"workspace-content relative z-10 w-full px-6 py-8 space-y-6 sm:px-8"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"release-workspace-heading flex flex-wrap items-start justify-between gap-4"[31m
+          [36m>[31m
+            [36m<div>[31m
+              [36m<h1[31m
+                [33mclass[31m=[32m"text-2xl font-semibold tracking-tight"[31m
+              [36m>[31m
+                [0mReleases[0m
+              [36m</h1>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"text-sm text-zinc-500 mt-0.5"[31m
+              [36m>[31m
+                [0mPrepare the scope. Review the actions. Follow the verified outcome.[0m
+              [36m</p>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"flex flex-wrap gap-2"[31m
+            [36m>[31m
+              [36m<button[31m
+                [33mclass[31m=[32m"btn-secondary"[31m
+                [33mdata-help-id[31m=[32m"releases.workspace.refresh"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mRefresh[0m
+              [36m</button>[31m
+              [36m<button[31m
+                [33mclass[31m=[32m"btn-secondary"[31m
+                [33mdata-help-id[31m=[32m"releases.workspace.ticket-draft-toggle"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mStart from ticket[0m
+              [36m</button>[31m
+              [36m<button[31m
+                [33mclass[31m=[32m"btn-primary"[31m
+                [33mdata-help-id[31m=[32m"releases.workspace.intake-toggle"[31m
+                [33mtype[31m=[32m"button"[31m
+              [36m>[31m
+                [0mCancel intake[0m
+              [36m</button>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<form[31m
+            [33maria-busy[31m=[32m"true"[31m
+            [33mclass[31m=[32m"glass-card p-5 space-y-5"[31m
+          [36m>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-sm text-zinc-300"[31m
+              [33mrole[31m=[32m"status"[31m
+            [36m>[31m
+              [0mSaving the captured request. Editing is paused. Leaving this form does not cancel a save already sent. Check saved requests before submitting again.[0m
+            [36m</p>[31m
+            [36m<fieldset[31m
+              [33maria-label[31m=[32m"Captured release intake"[31m
+              [33mclass[31m=[32m"min-w-0 space-y-5 border-0 p-0"[31m
+              [33mdisabled[31m=[32m""[31m
+            [36m>[31m
+              [36m<div>[31m
+                [36m<div[31m
+                  [33mclass[31m=[32m"flex items-center justify-between gap-3"[31m
+                [36m>[31m
+                  [36m<div>[31m
+                    [36m<p[31m
+                      [33mclass[31m=[32m"text-sm font-semibold text-white"[31m
+                    [36m>[31m
+                      [0mRevise release request · v3 → v4[0m
+                    [36m</p>[31m
+                    [36m<p[31m
+                      [33mclass[31m=[32m"mt-1 text-xs text-zinc-500"[31m
+                    [36m>[31m
+                      [0mStep [0m
+                      [0m5[0m
+                      [0m of [0m
+                      [0m5[0m
+                      [0m · [0m
+                      [0mRecovery[0m
+                    [36m</p>[31m
+                  [36m</div>[31m
+                  [36m<span[31m
+                    [33mclass[31m=[32m"text-[10px] font-mono uppercase tracking-wider text-zinc-500"[31m
+                  [36m>[31m
+                    [0mComplete each step before submitting[0m
+                  [36m</span>[31m
+                [36m</div>[31m
+                [36m<div[31m
+                  [33maria-label[31m=[32m"Intake progress"[31m
+                  [33mclass[31m=[32m"mt-4 grid grid-cols-5 gap-2"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0m1[0m
+                    [0m. [0m
+                    [0mWindow[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0m2[0m
+                    [0m. [0m
+                    [0mScope[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0m3[0m
+                    [0m. [0m
+                    [0mExecution[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+                    [33mtype[31m=[32m"button"[31m
+                  [36m>[31m
+                    [0m4[0m
+                    [0m. [0m
+                    [0mValidation[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33maria-current[31m=[32m"step"[31m
+                    [33mclass[31m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-violet-500/40 bg-violet-500/10 text-violet-200"[31m
+                    [33mdata-help-id[31m=[32m"releases.workspace.intake-step"[31m
+                    [33mdisabled[31m=[32m""[31m
+ ...[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdoes not close a replacement draft after an abandoned create intake succeeds[32m 44[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdoes not close a replacement draft after an abandoned revise intake succeeds[32m 97[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains and unlocks the captured form after save response without automatic replay[32m 59[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains and unlocks the captured form after save rejection without automatic replay[32m 55[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mcloses the form only after its own ordinary successful save[32m 35[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdoes not refresh or apply a late successful save after the intake view unmounts[32m 33[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mfreezes the captured create intake synchronously and sends only one immutable request
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the role "status"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-sm text-zinc-300"[39m
+  [33mrole[39m=[32m"status"[39m
+[36m>[39m
+  [0mSaving the captured request. Editing is paused. Leaving this form does not cancel a save already sent. Check saved requests before submitting again.[0m
+[36m</p>[39m
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-[11px] text-zinc-500"[39m
+  [33mrole[39m=[32m"status"[39m
+[36m>[39m
+  [0mService last responded [0m
+  [0m11/4/2026, 4:59:58 PM[0m
+  [0m.[0m
+[36m</p>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"workspace-view flex-1 overflow-y-auto bg-axiom-bg"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"aurora-bg"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"workspace-content relative z-10 w-full px-6 py-8 space-y-6 sm:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"release-workspace-heading flex flex-wrap items-start justify-between gap-4"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"text-2xl font-semibold tracking-tight"[39m
+              [36m>[39m
+                [0mReleases[0m
+              [36m</h1>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-zinc-500 mt-0.5"[39m
+              [36m>[39m
+                [0mPrepare the scope. Review the actions. Follow the verified outcome.[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn-secondary"[39m
+                [33mdata-help-id[39m=[32m"releases.workspace.refresh"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mRefresh[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn-secondary"[39m
+                [33mdata-help-id[39m=[32m"releases.workspace.ticket-draft-toggle"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mStart from ticket[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn-primary"[39m
+                [33mdata-help-id[39m=[32m"releases.workspace.intake-toggle"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCancel intake[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<form[39m
+            [33maria-busy[39m=[32m"true"[39m
+            [33mclass[39m=[32m"glass-card p-5 space-y-5"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-zinc-300"[39m
+              [33mrole[39m=[32m"status"[39m
+            [36m>[39m
+              [0mSaving the captured request. Editing is paused. Leaving this form does not cancel a save already sent. Check saved requests before submitting again.[0m
+            [36m</p>[39m
+            [36m<fieldset[39m
+              [33maria-label[39m=[32m"Captured release intake"[39m
+              [33mclass[39m=[32m"min-w-0 space-y-5 border-0 p-0"[39m
+              [33mdisabled[39m=[32m""[39m
+            [36m>[39m
+              [36m<div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center justify-between gap-3"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm font-semibold text-white"[39m
+                    [36m>[39m
+                      [0mNew release request[0m
+                    [36m</p>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"mt-1 text-xs text-zinc-500"[39m
+                    [36m>[39m
+                      [0mStep [0m
+                      [0m5[0m
+                      [0m of [0m
+                      [0m5[0m
+                      [0m · [0m
+                      [0mRecovery[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-wider text-zinc-500"[39m
+                  [36m>[39m
+                    [0mComplete each step before submitting[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33maria-label[39m=[32m"Intake progress"[39m
+                  [33mclass[39m=[32m"mt-4 grid grid-cols-5 gap-2"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0m1[0m
+                    [0m. [0m
+                    [0mWindow[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0m2[0m
+                    [0m. [0m
+                    [0mScope[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0m3[0m
+                    [0m. [0m
+                    [0mExecution[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0m4[0m
+                    [0m. [0m
+                    [0mValidation[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-current[39m=[32m"step"[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-violet-500/40 bg-violet-500/10 text-violet-200"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+              ...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m123:133[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mfreezes the captured revise intake synchronously and sends only one immutable request
+[31m[1mTestingLibraryElementError[22m[39m: Found multiple elements with the role "status"
+
+Here are the matching elements:
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-sm text-zinc-300"[39m
+  [33mrole[39m=[32m"status"[39m
+[36m>[39m
+  [0mSaving the captured request. Editing is paused. Leaving this form does not cancel a save already sent. Check saved requests before submitting again.[0m
+[36m</p>[39m
+
+Ignored nodes: comments, script, style
+[36m<p[39m
+  [33mclass[39m=[32m"text-[11px] text-zinc-500"[39m
+  [33mrole[39m=[32m"status"[39m
+[36m>[39m
+  [0mService last responded [0m
+  [0m11/4/2026, 4:59:58 PM[0m
+  [0m.[0m
+[36m</p>[39m
+
+(If this is intentional, then use the `*AllBy*` variant of the query (like `queryAllByText`, `getAllByText`, or `findAllByText`)).
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"workspace-view flex-1 overflow-y-auto bg-axiom-bg"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"aurora-bg"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"workspace-content relative z-10 w-full px-6 py-8 space-y-6 sm:px-8"[39m
+        [36m>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"release-workspace-heading flex flex-wrap items-start justify-between gap-4"[39m
+          [36m>[39m
+            [36m<div>[39m
+              [36m<h1[39m
+                [33mclass[39m=[32m"text-2xl font-semibold tracking-tight"[39m
+              [36m>[39m
+                [0mReleases[0m
+              [36m</h1>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"text-sm text-zinc-500 mt-0.5"[39m
+              [36m>[39m
+                [0mPrepare the scope. Review the actions. Follow the verified outcome.[0m
+              [36m</p>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"flex flex-wrap gap-2"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn-secondary"[39m
+                [33mdata-help-id[39m=[32m"releases.workspace.refresh"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mRefresh[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn-secondary"[39m
+                [33mdata-help-id[39m=[32m"releases.workspace.ticket-draft-toggle"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mStart from ticket[0m
+              [36m</button>[39m
+              [36m<button[39m
+                [33mclass[39m=[32m"btn-primary"[39m
+                [33mdata-help-id[39m=[32m"releases.workspace.intake-toggle"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mCancel intake[0m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<form[39m
+            [33maria-busy[39m=[32m"true"[39m
+            [33mclass[39m=[32m"glass-card p-5 space-y-5"[39m
+          [36m>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-sm text-zinc-300"[39m
+              [33mrole[39m=[32m"status"[39m
+            [36m>[39m
+              [0mSaving the captured request. Editing is paused. Leaving this form does not cancel a save already sent. Check saved requests before submitting again.[0m
+            [36m</p>[39m
+            [36m<fieldset[39m
+              [33maria-label[39m=[32m"Captured release intake"[39m
+              [33mclass[39m=[32m"min-w-0 space-y-5 border-0 p-0"[39m
+              [33mdisabled[39m=[32m""[39m
+            [36m>[39m
+              [36m<div>[39m
+                [36m<div[39m
+                  [33mclass[39m=[32m"flex items-center justify-between gap-3"[39m
+                [36m>[39m
+                  [36m<div>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"text-sm font-semibold text-white"[39m
+                    [36m>[39m
+                      [0mRevise release request · v3 → v4[0m
+                    [36m</p>[39m
+                    [36m<p[39m
+                      [33mclass[39m=[32m"mt-1 text-xs text-zinc-500"[39m
+                    [36m>[39m
+                      [0mStep [0m
+                      [0m5[0m
+                      [0m of [0m
+                      [0m5[0m
+                      [0m · [0m
+                      [0mRecovery[0m
+                    [36m</p>[39m
+                  [36m</div>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-wider text-zinc-500"[39m
+                  [36m>[39m
+                    [0mComplete each step before submitting[0m
+                  [36m</span>[39m
+                [36m</div>[39m
+                [36m<div[39m
+                  [33maria-label[39m=[32m"Intake progress"[39m
+                  [33mclass[39m=[32m"mt-4 grid grid-cols-5 gap-2"[39m
+                [36m>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0m1[0m
+                    [0m. [0m
+                    [0mWindow[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0m2[0m
+                    [0m. [0m
+                    [0mScope[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0m3[0m
+                    [0m. [0m
+                    [0mExecution[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-emerald-500/20 bg-emerald-500/5 text-emerald-300"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+                    [33mtype[39m=[32m"button"[39m
+                  [36m>[39m
+                    [0m4[0m
+                    [0m. [0m
+                    [0mValidation[0m
+                  [36m</button>[39m
+                  [36m<button[39m
+                    [33maria-current[39m=[32m"step"[39m
+                    [33mclass[39m=[32m"rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors border-violet-500/40 bg-violet-500/10 text-violet-200"[39m
+                    [33mdata-help-id[39m=[32m"releases.workspace.intake-step"[39m
+                    [33mdisabled[39m=[32m""[39m
+ ...
+[90m [2m❯[22m Object.getElementError node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m getElementError node_modules/@testing-library/dom/dist/query-helpers.js:[2m20:35[22m[39m
+[90m [2m❯[22m getMultipleElementsFoundError node_modules/@testing-library/dom/dist/query-helpers.js:[2m23:10[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m55:13[22m[39m
+[90m [2m❯[22m node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m123:133[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m18 passed[39m[22m[90m (20)[39m
+[2m   Start at [22m 16:59:57
+[2m   Duration [22m 1.27s[2m (transform 176ms, setup 0ms, import 289ms, tests 742ms, environment 184ms)[22m
+
