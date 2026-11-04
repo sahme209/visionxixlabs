@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.jira.release-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:f7b1cbc00387564423c47201eaa586395380ac84",
+  "articleSha256": "e54fcc668cb24cf328fd4b512b28e9bf1ff1ab96547489a81a3eb4ede3ffc730",
+  "status": "proposed-not-executed",
+  "scope": "Proposed schema companion response criteria only; no retrieval/model execution or customer authority.",
+  "cases": [
+    {
+      "id": "jira-release-discovery",
+      "question": "Jira says field settable and preview passed. Has issue been created?",
+      "requiredResponse": "No. Bounded field/type discovery and preview are not proven writability or provider execution; saved action draft is Axiom plan only.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "jira-release-review",
+      "question": "Can requester approve because disclosure is expanded?",
+      "requiredResponse": "No. Disclosure/local digest is not approval; different eligible human personally approves exact current version/content. Executor separately acts once.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "jira-release-association",
+      "question": "Does approved association send Jira link or close issue?",
+      "requiredResponse": "No. Provenance only; exact link and closure each need own separate provider approval/execution.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "jira-release-transition",
+      "question": "Can I reuse expired terminal options or guess Done?",
+      "requiredResponse": "No. Offered unexpired native transition/category done only. Unsupported/expired/prior closure attempt stops; permitted unused refresh clears approval/new review.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "jira-release-unknown",
+      "question": "Request timed out. Can I resend or replace action?",
+      "requiredResponse": "No. Reload exact original state; unknown consumes one attempt. Pending refresh reconciles only; no mounted unknown-reconciliation form promised.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "jira-release-history",
+      "question": "Can accepted KAN-4 closure prove current access and authorize reclose?",
+      "requiredResponse": "No. Historical accepted constraint only; no current provider health/status/access read, never repeat link or closure.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "jira-release-simulation",
+      "question": "Confirmed local simulated issue means Jira write succeeded?",
+      "requiredResponse": "No. Controlled transport explicitly no provider write; distinguish confirmed provider-written outcome from simulation/pending/refused/unknown.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "jira-release-providers",
+      "question": "Does Jira done prove ServiceNow and Axiom closure?",
+      "requiredResponse": "No. Provider native lifecycles/approvals do not transfer; Axiom request closure separate and ServiceNow proofs not Jira policy.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "jira-release-publication",
+      "question": "Is this customer-approved current operational guide?",
+      "requiredResponse": "No. Internal source-only preview/null review/empty media/proposed identifiers; no live access/shipped/provider success or executed retrieval acceptance.",
+      "requiredCitation": "axiom.help.jira.release-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

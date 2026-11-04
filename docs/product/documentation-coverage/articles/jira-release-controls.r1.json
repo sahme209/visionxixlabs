@@ -1,0 +1,237 @@
+{
+  "schema": 1,
+  "id": "axiom.help.jira.release-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Jira release controls: discovery, exact reviews and single-attempt link or closure",
+  "productVersion": "local-source-preview:f7b1cbc00387564423c47201eaa586395380ac84",
+  "screenIds": [
+    "proposed.axiom.screen.jira.release-controls"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.jira.discovery",
+    "proposed.axiom.control.jira.preview",
+    "proposed.axiom.control.jira.save-ticket-draft",
+    "proposed.axiom.control.jira.reload-ticket-actions",
+    "proposed.axiom.control.jira.review-exact-ticket",
+    "proposed.axiom.control.jira.publish-approved",
+    "proposed.axiom.control.jira.closure-options",
+    "proposed.axiom.control.jira.prepare-association",
+    "proposed.axiom.control.jira.reload-exact-review",
+    "proposed.axiom.control.jira.approve-association",
+    "proposed.axiom.control.jira.save-link",
+    "proposed.axiom.control.jira.approve-provider-action",
+    "proposed.axiom.control.jira.send-link",
+    "proposed.axiom.control.jira.save-closure",
+    "proposed.axiom.control.jira.close-approved",
+    "proposed.axiom.control.jira.check-saved-outcome"
+  ],
+  "goal": "Distinguish Jira field discovery, saved exact proposals, independent approvals, association provenance and deliberate provider execution without transferring authority or repeating uncertain historical work.",
+  "prerequisites": [
+    "Internal source-only draft; current installed support, service enablement, provider/connection access and exact returned permissions require separate current checks.",
+    "Current selected workspace/paired desktop context, intended release/version/status and exact saved IDs. Historical card visibility or connection summary does not grant authority.",
+    "A genuine different eligible human must personally inspect/approve the exact current version/digest/target/content. AI/requester/executor cannot supply independent approval."
+  ],
+  "permissions": [
+    "Discovery/preview and advertised settable metadata are not proven provider write permission. Owner/admin browser ticket-access navigation with connections:manage is not consent or action approval.",
+    "Association provenance approval, lifecycle ticket approval and each associated provider link/closure approval are separate; no transfer to another action/version/provider.",
+    "Returned enablement/approval/execution/amend/cancel/close flags and current server context decide availability; no current flag/access/provider health was inspected.",
+    "Native offered unexpired Jira terminal transition/category done is required. No guessed status, expired reuse or imported ServiceNow policy/native approval substitutes."
+  ],
+  "steps": [
+    {
+      "instruction": "Focus intended release/version in Releases \u2192 Tickets \u2192 Jira. Left/Right/Home/End select provider tabs.",
+      "effect": "read",
+      "expectedState": "Jira branch mounts discovery, JiraTicketLifecycle and selected-provider TicketGovernancePanel. Hidden panels remain mounted, so tab switch is not cancellation. Context/release version/status changes key new ticket session."
+    },
+    {
+      "instruction": "Explore read-only Jira form with paired desktop session, Load Jira connections, search/paginate projects and issue types and inspect Fields reported by Jira.",
+      "effect": "read",
+      "expectedState": "Recorded connection summary says health not checked/write permission not verified. Bounded discovery/advertised settable fields do not prove writability; selection changes clear dependent fields/previews."
+    },
+    {
+      "instruction": "Enter supported Ticket summary, optional plain-text description and optionally Use my connected Jira account as Reporter; Preview ticket.",
+      "effect": "local-preference",
+      "expectedState": "Summary single line max255UTF8bytes; description8192bytes/128lines. Preview identifies included/missing/unsupported/omitted/not-settable blockers. No arbitrary Reporter/custom-field editor. Preview never creates issue or grants publish authority."
+    },
+    {
+      "instruction": "In lifecycle-hosted discovery only when permitted and exact preview blocker-free, Save ticket action draft/Update saved ticket action; Reload saved ticket actions first. Review Jira ticket access, if offered, opens separate browser access after current owner/admin connections:manage checks.",
+      "effect": "propose",
+      "expectedState": "Saves Axiom exact plan, not provider issue. Returned enabled/providerWritesAvailable/approvalAvailable/linkAvailable/closeAvailable/per-action permissions govern availability. Opening access page grants no consent/approval. Closed release preserves history and suppresses publish preparation."
+    },
+    {
+      "instruction": "Review exact ticket action disclosure and inspect ID/version/digest/expiry, project/type/content/Reporter for create, issue/run/source for link or issue/terminal status/category for close. Genuine different eligible human personally chooses Approve exact ticket action.",
+      "effect": "human-review",
+      "expectedState": "Disclosure records local reviewed digest, not approval. Requester/designated executor excluded from independent approval. Authorized executor separately Publish approved ticket/Link approved deployment evidence/Close approved ticket only when returned executable; cancel unused action conditional."
+    },
+    {
+      "instruction": "For confirmed provider-created lifecycle issue, Read Jira closure options, choose offered unexpired Terminal Jira transition and Prepare closure for independent approval. Refresh unused closure action \u2192 Save refreshed closure for new approval only if permitted.",
+      "effect": "propose",
+      "expectedState": "Preparation performs no transition; refresh preserves history and clears prior approval. Unsupported/expired transition stops preparation. Do not invent lifecycle link-preparation control from backend/status rendering."
+    },
+    {
+      "instruction": "Associate existing ticket with deployment evidence using Original published action ID, Saved successful deployment evidence ID and Current deployed release head version. Prepare association for independent review then Reload exact ticket review.",
+      "effect": "propose",
+      "expectedState": "Saved Axiom provenance IDs, not arbitrary Jira URL/key import; deployed request may differ from original. Review exact provider/connection/issue/request/head/repository/workflow/ref/source/run/attempt/expiry. Technical bindings expansion read-only; preparation neither links nor closes."
+    },
+    {
+      "instruction": "Eligible independent reviewer personally checks exact ticket/deployment/policy evidence and Approve exact ticket association or policy only when current/unexpired.",
+      "effect": "human-review",
+      "expectedState": "Association approval is provenance only, not provider action approval or a claimed Jira terminal-policy review. Historical/noncurrent review ineligible. Cancel/revoke only when offered."
+    },
+    {
+      "instruction": "Under Jira deployment link and closure, Reload associated action history/Load saved action outcome. Save deployment link for separate review only with current approved association and no existing link/action/draft/accepted link. Inspect exact issue/URL/title/global identity/run/source/payload digest.",
+      "effect": "propose",
+      "expectedState": "Save/refresh unused link sends nothing, clears old provider approval and preserves history. Distinct reviewer approves exact provider target/content; requester/authorized executor separately sends exact approved link once. Changed version/digest requires fresh review."
+    },
+    {
+      "instruction": "After confirmed provider-written link, Read verified closure options or Read closure options for existing confirmed link. Choose offered unexpired Terminal Jira transition \u2192 Save exact closure for independent review; genuine separate provider approval precedes Close approved ticket.",
+      "effect": "execute",
+      "expectedState": "Existing confirmed link card is historical and never resends accepted link. Terminal candidate binds category done; no guessed status. Expired/no supported options or prior closure attempt blocks preparation. Association/link approval cannot authorize closure."
+    },
+    {
+      "instruction": "After unconfirmed mutation, reload exact saved review/action/history. Refresh pending execution status or Refresh pending action outcome reconciles the existing dispatch.",
+      "effect": "recover",
+      "expectedState": "Unknown consumes single attempt /1; no resend/replacement from timeout. Lifecycle unknown requires verified provider read; associated unknown requires provider history/reviewed reconciliation. No mounted Jira unknown-reconciliation form is promised."
+    }
+  ],
+  "expectedOutcome": "Find current exact saved Jira action/review and distinguish verified provider outcomes from discovery/simulation/history, keeping uncertainty unresolved until authorized original-record recovery.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial accepted:false. Media accepted:false. Native accepted:false. Runtime accepted:false. Release accepted:false. Shipped accepted:false. Human review null/media empty; no authentic walkthrough/provider success/current health claim.",
+    "All proposed. identifiers are authoring candidates only, not runtime/help bindings. No ingestion/retrieval activation/publication/new feature/authority created.",
+    "Historical25da6f26 guide/manifest/review/binding-verification remain unchanged; currentf7b1cbc0 article binds17codefiles20rawranges plus4supportingrecords=21sources. Source identity does not qualify semantics/runtime/backend invariants.",
+    "Controlled transport can say no provider write and display simulated issue identity; local confirmed state is not Jira creation. Confirmed provider write/refused/pending/unknown/cancelled remain distinct; bounded five-action history is not complete provider history.",
+    "Prior KAN-4 accepted link and closure are historical scope constraints only, not current health/access/status evidence or new reclose authority. Never repeat either action; no live ticket status was read.",
+    "Finite scope excludes ServiceNow lifecycle/models/policy/journal proofs/note flows, OAuth/consent detail, Approval Center browser flows, deployment dispatch/evidence internals, full provider transport/database/native/security testing and general journey internals. No backend-only route presented as mounted control.",
+    "Jira transition/closure evidence does not establish ServiceNow closure. Axiom request closure remains separate from Jira native terminal transition.",
+    "Fixture proposed-not-executed prose only; no retrieval/model evaluation or customer acceptance."
+  ],
+  "recovery": [
+    "Unconfirmed save retains form and requires Reload saved ticket actions before another preparation. Unconfirmed discovery refresh stops discovery; Reload connection status only, not retry/token rotation.",
+    "After mutation uncertainty hold further changes and reload exact saved ID/version/digest/history. Failed read is not empty success; current context/connection/release readiness must be restored.",
+    "Pending status refresh reconciles original attempt. Unknown consumes the one attempt; do not resend/create replacement/reset/renew/descend based on timeout. Preserve exact IDs/digest/result for authorized recovery.",
+    "Expired options/plans never reused. Refresh permitted unused action preserves history and clears old provider approval; requires fresh exact independent review. Existing closure attempt blocks another preparation.",
+    "Existing confirmed link card never resends remote link. KAN-4 prior link/closure never repeat; historical outcome grants no current access or authority.",
+    "Switching tab/hiding explorer is not cancellation. Context change requires reopening intended release; stale responses cannot authorize active context. Cancel unused action only when returned permitted, not provider rollback."
+  ],
+  "searchTerms": [
+    "Jira",
+    "Explore read-only Jira form",
+    "Fields reported by Jira",
+    "Preview ticket",
+    "Reload saved ticket actions",
+    "Approve exact ticket action",
+    "Original published action ID",
+    "Prepare association for independent review",
+    "Save deployment link for separate review",
+    "Read verified closure options",
+    "Terminal Jira transition",
+    "Close approved ticket",
+    "Check saved action outcome",
+    "KAN-4 historical"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "0d51713c1193b657a364a829b29595b415e0f67ecb17ebfa8e7a490aea4b99ee"
+    },
+    {
+      "path": "desktop/src/components/ReleaseTicketWorkspace.tsx",
+      "sha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902"
+    },
+    {
+      "path": "desktop/src/components/JiraTicketDiscovery.tsx",
+      "sha256": "bc473956cef7a25c0450df7141ac721a4be233c1e7b730916ffde566a853b172"
+    },
+    {
+      "path": "desktop/src/components/JiraTicketLifecycle.tsx",
+      "sha256": "ec200b2ce490ad4e40e611604906757c32ff86b3ece866157e9b940c8726fcc0"
+    },
+    {
+      "path": "desktop/src/components/TicketGovernancePanel.tsx",
+      "sha256": "3c8b8a7b901295450a5f5d78b1854a54935e6ad2ba4beb013200258d846a8a74"
+    },
+    {
+      "path": "desktop/src/components/AssociatedTicketActionsPanel.tsx",
+      "sha256": "93d3c27a2041648aba5973e15c91bcdc8e3cc7c892a8d2954df76ad07f01389a"
+    },
+    {
+      "path": "desktop/src/lib/jiraTicketDiscovery.ts",
+      "sha256": "40dc3ff717bfa16e58d848e685708944cdaaaf6e997267e5a492b21cade3b052"
+    },
+    {
+      "path": "desktop/src/lib/jiraTicketLifecycle.ts",
+      "sha256": "511ddaa3948da91d958747bff5daa0fd6db00cd64e31560ce385a63dc28c8523"
+    },
+    {
+      "path": "desktop/src/lib/ticketGovernance.ts",
+      "sha256": "e30ad3e939b22098d1a458e8ed5fe229a6962be296366903cd0ffbd8ef487d46"
+    },
+    {
+      "path": "desktop/src/lib/associatedTicketActions.ts",
+      "sha256": "b366ca6a877a979ce1875e5bb1ed3d4e44c92de8d1ecd8931f524fa443899453"
+    },
+    {
+      "path": "lib/releaseops/jiraFieldSupport.ts",
+      "sha256": "a8957050047a2c7e1bd213b52192b040a60dbe3a23e027d4a4eba5a5cb5731e2"
+    },
+    {
+      "path": "lib/releaseops/jiraTicketLifecycleContract.ts",
+      "sha256": "d0b4a485bcafd9551b9ab46ba8491c1512f5ffc407ecfcd6c3dace0f73e70569"
+    },
+    {
+      "path": "lib/releaseops/jiraTicketLifecycleStore.ts",
+      "sha256": "8dbb4a0ccf6de6af62e428c3691710a2babbabf374a0525b5d21c0ccce93adfd"
+    },
+    {
+      "path": "desktop/src/components/ActionJourney.tsx",
+      "sha256": "bfc20deab9249e82603ee05734732b299c0e03b93eb097b57afd37cce102f653"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-controls.md",
+      "sha256": "f96c4c62726961e8006475a54e8c7f8e2bac6014c299df078227ee239a4d719b"
+    },
+    {
+      "path": "docs/product/knowledge/servicenow-evidence-and-closure-controls.md",
+      "sha256": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336"
+    },
+    {
+      "path": "docs/product/knowledge/jira-release-controls.md",
+      "sha256": "c204974ab27557d1271f3e5b21723afe69e878f8a165fe274c6559c3885bee24"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/jira-release-guide/source-bindings.json",
+      "sha256": "0a88416ecea841f34ae65d55fc05c44fdbc7af47c33435680b70170c3cc2ccf8"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/jira-release-guide/source-review.md",
+      "sha256": "710815085c465b0e1b9d6330f2cf106ca1dd00551e77c18109f355f166be2dad"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/jira-release-guide/binding-verification.json",
+      "sha256": "82eb8e90ff0f169488edb64cc5b97c5d4749856a142c9d0182087c29ba7baa14"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/jira-release-controls.md",
+      "docs/recovery/2026-11-03/jira-release-guide/source-bindings.json",
+      "docs/recovery/2026-11-03/jira-release-guide/source-review.md",
+      "docs/recovery/2026-11-03/jira-release-guide/binding-verification.json"
+    ],
+    "verifiedVersion": "local-source-preview:f7b1cbc00387564423c47201eaa586395380ac84",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
