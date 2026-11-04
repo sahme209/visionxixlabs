@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.governance.execution-limits-prototype",
+  "revision": 1,
+  "productVersion": "local-source-preview:f57bd027a29971726096914f31049764a15717d2",
+  "articleSha256": "2849e4b66188f064f7b1d20a21d5b1eecf36356978a829f8a5da673dc794ab00",
+  "status": "proposed-not-executed",
+  "scope": "Proposed schema companion response criteria only; no retrieval/model execution or customer authority.",
+  "cases": [
+    {
+      "id": "governance-limits-prototype-availability",
+      "question": "Why cannot I find execution limits in production?",
+      "requiredResponse": "Development-only preview, existing service gate/current authority also required. No enable flag/bypass guidance and no production Governance MVP claim.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-limits-prototype-ceiling",
+      "question": "Level5 activated means provider action approved and baseline enrolled?",
+      "requiredResponse": "No. Numeric ceiling only, not provider access/action approval/baseline enrollment/coverage/current authority.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-limits-prototype-review",
+      "question": "Can named executor approve their own ceiling proposal?",
+      "requiredResponse": "No. Genuine current different authorized human not requester/named executor personally reviews exact scope/executors/expiry. Activation separate manager action.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-limits-prototype-parent",
+      "question": "Current parent changed. Can I force activate or reload expired policy to renew it?",
+      "requiredResponse": "No. Reload current parent; expired proposal cannot approve/activate, lookup never renews. Containment revocation separate undercurrent authority.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-limits-prototype-unknown",
+      "question": "Lost response. Retry with new nonce or delete locator?",
+      "requiredResponse": "No. Read unchanged original request; missing/unavailable retains blocker. Locator storage failure/corruption blocks mutation, no bypass.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-limits-prototype-restart",
+      "question": "Restart history receipt restores draft/current policy authority?",
+      "requiredResponse": "No. Historical locator/response only, exactProposalContentVerified:false for sparse payload. Clears exact locator only; load policy/current authority separately, original session restrictions remain.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-limits-prototype-revoke",
+      "question": "Unresolved proposal prevents every containment revocation?",
+      "requiredResponse": "Not necessarily. Current authorized manager can revoke separate exact loaded policy unless unresolved revoke names it. Not blanket bypass.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-limits-prototype-source",
+      "question": "Were all ten old source hashes unchanged?",
+      "requiredResponse": "No. Nine match, wrapper refactored/delegates newCore/productionauthority; current receipt binds full graph, no runtime qualification.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "governance-limits-prototype-qualification",
+      "question": "This completes A2 issuer/custody/channel coverage?",
+      "requiredResponse": "No. Canonical issuer/custody/business channel/enrollment/complete execution coverage remain unqualified; internal source-only/null review/empty media, no customer/runtime acceptance.",
+      "requiredCitation": "axiom.help.governance.execution-limits-prototype revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+{
+  "schema": 1,
+  "id": "axiom.help.governance.execution-limits-prototype",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Execution limits prototype: why unavailable and what exact policy decisions mean",
+  "productVersion": "local-source-preview:f57bd027a29971726096914f31049764a15717d2",
+  "screenIds": [
+    "proposed.axiom.screen.governance.execution-limits-prototype"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.governance.limits.preview-entry",
+    "proposed.axiom.control.governance.limits.load-baselines",
+    "proposed.axiom.control.governance.limits.exact-baseline",
+    "proposed.axiom.control.governance.limits.scope",
+    "proposed.axiom.control.governance.limits.named-executors",
+    "proposed.axiom.control.governance.limits.numeric-ceiling",
+    "proposed.axiom.control.governance.limits.expiry",
+    "proposed.axiom.control.governance.limits.read-parent",
+    "proposed.axiom.control.governance.limits.save-proposal",
+    "proposed.axiom.control.governance.limits.load-policy",
+    "proposed.axiom.control.governance.limits.independent-approval",
+    "proposed.axiom.control.governance.limits.read-pointer",
+    "proposed.axiom.control.governance.limits.activate",
+    "proposed.axiom.control.governance.limits.revoke",
+    "proposed.axiom.control.governance.limits.original-outcome",
+    "proposed.axiom.control.governance.limits.restart-history"
+  ],
+  "goal": "Explain the development prototype and finite exact policy workflow without confusing numeric ceilings with provider action approval, baseline enrollment, enforcement coverage or qualified Governance availability.",
+  "prerequisites": [
+    "Internal source-only prototype draft, not production-supported Governance or A2 completion. No guidance to enable flags, bypass guards or qualify a deployment.",
+    "Current accepted paired desktop workspace member/context with required server capability and existing enabled service. API-key authority refused; current identity/session/membership/expiry/expectedstate still checked.",
+    "Exact saved baseline/revision/organization/scope, current parent and genuinely eligible separate human reviewer; canonical issuer/custody/business-channel authority and coverage remain unqualified."
+  ],
+  "permissions": [
+    "Reads need workspace:read; propose/activate/revoke policy:manage; independent limit review agent:approve. Role labels, help IDs and client context grant nothing.",
+    "Numeric ceiling is maximum eligible level only. It supplies no provider access/action approval, current baseline enrollment/execution coverage or actual eligible integration availability.",
+    "Actual production wrapper supplies createGovernanceRequestAuthority(request) to delegated Core; current request resolver excludes API keys and checks matching organization/user/session and accepted membership/live session/capability around locked reads. This source description is not backend/race qualification.",
+    "Real exact independent human policy review is distinct from manager activation and any provider-action approval. Requester/named executors cannot be independent reviewer; no automated/impersonated approval."
+  ],
+  "steps": [
+    {
+      "instruction": "Understand why the lane may be unavailable: Review execution limits preview is a development-only Settings entry, not a production-supported Governance MVP. If already available under legitimate current access, opening it performs no automatic server read.",
+      "effect": "read",
+      "expectedState": "No flag-enabling, bypass or deployment instructions. Separate Inspect saved Governance lane is not this numeric management workflow. Service endpoint also requires its existing server gate; source does not prove current value."
+    },
+    {
+      "instruction": "Load saved baselines, select/enter exact saved baseline revision ID and Load baseline review.",
+      "effect": "read",
+      "expectedState": "Returned revision must match ID and organization. Saved repository/resource/environment scope supplies offered limit scopes. Read does not approve/enroll baseline or establish coverage; context/baseline changes clear old controls."
+    },
+    {
+      "instruction": "A currently authorized policy:manage manager chooses exact scope, explicitly loads current members and selects named executors. Set maximum numeric level 0\u20135 and exact eligible action kinds, then Limit expiry and inspect displayed UTC instant.",
+      "effect": "local-preference",
+      "expectedState": "Only accepted owner/admin/operator records offered, with actual action rights still checked. Named executors cannot independently approve proposal. Numeric maximum is eligibility ceiling, not action permission; mutations need at least level 4 plus separate action/platform checks."
+    },
+    {
+      "instruction": "Read exact current limit parent, review unchanged draft and personally confirm its checkbox, then Save limits for independent review.",
+      "effect": "propose",
+      "expectedState": "Saves proposal only. Draft edits clear confirmation; scope changes clear parent. Schema bounds1\u201312distinct actions/1\u2013100distinct named executors/canonical UTC expiry are limits, not autonomy grants."
+    },
+    {
+      "instruction": "Load saved limit policies (up to20recent), select/enter exact policy ID and Load exact policy. Expand Exact policy identifiers for ID/digest/parent.",
+      "effect": "read",
+      "expectedState": "Bounded list/receipt is historical locator, not full history/current authority. A found/loaded record does not renew expiry or supply original proposal verification."
+    },
+    {
+      "instruction": "A genuine current agent:approve human reviewer inspects exact scope/ceiling/executors/expiry and Record independent limit approval only for unexpired proposed revision.",
+      "effect": "human-review",
+      "expectedState": "Reviewer must differ from requester and every named executor. Owner/admin/security-reviewer role mapping can provide capability, but label/checkbox/documentation is not authority or personal decision. No provider action approval follows."
+    },
+    {
+      "instruction": "A current policy:manage manager reads current limit pointer and Activate these limits only for approved/unexpired exact policy whose parent still matches.",
+      "effect": "execute",
+      "expectedState": "Activation changes numeric ceiling only, not baseline enrollment, provider permission, execution coverage or approval. Changed parent requires reload, not forced activation; proposing/reviewing/activating are separate operations."
+    },
+    {
+      "instruction": "For containment, Revoke this limit policy only against exact loaded nonrevoked revision/expected version and current manager authority.",
+      "effect": "execute",
+      "expectedState": "Expiry blocks approval/activation but does not prevent containment revocation. An unresolved request normally blocks mutations; separately loaded exact revocation may remain allowed unless unresolved revoke names that policy."
+    },
+    {
+      "instruction": "If a mutation outcome is uncertain, Check original proposal outcome or Check original saved outcome for unchanged original request.",
+      "effect": "recover",
+      "expectedState": "Bounded inert locator must persist before mutation; failure blocks it. Locator keyed by service/organization/user/original nonce holds operation/safe IDs, no proposal payload/credentials/authority. Missing/unavailable outcome keeps blocker; never resend or replace nonce."
+    },
+    {
+      "instruction": "After restart use Observe original request history via saved locator; Load my recorded decisions/Original request locator/Select policy from this receipt locate records only.",
+      "effect": "recover",
+      "expectedState": "Original actor/session rules remain; replacement session may be refused. Historical exact result clears only matching local locator, not draft/approval/current authority. Sparse restart reports exactProposalContentVerified:false because payload was not persisted; load policy separately."
+    }
+  ],
+  "expectedOutcome": "Recognize development-only availability and exact recorded policy/recovery state while retaining separate source authority, provider action approval, enrollment, coverage and current identity boundaries.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial accepted:false. Media accepted:false. Native accepted:false. Runtime accepted:false. Release accepted:false. Shipped accepted:false. Human review null and media empty; no authentic native examples, production activation or complete Governance acceptance.",
+    "proposed. IDs are article-authoring candidates only, not runtime/help bindings. Existing literal control inventory IDs are source metadata, not customer retrieval/ingestion or accepted media.",
+    "Historical91d3f88d guide untouched. Nine of ten embedded hashes match; request-service wrapper refactored6insertions/76deletions delegates Core. New receipt binds exact current wrapper/Core/authority/store and full current ranges; no claim all historical files unchanged.",
+    "Mechanical source comparison preserves old policy body with injected authority/default Date.now store clock and old authority body with injected existing resolver; this is not live session, storage, execution or concurrency qualification.",
+    "Canonical issuer/channel identity, signing custody, business-channel integration, fresh enrollment and complete enforcement/tool coverage remain unqualified. No A2 completion, Governance MVP release or provider execution authorization follows.",
+    "Finite preview scope excludes baseline authoring/enrollment, provider collection/action execution, all backend/OS/native/release accessibility qualification and complete Governance design.",
+    "Fixture proposed-not-executed prose only. No retrieval/model evaluation, tests, source qualification experiment, auth/native/provider/DB operations or runtime flag reads."
+  ],
+  "recovery": [
+    "Persist original inert locator before mutation. Corrupt/overflowing/unavailable recovery storage blocks mutations rather than discarding history; do not delete locator to bypass uncertainty.",
+    "Unresolved outcome: read unchanged original request only, no resend/new nonce/replacement operation. Missing/unavailable response retains blocker.",
+    "Restart historical lookup may be refused under replacement session; locators provide no authority. Verified historical result clears exact locator only, load current exact policy/authority separately.",
+    "Changed parent/digest/version/context/expiry requires reload; do not force activation or renew expired record by lookup. Expired policy remains historical; only eligible containment revocation may proceed.",
+    "Unresolved proposals/approvals/activations block new ones. Separate authorized exact policy revocation exception is bounded; unresolved revoke for same policy blocks it.",
+    "Opening lane/local Back to Settings sends no policy action/provider work. Read/list/lookup use POST but are read-only; HTTP method alone not mutation evidence."
+  ],
+  "searchTerms": [
+    "Review execution limits preview",
+    "Load saved baselines",
+    "Load baseline review",
+    "Limit expiry",
+    "Save limits for independent review",
+    "Record independent limit approval",
+    "Read current limit pointer",
+    "Activate these limits",
+    "Revoke this limit policy",
+    "Check original saved outcome",
+    "Observe original request history",
+    "exactProposalContentVerified"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029"
+    },
+    {
+      "path": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "sha256": "d154a29c5cb47dfa7786a14bd420d8f20205f27d2e3f8af14b42d7cb3c8ffb9c"
+    },
+    {
+      "path": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "sha256": "568a74d4cefb98268745a7fa8b495abb00213954ce91ed81c0e9eb2c9483dde4"
+    },
+    {
+      "path": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "sha256": "db586c750e00a46d2551f89f41558fa7e90b3e00e32c54257f9acf87d51e1a4e"
+    },
+    {
+      "path": "desktop/src/lib/governanceExecutionPolicy.ts",
+      "sha256": "3da2dbcf268977d84998d283435dad9413e0424c3a8ce127ae32cc8ca00cee91"
+    },
+    {
+      "path": "desktop/src/lib/useExecutionPolicyRecovery.ts",
+      "sha256": "6342c60c7ea21b89aa0f4714b63975ae02d7d1b2139986bff3277762018298aa"
+    },
+    {
+      "path": "desktop/src/lib/executionPolicyRecoveryStore.ts",
+      "sha256": "e51b4c81fa3599a765592d43ca6ce0c9e29ae22b28a90d744aa2a5591bfc310e"
+    },
+    {
+      "path": "app/api/desktop/governance-intelligence/execution-policy/route.ts",
+      "sha256": "dbc25e40d175df6bc1782ef9d0834c1d9ef07ce80a0ad3f146bf51d41916216b"
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyHttp.ts",
+      "sha256": "09ff9bbed6041a112f9481f50cb1f1b3fcd894cd04019ee72e61d16d6c430212"
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyRequestService.ts",
+      "sha256": "3b22921234cb0bec24efdcf253e8cb159f8d280d81c3b1f4e1dc70778238dd01"
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyRequestServiceCore.ts",
+      "sha256": "505a0b7b5f8cefbf791d829e63c24402bf21afd0d97e856fe42de0765bd4d9c5"
+    },
+    {
+      "path": "lib/governance/intelligence/requestAuthority.ts",
+      "sha256": "dca84b74ee7e0d2f0935ae7564149ace6e1088650981fca827d785f315197c86"
+    },
+    {
+      "path": "lib/governance/intelligence/requestAuthorityCore.ts",
+      "sha256": "59db20c73cab7b32fd9268c1ddf28f7992fe46f5d1f85391d39e5cdd268ff217"
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyStore.ts",
+      "sha256": "78bab2e5335738bac8ffab7ee232de72483d32641cfcbc648abcbef2c09b5f97"
+    },
+    {
+      "path": "docs/product/knowledge/governance-execution-limits.md",
+      "sha256": "b300bfdf8145c17dce0c8cbd6998405e514c0e63062edfa3cff083a118d8768c"
+    },
+    {
+      "path": "docs/product/knowledge/governance-execution-limits-controls.json",
+      "sha256": "54328037993426a4294b6ced3400af8c1293fdf7c44b54f1aaf615ead19e1a7b"
+    },
+    {
+      "path": "docs/product/documentation-coverage/governance-execution-limits.r1.sources.json",
+      "sha256": "15e3e53487e0c5183b832365477b296dba4bc8e19a1475aec43cedd5152b6655"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/governance-execution-limits.md",
+      "docs/product/knowledge/governance-execution-limits-controls.json",
+      "docs/product/documentation-coverage/governance-execution-limits.r1.sources.json"
+    ],
+    "verifiedVersion": "local-source-preview:f57bd027a29971726096914f31049764a15717d2",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
