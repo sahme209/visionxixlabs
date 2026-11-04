@@ -1,8 +1,8 @@
 # Axiom remaining work
 
-Master execution plan: [application + website action plan](axiom-master-action-plan.md), updated November 1, 2026. It includes the visible reference-site audit, authentic product demos, every-control documentation coverage, and future support-AI knowledge foundation. Execution paused at the user's request.
+Master execution plan: [application + website action plan](axiom-master-action-plan.md). Authorized local execution has resumed; the [current execution board](current-execution-board.md) holds the prioritized A1–A9/B1–B6 status and evidence. All 15 parent requirements remain open. Specific pending operational, security-boundary and genuine human approvals remain required. The ecosystem roadmap below is retained; it is not a completion claim.
 
-Updated October 31, 2026. This is the implementation roadmap, not a claim that planned integrations have been accepted live.
+Status pointer corrected November 4, 2026; ecosystem entries retain their recorded planning scope. This is the implementation roadmap, not a claim that planned integrations have been accepted live.
 
 ## Current completion work
 
