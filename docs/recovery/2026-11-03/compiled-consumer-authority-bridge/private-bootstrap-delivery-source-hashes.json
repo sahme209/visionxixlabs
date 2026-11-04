@@ -17,6 +17,9 @@
     "lib/desktop/privateReleaseMergeComposition.ts": "52d0297aff96d8857ae9f19331204606659afe66ba56de8ae4ee252ed53fbe5c",
     "lib/security/privateCredentialVault.ts": "4e0e93c0eefc21503a7c7f9aa008f656a8e2db5b61ace260cdee602ca71a2541",
     "lib/security/privateAuthorityDatabase.ts": "0baf90d2d6624d56c5ec6be220e33f53be7dbd48480bf5758ba7aa70752f07cd",
-    "lib/desktop/privateDesktopCommercialAccess.ts": "e4b1bf349066d605d963f97dce8814c01593a9aee5ba654b7704446de665e622"
+    "lib/desktop/privateDesktopCommercialAccess.ts": "e4b1bf349066d605d963f97dce8814c01593a9aee5ba654b7704446de665e622",
+    "lib/desktop/privateDesktopToken.ts": "09e32fe5ff30d96da301d991de59f0eb9c2235d4b9c8a840fc6d8ecc5a8104ba",
+    "packages/verified-issuer-runtime/native/protected_resource_inventory.h": "507a9fa8518a1182a9baeccee3c5e9a616aff949016ceb8b7711ef189f9482a6",
+    "packages/verified-issuer-runtime/native/protected_resource_inventory.c": "b257135d421cf1ba69fb33ee347970dbdd978d1e43c56c3197018e969614ee4d"
   }
 }
