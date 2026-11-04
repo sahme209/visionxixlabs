@@ -7,7 +7,7 @@
   "installedSdkOffline": 1,
   "monetaryFocused": 26,
   "countsOverlap": true,
-  "distinctOwnedPostgresCases": 19,
+  "distinctOwnedPostgresCases": 23,
   "initialFollowOnFailedCases": 1,
   "correctedSettlementBodyPassed": true,
   "correctedSettlementWholeFileSourceBinding": "not asserted due parallel test append",
@@ -17,5 +17,9 @@
   "productionEligibility": false,
   "providerPricingReads": 0,
   "inferenceCalls": 0,
-  "productionChanges": false
+  "productionChanges": false,
+  "composedActualLocalCases": 4,
+  "composedTransport": "synthetic successful responses with real installed SDK and local database",
+  "managerFocused": 7,
+  "billingAdmissionFocused": 5
 }

@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/ai/__tests__/codingDispatchManagerBoundary.test.ts (7 tests | 3 failed) 7ms
+   × burns admission on payload preparation failure without any provider or ledger effect 2ms
+   × burns admission on model preparation failure without any provider or ledger effect 0ms
+   × burns admission on provider preparation failure without any provider or ledger effect 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/ai/__tests__/codingDispatchManagerBoundary.test.ts > burns admission on payload preparation failure without any provider or ledger effect
+ FAIL  lib/ai/__tests__/codingDispatchManagerBoundary.test.ts > burns admission on model preparation failure without any provider or ledger effect
+ FAIL  lib/ai/__tests__/codingDispatchManagerBoundary.test.ts > burns admission on provider preparation failure without any provider or ledger effect
+AssertionError: expected "vi.fn()" to be called once with arguments: [ {} ]
+
+Number of calls: 0
+
+ ❯ lib/ai/__tests__/codingDispatchManagerBoundary.test.ts:41:21
+     39|   const prompt=failure==="payload"?"x".repeat(131073):"prompt";
+     40|   await expect(new AIProviderManager().generateTextWithAdmission(promp…
+     41|   expect(m.discard).toHaveBeenCalledExactlyOnceWith(admission);
+       |                     ^
+     42|   expect(m.consume).not.toHaveBeenCalled();expect(m.text).not.toHaveBe…
+     43| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 4 passed (7)
+   Start at  09:01:19
+   Duration  200ms (transform 68ms, setup 0ms, import 112ms, tests 7ms, environment 0ms)
+

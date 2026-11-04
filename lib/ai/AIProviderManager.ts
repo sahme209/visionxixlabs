@@ -1,3 +1,4 @@
+import { boundedAIInput } from "./inputByteBound";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * AIProviderManager — singleton that:
@@ -21,7 +22,7 @@ import { runWithFallback } from "./AIFallbackHandler";
 import { recordUsage } from "./AIUsageLogger";
 import { redact } from "@/lib/security/redaction";
 import { recordAIUsageEvent } from "@/lib/billing/recordAIUsageEvent";
-import { consumeGovernedExtractAdmission, consumeGovernedTextAdmission, type GovernedAIAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
+import { consumeGovernedExtractAdmission, consumeGovernedTextAdmission, discardGovernedAIAdmission, type GovernedAIAdmission, type GovernedExtractAdmission } from "@/lib/billing/governedExtractAdmission";
 import { parseGatewayStructuredResponse, VercelGatewayProvider } from "./providers/VercelGatewayProvider";
 import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "./effectiveGatewayModel";
 import { AccountedDecisionMalformed } from "./accountedDecisionMalformed";
@@ -213,13 +214,26 @@ export class AIProviderManager {
     options: AIRequestOptions & { only?: AIProviderName },
     admission: GovernedAIAdmission,
   ): Promise<AITextResponse> {
-    const gateway = this.admittedGateway(options);
-    const gatewayOptions = this.optionsForProvider(gateway, options);
-    const safePrompt = redact(prompt);
-    const authority = consumeGovernedTextAdmission(admission, gatewayOptions ?? options, { prompt: safePrompt, ...(gatewayOptions?.system === undefined ? {} : { system: gatewayOptions.system }) });
+    let gateway: VercelGatewayProvider;
+    let payload: ReturnType<typeof boundedAIInput>;
+    let preparedOptions: AIRequestOptions;
+    try {
+      gateway = this.admittedGateway(options);
+      const gatewayOptions = this.optionsForProvider(gateway, options);
+      payload = boundedAIInput(prompt, gatewayOptions?.system);
+      // Use the same canonical full payload at admission and final provider entry.
+      // Strip an explicitly undefined caller system so absent and empty stay distinct.
+      const { system: _unpreparedSystem, ...pinnedOptions } = gatewayOptions ?? options;
+      preparedOptions = { ...pinnedOptions, ...(payload.system === undefined ? {} : { system: payload.system }) };
+    } catch (error) {
+      // Preparation refusal never releases funding or leaves reusable admission.
+      discardGovernedAIAdmission(admission);
+      throw error;
+    }
+    const authority = consumeGovernedTextAdmission(admission, preparedOptions, payload);
     const out = await runWithFallback<AITextResponse>(
       [gateway],
-      () => gateway.generateTextOnce(safePrompt, { ...gatewayOptions, ...(authority.codingDispatch ? { codingDispatch: authority.codingDispatch } : {}) }),
+      () => gateway.generateTextOnce(payload.prompt, { ...preparedOptions, ...(authority.codingDispatch ? { codingDispatch: authority.codingDispatch } : {}) }),
       { task: "generate_text", correlationId: options.correlationId, organizationId: options.organizationId },
     );
     await authority.record(out.result);

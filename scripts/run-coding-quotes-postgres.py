@@ -15,7 +15,8 @@ from urllib.parse import quote
 
 REPO=Path(__file__).resolve().parents[1]
 TEST='lib/workforce/pipelines/__tests__/codingRequestQuote.pg.test.ts'
-SOURCES=[Path(__file__).resolve(),REPO/TEST,REPO/'prisma/schema.prisma',REPO/'lib/ai/codingRequestQuote.ts',REPO/'lib/workforce/pipelines/codingRunReservation.ts',REPO/'lib/billing/aiCreditReservation.ts',REPO/'lib/billing/reconcileGatewayUsage.ts']
+COMPOSED_TEST='lib/workforce/pipelines/__tests__/codingQuotedAdmission.pg.test.ts'
+SOURCES=[Path(__file__).resolve(),REPO/TEST,REPO/'prisma/schema.prisma',REPO/'lib/ai/codingRequestQuote.ts',REPO/'lib/workforce/pipelines/codingRunReservation.ts',REPO/'lib/billing/aiCreditReservation.ts',REPO/'lib/billing/reconcileGatewayUsage.ts',REPO/COMPOSED_TEST,REPO/'lib/ai/AIProvider.ts',REPO/'lib/ai/AIProviderManager.ts',REPO/'lib/ai/providers/VercelGatewayProvider.ts',REPO/'lib/billing/governedExtractAdmission.ts',REPO/'lib/ai/inputByteBound.ts',REPO/'lib/security/redaction.ts',REPO/'lib/billing/recordAIUsageEvent.ts',REPO/'lib/billing/newTestSubscription/usageAllocationIO.ts',REPO/'package-lock.json',REPO/'node_modules/ai/dist/index.mjs',REPO/'node_modules/@ai-sdk/gateway/dist/index.mjs']
 PG=Path('/opt/homebrew/opt/postgresql@17/bin')
 NODE=Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
 
@@ -26,11 +27,12 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--describe',action='store_true')
     parser.add_argument('--execute-reviewed-hash')
-    parser.add_argument('--cases',choices=['initial','follow-on','settlement-correction','allocations'],default='initial')
+    parser.add_argument('--cases',choices=['initial','follow-on','settlement-correction','allocations','composed'],default='initial')
     args=parser.parse_args()
+    selected_test=COMPOSED_TEST if args.cases=='composed' else TEST
     source_hash=packet()
     if args.describe:
-        print(json.dumps({'packetSha256':source_hash,'test':TEST,'execute':False,'cases':args.cases}));return
+        print(json.dumps({'packetSha256':source_hash,'test':selected_test,'execute':False,'cases':args.cases}));return
     if args.execute_reviewed_hash!=source_hash:
         raise RuntimeError('exact_reviewed_packet_hash_required_no_execution')
     os.umask(0o077)
@@ -84,12 +86,13 @@ def main():
         run('owned-empty-schema',[NODE,REPO/'node_modules/prisma/build/index.js','db','push','--schema',schema,'--skip-generate'])
         env.update(AXIOM_CODING_QUOTE_PG_ROOT=str(root),AXIOM_CODING_QUOTE_PG_SOCKET=str(socket),AXIOM_CODING_QUOTE_PG_CLIENT=str(root/'generated/index.js'))
         corrected_title='follow-on: quoted settlement rolls back atomically then updates late stage cost without losing history'
-        selected_pattern='allocation:' if args.cases=='allocations' else corrected_title if args.cases=='settlement-correction' else 'follow-on:' if args.cases=='follow-on' else '^(?!.*(?:follow-on:|allocation:))'
-        expected=8 if args.cases=='allocations' else 1 if args.cases=='settlement-correction' else 6 if args.cases=='follow-on' else 5
-        run('journey',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--root',REPO,'--config',REPO/'vitest.config.ts',TEST,'-t',selected_pattern,'--reporter=json','--outputFile='+str(logs/'results.json')])
+        selected_pattern='composed:' if args.cases=='composed' else 'allocation:' if args.cases=='allocations' else corrected_title if args.cases=='settlement-correction' else 'follow-on:' if args.cases=='follow-on' else '^(?!.*(?:follow-on:|allocation:))'
+        expected=4 if args.cases=='composed' else 8 if args.cases=='allocations' else 1 if args.cases=='settlement-correction' else 6 if args.cases=='follow-on' else 5
+        run('journey',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--root',REPO,'--config',REPO/'vitest.config.ts',selected_test,'-t',selected_pattern,'--reporter=json','--outputFile='+str(logs/'results.json')])
         results=json.loads((logs/'results.json').read_text())
         assertions=[a for suite in results['testResults'] for a in suite.get('assertionResults',[])]
         def chosen(title):
+            if args.cases=='composed':return title.startswith('composed:')
             if args.cases=='allocations':return title.startswith('allocation:')
             if args.cases=='settlement-correction':return title==corrected_title
             if args.cases=='follow-on':return title.startswith('follow-on:')
@@ -97,7 +100,7 @@ def main():
         selected=[a for a in assertions if chosen(a['title'])]
         if results['numFailedTests'] or len(selected)!=expected or any(a['status']!='passed' for a in selected) or results['numPassedTests']!=expected:raise RuntimeError('all_selected_non_skipped_journeys_required')
         if packet()!=source_hash:raise RuntimeError('reviewed_direct_sources_changed_during_owned_run')
-        (root/'receipt.json').write_text(json.dumps({'packetSha256':source_hash,'tests':expected,'selection':args.cases,'excludedCases':len(assertions)-len(selected),'provider':'simulated','root':str(root),'schemaSha256':hashlib.sha256(schema.read_bytes()).hexdigest(),'engineSha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [query,engine]},'productionChanged':False,'directSourceHashAfter':packet(),'sourceBindingScope':'seven direct reviewed files only, not complete transitive attestation'},indent=2))
+        (root/'receipt.json').write_text(json.dumps({'packetSha256':source_hash,'tests':expected,'selection':args.cases,'excludedCases':len(assertions)-len(selected),'provider':'simulated','root':str(root),'schemaSha256':hashlib.sha256(schema.read_bytes()).hexdigest(),'engineSha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [query,engine]},'productionChanged':False,'directSourceHashAfter':packet(),'sourceBindingScope':str(len(SOURCES))+' direct reviewed application/test/SDK files only, not complete transitive attestation'},indent=2))
     except BaseException as error:
         failure=error
     finally:

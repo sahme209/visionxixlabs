@@ -1,0 +1,74 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/ai/__tests__/codingDispatchManagerBoundary.test.ts (4 tests | 2 failed) 7ms
+   × pins final effective model before consuming exact text authority and forwards the private dispatch 5ms
+   × preserves absent versus empty canonical system at both boundaries (undefined) 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/ai/__tests__/codingDispatchManagerBoundary.test.ts > pins final effective model before consuming exact text authority and forwards the private dispatch
+AssertionError: expected "vi.fn()" to be called with arguments: [ {}, ObjectContaining{…}, { …(2) } ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+    {},
+-   ObjectContaining {
++   {
++     "correlationId": "correlation",
+      "maxTokens": 4096,
+      "model": "anthropic/claude-sonnet-5",
++     "modelSelections": {
++       "vercel_gateway": "anthropic/claude-sonnet-5",
++     },
++     "organizationId": "org",
++     "system": "System ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "temperature": 0.2,
+    },
+    {
+-     "prompt": StringContaining "REDACTED",
+-     "system": StringContaining "REDACTED",
++     "prompt": "Inspect [REDACTED-GITHUB-PAT]",
++     "system": "System ghp_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ lib/ai/__tests__/codingDispatchManagerBoundary.test.ts:15:21
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/ai/__tests__/codingDispatchManagerBoundary.test.ts > preserves absent versus empty canonical system at both boundaries (undefined)
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ lib/ai/__tests__/codingDispatchManagerBoundary.test.ts:32:118
+     30|   await new AIProviderManager().generateTextWithAdmission("prompt", { …
+     31|   const payload=m.consume.mock.calls[0][2],options=m.text.mock.calls[0…
+     32|   if(system===undefined){expect(Object.hasOwn(payload,"system")).toBe(…
+       |                                                                                                                      ^
+     33|   else{expect(payload.system).toBe("");expect(options.system).toBe("")…
+     34| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  09:00:13
+   Duration  208ms (transform 65ms, setup 0ms, import 120ms, tests 7ms, environment 0ms)
+

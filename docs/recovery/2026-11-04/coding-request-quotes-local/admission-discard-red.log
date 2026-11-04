@@ -1,0 +1,24 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/billing/__tests__/codingQuoteAdmission.test.ts (5 tests | 1 failed | 4 skipped) 3ms
+   × discard burns only opaque admission authority without creating a replacement or another hold 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/billing/__tests__/codingQuoteAdmission.test.ts > discard burns only opaque admission authority without creating a replacement or another hold
+TypeError: discardGovernedAIAdmission is not a function
+ ❯ lib/billing/__tests__/codingQuoteAdmission.test.ts:24:189
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 skipped (5)
+   Start at  09:01:41
+   Duration  185ms (transform 78ms, setup 0ms, import 101ms, tests 3ms, environment 0ms)
+

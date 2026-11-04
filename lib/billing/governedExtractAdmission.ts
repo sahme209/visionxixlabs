@@ -109,6 +109,12 @@ export function consumeGovernedExtractAdmission(capability: GovernedExtractAdmis
   return consumeAdmission(capability, binding, "extract_structured_data", payload);
 }
 
+/** Preparation failures burn only in-process authority. The durable claimed
+ * hold remains unknown; this never refunds, releases or reconstructs a call. */
+export function discardGovernedAIAdmission(capability: GovernedAIAdmission): void {
+  admissions.delete(capability);
+}
+
 export function consumeGovernedTextAdmission(capability: GovernedAIAdmission, binding: { organizationId?: string; correlationId?: string;model?:string;maxTokens?:number;temperature?:number }, payload?: {prompt:string;system?:string}) {
   return consumeAdmission(capability, binding, "generate_text", payload);
 }
