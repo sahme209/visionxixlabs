@@ -18,10 +18,8 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { resolveGithubInstallationToken, type GithubReadPermissionProfile } from "./githubAppAuth";
 
-export interface RepoRef {
-  owner: string;
-  repo: string;
-}
+import {parseRepositoryFullName,type RepoRef} from "./repositoryFullName";
+export {parseRepositoryFullName,type RepoRef} from "./repositoryFullName";
 
 export type ResolveTenantScopedTokenResult =
   | { ok: true; token: string }
@@ -107,13 +105,4 @@ export async function resolveTenantScopedTokenWithExpiry(organizationId:string,r
     if(typeof result.expiresAt!=='number')return{ok:false,error:'github_token_unavailable'};
     return{ok:true,token:result.token,expiresAt:result.expiresAt};
   }catch{return{ok:false,error:'github_token_unavailable'}}
-}
-
-/** Splits "owner/repo" into its parts. Returns null for anything else. */
-export function parseRepositoryFullName(fullName: string): RepoRef | null {
-  const parts = fullName.split("/");
-  if (parts.length !== 2 || !parts[0] || !parts[1]) return null;
-  const safeName = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,99}$/;
-  if (!safeName.test(parts[0]) || !safeName.test(parts[1])) return null;
-  return { owner: parts[0], repo: parts[1] };
 }

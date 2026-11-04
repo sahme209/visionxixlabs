@@ -1,7 +1,7 @@
 import 'server-only';
 import {z} from 'zod';
 import {parseReleaseOperationPlan,type ReleaseOperationPlan} from './releaseOperationPlanContract';
-import {parseRepositoryFullName} from '@/lib/connectors/github/resolveTenantScopedToken';
+import {parseRepositoryFullName} from '@/lib/connectors/github/repositoryFullName';
 import {readBoundedGithubBody,withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import type {ProviderMergeCredential} from './releaseProviderMergeTransport';
 const key=z.string().min(1).max(240),instant=z.string().datetime(),installationId=z.string().regex(/^[1-9][0-9]{0,19}$/);

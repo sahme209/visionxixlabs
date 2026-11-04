@@ -2,7 +2,7 @@ import {sha256ContentHash} from './contentHash';
 import 'server-only';
 import {z} from 'zod';
 import {parseReleaseOperationPlan,type ReleaseOperationPlan} from './releaseOperationPlanContract';
-import {parseRepositoryFullName} from '@/lib/connectors/github/resolveTenantScopedToken';
+import {parseRepositoryFullName} from '@/lib/connectors/github/repositoryFullName';
 import {readBoundedGithubBody,withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
 import type {DirectMergeSupport,ProviderMergeCredential} from './releaseProviderMergeTransport';
 export type ProviderMergeReadCredential=Omit<ProviderMergeCredential,'contentsWrite'>&{contentsRead:true;contentsWrite?:never};

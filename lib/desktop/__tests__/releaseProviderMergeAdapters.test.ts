@@ -1,3 +1,5 @@
+// Simulated provider wiring only; the canonical production issuer still refuses.
+vi.mock('@/lib/governance/intelligence/mergeOutboundDrainCore',()=>({createMergeOutboundDrain:()=>({assertAvailable(){},beforeCredential:async()=>{},beforeSubmission:async()=>()=>{}})}));
 import {beforeEach,it,expect,vi} from 'vitest';import {NextRequest} from 'next/server';
 const m=vi.hoisted(()=>({auth:vi.fn(),before:vi.fn(),credential:vi.fn(),policy:vi.fn(),credentialDeps:null as any,policyDeps:null as any,transport:null as any,scopedDeps:null as any,topologyDeps:null as any}));
 vi.mock('@/lib/governance/intelligence/uncoveredExecution',()=>({assertNoUncoveredGovernanceExecution:async()=>{}}));
@@ -9,7 +11,7 @@ vi.mock('@/lib/tauri/releaseProviderMergeCredential',()=>({createReleaseProvider
 vi.mock('@/lib/tauri/releaseDirectMergeSupport',()=>({createReleaseDirectMergeSupportReader:(d:any)=>{m.policyDeps=d;return m.policy}}));
 vi.mock('@/lib/tauri/releaseProviderMergeTransport',()=>({createReleaseProviderMergeTransport:(d:any)=>{m.transport=d;return {execute:async()=>{await d.readCredential(plan,new AbortController().signal);return {state:'refused'}}}}}));
 vi.mock('@/lib/tauri/releaseProviderMergeExecutor',()=>({createReleaseProviderMergeExecutor:(_s:any,t:any)=>({run:()=>t.execute({operationId:op,plan,signal:new AbortController().signal})})}));
-vi.mock('../releaseProviderMergeToken',()=>({createReleaseMergePolicyCredential:(d:any)=>{m.topologyDeps=d;return vi.fn()},createReleaseProviderMergeToken:(d:any)=>{m.scopedDeps=d;return async(p:any,s:any)=>{await d.assertCurrent(p,s);return null}}}));
+vi.mock('../releaseProviderMergeTokenCore',()=>({createReleaseMergePolicyCredential:(d:any)=>{m.topologyDeps=d;return vi.fn()},createReleaseProviderMergeToken:(d:any)=>{m.scopedDeps=d;return async(p:any,s:any)=>{await d.assertCurrent(p,s);return null}}}));
 // This suite isolates adapter wiring; durable exposure/session authority is
 // exercised in the separate actual coordinator PostgreSQL journeys.
 vi.mock('../releaseMergeCredentialExposure',()=>({createReleaseMergeCredentialExposure:(_repo:any,_scope:any,_id:any,_store:any,d:any)=>d.readCredential}));
