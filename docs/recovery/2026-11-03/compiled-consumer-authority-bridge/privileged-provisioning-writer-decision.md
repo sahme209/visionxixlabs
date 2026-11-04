@@ -10,13 +10,15 @@ The finite unit is one installation transaction for three **new synthetic instal
 
 This is viable only with an explicitly approved trusted installer boundary. Public Security declarations do not independently attest “this process was installed by the approved operator” or “the policy has never changed.” Trust in that administrative boundary must be stated, not simulated through ACL metadata.
 
+**Source correction:** the historical candidate policy in `15b96dfa` is rejected; see the [corrected specification](synthetic-custodian-installation-policy-spec.md) and separately approved [Apple source findings](apple-acl-source-findings.md). In particular, `SecAccessCreateWithOwnerAndACL` must not receive a `SecACLRef` array, and simple application lists retain a prompt alternative. This proposal supplies no implementation-ready exclusive policy.
+
 ## Local API grounding and important limit
 
 The hashed local SDK declares:
 
 - `SecTrustedApplicationCreateFromPath(fixedInstalledCustodianPath, &app)` constructs a trusted-application reference for the selected installed tool. Never pass NULL (self), a caller path or a broad list of signed applications.
 - `SecAccessCreate(descriptor, explicitSingleApplicationArray, &access)` creates the **currently designated system default** configuration. Header comments say defaults can change by release and the trusted list controls applications allowed without confirmation. NULL defaults to the creating application. Therefore this call alone is **not** an exclusive-owner/full-policy proof and must not accidentally retain the installer as a general secret reader.
-- `SecAccessCreateWithOwnerAndACL(uid, gid, ownerType, explicitACLArray, &error)` accepts explicit ownership and ACLs. `SecACLCreateWithSimpleContents` and `SecACLUpdateAuthorizations` supply creation/update surfaces; the exact full owner/authorization/prompt/partition policy must be fixed and platform-qualified. Do not guess that an empty list denies everything or that a single no-prompt application denies all other access paths.
+- The local declaration of `SecAccessCreateWithOwnerAndACL` is insufficient to infer its array element semantics: the subsequently reviewed source consumes authorization names, not ACL-entry references. The earlier `explicitACLArray` interpretation is rejected. `SecACLCreateWithSimpleContents` and `SecACLUpdateAuthorizations` supply creation/update surfaces; the exact full owner/authorization/prompt/partition policy must be fixed and platform-qualified. Do not guess that an empty list denies everything or that a single no-prompt application denies all other access paths.
 - `SecItemAdd` accepts `kSecUseKeychain` for the exact target keychain and `kSecAttrAccess` for macOS generic-password items, returning the added reference with `kSecReturnRef`. Success acknowledges an actual addition; it does not certify all exclusivity requirements.
 - `SecKeychainItemSetAccess(exactOwnedRef, access)` replaces access on an actual item. It is a potential later reviewed migration mechanism, **excluded from the initial new-item unit**. It must never discover an arbitrary legacy item by name and rewrite it merely because an install request asked.
 
