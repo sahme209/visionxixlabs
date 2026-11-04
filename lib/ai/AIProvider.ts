@@ -1,3 +1,4 @@
+import type { CodingProviderDispatch } from "@/lib/ai/codingRequestQuote";
 import type { SmallSonnet55Dispatch } from "@/lib/billing/smallSonnet55Request";
 import type { SmallSonnetDispatch } from "@/lib/billing/smallSonnetRequest";
 /**
@@ -51,6 +52,8 @@ export type AITaskKind =
   | "health_check";
 
 export interface AIRequestOptions {
+  /** Separate opaque one-use authority for an exact admitted coding request. */
+  codingDispatch?: CodingProviderDispatch;
   /** Internal opaque authority from the existing durable admission only. */
   smallAgentDispatch?: SmallSonnetDispatch;
   /** Separate exact55 AnthropicMessages protocol; never accepted by the old SDK path. */

@@ -1,0 +1,208 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts (18 tests | 6 failed) 7ms
+   × settles canonical decimal USD 0 as 0 cents without binary rounding inflation 4ms
+   × settles canonical decimal USD -0 as 0 cents without binary rounding inflation 0ms
+   × settles canonical decimal USD 0.07 as 7 cents without binary rounding inflation 0ms
+   × settles canonical decimal USD 5e-324 as 1 cents without binary rounding inflation 0ms
+   × settles canonical decimal USD 0.010000000000000002 as 2 cents without binary rounding inflation 0ms
+   × does not silently reprice historical settled eight-cent evidence when a new seven-cent receipt is observed 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts > settles canonical decimal USD 0 as 0 cents without binary rounding inflation
+ FAIL  lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts > settles canonical decimal USD -0 as 0 cents without binary rounding inflation
+AssertionError: expected "vi.fn()" to be called with arguments: [ ObjectContaining{…} ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+-   ObjectContaining {
+-     "data": ObjectContaining {
++   {
++     "data": {
++       "billedCents": -0,
+        "billingStatus": "settled",
+-       "costCents": 0,
++       "cachedReadTokens": 0,
++       "costCents": -0,
++       "inputTokens": 5,
++       "model": "synthetic/model",
++       "outputTokens": 2,
++     },
++     "where": {
++       "billingStatus": "pending",
++       "id": "usage",
+      },
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts:14:21
+     12|  const updateMany=vi.fn().mockResolvedValue({count:1});
+     13|  await settleGatewayGenerationInTransaction({usageEvent:{findMany:vi.f…
+     14|  expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({data…
+       |                     ^
+     15| });
+     16| it.each([-1,NaN,Infinity,-Infinity,Number.MAX_VALUE,Number.MAX_SAFE_IN…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts > settles canonical decimal USD 0.07 as 7 cents without binary rounding inflation
+AssertionError: expected "vi.fn()" to be called with arguments: [ ObjectContaining{…} ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+-   ObjectContaining {
+-     "data": ObjectContaining {
++   {
++     "data": {
++       "billedCents": 12,
+        "billingStatus": "settled",
+-       "costCents": 7,
++       "cachedReadTokens": 0,
++       "costCents": 8,
++       "inputTokens": 5,
++       "model": "synthetic/model",
++       "outputTokens": 2,
++     },
++     "where": {
++       "billingStatus": "pending",
++       "id": "usage",
+      },
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts:14:21
+     12|  const updateMany=vi.fn().mockResolvedValue({count:1});
+     13|  await settleGatewayGenerationInTransaction({usageEvent:{findMany:vi.f…
+     14|  expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({data…
+       |                     ^
+     15| });
+     16| it.each([-1,NaN,Infinity,-Infinity,Number.MAX_VALUE,Number.MAX_SAFE_IN…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts > settles canonical decimal USD 5e-324 as 1 cents without binary rounding inflation
+AssertionError: expected "vi.fn()" to be called with arguments: [ ObjectContaining{…} ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+-   ObjectContaining {
+-     "data": ObjectContaining {
++   {
++     "data": {
++       "billedCents": -0,
+        "billingStatus": "settled",
+-       "costCents": 1,
++       "cachedReadTokens": 0,
++       "costCents": -0,
++       "inputTokens": 5,
++       "model": "synthetic/model",
++       "outputTokens": 2,
++     },
++     "where": {
++       "billingStatus": "pending",
++       "id": "usage",
+      },
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts:14:21
+     12|  const updateMany=vi.fn().mockResolvedValue({count:1});
+     13|  await settleGatewayGenerationInTransaction({usageEvent:{findMany:vi.f…
+     14|  expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({data…
+       |                     ^
+     15| });
+     16| it.each([-1,NaN,Infinity,-Infinity,Number.MAX_VALUE,Number.MAX_SAFE_IN…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts > settles canonical decimal USD 0.010000000000000002 as 2 cents without binary rounding inflation
+AssertionError: expected "vi.fn()" to be called with arguments: [ ObjectContaining{…} ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+-   ObjectContaining {
+-     "data": ObjectContaining {
++   {
++     "data": {
++       "billedCents": 2,
+        "billingStatus": "settled",
+-       "costCents": 2,
++       "cachedReadTokens": 0,
++       "costCents": 1,
++       "inputTokens": 5,
++       "model": "synthetic/model",
++       "outputTokens": 2,
++     },
++     "where": {
++       "billingStatus": "pending",
++       "id": "usage",
+      },
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts:14:21
+     12|  const updateMany=vi.fn().mockResolvedValue({count:1});
+     13|  await settleGatewayGenerationInTransaction({usageEvent:{findMany:vi.f…
+     14|  expect(updateMany).toHaveBeenCalledWith(expect.objectContaining({data…
+       |                     ^
+     15| });
+     16| it.each([-1,NaN,Infinity,-Infinity,Number.MAX_VALUE,Number.MAX_SAFE_IN…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts > does not silently reprice historical settled eight-cent evidence when a new seven-cent receipt is observed
+AssertionError: promise resolved "undefined" instead of rejecting
+
+- Expected:
+Error {
+  "message": "rejected promise",
+}
+
++ Received:
+undefined
+
+ ❯ lib/billing/__tests__/gatewaySettlementDecimalCents.test.ts:29:76
+     27|  };
+     28|  coding.lock.mockResolvedValue({status:'settled',externalUsageId:'gene…
+     29|  await expect(settleGatewayGenerationInTransaction(tx,event,receipt(0.…
+       |                                                                            ^
+     30|  expect(updateUsage).not.toHaveBeenCalled();expect(updateHold).not.toH…
+     31| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 12 passed (18)
+   Start at  08:41:41
+   Duration  162ms (transform 53ms, setup 0ms, import 71ms, tests 7ms, environment 0ms)
+

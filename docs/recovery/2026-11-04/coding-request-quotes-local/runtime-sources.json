@@ -1,0 +1,11 @@
+{
+  "lib/ai/codingRequestQuote.ts": "368b1b67adf0e3eb17c8332298821fc0439d2720707f81981037cee60712ab40",
+  "lib/ai/AIProvider.ts": "1494950f3a82c66e8425d21305e541554e91f7f67d276af8ae93f32923b3f67c",
+  "lib/ai/AIProviderManager.ts": "5412279098b4c6996372d50d9ed11e9fa3943ce872599010c596fd60566a93bc",
+  "lib/ai/providers/VercelGatewayProvider.ts": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce",
+  "lib/billing/governedExtractAdmission.ts": "8a08ac41a9162e4685379e0d060da0118c5f7e6a31e697ac91146c6c35f76f84",
+  "lib/billing/reconcileGatewayUsage.ts": "0485a0d2e93e98c7da8eea506aba763b3af28524157804fac94480586b67dd18",
+  "lib/workforce/pipelines/codingRunReservation.ts": "ddcb277b0472e1a0fc9775c141f1ad7cd547f14d27527244d02643b3102fb91e",
+  "lib/workforce/pipelines/codeProposeRealExecutor.ts": "8d31d7678f3b7a2fb78b115b90327bb7e4825e7076121e7c0028040c3b828d9e",
+  "prisma/schema.prisma": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031"
+}

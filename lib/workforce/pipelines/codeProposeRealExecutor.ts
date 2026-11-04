@@ -205,18 +205,18 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
         defaultModel: manager.status().find(row => row.provider === "vercel_gateway")?.defaultModel });
       if (!gatewayModelOutputBoundVerified(dispatchModel)) throw new CodeProposalCallRefusal("output_bound_unverified");
       const idempotencyKey = "coding_text_" + createHash("sha256").update(JSON.stringify([ctx.organizationId, ctx.stageRunId, phase])).digest("hex");
-      boundedAIInput(prompt, system);
+      const preparedPayload = boundedAIInput(prompt, system);
       const admitted = await admitAIText({ organizationId: ctx.organizationId, userId: ctx.triggeredBy,
-        correlationId: ctx.correlationId, idempotencyKey, source: "coding_proposal", codingRunClaim:ctx.codingRunClaim,codingPhase:phase,codingModel:dispatchModel }, { prompt, system });
+        correlationId: ctx.correlationId, idempotencyKey, source: "coding_proposal", codingRunClaim:ctx.codingRunClaim,codingPhase:phase,codingModel:dispatchModel }, preparedPayload);
       if (!admitted.ok) throw new CodeProposalCallRefusal("reservation_refused");
       // The admitted manager performs one SDK attempt and durably links its
       // usage before returning. No ordinary retry/fallback or eager writer.
-      const response = await manager.generateTextWithAdmission(prompt, {
+      const response = await manager.generateTextWithAdmission(preparedPayload.prompt, {
         organizationId: ctx.organizationId, only: "vercel_gateway",
         allowedProviders: current.allowedProviders, modelSelections: current.modelSelections,
         fallbackOrder: current.fallbackOrder,
         model: dispatchModel,
-        system, maxTokens: CODE_PROPOSE_MAX_TOKENS, temperature: 0.2, correlationId: ctx.correlationId,
+        system: preparedPayload.system, maxTokens: CODE_PROPOSE_MAX_TOKENS, temperature: 0.2, correlationId: ctx.correlationId,
       }, admitted.admission);
       gatewayResponses.push(response);
       return response;

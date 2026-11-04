@@ -53,9 +53,24 @@ const usageAlreadySettled = new Error("gateway_usage_already_settled");
 
 function centsFromUsd(usd: number): number {
   if (!Number.isFinite(usd) || usd < 0) throw new Error("invalid_gateway_cost");
-  // The prepaid wallet is cent-denominated. Rounding up prevents a completed
-  // sub-cent generation from silently becoming unmetered usage.
-  return Math.ceil((usd * 100) - Number.EPSILON);
+  // Interpret the numeric receipt's canonical decimal value exactly. Binary
+  // multiplication can turn 0.07 USD into 7.000000000000001 cents, while an
+  // epsilon adjustment can erase a genuine positive sub-cent amount. Neither
+  // tolerance nor rounding down is financial evidence. This does not reprice
+  // settled history: the existing exact settled-receipt mismatch gate remains.
+  // This Number API cannot recover precision already lost while parsing JSON;
+  // e.g. numeric 0.07000000000000001 is indistinguishable from numeric 0.07.
+  const decimal = /^(\d+)(?:\.(\d+))?(?:e([+-]?\d+))?$/.exec(usd.toString());
+  if (!decimal) throw new Error("invalid_gateway_cost");
+  const fraction = decimal[2] ?? "";
+  const coefficient = BigInt(decimal[1] + fraction);
+  const exponent = Number(decimal[3] ?? 0) - fraction.length + 2;
+  const power = BigInt(10) ** BigInt(Math.abs(exponent));
+  const cents = exponent >= 0
+    ? coefficient * power
+    : (coefficient + power - BigInt(1)) / power;
+  if (cents > BigInt(Number.MAX_SAFE_INTEGER)) throw new Error("invalid_gateway_cost");
+  return Number(cents);
 }
 
 function isNotYetAvailable(error: unknown): boolean {

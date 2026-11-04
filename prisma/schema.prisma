@@ -5062,6 +5062,8 @@ model PipelineAICallReservation {
  workspaceReservationId String @unique
  actorId String
  correlationId String
+ admissionContract String @default("coding_fixed_hold_v1")
+ quoteEvidence Json?
  estimatedCents Int
  capCents Int?
  capSource String

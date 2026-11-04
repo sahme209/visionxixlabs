@@ -1,0 +1,68 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/ai/__tests__/codingRequestQuote.test.ts (64 tests | 11 failed) 11ms
+     × rejects accessors without invoking them (boundary 0) 2ms
+     × rejects accessors without invoking them (boundary 1) 0ms
+     × rejects accessors without invoking them (boundary 2) 0ms
+     × rejects symbol-owned unknown fields (boundary 0) 0ms
+     × rejects symbol-owned unknown fields (boundary 1) 0ms
+     × rejects symbol-owned unknown fields (boundary 2) 0ms
+     × rejects nonenumerable unknown fields (boundary 0) 0ms
+     × rejects nonenumerable unknown fields (boundary 1) 0ms
+     × rejects nonenumerable unknown fields (boundary 2) 0ms
+     × rejects indexed route accessors without invocation 0ms
+     × rejects non-index route properties and symbols 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects accessors without invoking them (boundary 0)
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects accessors without invoking them (boundary 1)
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects accessors without invoking them (boundary 2)
+AssertionError: expected [Function] to throw an error
+ ❯ lib/ai/__tests__/codingRequestQuote.test.ts:47:310
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects symbol-owned unknown fields (boundary 0)
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects symbol-owned unknown fields (boundary 1)
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects symbol-owned unknown fields (boundary 2)
+AssertionError: expected [Function] to throw an error
+ ❯ lib/ai/__tests__/codingRequestQuote.test.ts:48:194
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects nonenumerable unknown fields (boundary 0)
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects nonenumerable unknown fields (boundary 1)
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects nonenumerable unknown fields (boundary 2)
+AssertionError: expected [Function] to throw an error
+ ❯ lib/ai/__tests__/codingRequestQuote.test.ts:49:245
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects indexed route accessors without invocation
+AssertionError: expected [Function] to throw an error
+ ❯ lib/ai/__tests__/codingRequestQuote.test.ts:50:271
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  lib/ai/__tests__/codingRequestQuote.test.ts > raw parser property-descriptor safety > rejects non-index route properties and symbols
+AssertionError: expected [Function] to throw an error
+ ❯ lib/ai/__tests__/codingRequestQuote.test.ts:51:286
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  11 failed | 53 passed (64)
+   Start at  08:33:48
+   Duration  143ms (transform 21ms, setup 0ms, import 31ms, tests 11ms, environment 0ms)
+

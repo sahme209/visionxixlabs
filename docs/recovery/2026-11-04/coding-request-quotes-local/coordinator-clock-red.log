@@ -1,0 +1,122 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts (17 tests | 4 failed | 13 skipped) 8ms
+   × refuses a backwards DB clock after funding even while both readings are inside the TTL 6ms
+   × refuses DB/server skew above one second without changing quote TTL 1ms
+   × retains the post-funding DB observation across the reservation and dispatch boundary 1ms
+   × refuses a DB rewind during the workspace dispatch claim without returning manager authority 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts > refuses a backwards DB clock after funding even while both readings are inside the TTL
+AssertionError: promise resolved "{ ok: true, reused: false, …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "callId": "call",
++   "ok": true,
++   "quoteReservation": {},
++   "reservation": {
++     "id": "hold",
++     "reservedCents": 17,
++   },
++   "reused": false,
+  }
+
+ ❯ lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts:106:83
+    104|  const f=await quotedFixture();f.setClock(new Date(f.now+20));
+    105|  io.reserve.mockImplementation(async(_tx,input)=>{f.setClock(new Date(…
+    106|  await expect(f.coordinator.reserveQuotedCodingCall(f.repo,f.claim,sco…
+       |                                                                                   ^
+    107|  expect(f.tx.pipelineAICallReservation.create).not.toHaveBeenCalled();
+    108| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts > refuses DB/server skew above one second without changing quote TTL
+AssertionError: promise resolved "{ ok: true, reused: false, …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "callId": "call",
++   "ok": true,
++   "quoteReservation": {},
++   "reservation": {
++     "id": "hold",
++     "reservedCents": 17,
++   },
++   "reused": false,
+  }
+
+ ❯ lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts:111:83
+    109| it('refuses DB/server skew above one second without changing quote TTL…
+    110|  const f=await quotedFixture();f.setClock(new Date(f.now+5000));
+    111|  await expect(f.coordinator.reserveQuotedCodingCall(f.repo,f.claim,sco…
+       |                                                                                   ^
+    112|  expect(io.reserve).not.toHaveBeenCalled();
+    113| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts > retains the post-funding DB observation across the reservation and dispatch boundary
+AssertionError: promise resolved "{ managerQuote: {} }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "managerQuote": {},
+  }
+
+ ❯ lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts:119:121
+    117|  const held=await f.coordinator.reserveQuotedCodingCall(f.repo,f.claim…
+    118|  f.setClock(new Date(f.now+20));
+    119|  await expect(f.coordinator.dispatchQuotedCodingCall(f.repo,f.claim,sc…
+       |                                                                                                                         ^
+    120|  expect(io.legacyClaim).not.toHaveBeenCalled();
+    121| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts > refuses a DB rewind during the workspace dispatch claim without returning manager authority
+AssertionError: promise resolved "{ managerQuote: {} }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "managerQuote": {},
+  }
+
+ ❯ lib/workforce/pipelines/__tests__/codingQuoteCoordinator.test.ts:125:121
+    123|  const f=await quotedFixture(),held=await f.coordinator.reserveQuotedC…
+    124|  f.setClock(new Date(f.now+40));io.legacyClaim.mockImplementation(asyn…
+    125|  await expect(f.coordinator.dispatchQuotedCodingCall(f.repo,f.claim,sc…
+       |                                                                                                                         ^
+    126|  expect(f.tx.pipelineAICallReservation.updateMany).not.toHaveBeenCalle…
+    127| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 13 skipped (17)
+   Start at  08:27:48
+   Duration  186ms (transform 60ms, setup 0ms, import 93ms, tests 8ms, environment 0ms)
+

@@ -1,3 +1,4 @@
+import { consumeCodingProviderDispatchForRequest } from "@/lib/ai/codingRequestQuote";
 import {sendSmallSonnet55Messages} from "./sonnet55Messages";
 import { boundedAIInput } from "../inputByteBound";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
@@ -90,6 +91,9 @@ export class VercelGatewayProvider implements AIProvider {
 
   private async generateTextWithRetries(prompt: string, options?: AIRequestOptions, maxRetries?: 0): Promise<AITextResponse> {
     denyIsolatedExternalIO();
+    if (options?.codingDispatch && (options.smallAgentDispatch || options.smallAgent55Dispatch)) {
+      throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "coding dispatch cannot be mixed with extraction dispatch" });
+    }
     if (!this.isConfigured()) {
       throw new AIProviderError({ provider: this.name, kind: "not_configured", message: "AI Gateway is not configured" });
     }
@@ -101,6 +105,9 @@ export class VercelGatewayProvider implements AIProvider {
       : "request:unattributed";
     try {
       const payload = boundedAIInput(prompt, options?.system);
+      const coding = options?.codingDispatch
+        ? consumeCodingProviderDispatchForRequest(options.codingDispatch, { ...payload, model, maxTokens: options.maxTokens, temperature: options.temperature, organizationId: options.organizationId, correlationId: options.correlationId }, Date.now())
+        : undefined;
       const bounded = options?.smallAgentDispatch
         ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
         : undefined;
@@ -108,17 +115,17 @@ export class VercelGatewayProvider implements AIProvider {
         model,
         // Scrub after composing schema/label instructions, including callers
         // that reach this provider without going through the manager.
-        ...payload,
-        temperature: options?.temperature,
-        maxOutputTokens: options?.maxTokens,
-        ...(maxRetries === 0 || bounded ? { maxRetries: 0 } : {}),
+        ...(coding ? { prompt: coding.prompt, ...(coding.system === undefined ? {} : { system: coding.system }) } : payload),
+        temperature: coding?.temperature ?? options?.temperature,
+        maxOutputTokens: coding?.maxOutputTokens ?? options?.maxTokens,
+        ...(maxRetries === 0 || bounded || coding ? { maxRetries: 0 } : {}),
         abortSignal: options?.timeoutMs ? AbortSignal.timeout(options.timeoutMs) : undefined,
         providerOptions: {
-          ...(bounded ? { anthropic: bounded.anthropic } : {}),
+          ...(coding ? { anthropic: coding.providerOptions.anthropic } : bounded ? { anthropic: bounded.anthropic } : {}),
           gateway: {
             user: options?.organizationId,
             tags: ["product:axiom-agent", correlationTag],
-            ...(bounded?.gateway ?? {}),
+            ...(coding?.providerOptions.gateway ?? bounded?.gateway ?? {}),
           },
         },
       });
@@ -179,6 +186,7 @@ export class VercelGatewayProvider implements AIProvider {
     format?: "json",
   ): AsyncGenerator<GatewayAdmittedStreamChunk, void, unknown> {
     denyIsolatedExternalIO();
+    if (options?.codingDispatch) throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "coding dispatch does not authorize streaming" });
     if (!this.isConfigured()) {
       throw new AIProviderError({ provider: this.name, kind: "not_configured", message: "AI Gateway is not configured" });
     }

@@ -1,6 +1,7 @@
 import 'server-only';
 import {randomUUID} from 'node:crypto';
-import type {Prisma,PrismaClient} from '@prisma/client';
+import {Prisma,type PrismaClient} from '@prisma/client';
+import {codingRequestQuoteProtocol,parseStoredCodingQuoteEvidence,type CodingQuoteProtocol,type CodingQuote,type CodingReservationQuote,type PreparedCodingRequest,type CodingQuoteEvidence} from '@/lib/ai/codingRequestQuote';
 
 declare const claimBrand:unique symbol;
 export type CodingRunClaim={readonly [claimBrand]:true};
@@ -40,6 +41,33 @@ import {normalizeStoredWorkspaceAIProviderPolicy,resolveWorkspaceAIProviderPolic
 import {effectiveGatewayModel,gatewayModelOutputBoundVerified} from '@/lib/ai/effectiveGatewayModel';
 type Scope={organizationId:string;userId:string;correlationId:string};
 type Repo=Pick<PrismaClient,'$transaction'>;
+type AdmissionRow={admissionContract?:unknown;quoteEvidence?:unknown;organizationId:string;actorId:string;correlationId:string;runId:string;stageRunId:string;claimGeneration:string;phase:string;idempotencyKey:string;estimatedCents:number};
+function rowQuoteBinding(c:AdmissionRow){return {organizationId:c.organizationId,userId:c.actorId,correlationId:c.correlationId,runId:c.runId,stageRunId:c.stageRunId,claimGeneration:c.claimGeneration,phase:c.phase,idempotencyKey:c.idempotencyKey};}
+function assertStoredCodingAdmission(c:AdmissionRow):CodingQuoteEvidence|null{
+ if(!Number.isSafeInteger(c.estimatedCents)||c.estimatedCents<1)codingBudgetUnavailable();
+ if(c.admissionContract==='coding_fixed_hold_v1'){if(c.quoteEvidence!==null)codingBudgetUnavailable();return null;}
+ if(c.admissionContract!=='coding_request_quote_v1')codingBudgetUnavailable();
+ const evidence=parseStoredCodingQuoteEvidence(c.quoteEvidence,rowQuoteBinding(c));
+ if(evidence.reservedCents!==c.estimatedCents)codingBudgetUnavailable();return evidence;
+}
+async function codingDatabaseNow(tx:Prisma.TransactionClient):Promise<Date>{
+ const rows=await tx.$queryRawUnsafe<Array<{now:Date}>>("SELECT clock_timestamp() AT TIME ZONE 'UTC' AS now");
+ if(rows.length!==1||!(rows[0]?.now instanceof Date)||!Number.isFinite(rows[0].now.getTime()))codingBudgetUnavailable();return rows[0].now;
+}
+type QuoteClockObservation=Readonly<{db:number;server:number}>;
+/** Quote-v1 local admission accepts at most 1000ms DB/server skew. This is a
+ * refusal bound, not an assertion that either clock proves provider prices. */
+const CODING_QUOTE_MAX_CLOCK_SKEW_MS=1000;
+function assertQuoteNow(e:CodingQuoteEvidence,now:Date,previous?:QuoteClockObservation):QuoteClockObservation{
+ const server=Date.now(),db=now.getTime();
+ if(!Number.isSafeInteger(server)||!Number.isSafeInteger(db)||server<e.quotedAt||server>=e.expiresAt||db<e.quotedAt||db>=e.expiresAt||Math.abs(server-db)>CODING_QUOTE_MAX_CLOCK_SKEW_MS||previous&&(db<previous.db||server<previous.server))codingBudgetUnavailable();
+ return Object.freeze({db,server});
+}
+function assertPreparedClaim(prepared:PreparedCodingRequest,b:Binding,phase:string,key:string){
+ const e=prepared.envelope;
+ if(e.organizationId!==b.organizationId||e.userId!==b.actorId||e.correlationId!==b.correlationId||e.runId!==b.runId||e.stageRunId!==b.stageRunId||e.claimGeneration!==b.generation||e.phase!==phase||e.idempotencyKey!==key)codingBudgetUnavailable();
+}
+
 async function policyAndExposure(tx:Prisma.TransactionClient,b:Binding,model:string,proposed:number){
  const run=await lockCodingRun(tx,b);
  const config=await tx.organizationBudgetConfig.findUnique({where:{organizationId:b.organizationId}});
@@ -72,7 +100,8 @@ export async function reserveCodingCall(repo:Repo,handle:CodingRunClaim|undefine
   if(input.phase==='refinement'&&!await tx.pipelineAICallReservation.findFirst({where:{organizationId:b.organizationId,stageRunId:b.stageRunId,phase:'initial',status:{in:['pending_settlement','settled']}}}))codingBudgetUnavailable();
   const held=await reserveAICreditsInTransaction(tx,{organizationId:b.organizationId,idempotencyKey:input.idempotencyKey,reservedCents:input.estimatedCents,correlationId:b.correlationId},new Date(),isolatedVerifiedPlan);
   if(!held.ok||held.reused)throw Error(held.ok?'request_already_reserved':held.error);
-  const call=await tx.pipelineAICallReservation.create({data:{organizationId:b.organizationId,runId:b.runId,stageRunId:b.stageRunId,phase:input.phase,claimGeneration:b.generation,idempotencyKey:input.idempotencyKey,workspaceReservationId:held.reservation.id,actorId:b.actorId,correlationId:b.correlationId,estimatedCents:input.estimatedCents,capCents:cap.maxCents,capSource:cap.source,allocationPolicy:held.allocationPolicy??null}});
+  const data={organizationId:b.organizationId,runId:b.runId,stageRunId:b.stageRunId,phase:input.phase,claimGeneration:b.generation,idempotencyKey:input.idempotencyKey,workspaceReservationId:held.reservation.id,actorId:b.actorId,correlationId:b.correlationId,estimatedCents:input.estimatedCents,admissionContract:'coding_fixed_hold_v1',quoteEvidence:Prisma.DbNull,capCents:cap.maxCents,capSource:cap.source,allocationPolicy:held.allocationPolicy??null};
+  const call=await tx.pipelineAICallReservation.create({data});
   return {...held,callId:call.id};
  },{isolationLevel:'Serializable'});
 }
@@ -82,6 +111,8 @@ export async function dispatchCodingCall(repo:Repo,handle:CodingRunClaim|undefin
   await policyAndExposure(tx,b,model,0);
   const call=await tx.pipelineAICallReservation.findUnique({where:{id:callId}});
   if(!call||call.organizationId!==b.organizationId||call.runId!==b.runId||call.stageRunId!==b.stageRunId||call.claimGeneration!==b.generation||call.actorId!==b.actorId||call.status!=='reserved'||call.usageEventId!==null)codingBudgetUnavailable();
+  assertStoredCodingAdmission(call as unknown as AdmissionRow);
+  if((call as unknown as AdmissionRow).admissionContract!=='coding_fixed_hold_v1')codingBudgetUnavailable();
   const ok=call.allocationPolicy==='axiom_test_anniversary_v2'?await claimNewTestBillableDispatch(tx,scope,call.workspaceReservationId):await claimLegacyAICreditDispatch(tx,scope,call.workspaceReservationId);
   if(!ok)codingBudgetUnavailable();
   const changed=await tx.pipelineAICallReservation.updateMany({where:{id:call.id,status:'reserved',usageEventId:null},data:{status:'dispatch_unknown',dispatchedAt:new Date()}});
@@ -94,7 +125,8 @@ export async function releaseCodingCall(repo:Repo,handle:CodingRunClaim|undefine
   await tx.$queryRawUnsafe('SELECT id FROM "PipelineRun" WHERE id=$1 AND "organizationId"=$2 FOR UPDATE',b.runId,b.organizationId);
   const call=await tx.pipelineAICallReservation.findUnique({where:{id:callId}});
   if(!call||call.runId!==b.runId||call.stageRunId!==b.stageRunId||call.claimGeneration!==b.generation||call.actorId!==b.actorId||call.status!=='reserved'||call.dispatchedAt||call.usageEventId)codingBudgetUnavailable();
-  const h=await tx.aIUsageReservation.updateMany({where:{id:call.workspaceReservationId,organizationId:b.organizationId,status:'reserved',usageEventId:null},data:{status:'released',releasedAt:new Date()}});
+  assertStoredCodingAdmission(call as unknown as AdmissionRow);
+  const h=await tx.aIUsageReservation.updateMany({where:{id:call.workspaceReservationId,organizationId:b.organizationId,idempotencyKey:call.idempotencyKey,correlationId:call.correlationId,reservedCents:call.estimatedCents,status:'reserved',usageEventId:null},data:{status:'released',releasedAt:new Date()}});
   if(h.count!==1)codingBudgetUnavailable();
   const c=await tx.pipelineAICallReservation.updateMany({where:{id:call.id,status:'reserved',usageEventId:null},data:{status:'released',releasedAt:new Date()}});
   if(c.count!==1)codingBudgetUnavailable();return true;
@@ -105,7 +137,11 @@ export async function lockCodingFinancial(tx:Prisma.TransactionClient,workspaceR
  const call=await tx.pipelineAICallReservation.findUnique({where:{workspaceReservationId}});
  if(!call)return null;
  await tx.$queryRawUnsafe('SELECT id FROM "PipelineRun" WHERE id=$1 AND "organizationId"=$2 FOR UPDATE',call.runId,call.organizationId);
- const rows=await tx.pipelineAICallReservation.findMany({where:{id:call.id}});if(rows.length!==1)codingBudgetUnavailable();return rows[0]!;
+ const rows=await tx.pipelineAICallReservation.findMany({where:{id:call.id}});if(rows.length!==1)codingBudgetUnavailable();
+ const current=rows[0]!;assertStoredCodingAdmission(current as unknown as AdmissionRow);
+ const hold=await tx.aIUsageReservation.findUnique({where:{id:current.workspaceReservationId}});
+ if(!hold||hold.organizationId!==current.organizationId||hold.idempotencyKey!==current.idempotencyKey||hold.correlationId!==current.correlationId||hold.reservedCents!==current.estimatedCents)codingBudgetUnavailable();
+ return current;
 }
 export async function linkCodingUsage(tx:Prisma.TransactionClient,workspaceReservationId:string,usageEventId:string,externalUsageId:string){
  const call=await lockCodingFinancial(tx,workspaceReservationId);if(!call)return;
@@ -126,6 +162,7 @@ export async function settleCodingLedger(tx:Prisma.TransactionClient,workspaceRe
  if(changed.count!==1)codingBudgetUnavailable();
  // Projection only: preserve unknown as output metadata, never treat display0 as authority.
  const calls=await tx.pipelineAICallReservation.findMany({where:{stageRunId:call.stageRunId}});
+ for(const c of calls)assertStoredCodingAdmission(c as unknown as AdmissionRow);
  if(calls.every(c=>c.status==='settled'||c.status==='released')){
   const total=calls.reduce((sum,c)=>sum+(c.status==='settled'?(c.providerCents??codingBudgetUnavailable()):0),0);
   if(!Number.isSafeInteger(total)||total<0)codingBudgetUnavailable();
@@ -150,6 +187,7 @@ export async function readCodingRunExposure(repo:Repo,organizationId:string,runI
  * Prisma string columns are not a substitute for a checked read boundary. */
 async function validateCodingRows(tx:Prisma.TransactionClient,organizationId:string,runId:string,calls:Awaited<ReturnType<Prisma.TransactionClient['pipelineAICallReservation']['findMany']>>,stages:Awaited<ReturnType<Prisma.TransactionClient['pipelineStageRun']['findMany']>>){
  for(const c of calls){
+  assertStoredCodingAdmission(c as unknown as AdmissionRow);
   const stage=stages.find(s=>s.id===c.stageRunId);
   const date=(v:unknown)=>v instanceof Date&&Number.isFinite(v.getTime());
   if(c.organizationId!==organizationId||c.runId!==runId||!stage||stage.runId!==runId||stage.stageKind!=='code_propose'||stage.aiClaimGeneration!==c.claimGeneration||!c.claimGeneration||!c.actorId||!c.correlationId||!c.idempotencyKey||!['initial','refinement'].includes(c.phase)||!date(c.createdAt)||!date(c.updatedAt)||c.capCents!==null&&(!Number.isSafeInteger(c.capCents)||c.capCents<1)||!['metadata_explicit_cap','org_pipeline_override','org_pipeline_override_unlimited','org_default','org_default_unlimited','platform_default'].includes(c.capSource)||![null,'axiom_public_anniversary_v1','axiom_test_anniversary_v2'].includes(c.allocationPolicy))codingBudgetUnavailable();
@@ -189,3 +227,62 @@ export async function persistCodingStageResult(repo:Repo,organizationId:string,r
   return tx.pipelineStageRun.update({where:{id:stageRunId},data:{...data,costCents:actual??0,outputDetail:{...detail,cost:{...cost,totalCents:actual,pendingSettlement:pending}} as Prisma.InputJsonObject}});
  },{isolationLevel:'Serializable'});
 }
+
+/** The canonical instance cannot accept isolated pricing/quote capabilities. */
+function quotedCoordinator(protocol:CodingQuoteProtocol){
+ const reserved=new WeakMap<object,Readonly<{callId:string;evidence:CodingQuoteEvidence;prepared:PreparedCodingRequest;clock:QuoteClockObservation}>>();
+ async function reserveQuotedCodingCall(repo:Repo,handle:CodingRunClaim|undefined,scope:Scope,input:{idempotencyKey:string;phase:'initial'|'refinement';prepared:PreparedCodingRequest;quote:CodingQuote},isolatedVerifiedPlan?:Parameters<typeof reserveAICreditsInTransaction>[3]){
+  const b=codingClaimBinding(handle,scope);
+  assertPreparedClaim(input.prepared,b,input.phase,input.idempotencyKey);
+  const result=await repo.$transaction(async tx=>{
+   const start=await codingDatabaseNow(tx);
+   // Burn the quote even if a later transaction fails. Rollback is not retry authority.
+   const quote=protocol.consumeForReservation(input.quote,input.prepared,start.getTime());
+   const evidence=parseStoredCodingQuoteEvidence(quote.evidence,input.prepared);
+   const startClock=assertQuoteNow(evidence,start);
+   const cap=await policyAndExposure(tx,b,evidence.model,evidence.reservedCents);
+   const prior=await tx.pipelineAICallReservation.findUnique({where:{organizationId_stageRunId_phase:{organizationId:b.organizationId,stageRunId:b.stageRunId,phase:input.phase}}});
+   if(prior)codingBudgetUnavailable();
+   if(input.phase==='refinement'&&!await tx.pipelineAICallReservation.findFirst({where:{organizationId:b.organizationId,stageRunId:b.stageRunId,phase:'initial',status:{in:['pending_settlement','settled']}}}))codingBudgetUnavailable();
+   const beforeFunding=await codingDatabaseNow(tx);const fundingClock=assertQuoteNow(evidence,beforeFunding,startClock);
+   const held=await reserveAICreditsInTransaction(tx,{organizationId:b.organizationId,idempotencyKey:input.idempotencyKey,reservedCents:evidence.reservedCents,correlationId:b.correlationId},beforeFunding,isolatedVerifiedPlan);
+   if(!held.ok||held.reused)throw Error(held.ok?'request_already_reserved':held.error);
+   // Funding may await branch-specific locks: require a fresh DB clock afterwards.
+   const afterFunding=await codingDatabaseNow(tx);const finalClock=assertQuoteNow(evidence,afterFunding,fundingClock);
+   const data={organizationId:b.organizationId,runId:b.runId,stageRunId:b.stageRunId,phase:input.phase,claimGeneration:b.generation,idempotencyKey:input.idempotencyKey,workspaceReservationId:held.reservation.id,actorId:b.actorId,correlationId:b.correlationId,estimatedCents:evidence.reservedCents,capCents:cap.maxCents,capSource:cap.source,allocationPolicy:held.allocationPolicy??null,admissionContract:'coding_request_quote_v1',quoteEvidence:evidence as unknown as Prisma.InputJsonObject};
+   const call=await tx.pipelineAICallReservation.create({data});
+   return {...held,callId:call.id,quoteReservation:quote.handle,evidence,clock:finalClock};
+  },{isolationLevel:'Serializable'});
+  // Only a committed reservation obtains a dispatch binding; persisted JSON cannot reconstruct it.
+  reserved.set(result.quoteReservation,Object.freeze({callId:result.callId,evidence:result.evidence,prepared:input.prepared,clock:result.clock}));
+  const {evidence:_evidence,clock:_clock,...publicResult}=result;return publicResult;
+ }
+ async function dispatchQuotedCodingCall(repo:Repo,handle:CodingRunClaim|undefined,scope:Scope,callId:string,prepared:PreparedCodingRequest,quoteReservation:CodingReservationQuote){
+  const b=codingClaimBinding(handle,scope);
+  const original=reserved.get(quoteReservation);reserved.delete(quoteReservation);
+  if(!original||original.callId!==callId||original.prepared.digest!==prepared.digest)codingBudgetUnavailable();
+  assertPreparedClaim(prepared,b,prepared.envelope.phase,prepared.envelope.idempotencyKey);
+  return repo.$transaction(async tx=>{
+   await policyAndExposure(tx,b,prepared.envelope.model,0);
+   const call=await tx.pipelineAICallReservation.findUnique({where:{id:callId}});
+   if(!call||call.organizationId!==b.organizationId||call.runId!==b.runId||call.stageRunId!==b.stageRunId||call.claimGeneration!==b.generation||call.actorId!==b.actorId||call.correlationId!==b.correlationId||call.phase!==prepared.envelope.phase||call.idempotencyKey!==prepared.envelope.idempotencyKey||call.status!=='reserved'||call.usageEventId!==null||call.dispatchedAt!==null)codingBudgetUnavailable();
+   const evidence=assertStoredCodingAdmission(call as unknown as AdmissionRow);
+   if(!evidence||!(Object.keys(original.evidence) as (keyof CodingQuoteEvidence)[]).every(key=>evidence[key]===original.evidence[key]))codingBudgetUnavailable();
+   parseStoredCodingQuoteEvidence(evidence,prepared);
+   const beforeClaim=await codingDatabaseNow(tx);const claimClock=assertQuoteNow(evidence,beforeClaim,original.clock);
+   const ok=call.allocationPolicy==='axiom_test_anniversary_v2'?await claimNewTestBillableDispatch(tx,scope,call.workspaceReservationId):await claimLegacyAICreditDispatch(tx,scope,call.workspaceReservationId);
+   if(!ok)codingBudgetUnavailable();
+   const afterClaim=await codingDatabaseNow(tx);assertQuoteNow(evidence,afterClaim,claimClock);
+   const managerQuote=protocol.consumeForDispatch(quoteReservation,prepared,afterClaim.getTime());
+   const changed=await tx.pipelineAICallReservation.updateMany({where:{id:call.id,status:'reserved',usageEventId:null},data:{status:'dispatch_unknown',dispatchedAt:afterClaim}});
+   if(changed.count!==1)codingBudgetUnavailable();
+   return Object.freeze({managerQuote});
+  },{isolationLevel:'Serializable'});
+ }
+ return Object.freeze({reserveQuotedCodingCall,dispatchQuotedCodingCall});
+}
+const canonicalQuotedCoordinator=quotedCoordinator(codingRequestQuoteProtocol);
+export const reserveQuotedCodingCall=canonicalQuotedCoordinator.reserveQuotedCodingCall;
+export const dispatchQuotedCodingCall=canonicalQuotedCoordinator.dispatchQuotedCodingCall;
+/** Explicit owned-fixture composition. Never mounted or selected by request fields. */
+export const createIsolatedQuotedCodingCoordinator=(protocol:CodingQuoteProtocol)=>{if(process.env.NODE_ENV!=='test')codingBudgetUnavailable();return quotedCoordinator(protocol);};

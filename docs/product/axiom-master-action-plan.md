@@ -33,6 +33,10 @@ A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-targe
 
 ~~Five recorded stale-fixture failures diagnosed and corrected without runtime changes~~ ([evidence](../recovery/2026-11-04/stale-regression-fixtures/README.md)):33focused desktop contract/entitlement/logging checks and3notification checks pass. Exact mounted core binding and financial-proof denial retained. No full-suite/customer/DB/provider/Governance completion claim; all15parents remain open.
 
+## November 4 approved local quote mechanism milestone
+
+~~Exact request/capability/accounting mechanism and final SDK boundary implemented locally~~ ([bounded progress](../recovery/2026-11-04/coding-request-quotes-local/PROGRESS.md)):64core/19coordinator/17admission-preparation/71overlapping compatibility checks, one installed-SDK offline request,19distinct local PostgreSQL journeys across legacy/public-Free/v2-Free, scoped runtime types with a private current-schema client. Existing decimal settlement defect reproduced and corrected locally (26checks); no historical repricing. Synthetic pricing/authority remain explicit; complete composed path, real pricing/estimator/billable qualification, paid variants, full production build/schema/rollout acceptance remain open. Canonical quote eligibility and executor activation remain unavailable; all15parents stay open.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains

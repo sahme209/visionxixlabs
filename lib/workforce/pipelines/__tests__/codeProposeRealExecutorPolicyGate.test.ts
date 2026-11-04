@@ -134,6 +134,19 @@ describe("codeProposeRealExecutor — workspace AI provider policy gate", () => 
     expect(mocks.gatewayGenerate).not.toHaveBeenCalled();
   });
 
+  it("retains the same fully redacted payload at admission and manager boundaries", async () => {
+    mocks.loadWorkspaceAIProviderPolicyWithState.mockResolvedValue({policy:{},storageState:"ready"});
+    mocks.resolveWorkspaceAIProviderPolicy.mockReturnValue({enabled:true,allowedProviders:["vercel_gateway"],modelSelections:{vercel_gateway:"vendor/model"},fallbackOrder:[]});
+    const {codeProposeRealExecutor}=await import("../codeProposeRealExecutor");
+    const syntheticSecret="sk_test_123456789012345678901234";
+    await codeProposeRealExecutor(ctx({runMetadata:{instruction:"remove "+syntheticSecret,repoRef:"acme/checkout"}}));
+    const payload=mocks.admit.mock.calls[0][1];
+    expect(payload.prompt).not.toContain(syntheticSecret);
+    expect(payload.prompt).toContain("[REDACTED-STRIPE-KEY]");
+    expect(mocks.gatewayGenerate.mock.calls[0][0]).toBe(payload.prompt);
+    expect(mocks.gatewayGenerate.mock.calls[0][1].system).toBe(payload.system);
+  });
+
   it("invokes Gateway once policy allows it", async () => {
     mocks.loadWorkspaceAIProviderPolicyWithState.mockResolvedValue({ policy: { enabled: true, allowedProviders: ["vercel_gateway"] }, storageState: "ready" });
     mocks.resolveWorkspaceAIProviderPolicy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "service-default" }, fallbackOrder: ["vercel_gateway"] });

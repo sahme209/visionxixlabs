@@ -215,10 +215,11 @@ export class AIProviderManager {
   ): Promise<AITextResponse> {
     const gateway = this.admittedGateway(options);
     const gatewayOptions = this.optionsForProvider(gateway, options);
-    const authority = consumeGovernedTextAdmission(admission, options);
+    const safePrompt = redact(prompt);
+    const authority = consumeGovernedTextAdmission(admission, gatewayOptions ?? options, { prompt: safePrompt, ...(gatewayOptions?.system === undefined ? {} : { system: gatewayOptions.system }) });
     const out = await runWithFallback<AITextResponse>(
       [gateway],
-      () => gateway.generateTextOnce(redact(prompt), gatewayOptions),
+      () => gateway.generateTextOnce(safePrompt, { ...gatewayOptions, ...(authority.codingDispatch ? { codingDispatch: authority.codingDispatch } : {}) }),
       { task: "generate_text", correlationId: options.correlationId, organizationId: options.organizationId },
     );
     await authority.record(out.result);

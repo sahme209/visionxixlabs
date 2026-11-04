@@ -1,3 +1,5 @@
+import {codingClaimBinding,reserveQuotedCodingCall,dispatchQuotedCodingCall} from "@/lib/workforce/pipelines/codingRunReservation";
+import {prepareCodingRequestEnvelope,quoteCodingRequest,consumeCodingManagerQuoteForRequest,type CodingManagerQuote} from "@/lib/ai/codingRequestQuote";
 import {reserveCodingCall,dispatchCodingCall,releaseCodingCall,lockCodingFinancial,linkCodingUsage,type CodingRunClaim} from "@/lib/workforce/pipelines/codingRunReservation";
 import {recordAttributedUsageV2} from "./newTestSubscription/usageAllocationIO";
 import { boundedAIInput, boundedStructuredAIInput } from "@/lib/ai/inputByteBound";
@@ -22,7 +24,7 @@ export type GovernedExtractAdmission = { readonly [admissionBrand]: true };
 export type GovernedAIAdmission = GovernedExtractAdmission;
 type Task = "generate_text" | "extract_structured_data";
 type AdmissionResult = { ok: true; admission: GovernedAIAdmission } | { ok: false; error: Extract<AICreditReservationResult, { ok: false }>["error"] | "request_already_reserved" };
-const admissions = new WeakMap<object, Readonly<{ scope: Scope; reservationId: string; v2: boolean; task: Task; small?: SmallSonnetRequest; small55?: SmallSonnet55Request }>>();
+const admissions = new WeakMap<object, Readonly<{ scope: Scope; reservationId: string; v2: boolean; task: Task; small?: SmallSonnetRequest; small55?: SmallSonnet55Request; codingManager?: CodingManagerQuote }>>();
 function deny(): never { throw new Error("governed_extract_admission_unavailable"); }
 
 export function governedExtractReservationKey(scope: Scope): string {
@@ -51,6 +53,24 @@ export async function admitGovernedExtract(input: Scope, request?: { model: stri
 export function admitAIText(input: Scope & { idempotencyKey: string }, payload?: { prompt: string; system?: string }): Promise<AdmissionResult> {
   if (payload) boundedAIInput(payload.prompt, payload.system);
   return reserveAndClaim(input, input.idempotencyKey, "generate_text");
+}
+
+/** Separate server-owned mode. Unqualified quotes refuse before any hold; never
+ * silently fall back to the default fixed-hold entry point. */
+export async function admitQuotedAIText(input: Scope & { idempotencyKey: string }, payload: {prompt:string;system?:string}): Promise<AdmissionResult> {
+  if(input.source !== "coding_proposal") deny();
+  const binding = codingClaimBinding(input.codingRunClaim,input);
+  const preparedPayload=boundedAIInput(payload.prompt,payload.system);
+  const prepared=prepareCodingRequestEnvelope({organizationId:binding.organizationId,userId:binding.actorId,correlationId:binding.correlationId,runId:binding.runId,stageRunId:binding.stageRunId,claimGeneration:binding.generation,phase:input.codingPhase,idempotencyKey:input.idempotencyKey,task:"generate_text",model:input.codingModel,...preparedPayload,temperature:0.2,maxOutputTokens:4096,maxRetries:0,adapterContract:"coding_gateway_text_v1",routing:{only:["anthropic"],thinking:"disabled",region:"default",cache:"none"}});
+  const quote=quoteCodingRequest(prepared);
+  const scope=Object.freeze({organizationId:input.organizationId,userId:input.userId,correlationId:input.correlationId,source:"coding_proposal" as const});
+  const reserved=await reserveQuotedCodingCall(prisma,input.codingRunClaim,scope,{idempotencyKey:input.idempotencyKey,phase:input.codingPhase!,prepared,quote});
+  if(reserved.reused)deny();
+  try { denyIsolatedExternalIO(); } catch(error) { await releaseCodingCall(prisma,input.codingRunClaim,scope,reserved.callId);throw error; }
+  const {managerQuote}=await dispatchQuotedCodingCall(prisma,input.codingRunClaim,scope,reserved.callId,prepared,reserved.quoteReservation);
+  const capability=Object.freeze({}) as GovernedAIAdmission;
+  admissions.set(capability,Object.freeze({scope,reservationId:reserved.reservation.id,v2:reserved.allocationPolicy === "axiom_test_anniversary_v2",task:"generate_text",codingManager:managerQuote}));
+  return {ok:true,admission:capability};
 }
 
 async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task, small?: SmallSonnetRequest, abortSignal?: AbortSignal, small55?: SmallSonnet55Request): Promise<AdmissionResult> {
@@ -89,24 +109,28 @@ export function consumeGovernedExtractAdmission(capability: GovernedExtractAdmis
   return consumeAdmission(capability, binding, "extract_structured_data", payload);
 }
 
-export function consumeGovernedTextAdmission(capability: GovernedAIAdmission, binding: { organizationId?: string; correlationId?: string }) {
-  return consumeAdmission(capability, binding, "generate_text");
+export function consumeGovernedTextAdmission(capability: GovernedAIAdmission, binding: { organizationId?: string; correlationId?: string;model?:string;maxTokens?:number;temperature?:number }, payload?: {prompt:string;system?:string}) {
+  return consumeAdmission(capability, binding, "generate_text", payload);
 }
 
-function consumeAdmission(capability: GovernedAIAdmission, binding: { organizationId?: string; correlationId?: string; model?: string; maxTokens?: number }, task: Task, payload?: { text: string; schemaHint: string }) {
+function consumeAdmission(capability: GovernedAIAdmission, binding: { organizationId?: string; correlationId?: string; model?: string; maxTokens?: number;temperature?:number }, task: Task, payload?: { text: string; schemaHint: string }|{prompt:string;system?:string}) {
   const admission = admissions.get(capability);
   admissions.delete(capability);
   if (!admission || admission.task !== task || binding.organizationId !== admission.scope.organizationId || binding.correlationId !== admission.scope.correlationId) deny();
   const { scope, reservationId, v2 } = admission;
+  const codingDispatch=admission.codingManager
+    ? consumeCodingManagerQuoteForRequest(admission.codingManager,{...binding,...(payload && "prompt" in payload ? payload : deny()),model:binding.model ?? deny()},Date.now())
+    : undefined;
   const reservationEvidence = admission.small55 ? smallSonnet55ReservationEvidence(admission.small55, scope) : admission.small ? smallSonnetReservationEvidence(admission.small, scope) : undefined;
   const smallAgentDispatch = admission.small
-    ? authorizeSmallSonnetDispatch(admission.small, { ...scope, model: binding.model, maxTokens: binding.maxTokens, ...(payload ?? deny()) })
+    ? authorizeSmallSonnetDispatch(admission.small, { ...scope, model: binding.model, maxTokens: binding.maxTokens, ...((payload && "text" in payload ? payload : undefined) ?? deny()) })
     : undefined;
   const smallAgent55Dispatch = admission.small55
-    ? authorizeSmallSonnet55Dispatch(admission.small55, { ...scope, model: binding.model, maxTokens: binding.maxTokens, ...(payload ?? deny()) })
+    ? authorizeSmallSonnet55Dispatch(admission.small55, { ...scope, model: binding.model, maxTokens: binding.maxTokens, ...((payload && "text" in payload ? payload : undefined) ?? deny()) })
     : undefined;
   let recorded = false;
   return Object.freeze({
+    ...(codingDispatch ? {codingDispatch} : {}),
     ...(smallAgentDispatch ? { smallAgentDispatch } : {}),
     ...(smallAgent55Dispatch ? { smallAgent55Dispatch } : {}),
     async record(result: ExtractUsage): Promise<void> {

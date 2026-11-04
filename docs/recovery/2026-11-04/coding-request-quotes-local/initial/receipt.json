@@ -1,0 +1,13 @@
+{
+  "packetSha256": "274949581a5a00e8d91a323fe535e7426baa4cc21b697d6bdbf5bb29ace975f0",
+  "tests": 5,
+  "provider": "simulated",
+  "root": "/private/tmp/axiom-cq-pg-vxjjpcz2",
+  "schemaSha256": "5bea98110efba0049127db3aa6bb97fbe5aa1bb649449b4f34b778b2a1a3f139",
+  "engineSha256": {
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@prisma/engines/libquery_engine-darwin-arm64.dylib.node": "e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@prisma/engines/schema-engine-darwin-arm64": "57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a"
+  },
+  "productionChanged": false,
+  "sourceBindingScope": "six direct reviewed files only, not complete transitive attestation"
+}

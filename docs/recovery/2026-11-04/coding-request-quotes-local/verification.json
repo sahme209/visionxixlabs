@@ -1,0 +1,21 @@
+{
+  "base": "32b6a63d18c2a2da594d9279293b6f9930d22112",
+  "coreFocused": 64,
+  "coordinatorFocused": 19,
+  "admissionPreparationFocused": 17,
+  "sharedCompatibility": 71,
+  "installedSdkOffline": 1,
+  "monetaryFocused": 26,
+  "countsOverlap": true,
+  "distinctOwnedPostgresCases": 19,
+  "initialFollowOnFailedCases": 1,
+  "correctedSettlementBodyPassed": true,
+  "correctedSettlementWholeFileSourceBinding": "not asserted due parallel test append",
+  "finalAllocationDirectSourcesUnchanged": true,
+  "runtimeScopedTypes": "PASS with private current-schema generated Prisma client",
+  "fullProductionBuild": false,
+  "productionEligibility": false,
+  "providerPricingReads": 0,
+  "inferenceCalls": 0,
+  "productionChanges": false
+}

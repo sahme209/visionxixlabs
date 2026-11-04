@@ -1,0 +1,29 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "incremental": false,
+    "paths": {
+      "@/*": [
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/*"
+      ],
+      "@prisma/client": [
+        "/private/tmp/axiom-cq-pg-vxjjpcz2/generated/index.d.ts"
+      ]
+    }
+  },
+  "include": [],
+  "files": [
+    "../../lib/ai/codingRequestQuote.ts",
+    "../../lib/workforce/pipelines/codingRunReservation.ts",
+    "../../lib/billing/governedExtractAdmission.ts",
+    "../../lib/ai/AIProviderManager.ts",
+    "../../lib/ai/providers/VercelGatewayProvider.ts",
+    "../../next-env.d.ts",
+    "../../lib/workforce/pipelines/codeProposeRealExecutor.ts",
+    "../../lib/billing/reconcileGatewayUsage.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
