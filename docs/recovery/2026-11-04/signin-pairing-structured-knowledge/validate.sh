@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /private/tmp/axiom-b4-signin-20261104 || exit 90
+exec /usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-b4-signin-evidence TMPDIR=/private/tmp/axiom-b4-signin-evidence NODE_ENV=test /usr/bin/sandbox-exec -f /private/tmp/axiom-b4-signin-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node docs/product/documentation-coverage/validate-support-knowledge.cjs --root /private/tmp/axiom-b4-signin-20261104 --article docs/product/documentation-coverage/articles/native-signin-browser-pairing.r1.json --evaluation docs/product/documentation-coverage/native-signin-browser-pairing-evaluation.r1.json --version local-source-preview:c828ff9ee4d3181e8073398fb82adc489225c25e "$@"

@@ -31,7 +31,7 @@
 | Explore the scripted website tour | [Tour controls](website-scripted-tour-controls.md) | Sample context, playback and decisions change local presentation only; not authentic execution footage or approval. |
 | Understand the website workflow figure | [Workflow illustration](website-workflow-visual.md) | Conceptual illustration, not authentic execution footage. |
 
-Structured Agent, deployment, Bot and repository article drafts, evaluation requirements and validation rules are indexed separately in the [support-knowledge authoring queue](../documentation-coverage/README.md). Proposed evaluation cases are not executed retrieval results. None of this index approves a catalog, ingests customer data or activates a support assistant.
+Structured article drafts, proposed evaluations and validation rules are indexed separately in the [support-knowledge authoring queue](../documentation-coverage/README.md). The [guide-to-article source-reference map](../documentation-coverage/guide-article-linkage.md) identifies direct source linkage only, not completed control coverage. Proposed evaluation cases are not executed retrieval results. None of this index approves a catalog, ingests customer data or activates a support assistant.
 
 ## Advance a draft safely
 
@@ -40,4 +40,4 @@ Structured Agent, deployment, Bot and repository article drafts, evaluation requ
 3. Obtain genuine editorial/release decisions and separately verify customer/public eligibility. Metadata alone cannot make those decisions.
 4. Update the coverage queue and exact bindings. Keep missing controls and unaccepted states open; do not infer whole-app coverage from this index.
 
-Explicitly omitted provider/browser/account setup and native authentication/session subflows still need their source-to-control inventory and operational walkthroughs. Native Documentation, Jira, Home, Settings, Releases, Batches, Agent and every guide still require their media, native, editorial and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.
+Complete provider/browser/account setup and platform-specific authentication/session subflows remain unfinished even where finite pairing/native source guides now exist; their full inventory and operational walkthroughs are still required. Native Documentation, Jira, Home, Settings, Releases, Batches, Agent and every guide still require their media, native, editorial and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.

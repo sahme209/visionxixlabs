@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.native-signin.browser-pairing",
+  "revision": 1,
+  "productVersion": "local-source-preview:c828ff9ee4d3181e8073398fb82adc489225c25e",
+  "sourceFiles": 28,
+  "evaluationCases": 8,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

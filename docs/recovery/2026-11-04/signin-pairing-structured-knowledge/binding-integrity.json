@@ -1,0 +1,41 @@
+{
+  "result": "PASS",
+  "bindingCounts": [
+    16,
+    9
+  ],
+  "uniqueCodeFiles": 22,
+  "paths": [
+    "desktop/src/main.tsx",
+    "desktop/src/DesktopStartupGate.tsx",
+    "desktop/src/App.tsx",
+    "desktop/src/views/DesktopSignInView.tsx",
+    "desktop/src/views/DesktopAccessRequiredView.tsx",
+    "desktop/src/lib/desktopPairing.ts",
+    "desktop/src/lib/activeDesktopCredential.ts",
+    "desktop/src/lib/credentialVerificationCoordinator.ts",
+    "desktop/src/lib/apiKeyStore.ts",
+    "desktop/src/lib/authSession.ts",
+    "desktop/src/lib/secureStorage.ts",
+    "desktop/src/lib/preferences.ts",
+    "desktop/src/lib/desktopIdentityResponse.ts",
+    "desktop/src/lib/desktopClient.ts",
+    "desktop/src/views/SettingsView.tsx",
+    "app/api/desktop/pair/status/route.ts",
+    "app/desktop/connect/page.tsx",
+    "app/desktop/connect/PairDesktopClient.tsx",
+    "app/api/desktop/pair/start/route.ts",
+    "app/api/desktop/pair/approve/route.ts",
+    "lib/auth/verificationCallback.ts",
+    "lib/desktop/desktopAuthPolicy.ts"
+  ],
+  "supportingPaths": [
+    "docs/product/knowledge/native-signin-and-access-controls.md",
+    "docs/recovery/2026-11-03/native-signin-guide/source-bindings.json",
+    "docs/recovery/2026-11-03/native-signin-guide/review.md",
+    "docs/product/knowledge/browser-desktop-pairing-controls.md",
+    "docs/recovery/2026-11-04/browser-desktop-pairing-guide/source-bindings.json",
+    "docs/recovery/2026-11-04/browser-desktop-pairing-guide/review.md"
+  ],
+  "wholeFileAndInclusiveRawRange": true
+}

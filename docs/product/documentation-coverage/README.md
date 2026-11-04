@@ -106,3 +106,15 @@ For the human-readable source-guide queue, see the [internal task index](../know
 ## Slack internal structured source draft (November4)
 
 [Slack article revision1](articles/slack-reviewed-action-controls.r1.json) and [eight proposed cases](slack-reviewed-action-controls-evaluation.r1.json) retain exact task/connection binding, independent review, requester preparation/send once and unknown/no-resend limits.16source hashes/14ranges verified; historical guide preserved. Newbundleintegrity passed; customer mode refused. No executed retrieval or live Slack acceptance. [Review/evidence](../../recovery/2026-11-04/slack-structured-knowledge-author/independent-review.md).
+
+
+## Native sign-in and browser pairing internal draft (November4)
+
+[Combined article revision1](articles/native-signin-browser-pairing.r1.json) and [eight proposed cases](native-signin-browser-pairing-evaluation.r1.json) keep browser approval, native verification/save, entitlement and execution authority distinct. Newbundle integrity passed; customer mode refused. [Evidence](../../recovery/2026-11-04/signin-pairing-structured-knowledge/README.md). No actual retrieval, clean-host, native or customer acceptance.
+
+
+## Home, navigation and Settings internal draft (November4)
+
+[Combined article revision1](articles/home-settings-navigation-controls.r1.json) and [nine proposed cases](home-settings-navigation-controls-evaluation.r1.json) retain navigation/effects, preferences uncertainty, incomplete Governance preview and external billing boundaries. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/home-settings-structured-knowledge-author/independent-review.md). No executed retrieval/runtime/customer acceptance.
+
+The [guide-to-article source linkage queue](guide-article-linkage.md) maps indexed guide paths to direct article source references; it is not a control-coverage or customer-eligibility score.

@@ -712,3 +712,11 @@ No customer, editorial, media, runtime, ingestion or publication acceptance; all
 - [x] Compact execution board retains every15parent and the full master scope; source/claim review does not requalify historical runtime evidence. [Current board](current-execution-board.md).
 
 All15parents remain open;10stored article revisions include history and are not10customer-approved documents. No publishing/runtime/Governance or current provider access acceptance.
+
+
+## November4 — sign-in/pairing and workspace knowledge batch
+
+- [x] B4/B5 bounded combined native/browser sign-in and Home/Settings drafts added.28source hashes/25historicbindings and17source hashes/28rawranges respectively; newbundle integrity passes and customer mode refuses. Independent source reviews pass. Eight and nine proposed cases are not executed retrieval. [Sign-in](../recovery/2026-11-04/signin-pairing-structured-knowledge/README.md), [Home/Settings](../recovery/2026-11-04/home-settings-structured-knowledge-author/independent-review.md).
+- [x] Authoring linkage queue reconciles25indexed source-guide paths against12stored article revisions including history; direct references are not complete control coverage. [Queue](documentation-coverage/guide-article-linkage.md).
+
+All15parents remain open. No customer/editorial/media/native/runtime/production acceptance or new authority is created by these drafts.
