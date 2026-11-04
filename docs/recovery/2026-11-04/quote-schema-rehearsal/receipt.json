@@ -1,0 +1,9 @@
+{
+  "packet": "8794f87885990fba432961cf3d734a5720ce2da0b14bcd79ca25f3a3245dc370",
+  "baseline": "d3e591b9f262435cf05fe690742f6898fcebf742",
+  "rowsPreserved": 5,
+  "financialSnapshotSha256": "230344ac6f6a96d68caa99bd866d2b44b91218a29e07f98b57d2537018cf750b",
+  "defaultsCorrect": true,
+  "productionChanged": false,
+  "scope": "full old Prisma schema; five synthetic ledger rows plus holds/usage, not complete cutover/concurrency/backup acceptance"
+}

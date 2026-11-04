@@ -26,4 +26,4 @@ No push, deploy, production schema/environment/flag change, paid CI, provider wr
 
 The existing recurring Axiom heartbeat was already PAUSED when inspected. Leave it paused until the user resumes work. Formal goal pause is recorded separately in the external current-status file.
 
-Final-credit supplement: a future two-column SQL draft is saved at `ops/proposals/coding-request-quotes/README.md`. Source/schema consistency checked only; it is NOT executed, rehearsed or production-approved. Rehearse fresh populated old-schema cutover before seeking any apply authorization.
+Final-credit supplement: a future two-column SQL draft is saved at `ops/proposals/coding-request-quotes/README.md`. A later fresh populated-old-schema rehearsal passed for five synthetic ledger rows and matching financial records; see quote-schema-rehearsal/README.md. It remains production-unapproved, with real target/backup/concurrency/cutover checks open.
