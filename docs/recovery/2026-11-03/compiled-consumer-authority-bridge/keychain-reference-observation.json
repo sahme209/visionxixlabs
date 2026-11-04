@@ -1,0 +1,15 @@
+{
+  "approval": "call_7xRvOe54vtxhcc6a5CdEgjAk[0]",
+  "logicalPublicPages": 4,
+  "rawBodiesSaved": false,
+  "markdownRepresentations": {
+    "https://developer.apple.com/documentation/technotes/tn3137-on-mac-keychains.md": "d0340f4e8c1d8e167e926bffa65394a0080e424f7de105b4d61b9bd5de8f4e61",
+    "https://developer.apple.com/documentation/security/secitemcopymatching%28_%3A_%3A%29.md": "0de9131cf3a5fafdca6f1fd7478e1afa8402ea2f845e07013cba2a0d6c3db27b"
+  },
+  "localSDKHeaders": {
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecItem.h": "1a5a731dc52e85cf7fb6ebe26d75aa467113c07b6ec3389c98e183d75c651eaf",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecKeychain.h": "7dd9966ba8769c1dd9ed29e52d04b5fceea16efc8c2f0ca20ead84a513d74d65"
+  },
+  "keychainAPIsCalled": 0,
+  "resourceQualification": false
+}

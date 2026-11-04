@@ -1,0 +1,16 @@
+# Bounded Keychain reference findings — November 3
+
+Approval `call_7xRvOe54vtxhcc6a5CdEgjAk[0]` covered four official Apple pages. **Consumed.** Only the four sources below support findings; other search-result snippets were not adopted as evidence. Markdown links are representations of those same documentation pages, not additional authorities. Two representations were read in memory after the web reader rejected text/markdown; raw page bodies were not saved, downloaded as artifacts or executed.
+
+1. [TN3137](https://developer.apple.com/documentation/Technotes/tn3137-on-mac-keychains): a launchd daemon outside a user context needs the file-based implementation. System context defaults to System keychain; file-based ACLs differ from data-protection access groups. This establishes the correct API family, not Axiom's actual custody.
+2. [Apple DTS pitfalls](https://developer.apple.com/forums/thread/724013): query attributes must match the item class; the file-based shim can ignore unsupported ones. Generic-password service/account identity matters. Authentication failure must not trigger deletion/reset.
+3. [SecItemCopyMatching](https://developer.apple.com/documentation/security/secitemcopymatching(_:_:)): the call blocks. Supplier work needs an owned worker and stale-result disposal; a deadline does not prove a blocked read stopped.
+4. [Apple DTS service-context answer](https://developer.apple.com/forums/thread/844182): daemon/System is a valid combination. Explicit opening/status preflight is generally unnecessary; a reported failure is not a confirmed Axiom or OS root cause. Deprecation/compatibility still needs review.
+
+## Local SDK observation and decision boundary
+
+Inspected only headers in `/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk`: Security SecItem.h and SecKeychain.h. They declare SecItemCopyMatching/search-list support. The old keychain open/status and interaction-control APIs are deprecated. The SDK recommends LAContext for the newer authentication-UI control, but that is NOT evidence that an LAContext attribute enforces file-based ACLs.
+
+The file-based noninteractive setter is still declared in this SDK. A proposed supplier must deliberately resolve its compatibility/policy before use; no silent fallback or UI permission prompt. If selected, its global effect belongs only in the new dedicated custodian before workers start, never the user's signed-in app. This is design input, not execution approval.
+
+Retain the selected dedicated-system-principal model and actual private lexical Node graph. Fixed three-item SecItemCopyMatching source can be prepared only after reviewed local-code approval. Genuine system context, search scope, item ACLs, noninteractive behavior, exact compatible existing material, exclusive resources/writers and actual owned-pipe recipient remain operational qualification gates. Item names, UID/signature, returned bytes or source hashes are not authority. No Keychain call, item enumeration, password/key read, supplier compilation/execution, service registration, role/entitlement/grant, provisioning or credential migration occurred. No additional Apple page/source read is authorized by the consumed exception.
