@@ -2,7 +2,7 @@
 
 import { VerificationRecovery } from "@/components/auth/VerificationRecovery";
 import { verificationDesktopCallback } from "@/lib/auth/verificationCallback";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { getProviders, signIn } from "next-auth/react";
 import Link from "next/link";
@@ -35,6 +35,7 @@ function SignUpForm() {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const authInFlight = useRef(false);
   const [verificationEmail, setVerificationEmail] = useState<string | null>(null);
   const [oauthLoading, setOauthLoading] = useState<null | "google" | "github">(null);
   const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean } | null>(null);
@@ -58,7 +59,8 @@ function SignUpForm() {
   }, []);
 
   const handleOAuth = async (provider: "google" | "github") => {
-    if (!acceptedTerms || !desktopChallenge || enabledProviders?.[provider] !== true) return;
+    if (authInFlight.current || !acceptedTerms || !desktopChallenge || enabledProviders?.[provider] !== true) return;
+    authInFlight.current = true;
     setOauthLoading(provider);
     setError("");
     try {
@@ -67,12 +69,15 @@ function SignUpForm() {
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : `Could not start ${provider} sign-up.`);
     } finally {
+      authInFlight.current = false;
       setOauthLoading(null);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (authInFlight.current || !acceptedTerms || !desktopChallenge) return;
+    authInFlight.current = true;
     setError("");
     setLoading(true);
     try {
@@ -118,6 +123,7 @@ function SignUpForm() {
     } catch {
       setError("Something went wrong");
     } finally {
+      authInFlight.current = false;
       setLoading(false);
     }
   };
@@ -226,7 +232,7 @@ function SignUpForm() {
               )}
               <button
                 type="submit"
-                disabled={loading || !acceptedTerms || !desktopChallenge}
+                disabled={loading || oauthLoading !== null || !acceptedTerms || !desktopChallenge}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:opacity-50"
               >
                 {loading ? "Creating account..." : "Create account"}
