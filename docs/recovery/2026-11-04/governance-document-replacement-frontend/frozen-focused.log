@@ -1,0 +1,24 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-governance-document-replacement[39m
+
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22moffers deliberate document replacement for an existing saved document under broad local identity only[32m 63[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mreviews exact new bytes against metadata and keeps target name and scope fixed for one submit[32m 18[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mholds unknown and missing lookup outcomes and confirms only historical original without replay[32m 22[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mclears review for a changed file and refuses unsafe local bytes[32m 16[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mleaves disabled or swapped metadata unverified and version999 read-only[32m 11[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mdisowns a pending response and aborts on context replacement[32m 10[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mparent locks saved-evidence refresh and target switching while outcome remains unknown[32m 31[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mkeeps replacement absent in default read-only and narrow execution-limits lanes[32m 6[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mrejects a swapped saved artifact before requesting head metadata[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mclears file review on deliberate head reload and target change[32m 12[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mignores late file reads after another file is chosen[32m 7[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mholds thrown submit and failed original lookup without resending[32m 13[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22mdoes not load sources or replacement in the narrow execution-limits lane[32m 1[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts[2m > [22mdeliberately reads only exact saved artifact metadata and validates every target echo[32m 12[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts[2m > [22mrefuses non-document targets and disabled reads without retry or upload[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m15 passed[39m[22m[90m (15)[39m
+[2m   Start at [22m 06:24:52
+[2m   Duration [22m 846ms[2m (transform 179ms, setup 0ms, import 314ms, tests 227ms, environment 205ms)[22m
+

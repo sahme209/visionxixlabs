@@ -1,0 +1,57 @@
+{
+  "status": "frozen-ready-for-independent-review",
+  "base": "f5bca40030864141abe6d42303d2bc2fcd0ce9dd",
+  "worktree": "/private/tmp/axiom-governance-document-replacement",
+  "branch": "codex/governance-document-replacement",
+  "results": {
+    "behavioralRed": {
+      "exit": 1,
+      "failed": 3
+    },
+    "focused": {
+      "exit": 0,
+      "passed": 15
+    },
+    "compatibility": {
+      "exit": 0,
+      "passed": 22
+    },
+    "desktopTypes": 0,
+    "newTestRootTypes": 0,
+    "frontendWrongCwdFailure": 1,
+    "frontendCorrectedCwd": 0
+  },
+  "allTestsMocked": true,
+  "actualRuntimeBrowserNativeProviderDatabaseAcceptance": false,
+  "flagsOrMountChanges": false,
+  "frontendBuildSessions": {
+    "failedWrongCwd": 9593,
+    "correctedPassed": 96087
+  },
+  "buildArtifacts": [
+    {
+      "path": "desktop/dist/axiom-logo.png",
+      "sha256": "680c38d3c8bd178f2fbc1dbc9d079e16b7b6c130ebe90a0c9c2479d7ec98bee9"
+    },
+    {
+      "path": "desktop/dist/index.html",
+      "sha256": "4119396db38bab23624279f14d770e2625431d7327cef134e2d7adcceed0f5db"
+    },
+    {
+      "path": "desktop/dist/assets/servicenow-B5BT0v3W.png",
+      "sha256": "5d8ad5f9badc5eda5a42df74a6d4133425ed3144226249bdaf50d3e8732e6318"
+    },
+    {
+      "path": "desktop/dist/assets/index-DsgVu0Aq.js",
+      "sha256": "8f866e5fb92396e64a34b9c9d57371cd9a13e5e8dbc1d0274325f802913191d1"
+    },
+    {
+      "path": "desktop/dist/assets/index-xeoNjdaE.css",
+      "sha256": "fb7f17745e1ec7b1e6b67519b84ba4937f820fb3790c4284ef0e6016284d3afa"
+    },
+    {
+      "path": "desktop/dist/assets/index-CAJbp7zY.js",
+      "sha256": "a3afa3a3cfa621984ab2f6936b3549ba00420ca9f0719a30eb51b6314d4c2795"
+    }
+  ]
+}

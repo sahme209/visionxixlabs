@@ -1,0 +1,29 @@
+{
+  "base": "f5bca40030864141abe6d42303d2bc2fcd0ce9dd",
+  "files": [
+    {
+      "path": "desktop/src/lib/governanceIntelligence.ts",
+      "sha256": "364d8997ba88ef127406f1e1a56979ae1c750ed2baf526ae008e44b39ea4919e"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1"
+    },
+    {
+      "path": "desktop/src/components/GovernanceDocumentReplacement.tsx",
+      "sha256": "87ac07078d6d6c153263b119ea52ba7d15680b7c5c206f36a8957f68e425729b"
+    },
+    {
+      "path": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "sha256": "aa58746be73a807e973d96ab78e32898715dd6e605f9030288ab6ff8e49897b4"
+    },
+    {
+      "path": "lib/desktop/__tests__/governanceDocumentHeadClient.test.ts",
+      "sha256": "aa09c3de2136d6e26bee18004770c25efb01652dc1b5f75df3ba3cdaf336ebe8"
+    },
+    {
+      "path": "lib/desktop/__tests__/governanceDocumentReplacement.test.ts",
+      "sha256": "cd0d468d952a5fa1994857bd4e88784f8661327ef57c02e8f073252b1c7132a8"
+    }
+  ]
+}

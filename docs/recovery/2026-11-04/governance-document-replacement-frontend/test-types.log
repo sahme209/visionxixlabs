@@ -1,0 +1,11 @@
+lib/desktop/__tests__/governanceDocumentHeadClient.test.ts(7,380): error TS2493: Tuple type '[]' of length '0' has no element at index '1'.
+lib/desktop/__tests__/governanceDocumentHeadClient.test.ts(7,384): error TS2339: Property 'body' does not exist on type 'never'.
+lib/desktop/__tests__/governanceDocumentReplacement.test.ts(9,504): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'identity' does not exist in type 'Attributes'.
+lib/desktop/__tests__/governanceDocumentReplacement.test.ts(23,410): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'identity' does not exist in type 'Attributes'.
+lib/desktop/__tests__/governanceDocumentReplacement.test.ts(30,129): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'executionPolicyIdentity' does not exist in type 'Attributes'.

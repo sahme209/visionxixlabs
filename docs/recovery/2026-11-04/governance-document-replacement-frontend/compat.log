@@ -1,0 +1,31 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-governance-document-replacement[39m
+
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22muses only the fixed read endpoint and strict operation body[32m 9[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mrefuses unsafe revision references before a request[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mbinds drift to the selected baseline and rejects execution claims[32m 1[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mdoes not retry a disabled or failed read[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mkeeps failed read outcomes distinct from uncertain provider writes[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22msends one exact approval and refuses a swapped digest in its response[32m 1[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mclassifies a lost durable review acknowledgement as unknown and never resends[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mrefuses noninitial approvals and bad review nonces before dispatch[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mloads bounded revision metadata from the fixed read endpoint[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mbinds saved proposals to the typed source and exact rules without supplying an organization[32m 1[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mbinds source inspection to the exact saved digest and refuses unsupported fact shapes[32m 1[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mhashes exact selected document bytes and rejects a swapped storage response[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mdoes not retry a lost document acknowledgement or dispatch invalid filenames[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mrefuses binary or credential-shaped document bytes locally before transmitting them[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mchecks an interrupted upload by nonce without sending its bytes again[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mloads configured connection metadata without collecting it and rejects arbitrary read operations[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceIntelligenceClient.test.ts[2m > [22mrecovers a collection result with only its nonce and never automatically reads the provider again[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentUpload.test.ts[2m > [22mpreviews inert text locally and requires an explicit reviewed save[32m 61[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentUpload.test.ts[2m > [22mrecovers an unknown save with a read-only lookup and never resends the file[32m 13[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentUpload.test.ts[2m > [22mrefuses credential-shaped text before enabling save[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentUpload.test.ts[2m > [22mignores an older file read after a newer file is selected[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentUpload.test.ts[2m > [22mrenders document markup as inert preview text without links or images[32m 3[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m22 passed[39m[22m[90m (22)[39m
+[2m   Start at [22m 06:22:46
+[2m   Duration [22m 708ms[2m (transform 140ms, setup 0ms, import 262ms, tests 104ms, environment 178ms)[22m
+

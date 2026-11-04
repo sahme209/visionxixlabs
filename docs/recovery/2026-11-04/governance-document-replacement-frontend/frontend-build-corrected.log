@@ -1,0 +1,22 @@
+vite v6.4.2 building for production...
+transforming...
+Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+  npx update-browserslist-db@latest
+  Why you should do it regularly: https://github.com/browserslist/update-db#readme
+✓ 2159 modules transformed.
+rendering chunks...
+[plugin vite:reporter] 
+(!) /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/node_modules/@tauri-apps/plugin-shell/dist-js/index.js is dynamically imported by /private/tmp/axiom-governance-document-replacement/desktop/src/lib/notifications.ts but also statically imported by /private/tmp/axiom-governance-document-replacement/desktop/src/components/AwsGuidedConnection.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/components/AzureGuidedConnection.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/components/ConnectedActionsPanel.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/components/DesktopMcpTools.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/components/GcpGuidedConnection.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/components/JiraTicketLifecycle.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/components/OutlookIntegrationCard.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/components/ServiceNowTicketLifecycle.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/lib/desktopPairing.ts, /private/tmp/axiom-governance-document-replacement/desktop/src/views/DesktopAccessRequiredView.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/views/PluginsSkillsView.tsx, /private/tmp/axiom-governance-document-replacement/desktop/src/views/SettingsView.tsx, dynamic import will not move module into another chunk.
+
+computing gzip size...
+dist/index.html                          0.86 kB │ gzip:   0.48 kB
+dist/assets/servicenow-B5BT0v3W.png     11.03 kB
+dist/assets/index-xeoNjdaE.css          84.51 kB │ gzip:  15.51 kB
+dist/assets/index-CAJbp7zY.js            2.30 kB │ gzip:   0.85 kB
+dist/assets/index-DsgVu0Aq.js        2,487.59 kB │ gzip: 540.76 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1.94s

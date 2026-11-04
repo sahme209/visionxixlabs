@@ -1,0 +1,12 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-governance-document-replacement[39m
+
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts[2m > [22mdeliberately reads only exact saved artifact metadata and validates every target echo[32m 12[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts[2m > [22mrefuses non-document targets and disabled reads without retry or upload[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22moffers deliberate document replacement for an existing saved document under broad local identity only[32m 74[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 06:20:24
+[2m   Duration [22m 852ms[2m (transform 184ms, setup 0ms, import 355ms, tests 87ms, environment 311ms)[22m
+

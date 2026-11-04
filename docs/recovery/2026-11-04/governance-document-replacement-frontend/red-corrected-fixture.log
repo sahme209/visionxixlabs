@@ -1,0 +1,681 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-governance-document-replacement[39m
+
+ [31m×[39m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts[2m > [22mdeliberately reads only exact saved artifact metadata and validates every target echo[32m 2[2mms[22m[39m
+[31m   → c.governanceDocumentHead is not a function[39m
+ [31m×[39m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts[2m > [22mrefuses non-document targets and disabled reads without retry or upload[32m 0[2mms[22m[39m
+[31m   → c.governanceDocumentHead is not a function[39m
+ [31m×[39m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22moffers deliberate document replacement for an existing saved document under broad local identity only[33m 1057[2mms[22m[39m
+[31m   → Unable to find a label with the text of: Saved policy document to replace
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<section[31m
+      [33maria-busy[31m=[32m"false"[31m
+      [33maria-label[31m=[32m"Governance evidence"[31m
+      [33mclass[31m=[32m"space-y-5 p-6"[31m
+    [36m>[31m
+      [36m<header>[31m
+        [36m<h1[31m
+          [33mclass[31m=[32m"text-2xl font-medium"[31m
+        [36m>[31m
+          [0mGovernance evidence[0m
+        [36m</h1>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"mt-2 text-sm text-zinc-400"[31m
+        [36m>[31m
+          [0mInspect saved sources, exact baseline reviews and source changes.[0m
+          [0m [0m
+          [0mExact baseline proposals and independent decisions stay separate from activation and provider actions.[0m
+        [36m</p>[31m
+      [36m</header>[31m
+      [36m<section[31m
+        [33maria-label[31m=[32m"Governance next step"[31m
+        [33mclass[31m=[32m"my-3 rounded-xl border border-white/10 bg-white/[0.025] p-4"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex flex-wrap items-start justify-between gap-2"[31m
+        [36m>[31m
+          [36m<div>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-[10px] uppercase tracking-wider text-zinc-500"[31m
+            [36m>[31m
+              [0mGovernance next step[0m
+            [36m</p>[31m
+            [36m<h4[31m
+              [33mclass[31m=[32m"mt-1 text-sm font-medium text-zinc-100"[31m
+            [36m>[31m
+              [0mResolve the source evidence gap[0m
+            [36m</h4>[31m
+          [36m</div>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"rounded-full border border-white/10 px-2 py-1 text-[11px] text-zinc-300"[31m
+          [36m>[31m
+            [0mWho: [0m
+            [0mWorkspace administrator[0m
+          [36m</p>[31m
+        [36m</div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"mt-2 text-xs leading-5 text-zinc-400"[31m
+        [36m>[31m
+          [0mMissing or denied data is unknown, not proof that a control is absent. Review access and collection limits before a deliberate fresh read.[0m
+        [36m</p>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"mt-3 rounded-lg border border-white/15 p-3 text-xs leading-5 text-zinc-200"[31m
+          [33mrole[31m=[32m"status"[31m
+        [36m>[31m
+          [0mPreserve the exact evidence and approval history. Restore current access or coverage before a deliberate fresh check; do not automatically retry provider denials.[0m
+        [36m</p>[31m
+        [36m<details[31m
+          [33mclass[31m=[32m"mt-3 text-xs text-zinc-400"[31m
+        [36m>[31m
+          [36m<summary[31m
+            [33mclass[31m=[32m"cursor-pointer py-1"[31m
+          [36m>[31m
+            [0mReadiness, review, outcome and recovery[0m
+          [36m</summary>[31m
+          [36m<ol[31m
+            [33maria-label[31m=[32m"Workflow stages"[31m
+            [33mclass[31m=[32m"mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"[31m
+          [36m>[31m
+            [36m<li[31m
+              [33mclass[31m=[32m"min-w-0 border-t border-white/10 pt-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-1"[31m
+              [36m>[31m
+                [36m<h5[31m
+                  [33mclass[31m=[32m"text-xs font-medium text-zinc-200"[31m
+                [36m>[31m
+                  [0m1[0m
+                  [0m. [0m
+                  [0mSources and coverage[0m
+                [36m</h5>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"text-[10px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mNeeds attention[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[31m
+              [36m>[31m
+                [0mComplete current evidence and registered execution coverage are checked separately. A connected account alone establishes neither.[0m
+              [36m</p>[31m
+            [36m</li>[31m
+            [36m<li[31m
+              [33mclass[31m=[32m"min-w-0 border-t border-white/10 pt-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-1"[31m
+              [36m>[31m
+                [36m<h5[31m
+                  [33mclass[31m=[32m"text-xs font-medium text-zinc-200"[31m
+                [36m>[31m
+                  [0m2[0m
+                  [0m. [0m
+                  [0mIndependent review[0m
+                [36m</h5>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"text-[10px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mNeeds attention[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[31m
+              [36m>[31m
+                [0mApproval records one immutable baseline digest. The requester cannot make the independent decision; any changed revision needs a fresh review.[0m
+              [36m</p>[31m
+            [36m</li>[31m
+            [36m<li[31m
+              [33mclass[31m=[32m"min-w-0 border-t border-white/10 pt-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-1"[31m
+              [36m>[31m
+                [36m<h5[31m
+                  [33mclass[31m=[32m"text-xs font-medium text-zinc-200"[31m
+                [36m>[31m
+                  [0m3[0m
+                  [0m. [0m
+                  [0mVerified outcome[0m
+                [36m</h5>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"text-[10px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mUnverified[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[31m
+              [36m>[31m
+                [0mAn active enforced revision is not established by this summary. Inspect the exact saved records and coverage.[0m
+              [36m</p>[31m
+            [36m</li>[31m
+            [36m<li[31m
+              [33mclass[31m=[32m"min-w-0 border-t border-white/10 pt-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-1"[31m
+              [36m>[31m
+                [36m<h5[31m
+                  [33mclass[31m=[32m"text-xs font-medium text-zinc-200"[31m
+                [36m>[31m
+                  [0m4[0m
+                  [0m. [0m
+                  [0mRecovery[0m
+ ...
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<section[31m
+      [33maria-busy[31m=[32m"false"[31m
+      [33maria-label[31m=[32m"Governance evidence"[31m
+      [33mclass[31m=[32m"space-y-5 p-6"[31m
+    [36m>[31m
+      [36m<header>[31m
+        [36m<h1[31m
+          [33mclass[31m=[32m"text-2xl font-medium"[31m
+        [36m>[31m
+          [0mGovernance evidence[0m
+        [36m</h1>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"mt-2 text-sm text-zinc-400"[31m
+        [36m>[31m
+          [0mInspect saved sources, exact baseline reviews and source changes.[0m
+          [0m [0m
+          [0mExact baseline proposals and independent decisions stay separate from activation and provider actions.[0m
+        [36m</p>[31m
+      [36m</header>[31m
+      [36m<section[31m
+        [33maria-label[31m=[32m"Governance next step"[31m
+        [33mclass[31m=[32m"my-3 rounded-xl border border-white/10 bg-white/[0.025] p-4"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex flex-wrap items-start justify-between gap-2"[31m
+        [36m>[31m
+          [36m<div>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"text-[10px] uppercase tracking-wider text-zinc-500"[31m
+            [36m>[31m
+              [0mGovernance next step[0m
+            [36m</p>[31m
+            [36m<h4[31m
+              [33mclass[31m=[32m"mt-1 text-sm font-medium text-zinc-100"[31m
+            [36m>[31m
+              [0mResolve the source evidence gap[0m
+            [36m</h4>[31m
+          [36m</div>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"rounded-full border border-white/10 px-2 py-1 text-[11px] text-zinc-300"[31m
+          [36m>[31m
+            [0mWho: [0m
+            [0mWorkspace administrator[0m
+          [36m</p>[31m
+        [36m</div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"mt-2 text-xs leading-5 text-zinc-400"[31m
+        [36m>[31m
+          [0mMissing or denied data is unknown, not proof that a control is absent. Review access and collection limits before a deliberate fresh read.[0m
+        [36m</p>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"mt-3 rounded-lg border border-white/15 p-3 text-xs leading-5 text-zinc-200"[31m
+          [33mrole[31m=[32m"status"[31m
+        [36m>[31m
+          [0mPreserve the exact evidence and approval history. Restore current access or coverage before a deliberate fresh check; do not automatically retry provider denials.[0m
+        [36m</p>[31m
+        [36m<details[31m
+          [33mclass[31m=[32m"mt-3 text-xs text-zinc-400"[31m
+        [36m>[31m
+          [36m<summary[31m
+            [33mclass[31m=[32m"cursor-pointer py-1"[31m
+          [36m>[31m
+            [0mReadiness, review, outcome and recovery[0m
+          [36m</summary>[31m
+          [36m<ol[31m
+            [33maria-label[31m=[32m"Workflow stages"[31m
+            [33mclass[31m=[32m"mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"[31m
+          [36m>[31m
+            [36m<li[31m
+              [33mclass[31m=[32m"min-w-0 border-t border-white/10 pt-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-1"[31m
+              [36m>[31m
+                [36m<h5[31m
+                  [33mclass[31m=[32m"text-xs font-medium text-zinc-200"[31m
+                [36m>[31m
+                  [0m1[0m
+                  [0m. [0m
+                  [0mSources and coverage[0m
+                [36m</h5>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"text-[10px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mNeeds attention[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[31m
+              [36m>[31m
+                [0mComplete current evidence and registered execution coverage are checked separately. A connected account alone establishes neither.[0m
+              [36m</p>[31m
+            [36m</li>[31m
+            [36m<li[31m
+              [33mclass[31m=[32m"min-w-0 border-t border-white/10 pt-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-1"[31m
+              [36m>[31m
+                [36m<h5[31m
+                  [33mclass[31m=[32m"text-xs font-medium text-zinc-200"[31m
+                [36m>[31m
+                  [0m2[0m
+                  [0m. [0m
+                  [0mIndependent review[0m
+                [36m</h5>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"text-[10px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mNeeds attention[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[31m
+              [36m>[31m
+                [0mApproval records one immutable baseline digest. The requester cannot make the independent decision; any changed revision needs a fresh review.[0m
+              [36m</p>[31m
+            [36m</li>[31m
+            [36m<li[31m
+              [33mclass[31m=[32m"min-w-0 border-t border-white/10 pt-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-1"[31m
+              [36m>[31m
+                [36m<h5[31m
+                  [33mclass[31m=[32m"text-xs font-medium text-zinc-200"[31m
+                [36m>[31m
+                  [0m3[0m
+                  [0m. [0m
+                  [0mVerified outcome[0m
+                [36m</h5>[31m
+                [36m<span[31m
+                  [33mclass[31m=[32m"text-[10px] text-zinc-400"[31m
+                [36m>[31m
+                  [0mUnverified[0m
+                [36m</span>[31m
+              [36m</div>[31m
+              [36m<p[31m
+                [33mclass[31m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[31m
+              [36m>[31m
+                [0mAn active enforced revision is not established by this summary. Inspect the exact saved records and coverage.[0m
+              [36m</p>[31m
+            [36m</li>[31m
+            [36m<li[31m
+              [33mclass[31m=[32m"min-w-0 border-t border-white/10 pt-2"[31m
+            [36m>[31m
+              [36m<div[31m
+                [33mclass[31m=[32m"flex flex-wrap items-center justify-between gap-1"[31m
+              [36m>[31m
+                [36m<h5[31m
+                  [33mclass[31m=[32m"text-xs font-medium text-zinc-200"[31m
+                [36m>[31m
+                  [0m4[0m
+                  [0m. [0m
+                  [0mRecovery[0m
+ ...[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts[2m > [22mdeliberately reads only exact saved artifact metadata and validates every target echo
+[31m[1mTypeError[22m: c.governanceDocumentHead is not a function[39m
+[36m [2m❯[22m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts:[2m7:290[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts[2m > [22mrefuses non-document targets and disabled reads without retry or upload
+[31m[1mTypeError[22m: c.governanceDocumentHead is not a function[39m
+[36m [2m❯[22m lib/desktop/__tests__/governanceDocumentHeadClient.test.ts:[2m8:297[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/governanceDocumentReplacement.test.ts[2m > [22moffers deliberate document replacement for an existing saved document under broad local identity only
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find a label with the text of: Saved policy document to replace
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-busy[39m=[32m"false"[39m
+      [33maria-label[39m=[32m"Governance evidence"[39m
+      [33mclass[39m=[32m"space-y-5 p-6"[39m
+    [36m>[39m
+      [36m<header>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-2xl font-medium"[39m
+        [36m>[39m
+          [0mGovernance evidence[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-2 text-sm text-zinc-400"[39m
+        [36m>[39m
+          [0mInspect saved sources, exact baseline reviews and source changes.[0m
+          [0m [0m
+          [0mExact baseline proposals and independent decisions stay separate from activation and provider actions.[0m
+        [36m</p>[39m
+      [36m</header>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"Governance next step"[39m
+        [33mclass[39m=[32m"my-3 rounded-xl border border-white/10 bg-white/[0.025] p-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-2"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-zinc-500"[39m
+            [36m>[39m
+              [0mGovernance next step[0m
+            [36m</p>[39m
+            [36m<h4[39m
+              [33mclass[39m=[32m"mt-1 text-sm font-medium text-zinc-100"[39m
+            [36m>[39m
+              [0mResolve the source evidence gap[0m
+            [36m</h4>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"rounded-full border border-white/10 px-2 py-1 text-[11px] text-zinc-300"[39m
+          [36m>[39m
+            [0mWho: [0m
+            [0mWorkspace administrator[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-2 text-xs leading-5 text-zinc-400"[39m
+        [36m>[39m
+          [0mMissing or denied data is unknown, not proof that a control is absent. Review access and collection limits before a deliberate fresh read.[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-3 rounded-lg border border-white/15 p-3 text-xs leading-5 text-zinc-200"[39m
+          [33mrole[39m=[32m"status"[39m
+        [36m>[39m
+          [0mPreserve the exact evidence and approval history. Restore current access or coverage before a deliberate fresh check; do not automatically retry provider denials.[0m
+        [36m</p>[39m
+        [36m<details[39m
+          [33mclass[39m=[32m"mt-3 text-xs text-zinc-400"[39m
+        [36m>[39m
+          [36m<summary[39m
+            [33mclass[39m=[32m"cursor-pointer py-1"[39m
+          [36m>[39m
+            [0mReadiness, review, outcome and recovery[0m
+          [36m</summary>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"Workflow stages"[39m
+            [33mclass[39m=[32m"mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"min-w-0 border-t border-white/10 pt-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-1"[39m
+              [36m>[39m
+                [36m<h5[39m
+                  [33mclass[39m=[32m"text-xs font-medium text-zinc-200"[39m
+                [36m>[39m
+                  [0m1[0m
+                  [0m. [0m
+                  [0mSources and coverage[0m
+                [36m</h5>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-[10px] text-zinc-400"[39m
+                [36m>[39m
+                  [0mNeeds attention[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mComplete current evidence and registered execution coverage are checked separately. A connected account alone establishes neither.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"min-w-0 border-t border-white/10 pt-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-1"[39m
+              [36m>[39m
+                [36m<h5[39m
+                  [33mclass[39m=[32m"text-xs font-medium text-zinc-200"[39m
+                [36m>[39m
+                  [0m2[0m
+                  [0m. [0m
+                  [0mIndependent review[0m
+                [36m</h5>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-[10px] text-zinc-400"[39m
+                [36m>[39m
+                  [0mNeeds attention[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mApproval records one immutable baseline digest. The requester cannot make the independent decision; any changed revision needs a fresh review.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"min-w-0 border-t border-white/10 pt-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-1"[39m
+              [36m>[39m
+                [36m<h5[39m
+                  [33mclass[39m=[32m"text-xs font-medium text-zinc-200"[39m
+                [36m>[39m
+                  [0m3[0m
+                  [0m. [0m
+                  [0mVerified outcome[0m
+                [36m</h5>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-[10px] text-zinc-400"[39m
+                [36m>[39m
+                  [0mUnverified[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mAn active enforced revision is not established by this summary. Inspect the exact saved records and coverage.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"min-w-0 border-t border-white/10 pt-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-1"[39m
+              [36m>[39m
+                [36m<h5[39m
+                  [33mclass[39m=[32m"text-xs font-medium text-zinc-200"[39m
+                [36m>[39m
+                  [0m4[0m
+                  [0m. [0m
+                  [0mRecovery[0m
+ ...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-busy[39m=[32m"false"[39m
+      [33maria-label[39m=[32m"Governance evidence"[39m
+      [33mclass[39m=[32m"space-y-5 p-6"[39m
+    [36m>[39m
+      [36m<header>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-2xl font-medium"[39m
+        [36m>[39m
+          [0mGovernance evidence[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-2 text-sm text-zinc-400"[39m
+        [36m>[39m
+          [0mInspect saved sources, exact baseline reviews and source changes.[0m
+          [0m [0m
+          [0mExact baseline proposals and independent decisions stay separate from activation and provider actions.[0m
+        [36m</p>[39m
+      [36m</header>[39m
+      [36m<section[39m
+        [33maria-label[39m=[32m"Governance next step"[39m
+        [33mclass[39m=[32m"my-3 rounded-xl border border-white/10 bg-white/[0.025] p-4"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex flex-wrap items-start justify-between gap-2"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"text-[10px] uppercase tracking-wider text-zinc-500"[39m
+            [36m>[39m
+              [0mGovernance next step[0m
+            [36m</p>[39m
+            [36m<h4[39m
+              [33mclass[39m=[32m"mt-1 text-sm font-medium text-zinc-100"[39m
+            [36m>[39m
+              [0mResolve the source evidence gap[0m
+            [36m</h4>[39m
+          [36m</div>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"rounded-full border border-white/10 px-2 py-1 text-[11px] text-zinc-300"[39m
+          [36m>[39m
+            [0mWho: [0m
+            [0mWorkspace administrator[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-2 text-xs leading-5 text-zinc-400"[39m
+        [36m>[39m
+          [0mMissing or denied data is unknown, not proof that a control is absent. Review access and collection limits before a deliberate fresh read.[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-3 rounded-lg border border-white/15 p-3 text-xs leading-5 text-zinc-200"[39m
+          [33mrole[39m=[32m"status"[39m
+        [36m>[39m
+          [0mPreserve the exact evidence and approval history. Restore current access or coverage before a deliberate fresh check; do not automatically retry provider denials.[0m
+        [36m</p>[39m
+        [36m<details[39m
+          [33mclass[39m=[32m"mt-3 text-xs text-zinc-400"[39m
+        [36m>[39m
+          [36m<summary[39m
+            [33mclass[39m=[32m"cursor-pointer py-1"[39m
+          [36m>[39m
+            [0mReadiness, review, outcome and recovery[0m
+          [36m</summary>[39m
+          [36m<ol[39m
+            [33maria-label[39m=[32m"Workflow stages"[39m
+            [33mclass[39m=[32m"mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"min-w-0 border-t border-white/10 pt-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-1"[39m
+              [36m>[39m
+                [36m<h5[39m
+                  [33mclass[39m=[32m"text-xs font-medium text-zinc-200"[39m
+                [36m>[39m
+                  [0m1[0m
+                  [0m. [0m
+                  [0mSources and coverage[0m
+                [36m</h5>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-[10px] text-zinc-400"[39m
+                [36m>[39m
+                  [0mNeeds attention[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mComplete current evidence and registered execution coverage are checked separately. A connected account alone establishes neither.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"min-w-0 border-t border-white/10 pt-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-1"[39m
+              [36m>[39m
+                [36m<h5[39m
+                  [33mclass[39m=[32m"text-xs font-medium text-zinc-200"[39m
+                [36m>[39m
+                  [0m2[0m
+                  [0m. [0m
+                  [0mIndependent review[0m
+                [36m</h5>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-[10px] text-zinc-400"[39m
+                [36m>[39m
+                  [0mNeeds attention[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mApproval records one immutable baseline digest. The requester cannot make the independent decision; any changed revision needs a fresh review.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"min-w-0 border-t border-white/10 pt-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-1"[39m
+              [36m>[39m
+                [36m<h5[39m
+                  [33mclass[39m=[32m"text-xs font-medium text-zinc-200"[39m
+                [36m>[39m
+                  [0m3[0m
+                  [0m. [0m
+                  [0mVerified outcome[0m
+                [36m</h5>[39m
+                [36m<span[39m
+                  [33mclass[39m=[32m"text-[10px] text-zinc-400"[39m
+                [36m>[39m
+                  [0mUnverified[0m
+                [36m</span>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [0mAn active enforced revision is not established by this summary. Inspect the exact saved records and coverage.[0m
+              [36m</p>[39m
+            [36m</li>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"min-w-0 border-t border-white/10 pt-2"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center justify-between gap-1"[39m
+              [36m>[39m
+                [36m<h5[39m
+                  [33mclass[39m=[32m"text-xs font-medium text-zinc-200"[39m
+                [36m>[39m
+                  [0m4[0m
+                  [0m. [0m
+                  [0mRecovery[0m
+ ...
+[90m [2m❯[22m waitForWrapper ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/wait-for.js:[2m163:27[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m86:33[22m[39m
+[36m [2m❯[22m lib/desktop/__tests__/governanceDocumentReplacement.test.ts:[2m8:710[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m   Start at [22m 03:19:28
+[2m   Duration [22m 1.67s[2m (transform 168ms, setup 0ms, import 302ms, tests 1.06s, environment 181ms)[22m
+

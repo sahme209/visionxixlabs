@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2021",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": false,
+    "jsx": "react-jsx",
+    "baseUrl": "/private/tmp/axiom-governance-document-replacement",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
+  },
+  "files": [
+    "/private/tmp/axiom-governance-document-replacement/lib/desktop/__tests__/governanceDocumentHeadClient.test.ts",
+    "/private/tmp/axiom-governance-document-replacement/lib/desktop/__tests__/governanceDocumentReplacement.test.ts"
+  ]
+}
