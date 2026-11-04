@@ -25,3 +25,5 @@ User requested stopping until new credits on November4. Preserve the full scope 
 No push, deploy, production schema/environment/flag change, paid CI, provider write, new credential/grant or purchase without specific authorization. Preserve all database/Neon branches/backups; no recovery SQL replay, migrations/backfills/deletions, expired fixtures or AWS denial retries. Preserve paired native sessions and previews; no needless restart. Never impersonate independent reviewers. Existing pending approvals are not consent and should not be repeatedly prompted. Trial renewals remain off; retain the November23 follow-up.
 
 The existing recurring Axiom heartbeat was already PAUSED when inspected. Leave it paused until the user resumes work. Formal goal pause is recorded separately in the external current-status file.
+
+Final-credit supplement: a future two-column SQL draft is saved at `ops/proposals/coding-request-quotes/README.md`. Source/schema consistency checked only; it is NOT executed, rehearsed or production-approved. Rehearse fresh populated old-schema cutover before seeking any apply authorization.

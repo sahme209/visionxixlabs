@@ -1,0 +1,7 @@
+{
+  "check": "static schema/draft consistency only",
+  "sqlExecuted": false,
+  "databaseRehearsed": false,
+  "draftSha256": "52b8a07ab4af5205e3bc513fb94ad5fd5d65742f6c01483376f843a36b4e2a7f",
+  "schemaSha256": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031"
+}
