@@ -1,1 +1,20 @@
-{"extends":"./tsconfig.json","compilerOptions":{"incremental":false,"noEmit":true},"include":["lib/connectors/github/githubAppAuthCore.ts","lib/connectors/github/githubAppJwt.ts","lib/connectors/github/privateGithubAppAuth.ts","lib/connectors/github/privatePlatformGithubAppConfiguration.ts","lib/connectors/github/__tests__/privateGithubAppAuth.test.ts"],"exclude":["node_modules"]}
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true
+  },
+  "include": [
+    "lib/connectors/github/githubAppAuthCore.ts",
+    "lib/connectors/github/githubAppJwt.ts",
+    "lib/connectors/github/privateGithubAppAuth.ts",
+    "lib/connectors/github/privatePlatformGithubAppConfiguration.ts",
+    "lib/connectors/github/__tests__/privateGithubAppAuth.test.ts",
+    "lib/connectors/github/githubAppAuth.ts",
+    "lib/connectors/github/githubConfig.ts",
+    "lib/connectors/github/platformGithubAppCredential.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

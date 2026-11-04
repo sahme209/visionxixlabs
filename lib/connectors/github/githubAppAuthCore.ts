@@ -20,8 +20,8 @@ export interface GithubAppInstallationMetadata {
 export type InstallationTokenOutcome = InstallationTokenResult | InstallationTokenError;
 export type GithubReadPermissionProfile = "provenance_read" | "contents_read" | "pull_requests_read";
 export interface GithubAppAuthDependencies {
- getGithubConfig(): Promise<{appConfigured:boolean;appId:number|null|undefined;installationId?:number|null}>;
- resolveGithubAppPrivateKey(): Promise<string|null>;
+ getGithubConfig(): Promise<{appConfigured:boolean;appId?:number|null;installationId?:number|null}>;
+ resolveGithubAppPrivateKey(): Promise<string|null|undefined>;
  fetch: typeof fetch;
  now: () => number;
  strict?: boolean;
