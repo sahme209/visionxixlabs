@@ -1,0 +1,12 @@
+{
+  "sourceRevision": "d7013c68",
+  "boundRecordsMatched": 14,
+  "packetSha256": "909cbd489d59046afe88e7e397de0d6e7b01fc0cd15471fd526e6178d46c91df",
+  "controllerSha256": "6c4ca38130b23351eca4419a38ed77caa1f091a564439217bb3c01946b8afc83",
+  "helperSha256": "098736e957189c4c9abd37b2e36662c5b97277f69f0787278a6470428f8d4f3b",
+  "helperMode": "0600",
+  "controllerAndPacketExcludedFromPayload": true,
+  "helperExecuted": false,
+  "securityCallsExecuted": false,
+  "runAuthorized": false
+}

@@ -1,0 +1,9 @@
+# Qualification preparation source and compile review
+
+Source d5c165e6 received one P2: packet/controller hash cycle. Fix9bda7ee0 makes the graph acyclic, supplies an explicit future invocation, ignores atime in stable comparisons and confines future600→700→600 transition to a held verified descriptor. Eight pure mocked tests passed with recorded fix RED→GREEN; original inspector RED was not recorded and is not retroactively claimed. No actual mode transition, RUN, Popen or Security invocation occurred. Scoped independent source re-review PASS.
+
+Authorized compile-only finalization d7013c68 passed strict compile/link, imported-symbol inspection, Python compile and read-only14-binding preflight. The first unexecuted0700 link was discarded; relinking underumask0177 produced0600 directly. No signing, load, mode change or execution. Independent metadata review PASS; only runtime code change after source freeze is final packet-digest literal. Root separately matched14 live file bindings plus helper/controller/packet hashes and mode0600.
+
+DAG: compiled payload/source/fixture → packet → controller → external execution instruction. Packet excludes itself, controller and external instruction; source stamp explicitly excludes its generated stamp. Hashes are provenance, not permission or issuer identity. Actual Security execution remains UNAUTHORIZED until a fresh specific user decision for this exact packet. No original blocked validation or custody/installed/pre-main/consumer/fleet gate is replaced.
+
+Ruling: ordinary local helper/controller source, pure tests and compilation are within the existing bounded code-preparation approval; preparing an explicit invocation does not authorize calling it. Actual run, temporary execution-mode transitions and Security calls remain a separate permission gate. If this scope interpretation were wrong, source preparation would need re-review; no operational effect has occurred.
