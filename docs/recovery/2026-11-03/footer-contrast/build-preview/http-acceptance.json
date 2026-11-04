@@ -1,0 +1,61 @@
+{
+  "sourceRevision": "769af0668dd59ac2cd225ea488b23a3722470e64",
+  "preview": "http://127.0.0.1:5218/__axiom_preview",
+  "pages": [
+    {
+      "path": "/product",
+      "status": 200,
+      "sha256": "f263fb58fa85e9833b92a320a33d0d6ca9d054eac6ad7452be6ef04f14d90e8f",
+      "newFooterSourceObserved": true,
+      "setCookie": false
+    },
+    {
+      "path": "/docs/getting-started",
+      "status": 200,
+      "sha256": "834088266e65ec09cac59cfdc61226d4bf0a613454050e2fccb8f0de85a2bc0d",
+      "newFooterSourceObserved": true,
+      "setCookie": false
+    },
+    {
+      "path": "/integrations",
+      "status": 200,
+      "sha256": "309a89b180fd5ec5d742e0e9b09f77ecf6800e1a22c8355eacf85fce01200f86",
+      "newFooterSourceObserved": true,
+      "setCookie": false
+    },
+    {
+      "path": "/security",
+      "status": 200,
+      "sha256": "ba0fcc49c63db7b48c5cebe404bdee425286b5ff789f503fb7a926ebbe67c02c",
+      "newFooterSourceObserved": true,
+      "setCookie": false
+    }
+  ],
+  "assets": [
+    {
+      "path": "/_next/static/css/532cba65621fdb11.css",
+      "sha256": "0b1fba9092923810f92d0bac777389ba34903307040bef94c700d40c23bc79e7",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/css/fd496917896bbbdc.css",
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e",
+      "status": 200
+    }
+  ],
+  "guardRefusals": [
+    {
+      "method": "GET",
+      "path": "/api/auth/session",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/api/actions",
+      "status": 403
+    }
+  ],
+  "actualBrowserAcceptance": false,
+  "issuerQualification": false,
+  "productionChanged": false
+}
