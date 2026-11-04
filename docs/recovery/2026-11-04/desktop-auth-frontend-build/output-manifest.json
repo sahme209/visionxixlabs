@@ -1,0 +1,63 @@
+{
+  "sourceHead": "3acc3b16c3260d2a1840879347c9b7dc941e7996",
+  "sourceTree": "92e0b2a6bf72b81ff1d16fe4f1553b206e8d6e3b",
+  "canonicalVite": "6.4.2",
+  "declaredDesktopVite": "^6.0.0",
+  "cwd": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop",
+  "outDir": "/private/tmp/axiom-auth-frontend-gxo3ig4q/dist-desktop",
+  "exit": 0,
+  "sourceFilesChanged": false,
+  "files": [
+    {
+      "path": "assets/index-BHUouh-B.js",
+      "bytes": 2304,
+      "sha256": "fb94302b1f6b641653f1896d15d0661d79308b64c0e98818427b4c4e16c4d3ca"
+    },
+    {
+      "path": "assets/index-CmtMf24Y.js",
+      "bytes": 1566763,
+      "sha256": "cc617144cf4444d1449f86ba3118dc6a63112e2da4dff189e0db1b3a3a80b54a"
+    },
+    {
+      "path": "assets/index-xeoNjdaE.css",
+      "bytes": 84512,
+      "sha256": "fb7f17745e1ec7b1e6b67519b84ba4937f820fb3790c4284ef0e6016284d3afa"
+    },
+    {
+      "path": "assets/servicenow-B5BT0v3W.png",
+      "bytes": 11033,
+      "sha256": "5d8ad5f9badc5eda5a42df74a6d4133425ed3144226249bdaf50d3e8732e6318"
+    },
+    {
+      "path": "axiom-logo.png",
+      "bytes": 16456,
+      "sha256": "680c38d3c8bd178f2fbc1dbc9d079e16b7b6c130ebe90a0c9c2479d7ec98bee9"
+    },
+    {
+      "path": "index.html",
+      "bytes": 864,
+      "sha256": "daa8a044d6f819a6300fcdc8a44b243d3e919ddee5e15d5cd90fd63a85c1ada3"
+    }
+  ],
+  "indexReferences": [
+    {
+      "url": "/assets/index-CmtMf24Y.js",
+      "kind": "local-exists",
+      "sha256": "cc617144cf4444d1449f86ba3118dc6a63112e2da4dff189e0db1b3a3a80b54a"
+    },
+    {
+      "url": "/assets/index-xeoNjdaE.css",
+      "kind": "local-exists",
+      "sha256": "fb7f17745e1ec7b1e6b67519b84ba4937f820fb3790c4284ef0e6016284d3afa"
+    }
+  ],
+  "unresolvedWarnings": [
+    "large minified chunk",
+    "mixed dynamic/static import; no native/browser/performance acceptance"
+  ],
+  "nativeInstallerReleaseOrVersionScriptAcceptance": false,
+  "providerOrCredentialOperation": false,
+  "network": "kernel denied",
+  "env": "scrubbed; private empty envDir",
+  "writes": "owned build temp only"
+}

@@ -1,0 +1,18 @@
+{
+  "owned": "/private/tmp/axiom-auth-frontend-gxo3ig4q",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-auth-frontend-gxo3ig4q/build.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vite/bin/vite.js",
+    "build",
+    "desktop",
+    "--config",
+    "/private/tmp/axiom-auth-frontend-gxo3ig4q/build.config.mjs",
+    "--configLoader",
+    "runner"
+  ],
+  "configSha256": "0ab20cf2d551687b462a6435da6efb1fbf653f7b50ef5fae49cfb8e64037a99b",
+  "sourceHead": "3acc3b16c3260d2a1840879347c9b7dc941e7996"
+}

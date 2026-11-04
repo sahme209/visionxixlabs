@@ -1,0 +1,22 @@
+{
+  "owned": "/private/tmp/axiom-auth-frontend-gxo3ig4q",
+  "cwd": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-auth-frontend-gxo3ig4q/build.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/node_modules/vite/bin/vite.js",
+    "build",
+    ".",
+    "--config",
+    "/private/tmp/axiom-auth-frontend-gxo3ig4q/desktop-build.config.mjs",
+    "--configLoader",
+    "runner"
+  ],
+  "viteVersion": "6.4.2",
+  "configSha256": "dbd8f1c94d9453f4d57878af7b2a515e9eb2233bf49484f8dee2163500cac14c",
+  "correction": "Use declared desktop tool and package cwd; initial root Vite8/root Tailwind was not canonical",
+  "network": "kernel denied",
+  "envDir": "owned empty; no .env credential loading"
+}
