@@ -1,0 +1,12 @@
+{
+  "productionSource": "7ea48aa8bd4e2e3b092e52d56ca6d1a1c8e1ba6f",
+  "candidate": "e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+  "schemaInputs": {
+    "production-source.prisma": "4e35ea3c8645656dbdae19c1ee6427bf526d9b82527de6ef046048dcdb6e617a",
+    "candidate.prisma": "c5c85e99016be6752308be8c60c550a44221abe572030a9ed783a3f6764c0377"
+  },
+  "engine": {
+    "path": "/private/tmp/axiom-a7-run-budget-evidence/engines/schema-engine",
+    "sha256": "57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a"
+  }
+}

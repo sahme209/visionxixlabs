@@ -1,0 +1,5041 @@
+// Vision XIX AI — sellable bot platform
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Axiom Platform Enums
+// ---------------------------------------------------------------------------
+
+enum CloudProvider {
+  aws
+  azure
+  gcp
+}
+
+enum AgentRunStatus {
+  pending
+  running
+  completed
+  failed
+  partially_completed
+}
+
+enum AgentTrigger {
+  manual
+  scheduled
+  drift
+  onboarding
+  webhook
+}
+
+enum FindingCategory {
+  cost
+  resilience
+  security
+  performance
+  compliance
+}
+
+enum FindingSeverity {
+  info
+  low
+  medium
+  high
+  critical
+}
+
+enum ActionDisposition {
+  auto_fix_candidate
+  approval_required
+  report_only
+  blocked
+}
+
+enum ActionType {
+  resize_compute
+  apply_storage_policy
+  purchase_commitment
+  decommission_compute
+}
+
+enum RiskLevel {
+  low
+  medium
+  high
+}
+
+enum ApprovalDecision {
+  approve_all
+  approve_partial
+  reject_all
+}
+
+enum AuditEventStatus {
+  pending
+  precheck_failed
+  applied
+  /// Handler ran but never called a real cloud SDK — see
+  /// StepResult["simulated"] in lib/axiom/applyEngine.ts. Distinct from
+  /// "applied", which means a real mutation was executed.
+  simulated
+  verified
+  failed
+  rolled_back
+}
+
+enum ScheduleFrequency {
+  daily
+  weekly
+}
+
+enum NotificationType {
+  scan_diff
+  new_high_risk
+  savings_increased
+  risk_resolved
+  scan_failed
+}
+
+enum RiskTolerance {
+  conservative // never auto-apply, approval for everything
+  moderate // auto-apply low-risk, approve medium+
+  aggressive // auto-apply low+medium, approve high only
+}
+
+enum ApprovalPolicy {
+  require_all // every action needs human sign-off
+  auto_low_risk // auto-apply low-risk, approve medium+
+  auto_safe // auto-apply auto_fix_candidates, approve the rest
+}
+
+enum OutputFormat {
+  terraform
+  cli
+  json
+}
+
+enum BusinessContext {
+  startup
+  agency
+  enterprise
+  ecommerce
+  healthcare
+  fintech
+  saas
+  other
+}
+
+enum AutopilotMode {
+  observe_only // scan + report, no plans or actions
+  recommend // scan + plan + recommendations, no apply
+  assisted_apply // apply approved low/medium-risk fixes
+  full_guarded // auto-apply pre-approved low-risk fixes, approve medium
+}
+
+enum ApprovalItemStatus {
+  pending
+  approved
+  rejected
+  snoozed
+  applied
+  failed
+  expired
+}
+
+enum AgentTaskType {
+  scan_cloud
+  analyze_snapshot
+  generate_execution_plan
+  generate_terraform
+  request_approval
+  apply_action
+  verify_action
+  rollback_action
+  schedule_next_scan
+}
+
+enum AgentTaskStatus {
+  pending
+  running
+  completed
+  failed
+  skipped
+}
+
+enum OrgRole {
+  owner
+  admin
+  operator
+  security_reviewer
+  finance_viewer
+  read_only
+}
+
+enum ApprovalChainStatus {
+  pending_approvals
+  approved
+  rejected
+  escalated
+  expired
+  bypassed
+}
+
+// Phase 414 — connector onboarding state machine. Mirrors the closed-union
+// ConnectorSetupStatus in lib/connectors/connectorSetupSession.ts.
+enum ConnectorSetupStatus {
+  not_connected
+  setup_started
+  waiting_for_provider
+  validating
+  connected
+  failed
+  disconnected
+  revoked
+  needs_attention
+}
+
+// Phase 426 — alert escalation state machine. Mirrors the closed-union
+// AlertEscalationStatus in lib/alerts/alertEscalationSession.ts.
+enum AlertEscalationStatus {
+  quiet
+  fired
+  escalated
+  acknowledged
+  snoozed
+  resolved
+  auto_resolved
+  expired
+}
+
+model User {
+  id                   String    @id @default(cuid())
+  email                String    @unique
+  name                 String?
+  passwordHash         String? // for credentials auth
+  emailVerifiedAt      DateTime?
+  image                String?
+  stripeCustomerId     String?   @unique
+  stripeSubscriptionId String?
+  plan                 String? // starter | growth | scale | enterprise
+  planExpiresAt        DateTime?
+  modules              Json? // { builder, axiom, chatbot, plugins: [plugin_ids] } - chatbot add-on, plugins as paid add-ons
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  bots                 Bot[]
+  emailVerificationTokens EmailVerificationToken[]
+}
+
+/// A hashed, single-use proof that a credentials-account holder controls the
+/// mailbox. The plaintext token is never persisted.
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+}
+
+model Bot {
+  id           String            @id @default(cuid())
+  name         String // e.g. "My Support Bot"
+  userId       String
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messageCount Int               @default(0)
+  messageLimit Int               @default(6000) // per month, reset monthly
+  pageCount    Int               @default(0)
+  pageLimit    Int               @default(2500)
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  sources      KnowledgeSource[]
+}
+
+model KnowledgeSource {
+  id        String   @id @default(cuid())
+  botId     String
+  bot       Bot      @relation(fields: [botId], references: [id], onDelete: Cascade)
+  type      String // url | file | text
+  url       String? // for url type
+  content   String? // scraped/stored text
+  charCount Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+// AI Website Build — New Website Request leads
+// Phase 7: Optional userId for identity tie-in
+model Lead {
+  id          String   @id @default(cuid())
+  email       String
+  name        String?
+  userId      String? // Optional: bind to authenticated user
+  source      String   @default("website-request") // website-request, etc.
+  status      String   @default("created") // created, package_generating, package_ready, deploy_generating, deploy_ready, published
+  fullPayload Json     @default("{}") // form data, aiPackage, previewUrl, vercelDeploymentId, etc.
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  AxiomScoreSnapshots AxiomScoreSnapshot[]
+  RecurringAnalyses   RecurringAnalysis[]
+
+  @@index([source])
+  @@index([status])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+// Phase 4: Axiom score snapshots for persistent trend history
+// Phase 7: scoringVersion for audit and compliance
+// Structural Stabilization: FK to Lead with onDelete Cascade
+model AxiomScoreSnapshot {
+  id        String   @id @default(cuid())
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  tier     String
+  provider String?
+
+  infrastructureScore      Int?
+  estimatedAnnualSavings   Int?
+  riskExposureLevel        String?
+  deploymentFrictionIndex  Int?
+  complexityTier           String?
+  automationReadinessScore Int?
+  scoringVersion           String?
+
+  raw Json?
+
+  @@index([leadId])
+}
+
+// Phase 9: Sales pipeline snapshots (admin dashboard)
+model SalesPipelineSnapshot {
+  id                      String   @id @default(cuid())
+  createdAt               DateTime @default(now())
+  highUrgencyCount        Int
+  enterpriseLikelihoodAvg Float
+  expansionProbabilityAvg Float
+  avgStrategicReadiness   Float
+
+  @@index([createdAt])
+}
+
+// Phase 8: Recurring analysis for Growth+/Enterprise
+// jobType: "iam_scan" (daily) | "infra_discovery" (weekly) | null (legacy snapshot-only)
+// Structural Stabilization: FK to Lead with onDelete Cascade
+model RecurringAnalysis {
+  id        String    @id @default(cuid())
+  leadId    String
+  lead      Lead      @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  frequency String // "daily" | "weekly" | "monthly"
+  jobType   String? // "iam_scan" | "infra_discovery" | null (legacy)
+  lastRunAt DateTime?
+  nextRunAt DateTime
+  enabled   Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([leadId])
+  @@index([nextRunAt])
+  @@index([jobType])
+}
+
+// Execution logs — automation engine audit trail, rollback capability
+model ExecutionLog {
+  id            String    @id @default(cuid())
+  userId        String
+  projectId     String?
+  leadId        String?
+  action        String
+  pluginId      String
+  status        String // pending | success | failed | rolled_back
+  dryRun        Boolean   @default(false)
+  params        Json?
+  result        Json?
+  error         String?
+  inputHash     String?
+  outputJson    Json?
+  errorMessage  String?
+  rollbackSteps String[]  @default([])
+  executedAt    DateTime  @default(now())
+  startedAt     DateTime? @default(now())
+  finishedAt    DateTime?
+
+  @@index([userId])
+  @@index([projectId])
+  @@index([leadId])
+  @@index([executedAt])
+}
+
+// AI invocation log — PII-safe, for tracing and cost attribution
+model AIInvocation {
+  id            String   @id @default(cuid())
+  userId        String?
+  taskType      String
+  provider      String
+  model         String
+  latencyMs     Int?
+  success       Boolean
+  errorMessage  String?
+  tokensIn      Int?
+  tokensOut     Int?
+  promptHash    String?
+  promptPreview String?  @db.VarChar(200)
+  requestId     String?
+  createdAt     DateTime @default(now())
+
+  @@index([userId])
+  @@index([taskType])
+  @@index([createdAt])
+}
+
+// Agent jobs — queue for contact resolution and other async agent tasks
+model AgentJob {
+  id        String   @id @default(cuid())
+  leadId    String
+  type      String // CONTACT_RESOLUTION
+  status    String   @default("pending") // pending | running | completed | failed
+  attempts  Int      @default(0)
+  lastError String?
+  runAt     DateTime @default(now())
+  result    Json? // RESOLVED | NEEDS_INFO | ESCALATED + actionsTaken, etc.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([runAt])
+  @@index([leadId])
+}
+
+// Phase 5: Audit log for enterprise-grade security
+model AuditLog {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  leadId    String?
+  action    String
+  actor     String // "system" | "user" | "admin"
+  metadata  Json?
+
+  @@index([leadId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+// Multi-Cloud Readiness Report — Phase 3 Magic Moment
+model MultiCloudReadinessReport {
+  id                  String   @id @default(cuid())
+  leadId              String
+  userId              String?
+  score               Int // 0-100 resilience score
+  providerSummary     Json // { primary: "aws", regions: [...], resourceCounts: {...} }
+  risks               Json // [{ category, severity, description }]
+  recommendations     Json // { architecture, secondaryProvider, components, nextSteps }
+  estimatedCostImpact Json // { currentMonthlyCost, additionalCost, percentIncrease }
+  rto                 String // e.g. "5 minutes"
+  rpo                 String // e.g. "5 minutes"
+  rawScanData         Json? // normalized scan results from all plugins
+  aiAnalysis          String? // raw AI-generated analysis text
+  createdAt           DateTime @default(now())
+
+  @@index([leadId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// Phase 4: Terraform Controlled Execution
+model TerraformExecutionJob {
+  id                String    @id @default(cuid())
+  leadId            String
+  userId            String?
+  readinessReportId String?
+  status            String    @default("queued") // queued | generating | validating | planned | awaiting_approval | applying | succeeded | failed | cancelled
+  mode              String    @default("active_passive") // active_passive
+  primaryCloud      String    @default("aws")
+  secondaryCloud    String    @default("azure")
+  workingDirectory  String?
+  generatedFiles    Json? // { "main.tf": "...", "variables.tf": "...", ... }
+  planSummary       Json? // { add: N, change: N, destroy: N, resources: [...] }
+  planOutput        String?   @db.Text
+  applyOutput       String?   @db.Text
+  errorMessage      String?
+  approvedAt        DateTime?
+  approvedBy        String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([leadId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Cloud Operator "Ask Axiom" chat persistence
+model AxiomConversation {
+  id        String         @id @default(cuid())
+  userId    String?
+  leadId    String?
+  title     String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  messages  AxiomMessage[]
+
+  @@index([userId])
+  @@index([leadId])
+}
+
+model AxiomMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String // "user" | "assistant" | "system"
+  content        String
+  toolCalls      Json?
+  toolResults    Json?
+  createdAt      DateTime @default(now())
+
+  conversation AxiomConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Connected Cloud Accounts (one org → many accounts)
+// credentialRef is a vault pointer — raw secrets are NEVER stored here
+// ---------------------------------------------------------------------------
+
+model CloudAccount {
+  id                String        @id @default(cuid())
+  organizationId    String
+  provider          CloudProvider
+  externalAccountId String // AWS account ID, Azure subscription ID, GCP project ID
+  alias             String?
+  credentialRef     String? // pointer to encrypted credential vault entry
+  regions           String[]      @default([])
+  autopilotMode     AutopilotMode @default(observe_only)
+  connectedAt       DateTime      @default(now())
+  lastScannedAt     DateTime?
+  enabled           Boolean       @default(true)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  credential      CloudAccountCredential?
+  enrollmentAttempts CloudAccountEnrollmentAttempt[]
+  runs            AxiomAgentRun[]
+  scheduledRuns   AxiomScheduledRun[]
+  autopilotEvents AxiomAutopilotEvent[]
+
+  @@unique([id, organizationId])
+  @@unique([organizationId, provider, externalAccountId])
+  @@index([organizationId])
+  @@index([provider])
+}
+
+// Server-owned encrypted connector configuration; no plaintext credentials.
+model CloudAccountCredential {
+  id                     String   @id
+  organizationId         String
+  encryptedConfiguration String   @db.Text
+  /// Local Axiom revocation only; does not revoke AWS roles or issued STS sessions.
+  revokedAt              DateTime?
+  version                Int      @default(1)
+  validatedAt            DateTime
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  cloudAccount CloudAccount @relation(fields: [id, organizationId], references: [id, organizationId], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([id, organizationId])
+  @@index([organizationId])
+}
+
+// A short-lived tenant/user challenge, never a provider authorization grant.
+model CloudAccountEnrollmentAttempt {
+  id                        String    @id @default(cuid())
+  organizationId            String
+  userId                    String
+  expectedAccountId         String
+  roleArn                   String
+  region                    String
+  externalIdDigest          String
+  expiresAt                 DateTime
+  consumedAt                DateTime?
+  expectedCredentialVersion Int?
+  expectedAccountUpdatedAt  DateTime?
+  cloudAccountId            String?
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
+
+  cloudAccount CloudAccount? @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([organizationId, userId, expiresAt])
+  @@index([cloudAccountId, organizationId])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom Agent — run lifecycle
+// ---------------------------------------------------------------------------
+
+model AxiomAgentRun {
+  id             String         @id @default(cuid())
+  userId         String
+  organizationId String
+  cloudAccountId String
+  cloudAccount   CloudAccount   @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
+  trigger        AgentTrigger
+  status         AgentRunStatus @default(pending)
+  snapshotData   Json?
+  summary        String?        @db.Text
+  errorMessage   String?
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  findings        AxiomFinding[]
+  recommendations AxiomRecommendation[]
+  executionPlan   AxiomExecutionPlan?
+  approvals       AxiomApprovalRequest[]
+  auditEvents     AxiomAuditEvent[]
+  tasks           AxiomAgentTask[]
+
+  @@index([userId])
+  @@index([organizationId])
+  @@index([cloudAccountId])
+  @@index([status])
+  @@index([trigger])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Findings — what the agent discovered
+// ---------------------------------------------------------------------------
+
+model AxiomFinding {
+  id                String          @id @default(cuid())
+  runId             String
+  run               AxiomAgentRun   @relation(fields: [runId], references: [id], onDelete: Cascade)
+  category          FindingCategory
+  severity          FindingSeverity
+  title             String
+  description       String          @db.Text
+  affectedResources Json // string[]
+  region            String
+  provider          CloudProvider
+  confidence        String // "low" | "medium" | "high"
+  monthlyLow        Float           @default(0)
+  monthlyHigh       Float           @default(0)
+  yearlyLow         Float           @default(0)
+  yearlyHigh        Float           @default(0)
+  data              Json?
+  createdAt         DateTime        @default(now())
+
+  recommendations AxiomRecommendation[]
+
+  @@index([runId])
+  @@index([category])
+  @@index([severity])
+}
+
+// ---------------------------------------------------------------------------
+// Recommendations — what the agent suggests
+// ---------------------------------------------------------------------------
+
+model AxiomRecommendation {
+  id                String            @id @default(cuid())
+  runId             String
+  run               AxiomAgentRun     @relation(fields: [runId], references: [id], onDelete: Cascade)
+  findingId         String
+  finding           AxiomFinding      @relation(fields: [findingId], references: [id], onDelete: Cascade)
+  title             String
+  rationale         String            @db.Text
+  disposition       ActionDisposition
+  dispositionReason String
+  actionType        ActionType?
+  riskLevel         RiskLevel?
+  effort            String            @default("none") // "none" | "low" | "medium" | "high"
+  actionable        Boolean           @default(false)
+  monthlyLow        Float             @default(0)
+  monthlyHigh       Float             @default(0)
+  yearlyLow         Float             @default(0)
+  yearlyHigh        Float             @default(0)
+  createdAt         DateTime          @default(now())
+
+  planItems AxiomExecutionPlanItem[]
+
+  @@index([runId])
+  @@index([disposition])
+  @@index([actionType])
+}
+
+// ---------------------------------------------------------------------------
+// Execution Plans — the agent's proposed actions
+// ---------------------------------------------------------------------------
+
+model AxiomExecutionPlan {
+  id                 String        @id @default(cuid())
+  runId              String        @unique
+  run                AxiomAgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  totalItems         Int           @default(0)
+  safeToApply        Boolean       @default(false)
+  downtimeEstimate   String?
+  rollbackComplexity String? // "trivial" | "moderate" | "complex"
+  dryRunResult       Json?
+  createdAt          DateTime      @default(now())
+
+  items AxiomExecutionPlanItem[]
+
+  @@index([runId])
+}
+
+model AxiomExecutionPlanItem {
+  id               String               @id @default(cuid())
+  planId           String
+  plan             AxiomExecutionPlan   @relation(fields: [planId], references: [id], onDelete: Cascade)
+  recommendationId String?
+  recommendation   AxiomRecommendation? @relation(fields: [recommendationId], references: [id])
+  actionType       ActionType
+  provider         CloudProvider
+  region           String
+  resourceIds      Json // string[]
+  currentState     String
+  recommendedState String
+  riskLevel        RiskLevel
+  disposition      ActionDisposition
+  monthlyLow       Float                @default(0)
+  monthlyHigh      Float                @default(0)
+  yearlyLow        Float                @default(0)
+  yearlyHigh       Float                @default(0)
+  rollbackPlan     Json?
+  precheckResult   Json?
+  sortOrder        Int                  @default(0)
+  createdAt        DateTime             @default(now())
+
+  @@index([planId])
+  @@index([disposition])
+}
+
+// ---------------------------------------------------------------------------
+// Approval Requests — user decisions on agent proposals
+// ---------------------------------------------------------------------------
+
+model AxiomApprovalRequest {
+  id              String           @id @default(cuid())
+  runId           String
+  run             AxiomAgentRun    @relation(fields: [runId], references: [id], onDelete: Cascade)
+  userId          String
+  decision        ApprovalDecision
+  approvedItemIds Json // string[]
+  rejectedItemIds Json? // string[]
+  note            String?          @db.Text
+  decidedAt       DateTime         @default(now())
+
+  @@index([runId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Approval Items — per-action approval tracking for the Approval Center
+//
+// Each execution plan item that needs approval gets its own row here.
+// Supports approve / reject / snooze at the individual action level.
+// Status transitions:
+//   pending → approved → applied
+//   pending → rejected
+//   pending → snoozed → pending (auto-resurfaces after snoozedUntil)
+//   pending → expired  (run is stale or account disconnected)
+//   approved → failed  (apply encountered an error)
+// ---------------------------------------------------------------------------
+
+model AxiomApprovalItem {
+  id                 String             @id @default(cuid())
+  organizationId     String
+  runId              String
+  planItemId         String
+  status             ApprovalItemStatus @default(pending)
+  title              String
+  actionType         ActionType
+  provider           CloudProvider
+  region             String
+  resourceIds        Json // string[]
+  currentState       String
+  recommendedState   String
+  riskLevel          RiskLevel
+  disposition        ActionDisposition
+  dispositionReason  String
+  monthlyLow         Float              @default(0)
+  monthlyHigh        Float              @default(0)
+  yearlyLow          Float              @default(0)
+  yearlyHigh         Float              @default(0)
+  rollbackAvailable  Boolean            @default(false)
+  rollbackComplexity String? // "trivial" | "moderate" | "complex"
+  precheckPassed     Boolean            @default(true)
+  decidedBy          String?
+  decidedAt          DateTime?
+  note               String?            @db.Text
+  snoozedUntil       DateTime?
+  errorMessage       String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@unique([runId, planItemId])
+  @@index([organizationId, status])
+  @@index([status])
+  @@index([runId])
+  @@index([snoozedUntil])
+}
+
+// ---------------------------------------------------------------------------
+// Audit Events — immutable trail of every cloud mutation
+// ---------------------------------------------------------------------------
+
+model AxiomAuditEvent {
+  id             String           @id @default(cuid())
+  runId          String?
+  run            AxiomAgentRun?   @relation(fields: [runId], references: [id])
+  userId         String
+  organizationId String
+  planItemId     String?
+  provider       CloudProvider
+  actionType     ActionType
+  resourceIds    Json // string[]
+  region         String
+  beforeState    Json
+  afterState     Json?
+  status         AuditEventStatus @default(pending)
+  errorMessage   String?
+  riskLevel      RiskLevel
+  monthlyLow     Float            @default(0)
+  monthlyHigh    Float            @default(0)
+  yearlyLow      Float            @default(0)
+  yearlyHigh     Float            @default(0)
+  metadata       Json?
+  createdAt      DateTime         @default(now())
+  appliedAt      DateTime?
+  verifiedAt     DateTime?
+  rolledBackAt   DateTime?
+  updatedAt      DateTime         @updatedAt
+
+  @@index([runId])
+  @@index([userId])
+  @@index([organizationId])
+  @@index([provider, status])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Scheduled Runs — future and recurring agent executions
+// ---------------------------------------------------------------------------
+
+model AxiomScheduledRun {
+  id                  String            @id @default(cuid())
+  organizationId      String
+  cloudAccountId      String
+  cloudAccount        CloudAccount      @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
+  trigger             AgentTrigger      @default(scheduled)
+  frequency           ScheduleFrequency @default(daily)
+  cronExpression      String // e.g. "0 9 * * 1" (Monday 9am UTC)
+  timezone            String            @default("UTC")
+  nextRunAt           DateTime
+  lastRunId           String?
+  lastDiffSummary     String?
+  consecutiveFailures Int               @default(0)
+  enabled             Boolean           @default(true)
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@index([organizationId])
+  @@index([cloudAccountId])
+  @@index([nextRunAt, enabled])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Notifications (scheduled scan results, drift alerts)
+// ---------------------------------------------------------------------------
+
+model AxiomNotification {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String?
+  runId          String?
+  scheduledRunId String?
+  type           NotificationType
+  title          String
+  body           String           @db.Text
+  data           Json?
+  read           Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+
+  @@index([organizationId])
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Organization Preferences (persistent agent context)
+//
+// One row per organization. Controls how the agent prioritizes findings,
+// classifies dispositions, and formats output. Preferences NEVER bypass
+// the approval gate — they only influence ordering and defaults.
+// ---------------------------------------------------------------------------
+
+model AxiomOrgPreferences {
+  id                   String          @id @default(cuid())
+  organizationId       String          @unique
+  preferredProviders   String[]        @default([]) // empty = all
+  riskTolerance        RiskTolerance   @default(conservative)
+  approvalPolicy       ApprovalPolicy  @default(require_all)
+  autoApplyEnabled     Boolean         @default(false)
+  outputFormat         OutputFormat    @default(terraform)
+  businessContext      BusinessContext @default(other)
+  ignoredFindingTitles String[]        @default([])
+  priorityCategories   String[]        @default([]) // empty = default ordering
+  notes                String?         @db.Text // freeform context from user
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Agent Task Queue
+//
+// Decomposes an agent run into discrete, retry-safe tasks. Each task is
+// idempotent: re-running a completed task is a no-op, re-running a failed
+// task picks up where it left off. Failed tasks never break the whole run —
+// downstream tasks are skipped instead.
+// ---------------------------------------------------------------------------
+
+model AxiomAgentTask {
+  id             String          @id @default(cuid())
+  agentRunId     String
+  run            AxiomAgentRun   @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+  taskType       AgentTaskType
+  status         AgentTaskStatus @default(pending)
+  provider       CloudProvider
+  sortOrder      Int             @default(0)
+  attempts       Int             @default(0)
+  maxAttempts    Int             @default(3)
+  inputJson      Json?
+  outputJson     Json?
+  errorMessage   String?
+  dependsOn      String[]        @default([]) // task type names that must complete first
+  idempotencyKey String?         @unique
+  startedAt      DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@index([agentRunId])
+  @@index([status])
+  @@index([taskType])
+  @@index([agentRunId, sortOrder])
+}
+
+// ---------------------------------------------------------------------------
+// AI Workforce — workspace-scoped engineer state.
+//
+// One AgentEngineerRecord per (organizationId, engineerId) — the workspace's
+// view of a canonical engineer from lib/workforce/agentWorkforceRegistry.ts.
+// Holds the workspace-tightened approval rule (never looser than canonical),
+// the enabled flag, optional operator notes, and timestamps.
+//
+// AgentEngineerActionAttempt is appended every time an engineer attempts a
+// gated action. Closes the loop between "engineer exists" and "engineer
+// actually ran something" with the runtime verdict + audit correlation id.
+// ---------------------------------------------------------------------------
+
+model AgentEngineerRecord {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  /// Stable id from agentWorkforceRegistry — e.g. "spec_writer_engineer".
+  engineerId          String
+  /// Sync-time copy of the canonical default approval rule. Used as the floor
+  /// for tightening — overrides may only move strictly tighter.
+  defaultApprovalRule String
+  /// Workspace-tightened rule. NULL means "use canonical default".
+  currentApprovalRule String?
+  /// Whether the workspace admin has disabled this engineer entirely.
+  isEnabled           Boolean  @default(true)
+  /// Free-text operator notes — visible only to workspace admins.
+  notes               String?  @db.Text
+  /// Optional per-engineer JSON config (future use; never holds secrets).
+  config              Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  attempts AgentEngineerActionAttempt[]
+
+  @@unique([organizationId, engineerId])
+  @@index([organizationId, isEnabled])
+  @@index([organizationId, createdAt])
+}
+
+model AgentEngineerActionAttempt {
+  id                String              @id @default(cuid())
+  organizationId    String
+  /// Foreign key to the engineer record this attempt belongs to.
+  recordId          String
+  record            AgentEngineerRecord @relation(fields: [recordId], references: [id], onDelete: Cascade)
+  engineerId        String
+  /// Free-text action label — e.g. "scan_repo", "apply_terraform".
+  action            String
+  /// Closed-union risk level the caller declared.
+  riskLevel         String
+  /// Whether the caller declared this action as read-only.
+  isReadOnly        Boolean
+  module            String?
+  connector         String?
+  /// Runtime verdict from evaluateEngineerActionAttempt.
+  runtimeDecision   String // "allowed" | "requires_approval" | "blocked"
+  effectiveRule     String // approval rule in force at decision time
+  policySource      String // canonical_default | workspace_override | ...
+  requiredApprovers Int                 @default(0)
+  /// Operator/agent who attempted the action.
+  requestedBy       String
+  /// Correlation id stitched into the audit fabric.
+  correlationId     String
+  /// Reason copy surfaced in the UI + audit row.
+  reason            String              @db.Text
+  /// Optional approval-request id when decision === "requires_approval".
+  approvalRequestId String?
+  metadata          Json?
+  createdAt         DateTime            @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([recordId, createdAt])
+  @@index([organizationId, runtimeDecision, createdAt])
+  @@index([correlationId])
+}
+
+// ---------------------------------------------------------------------------
+// Engineer-sourced approval snapshot.
+//
+// Mirrors the in-memory ApprovalRequest minted by the approval engine for
+// engineer-sourced actions. Survives deploys / restarts so the
+// /dashboard/workforce/approvals queue keeps history intact. The engine's
+// in-memory store remains authoritative for live decision flow (17 other
+// callers still use it sync); this snapshot is the durable copy for
+// workforce surfaces specifically.
+// ---------------------------------------------------------------------------
+
+model EngineerApprovalSnapshot {
+  id                String   @id @default(cuid())
+  organizationId    String
+  /// Mirrors approvalEngine.ApprovalRequest.id — the join key back to the engine.
+  approvalRequestId String   @unique
+  /// Canonical engineer id from agentWorkforceRegistry.
+  engineerId        String
+  /// Action label the orchestrator passed to the recorder.
+  action            String
+  /// Linked AgentEngineerActionAttempt row id.
+  attemptId         String?
+  /// Closed-union risk vocabulary from the recorder.
+  riskLevel         String
+  /// Effective approval rule at decision time.
+  effectiveRule     String
+  requiredApprovers Int      @default(0)
+  /// Workforce correlation id stitched into the audit fabric.
+  correlationId     String
+  /// Lifecycle: pending → approved | rejected | expired.
+  status            String   @default("pending")
+  /// User who requested (typically the agent/operator that triggered).
+  requestedBy       String
+  /// Set when a workspace admin decides the approval.
+  decidedByUserId   String?
+  decidedAt         DateTime?
+  decisionReason    String?
+  // Execution layer — Phase 376.
+  /// "not_started" | "executed" | "failed". Atomic CAS on this is the idempotency guard.
+  executionStatus        String   @default("not_started")
+  executedAt             DateTime?
+  executedByUserId       String?
+  executionResultSummary String?
+  executionResultDetail  Json?
+  executionError         String?
+  // Phase 378 — pipeline-source discriminator.
+  /// "engineer_action" | "pipeline_stage". Distinguishes how the snapshot was minted.
+  sourceKind             String   @default("engineer_action")
+  /// FK to PipelineStageRun when sourceKind="pipeline_stage". Null for engineer_action rows.
+  pipelineStageRunId     String?
+  pipelineStageRun       PipelineStageRun? @relation(fields: [pipelineStageRunId], references: [id], onDelete: SetNull)
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  decisions         EngineerApprovalDecision[]
+
+  @@index([organizationId, status, createdAt])
+  @@index([organizationId, engineerId, createdAt])
+  @@index([organizationId, executionStatus])
+  @@index([correlationId])
+  @@index([pipelineStageRunId])
+}
+
+// ---------------------------------------------------------------------------
+// EngineerApprovalDecision — Phase 369 (two-step approval quorum).
+// One row per approver vote on an EngineerApprovalSnapshot. The snapshot's
+// status is recomputed from these rows by computeQuorumStatus(). The unique
+// constraint on (snapshotId, approverUserId) is the integrity lock that
+// prevents a single user from rubber-stamping a critical action twice.
+// ---------------------------------------------------------------------------
+
+model EngineerApprovalDecision {
+  id              String   @id @default(cuid())
+  snapshotId      String
+  organizationId  String
+  approverUserId  String
+  /// "approved" | "rejected"
+  decision        String
+  reason          String?
+  decidedAt       DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  snapshot        EngineerApprovalSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@unique([snapshotId, approverUserId])
+  @@index([snapshotId])
+  @@index([organizationId, decidedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Pipeline runs — Phase 377.
+//
+// A PipelineRun is one execution of a registered pipeline definition
+// (CI/CD, db-migrate, etc.) for a workspace. PipelineStageRuns are
+// the per-stage lifecycle rows. Stages advance through a closed-union
+// status machine (queued → running → succeeded | failed | skipped),
+// with optional pause at "awaiting_approval".
+// ---------------------------------------------------------------------------
+
+model PipelineRun {
+  id             String   @id @default(cuid())
+  organizationId String
+  pipelineId     String
+  /// queued | running | succeeded | failed | cancelled
+  status         String   @default("queued")
+  triggeredBy    String
+  correlationId  String
+  metadata       Json?
+  startedAt      DateTime @default(now())
+  completedAt    DateTime?
+  errorSummary   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  stages         PipelineStageRun[]
+  codingTask     CodingTask?
+
+  @@index([organizationId, pipelineId, startedAt])
+  @@index([organizationId, status, startedAt])
+  @@index([correlationId])
+}
+
+model PipelineStageRun {
+  id               String   @id @default(cuid())
+  runId            String
+  stageId          String
+  stageKind        String
+  ordering         Int
+  /// queued | running | succeeded | failed | skipped | awaiting_approval
+  status           String   @default("queued")
+  requiresApproval Boolean  @default(false)
+  approvalRequestId String?
+  startedAt        DateTime?
+  completedAt      DateTime?
+  outputSummary    String?
+  outputDetail     Json?
+  errorMessage     String?
+  /// Phase 400 — per-stage telemetry, indexed for fast run-level rollups.
+  costCents        Int      @default(0)
+  tokensInput      Int      @default(0)
+  tokensOutput     Int      @default(0)
+  latencyMs        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  run              PipelineRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  approvals        EngineerApprovalSnapshot[]
+
+  @@unique([runId, ordering])
+  @@index([runId, status])
+  @@index([runId, costCents])
+}
+
+// ---------------------------------------------------------------------------
+// AI coding task — Phase 379.
+//
+// One operator-initiated AI coding request, bound 1:1 to a PipelineRun
+// of the ai_coding pipeline definition. The pipeline stages do the work
+// (read, propose, lint, test, approval gate, PR open); this row carries
+// the operator's intent + repo target.
+// ---------------------------------------------------------------------------
+
+model CodingTask {
+  id             String   @id @default(cuid())
+  organizationId String
+  runId          String   @unique
+  instruction    String   @db.Text
+  repoRef        String
+  branchHint     String?
+  /// queued | running | succeeded | failed | cancelled — mirrors PipelineRun.status.
+  status         String   @default("queued")
+  createdBy      String
+  correlationId  String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  run            PipelineRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status, createdAt])
+  @@index([correlationId])
+}
+
+// ---------------------------------------------------------------------------
+// Pricing economics foundation — Phase 381.
+//
+// Three additive tables. Stripe/TenantBillingPlan/TenantUsageCounter/
+// AIInvocation untouched.
+//   AIProviderRate  — configurable per-(provider, model, effective_date)
+//   UsageEvent      — per-invocation usage log with cost attribution
+//   WorkspaceUsageSummary — month-to-date aggregate per workspace
+// ---------------------------------------------------------------------------
+
+model AIProviderRate {
+  id                          String   @id @default(cuid())
+  provider                    String
+  modelId                     String
+  displayName                 String
+  /// Cents per million tokens (integer — no float drift).
+  inputCentsPerMillion        Int
+  outputCentsPerMillion       Int
+  cachedReadCentsPerMillion   Int?
+  batchInputCentsPerMillion   Int?
+  batchOutputCentsPerMillion  Int?
+  enterpriseRateNote          String?
+  currency                    String   @default("USD")
+  effectiveFrom               DateTime
+  effectiveTo                 DateTime?
+  isActive                    Boolean  @default(true)
+  notes                       String?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  @@index([provider, modelId, effectiveFrom])
+  @@index([isActive])
+}
+
+model UsageEvent {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Provider request id used for idempotent cost reconciliation.
+  externalUsageId String?  @unique
+  /// "ai_invocation" | "agent_run" | "automation_run" | "connector_sync"
+  /// | "cloud_scan" | "report_generated" | "monitoring_event" | "desktop_task"
+  eventKind       String
+  provider        String?
+  model           String?
+  inputTokens     Int      @default(0)
+  outputTokens    Int      @default(0)
+  cachedReadTokens Int     @default(0)
+  /// Cost attributed to VisionXIXLabs in cents (USD).
+  costCents       Int      @default(0)
+  /// Customer debit after the configured platform margin.
+  billedCents     Int      @default(0)
+  /// pending | settled | failed. Gateway events remain pending until
+  /// the provider's authoritative generation-cost record is available.
+  billingStatus   String   @default("settled")
+  triggeredBy     String?
+  aiInvocationId  String?
+  correlationId   String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, eventKind, createdAt])
+  @@index([correlationId])
+  @@index([billingStatus, createdAt])
+}
+
+/// A short-lived, tenant-scoped hold placed before a billable AI request
+/// leaves Axiom.  It prevents concurrent requests from spending the same
+/// remaining pool.  Only settled usage is charged; expired/cancelled holds
+/// release their full amount.
+model AIUsageReservation {
+  id               String   @id @default(cuid())
+  organizationId   String
+  idempotencyKey   String
+  reservedCents    Int
+  settledCents     Int?
+  /// reserved | pending_settlement | settled | released | expired | cancelled
+  status           String   @default("reserved")
+  correlationId    String?
+  usageEventId     String?  @unique
+  expiresAt        DateTime
+  settledAt        DateTime?
+  releasedAt       DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, status, expiresAt])
+  @@index([correlationId])
+}
+
+// ---------------------------------------------------------------------------
+// Add-on purchase ledger — Phase 386.
+// Catalog (ADD_ON_CATALOG) lives in code; this table tracks workspace purchases.
+// ---------------------------------------------------------------------------
+model AddOnPurchase {
+  id                        String   @id @default(cuid())
+  organizationId            String
+  /// Catalog SKU: ai_credits_small | ai_credits_medium | ai_credits_large | seat_addon | connector_addon
+  sku                       String
+  pricePaidCents            Int
+  deliveredAICreditsCents   Int      @default(0)
+  deliveredSeats            Int      @default(0)
+  deliveredConnectors       Int      @default(0)
+  /// "current_month" rolls off at month boundary; "permanent" persists.
+  validFor                  String
+  /// YYYY-MM
+  periodMonth               String
+  /// pending | paid | partially_refunded | refunded | expired | failed
+  status                    String   @default("pending")
+  stripeCheckoutSessionId   String?  @unique
+  stripePaymentIntentId     String?  @unique
+  idempotencyKey            String
+  refundedAmountCents       Int      @default(0)
+  reversedAICreditsCents    Int      @default(0)
+  purchasedBy               String
+  correlationId             String
+  appliedAt                 DateTime?
+  refundedAt                DateTime?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@index([organizationId, periodMonth, status])
+  @@index([organizationId, createdAt])
+  @@unique([organizationId, idempotencyKey])
+  @@index([correlationId])
+}
+
+/// Signed Stripe events consumed by the workspace billing webhook. A primary
+/// key on the provider event id makes financial mutations replay-safe.
+model StripeBillingEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+
+  @@index([processedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Scheduled compliance control checks — lib/compliance/scheduledControlChecks.ts.
+//
+// Platform-level, not tenant-scoped: these verify runtime facts about the
+// service itself (is a required secret actually set, at the right
+// strength) that CONTROL_REGISTRY's "config_value" evidence kind claims
+// but that only a running check — not a code review — can confirm stays
+// true over time. Deliberately scoped to checks that only ever read
+// config/environment state; nothing here probes a live security boundary
+// (e.g. attempting a cross-tenant read to "test" isolation), which would
+// be a materially different, riskier kind of automation.
+// ---------------------------------------------------------------------------
+model ComplianceControlCheckRun {
+  id         String   @id @default(cuid())
+  /// Matches a ComplianceControl.id in lib/compliance/controlRegistry.ts.
+  controlId  String
+  /// pass | fail | error (the check itself couldn't run).
+  status     String
+  detail     String
+  checkedAt  DateTime @default(now())
+
+  @@index([controlId, checkedAt])
+}
+
+// ---------------------------------------------------------------------------
+// AI coding loop eval harness — Phase 389.
+// EvalRun is one batch; EvalCase is one synthetic task within the batch.
+// Without this, every model update / dependency bump / prompt tweak breaks
+// the AGI loop invisibly.
+// ---------------------------------------------------------------------------
+model EvalRun {
+  id              String   @id @default(cuid())
+  /// "manual" | "cron_daily" | "ci_smoke"
+  runKind         String
+  /// pending | running | completed | failed
+  status          String   @default("pending")
+  totalCases      Int      @default(0)
+  passCount       Int      @default(0)
+  failCount       Int      @default(0)
+  skippedCount    Int      @default(0)
+  totalCostCents  Int      @default(0)
+  modelUsed       String?
+  triggeredBy     String
+  correlationId   String
+  errorSummary    String?
+  startedAt       DateTime @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  cases           EvalCase[]
+
+  @@index([runKind, startedAt])
+  @@index([status])
+}
+
+model EvalCase {
+  id            String   @id @default(cuid())
+  evalRunId     String
+  taskKey       String
+  instruction   String   @db.Text
+  codingTaskId  String?
+  /// pass | fail | skipped | errored
+  outcome       String
+  score         Float    @default(0)
+  /// JSON array of FailureKind strings.
+  failures      Json
+  durationMs    Int      @default(0)
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  run           EvalRun @relation(fields: [evalRunId], references: [id], onDelete: Cascade)
+
+  @@index([evalRunId, outcome])
+  @@index([taskKey])
+}
+
+model BillingAlert {
+  id               String   @id @default(cuid())
+  organizationId   String
+  /// ai_credits | agent_runs_per_month | connectors | etc. (matches EntitlementDimension + ai_credits)
+  dimension        String
+  /// 70 | 90 | 100
+  threshold        Int
+  /// YYYY-MM — same threshold can re-fire next month.
+  periodMonth      String
+  planTier         String
+  ratioAtTrigger   Float
+  limitAtTrigger   Int?
+  currentAtTrigger Int
+  deliveredAt      DateTime?
+  /// "dashboard" | "email" | "slack" — for future delivery wiring.
+  deliveryChannel  String   @default("dashboard")
+  correlationId    String
+  createdAt        DateTime @default(now())
+
+  @@unique([organizationId, dimension, threshold, periodMonth])
+  @@index([organizationId, createdAt])
+  @@index([periodMonth])
+}
+
+model WorkspaceUsageSummary {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  /// YYYY-MM
+  periodMonth         String
+  totalCostCents      Int      @default(0)
+  aiCostCents         Int      @default(0)
+  aiInvocationCount   Int      @default(0)
+  aiInputTokens       BigInt   @default(0)
+  aiOutputTokens      BigInt   @default(0)
+  aiCachedReadTokens  BigInt   @default(0)
+  agentRunCount       Int      @default(0)
+  automationRunCount  Int      @default(0)
+  connectorSyncCount  Int      @default(0)
+  cloudScanCount      Int      @default(0)
+  reportCount         Int      @default(0)
+  lastRebuiltAt       DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@unique([organizationId, periodMonth])
+  @@index([periodMonth])
+}
+
+// ---------------------------------------------------------------------------
+// Axiom — Autopilot Audit Trail
+//
+// Immutable log of every autopilot mode change and every action the agent
+// takes autonomously. Required for enterprise compliance — proves what
+// happened, who authorized it, and under which policy.
+// ---------------------------------------------------------------------------
+
+model AxiomAutopilotEvent {
+  id             String             @id @default(cuid())
+  cloudAccountId String
+  cloudAccount   CloudAccount       @relation(fields: [cloudAccountId, organizationId], references: [id, organizationId])
+  organizationId String
+  userId         String
+  eventType      String // "mode_change" | "auto_applied" | "auto_blocked"
+  previousMode   AutopilotMode?
+  newMode        AutopilotMode?
+  runId          String?
+  actionType     ActionType?
+  riskLevel      RiskLevel?
+  disposition    ActionDisposition?
+  resourceIds    Json? // string[]
+  reason         String             @db.Text
+  metadata       Json?
+  createdAt      DateTime           @default(now())
+
+  @@index([cloudAccountId])
+  @@index([organizationId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Enterprise RBAC — Organization membership, approval policies, approval chains
+// ---------------------------------------------------------------------------
+
+model OrgMembership {
+  id             String    @id @default(cuid())
+  userId         String
+  organizationId String
+  role           OrgRole   @default(read_only)
+  providerScopes String[]  @default([]) // empty = all providers; ["aws","gcp"] = restricted
+  invitedBy      String?
+  acceptedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([userId, organizationId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Enterprise identity — docs/ENTERPRISE_IDENTITY_DESIGN.md.
+//
+// Status: schema + config management only. No OIDC/SAML client exists yet,
+// no real identity provider is connected, and no sign-in path reads these
+// tables — see lib/identity/enterpriseIdentityContract.ts and
+// lib/iam/scimLifecycleHelper.ts for the pure decision logic this will
+// eventually sit behind. Connection status starts and stays "pending"
+// until a real metadata exchange + test assertion round-trip ships in a
+// later phase; never fabricate "active" on config save alone.
+// ---------------------------------------------------------------------------
+
+enum IdentityProviderProtocol {
+  oidc
+  saml
+}
+
+model TenantIdentityProvider {
+  id                  String                   @id @default(cuid())
+  organizationId      String
+  protocol            IdentityProviderProtocol
+  /// Closed-union: pending | active | needs_attention | revoked.
+  status              String                   @default("pending")
+  /// OIDC issuer URL or SAML IdP entity ID — binds an incoming
+  /// assertion/token to exactly one tenant.
+  issuerOrEntityId    String
+  /// SAML IdP metadata XML or OIDC discovery document, stored verbatim
+  /// for audit/debugging. Never contains a credential.
+  metadataDocument    String                   @db.Text
+  /// Domain(s) this IdP is authoritative for. A user signing in with a
+  /// matching email domain is routed to this IdP instead of
+  /// password/OAuth — never both paths silently accepted.
+  managedDomains      String[]                 @default([])
+  /// IdP group/claim -> OrgRole, shape: RoleMappingRule[] (see
+  /// lib/identity/enterpriseIdentityContract.ts). No default role.
+  roleMappingJson     Json
+  requireMfaClaim     Boolean                  @default(true)
+  lastTestAssertionAt DateTime?
+  configuredByUserId  String
+  revokedAt           DateTime?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+
+  @@unique([organizationId, protocol])
+  @@index([organizationId, status])
+  @@index([issuerOrEntityId])
+}
+
+/// SCIM-provisioned identity record — separate from OrgMembership so a
+/// deprovisioned SCIM user is distinguishable in the audit trail from a
+/// manually-removed one, and so sync failures never silently delete a
+/// membership row outright.
+model ScimProvisionedIdentity {
+  id               String    @id @default(cuid())
+  organizationId   String
+  /// IdP-assigned stable user id.
+  externalId       String
+  email            String
+  /// Null until first successful role-mapped login.
+  orgMembershipId  String?
+  scimActive       Boolean   @default(true)
+  lastSyncedAt     DateTime  @default(now())
+  deprovisionedAt  DateTime?
+
+  @@unique([organizationId, externalId])
+  @@index([organizationId, email])
+}
+
+// ---------------------------------------------------------------------------
+// Agent runtime — plain-English request to risk-checked, approval-gated,
+// auditable execution. The agent never executes a write action itself: it
+// proposes one (AgentActionProposal, status "proposed"), and a workspace
+// admin must explicitly approve it before lib/connectors/github/
+// githubWriteClient.ts or the AWS deploy dispatch actually runs. Read-only
+// tool calls still get a persisted row (status "executed" immediately) so
+// every agent action — not just the risky ones — is in the audit trail.
+// ---------------------------------------------------------------------------
+
+model AgentConversation {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  title          String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  turns   AgentConversationTurn[]
+  actions AgentActionProposal[]
+
+  @@index([organizationId, userId])
+}
+
+model AgentConversationTurn {
+  id             String   @id @default(cuid())
+  conversationId String
+  /// user | assistant | tool_result
+  role           String
+  content        String   @db.Text
+  /// Set when role = tool_result — links back to the proposal it reports on.
+  actionProposalId String?
+  createdAt      DateTime @default(now())
+
+  conversation AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+}
+
+model AgentActionProposal {
+  id               String    @id @default(cuid())
+  organizationId   String
+  conversationId   String
+  proposedByUserId String
+  /// Tool registry name — see lib/axiom/agentRuntime/tools.ts.
+  toolName         String
+  argsJson         Json
+  /// low | medium | high. Low executes inline; medium/high require
+  /// explicit approval before lib/connectors/github/githubWriteClient.ts
+  /// or the AWS deploy dispatch ever runs.
+  riskLevel        String
+  /// proposed | approved | rejected | executed | failed.
+  status           String    @default("proposed")
+  resultJson       Json?
+  errorMessage     String?
+  decidedByUserId  String?
+  decidedAt        DateTime?
+  executedAt       DateTime?
+  createdAt        DateTime  @default(now())
+  /// Browser and desktop decisions fail closed after this instant.
+  approvalExpiresAt DateTime?
+  /// SHA-256 binding the organization, conversation, proposer, tool and args.
+  actionDigest      String?
+
+  conversation AgentConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status])
+  @@index([organizationId, status, approvalExpiresAt])
+  @@index([conversationId])
+}
+
+/// Durable backend-owned state for autonomous work. Workers must acquire a
+/// bounded lease and use versioned compare-and-set updates.
+model DurableAgentWorkflow {
+  id                 String   @id @default(cuid())
+  organizationId     String
+  workflowKind       String
+  objective          String   @db.Text
+  /// queued | running | paused_for_approval | paused_for_input | retrying | completed | failed | cancelled
+  status             String   @default("queued")
+  autonomyLevel      String
+  currentStep        String?
+  inputJson          Json
+  stateJson          Json
+  requestedByUserId  String
+  approvalProposalId String?
+  pauseReason        String?
+  failureCode        String?
+  attemptCount       Int      @default(0)
+  maxAttempts        Int      @default(3)
+  nextAttemptAt      DateTime?
+  leaseOwner         String?
+  leaseExpiresAt     DateTime?
+  cancelRequestedAt  DateTime?
+  cancelledAt        DateTime?
+  completedAt        DateTime?
+  version            Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  events DurableAgentWorkflowEvent[]
+
+  @@index([organizationId, status, updatedAt])
+  @@index([status, nextAttemptAt])
+  @@index([leaseExpiresAt])
+  @@index([approvalProposalId])
+}
+
+/// Append-only transition evidence. Sequence is the workflow version reached
+/// by the transition, making duplicate/replayed checkpoints fail closed.
+model DurableAgentWorkflowEvent {
+  id             String   @id @default(cuid())
+  workflowRunId  String
+  organizationId String
+  sequence       Int
+  eventType      String
+  actorKind      String
+  actorId        String?
+  detailJson     Json
+  occurredAt     DateTime @default(now())
+
+  workflowRun DurableAgentWorkflow @relation(fields: [workflowRunId], references: [id], onDelete: Cascade)
+
+  @@unique([workflowRunId, sequence])
+  @@index([organizationId, occurredAt])
+  @@index([workflowRunId, occurredAt])
+}
+
+/// Small, explicit workspace context carried across Agent conversations.
+/// It stores identifiers the workspace actually used, never model-generated
+/// secrets or an opaque transcript summary.
+model AgentWorkspaceMemory {
+  organizationId      String   @id
+  repositoryFullNames String[] @default([])
+  environmentIds      String[] @default([])
+  updatedAt           DateTime @updatedAt
+}
+
+/// Workspace-scoped workflow guidance enabled for the governed Agent.
+/// Skills never contain credentials and never grant tool authority.
+model AgentSkillInstallation {
+  id                String   @id @default(cuid())
+  organizationId    String
+  skillId           String
+  /// enabled | disabled
+  status            String   @default("enabled")
+  installedByUserId String
+  installedAt       DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([organizationId, skillId])
+  @@index([organizationId, status])
+}
+
+model AxiomApprovalPolicy {
+  id             String  @id @default(cuid())
+  organizationId String
+  name           String
+  description    String? @db.Text
+  enabled        Boolean @default(true)
+  priority       Int     @default(0) // higher = evaluated first
+
+  // Matching criteria — which actions this policy applies to
+  matchRiskLevels  String[] @default([]) // empty = all
+  matchActionTypes String[] @default([]) // empty = all
+  matchProviders   String[] @default([]) // empty = all
+  matchCategories  String[] @default([]) // empty = all
+  matchMinSavings  Float? // only match if yearly savings >= this
+
+  // Approval requirements
+  requiredApprovals  Int      @default(1) // how many approvals needed
+  requiredRoles      String[] @default([]) // which roles can approve (empty = any with permission)
+  escalateAfterHours Int? // auto-escalate if no decision in N hours
+  escalateToRoles    String[] @default([]) // who gets the escalation
+  autoExpireHours    Int? // auto-expire if no decision in N hours
+  blockAction        Boolean  @default(false) // true = hard-block, no approval path
+
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([organizationId, enabled])
+  @@index([priority])
+}
+
+model AxiomApprovalChain {
+  id             String              @id @default(cuid())
+  organizationId String
+  approvalItemId String
+  policyId       String // which policy triggered this chain
+  status         ApprovalChainStatus @default(pending_approvals)
+  requiredCount  Int // how many approvals needed
+  currentCount   Int                 @default(0) // how many received
+  escalatedAt    DateTime?
+  expiresAt      DateTime?
+  resolvedAt     DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  votes AxiomApprovalVote[]
+
+  @@unique([approvalItemId, policyId])
+  @@index([organizationId, status])
+  @@index([approvalItemId])
+  @@index([expiresAt])
+}
+
+model AxiomApprovalVote {
+  id        String   @id @default(cuid())
+  chainId   String
+  userId    String
+  role      OrgRole
+  decision  String // "approve" | "reject" | "escalate"
+  reason    String?  @db.Text
+  createdAt DateTime @default(now())
+
+  chain AxiomApprovalChain @relation(fields: [chainId], references: [id], onDelete: Cascade)
+
+  @@unique([chainId, userId]) // one vote per user per chain
+  @@index([chainId])
+  @@index([userId])
+}
+
+model AxiomRbacAuditEvent {
+  id             String   @id @default(cuid())
+  organizationId String
+  actorId        String
+  actorRole      OrgRole
+  action         String // "role_assigned", "policy_created", "approval_voted", etc.
+  targetType     String // "membership", "policy", "chain", "item"
+  targetId       String
+  before         Json?
+  after          Json?
+  metadata       Json?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([actorId])
+  @@index([targetId])
+}
+
+// ---------------------------------------------------------------------------
+// Stabilization Phase — persistence for stores that were previously in-memory.
+// Adapters live in lib/audit/auditStore.prisma.ts,
+// lib/memory/memoryStore.prisma.ts, lib/desktop/desktopSessionStore.prisma.ts,
+// and switch on via lib/platform/storeFactory.ts when DATABASE_URL is set.
+// ---------------------------------------------------------------------------
+
+/// Generic typed audit trail. Distinct from AxiomAuditEvent (which is per
+/// cloud-mutation): this row records every governance-relevant action a
+/// user / agent / system takes (auth events, policy decisions, store
+/// writes). Backs lib/audit/secureAudit.ts → SecureAuditStore.
+model SecureAuditRecord {
+  id             String   @id
+  organizationId String
+  actorUserId    String?
+  actorKind      String // "user" | "agent" | "system"
+  action         String
+  outcome        String // "success" | "failure" | "blocked"
+  entityRef      String?
+  correlationId  String
+  source         String
+  occurredAt     DateTime
+  detail         Json?
+  errorCode      String?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, occurredAt])
+  @@index([action])
+  @@index([correlationId])
+}
+
+/// Long-term operational memory — outcomes, recurring patterns, confidence
+/// trends. Backs lib/memory/operationalMemory.ts → MemoryStore.
+model OperationalMemoryRecord {
+  id             String   @id
+  organizationId String
+  actorId        String
+  kind           String // MemoryRecordKind
+  provider       String?
+  resources      Json // ResourceRef[]
+  summary        String   @db.Text
+  evidence       Json // { name, value }[]
+  outcome        String // "positive" | "negative" | "neutral" | "pending"
+  impact         Json // { costDeltaUsd?, confidenceDelta?, riskDelta? }
+  links          Json // { auditEventIds, executionPlanIds, ... }
+  nextAction     Json?
+  occurredAt     DateTime
+  recordedAt     DateTime
+
+  @@index([organizationId, occurredAt])
+  @@index([organizationId, kind])
+  @@index([organizationId, outcome])
+}
+
+/// Desktop pairing session — long-lived bearer-token pairing between a web
+/// user and a Tauri desktop instance. Backs lib/desktop/desktopSession.ts
+/// → DesktopSessionStore.
+model DesktopSessionRecord {
+  id                String    @id
+  userId            String
+  organizationId    String
+  deviceFingerprint String
+  deviceLabel       String
+  platform          String
+  desktopVersion    String?
+  issuedAt          DateTime
+  expiresAt         DateTime
+  lastSeenAt        DateTime
+  revokedAt         DateTime?
+  revokeReason      String?
+  createdAt         DateTime  @default(now())
+
+  @@index([userId])
+  @@index([organizationId])
+  @@index([expiresAt])
+}
+
+/// Short-lived, one-time browser authorization request created by an
+/// installed desktop. It contains device metadata only—never cloud secrets.
+model DesktopPairingChallengeRecord {
+  id                   String    @id
+  deviceFingerprint    String
+  deviceLabel          String
+  platform             String
+  desktopVersion       String?
+  status               String    @default("pending")
+  approvedByUserId     String?
+  approvedOrganizationId String?
+  sessionId            String?
+  createdAt            DateTime  @default(now())
+  expiresAt            DateTime
+  approvedAt           DateTime?
+  consumedAt           DateTime?
+
+  @@index([expiresAt])
+  @@index([approvedByUserId])
+  @@index([sessionId])
+}
+
+/// Desktop handoff bundle persistence — packaged execution plans the
+/// desktop opens. Backs the handoff lifecycle in lib/desktop/.
+model DesktopHandoffRecord {
+  id              String    @id
+  organizationId  String
+  userId          String
+  executionPlanId String
+  approver        String
+  status          String // "ready" | "delivered" | "rejected_by_desktop" | "expired"
+  rejectionReason String?
+  manifest        Json
+  payload         Json
+  preparedAt      DateTime
+  expiresAt       DateTime
+  deliveredAt     DateTime?
+  rejectedAt      DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([organizationId, status])
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// Distributed-trace span captured by the observability layer. Lets
+/// /dashboard/observability render real call graphs instead of mock
+/// timelines. Backs lib/observability/ (trace store TBD).
+model OperationTraceSpan {
+  id             String    @id
+  organizationId String
+  traceId        String
+  parentId       String?
+  name           String
+  service        String
+  startedAt      DateTime
+  endedAt        DateTime?
+  durationMs     Int?
+  status         String // "ok" | "error" | "in_progress"
+  attributes     Json?
+  errorMessage   String?
+  createdAt      DateTime  @default(now())
+
+  @@index([organizationId, traceId])
+  @@index([organizationId, startedAt])
+  @@index([traceId])
+}
+
+/// Outbound notification audit row — every Slack/Teams/webhook send
+/// the outbound lane attempts (success or skip). Replaces the
+/// in-memory dedupe map with a durable history so the operator can
+/// answer "did we page anyone last night?" weeks later. Backs
+/// lib/notifications/outboundNotificationLane + /api/notifications/history.
+model OutboundNotificationRecord {
+  id                String   @id
+  organizationId    String
+  dedupeKey         String
+  kind              String // OutboundNotificationKind literal
+  severity          String // OutboundSeverity literal
+  headline          String
+  body              String
+  /// "ok" — at least one channel succeeded
+  /// "deduped" — suppressed by the 10-min dedupe window
+  /// "failed" — every attempted channel returned non-2xx
+  /// "skipped" — no channels configured
+  outcome           String
+  channelsSucceeded String[] // {"slack","microsoft_teams","generic_webhook"} subset
+  channelsSkipped   String[] // human-readable skip reasons
+  evidenceRefs      String[]
+  correlationId     String?
+  createdAt         DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, dedupeKey, createdAt])
+  @@index([dedupeKey, createdAt])
+}
+
+/// Outbound notification retry row. When a send fails (no channel
+/// succeeded), the lane enqueues a retry here. A drain cron picks up
+/// pending rows older than 5 minutes, attempts one more send, and
+/// marks the row 'succeeded' on success or 'failed_terminal' on a
+/// second failure. Status is three-valued so operators can audit
+/// which notifications gave up and which recovered.
+model OutboundNotificationRetry {
+  id              String    @id
+  organizationId  String
+  dedupeKey       String
+  kind            String
+  severity        String
+  headline        String
+  body            String
+  evidenceRefs    String[]
+  safeActionLabel String?
+  safeActionHref  String?
+  status          String // "pending" | "succeeded" | "failed_terminal"
+  attemptCount    Int       @default(0)
+  lastError       String?
+  enqueuedAt      DateTime  @default(now())
+  retriedAt       DateTime?
+
+  @@index([status, enqueuedAt])
+  @@index([organizationId, status])
+}
+
+/// Help query analytics row. One per /api/help/ask call. Captures
+/// the verbatim query + the verdict the local search engine returned
+/// + the top hit (when any) so operators can see which docs are
+/// missing or under-keyworded. Best-effort write — the search hot
+/// path never blocks on this table.
+model HelpQueryRecord {
+  id             String   @id
+  organizationId String?
+  query          String
+  totalTokens    Int
+  verdict        String
+  primaryEntryId String?
+  topHitScore    Float?
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([verdict, createdAt])
+  @@index([organizationId, createdAt])
+}
+
+/// Per-tenant feature flag. Keyed on (organizationId, key) so each
+/// tenant can independently enable / disable any flag declared in
+/// the closed FeatureFlagKey union. Stores the boolean value + an
+/// optional rationale + updatedBy for audit. Backs
+/// lib/flags/featureFlagStore.
+model TenantFeatureFlag {
+  organizationId String
+  key            String
+  enabled        Boolean
+  rationale      String?
+  updatedBy      String?
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+
+  @@id([organizationId, key])
+  @@index([organizationId, updatedAt])
+}
+
+/// Autonomous-decision rationale row. For every candidate the autonomy
+/// loop touches, we write one durable audit record with the inputs +
+/// per-stage reasoning + final outcome. The audit-readable spine of
+/// "why did the AGI do that?" — never trimmed for space.
+model AutonomyDecisionRationale {
+  id             String   @id
+  organizationId String
+  cycleId        String?
+  candidateId    String
+  title          String
+  charterMode    String // AutonomyMode literal
+  boundaryClass  String
+  /// "passed" | "approval_packet_prepared" | "halted_at_gate" | "policy_blocked" | "unsafe_blocked" | "credential_blocked"
+  outcome        String
+  haltedAtStage  String? // when outcome is halted_*
+  haltReason     String?
+  proposedIntent String
+  /// Each stage transcript serialized — { stage, status, summary, evidenceRef, reason? }[]
+  stages         Json
+  evidenceRefs   String[]
+  durationMs     Int
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, outcome, createdAt])
+  @@index([candidateId, createdAt])
+}
+
+/// Runbook staged for human approval. Operators promote any runbook
+/// from /dashboard/runbooks into this queue, then approve or reject.
+/// Approval here NEVER triggers an actual mutation — it records the
+/// human decision so the IaC pipeline can pick it up. Read-only by
+/// design; the lane that actually applies a change is out of scope.
+model StagedRemediationRunbook {
+  id               String    @id
+  organizationId   String
+  runbookId        String // From RemediationRunbook.id
+  sourceEventId    String // CloudTrail event id
+  eventName        String
+  severity         String
+  rootCause        String
+  affectedResource String
+  reversalLabel    String
+  reversalRisk     String
+  reversalApi      String?
+  hardeningLabel   String
+  hardeningApi     String?
+  confidence       Float
+  evidenceRefs     String[]
+  status           String // "staged" | "approved" | "rejected" | "expired"
+  decision         String?
+  stagedBy         String?
+  stagedAt         DateTime  @default(now())
+  decidedAt        DateTime?
+  decidedBy        String?
+
+  @@index([organizationId, status, stagedAt])
+  @@index([organizationId, runbookId])
+}
+
+/// Agent message bus row. Every typed message the autonomy stages
+/// publish lands here for audit + replay. Bus is in-memory at runtime
+/// for fan-out; Prisma is the durable spine so operators can answer
+/// "who told what to whom" weeks later.
+model AgentBusMessage {
+  id             String   @id
+  organizationId String
+  /// Sender agent role (closed AgentRole union literal).
+  sender         String
+  /// Optional named recipient; null = broadcast.
+  recipient      String?
+  /// Closed AgentMessageKind union literal.
+  kind           String
+  /// Operator-readable summary (≤500 chars).
+  summary        String
+  /// Structured payload (kind-specific).
+  payload        Json
+  /// Stable correlation id linking related back-and-forth.
+  threadId       String?
+  createdAt      DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([threadId, createdAt])
+  @@index([sender, createdAt])
+}
+
+/// Agent-authored proposal to improve a recipe / template / charter
+/// default. Reviewed by operators on /dashboard/agent-proposals; on
+/// approval the IaC pipeline (or future apply lane) picks it up.
+/// Status is intentionally three-valued so operators can see which
+/// proposals were considered + rejected.
+model MethodProposal {
+  id             String    @id
+  organizationId String
+  /// Author agent role.
+  authorAgent    String
+  /// Target subsystem (closed ProposalTarget union literal):
+  /// "runbook_recipe" | "policy_template" | "charter_default" |
+  /// "help_entry" | "tier_cap"
+  target         String
+  /// Short human-readable label.
+  label          String
+  /// Operator-readable rationale (≤2000 chars).
+  rationale      String
+  /// Proposed diff (kind-specific JSON shape).
+  proposedDiff   Json
+  /// 0..1 confidence the author has in the change.
+  confidence     Float
+  /// "pending" | "approved" | "rejected" | "applied" | "superseded"
+  status         String    @default("pending")
+  decidedBy      String?
+  decidedAt      DateTime?
+  decisionReason String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([organizationId, status, createdAt])
+  @@index([target, status])
+  @@index([authorAgent, createdAt])
+}
+
+/// Per-tenant per-day usage counter. Single row per (tenant, capName,
+/// dateKey YYYY-MM-DD). Incremented by the autonomy scheduler +
+/// outbound lane; read by the tier-cap enforcer to decide allow/deny.
+/// dateKey is a string (not a DateTime) so a UNIQUE index on
+/// (tenant, capName, dateKey) is a cheap rollover boundary.
+model TenantUsageCounter {
+  organizationId String
+  capName        String // matches CapName literal: autonomyCyclesPerDay | outboundPerDay | ...
+  dateKey        String // YYYY-MM-DD UTC
+  count          Int      @default(0)
+  updatedAt      DateTime @updatedAt
+  createdAt      DateTime @default(now())
+
+  @@id([organizationId, capName, dateKey])
+  @@index([organizationId, dateKey])
+}
+
+/// Tenant billing plan. One row per tenant. Tier is a closed
+/// BillingTier literal validated at the API boundary; status is a
+/// BillingStatus literal. stripeCustomerId + stripeSubscriptionId
+/// are nullable so the platform works without Stripe configured
+/// (defaults to 'trial' with a 14-day expiry).
+model TenantBillingPlan {
+  organizationId       String    @id
+  tier                 String
+  status               String
+  trialEndsAt          DateTime?
+  currentPeriodEndsAt  DateTime?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  /// Authoritative recurring subscription quantity for paid per-seat plans.
+  seatQuantity          Int?
+  cancelAtPeriodEnd    Boolean   @default(false)
+  /// Last raw Stripe event id consumed by the webhook handler.
+  /// Used for idempotency: re-receiving the same id is a no-op.
+  lastStripeEventId    String?
+  updatedAt            DateTime  @updatedAt
+  createdAt            DateTime  @default(now())
+
+  @@index([status, currentPeriodEndsAt])
+  @@index([tier, status])
+}
+
+/// Explicit opt-in for metered AI settlement.  A missing row is equivalent to
+/// disabled; this prevents a newly connected Stripe customer from being billed
+/// merely because it has generated AI usage.
+model AIUsageBillingConfig {
+  organizationId            String   @id
+  enabled                   Boolean  @default(false)
+  /// Hard monthly customer-charge ceiling, in USD cents.  Zero blocks all
+  /// settlement until an operator sets a positive value.
+  monthlySpendLimitCents    Int      @default(0)
+  currency                  String   @default("usd")
+  updatedAt                 DateTime @updatedAt
+  createdAt                 DateTime @default(now())
+}
+
+/// One immutable Stripe-settlement intent per reconciled UsageEvent. The
+/// idempotency key is sent to Stripe, so a timeout never becomes a duplicate
+/// invoice item on retry.
+model AIUsageBillingSettlement {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  usageEventId        String   @unique
+  periodMonth         String
+  amountCents         Int
+  /// reserved | submitted | failed | blocked
+  status              String   @default("reserved")
+  idempotencyKey      String   @unique
+  stripeInvoiceItemId String?  @unique
+  failureReason       String?
+  attemptCount        Int      @default(0)
+  submittedAt         DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([organizationId, periodMonth, status])
+}
+
+/// Serializable monthly counter used to reserve a workspace's configured
+/// spending ceiling before the Stripe request is made.
+model AIUsageBillingPeriod {
+  organizationId String
+  periodMonth    String
+  limitCents     Int
+  reservedCents  Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@id([organizationId, periodMonth])
+}
+
+/// In-product feedback row. Captured from /api/feedback. NEVER
+/// blocking the dashboard — the form is fire-and-forget. Stored
+/// for follow-up + optionally mirrored to Slack via the outbound lane.
+model FeedbackRecord {
+  id             String   @id
+  organizationId String?
+  email          String?
+  sentiment      String // "happy" | "neutral" | "frustrated"
+  pagePath       String?
+  message        String
+  userAgent      String?
+  createdAt      DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([sentiment, createdAt])
+  @@index([organizationId, createdAt])
+}
+
+/// Idempotency record — Phase 402.
+/// Caches v1 API responses keyed by (organizationId, idempotencyKey,
+/// routePath) so a client's network retry doesn't fire the same
+/// pipeline run twice. Stripe-style semantics:
+///   · same hash + completed → replay cached response
+///   · same hash + in_flight → 409 (still processing)
+///   · diff hash             → 422 (key reuse with different body)
+/// Expires 24h after creation to bound storage growth.
+model IdempotencyRecord {
+  id                String   @id @default(cuid())
+  organizationId    String
+  idempotencyKey    String
+  routePath         String
+  /// SHA-256 hex of the raw request body — detects key reuse with
+  /// a different body.
+  requestBodyHash   String
+  /// "in_flight" | "completed" | "failed"
+  status            String   @default("in_flight")
+  responseStatus    Int?
+  responseBody      Json?
+  expiresAt         DateTime
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([organizationId, idempotencyKey, routePath])
+  @@index([expiresAt])
+}
+
+/// Per-organization pipeline budget config — Phase 401.
+/// Overrides the platform's DEFAULT_RUN_MAX_CENTS for this workspace.
+/// `defaultMaxCostCents = null` means unlimited at the workspace level
+/// (Enterprise). `pipelineOverrides` is a JSON array of
+/// `{ pipelineId, maxCostCents }` records — null cents within a
+/// pipeline override also means unlimited for that one pipeline.
+/// Resolution priority (high → low):
+///   pipelineOverrides > defaultMaxCostCents > platform default; run metadata may only lower the result
+model OrganizationBudgetConfig {
+  organizationId       String   @id
+  /// null = unlimited at the workspace level.
+  defaultMaxCostCents  Int?
+  /// JSON array of `{ pipelineId, maxCostCents }` entries.
+  pipelineOverrides    Json     @default("[]")
+  /// Free-form rationale for the audit trail.
+  rationale            String?
+  updatedBy            String
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+/// Workspace-owned AI routing policy. This stores provider identifiers,
+/// approved model selections, and fallback order only; credentials remain
+/// exclusively in server environment configuration and are never tenant supplied.
+model OrganizationAIProviderPolicy {
+  organizationId     String   @id
+  /// Workspace owner can explicitly stop governed workspace AI generation
+  /// without removing service-managed provider credentials.
+  enabled            Boolean  @default(true)
+  allowedProviders   Json     @default("[]")
+  modelSelections    Json     @default("{}")
+  fallbackOrder      Json     @default("[]")
+  updatedBy          String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+/// The organization-owned identity used by the governed desktop Agent.
+/// This is policy, not a credential: tools remain implemented and enforced
+/// by the backend registry, and an empty allowlist fails closed.
+model WorkspaceAgentIdentity {
+  organizationId String   @id
+  displayName    String   @default("Axiom Agent")
+  enabled        Boolean  @default(false)
+  allowedTools   Json     @default("[]")
+  updatedBy      String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+/// Per-tenant override of the autonomy charter. When a row exists,
+/// the scheduler and on-demand cockpit use this charter instead of
+/// the global default. Mode is an AutonomyMode literal validated at
+/// the API boundary. Backs lib/autonomy/tenantCharterStore.
+model TenantAutonomyCharter {
+  organizationId       String   @id
+  mode                 String // AutonomyMode literal: observer | review | assisted | autonomous
+  perCycleActionLimit  Int?
+  rationale            String?
+  slackWebhookOverride String?
+  updatedAt            DateTime @updatedAt
+  updatedBy            String?
+  createdAt            DateTime @default(now())
+}
+
+/// Machine-to-machine API key for the v1 surface — Phase 394.
+/// Plaintext is shown ONCE at mint time; we only persist the hash.
+/// `prefix` is indexed for fast lookup; `keyHash` is the canonical
+/// auth column (SHA-256 of the plaintext). `scopes` is a JSON array
+/// of ApiKeyScope strings — normalized + validated at mint time.
+model ApiKey {
+  id               String    @id @default(cuid())
+  organizationId   String
+  /// Human-readable label set by the operator at mint time.
+  name             String
+  /// "vxlk_live_xxxx" — first 14 chars of plaintext. Indexed.
+  prefix           String
+  /// SHA-256 hex of full plaintext. UNIQUE — never collides.
+  keyHash          String    @unique
+  /// "live" | "test"
+  env              String
+  /// JSON array of ApiKeyScope strings.
+  scopes           Json
+  /// Who minted this (admin email or system actor).
+  createdBy        String
+  /// Last successful authentication. Null until first use.
+  lastUsedAt       DateTime?
+  /// Last source IP that authenticated. Null until first use.
+  lastUsedIp       String?
+  /// Total successful authentications. Useful for usage display.
+  useCount         Int       @default(0)
+  /// When set, key auto-expires at this timestamp.
+  expiresAt        DateTime?
+  /// When set, key is revoked and won't authenticate.
+  revokedAt        DateTime?
+  /// Revocation reason for the audit trail.
+  revokedReason    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([prefix])
+  @@index([organizationId, createdAt])
+  @@index([revokedAt])
+}
+
+/// Platform-wide ES256 webhook signing key — Phase 404.
+/// Single-row table holding the private + public PEM pair used to sign
+/// every outbound delivery whose endpoint opts in to ES256. The public
+/// key (+ its JWK form + RFC 7638 kid) is exposed at
+/// `/api/v1/webhooks/jwks` so integrators can verify with a public key
+/// instead of a shared secret.
+///
+/// Rotation: store BOTH the current and one prior key when rotating so
+/// in-flight retries can still be verified; expose both via the JWKS
+/// endpoint until the prior key's TTL elapses.
+model WebhookSigningKey {
+  id              String   @id @default(cuid())
+  /// RFC 7638 thumbprint of the public JWK — published in the JWKS
+  /// header so verifiers can pick the right key on rotation.
+  kid             String   @unique
+  /// PEM-encoded PKCS#8 private key. NEVER expose via any API.
+  privateKeyPem   String   @db.Text
+  /// PEM-encoded SubjectPublicKeyInfo. Safe to serve publicly.
+  publicKeyPem    String   @db.Text
+  /// JWK form of the public key — what /jwks emits inside `keys[]`.
+  publicJwk       Json
+  /// "active" = the key the platform CURRENTLY signs with.
+  /// "retiring" = still valid for verifying in-flight deliveries
+  /// during a grace window after rotation.
+  /// "revoked" = no longer accepted; remove from /jwks on next sweep.
+  status          String   @default("active")
+  createdAt       DateTime @default(now())
+  retiredAt       DateTime?
+
+  @@index([status])
+}
+
+/// Outbound webhook endpoint — Phase 395.
+/// A workspace registers one (or many) HTTPS URLs that should receive
+/// signed event deliveries. `secret` is the HMAC-SHA256 shared secret;
+/// the integrator side uses the existing webhookSignatureValidator to
+/// verify each delivery.
+model WebhookEndpoint {
+  id                   String    @id @default(cuid())
+  organizationId       String
+  /// Human-readable label.
+  name                 String
+  /// Destination URL — validated at register time (https-only by default,
+  /// no private IPs unless explicitly opted in).
+  url                  String
+  /// HMAC-SHA256 shared secret. Shown ONCE at registration time + on
+  /// secret rotation; otherwise never revealed back to the operator.
+  /// Ignored when `signingMode = "es256"` (no shared secret needed).
+  secret               String
+  /// Phase 404: signing mode. "hmac" (default, legacy) uses the symmetric
+  /// `secret` column with HMAC-SHA256. "es256" uses the platform's P-256
+  /// private key; integrators verify with the public key from
+  /// /api/v1/webhooks/jwks.
+  signingMode          String    @default("hmac")
+  /// JSON array of WebhookEventKind strings ("*" allowed as catch-all).
+  subscribedEvents     Json
+  /// Running counter of consecutive failed deliveries. Auto-resets to 0
+  /// on each successful delivery.
+  consecutiveFailures  Int       @default(0)
+  /// After this many consecutive failures, deliveries skip with
+  /// `auto_disabled_too_many_failures`. Operator must rotate URL or
+  /// reset to re-enable.
+  autoDisableThreshold Int       @default(50)
+  createdBy            String
+  revokedAt            DateTime?
+  revokedReason        String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  deliveries           WebhookDelivery[]
+
+  @@index([organizationId, createdAt])
+  @@index([revokedAt])
+}
+
+/// Outbound webhook delivery attempt — Phase 395.
+/// One row PER ATTEMPT (not per event), so the operator can see the
+/// full retry timeline. Closed-union `outcome` mirrors
+/// `DeliveryOutcomeKind` from the pure kernel.
+model WebhookDelivery {
+  id                  String    @id @default(cuid())
+  endpointId          String
+  organizationId      String
+  /// Same eventId across all retries for one logical event — used by
+  /// integrators to dedup.
+  eventId             String
+  /// WebhookEventKind literal.
+  eventKind           String
+  /// 1-based attempt number.
+  attemptNumber       Int
+  /// "queued" | "delivering" | "delivered" | "retry" | "deadletter"
+  status              String    @default("queued")
+  /// DeliveryOutcomeKind literal — null until classifyDeliveryOutcome runs.
+  outcomeKind         String?
+  /// HTTP status from the integrator (null on network failure).
+  httpStatus          Int?
+  /// Response body (truncated to 2KB for storage; full body kept in audit).
+  responseBodySnippet String?   @db.Text
+  /// Operator-visible failure reason for retry / deadletter rows.
+  errorMessage        String?
+  /// Time we sent the request.
+  attemptedAt         DateTime?
+  /// Time we got the response back (or null on timeout).
+  respondedAt         DateTime?
+  /// For retry rows — when the next attempt should fire.
+  nextAttemptAt       DateTime?
+  /// JSON: the full envelope that was sent (or planned to be sent).
+  payload             Json
+  /// JSON: the headers we sent (for audit / replay).
+  requestHeaders      Json?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  endpoint            WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@index([endpointId, attemptNumber])
+  @@index([organizationId, createdAt])
+  @@index([status, nextAttemptAt])
+  @@index([eventId])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 414 — connector onboarding state machine, persisted.
+//
+// One row per (organization, provider). The kernel in
+// lib/connectors/connectorSetupSession.ts is the source of truth for legal
+// transitions; this row stores the *current* status. Every transition attempt
+// — legal or illegal — emits an append-only ConnectorSetupTransition row so
+// the dashboard sidebar dot, cron health check, and audit log can read the
+// same canonical history.
+//
+// Why no relation to User: org-scoped. The actorUserId on the transition row
+// captures *who* did it; the org owns the connector lifecycle.
+// ---------------------------------------------------------------------------
+
+model ConnectorSetupSession {
+  id              String               @id @default(cuid())
+  organizationId  String
+  /// Plain string (not CloudProvider enum) — the existing CloudProvider
+  /// type isn't declared in any migration file, so referencing it here
+  /// would break the new-table migration on prod. The application layer
+  /// gates allowed values via ALLOWED_PROVIDERS in connectorSetupEventEmit.
+  provider        String
+  status          ConnectorSetupStatus @default(not_connected)
+  /// Last legal transition's event kind, for fast "what just happened" reads.
+  lastEventKind   String?
+  /// Last error code from a validation_failed event — surfaced in UI.
+  lastErrorCode   String?
+  /// When the connector last reached `connected` (for "live for X days" pills).
+  firstConnectedAt DateTime?
+  /// Updated on every successful transition for sidebar staleness checks.
+  lastTransitionAt DateTime             @default(now())
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  transitions ConnectorSetupTransition[]
+
+  @@unique([organizationId, provider])
+  @@index([organizationId])
+  @@index([status])
+}
+
+model ConnectorSetupTransition {
+  id             String               @id @default(cuid())
+  sessionId      String
+  /// Status the session was in when the event arrived.
+  fromStatus     ConnectorSetupStatus
+  /// Status the session moved to. Equal to fromStatus when the transition was illegal.
+  toStatus       ConnectorSetupStatus
+  /// Closed-union event kind from ConnectorSetupEvent. Stored as String so the
+  /// audit row can record illegal events (e.g. event kinds added in a future
+  /// kernel version) without a schema migration.
+  eventKind      String
+  /// True iff the kernel returned ok:true. False rows are illegal-transition
+  /// attempts — kept for debugging "why didn't my Connect button work".
+  isLegal        Boolean
+  /// If !isLegal, the kernel's rejection reason ("illegal_transition"). Null otherwise.
+  rejectionReason String?
+  /// Optional event-payload fields (e.g. validation_failed.errorCode). JSON
+  /// so we don't need a column for every event variant.
+  eventPayload   Json?
+  /// The user who triggered the transition (operator click, OAuth callback, cron).
+  /// Null when the trigger was a system actor (cron, webhook).
+  actorUserId    String?
+  /// Human-readable actor label for system actors: "cron:health-check", "webhook:aws".
+  actorLabel     String?
+  createdAt      DateTime             @default(now())
+
+  session ConnectorSetupSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@index([isLegal, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 427 — alert escalation persistence (kernel in Phase 426).
+//
+// One row per (organization, signalRef) — each unique signal gets its own
+// session. signalRef is the application-level identifier (e.g.
+// "connector_setup:aws:org_42") so the bridge from Phase 418's sticky-error
+// classifier can route to the right session deterministically.
+// ---------------------------------------------------------------------------
+
+model AlertEscalationSession {
+  id                   String                @id @default(cuid())
+  organizationId       String
+  /// Application-level signal identifier — opaque to the kernel, but the
+  /// dashboard reads it to know which connector / service / metric is firing.
+  signalRef            String
+  status               AlertEscalationStatus @default(quiet)
+  /// Last legal event kind, for fast "what just happened" reads.
+  lastEventKind        String?
+  /// First time this session entered `fired`. Set once and never updated —
+  /// drives "open for X minutes" pills on the dashboard.
+  firstFiredAt         DateTime?
+  /// Timestamps for the most-recent human interactions, for surfacing on the card.
+  acknowledgedAt       DateTime?
+  acknowledgedByUserId String?
+  /// When the current snooze (if any) ends — drives the "snoozed for N more minutes" pill.
+  snoozedUntilAt       DateTime?
+  resolvedAt           DateTime?
+  resolvedByUserId     String?
+  lastTransitionAt     DateTime              @default(now())
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+
+  transitions AlertEscalationTransition[]
+
+  @@unique([organizationId, signalRef])
+  @@index([organizationId])
+  @@index([status])
+}
+
+model AlertEscalationTransition {
+  id              String                @id @default(cuid())
+  sessionId       String
+  fromStatus      AlertEscalationStatus
+  toStatus        AlertEscalationStatus
+  eventKind       String
+  isLegal         Boolean
+  rejectionReason String?
+  /// JSON event payload — signalRef for signal_fired, snoozeMinutes for
+  /// operator_snoozed, etc. Schemaless on purpose so future event variants
+  /// don't need a migration.
+  eventPayload    Json?
+  actorUserId     String?
+  actorLabel      String?
+  createdAt       DateTime              @default(now())
+
+  session AlertEscalationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+  @@index([isLegal, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 441 — ReleaseOps foundation entities.
+//
+// Application / Component / Repository / Environment + BranchEnvironmentPolicy.
+// These are the bottom-of-stack models that every later ReleaseOps phase
+// (release readiness snapshots, branch validation, evidence packs, drift
+// findings, manual-change reconciliation, etc.) hangs off of.
+//
+// Migration is intentionally NOT generated in this phase — same gradual
+// rollout pattern Phases 414/427 used. The application layer reads through
+// graceful-degradation paths until a dedicated migration phase lands.
+// ---------------------------------------------------------------------------
+
+enum ComponentKind {
+  app                // user-facing application service
+  infra              // infrastructure-as-code module
+  data_pipeline      // ETL/ELT/ADF/Databricks pipeline
+  connector          // integration / connector config
+  database           // schema / Liquibase / Flyway target
+  dag                // Airflow / orchestration DAG
+  iac                // Terraform / Pulumi module (alternative to infra when distinct)
+  artifact           // build artifact / container image source
+}
+
+enum GitProvider {
+  github
+  gitlab
+  azuredevops
+  other
+}
+
+enum EnvironmentTier {
+  dev
+  test
+  qa
+  uat
+  stage
+  preprod
+  prod
+}
+
+model Application {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// URL-safe slug. (organizationId, slug) must be unique.
+  slug            String
+  /// Operator-readable name.
+  name            String
+  /// Optional team owner (string for now — will become FK when Team model lands).
+  ownerTeamLabel  String?
+  /// Free-form business tier label ("tier_1" | "tier_2" | "internal" | ...).
+  /// Not an enum on purpose — every org defines their own tiering.
+  businessTier    String?
+  /// Optional description for the dashboard card.
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  components Component[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+}
+
+model Component {
+  id              String          @id @default(cuid())
+  organizationId  String
+  applicationId   String
+  /// Stable slug within the application.
+  slug            String
+  name            String
+  kind            ComponentKind
+  /// Optional repository where source lives. Components can be infra-only
+  /// (manifest in a different repo than the app) or fully repo-less.
+  repositoryId    String?
+  /// Explicit dependency graph — IDs of other Components this depends on.
+  /// Resolved at query time; no FK so cross-org accidents are impossible.
+  dependsOnIds    String[]        @default([])
+  ownerTeamLabel  String?
+  description     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  repository  Repository? @relation(fields: [repositoryId], references: [id], onDelete: SetNull)
+
+  @@unique([applicationId, slug])
+  @@index([organizationId])
+  @@index([kind])
+}
+
+model Repository {
+  id                  String      @id @default(cuid())
+  organizationId      String
+  provider            GitProvider
+  /// Organization or group on the provider (e.g. "my-org").
+  remoteOwner         String
+  /// Repo slug on the provider (e.g. "checkout-frontend").
+  remoteName          String
+  /// Full clone URL — convenience field; can be derived from owner/name.
+  remoteUrl           String
+  defaultBranch       String      @default("main")
+  /// Branch patterns that the provider enforces as protected.
+  /// Discovered later by the GitHub/GitLab/ADO adapters.
+  protectedBranches   String[]    @default([])
+  codeownersPresent   Boolean     @default(false)
+  prTemplatePresent   Boolean     @default(false)
+  /// Free-form tag — "monorepo" | "service" | "infra" | "data-pipeline" etc.
+  /// Used by the dashboard to filter inventories.
+  repoFlavor          String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  components Component[]
+  branchEnvironmentPolicies BranchEnvironmentPolicy[]
+
+  @@unique([organizationId, provider, remoteOwner, remoteName])
+  @@index([organizationId])
+  @@index([provider])
+}
+
+model Environment {
+  id              String          @id @default(cuid())
+  organizationId  String
+  /// Stable slug within the org. "dev" | "uat" | "prod" etc.
+  slug            String
+  name            String
+  tier            EnvironmentTier
+  /// Optional ordering hint — lower values surface higher in the dashboard.
+  displayOrder    Int             @default(0)
+  /// Free-form JSON for change-window rules. Validated by the application
+  /// layer, not the schema. Example shape:
+  ///   { "weekdays": ["Mon","Tue"], "utcWindows": [{"start":"22:00","end":"06:00"}] }
+  changeWindowRuleJson Json?
+  /// Optional AxiomApprovalPolicy ID that gates production deploys here.
+  /// Soft reference (no FK) so policy lifecycle is independent.
+  approvalPolicyId String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  branchEnvironmentPolicies BranchEnvironmentPolicy[]
+  deploymentTarget          DeploymentTarget?
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+  @@index([tier])
+}
+
+// ---------------------------------------------------------------------------
+// Real cloud deployment target for one Environment. The actual AWS trust
+// (OIDC identity provider + the role's trust policy) lives entirely on the
+// tenant's AWS account and their own GitHub Actions workflow — this row
+// only remembers which role/region/cluster/service a deploy for this
+// environment should target. roleArn is an ARN, never a credential; no
+// AWS secret of any kind is ever stored here or anywhere in Axiom.
+// ---------------------------------------------------------------------------
+
+model DeploymentTarget {
+  id             String   @id @default(cuid())
+  organizationId String
+  environmentId  String   @unique
+  /// Closed-union in the application layer: "aws" today.
+  provider       String   @default("aws")
+  roleArn        String
+  region         String
+  ecsCluster     String
+  ecsService     String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+}
+
+/// Credential-free observation record for a real deployment dispatched
+/// through the tenant's GitHub Actions workflow. The exact run ID prevents
+/// one repository's concurrent workflow runs from being confused.
+model DeploymentExecution {
+  id                 String    @id @default(cuid())
+  organizationId     String
+  /// Stable caller-supplied key. It is reserved transactionally before an
+  /// external dispatch so retries cannot launch the same deployment twice.
+  idempotencyKey     String?
+  environmentId      String
+  repositoryFullName String
+  /// Exact GitHub branch or tag selected for this dispatch.
+  sourceRef          String?
+  /// Closed union in application code: branch | tag.
+  sourceKind         String?
+  /// Commit resolved from sourceRef immediately before dispatch.
+  sourceCommitSha    String?
+  /// Soft reference to the enforced BranchEnvironmentPolicy, when present.
+  branchPolicyId     String?
+  /// Soft reference to the prior-environment DeploymentExecution this one
+  /// promotes, when the target environment's policy requires promotion.
+  promotedFromExecutionId String?
+  /// Verified GitHub PR evidence used by the policy guard, when required.
+  pullRequestUrl     String?
+  workflowRunId      String?
+  workflowUrl        String?
+  /// desktop | agent
+  source             String
+  triggeredByUserId  String
+  /// reserved | queued | in_progress | completed | tracking_unavailable
+  status             String    @default("queued")
+  conclusion         String?
+  /// not_started | in_progress | succeeded | failed | unknown
+  rollbackStatus     String    @default("not_started")
+  lastObservedAt     DateTime?
+  completedAt        DateTime?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, environmentId, createdAt])
+  @@unique([organizationId, idempotencyKey])
+  @@unique([organizationId, workflowRunId])
+}
+
+model BranchEnvironmentPolicy {
+  id              String      @id @default(cuid())
+  organizationId  String
+  repositoryId    String
+  environmentId   String
+  /// Branch / tag pattern (glob) — e.g. "release/*", "main", "v[0-9]+.*".
+  branchPattern   String
+  /// Hard requirements for deploys matching this (repo, env, branch) triple.
+  requireReleaseTag   Boolean @default(false)
+  requireCodeowners   Boolean @default(false)
+  requirePrLink       Boolean @default(false)
+  requireChangeTicket Boolean @default(false)
+  /// Soft reference to another Environment (no FK — policy lifecycle is
+  /// independent). When set, a deploy matching this policy must supply a
+  /// promotedFromExecutionId pointing at a completed, successful
+  /// DeploymentExecution against exactly this prior environment, carrying
+  /// the identical resolved commit — a real dev -> test -> prod chain
+  /// instead of independent, unrelated deploys per environment.
+  requirePromotionFromEnvironmentId String?
+  /// When true, the resolved commit must have a successful GitHub combined
+  /// status or check-run result (the repo's own CI/tests) before deploy.
+  requireTestsPassing Boolean @default(false)
+  /// Priority — lowest wins when multiple rules match. Default 100.
+  priority        Int         @default(100)
+  enabled         Boolean     @default(true)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  repository  Repository  @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  environment Environment @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, environmentId, branchPattern])
+  @@index([organizationId])
+  @@index([environmentId])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 442 — Release lifecycle entities.
+//
+// Release is the aggregate every other ReleaseOps concern hangs off of:
+// readiness scores, evidence packs, branch validations, change tickets,
+// manual-fix reconciliation, drift findings, communications. The
+// per-domain state machines (BranchValidationSession, ChangeTicketSession,
+// HelmDeploymentSession, etc.) compose to ONE release via signalRef.
+//
+// Status is intentionally NOT a Postgres enum here — a closed-union kernel
+// for Release transitions lands as a focused future phase. Plain String
+// with application-layer validation keeps Phase 442 mergeable today.
+// ---------------------------------------------------------------------------
+
+model Release {
+  id              String   @id @default(cuid())
+  organizationId  String
+  applicationId   String
+  /// Optional target environment — null until the operator commits a target.
+  targetEnvironmentId String?
+  /// Git release tag (e.g. "v2.7.0"). Required before status leaves "draft".
+  releaseTag      String?
+  /// Commit SHA the release tag points at. Snapshot at scope-finalization time.
+  commitSha       String?
+  /// Closed-union status string. Application layer enforces:
+  ///   draft | ready | deploying | deployed | rolled_back | failed
+  status          String   @default("draft")
+  /// When scope was frozen — null while still mutable.
+  scopeFinalizedAt DateTime?
+  scopeFinalizedByUserId String?
+  /// The Release this one would roll back TO if needed. Soft reference.
+  rollbackReferenceReleaseId String?
+  /// Planned deploy window (ISO timestamps in UTC).
+  plannedWindowStart DateTime?
+  plannedWindowEnd   DateTime?
+  /// Actual deploy start / end stamps populated by the runtime.
+  actualDeployStart DateTime?
+  actualDeployEnd   DateTime?
+  /// Free-form notes — operator-facing summary the dashboard surfaces.
+  summary           String?
+  createdAt       DateTime @default(now())
+  createdByUserId String?
+  updatedAt       DateTime @updatedAt
+
+  /// The single Repository this release's GitHub evidence (PRs, checks,
+  /// workflow runs) is sourced from. Deliberately NOT a Prisma relation —
+  /// same soft-reference convention as Component.repositoryId — so a
+  /// cross-tenant Repository row can never be attached even by accident;
+  /// the application layer (releaseRepositoryBinding.ts) is the only
+  /// writer and always re-checks organizationId itself.
+  ///
+  /// Set at most once, at release-creation time, and never changed after
+  /// that (no update path exists) — a release's evidence provenance must
+  /// not silently change after readiness/approval decisions have been
+  /// made against it. Null for releases created before this field
+  /// existed, and for any release created without an evidence repository
+  /// selected; the Playbook renders that as an explicit "not bound" state
+  /// (DataSourceState{available:false}), never a guess at which repo it
+  /// might be.
+  evidenceRepositoryId            String?
+  evidenceRepositoryBoundAt       DateTime?
+  evidenceRepositoryBoundByUserId String?
+
+  readinessSnapshots ReleaseReadinessSnapshot[]
+  evidencePack       ReleaseEvidencePack?
+
+  @@unique([organizationId, applicationId, releaseTag])
+  @@index([organizationId])
+  @@index([applicationId])
+  @@index([status])
+  @@index([targetEnvironmentId])
+  @@index([evidenceRepositoryId])
+}
+
+model ReleaseReadinessSnapshot {
+  id               String   @id @default(cuid())
+  organizationId   String
+  releaseId        String
+  evaluatedAt      DateTime @default(now())
+  /// 0-100 scoring per dimension. Application layer validates the range.
+  branchGovernance    Int
+  changeCompliance    Int
+  artifactTraceability Int
+  secretTraceability  Int
+  rollbackReadiness   Int
+  communicationReadiness Int
+  driftRisk           Int
+  manualReconciliation Int
+  /// Aggregate score the dashboard headline uses.
+  overallScore        Int
+  /// Closed-union risk level string: low | medium | high | critical.
+  riskLevel           String
+  /// Typed blocker list — schemaless JSON keeps the engine free to evolve
+  /// shape without a migration. Application layer validates.
+  blockersJson        Json
+  /// Evaluation provenance — "manual" | "auto" | "cron:<jobId>" etc.
+  evaluationSource    String
+
+  release Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@index([releaseId, evaluatedAt])
+  @@index([organizationId, evaluatedAt])
+}
+
+model ReleaseEvidencePack {
+  id              String   @id @default(cuid())
+  organizationId  String
+  releaseId       String   @unique
+  generatedAt     DateTime @default(now())
+  /// Set once the pack is sealed against further edits.
+  signedAt        DateTime?
+  /// Hex SHA-256 of contentJson at the moment of signedAt — tamper-evidence.
+  contentHash     String?
+  /// Full typed evidence payload — provider line items, change ticket,
+  /// approvals, validations, etc. Engine writes; UI reads.
+  contentJson     Json
+  /// Map of pre-generated exports: { pdf: "/.../release-v2.7.0.pdf", md: "..." }
+  /// Soft references — actual file storage is external.
+  exportRefsJson  Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  release Release @relation(fields: [releaseId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, generatedAt])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 443 — Policy engine.
+//
+// PolicyRule is the configurable per-org registry. Seed rules live in
+// lib/releaseops/policies/seed.ts and are upserted on org bootstrap.
+// PolicyViolation is the per-release record produced by evaluating the
+// active rule set against a release.
+//
+// Closed-union severity/blocking/exception fields are application-layer
+// enforced — keeps the schema migration-light.
+// ---------------------------------------------------------------------------
+
+model PolicyRule {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Stable key — matches the seed catalog. (org, key) is unique.
+  key             String
+  /// Operator-readable label for the dashboard.
+  label           String
+  /// Closed-union severity: low | medium | high | critical (string at the schema layer).
+  severity        String
+  /// If true, a violation BLOCKS the release transition out of draft/ready.
+  blocking        Boolean  @default(false)
+  /// If true, the rule can be waived via an approver role.
+  exceptionAllowed Boolean @default(false)
+  /// Role required to grant the exception ("manager" | "release_captain" | "emergency_change" | null).
+  approverRole    String?
+  /// If true, evidence must be attached to grant the exception.
+  evidenceRequired Boolean @default(false)
+  /// Optional auto-remediation key the recommendation engine can suggest.
+  autoRemediationKey String?
+  /// Free-form description shown in the policy registry UI.
+  description     String?
+  /// If false, the engine skips this rule entirely.
+  enabled         Boolean  @default(true)
+  /// Source — "seed" | "operator" | "imported" — for audit-of-audit purposes.
+  source          String   @default("seed")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  violations PolicyViolation[]
+
+  @@unique([organizationId, key])
+  @@index([organizationId])
+  @@index([severity])
+}
+
+model PolicyViolation {
+  id              String   @id @default(cuid())
+  organizationId  String
+  ruleId          String
+  releaseId       String
+  detectedAt      DateTime @default(now())
+  /// Closed-union status: open | exception_pending | exception_granted | resolved.
+  status          String   @default("open")
+  /// Free-form, engine-emitted message explaining what tripped the rule.
+  message         String
+  /// Optional remediation suggestion the engine attached at detection time.
+  remediation     String?
+  /// User who granted the exception, if any.
+  exceptionGrantedByUserId String?
+  exceptionGrantedAt DateTime?
+  /// JSON for any extra context the engine wants to keep (e.g. observed value).
+  contextJson     Json?
+
+  rule PolicyRule @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, status])
+  @@index([releaseId])
+  @@index([ruleId, status])
+}
+
+// ---------------------------------------------------------------------------
+// Internal VisionXIXLabs growth automation (LinkedIn) — Phase 1
+//
+// All rows below are INTERNAL-ONLY. They are written by admin operators
+// (gated by ADMIN_EMAILS) and by internal cron jobs. No client tenant
+// row references these. Nothing here gets surfaced under /dashboard/*.
+// ---------------------------------------------------------------------------
+
+model GrowthCampaign {
+  id          String   @id @default(cuid())
+  name        String
+  hypothesis  String
+  /// Closed-union ContentTopicCategory from lib/growth/growthModels.ts.
+  theme       String
+  startsAt    DateTime
+  endsAt      DateTime
+  /// Closed-union: planned | active | paused | completed | cancelled.
+  status      String   @default("planned")
+  /// Performance targets (JSON: impressions/engagements/visits/qualifiedLeads).
+  targetsJson Json?
+  /// Free-form notes / weekly summary.
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  drafts LinkedInPostDraft[]
+
+  @@index([status])
+  @@index([startsAt])
+}
+
+model LinkedInPostDraft {
+  id              String   @id @default(cuid())
+  /// Optional campaign membership.
+  campaignId      String?
+  /// Short editor-facing title (often the hook).
+  title           String
+  /// Opening hook — first 1-2 lines.
+  hook            String
+  /// Main body of the post.
+  body            String
+  /// Optional call-to-action line.
+  cta             String?
+  /// Hashtags (without '#' prefix is OK; rendered as-is).
+  hashtags        String[] @default([])
+  /// Closed-union ContentTopicCategory.
+  category        String
+  /// Free-text target audience descriptor.
+  targetAudience  String?
+  /// Closed-union DraftStatus: idea | drafted | in_review | approved | scheduled | published | rejected | needs_revision | failed.
+  status          String   @default("drafted")
+  /// 0..1 confidence the generator emitted.
+  confidence      Float?
+  /// ISO timestamp the operator wants this published at (only set when status=scheduled).
+  scheduledFor    DateTime?
+  publishedAt     DateTime?
+  /// LinkedIn URN returned by the share / UGC API (urn:li:share:... or urn:li:ugcPost:...).
+  linkedinPostUrn String?
+  /// Public LinkedIn URL once known.
+  linkedinPostUrl String?
+  /// Agent / workflow that drafted this row.
+  createdByAgent  String   @default("marketingContentDrafter")
+  /// Operator email that approved (when status >= approved).
+  approvedByEmail String?
+  approvedAt      DateTime?
+  rejectionReason String?
+  /// Free-text performance notes manually entered by operator.
+  performanceNotes String?
+  /// Public URL of generated brand image (R2 / S3 / Vercel Blob).
+  imageUrl         String?
+  /// LinkedIn-side image URN once uploaded via /rest/images.
+  imageUrn         String?
+  /// Prompt sent to the image model — kept for reproducibility / audit.
+  imagePrompt      String?
+  /// 0..1 score from the secondary brand-safety pass.
+  hallucinationScore Float?
+  /// Free-text explanation of the score from the secondary pass.
+  hallucinationNotes String?
+  /// True only when both confidence + hallucinationScore beat the autopilot threshold.
+  autopilotEligible Boolean @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  campaign     GrowthCampaign?                  @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  publishRuns  LinkedInPostPublishRun[]
+  analytics    LinkedInPostAnalyticsSnapshot[]
+
+  @@index([status])
+  @@index([scheduledFor])
+  @@index([campaignId])
+}
+
+model GrowthAutopilotDecision {
+  id                      String   @id @default(cuid())
+  ranAt                   DateTime @default(now())
+  /// Closed-union: published | queued_for_review | killed | disabled | error.
+  decision                String
+  /// The draft chosen for action (or considered best). Null when no drafts generated.
+  draftId                 String?
+  draftsConsidered        Int      @default(0)
+  bestConfidence          Float?
+  bestHallucinationScore  Float?
+  /// Threshold in force at decision time. Lets us reconstruct decisions if policy changes.
+  threshold               Float
+  /// When the auto-scheduled draft will publish (null when not scheduled).
+  scheduledFor            DateTime?
+  /// Free-text reason — useful for "queued_for_review" / "killed" / "error".
+  reason                  String?
+  /// Arbitrary detail bag (scores per draft, prompt versions, etc.).
+  detail                  Json?
+
+  @@index([ranAt])
+  @@index([decision])
+  @@index([draftId])
+}
+
+model LinkedInAccountConnection {
+  id                 String   @id @default(cuid())
+  /// Operator email that performed the OAuth connect.
+  ownerEmail         String   @unique
+  /// LinkedIn member URN (e.g. urn:li:person:abc).
+  linkedinUrn        String
+  /// LinkedIn member display name (cached at connect-time).
+  linkedinName       String?
+  /// Optional organization URN if posting to a company page.
+  organizationUrn    String?
+  /// Encrypted at rest via lib/security/credentialVault.ts (AES-256-GCM).
+  /// Rows written before this was wired up are still plaintext; posting.ts
+  /// and the daily-drafts cron treat a decrypt failure as an expired
+  /// token (forces reconnect) rather than trusting an unreadable value.
+  accessToken        String
+  /// Refresh token if returned (some scope combos return one). Encrypted
+  /// at rest the same way as accessToken.
+  refreshToken       String?
+  /// Scopes granted at connect-time, comma-joined.
+  scopes             String
+  /// When the access token expires.
+  expiresAt          DateTime
+  /// Last time we attempted to use the token.
+  lastUsedAt         DateTime?
+  /// Closed-union: connected | expired | revoked | error.
+  status             String   @default("connected")
+  /// Free-form error detail when status != connected.
+  lastError          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([status])
+}
+
+model LinkedInPostPublishRun {
+  id              String   @id @default(cuid())
+  draftId         String
+  /// Operator email that triggered the publish (or "cron" for scheduler).
+  triggeredBy     String
+  /// Closed-union: pending | success | failed | skipped_disabled | skipped_not_connected.
+  outcome         String
+  /// LinkedIn URN returned on success.
+  linkedinPostUrn String?
+  /// HTTP status from LinkedIn, when applicable.
+  httpStatus      Int?
+  /// Error message / response body excerpt when outcome=failed.
+  errorDetail     String?
+  /// Request/response sample (truncated) for diagnostics.
+  diagnosticsJson Json?
+  startedAt       DateTime @default(now())
+  finishedAt      DateTime?
+
+  draft LinkedInPostDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([draftId])
+  @@index([outcome])
+  @@index([startedAt])
+}
+
+model LinkedInPostAnalyticsSnapshot {
+  id              String   @id @default(cuid())
+  draftId         String
+  collectedAt     DateTime @default(now())
+  impressions     Int      @default(0)
+  reactions       Int      @default(0)
+  comments        Int      @default(0)
+  shares          Int      @default(0)
+  clicks          Int?
+  /// True when this was entered manually (analytics API not yet wired).
+  manualEntry     Boolean  @default(false)
+  enteredByEmail  String?
+  notes           String?
+
+  draft LinkedInPostDraft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@index([draftId, collectedAt])
+}
+
+model GrowthAuditLog {
+  id          String   @id @default(cuid())
+  /// Operator email or agent id ("cron:linkedin-publish", "marketingContentDrafter", etc.).
+  actor       String
+  /// Short verb — closed-union not enforced at DB layer; enforced in lib/growth/audit.ts.
+  action      String
+  /// Target kind (e.g. "linkedin_draft", "linkedin_connection", "campaign").
+  targetKind  String?
+  targetId    String?
+  /// Arbitrary detail bag (status transitions, response excerpts, etc.).
+  detail      Json?
+  occurredAt  DateTime @default(now())
+
+  @@index([actor])
+  @@index([action])
+  @@index([targetKind, targetId])
+  @@index([occurredAt])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 451 — Git / CI-CD discovery models.
+//
+// Adapter-populated rows that mirror what GitHub / GitLab / Azure DevOps
+// surface. The platform stores enough to evaluate branch validation
+// rules + render release-tag diffs without calling out to the provider
+// API on every page load. Discovery happens via a sync job (later
+// phase); these tables are the persisted projection.
+//
+// Closed-union states (PR state, CI status, run kind/status/conclusion)
+// stored as String — application layer validates, schema migration
+// stays light. Same pattern Phase 414 / 427 / 442 use.
+// ---------------------------------------------------------------------------
+
+model PullRequestRecord {
+  id                     String   @id @default(cuid())
+  organizationId         String
+  repositoryId           String
+  /// PR / MR number on the provider side.
+  number                 Int
+  title                  String
+  /// Closed-union: open | merged | closed.
+  state                  String
+  sourceBranch           String
+  targetBranch           String
+  /// HEAD commit SHA at observation time.
+  commitShaHead          String
+  mergedAt               DateTime?
+  mergedByUserId         String?
+  /// Linked story / defect IDs extracted from PR body or labels.
+  linkedStories          String[]  @default([])
+  /// Linked change ticket IDs.
+  linkedTickets          String[]  @default([])
+  /// Required approval count from branch protection at observation time.
+  approvalsRequiredCount Int       @default(0)
+  /// Approvals observed at last sync.
+  approvalsObservedCount Int       @default(0)
+  codeownersApproved     Boolean   @default(false)
+  /// Closed-union: pending | passing | failing | not_run.
+  ciStatus               String    @default("not_run")
+  /// Absolute provider URL.
+  webUrl                 String?
+  lastSyncedAt           DateTime  @default(now())
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@unique([repositoryId, number])
+  @@index([organizationId])
+  @@index([state])
+  @@index([commitShaHead])
+}
+
+model ReleaseTagRecord {
+  id                          String   @id @default(cuid())
+  organizationId              String
+  repositoryId                String
+  /// Tag name (e.g. "v2.7.0"). Unique within a repository.
+  tagName                     String
+  commitSha                   String
+  createdAt                   DateTime @default(now())
+  /// User who pushed the tag, if known.
+  taggerUserId                String?
+  /// JSON array of PullRequestRecord ids the tag includes since the
+  /// previous tag — computed at sync time.
+  prListJson                  Json?
+  /// JSON array of commit SHAs the tag includes since the previous tag.
+  commitListJson              Json?
+  /// JSON projection of the diff against the previous prod tag.
+  diffAgainstPreviousProdJson Json?
+  /// Operator-readable release notes — computed by
+  /// aiReleaseNoteGenerator.ts when enabled.
+  notes                       String?
+  lastSyncedAt                DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  @@unique([repositoryId, tagName])
+  @@index([organizationId])
+  @@index([commitSha])
+}
+
+model WorkflowRunRecord {
+  id              String   @id @default(cuid())
+  organizationId  String
+  repositoryId    String
+  /// Workflow file / display name (e.g. ".github/workflows/deploy.yml").
+  workflowName    String
+  /// Provider-side run id (string to accommodate GitHub numerics + GitLab IDs).
+  externalRunId   String
+  /// Closed-union: queued | in_progress | completed.
+  status          String
+  /// Closed-union when status=completed: success | failure | cancelled | skipped | neutral.
+  conclusion      String?
+  /// Closed-union: build | deploy | check | other — derived at sync time.
+  runKind         String   @default("other")
+  /// Commit the workflow ran against.
+  commitSha       String?
+  /// Branch / tag ref the workflow ran against.
+  ref             String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  /// Provider URL for the run page.
+  webUrl          String?
+  /// JSON snapshot of attached artifact metadata (names + paths + sizes).
+  artifactsJson   Json?
+  lastSyncedAt    DateTime @default(now())
+  createdAt       DateTime @default(now())
+
+  @@unique([repositoryId, externalRunId])
+  @@index([organizationId])
+  @@index([status])
+  @@index([commitSha])
+  @@index([runKind])
+}
+
+// ---------------------------------------------------------------------------
+// Phase 457 — Cherry-pick exception workflow.
+//
+// When a release's diff against the previous prod tag drops PRs
+// (long-running features sitting in non-prod branches that should
+// NOT ship yet), the platform requires an explicit cherry-pick
+// exception with: rationale, approvedPrIds, excludedPrIds, approver,
+// final-commit-validation flag.
+//
+// Closed-union status string enforced application-side.
+// ---------------------------------------------------------------------------
+
+model CherryPickException {
+  id                       String   @id @default(cuid())
+  organizationId           String
+  releaseId                String
+  repositoryId             String
+  /// Closed-union: requested | approved | denied | superseded.
+  status                   String   @default("requested")
+  /// Operator-readable explanation of why the cherry-pick is needed.
+  rationale                String
+  /// PR ids the operator explicitly approved for inclusion.
+  approvedPrIds            String[] @default([])
+  /// PR ids the operator explicitly excluded (would otherwise be in scope).
+  excludedPrIds            String[] @default([])
+  /// True when the operator has verified the final release tag only
+  /// contains approved commits.
+  hasFinalCommitValidation Boolean  @default(false)
+  /// User who requested the exception.
+  requestedByUserId        String
+  requestedAt              DateTime @default(now())
+  /// User who approved / denied (null while requested).
+  decidedByUserId          String?
+  decidedAt                DateTime?
+  /// Reason the approver gave; surfaced in audit.
+  decisionReason           String?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([releaseId])
+  @@index([repositoryId])
+}
+
+/// Phase 463 — change-ticket bridge.
+///
+/// One row per Jira issue, Linear issue, or ServiceNow change request.
+/// Application layer enforces closed-union strings on provider, status,
+/// ticketType, priority. Linked PRs/releases use soft-reference id
+/// arrays so a ticket can span multiple repos.
+model ChangeTicket {
+  id                String   @id @default(cuid())
+  organizationId    String
+  /// Closed-union provider: jira | linear | servicenow | other.
+  provider          String
+  /// Provider-side key (Jira "PROJ-123", Linear "ENG-456", ServiceNow "CHG0012345").
+  externalKey       String
+  externalId        String?
+  title             String
+  /// Closed-union ticket type: story | bug | task | change_request | incident | epic.
+  ticketType        String
+  /// Normalized status closed-union: pending | in_progress | approved | implemented | rejected | cancelled.
+  status            String
+  /// Closed-union priority: trivial | low | normal | high | critical.
+  priority          String   @default("normal")
+  assigneeUserId    String?
+  reporterUserId    String?
+  /// Free-form labels from the provider (component, version, custom field).
+  labels            String[] @default([])
+  /// Provider-side URL for one-click jump.
+  webUrl            String?
+  /// Soft reference: PRs linked to this ticket. Closed-string id list.
+  linkedPrRecordIds String[] @default([])
+  /// Soft reference: Releases that included this ticket.
+  linkedReleaseIds  String[] @default([])
+  openedAt          DateTime?
+  closedAt          DateTime?
+  /// Last time the connector pulled this row.
+  lastSyncedAt      DateTime @default(now())
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([organizationId, provider, externalKey])
+  @@index([organizationId, status])
+  @@index([organizationId, provider])
+  @@index([assigneeUserId])
+}
+
+/// Phase 485 — drift findings.
+///
+/// One row per resource where declared (IaC) state differs from observed
+/// (cloud / runtime) state. Application layer enforces closed-union
+/// strings on resourceKind, severity, status. The detector that
+/// populates this table reads from IaC providers (Terraform plan,
+/// Helm release, Liquibase changelog) + cloud providers (AWS/Azure/GCP)
+/// — it ships in a follow-on phase.
+model DriftFinding {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Resource kind closed-union: aws_resource | azure_resource | gcp_resource | k8s_resource | helm_release | terraform_resource | database_object | runtime_config.
+  resourceKind    String
+  /// Stable identifier (ARN, ResourceID, fully-qualified name).
+  resourceId      String
+  /// Operator-readable display name.
+  displayName     String
+  /// Source application this resource belongs to (FK soft).
+  applicationId   String?
+  /// Environment tier the resource lives in.
+  environmentTier String?
+  /// Closed-union severity: low | medium | high | critical.
+  severity        String
+  /// Closed-union status: open | acknowledged | suppressed | resolved.
+  status          String   @default("open")
+  /// Free-form short summary of the drift ("EBS volume type changed from gp3 to gp2").
+  summary         String
+  /// Declared (IaC) state snapshot at detection time.
+  declaredJson    Json?
+  /// Observed (runtime) state snapshot at detection time.
+  observedJson    Json?
+  /// Optional autocheck remediation key (Terraform module, kubectl patch, etc.).
+  remediationKey  String?
+  /// User who acknowledged or suppressed.
+  decidedByUserId String?
+  decidedAt       DateTime?
+  /// Reason given when suppressed/acknowledged.
+  decisionReason  String?
+  detectedAt      DateTime @default(now())
+  lastSeenAt      DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, resourceKind, resourceId])
+  @@index([organizationId, status])
+  @@index([organizationId, severity])
+  @@index([applicationId])
+}
+
+/// Phase 495 — manual-fix tracking.
+///
+/// Operators log out-of-band fixes engineers made directly against prod
+/// (or another non-CI/CD path) so the readiness evaluator's
+/// `hasManualProdFixes` signal has a concrete audit trail. One row per
+/// reconciled action — `status` flips from "pending" to "reconciled"
+/// once the fix is captured back into the source-of-truth (PR landed,
+/// IaC catch-up commit, change ticket retroactively filed, etc.).
+model ManualFix {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Soft reference to the Release the fix applies to. Null = standalone
+  /// hotfix that didn't trace to a release window.
+  releaseId       String?
+  /// Operator-readable summary of what was changed by hand.
+  summary         String
+  /// Closed-union: status of reconciliation. pending | reconciled | wont_fix.
+  status          String   @default("pending")
+  /// Environment tier the fix was applied in. Closed-union: prod | staging | dev | other.
+  environmentTier String   @default("prod")
+  /// ISO timestamp when the fix actually landed in the environment.
+  fixedAtIso      DateTime
+  /// User who logged the fix.
+  loggedByUserId  String
+  /// User who marked the fix reconciled.
+  reconciledByUserId String?
+  reconciledAt    DateTime?
+  /// Optional pointer back to the source-of-truth commit/PR that
+  /// captured the fix after the fact.
+  reconciliationRef String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, releaseId])
+  @@index([organizationId, fixedAtIso])
+}
+
+/// Phase 496 — release-ops audit event log.
+///
+/// Append-only record of every state-changing action against the
+/// platform: decide approvals, reconcile fixes, transition release,
+/// register repos, evaluate policies, etc. Drives the desktop +
+/// dashboard "audit log" inbox and provides the source of truth for
+/// compliance exports. Closed-union strings on `kind`, `subjectKind`,
+/// `outcome` — application layer enforces.
+model AuditEvent {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Closed-union event kind (e.g. cherry_pick.decide, release.transition,
+  /// manual_fix.reconcile, repository.create, policy.evaluate). Stored as
+  /// a free string; the application layer normalizes.
+  kind            String
+  /// Closed-union subject kind (release | cherry_pick | manual_fix |
+  /// repository | application | policy | drift_finding | change_ticket).
+  subjectKind     String
+  /// Stable id of the subject this event refers to.
+  subjectId       String
+  /// Closed-union outcome label (ok | rejected | error | skipped).
+  outcome         String   @default("ok")
+  /// Operator-readable one-line summary.
+  summary         String
+  /// Optional structured detail blob — engine writes, UI may render.
+  detailJson      Json?
+  /// User who took the action (null = system / cron / webhook).
+  actorUserId     String?
+  /// Optional correlation id to tie multiple events from one request.
+  correlationId   String?
+  createdAt       DateTime @default(now())
+
+  @@index([organizationId, createdAt])
+  @@index([organizationId, subjectKind, subjectId])
+  @@index([organizationId, kind])
+}
+
+/// Phase 497 — GitHub (and future GitLab/ADO) inbound webhook delivery log.
+///
+/// Distinct from the outbound `WebhookDelivery` model (Phase 395) which
+/// tracks attempts the platform makes against integrator endpoints.
+/// This model tracks payloads *received* from upstream providers.
+///
+/// Idempotent on (provider, deliveryId) — duplicate retries from
+/// providers are no-ops. Stores the verified payload so downstream
+/// reducers (release-tag refresh, PR sync, branch validation refresh)
+/// can hydrate themselves without a second HTTP roundtrip.
+/// Phase 517 — Slack notification config + delivery log.
+///
+/// Per-org Slack outbound config. When critical AGI signals fire
+/// (council block_deploy/rollback, triage auto-escalate, learning-
+/// loop signals), the platform sends to the org's Slack incoming
+/// webhook. Operators see what was sent in SlackNotificationLog.
+///
+/// Closed-union `signalKind`:
+///   council_critical | triage_auto_escalate | learning_loop_signal |
+///   remediation_p0
+model SlackNotificationConfig {
+  id              String   @id @default(cuid())
+  organizationId  String   @unique
+  webhookUrl      String
+  enabledSignalKindsJson Json?
+  defaultChannel  String?
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SlackNotificationLog {
+  id              String   @id @default(cuid())
+  organizationId  String
+  signalKind      String
+  subjectKind     String?
+  subjectId       String?
+  title           String
+  outcome         String   @default("sent")
+  httpStatus      Int?
+  errorMessage    String?
+  payloadJson     Json
+  generatedAt     DateTime @default(now())
+
+  @@index([organizationId, generatedAt])
+  @@index([organizationId, signalKind])
+  @@index([organizationId, outcome])
+}
+
+/// Phase 514 — AGI Council Decision.
+///
+/// Persists the outcome of a multi-voter run. Each voter is a pure
+/// function over AdvisorInputs that emits a candidate recommendation
+/// kind + confidence. The council aggregator picks the consensus
+/// (majority kind, weighted by confidence) and records the per-voter
+/// dissent for the learning loop.
+///
+/// Closed-union `consensusKind`: one of RECOMMENDATION_KINDS, or
+/// "no_consensus" when no kind has a majority.
+/// Closed-union `operatorDecision`: pending | accepted | overridden |
+/// dismissed.
+model AdvisorCouncilDecision {
+  id              String   @id @default(cuid())
+  organizationId  String
+  releaseId       String
+  /// Closed-union (see model docstring).
+  consensusKind   String
+  /// 0-100 — how much the voters agreed.
+  agreementScore  Int
+  /// Operator-readable title (matches the consensus kind's title).
+  title           String
+  /// Synthesized rationale citing the majority + dissent voices.
+  rationale       String
+  /// JSON array of per-voter records: { voterId, kind, confidence, rationale }.
+  votesJson       Json
+  /// Number of voters that contributed.
+  voterCount      Int
+  /// Inputs the council saw, snapshotted.
+  inputsJson      Json
+  /// Pinned engine version.
+  engineVersion   String
+  /// Closed-union: pending | accepted | overridden | dismissed.
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  /// If operator overrode, the kind they picked.
+  overrideKind    String?
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision])
+  @@index([organizationId, releaseId])
+  @@index([organizationId, consensusKind])
+}
+
+/// Phase 518 — AI rationale enrichment for a council decision.
+///
+/// A natural-language "why this consensus" narrative generated by
+/// Claude (via the platform's AIProviderManager). Best-effort: when
+/// the AI provider is unavailable, the engine returns a deterministic
+/// fallback narrative built from the decision's existing rationale.
+///
+/// Keyed by (organizationId, decisionId) so re-generation overwrites
+/// the previous narrative. Outputs include narrative prose, a list of
+/// risk factors, and a list of suggested operator next-actions.
+///
+/// Closed-union `outcome`: ai_generated | fallback_rules | error.
+model AiRationaleEnrichment {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Which engine surface this enriches. Phase 518 ships "council";
+  /// future phases add "triage", "remediation", etc.
+  targetKind      String   @default("council")
+  targetId        String
+  narrative       String
+  /// JSON array of strings — each a single risk factor.
+  riskFactorsJson Json
+  /// JSON array of strings — each a single suggested next action.
+  nextActionsJson Json
+  /// Closed-union: ai_generated | fallback_rules | error.
+  outcome         String   @default("ai_generated")
+  errorMessage    String?
+  modelHint       String?
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, targetKind, targetId])
+  @@index([organizationId, targetKind, generatedAt])
+}
+
+/// Phase 523 — Persisted AGI meta-summary.
+///
+/// Each "Summarize recent thinking" call on the AGI Memory dashboard
+/// writes one row here. Operators get a longitudinal view of the AGI's
+/// reasoning trajectory: was the AI provider healthy yesterday, what
+/// themes recurred, what next-actions did the AGI propose?
+///
+/// Closed-union `outcome`: ai_generated | fallback_rules | error.
+/// `targetKind` is null when the summary was over all surfaces;
+/// otherwise it pins to a specific surface ("council", "triage", ...).
+model AiMemorySummaryLog {
+  id                String   @id @default(cuid())
+  organizationId    String
+  /// Surface scope: null means all surfaces, else "council" / "triage" / ...
+  targetKind        String?
+  narrative         String
+  /// JSON array of strings.
+  themesJson        Json
+  /// JSON array of strings — what the operator should review.
+  notableEntriesJson Json
+  outcome           String   @default("ai_generated")
+  errorMessage      String?
+  modelHint         String?
+  /// Number of memory entries the summary covered.
+  windowSize        Int
+  /// 0-100, share of window entries with outcome=ai_generated.
+  aiAvailabilityPct Int
+  engineVersion     String
+  generatedAt       DateTime @default(now())
+
+  @@index([organizationId, generatedAt])
+  @@index([organizationId, targetKind, generatedAt])
+}
+
+/// Phase 525 — Proactive AGI Suggestion.
+///
+/// The AGI generates concrete "operator next-action" suggestions from
+/// patterns in the rationale memory + persisted summaries + current
+/// release state. Each suggestion is a deep-link to a source object
+/// plus a rationale and confidence.
+///
+/// Closed-union `kind`:
+///   review_release      — check a specific release
+///   tighten_protection  — strengthen branch protection on a repo
+///   reconcile_manual_fix — close out an unreconciled manual fix
+///   investigate_incident — dig into a triage row with low confidence
+///   reduce_fallback_rate — AI provider is flaky, fix configuration
+///   review_pattern       — recurring pattern worth a human read
+///   no_action_needed     — explicit "nothing to do right now"
+///
+/// Closed-union `operatorDecision`: pending | acted | dismissed.
+/// Closed-union `outcome`: ai_generated | fallback_rules | error.
+model ProactiveAgiSuggestion {
+  id              String   @id @default(cuid())
+  organizationId  String
+  kind            String
+  title           String
+  rationale       String
+  /// Optional deep-link target: the surface the operator should open.
+  targetKind      String?
+  /// Optional deep-link target id (release id, repo id, incident id, ...).
+  targetId        String?
+  confidence      Int      // 0-100
+  /// JSON array of citation strings referencing memory entries / summaries.
+  citationsJson   Json
+  /// Closed-union: pending | acted | dismissed.
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  /// Closed-union: ai_generated | fallback_rules | error.
+  outcome         String   @default("ai_generated")
+  errorMessage    String?
+  modelHint       String?
+  engineVersion   String
+  /// Snapshot of the memory window the suggestion came from.
+  windowSize      Int
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision, generatedAt])
+  @@index([organizationId, kind])
+  @@index([organizationId, targetKind, targetId])
+}
+
+/// Phase 529 — Persisted AGI Chat Turn.
+///
+/// Every "Ask the AGI" question + answer pair (from Phase 524) lands
+/// here. Gives operators cross-session recall of what they asked the
+/// AGI about and what it answered. Audit trail for AGI responses.
+///
+/// Closed-union `outcome`: ai_generated | fallback_rules | error.
+model AiMemoryChatTurn {
+  id              String   @id @default(cuid())
+  organizationId  String
+  userId          String?
+  question        String
+  answer          String
+  /// JSON array of citation id strings the model echoed back.
+  citationsJson   Json
+  /// Phase 530 — JSON array of CitationDetail objects so chat history
+  /// rehydrates with the same deep-links + narrative previews the
+  /// ephemeral ask response showed. Nullable for forwards-compat
+  /// with Phase 529 rows that predate this column.
+  citationDetailsJson Json?
+  /// Closed-union outcome of the engine call.
+  outcome         String   @default("ai_generated")
+  errorMessage    String?
+  modelHint       String?
+  /// Snapshot of the context window the chat saw.
+  contextEntriesCount  Int
+  contextSummariesCount Int
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+
+  @@index([organizationId, generatedAt])
+  @@index([organizationId, userId, generatedAt])
+}
+
+/// Phase 531 — AI call log.
+///
+/// One row per AI provider call across every engine (rationale ×3,
+/// voter, summary, chat, suggestion). Powers:
+///   • Per-engine latency p50/p95 stats
+///   • Token usage + cost rollups
+///   • Circuit breaker state machine — opens after N consecutive
+///     errors in a rolling window, half-open after a cooldown
+///   • Engineer-facing AI call log dashboard
+///
+/// Closed-union `outcome`:
+///   ok         — provider returned 2xx with parseable body
+///   error      — provider returned 5xx / parse failed
+///   timeout    — call took longer than configured timeout
+///   short_circuit — caller declined to call because the breaker was open
+///
+/// Closed-union `engineName` (informational, not enforced — engineers
+/// can add new engines without a migration):
+///   council_rationale · triage_rationale · remediation_rationale ·
+///   council_voter · memory_summary · memory_chat ·
+///   proactive_suggestion · ad_hoc
+model AiCallLog {
+  id              String   @id @default(cuid())
+  organizationId  String?
+  engineName      String
+  model           String?
+  outcome         String
+  errorMessage    String?
+  /// Time spent in the provider call, milliseconds.
+  latencyMs       Int
+  promptTokens    Int?
+  completionTokens Int?
+  totalTokens     Int?
+  startedAt       DateTime @default(now())
+
+  @@index([engineName, startedAt])
+  @@index([organizationId, engineName, startedAt])
+  @@index([outcome, startedAt])
+}
+
+/// Phase 513 — Autonomous Tick log.
+///
+/// Append-only record of each autonomous cron tick. Operators see
+/// what the AGI did on its own via /dashboard/autonomy.
+model AutonomousTickLog {
+  id              String   @id @default(cuid())
+  organizationId  String
+  totalRuns       Int
+  okRuns          Int
+  errorRuns       Int
+  skippedRuns     Int
+  reportJson      Json
+  generatedAt     DateTime @default(now())
+
+  @@index([organizationId, generatedAt])
+}
+
+/// Phase 512 — Autonomous Remediation Proposals.
+///
+/// Pairs with IncidentTriage: triage says what's broken + how urgent;
+/// remediation proposals say WHAT TO DO about it. The engine reads
+/// triage priority + release context + similar past resolutions and
+/// emits specific remediations (rollback, flag-disable, restart, etc.)
+/// with prerequisites, expected impact, and rollback-if-fails plans.
+///
+/// Closed-union `kind`:
+///   rollback_release | disable_feature_flag | increase_replicas |
+///   restart_service | redirect_traffic | throttle_requests |
+///   escalate_to_vendor | no_action_recommended
+///
+/// Closed-union `operatorDecision`:
+///   pending | accepted | rejected | implemented | dismissed
+model RemediationProposal {
+  id              String   @id @default(cuid())
+  organizationId  String
+  incidentId      String
+  triageId        String?
+  kind            String
+  title           String
+  description     String
+  confidence      Int
+  severity        String   @default("medium")
+  prerequisitesJson Json
+  expectedImpact  String
+  rollbackPlan    String
+  estimatedMinutes Int
+  reversible      Boolean  @default(true)
+  rationale       String
+  inputsJson      Json
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  linkedManualFixId String?
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision])
+  @@index([organizationId, incidentId])
+  @@index([organizationId, kind])
+}
+
+/// Phase 509 — Autonomous Incident Triage.
+///
+/// One row per triage of a DeploymentIncident. The pure triage engine
+/// (releaseAdvisorTriageEngine.ts) reads incident + release + advisor
+/// recs + similar past incidents and projects priority + owner +
+/// ETA + recommended runbook. Operator can accept or override.
+///
+/// Closed-union `priority`: P0 | P1 | P2 | P3.
+/// Closed-union `operatorDecision`:
+///   pending | accepted | overridden | dismissed.
+model IncidentTriage {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// FK soft reference to DeploymentIncident.
+  incidentId      String
+  /// Closed-union priority. Lower number = more urgent.
+  priority        String
+  /// Suggested owner team (e.g. "platform-sre", "payments", "infra").
+  suggestedOwnerTeam String
+  /// Estimated time-to-mitigate in minutes (rough heuristic).
+  estimatedTimeToMitigateMinutes Int
+  /// Free-form recommended runbook key (matches existing SOP slugs).
+  recommendedRunbook String?
+  /// Suggest auto-escalate to on-call?
+  autoEscalate    Boolean  @default(false)
+  /// 0-100 engine confidence.
+  confidence      Int
+  /// Operator-readable triage summary + rationale.
+  rationale       String
+  /// JSON snapshot of the inputs at triage time (for audit).
+  inputsJson      Json
+  /// Closed-union operatorDecision. Pending until operator acts.
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  /// If the operator overrode, capture their priority choice.
+  overridePriority String?
+  /// Engine version pin.
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision])
+  @@index([organizationId, incidentId])
+  @@index([organizationId, priority])
+}
+
+/// Phase 507 — Autonomous Policy Proposals.
+///
+/// When patterns emerge across releases (e.g. 3+ releases with open
+/// critical incidents and weak branch protection on main), the
+/// PolicyProposalEngine suggests a new PolicyRule for the org to
+/// adopt. Operator accepts → the rule is upserted into PolicyRule.
+/// Rejects → captured as training data with a reason.
+///
+/// Closed-union `kind`:
+///   require_strong_branch_protection
+///   require_rollback_rehearsal
+///   require_evidence_pack_signed
+///   require_manual_fix_reconciliation
+///   require_release_notes_published
+///   limit_force_push
+///   require_change_ticket
+///
+/// Closed-union `operatorDecision`:
+///   pending | accepted | rejected | dismissed | superseded
+model PolicyProposal {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Closed-union kind — see model docstring.
+  kind            String
+  /// Stable suggested rule key the operator can override before accepting.
+  suggestedRuleKey String
+  /// Operator-readable title.
+  title           String
+  /// Free-form rationale citing the patterns the engine observed.
+  rationale       String
+  /// 0-100 confidence.
+  confidence      Int
+  /// Closed-union severity: low | medium | high | critical.
+  severity        String   @default("medium")
+  /// JSON-encoded evidence: which releases, which incidents, which fixes.
+  evidenceJson    Json
+  /// JSON suggested rule body the operator can edit before accepting.
+  suggestedRuleBodyJson Json
+  /// Closed-union: pending | accepted | rejected | dismissed | superseded.
+  operatorDecision String  @default("pending")
+  decidedByUserId String?
+  decidedAt       DateTime?
+  decisionNote    String?
+  /// Once accepted, this is the PolicyRule.id the proposal upserted.
+  acceptedRuleId  String?
+  /// Engine version that produced this proposal.
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([organizationId, suggestedRuleKey, operatorDecision])
+  @@index([organizationId, operatorDecision])
+  @@index([organizationId, generatedAt])
+}
+
+/// Phase 506 — Autonomous Release Advisor.
+///
+/// One row per recommendation generated by the pure decision engine
+/// (lib/releaseops/releaseAdvisorEngine.ts). Captures the AI's
+/// suggested action, confidence, rationale, and the operator's
+/// final decision. Drives the AGI cockpit for ReleaseOps.
+///
+/// Closed-union `kind` (suggested action):
+///   block_deploy | proceed_with_caution | proceed | rollback |
+///   needs_evidence | propose_freeze | propose_manual_fix_log |
+///   propose_branch_protection_strengthen
+///
+/// Closed-union `operatorDecision`:
+///   pending | accepted | rejected | implemented | dismissed
+model AdvisorRecommendation {
+  id              String   @id @default(cuid())
+  organizationId  String
+  releaseId       String
+  /// Closed-union kind — see model docstring.
+  kind            String
+  /// 0-100 confidence the engine assigns.
+  confidence      Int
+  /// One-line title the UI surfaces.
+  title           String
+  /// Free-form summary of why the engine made this call.
+  rationale       String
+  /// JSON array of `{ label, href }` suggested actions.
+  suggestedActionsJson Json
+  /// Closed-union severity: low | medium | high | critical.
+  severity        String   @default("medium")
+  /// Closed-union operatorDecision — pending until the operator acts.
+  operatorDecision String  @default("pending")
+  /// User who decided.
+  decidedByUserId String?
+  decidedAt       DateTime?
+  /// Free-form note the operator left when accepting/rejecting.
+  decisionNote    String?
+  /// Inputs the engine saw, snapshotted at generation time for audit.
+  inputsJson      Json
+  /// Engine version that produced this recommendation. Bump when the
+  /// decision logic changes so historical rows stay interpretable.
+  engineVersion   String
+  generatedAt     DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, operatorDecision])
+  @@index([organizationId, releaseId])
+  @@index([organizationId, generatedAt])
+}
+
+/// Phase 502 — GitHub App installation persistence.
+///
+/// One row per (organizationId, githubInstallationId) — the org's
+/// authorized link to a GitHub account or org. Captured from the
+/// post-install callback. Future phases mint installation access
+/// tokens from this row to call the GitHub REST API.
+///
+/// Closed-union accountType: User | Organization.
+/// Closed-union repositorySelection: all | selected.
+model GitHubInstallation {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  /// Provider-side numeric installation id (cast to string).
+  githubInstallationId  String
+  /// GitHub login (e.g. "acme-corp").
+  accountLogin          String
+  /// User | Organization.
+  accountType           String
+  /// all | selected.
+  repositorySelection   String   @default("selected")
+  /// Closed-union status: active | suspended | revoked.
+  status                String   @default("active")
+  /// Closed-union sourceFlow: install | request | manual.
+  sourceFlow            String   @default("install")
+  /// User who initiated the install handshake.
+  installedByUserId     String?
+  installedAt           DateTime @default(now())
+  suspendedAt           DateTime?
+  revokedAt             DateTime?
+  /// Last time we successfully called GitHub on behalf of this install.
+  lastSeenAt            DateTime?
+  /// Audit raw — the callback URL params, in case GitHub adds fields.
+  rawCallbackJson       Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([organizationId, githubInstallationId])
+  @@index([organizationId, status])
+  @@index([githubInstallationId])
+}
+
+/// Tenant-owned OAuth connection for a deployment integration.
+///
+/// This intentionally does not reuse cloud connector records: the encrypted
+/// OAuth payload and authorization-attempt history have different lifecycle,
+/// revocation, and retention requirements. Provider is a closed union in the
+/// application layer: github | slack | teams | linear.
+model TenantIntegrationConnection {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  provider              String
+  /// pending | active | needs_attention | suspended | revoked.
+  status                String   @default("pending")
+  /// Context-bound AES-GCM v2 envelope. Never returned to browser or desktop.
+  encryptedCredential   String
+  /// Provider workspace, tenant, installation, or app-user identifier, when available.
+  externalAccountId     String?
+  /// Granted scopes only; no bearer token or provider payload.
+  scopesJson            Json?
+  consentedByUserId     String?
+  consentedAt           DateTime @default(now())
+  lastValidatedAt       DateTime?
+  revokedAt             DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@unique([organizationId, provider])
+  @@index([organizationId, status])
+}
+
+/// A click-configured Airflow rule. Credentials remain in the encrypted
+/// TenantIntegrationConnection; this row contains only identifiers and the
+/// governed action that may be proposed after a matching DAG completion.
+model AirflowAutomation {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  connectionId          String
+  name                  String
+  dagId                 String
+  enabled               Boolean  @default(true)
+  /// dag_completion | schedule
+  triggerMode           String
+  /// Optional five-field UTC cron expression for scheduled rules.
+  scheduleCron           String?
+  /// success | failed | any
+  requiredDagState      String   @default("success")
+  /// Other DAGs whose latest run must be successful before this rule may act.
+  dependencyDagIds      String[] @default([])
+  /// none | open_pull_request | deploy
+  actionType            String
+  repositoryFullName    String?
+  sourceRef             String?
+  sourceKind            String?  @default("branch")
+  pullRequestBase       String?
+  pullRequestTitle      String?
+  environmentId         String?
+  promotedFromExecutionId String?
+  approvalRequired      Boolean  @default(true)
+  maxRetries            Int      @default(3)
+  retryDelaySeconds     Int      @default(60)
+  notifyOnSuccess       Boolean  @default(true)
+  notifyOnFailure       Boolean  @default(true)
+  lastEvaluatedAt       DateTime?
+  nextScheduledAt       DateTime?
+  createdByUserId       String
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  executions AirflowAutomationExecution[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId, enabled])
+  @@index([connectionId, dagId])
+  @@index([nextScheduledAt])
+}
+
+/// Durable, idempotent evidence for every Airflow rule evaluation and action.
+model AirflowAutomationExecution {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  automationId          String
+  sourceDagId           String
+  sourceDagRunId        String
+  sourceDagState        String
+  /// pending_approval | queued | running | succeeded | failed | needs_reconciliation | rejected | rolled_back
+  status                String   @default("pending_approval")
+  attempt               Int      @default(0)
+  nextRetryAt           DateTime?
+  errorCode             String?
+  resultJson            Json?
+  deploymentExecutionId String?
+  decidedByUserId       String?
+  decidedAt             DateTime?
+  completedAt           DateTime?
+  rollbackStatus        String   @default("not_required")
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  automation AirflowAutomation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+
+  @@unique([automationId, sourceDagRunId])
+  @@index([organizationId, status, createdAt])
+  @@index([status, nextRetryAt])
+}
+
+/// Secret-free mirror of Airflow run state used for completion monitoring and
+/// desktop history. DAG conf and task logs are deliberately not persisted.
+model AirflowDagRunSnapshot {
+  id             String   @id @default(cuid())
+  organizationId String
+  connectionId   String
+  dagId          String
+  dagRunId       String
+  state          String
+  logicalDate    DateTime?
+  startedAt      DateTime?
+  endedAt        DateTime?
+  lastSeenAt     DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([connectionId, dagId, dagRunId])
+  @@index([organizationId, dagId, lastSeenAt])
+  @@index([state, lastSeenAt])
+}
+
+/// A one-time browser authorization attempt. State is stored as a digest;
+/// the raw value never reaches the database. PKCE verifier ciphertext is
+/// optional because Slack does not use PKCE while Microsoft and Linear
+/// authorization code flows do.
+model TenantIntegrationAuthorizationAttempt {
+  id                    String   @id @default(cuid())
+  organizationId        String
+  provider              String
+  stateDigest           String   @unique
+  redirectUri           String
+  encryptedPkceVerifier String?
+  initiatedByUserId     String
+  expiresAt             DateTime
+  consumedAt            DateTime?
+  createdAt             DateTime @default(now())
+
+  @@index([organizationId, provider, expiresAt])
+  @@index([expiresAt])
+}
+
+/// Phase 501 — Deployment incident linked to a release.
+///
+/// Captures post-deploy spikes / regressions attributed to a specific
+/// Release. Closed-union state machine: open → mitigated → resolved
+/// (or wont_fix). Distinct from any platform-level incident model —
+/// this one is owned by ReleaseOps and is the "effect" side of the
+/// manual-fix "cause" loop.
+model DeploymentIncident {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// FK soft reference to Release.
+  releaseId       String
+  /// Closed-union severity: low | medium | high | critical.
+  severity        String
+  /// Closed-union status: open | mitigated | resolved | wont_fix.
+  status          String   @default("open")
+  /// Short title the dashboard surfaces.
+  title           String
+  /// Free-form one-paragraph summary.
+  summary         String?
+  /// Soft ref to the manual-fix that addressed this (post-resolution).
+  manualFixId     String?
+  /// User who reported the incident.
+  reportedByUserId String
+  reportedAt      DateTime @default(now())
+  /// User who flipped status from open → mitigated.
+  mitigatedByUserId String?
+  mitigatedAt     DateTime?
+  /// User who flipped status to resolved / wont_fix.
+  resolvedByUserId String?
+  resolvedAt      DateTime?
+  /// Outbound URL — Linear ticket, status-page entry, etc.
+  externalUrl     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, releaseId])
+  @@index([organizationId, severity])
+}
+
+/// Phase 500 — Release notes draft.
+///
+/// One row per Release. Bullets are stored as a JSON array so the UI
+/// can render the same shape the AI generator (lib/releaseops/
+/// aiReleaseNoteGenerator.ts) produces. Closed-union status: draft |
+/// reviewed | published — reject-by-default state machine.
+model ReleaseNotesDraft {
+  id              String   @id @default(cuid())
+  organizationId  String
+  releaseId       String   @unique
+  /// Closed-union status: draft | reviewed | published.
+  status          String   @default("draft")
+  /// JSON array of release-note bullets (strings).
+  bulletsJson     Json
+  /// Free-form headline the operator can override.
+  headline        String?
+  /// Source of the draft: ai | manual | imported.
+  source          String   @default("manual")
+  /// User who reviewed the draft (transition draft → reviewed).
+  reviewedByUserId String?
+  reviewedAt      DateTime?
+  /// User who published the draft (transition reviewed → published).
+  publishedByUserId String?
+  publishedAt     DateTime?
+  /// Optional outbound URL where the published notes live.
+  publishedUrl    String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, releaseId])
+}
+
+/// Phase 499 — branch protection snapshot.
+///
+/// One row per (repositoryId, branchName). Captures whether merges
+/// require PR review, status checks, signed commits, etc. The
+/// readiness evaluator's branchGovernance signal reads from here.
+/// Snapshot upsert is idempotent on (repositoryId, branchName).
+model BranchProtectionSnapshot {
+  id                            String   @id @default(cuid())
+  organizationId                String
+  repositoryId                  String
+  /// Branch this protection rule applies to (e.g. "main"). Together with
+  /// repositoryId this is unique.
+  branchName                    String
+  /// Closed-union strength label: strong | weak | none.
+  strength                      String
+  /// Direct signals projected from the provider payload.
+  requiresPullRequest           Boolean
+  requiredReviewCount           Int      @default(0)
+  dismissStaleReviews           Boolean  @default(false)
+  requireCodeOwnerReviews       Boolean  @default(false)
+  requiresStatusChecks          Boolean  @default(false)
+  requiredStatusCheckContexts   String[] @default([])
+  requiresSignedCommits         Boolean  @default(false)
+  requiresLinearHistory         Boolean  @default(false)
+  enforceAdmins                 Boolean  @default(false)
+  allowsForcePushes             Boolean  @default(false)
+  allowsDeletions               Boolean  @default(false)
+  /// Source provenance: "github_api" | "manual" | "import".
+  source                        String   @default("github_api")
+  /// Raw provider payload for audit / re-projection.
+  rawJson                       Json?
+  fetchedAt                     DateTime @default(now())
+  updatedAt                     DateTime @updatedAt
+
+  @@unique([repositoryId, branchName])
+  @@index([organizationId, repositoryId])
+  @@index([organizationId, strength])
+}
+
+model InboundWebhookDelivery {
+  id              String   @id @default(cuid())
+  organizationId  String
+  /// Closed-union provider: github | gitlab | azuredevops.
+  provider        String
+  /// Provider-side delivery id (X-GitHub-Delivery, etc.). Together
+  /// with provider this is unique — used for idempotency.
+  deliveryId      String
+  /// Closed-union event kind (e.g. "push", "pull_request", "release",
+  /// "workflow_run"). Free-string at schema level.
+  eventKind       String
+  /// Optional action sub-type ("opened", "closed", "synchronize").
+  eventAction     String?
+  /// Outcome of the dispatch: accepted | ignored | error.
+  outcome         String   @default("accepted")
+  /// Free-form summary the dashboard surfaces.
+  summary         String
+  /// Verified raw payload, parsed.
+  payloadJson     Json
+  receivedAt      DateTime @default(now())
+
+  @@unique([provider, deliveryId])
+  @@index([organizationId, receivedAt])
+  @@index([organizationId, provider, eventKind])
+}
+
+/// TAURI intake is tenant-scoped; raw secrets are prohibited from payloadJson.
+model TauriDeploymentRequest {
+  id               String   @id @default(cuid())
+  organizationId   String
+  requesterUserId  String
+  title             String
+  status            String   @default("draft")
+  correlationId     String
+  intakeJson        Json
+  version           Int      @default(1)
+  submittedAt       DateTime?
+  closedAt          DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  versions          TauriDeploymentRequestVersion[]
+  playbooks         TauriPlaybook[]
+  auditEvents       TauriAuditEvent[]
+
+  @@unique([organizationId, correlationId])
+  @@index([organizationId, status, createdAt])
+}
+
+/// Immutable snapshot of each submitted or revised deployment request.
+model TauriDeploymentRequestVersion {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  deploymentRequestId String
+  version             Int
+  intakeJson          Json
+  contentHash         String
+  createdByUserId     String
+  createdAt           DateTime @default(now())
+  deploymentRequest   TauriDeploymentRequest @relation(fields: [deploymentRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([deploymentRequestId, version])
+  @@index([organizationId, createdAt])
+}
+
+model TauriPlaybook {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  deploymentRequestId String
+  version             Int
+  status              String   @default("submitted")
+  playbookJson        Json
+  contentHash         String
+  createdByUserId     String
+  createdAt           DateTime @default(now())
+  deploymentRequest   TauriDeploymentRequest @relation(fields: [deploymentRequestId], references: [id], onDelete: Cascade)
+
+  @@unique([deploymentRequestId, version])
+  @@index([organizationId, status, createdAt])
+}
+
+/// Append-only TAURI audit record. Application code exposes create/find only.
+model TauriAuditEvent {
+  id                  String   @id @default(cuid())
+  organizationId      String
+  deploymentRequestId String
+  actorUserId         String
+  actorRole           String
+  action              String
+  previousValueJson   Json?
+  newValueJson        Json?
+  source              String
+  correlationId       String
+  evidenceLink        String?
+  timeZone            String
+  occurredAt          DateTime @default(now())
+  deploymentRequest   TauriDeploymentRequest @relation(fields: [deploymentRequestId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, deploymentRequestId, occurredAt])
+  @@index([organizationId, correlationId])
+}
+
+/// Durable idempotency and reconciliation ledger for consequential deployment
+/// actions. The application layer owns the closed status/kind unions.
+model TauriDeploymentOperation {
+  id                   String   @id
+  organizationId       String
+  deploymentRequestId  String
+  idempotencyKey       String
+  kind                 String
+  clientId             String
+  environmentId        String
+  contextDigest        String
+  status               String   @default("queued")
+  attemptCount         Int      @default(0)
+  lastAttemptAt        DateTime?
+  lastReconciledAt     DateTime?
+  externalReference    String?
+  errorSummary         String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([organizationId, idempotencyKey])
+  @@index([organizationId, deploymentRequestId, createdAt])
+  @@index([organizationId, status, updatedAt])
+}
+
+/// Incident-response evidence record — the named gap identified in
+/// docs/COMPLIANCE_CONTROL_MAPPING.md ("there is currently no dedicated
+/// incident-response runbook or recovery evidence model"). status and
+/// severity are closed-union strings validated in
+/// lib/incident/incidentLifecycle.ts, not Postgres enums — matching the
+/// Release.status / TenantIntegrationConnection.status convention used
+/// everywhere else newer in this schema, so extending the union never
+/// requires an ALTER TYPE migration.
+model IncidentRecord {
+  id                 String    @id @default(cuid())
+  organizationId     String
+  /// Closed-union: detected | investigating | mitigated | resolved | postmortem_complete
+  status             String    @default("detected")
+  /// Closed-union: low | medium | high | critical
+  severity           String
+  title              String
+  description        String?
+  detectedAt         DateTime  @default(now())
+  detectedByUserId   String?
+  /// Soft reference, no FK — same convention as Component.repositoryId.
+  /// An incident record is permanent evidence and must survive
+  /// independently of any single affected tenant's own lifecycle.
+  affectedOrganizationIds String[] @default([])
+  mitigatedAt            DateTime?
+  resolvedAt             DateTime?
+  postmortemCompletedAt  DateTime?
+  postmortemUrl          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([organizationId, status])
+  @@index([organizationId, detectedAt])
+}
+
+/// Platform-level singleton: the GitHub App credential produced by the
+/// GitHub App Manifest flow (one-time operator setup, NOT per-tenant).
+/// Distinct from TenantIntegrationConnection (per-workspace Slack/Teams
+/// OAuth) and GitHubInstallation (per-workspace installation records).
+/// `singletonKey` is always "platform_github_app" — the unique constraint
+/// enforces that only one row can ever exist; callers upsert on it.
+/// The three secret fields are context-bound AES-GCM v2 envelopes from
+/// lib/security/credentialVault.ts (same convention as
+/// TenantIntegrationConnection.encryptedCredential) and are never
+/// returned to a browser, logged, or included in audit detail.
+model PlatformGithubAppCredential {
+  id                     String   @id @default(cuid())
+  singletonKey           String   @unique @default("platform_github_app")
+  appId                  Int
+  slug                   String
+  name                   String
+  clientId               String
+  encryptedClientSecret  String
+  encryptedWebhookSecret String
+  encryptedPrivateKey    String
+  htmlUrl                String
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  createdByUserId        String
+}
+
+// ---------------------------------------------------------------------------
+// Founding Supporters — isolated from subscriptions and AI-credit purchases.
+// ---------------------------------------------------------------------------
+model FoundingSupporterPurchase {
+  id                       String   @id @default(cuid())
+  correlationId            String   @unique
+  stripeCheckoutSessionId  String?  @unique
+  stripePaymentIntentId    String?  @unique
+  email                    String
+  displayName              String?
+  publicName               String?
+  recognitionConsent       Boolean  @default(false)
+  updatesOptIn             Boolean  @default(false)
+  amountCents              Int
+  refundedAmountCents      Int      @default(0)
+  currency                 String   @default("usd")
+  /// pending | paid | failed | expired | partially_refunded | refunded
+  status                   String   @default("pending")
+  badgeIssuedAt            DateTime?
+  paidAt                   DateTime?
+  refundedAt               DateTime?
+  confirmationEmailSentAt  DateTime?
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email, createdAt])
+}
+
+model SupporterStripeEvent {
+  id          String   @id
+  type        String
+  processedAt DateTime @default(now())
+
+  @@index([processedAt])
+}
+
+/// Review-only ECS v2 evidence. No workflow authority or live quota claim.
+model EcsReleaseReviewPacket {
+  id                   String   @id @default(cuid())
+  organizationId       String
+  environmentId        String
+  operationId          String
+  manifestJson         Json
+  manifestDigest       String
+  imageSetDigest       String
+  healthPolicyDigest   String
+  verifiedEvidenceJson Json
+  evidenceDigest       String
+  policyDigest         String
+  createdByUserId      String
+  createdAt            DateTime @default(now())
+  expiresAt            DateTime
+  decisions            EcsReleaseReviewDecision[]
+  checkpoints          EcsReleaseReviewCheckpoint[]
+
+  @@unique([organizationId, operationId])
+  @@unique([id, organizationId])
+  @@index([organizationId, environmentId, expiresAt], map: "EcsReleaseReviewPacket_scope_expiry_idx")
+}
+
+/// Append a new revision to approve, reject or revoke; never overwrite a vote.
+model EcsReleaseReviewDecision {
+  id             String   @id @default(cuid())
+  packetId       String
+  organizationId String
+  userId         String
+  revision       Int
+  decision       String
+  manifestDigest String
+  policyDigest   String
+  decidedAt      DateTime @default(now())
+  expiresAt      DateTime
+  packet         EcsReleaseReviewPacket @relation(fields: [packetId, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([packetId, userId, revision])
+  @@index([organizationId, packetId, userId, revision(sort: Desc)], map: "EcsReleaseReviewDecision_scope_revision_idx")
+}
+
+/// Review snapshot only. A fresh checkpoint never permits external execution.
+model EcsReleaseReviewCheckpoint {
+  id                String   @id @default(cuid())
+  packetId          String
+  organizationId    String
+  manifestDigest    String
+  policyDigest      String
+  decisionSetDigest String
+  decisionIds       Json
+  createdAt         DateTime @default(now())
+  expiresAt         DateTime
+  packet            EcsReleaseReviewPacket @relation(fields: [packetId, organizationId], references: [id, organizationId], onDelete: Restrict)
+
+  @@unique([packetId, decisionSetDigest])
+  @@index([organizationId, packetId])
+}
+
+// Saved Bot drafts have no worker, lease, scheduling or execution authority.
+model BotTaskDraft {
+  id                 String @id
+  organizationId     String
+  createdByUserId    String
+  clientRequestId    String
+  title              String @db.VarChar(200)
+  instruction        String @db.Text
+  context            String @db.Text
+  initialContentHash String
+  contentHash        String
+  status             String @default("draft")
+  version            Int @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  events             BotTaskDraftEvent[]
+
+  @@unique([organizationId, id])
+  @@unique([organizationId, createdByUserId, clientRequestId])
+  @@index([organizationId, createdByUserId, createdAt, id])
+}
+
+model BotTaskDraftEvent {
+  id             String @id @default(cuid())
+  organizationId String
+  taskId         String
+  actorUserId    String
+  version        Int
+  eventType      String
+  contentJson    Json
+  contentHash    String
+  occurredAt     DateTime @default(now())
+  task           BotTaskDraft @relation(fields: [organizationId, taskId], references: [organizationId, id], onDelete: Restrict)
+
+  @@unique([taskId, version])
+  @@index([organizationId, taskId, version])
+}
+
+// Local-only readiness-report runtime. No provider/model dispatch authority.
+model BotTaskRun {
+  id String @id
+  organizationId String
+  createdByUserId String
+  taskId String
+  taskVersion Int
+  clientRequestId String
+  adapter String
+  intentHash String
+  snapshotJson Json
+  snapshotDigest String
+  status String @default("queued")
+  revision Int @default(0)
+  attemptCount Int @default(0)
+  eventCount Int
+  storedBytes Int
+  cancelRequested Boolean @default(false)
+  leaseOwner String?
+  leaseExpiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  deadlineAt DateTime
+  events BotTaskRunEvent[]
+  artifacts BotTaskArtifact[]
+  @@unique([organizationId, createdByUserId, id])
+  @@unique([organizationId, createdByUserId, clientRequestId])
+  @@index([organizationId, createdByUserId, createdAt, id])
+}
+model BotTaskRunEvent {
+  id String @id @default(cuid())
+  organizationId String
+  createdByUserId String
+  runId String
+  sequence Int
+  eventType String
+  payloadJson Json
+  occurredAt DateTime
+  run BotTaskRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@unique([runId, sequence])
+  @@index([organizationId, createdByUserId, runId, sequence])
+}
+model BotTaskArtifact {
+  id String @id
+  organizationId String
+  createdByUserId String
+  runId String @unique
+  kind String
+  content String @db.Text
+  contentHash String
+  snapshotDigest String
+  observedAt DateTime
+  createdAt DateTime
+  run BotTaskRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@index([organizationId, createdByUserId, runId])
+}
+
+// Local AI task runtime; separate authority and one-dispatch ledger. Not deployed.
+model BotAiTaskRun {
+  id String @id
+  organizationId String
+  createdByUserId String
+  taskId String
+  taskVersion Int
+  clientRequestId String
+  kind String
+  modelId String
+  correlationId String
+  dispatchClaimedAt DateTime?
+  usageReceiptId String?
+  intentHash String
+  snapshotJson Json
+  snapshotDigest String
+  status String @default("queued")
+  revision Int @default(0)
+  attemptCount Int @default(0)
+  eventCount Int
+  storedBytes Int
+  cancelRequested Boolean @default(false)
+  leaseOwner String?
+  leaseExpiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  deadlineAt DateTime
+  events BotAiTaskEvent[]
+  artifacts BotAiTaskArtifact[]
+  @@unique([organizationId, createdByUserId, id])
+  @@unique([organizationId, createdByUserId, clientRequestId])
+  @@index([organizationId, createdByUserId, createdAt, id])
+}
+model BotAiTaskEvent {
+  id String @id @default(cuid())
+  organizationId String
+  createdByUserId String
+  runId String
+  sequence Int
+  eventType String
+  payloadJson Json
+  occurredAt DateTime
+  run BotAiTaskRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@unique([runId, sequence])
+  @@index([organizationId, createdByUserId, runId, sequence])
+}
+model BotAiTaskArtifact {
+  id String @id
+  organizationId String
+  createdByUserId String
+  runId String @unique
+  kind String
+  content String @db.Text
+  contentHash String
+  snapshotDigest String
+  usageReceiptId String
+  createdAt DateTime
+  run BotAiTaskRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@index([organizationId, createdByUserId, runId])
+}
+
+// Local-only fixed read operation. No provider writes or AI dispatch.
+model BotPullRequestEvidenceRun {
+  id String @id
+  organizationId String
+  createdByUserId String
+  taskId String
+  taskVersion Int
+  clientRequestId String
+  kind String
+  intentHash String
+  snapshotJson Json
+  snapshotDigest String
+  status String @default("queued")
+  revision Int @default(0)
+  attemptCount Int @default(0)
+  eventCount Int
+  storedBytes Int
+  cancelRequested Boolean @default(false)
+  leaseOwner String?
+  leaseExpiresAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  deadlineAt DateTime
+  events BotPullRequestEvidenceEvent[]
+  artifacts BotPullRequestEvidenceArtifact[]
+  @@unique([organizationId, createdByUserId, id])
+  @@unique([organizationId, createdByUserId, clientRequestId])
+  @@index([organizationId, createdByUserId, createdAt, id])
+}
+model BotPullRequestEvidenceEvent {
+  id String @id @default(cuid())
+  organizationId String
+  createdByUserId String
+  runId String
+  sequence Int
+  eventType String
+  payloadJson Json
+  occurredAt DateTime
+  run BotPullRequestEvidenceRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@unique([runId, sequence])
+  @@index([organizationId, createdByUserId, runId, sequence])
+}
+model BotPullRequestEvidenceArtifact {
+  id String @id
+  organizationId String
+  createdByUserId String
+  runId String @unique
+  kind String
+  content String @db.Text
+  contentHash String
+  snapshotDigest String
+  observedAt DateTime
+  createdAt DateTime
+  run BotPullRequestEvidenceRun @relation(fields:[organizationId, createdByUserId, runId], references:[organizationId, createdByUserId, id], onDelete:Restrict)
+  @@index([organizationId, createdByUserId, runId])
+}
+
+// Dedicated one-use guided GCP consent; never claimed by generic Agent workers.
+model GcpGuidedAuthorization {
+  id String @id
+  organizationId String
+  userId String
+  sessionId String
+  stateDigest String @unique
+  status String
+  version Int @default(0)
+  encryptedVerifier String @db.Text
+  encryptedTokens String? @db.Text
+  resourcesJson Json?
+  connectionId String?
+  connectionVersion Int?
+  operationExpiresAt DateTime?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organizationId, userId, sessionId, expiresAt])
+}
+
+/// Local-only guided AWS role bootstrap. No provider authority from callback input.
+model AwsGuidedConnectionFlow {
+  id String @id
+  organizationId String
+  userId String
+  sessionId String
+  version Int @default(0)
+  state String @default("review")
+  attemptCount Int @default(0)
+  connectionJson Json?
+  inputJson Json
+  sealedChallenge String
+  callbackDigest String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([organizationId,userId,createdAt])
+}
+
+// Delegated Azure sign-in/cache ledger. No provider-enforced Reader claim.
+model AzureGuidedAuthorization {
+  id                   String   @id
+  organizationId       String
+  userId               String
+  sessionId            String
+  kind                 String   @default("authorization")
+  stateDigest          String   @unique
+  nonceDigest          String
+  configurationDigest  String
+  encryptedVerifier    String   @db.Text
+  encryptedTokens      String?  @db.Text
+  resourcesJson        Json?
+  status               String
+  version              Int      @default(0)
+  operationExpiresAt   DateTime?
+  expiresAt            DateTime
+  connectionId         String?
+  connectionVersion    Int?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([organizationId, userId, sessionId, createdAt])
+  @@index([connectionId, connectionVersion])
+}

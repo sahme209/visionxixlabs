@@ -1,0 +1,12 @@
+{
+  "READINESS-REVIEW.md": "e1e226ed71283fe8bcbe5e46ad12b8c3a89976e6db052780cd9e246a53e1d82d",
+  "additive-migration.REVIEW-ONLY.sql": "5b00a10d61a3bca3ea50f3dbcc41954d8120d7b4a371a682485bbb2b6fa9ad34",
+  "candidate-source-bindings.json": "697bdcf2b1ebada0285ec1827effb2ef6b963c83b3dc7589d1105146ba6dae2c",
+  "candidate.prisma": "c5c85e99016be6752308be8c60c550a44221abe572030a9ed783a3f6764c0377",
+  "diff-deny.sb": "6bdaf5f02159143986a69b83215db80aa6d200acc14060fe2561eb75a49e3844",
+  "diff-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+  "diff.sh": "79cb735dcfc62d8009112ff941d4260a783da8668814a0e333d6b8cbdb939886",
+  "diff.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "production-source.prisma": "4e35ea3c8645656dbdae19c1ee6427bf526d9b82527de6ef046048dcdb6e617a",
+  "schema-inputs.json": "c5cc73e4c46614f2fc72e6209020fb1cf773c31a699a1b9dc5f9270260851460"
+}
