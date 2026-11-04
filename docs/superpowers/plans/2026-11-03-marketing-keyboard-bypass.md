@@ -11,7 +11,7 @@
 - [x] Observe focused behavior-test RED before source changes.
 - [x] Implement the minimal shared-control repair; focused GREEN and affected navigation checks.
 - [x] Independently review the frozen source and exact verification evidence.
-- [ ] Build once for changed source and expose a guarded local preview; keep browser/AT acceptance separate.
+- [x] Build once for changed source and expose a guarded local preview; browser/AT acceptance remains unverified (Work browser use disabled).
 
 # Marketing keyboard bypass: bounded local repair
 

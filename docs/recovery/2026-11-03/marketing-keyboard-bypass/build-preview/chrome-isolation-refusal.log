@@ -1,0 +1,2 @@
+[1103/224641.196896:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/samirahmed/Library/Application Support/Google/Chrome/Crashpad/settings.dat: Operation not permitted (1)
+[1103/224641.198004:ERROR:third_party/crashpad/crashpad/util/file/file_io_posix.cc:208] open /Users/samirahmed/Library/Application Support/Google/Chrome/Crashpad/settings.dat: Operation not permitted (1)

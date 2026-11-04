@@ -1,0 +1,30 @@
+{
+  "root": "/private/tmp/axiom-keyboard-browser-9q24k1ef",
+  "chromePid": 99647,
+  "flags": [
+    "--headless=new",
+    "--user-data-dir=/private/tmp/axiom-keyboard-browser-9q24k1ef/profile",
+    "--remote-debugging-address=127.0.0.1",
+    "--remote-debugging-port=0",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-networking",
+    "--disable-sync",
+    "--disable-extensions",
+    "--disable-component-update",
+    "--disable-default-apps",
+    "--disable-breakpad",
+    "--disable-crash-reporter",
+    "--use-mock-keychain",
+    "--password-store=basic",
+    "--no-proxy-server",
+    "--log-level=3",
+    "about:blank"
+  ],
+  "sandbox": "(version 1)(allow default)(deny network-outbound)(allow network-outbound (remote ip \"localhost:*\"))(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-keyboard-browser-9q24k1ef\"))(allow file-write* (literal \"/dev/null\"))",
+  "realProfileUsed": false,
+  "fixtureOnlyLocalPublicURLs": true,
+  "govHelperExecuted": false,
+  "error": "owned-chrome-stopped-before-debug-port",
+  "chromeExit": 21
+}

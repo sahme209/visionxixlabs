@@ -1,0 +1,82 @@
+{
+  "sourceRevision": "ce4ccd968c3efd49daad44af45f6f5b219baac0a",
+  "pages": [
+    {
+      "path": "/product",
+      "method": "GET",
+      "status": 200,
+      "source": "ce4ccd96",
+      "setCookie": false,
+      "sha256": "63d78fc9487a495abff618533c35516fe9b5b032e043a6482d7a3e004f92566f",
+      "firstNavigationControl": "Skip to content"
+    },
+    {
+      "path": "/docs/getting-started",
+      "method": "GET",
+      "status": 200,
+      "source": "ce4ccd96",
+      "setCookie": false,
+      "sha256": "57315eb87a1a8664b87ca96d8474a188667fd73fffc707d0490b6fdd1c6a3b20",
+      "firstNavigationControl": "Skip to content"
+    },
+    {
+      "path": "/integrations",
+      "method": "GET",
+      "status": 200,
+      "source": "ce4ccd96",
+      "setCookie": false,
+      "sha256": "1481e272d4021a71faec8ec5b01b1075e3daf395560d7fbe1b7a4b6dc2f7f55a",
+      "firstNavigationControl": "Skip to content"
+    },
+    {
+      "path": "/security",
+      "method": "GET",
+      "status": 200,
+      "source": "ce4ccd96",
+      "setCookie": false,
+      "sha256": "69f87a087489298cbec98589788488150421f4bb939d10a90efdc64def357eab",
+      "firstNavigationControl": "Skip to content"
+    }
+  ],
+  "assets": [
+    {
+      "path": "/_next/static/css/532cba65621fdb11.css",
+      "method": "GET",
+      "status": 200,
+      "source": "ce4ccd96",
+      "setCookie": false,
+      "sha256": "0b1fba9092923810f92d0bac777389ba34903307040bef94c700d40c23bc79e7"
+    },
+    {
+      "path": "/_next/static/css/fd496917896bbbdc.css",
+      "method": "GET",
+      "status": 200,
+      "source": "ce4ccd96",
+      "setCookie": false,
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e"
+    }
+  ],
+  "blocked": [
+    {
+      "path": "/api/auth/session",
+      "method": "GET",
+      "status": 403,
+      "source": "ce4ccd96",
+      "setCookie": false,
+      "sha256": "787a4671ae1285dd996777b87b92fd6946a72e20c46f3846da138b52723d19a2"
+    },
+    {
+      "path": "/api/actions",
+      "method": "POST",
+      "status": 403,
+      "source": "ce4ccd96",
+      "setCookie": false,
+      "sha256": "13f0b79e61798d6a53db5bca6677941dc3ac2b0c65e3a1b57904a71c3109addb"
+    }
+  ],
+  "preview": "http://127.0.0.1:5216/__axiom_preview",
+  "browserKeyboardVerified": false,
+  "assistiveTechnologyVerified": false,
+  "nativeAppsRestarted": false,
+  "productionDeployment": false
+}
