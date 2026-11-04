@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": false,
+    "baseUrl": "/private/tmp/axiom-a2-document-head-backend-20261104",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "jsx": "react-jsx"
+  },
+  "files": [
+    "/private/tmp/axiom-a2-document-head-backend-20261104/lib/governance/intelligence/__tests__/documentHead.test.ts",
+    "/private/tmp/axiom-a2-document-head-backend-20261104/lib/governance/intelligence/__tests__/readHttp.test.ts",
+    "/private/tmp/axiom-a2-document-head-backend-20261104/lib/governance/intelligence/__tests__/documentHttp.test.ts",
+    "/private/tmp/axiom-a2-document-head-backend-20261104/lib/governance/intelligence/__tests__/requestService.pg.test.ts"
+  ]
+}

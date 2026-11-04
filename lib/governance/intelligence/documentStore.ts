@@ -81,6 +81,18 @@ export function createGovernanceDocumentStore(repo:ReleaseOperationPlanRepo,port
     const artifact=await record(tx,s,parsed.snapshot,u.requestId,'new');await authority(tx,s,'collector');return{snapshot:parsed.snapshot,headVersion:version,artifact};
    });
   },
+  /** Metadata only, within the caller's historical-artifact read transaction.
+   * Parsing retained bytes validates the head; it does not renew evidence. */
+  async readHeadMetadata(rawScope:Scope,raw:unknown,tx:Tx){
+   const s=scopeInput.parse(rawScope),selected=validateEvidenceEnvelope(raw);
+   if(selected.organizationId!==s.organizationId||selected.source!=='document'||selected.collectorVersion!=='governance-document-v2'||!selected.connectionId.startsWith('upload:'))deny();
+   const name=nameSchema.parse(selected.connectionId.slice(7));await authority(tx,s,'reader');
+   const head=await readHead(tx,s,name,selected.selection);if(!head)deny();
+   const body=await readBlob(tx,s,head.state.blobId,now().getTime()),current=body.parsed.snapshot;
+   if(body.input.name!==name||hash(body.input.selection)!==hash(selected.selection)||body.input.sourceDigest!==head.state.sourceDigest)deny();
+   await authority(tx,s,'reader');
+   return{name,selection:structuredClone(head.input.selection),headVersion:head.row.version,sourceDigest:head.state.sourceDigest,updatedAt:head.row.updatedAt.toISOString(),completeness:current.completeness as 'complete'|'partial',factCount:current.facts.length,selectedSourceDigest:selected.sourceDigest,selectedContentMatchesHead:selected.sourceDigest===head.state.sourceDigest};
+  },
   async observe(rawScope:Scope,raw:unknown){const s=scopeInput.parse(rawScope),approved=validateEvidenceEnvelope(raw);if(approved.organizationId!==s.organizationId||approved.source!=='document'||!approved.connectionId.startsWith('upload:'))deny();const name=nameSchema.parse(approved.connectionId.slice(7));return repo.$transaction(async tx=>{await authority(tx,s,'reader');const head=await readHead(tx,s,name,approved.selection);if(!head)deny();const body=await readBlob(tx,s,head.state.blobId,now().getTime());if(body.input.name!==name||hash(body.input.selection)!==hash(approved.selection)||body.input.sourceDigest!==head.state.sourceDigest)deny();await authority(tx,s,'reader');return body.parsed.snapshot})},
  };
 }

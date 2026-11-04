@@ -1,0 +1,33 @@
+{
+  "base": "f5bca40030864141abe6d42303d2bc2fcd0ce9dd",
+  "files": [
+    {
+      "path": "lib/governance/intelligence/documentStore.ts",
+      "sha256": "528cc58781e6fd133adc0981562449db2e2f21c098fde0e72f5bbb6edec324bd"
+    },
+    {
+      "path": "lib/governance/intelligence/requestServiceCore.ts",
+      "sha256": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d"
+    },
+    {
+      "path": "lib/governance/intelligence/readHttp.ts",
+      "sha256": "9b25b829fa008908b185ce2fb08b8199e52393561cc19d75801a9077744028f0"
+    },
+    {
+      "path": "lib/governance/intelligence/__tests__/documentHead.test.ts",
+      "sha256": "9d5fc320d9a03a096cc3bd2cc79640e858321c587a5159c7a09dff2039e06220"
+    },
+    {
+      "path": "lib/governance/intelligence/__tests__/readHttp.test.ts",
+      "sha256": "fb70d0c8c321f2d91990ea1858bc29655a27752f77f4840b2ee5810d35d4af4a"
+    },
+    {
+      "path": "lib/governance/intelligence/__tests__/documentHttp.test.ts",
+      "sha256": "e6a4b24f2a4acd9824d013c9e0a02eff596e19b49bf55e81cf9ec7ad21429cc9"
+    },
+    {
+      "path": "lib/governance/intelligence/__tests__/requestService.pg.test.ts",
+      "sha256": "35e61d15bb5a5715cf189f024a8a4c310109b0b2d895e24657d40376abce1fbc"
+    }
+  ]
+}

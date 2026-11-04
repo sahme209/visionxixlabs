@@ -1,0 +1,66 @@
+diff --git a/lib/governance/intelligence/documentStore.ts b/lib/governance/intelligence/documentStore.ts
+index 83c72b02..3c698ebb 100644
+--- a/lib/governance/intelligence/documentStore.ts
++++ b/lib/governance/intelligence/documentStore.ts
+@@ -81,6 +81,18 @@ export function createGovernanceDocumentStore(repo:ReleaseOperationPlanRepo,port
+     const artifact=await record(tx,s,parsed.snapshot,u.requestId,'new');await authority(tx,s,'collector');return{snapshot:parsed.snapshot,headVersion:version,artifact};
+    });
+   },
++  /** Metadata only, within the caller's historical-artifact read transaction.
++   * Parsing retained bytes validates the head; it does not renew evidence. */
++  async readHeadMetadata(rawScope:Scope,raw:unknown,tx:Tx){
++   const s=scopeInput.parse(rawScope),selected=validateEvidenceEnvelope(raw);
++   if(selected.organizationId!==s.organizationId||selected.source!=='document'||selected.collectorVersion!=='governance-document-v2'||!selected.connectionId.startsWith('upload:'))deny();
++   const name=nameSchema.parse(selected.connectionId.slice(7));await authority(tx,s,'reader');
++   const head=await readHead(tx,s,name,selected.selection);if(!head)deny();
++   const body=await readBlob(tx,s,head.state.blobId,now().getTime()),current=body.parsed.snapshot;
++   if(body.input.name!==name||hash(body.input.selection)!==hash(selected.selection)||body.input.sourceDigest!==head.state.sourceDigest)deny();
++   await authority(tx,s,'reader');
++   return{name,selection:structuredClone(head.input.selection),headVersion:head.row.version,sourceDigest:head.state.sourceDigest,updatedAt:head.row.updatedAt.toISOString(),completeness:current.completeness as 'complete'|'partial',factCount:current.facts.length,selectedSourceDigest:selected.sourceDigest,selectedContentMatchesHead:selected.sourceDigest===head.state.sourceDigest};
++  },
+   async observe(rawScope:Scope,raw:unknown){const s=scopeInput.parse(rawScope),approved=validateEvidenceEnvelope(raw);if(approved.organizationId!==s.organizationId||approved.source!=='document'||!approved.connectionId.startsWith('upload:'))deny();const name=nameSchema.parse(approved.connectionId.slice(7));return repo.$transaction(async tx=>{await authority(tx,s,'reader');const head=await readHead(tx,s,name,approved.selection);if(!head)deny();const body=await readBlob(tx,s,head.state.blobId,now().getTime());if(body.input.name!==name||hash(body.input.selection)!==hash(approved.selection)||body.input.sourceDigest!==head.state.sourceDigest)deny();await authority(tx,s,'reader');return body.parsed.snapshot})},
+  };
+ }
+diff --git a/lib/governance/intelligence/readHttp.ts b/lib/governance/intelligence/readHttp.ts
+index 8730e4ab..21c2293d 100644
+--- a/lib/governance/intelligence/readHttp.ts
++++ b/lib/governance/intelligence/readHttp.ts
+@@ -6,8 +6,8 @@ import {consumeToken} from '@/lib/api/rateLimiter';
+ import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
+ import type {createGovernanceRequestService} from './requestService';
+ import type {RevisionScope} from './revisionStore';
+-const revisionId=z.string().regex(/^governance_revision_[a-f0-9]{64}$/),input=z.discriminatedUnion('operation',[z.object({operation:z.literal('list_evidence')}).strict(),z.object({operation:z.literal('list_collection_sources')}).strict(),z.object({operation:z.literal('list_revisions')}).strict(),z.object({operation:z.literal('read_evidence'),digest:z.string().regex(/^[a-f0-9]{64}$/)}).strict(),z.object({operation:z.literal('lookup_document_upload'),requestId:z.string().uuid()}).strict(),z.object({operation:z.literal('lookup_collection'),requestId:z.string().uuid()}).strict(),z.object({operation:z.literal('read_revision'),id:revisionId}).strict(),z.object({operation:z.literal('read_drift'),id:revisionId}).strict()]);
+-type Service=Pick<ReturnType<typeof createGovernanceRequestService>,'lookupCollectionRequest'|'listCollectionSources'|'lookupDocumentUpload'|'readEvidence'|'listEvidence'|'listRevisions'|'readRevision'|'readDrift'>;
++const revisionId=z.string().regex(/^governance_revision_[a-f0-9]{64}$/),input=z.discriminatedUnion('operation',[z.object({operation:z.literal('read_document_head'),artifactDigest:z.string().regex(/^[a-f0-9]{64}$/)}).strict(),z.object({operation:z.literal('list_evidence')}).strict(),z.object({operation:z.literal('list_collection_sources')}).strict(),z.object({operation:z.literal('list_revisions')}).strict(),z.object({operation:z.literal('read_evidence'),digest:z.string().regex(/^[a-f0-9]{64}$/)}).strict(),z.object({operation:z.literal('lookup_document_upload'),requestId:z.string().uuid()}).strict(),z.object({operation:z.literal('lookup_collection'),requestId:z.string().uuid()}).strict(),z.object({operation:z.literal('read_revision'),id:revisionId}).strict(),z.object({operation:z.literal('read_drift'),id:revisionId}).strict()]);
++type Service=Pick<ReturnType<typeof createGovernanceRequestService>,'readDocumentHead'|'lookupCollectionRequest'|'listCollectionSources'|'lookupDocumentUpload'|'readEvidence'|'listEvidence'|'listRevisions'|'readRevision'|'readDrift'>;
+ /** Read-only endpoint contract. No collect, approve, activate, revoke or provider
+  * write is reachable from this dispatcher, even for administrators. */
+ export function createGovernanceReadHttp(compose:(request:NextRequest,scope:RevisionScope)=>Service,isEnabled:()=>boolean){return async(request:NextRequest)=>{
+@@ -22,7 +22,7 @@ export function createGovernanceReadHttp(compose:(request:NextRequest,scope:Revi
+   const reader=request.body.getReader(),chunks:Uint8Array[]=[];let size=0;let parsed:unknown;
+   try{for(;;){const r=await withGithubAbort(reader.read(),signal);if(r.done)break;size+=r.value.byteLength;if(size>2048)return reply({ok:false,error:'invalid_governance_read_request'},400);chunks.push(r.value)}parsed=JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(Buffer.concat(chunks)))}finally{void reader.cancel().catch(()=>{});reader.releaseLock()}
+   const selected=input.parse(parsed),scope={organizationId:actor.organizationId,actorUserId:actor.userId,sessionId:actor.id},headers=new Headers(request.headers);headers.delete('content-length');
+-  const scopedRequest=new NextRequest(request.url,{method:'POST',headers,signal}),service=compose(scopedRequest,scope),data=await withGithubAbort<unknown>(selected.operation==='lookup_collection'?service.lookupCollectionRequest(selected.requestId):selected.operation==='list_collection_sources'?service.listCollectionSources():selected.operation==='lookup_document_upload'?service.lookupDocumentUpload(selected.requestId):selected.operation==='read_evidence'?service.readEvidence(selected.digest):selected.operation==='list_evidence'?service.listEvidence():selected.operation==='list_revisions'?service.listRevisions():selected.operation==='read_revision'?service.readRevision(selected.id):service.readDrift(selected.id),signal);
++  const scopedRequest=new NextRequest(request.url,{method:'POST',headers,signal}),service=compose(scopedRequest,scope),data=await withGithubAbort<unknown>(selected.operation==='read_document_head'?service.readDocumentHead(selected.artifactDigest):selected.operation==='lookup_collection'?service.lookupCollectionRequest(selected.requestId):selected.operation==='list_collection_sources'?service.listCollectionSources():selected.operation==='lookup_document_upload'?service.lookupDocumentUpload(selected.requestId):selected.operation==='read_evidence'?service.readEvidence(selected.digest):selected.operation==='list_evidence'?service.listEvidence():selected.operation==='list_revisions'?service.listRevisions():selected.operation==='read_revision'?service.readRevision(selected.id):service.readDrift(selected.id),signal);
+   signal.throwIfAborted();if(Buffer.byteLength(JSON.stringify(data))>262144)return reply({ok:false,error:'governance_read_response_limit'},502);return reply({ok:true,data});
+  }catch(error){return reply({ok:false,error:error instanceof z.ZodError||error instanceof SyntaxError?'invalid_governance_read_request':'governance_read_unavailable'},error instanceof z.ZodError||error instanceof SyntaxError?400:409)}
+ }}
+diff --git a/lib/governance/intelligence/requestServiceCore.ts b/lib/governance/intelligence/requestServiceCore.ts
+index 7baedac9..c7155ce9 100644
+--- a/lib/governance/intelligence/requestServiceCore.ts
++++ b/lib/governance/intelligence/requestServiceCore.ts
+@@ -74,6 +74,14 @@ export function createGovernanceRequestServiceCore<D extends object>(request:Nex
+   executionPolicies,
+   /** Paired source upload; its route is disabled by default and undeployed. */
+   async uploadDocument(raw:unknown){enabled();const saved=await documents.upload(scope,raw);if(!saved.artifact)throw Error('governance_document_artifact_unavailable');return{...saved.artifact,headVersion:saved.headVersion}},
++  async readDocumentHead(digest:string){
++   enabled();return repo.$transaction(async tx=>{
++    bound(scope);await authority(tx,scope,'reader');
++    const artifact=await history.read(scope,digest,tx),head=await documents.readHeadMetadata(scope,artifact.snapshot,tx);
++    bound(scope);await authority(tx,scope,'reader');request.signal.throwIfAborted();
++    return{artifactId:artifact.id,artifactDigest:artifact.snapshot.digest,organizationId:scope.organizationId,...head};
++   });
++  },
+   async lookupCollectionRequest(requestId:string){enabled();nonce.parse(requestId);return history.lookupCollectionRequest(scope,requestId)},
+   async lookupDocumentUpload(requestId:string){enabled();nonce.parse(requestId);return history.lookupDocumentUpload(scope,requestId)},
+   async listCollectionSources(){enabled();return sourceDirectory.list(scope)},

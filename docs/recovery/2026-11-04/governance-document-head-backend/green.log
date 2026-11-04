@@ -1,0 +1,70 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a2-document-head-backend-20261104[39m
+
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mloads actual head0 then exact replacement1 from immutable historical artifact in one transaction without writes or timestamp refresh[32m 12[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mmatching historical bytes can have later version without renewing evidence freshness[32m 1[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses missing instead of manufacturing head absence[32m 1[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses corrupt-head instead of manufacturing head absence[32m 1[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses corrupt-blob instead of manufacturing head absence[32m 1[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses corrupt-history instead of manufacturing head absence[32m 1[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses foreign instead of manufacturing head absence[32m 1[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses non-document instead of manufacturing head absence[32m 1[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [31m×[39m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrequires enabled and current reader before and after metadata lookup[32m 1[2mms[22m[39m
+[31m   → governance_document_unavailable[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22muses the authenticated principal only and returns private read-only status[32m 6[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mdoes not compose or touch provider/storage while disabled, unauthenticated or rate limited[32m 1[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mrejects mutation operations and authority fields before composition[32m 2[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mdispatches only exact revision/history or drift reads and hides error payloads[32m 1[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mrefuses API keys, oversized input and query strings without source calls[32m 0[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mlists only organization-bound saved revision metadata through the read dispatcher[32m 0[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mdispatches only an exact immutable evidence digest for source inspection[32m 0[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mlooks up the original document nonce without another upload[32m 0[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mloads configured connection metadata without starting discovery[32m 0[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mchecks collection outcome by the original nonce without another provider read[32m 0[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mreads an exact document artifact head without caller target authority[32m 0[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/readHttp.test.ts[2m > [22mkeeps the new head read disabled and rejects extra caller authority[32m 1[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/documentHttp.test.ts[2m > [22mbinds a bounded inert upload to the paired workspace and preserves the exact bytes and nonce[32m 11[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/documentHttp.test.ts[2m > [22mnever reaches storage while disabled, unauthenticated, read-only or rate-limited[32m 1[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/documentHttp.test.ts[2m > [22mrefuses identities, arbitrary URLs, executable/binary contents and oversized bytes before storage[32m 2[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/documentHttp.test.ts[2m > [22mnever retries or leaks a failed storage acknowledgement[32m 0[2mms[22m[39m
+ [32m✓[39m lib/governance/intelligence/__tests__/documentHttp.test.ts[2m > [22mkeeps an authority failure distinct from invalid document content[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 9 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mloads actual head0 then exact replacement1 from immutable historical artifact in one transaction without writes or timestamp refresh
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mmatching historical bytes can have later version without renewing evidence freshness
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses missing instead of manufacturing head absence
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses corrupt-head instead of manufacturing head absence
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses corrupt-blob instead of manufacturing head absence
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses corrupt-history instead of manufacturing head absence
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses foreign instead of manufacturing head absence
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrefuses non-document instead of manufacturing head absence
+[41m[1m FAIL [22m[49m lib/governance/intelligence/__tests__/documentHead.test.ts[2m > [22mrequires enabled and current reader before and after metadata lookup
+[31m[1mError[22m: governance_document_unavailable[39m
+[36m [2m❯[22m deny lib/governance/intelligence/documentStore.ts:[2m19:29[22m[39m
+
+[90m [2m❯[22m readBlob lib/governance/intelligence/documentStore.ts:[2m40:145[22m[39m
+[90m [2m❯[22m assertGovernanceDocumentHead lib/governance/intelligence/documentStore.ts:[2m48:13[22m[39m
+[90m [2m❯[22m assertGovernanceEvidenceConnection lib/governance/intelligence/sourceAuthority.ts:[2m22:28[22m[39m
+[90m [2m❯[22m checkedConnection lib/governance/intelligence/requestServiceCore.ts:[2m56:149[22m[39m
+[90m [2m❯[22m Object.assertCurrent lib/governance/intelligence/requestServiceCore.ts:[2m48:227[22m[39m
+[90m [2m❯[22m authority lib/governance/intelligence/evidenceStore.ts:[2m20:147[22m[39m
+[90m [2m❯[22m run lib/governance/intelligence/evidenceStore.ts:[2m36:161[22m[39m
+[90m [2m❯[22m record lib/governance/intelligence/documentStore.ts:[2m64:18[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m9 failed[39m[22m[2m | [22m[1m[32m17 passed[39m[22m[90m (26)[39m
+[2m   Start at [22m 03:19:57
+[2m   Duration [22m 408ms[2m (transform 75ms, setup 0ms, import 188ms, tests 46ms, environment 0ms)[22m
+

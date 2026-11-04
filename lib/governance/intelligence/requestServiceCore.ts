@@ -74,6 +74,14 @@ export function createGovernanceRequestServiceCore<D extends object>(request:Nex
   executionPolicies,
   /** Paired source upload; its route is disabled by default and undeployed. */
   async uploadDocument(raw:unknown){enabled();const saved=await documents.upload(scope,raw);if(!saved.artifact)throw Error('governance_document_artifact_unavailable');return{...saved.artifact,headVersion:saved.headVersion}},
+  async readDocumentHead(digest:string){
+   enabled();return repo.$transaction(async tx=>{
+    bound(scope);await authority(tx,scope,'reader');
+    const artifact=await history.read(scope,digest,tx),head=await documents.readHeadMetadata(scope,artifact.snapshot,tx);
+    bound(scope);await authority(tx,scope,'reader');request.signal.throwIfAborted();
+    return{artifactId:artifact.id,artifactDigest:artifact.snapshot.digest,organizationId:scope.organizationId,...head};
+   });
+  },
   async lookupCollectionRequest(requestId:string){enabled();nonce.parse(requestId);return history.lookupCollectionRequest(scope,requestId)},
   async lookupDocumentUpload(requestId:string){enabled();nonce.parse(requestId);return history.lookupDocumentUpload(scope,requestId)},
   async listCollectionSources(){enabled();return sourceDirectory.list(scope)},
