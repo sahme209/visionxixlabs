@@ -1,0 +1,36 @@
+{
+  "approval": "call_4Brwi2k7lpD5WqGheh5p5fr8: Approve four public documentation reads",
+  "scope": "Official text and official documentation search only; no model/pricing API, inference, installation, DB, credential, grants, build, deployment or spending",
+  "requestedReads": [
+    {
+      "url": "https://vercel.com/docs/ai-gateway/sdks-and-apis/rest-api",
+      "canonical": "https://vercel.com/docs/ai-gateway/sdks-and-apis/rest-api"
+    },
+    {
+      "url": "https://ai-sdk.dev/providers/ai-sdk-providers/ai-gateway",
+      "canonical": "https://ai-sdk.dev/providers/ai-sdk-providers/ai-gateway"
+    },
+    {
+      "url": "https://ai-sdk.dev/docs/reference/ai-sdk-core/generate-text",
+      "canonical": "https://ai-sdk.dev/docs/reference/ai-sdk-core/generate-text"
+    },
+    {
+      "url": "https://v6.ai-sdk.dev/docs/reference/ai-sdk-core/generate-text",
+      "canonical": "https://ai-sdk.dev/docs/reference/ai-sdk-core/generate-text",
+      "result": "Redirected to current v7 Latest; not a version-pinned v6 contract"
+    }
+  ],
+  "requestedPageReads": 4,
+  "distinctCanonicalDestinations": 3,
+  "officialSearchUsed": true,
+  "noFifthPageRead": true,
+  "packageLockSha256": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+  "installedLockVersions": {
+    "ai": "6.0.291",
+    "@ai-sdk/gateway": "3.0.201",
+    "@ai-sdk/provider": "3.0.17"
+  },
+  "implementationApproved": false,
+  "qualifiedQuoteAvailable": false,
+  "copiedLiveRates": false
+}
