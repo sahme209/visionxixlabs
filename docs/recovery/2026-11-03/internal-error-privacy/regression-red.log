@@ -1,0 +1,88 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-session-error-repro-20261103[39m
+
+ [31m×[39m lib/api/__tests__/errorDtoPrivacy.test.ts[2m > [22momits internal diagnostics from the DTO while retaining the original error[32m 3[2mms[22m[39m
+[31m   → expected { code: 'internal.synthetic', …(4) } to deeply equal { code: 'internal.synthetic', …(2) }[39m
+ [32m✓[39m lib/api/__tests__/errorDtoPrivacy.test.ts[2m > [22mpreserves typed noninternal validation detail and defined context[32m 0[2mms[22m[39m
+ [31m×[39m lib/api/__tests__/errorDtoPrivacy.test.ts[2m > [22momits internal diagnostics from the shared API error envelope[32m 2[2mms[22m[39m
+[31m   → expected { code: 'internal.synthetic', …(4) } to deeply equal { code: 'internal.synthetic', …(2) }[39m
+ [32m✓[39m app/api/desktop/session/__tests__/errorPrivacy.test.ts[2m > [22mpreserves the fixed safe sign-in validation error without store activity[32m 2[2mms[22m[39m
+ [31m×[39m app/api/desktop/session/__tests__/errorPrivacy.test.ts[2m > [22mexcludes synthetic private diagnostics from the actual GET response[32m 2[2mms[22m[39m
+[31m   → expected '{"ok":false,"error":{"code":"internal…' not to contain 'SYNTHETIC_PRIVATE_DIAGNOSTIC'[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/api/__tests__/errorDtoPrivacy.test.ts[2m > [22momits internal diagnostics from the DTO while retaining the original error
+[31m[1mAssertionError[22m: expected { code: 'internal.synthetic', …(4) } to deeply equal { code: 'internal.synthetic', …(2) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "category": "internal",[22m
+[2m    "code": "internal.synthetic",[22m
+[31m+   "context": {[39m
+[31m+     "diagnostic": "SYNTHETIC_PRIVATE_CONTEXT",[39m
+[31m+   },[39m
+[31m+   "detail": "SYNTHETIC_PRIVATE_DETAIL",[39m
+[2m    "userMessage": "Something went wrong. The team has been notified.",[22m
+[2m  }[22m
+
+[36m [2m❯[22m lib/api/__tests__/errorDtoPrivacy.test.ts:[2m10:15[22m[39m
+    [90m  8|[39m   const error = AxiomErrors.internal("internal.synthetic", "SYNTHETIC_…
+    [90m  9|[39m   [35mconst[39m dto [33m=[39m [34mtoErrorDTO[39m(error)[33m;[39m
+    [90m 10|[39m   expect(dto).toEqual({ code: "internal.synthetic", category: "interna…
+    [90m   |[39m               [31m^[39m
+    [90m 11|[39m   [34mexpect[39m(dto)[33m.[39mnot[33m.[39m[34mtoHaveProperty[39m([32m"detail"[39m)[33m;[39m
+    [90m 12|[39m   [34mexpect[39m(dto)[33m.[39mnot[33m.[39m[34mtoHaveProperty[39m([32m"context"[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/api/__tests__/errorDtoPrivacy.test.ts[2m > [22momits internal diagnostics from the shared API error envelope
+[31m[1mAssertionError[22m: expected { code: 'internal.synthetic', …(4) } to deeply equal { code: 'internal.synthetic', …(2) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "category": "internal",[22m
+[2m    "code": "internal.synthetic",[22m
+[31m+   "context": {[39m
+[31m+     "diagnostic": "SYNTHETIC_PRIVATE_CONTEXT",[39m
+[31m+   },[39m
+[31m+   "detail": "SYNTHETIC_PRIVATE_DETAIL",[39m
+[2m    "userMessage": "Something went wrong. The team has been notified.",[22m
+[2m  }[22m
+
+[36m [2m❯[22m lib/api/__tests__/errorDtoPrivacy.test.ts:[2m29:22[22m[39m
+    [90m 27|[39m   [34mexpect[39m(response[33m.[39mstatus)[33m.[39m[34mtoBe[39m([34m500[39m)[33m;[39m
+    [90m 28|[39m   expect(response.headers.get("x-correlation-id")).toBe("synthetic-cor…
+    [90m 29|[39m   expect(body.error).toEqual({ code: "internal.synthetic", category: "…
+    [90m   |[39m                      [31m^[39m
+    [90m 30|[39m   [34mexpect[39m([33mJSON[39m[33m.[39m[34mstringify[39m(body))[33m.[39mnot[33m.[39m[34mtoContain[39m([32m"SYNTHETIC_PRIVATE"[39m)[33m;[39m
+    [90m 31|[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/api/desktop/session/__tests__/errorPrivacy.test.ts[2m > [22mexcludes synthetic private diagnostics from the actual GET response
+[31m[1mAssertionError[22m: expected '{"ok":false,"error":{"code":"internal…' not to contain 'SYNTHETIC_PRIVATE_DIAGNOSTIC'[39m
+
+Expected: [32m"SYNTHETIC_PRIVATE_DIAGNOSTIC"[39m
+Received: [31m"[7m{"ok":false,"error":{"code":"internal.unknown","category":"internal","userMessage":"Something went wrong. The team has been notified.","detail":"[27mSYNTHETIC_PRIVATE_DIAGNOSTIC[7m"}}[27m"[39m
+
+[36m [2m❯[22m app/api/desktop/session/__tests__/errorPrivacy.test.ts:[2m37:20[22m[39m
+    [90m 35|[39m   [34mexpect[39m([33mJSON[39m[33m.[39m[34mparse[39m(body)[33m.[39merror[33m.[39mcode)[33m.[39m[34mtoBe[39m([32m"internal.unknown"[39m)[33m;[39m
+    [90m 36|[39m   [34mexpectNoStoreActivity[39m()[33m;[39m
+    [90m 37|[39m   [34mexpect[39m(body)[33m.[39mnot[33m.[39m[34mtoContain[39m(marker)[33m;[39m
+    [90m   |[39m                    [31m^[39m
+    [90m 38|[39m })[33m;[39m
+    [90m 39|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (5)[39m
+[2m   Start at [22m 23:39:41
+[2m   Duration [22m 240ms[2m (transform 25ms, setup 0ms, import 66ms, tests 10ms, environment 0ms)[22m
+

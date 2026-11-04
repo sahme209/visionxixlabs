@@ -1,0 +1,42 @@
+{
+  "baseRevision": "958e41b1fe589b5290ad0f0216107ff7719bcae9",
+  "reviewedImplementation": "5a3870839de05ea43efd2826407419486fdb191c",
+  "canonicalImplementation": "9ff876c5f3c9ec4ce621cadeb0aa44eca3cca61e",
+  "sourceHashes": {
+    "lib/api/dtoMappers.ts": "1aba75f96bde59433306e39da9aff4b73d6c6debfc5b6db5c322cd7909ddc169",
+    "lib/api/__tests__/errorDtoPrivacy.test.ts": "d149393643570a311bf5bc882687aeb6b6d8d6de6d4ca2aaa59ea8525d6dd7b8",
+    "app/api/desktop/session/__tests__/errorPrivacy.test.ts": "9e2edcebd76a76f6e5ba087a7259fe46771fe72910c1fc30256d5a902564b1d4"
+  },
+  "evidenceHashes": {
+    "types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "run.log": "0131b8bbd6433ba0531ef61de51f0b1ca294b44e33b089341473ba48ece83dc6",
+    "original-proof.test.ts.txt": "829898eb64f608f70cc9ea7ae7a9734a655de6eca4a21249cb8ad4759132a620",
+    "green.log": "0a5b91b664e41a6698a3bda08eb8987ff52c38d70614411ecc4df828db412611",
+    "tsconfig.scoped.json": "4a6c776c34c41a53d722d1713bbf7c8fb201d046bbc9db69623458ef223402a1",
+    "green-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "run.sh": "f0e15acad43b474dd11555d22faace08f3dbf3985f0e9ca1a64b27717b00f4eb",
+    "types-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "deny.sb": "8a409569d9734ec5e40666751f878911df9209a58c138c6309d3c94f198ff6ae",
+    "regression-red-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "regression-red.log": "dcba086d7903205c89332ef38b91a144fdb4ada7698fc67414120d11de3870b3",
+    "vitest.config.mjs": "606814bf3fe631609cb83b51d6bd8d96f46993e2a17087c2db54434d61251b30",
+    "types-provenance.txt": "78368ec57d6ff21aa429f99312f85bea1e1699ed9b245bbce17e485c1c924c6a",
+    "exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+  },
+  "genuineRegressionRed": {
+    "failed": 3,
+    "passed": 2
+  },
+  "focusedGreen": {
+    "passed": 10,
+    "files": 3
+  },
+  "types": {
+    "exitCode": 0,
+    "scope": "mapper and DTO unit test; route privacy executed but not typechecked",
+    "originalToolChunk": "1c8100"
+  },
+  "liveSensitiveDataLeakObserved": false,
+  "fullBuildOrDeployment": false,
+  "fullA7Accepted": false
+}

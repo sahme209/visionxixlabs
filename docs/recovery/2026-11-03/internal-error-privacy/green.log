@@ -1,0 +1,19 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-session-error-repro-20261103[39m
+
+ [32m✓[39m app/api/desktop/session/__tests__/route.test.ts[2m > [22mdesktop session lifecycle — /api/desktop/session[2m > [22mblocks session creation outright when pairing policy denies it[32m 15[2mms[22m[39m
+ [32m✓[39m app/api/desktop/session/__tests__/route.test.ts[2m > [22mdesktop session lifecycle — /api/desktop/session[2m > [22mcreates a real session on allowed pairing, scoped to the caller's org[32m 2[2mms[22m[39m
+ [32m✓[39m app/api/desktop/session/__tests__/route.test.ts[2m > [22mdesktop session lifecycle — /api/desktop/session[2m > [22mGET never returns another organization's session, even for the same userId[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/session/__tests__/route.test.ts[2m > [22mdesktop session lifecycle — /api/desktop/session[2m > [22mDELETE refuses to revoke a session owned by another organization[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/session/__tests__/route.test.ts[2m > [22mdesktop session lifecycle — /api/desktop/session[2m > [22mDELETE actually revokes an owned session — it never resurrects[32m 1[2mms[22m[39m
+ [32m✓[39m lib/api/__tests__/errorDtoPrivacy.test.ts[2m > [22momits internal diagnostics from the DTO while retaining the original error[32m 1[2mms[22m[39m
+ [32m✓[39m lib/api/__tests__/errorDtoPrivacy.test.ts[2m > [22mpreserves typed noninternal validation detail and defined context[32m 0[2mms[22m[39m
+ [32m✓[39m lib/api/__tests__/errorDtoPrivacy.test.ts[2m > [22momits internal diagnostics from the shared API error envelope[32m 2[2mms[22m[39m
+ [32m✓[39m app/api/desktop/session/__tests__/errorPrivacy.test.ts[2m > [22mpreserves the fixed safe sign-in validation error without store activity[32m 2[2mms[22m[39m
+ [32m✓[39m app/api/desktop/session/__tests__/errorPrivacy.test.ts[2m > [22mexcludes synthetic private diagnostics from the actual GET response[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 23:39:50
+[2m   Duration [22m 324ms[2m (transform 37ms, setup 0ms, import 89ms, tests 24ms, environment 0ms)[22m
+

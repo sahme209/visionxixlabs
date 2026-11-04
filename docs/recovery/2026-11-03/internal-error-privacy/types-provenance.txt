@@ -1,0 +1,15 @@
+Scoped TypeScript invocation already executed (not rerun):
+/usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-session-error-repro-evidence TMPDIR=/private/tmp/axiom-session-error-repro-evidence NODE_ENV=test DATABASE_URL=postgresql://synthetic:synthetic@127.0.0.1:1/synthetic /usr/bin/sandbox-exec -f /private/tmp/axiom-session-error-repro-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node /private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/typescript/bin/tsc --project /private/tmp/axiom-session-error-repro-evidence/tsconfig.scoped.json > /private/tmp/axiom-session-error-repro-evidence/types.log 2>&1
+
+Working directory: /private/tmp/axiom-session-error-repro-20261103
+Immediately following shell statements in the same exec_command invocation:
+result=$?
+echo "$result" > /private/tmp/axiom-session-error-repro-evidence/types-exit.txt
+cat /private/tmp/axiom-session-error-repro-evidence/types.log
+exit "$result"
+
+Original exec_command tool response from session history:
+{"chunk_id":"1c8100","wall_time_seconds":0.376445875,"exit_code":0,"original_token_count":0,"output":""}
+No session_id was returned: the command completed in this call.
+The captured result is the sandbox-exec/Node/tsc process status, before echo or cat could replace shell $?. The shell returned this same status with exit "$result". Empty log is expected for successful noEmit TypeScript checking; the original tool exit_code and captured exit file establish success independently of log emptiness.
+This receipt transcribes existing tool history only. No compiler or test was rerun.
