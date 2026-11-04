@@ -17,10 +17,10 @@
 static int failure(void){fputs("verified_issuer_bootstrap_unavailable\n",stderr);return 70;}
 static int closed_stdio(void){
  struct proc_fdinfo list[4];int bytes=proc_pidinfo(getpid(),PROC_PIDLISTFDS,0,list,sizeof(list));if(bytes!=3*(int)sizeof(list[0]))return 0;
- struct stat null;if(stat("/dev/null",&null)||!S_ISCHR(null.st_mode))return 0;int seen[3]={0};
+ int seen[3]={0};
  for(size_t i=0;i<3;i++){
   int fd=list[i].proc_fd;if(fd<0||fd>2||seen[fd]++)return 0;struct stat item;int flags=fcntl(fd,F_GETFL);if(flags<0||fstat(fd,&item))return 0;
-  if(fd==0){if(list[i].proc_fdtype!=PROX_FDTYPE_VNODE||(flags&O_ACCMODE)!=O_RDONLY||!S_ISCHR(item.st_mode)||item.st_rdev!=null.st_rdev)return 0;}
+  if(fd==0){if(list[i].proc_fdtype!=PROX_FDTYPE_PIPE||(flags&O_ACCMODE)!=O_RDONLY||!S_ISFIFO(item.st_mode)||item.st_nlink!=0)return 0;}
   else if(list[i].proc_fdtype!=PROX_FDTYPE_PIPE||(flags&O_ACCMODE)!=O_WRONLY||!S_ISFIFO(item.st_mode))return 0;
  }
  return seen[0]&&seen[1]&&seen[2];

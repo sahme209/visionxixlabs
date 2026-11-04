@@ -2,6 +2,9 @@
 #define NAPI_VERSION 8
 #include "origin_config.h"
 #include "origin_session.h"
+#include "origin_private_bootstrap.h"
+#include <fcntl.h>
+#include <unistd.h>
 #include "origin_process_identity.h"
 #include "protected_resource_inventory.h"
 #include <node_api.h>
@@ -36,7 +39,7 @@ static const char* fixed_process_failure(int main_thread){
  return NULL;
 }
 static napi_value refuse(napi_env env,const char*reason){napi_throw_error(env,"axiom_origin_unavailable",reason);return NULL;}
-typedef struct {atomic_uint refs;atomic_int invalid;atomic_flag busy;AxiomOriginSession*session;AxiomOriginProcessIdentity startup;dispatch_queue_t queue;} NativeOrigin;
+typedef struct {atomic_uint refs;atomic_int invalid;atomic_flag busy;atomic_flag bootstrap_attempted;AxiomOriginSession*session;AxiomOriginProcessIdentity startup;dispatch_queue_t queue;} NativeOrigin;
 typedef struct {atomic_uint refs;atomic_int cancelled;atomic_int success;NativeOrigin*origin;dispatch_semaphore_t done;uint64_t deadline;} NativeProbe;
 static uint64_t monotonic_ns(void){struct timespec t;if(clock_gettime(CLOCK_MONOTONIC,&t)||t.tv_sec<0||t.tv_nsec<0)return UINT64_MAX;return(uint64_t)t.tv_sec*1000000000ULL+(uint64_t)t.tv_nsec;}
 static void release_origin(NativeOrigin*o){if(atomic_fetch_sub(&o->refs,1)==1){axiom_origin_session_destroy(o->session);dispatch_release(o->queue);free(o);}}
@@ -69,6 +72,30 @@ static napi_value assert_current(napi_env env,napi_callback_info info){
  release_probe(p);if(!ok)return refuse(env,"origin_current_unavailable");
  napi_value result;if(napi_get_undefined(env,&result)!=napi_ok){revoke_origin(o);return refuse(env,"origin_result_unavailable");}return result;
 }
+static int close_bootstrap_input(void){
+ int closed=close(STDIN_FILENO)==0;int fd=open("/dev/null",O_RDONLY|O_CLOEXEC);if(fd!=STDIN_FILENO){if(fd>=0)close(fd);return 0;}return closed;
+}
+static napi_value consume_bootstrap(napi_env env,napi_callback_info info){
+ size_t argc=1;void*value=NULL;napi_value argument,result=NULL,dsn,vault,session;void*bytes=NULL,*vault_bytes=NULL,*session_bytes=NULL;size_t session_length=0;
+ if(napi_get_cb_info(env,info,&argc,&argument,NULL,&value)!=napi_ok||!value)return refuse(env,"origin_bootstrap_unavailable");
+ NativeOrigin*o=value;
+ /* Reservation is irreversible, including invalid calls and Node allocation
+  * failures. It precedes the first read and every material-bearing Node value. */
+ if(atomic_flag_test_and_set(&o->bootstrap_attempted)){revoke_origin(o);return refuse(env,"origin_bootstrap_consumed");}
+ AxiomPrivateBinding binding={0};AxiomPrivateMaterial material={0};int ok=0;
+ if(argc||!pthread_main_np()||atomic_load(&o->invalid)||fixed_process_failure(1)||!axiom_origin_identity_current(&o->startup)||!axiom_origin_session_locally_valid(o->session))goto done;
+ if(atomic_flag_test_and_set(&o->busy))goto done;
+ int current=axiom_origin_session_assert(o->session);atomic_flag_clear(&o->busy);if(!current)goto done;
+ if(!axiom_origin_session_bootstrap_binding(o->session,&binding.epoch,&binding.deadline,binding.client,binding.broker)||!axiom_private_frame_read(STDIN_FILENO,&binding,&material))goto done;
+ if(!axiom_origin_session_assert(o->session)||!axiom_origin_session_locally_valid(o->session)||monotonic_ns()>=binding.deadline||fixed_process_failure(1)||!axiom_origin_identity_current(&o->startup))goto done;
+ if(!close_bootstrap_input())goto done;
+ if(napi_create_object(env,&result)!=napi_ok||napi_create_string_utf8(env,(char*)material.datasource,material.datasource_length,&dsn)!=napi_ok||napi_create_arraybuffer(env,32,&bytes,&vault)!=napi_ok)goto done;
+ vault_bytes=bytes;memcpy(bytes,material.vault,32);if(napi_create_typedarray(env,napi_uint8_array,32,vault,0,&vault)!=napi_ok||napi_create_arraybuffer(env,material.session_length,&bytes,&session)!=napi_ok)goto done;
+ session_bytes=bytes;session_length=material.session_length;memcpy(bytes,material.session,material.session_length);if(napi_create_typedarray(env,napi_uint8_array,material.session_length,session,0,&session)!=napi_ok||napi_set_named_property(env,result,"datasource",dsn)!=napi_ok||napi_set_named_property(env,result,"vaultKey",vault)!=napi_ok||napi_set_named_property(env,result,"sessionSigningKey",session)!=napi_ok||napi_object_freeze(env,result)!=napi_ok)goto done;
+ ok=1;
+ done:axiom_private_material_wipe(&material);memset(&binding,0,sizeof(binding));
+ if(!ok){if(vault_bytes)memset(vault_bytes,0,32);if(session_bytes)memset(session_bytes,0,session_length);close_bootstrap_input();revoke_origin(o);return refuse(env,"origin_bootstrap_unavailable");}return result;
+}
 static napi_value initialize(napi_env env,napi_value exports){
  if(atomic_flag_test_and_set(&constructor_attempted))return refuse(env,"origin_fresh_constructor_required");
  const char*reason=fixed_process_failure(1);if(reason)return refuse(env,reason);
@@ -79,13 +106,13 @@ static napi_value initialize(napi_env env,napi_value exports){
  if(observed.decision!=AXIOM_RESOURCE_OBSERVED||!observed.descriptor_scan_complete||!observed.region_scan_complete||!observed.stable)return refuse(env,"origin_protected_resources_unavailable");
  NativeOrigin*o=calloc(1,sizeof(*o));if(!o)return refuse(env,"origin_private_state_unavailable");
  o->queue=dispatch_queue_create("axiom.issuer.current-origin",DISPATCH_QUEUE_SERIAL);if(!o->queue){free(o);return refuse(env,"origin_private_queue_unavailable");}
- atomic_init(&o->refs,1);atomic_init(&o->invalid,0);atomic_flag_clear(&o->busy);
+ atomic_init(&o->refs,1);atomic_init(&o->invalid,0);atomic_flag_clear(&o->busy);atomic_flag_clear(&o->bootstrap_attempted);
  void*node_code=dlsym(RTLD_DEFAULT,"napi_get_version");
  if(!axiom_origin_identity_capture((uintptr_t)&initialize,(uintptr_t)node_code,&o->startup)){dispatch_release(o->queue);free(o);return refuse(env,"origin_loaded_artifact_identity_unavailable");}
  o->session=axiom_origin_session_open();if(!o->session){dispatch_release(o->queue);free(o);return refuse(env,"origin_startup_unavailable");}
  if(!axiom_origin_identity_current(&o->startup)){cleanup_origin(o);return refuse(env,"origin_startup_resource_changed");}
- napi_value probe;if(napi_create_function(env,"assertCurrentOrigin",NAPI_AUTO_LENGTH,assert_current,o,&probe)!=napi_ok||napi_add_env_cleanup_hook(env,cleanup_origin,o)!=napi_ok){cleanup_origin(o);return refuse(env,"origin_private_session_unavailable");}
- if(napi_object_freeze(env,probe)!=napi_ok||napi_set_named_property(env,exports,"assertCurrentOrigin",probe)!=napi_ok||napi_object_freeze(env,exports)!=napi_ok){revoke_origin(o);return refuse(env,"origin_exports_unavailable");}
+ napi_value consume,probe;if(napi_create_function(env,"consumeBootstrapResources",NAPI_AUTO_LENGTH,consume_bootstrap,o,&consume)!=napi_ok||napi_create_function(env,"assertCurrentOrigin",NAPI_AUTO_LENGTH,assert_current,o,&probe)!=napi_ok||napi_add_env_cleanup_hook(env,cleanup_origin,o)!=napi_ok){cleanup_origin(o);return refuse(env,"origin_private_session_unavailable");}
+ if(napi_object_freeze(env,consume)!=napi_ok||napi_set_named_property(env,exports,"consumeBootstrapResources",consume)!=napi_ok||napi_object_freeze(env,probe)!=napi_ok||napi_set_named_property(env,exports,"assertCurrentOrigin",probe)!=napi_ok||napi_object_freeze(env,exports)!=napi_ok){revoke_origin(o);return refuse(env,"origin_exports_unavailable");}
  return exports;
 }
 NAPI_MODULE(axiom_origin_guard,initialize)

@@ -10,8 +10,8 @@
 #include <stdatomic.h>
 #include <time.h>
 extern OSStatus SecCodeCreateWithXPCMessage(xpc_object_t,SecCSFlags,SecCodeRef*) __attribute__((weak_import));
-struct AxiomOriginSession {atomic_uint refs;atomic_int invalid;atomic_flag busy;xpc_connection_t connection;pid_t self;unsigned char client[32],broker[32];};
-typedef struct {atomic_uint refs;atomic_int cancelled;atomic_int success;AxiomOriginSession*session;dispatch_semaphore_t done;unsigned char client[32],broker[32];int begin;} Exchange;
+struct AxiomOriginSession {atomic_uint refs;atomic_int invalid;atomic_flag busy;xpc_connection_t connection;pid_t self;uint64_t epoch,deadline;unsigned char client[32],broker[32];};
+typedef struct {atomic_uint refs;atomic_int cancelled;atomic_int success;AxiomOriginSession*session;dispatch_semaphore_t done;unsigned char client[32],broker[32];int begin;uint64_t epoch,deadline;} Exchange;
 static uint64_t clock_ns(void){struct timespec t;if(clock_gettime(CLOCK_MONOTONIC,&t)||t.tv_sec<0||t.tv_nsec<0)return UINT64_MAX;return(uint64_t)t.tv_sec*1000000000ULL+(uint64_t)t.tv_nsec;}
 static int received_broker(xpc_object_t message){
  if(!SecCodeCreateWithXPCMessage||!message||xpc_get_type(message)!=XPC_TYPE_DICTIONARY)return 0;
@@ -34,16 +34,16 @@ static int exchange(AxiomOriginSession*s,const char*operation,const char*expecte
  xpc_object_t message=xpc_dictionary_create(NULL,NULL,0);if(!message){release_exchange(x);release_exchange(x);return 0;}
  xpc_dictionary_set_string(message,"op",operation);xpc_dictionary_set_data(message,"client",x->client,32);if(!begin)xpc_dictionary_set_data(message,"broker",s->broker,32);
  xpc_connection_send_message_with_reply(s->connection,message,dispatch_get_global_queue(QOS_CLASS_USER_INITIATED,0),^(xpc_object_t reply){
-  if(!atomic_load(&x->cancelled)&&!atomic_load(&s->invalid)&&received_broker(reply)&&xpc_dictionary_get_count(reply)==4){
-   const char*status=xpc_dictionary_get_string(reply,"status");size_t na=0,nb=0;const void*a=xpc_dictionary_get_data(reply,"client",&na);const void*b=xpc_dictionary_get_data(reply,"broker",&nb);xpc_object_t child=xpc_dictionary_get_value(reply,"child");
-   if(status&&!strcmp(status,expected)&&child&&xpc_get_type(child)==XPC_TYPE_INT64&&xpc_int64_get_value(child)==s->self&&a&&b&&na==32&&nb==32&&!memcmp(a,x->client,32)&&(begin||!memcmp(b,x->broker,32))){if(begin)memcpy(x->broker,b,32);atomic_store(&x->success,1);}
+  if(!atomic_load(&x->cancelled)&&!atomic_load(&s->invalid)&&received_broker(reply)&&xpc_dictionary_get_count(reply)==6){
+   const char*status=xpc_dictionary_get_string(reply,"status");size_t na=0,nb=0;const void*a=xpc_dictionary_get_data(reply,"client",&na);const void*b=xpc_dictionary_get_data(reply,"broker",&nb);xpc_object_t child=xpc_dictionary_get_value(reply,"child"),epoch=xpc_dictionary_get_value(reply,"epoch"),deadline=xpc_dictionary_get_value(reply,"deadline");
+   if(epoch&&deadline&&xpc_get_type(epoch)==XPC_TYPE_UINT64&&xpc_get_type(deadline)==XPC_TYPE_UINT64&&xpc_uint64_get_value(epoch)>0&&xpc_uint64_get_value(deadline)>0&&(begin||(xpc_uint64_get_value(epoch)==s->epoch&&xpc_uint64_get_value(deadline)==s->deadline))&&status&&!strcmp(status,expected)&&child&&xpc_get_type(child)==XPC_TYPE_INT64&&xpc_int64_get_value(child)==s->self&&a&&b&&na==32&&nb==32&&!memcmp(a,x->client,32)&&(begin||!memcmp(b,x->broker,32))){if(begin){memcpy(x->broker,b,32);x->epoch=xpc_uint64_get_value(epoch);x->deadline=xpc_uint64_get_value(deadline);}atomic_store(&x->success,1);}
   }
   dispatch_semaphore_signal(x->done);release_exchange(x);
  });xpc_release(message);
  int timeout=dispatch_semaphore_wait(x->done,dispatch_time(DISPATCH_TIME_NOW,(int64_t)AXIOM_ORIGIN_EXCHANGE_NS))!=0;
  uint64_t end=clock_ns();if(timeout)atomic_store(&x->cancelled,1);
  int ok=!timeout&&!atomic_load(&s->invalid)&&atomic_load(&x->success)&&end>=start&&end-start<=AXIOM_ORIGIN_EXCHANGE_NS&&s->self==getpid();
- if(ok&&begin){memcpy(s->client,x->client,32);memcpy(s->broker,x->broker,32);}release_exchange(x);return ok;
+ if(ok&&begin){memcpy(s->client,x->client,32);memcpy(s->broker,x->broker,32);s->epoch=x->epoch;s->deadline=x->deadline;}release_exchange(x);return ok;
 }
 static int start_session(AxiomOriginSession*s){return exchange(s,"begin","challenge",1,1)&&exchange(s,"ack","origin_startup_consumed",0,0);}
 void axiom_origin_session_revoke(AxiomOriginSession*s){if(s){atomic_store(&s->invalid,1);if(s->connection)xpc_connection_cancel(s->connection);}}
@@ -61,4 +61,9 @@ int axiom_origin_session_locally_valid(AxiomOriginSession*s){return s&&!atomic_l
 int axiom_origin_session_assert(AxiomOriginSession*s){
  if(!s||atomic_load(&s->invalid)||atomic_flag_test_and_set(&s->busy))return 0;
  int ok=exchange(s,"live","origin_current",0,1);if(!ok)atomic_store(&s->invalid,1);atomic_flag_clear(&s->busy);return ok;
+}
+
+int axiom_origin_session_bootstrap_binding(AxiomOriginSession*s,uint64_t*epoch,uint64_t*deadline,unsigned char client[32],unsigned char broker[32]){
+ if(!epoch||!deadline||!client||!broker||!axiom_origin_session_locally_valid(s)||!s->epoch||clock_ns()>=s->deadline)return 0;
+ *epoch=s->epoch;*deadline=s->deadline;memcpy(client,s->client,32);memcpy(broker,s->broker,32);return 1;
 }
