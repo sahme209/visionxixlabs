@@ -1,0 +1,7 @@
+{
+  "status": 401,
+  "desktopSessionRequired": true,
+  "method": "existing-owner Vercel CLI curl, GET only",
+  "rawCredentialOutputStored": false,
+  "earlierConnectorApiCheck": "deployment authentication blocked; not application acceptance"
+}

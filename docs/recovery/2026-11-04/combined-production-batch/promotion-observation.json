@@ -1,0 +1,81 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "{\"error\":{\"message\":\"Vercel API request failed (409: conflict). The provided deploymentId (dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK) is already the current production deployment.\",\"recovery\":\"Check the API message, arguments, target team and resource state. Correct the request before retrying.\",\"remediation\":{\"actor\":\"agent\",\"action\":\"correct_request\"},\"status\":409,\"code\":\"conflict\",\"operation\":\"POST /v10/projects/{projectId}/promote/{deploymentId}\",\"requestId\":\"iad1:cle1:iad1:sfo1::clkn6-1793795283870-71063b61ed20\"},\"cliFallback\":{\"commandTemplate\":\"vercel api /v10/projects/{projectId}/promote/{deploymentId} --method POST\",\"guidance\":\"Check the API message, arguments, target team and resource state. Correct the request before retrying.\",\"kind\":\"api\",\"argv\":[\"vercel\",\"api\",\"/v10/projects/{projectId}/promote/{deploymentId}\",\"--method\",\"POST\"],\"help\":\"vercel api --help\",\"limitations\":\"Same endpoint and method only after translating inputs. --input preserves JSON object bodies, not top-level arrays or primitives; use MCP for those forms. CLI authentication and default team can differ. JSONL stays text instead of MCP aggregation; response field selection, bounds and error handling differ.\",\"contextBindings\":{\"teamId\":\"teamId\",\"projectId\":\"projectId\"},\"instructions\":\"Replace path placeholders with URL-encoded values. Add query inputs to the URL (repeat the key for arrays; omit null/undefined), headers with --header, and a JSON object body file with --input. Preserve schema defaults and coercions; an omitted optional JSON body on POST/PUT/PATCH is {} in MCP. Set teamId explicitly when supported; a slug alone does not override the CLI default team. Preserve required inputs and scoped context. Do not use -F for query parameters or --paginate unless all pages are intended. Native alternatives have limited input/output parity.\",\"inputs\":[{\"key\":\"projectId\",\"name\":\"projectId\",\"location\":\"path\",\"required\":true},{\"key\":\"deploymentId\",\"name\":\"deploymentId\",\"location\":\"path\",\"required\":true},{\"key\":\"teamId\",\"name\":\"teamId\",\"location\":\"query\",\"required\":false},{\"key\":\"slug\",\"name\":\"slug\",\"location\":\"query\",\"required\":false},{\"key\":\"requestBody\",\"name\":\"requestBody\",\"location\":\"body\",\"contentType\":\"application/json\",\"required\":false}],\"targetInstructions\":\"Fill team/project placeholders from tool inputs or route context and apply explicit scope selectors. Reuse known IDs without identity/team probes; discover only missing scope or diagnose a CLI access/not-found error. Never use a different CLI default.\",\"context\":{\"teamId\":\"team_j0CEiAAorasdEVQyeAJjpNfm\",\"projectId\":\"prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp\"}}}"
+    }
+  ],
+  "structuredContent": {
+    "error": {
+      "message": "Vercel API request failed (409: conflict). The provided deploymentId (dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK) is already the current production deployment.",
+      "recovery": "Check the API message, arguments, target team and resource state. Correct the request before retrying.",
+      "remediation": {
+        "actor": "agent",
+        "action": "correct_request"
+      },
+      "status": 409,
+      "code": "conflict",
+      "operation": "POST /v10/projects/{projectId}/promote/{deploymentId}",
+      "requestId": "iad1:cle1:iad1:sfo1::clkn6-1793795283870-71063b61ed20"
+    },
+    "cliFallback": {
+      "commandTemplate": "vercel api /v10/projects/{projectId}/promote/{deploymentId} --method POST",
+      "guidance": "Check the API message, arguments, target team and resource state. Correct the request before retrying.",
+      "kind": "api",
+      "argv": [
+        "vercel",
+        "api",
+        "/v10/projects/{projectId}/promote/{deploymentId}",
+        "--method",
+        "POST"
+      ],
+      "help": "vercel api --help",
+      "limitations": "Same endpoint and method only after translating inputs. --input preserves JSON object bodies, not top-level arrays or primitives; use MCP for those forms. CLI authentication and default team can differ. JSONL stays text instead of MCP aggregation; response field selection, bounds and error handling differ.",
+      "contextBindings": {
+        "teamId": "teamId",
+        "projectId": "projectId"
+      },
+      "instructions": "Replace path placeholders with URL-encoded values. Add query inputs to the URL (repeat the key for arrays; omit null/undefined), headers with --header, and a JSON object body file with --input. Preserve schema defaults and coercions; an omitted optional JSON body on POST/PUT/PATCH is {} in MCP. Set teamId explicitly when supported; a slug alone does not override the CLI default team. Preserve required inputs and scoped context. Do not use -F for query parameters or --paginate unless all pages are intended. Native alternatives have limited input/output parity.",
+      "inputs": [
+        {
+          "key": "projectId",
+          "name": "projectId",
+          "location": "path",
+          "required": true
+        },
+        {
+          "key": "deploymentId",
+          "name": "deploymentId",
+          "location": "path",
+          "required": true
+        },
+        {
+          "key": "teamId",
+          "name": "teamId",
+          "location": "query",
+          "required": false
+        },
+        {
+          "key": "slug",
+          "name": "slug",
+          "location": "query",
+          "required": false
+        },
+        {
+          "key": "requestBody",
+          "name": "requestBody",
+          "location": "body",
+          "contentType": "application/json",
+          "required": false
+        }
+      ],
+      "targetInstructions": "Fill team/project placeholders from tool inputs or route context and apply explicit scope selectors. Reuse known IDs without identity/team probes; discover only missing scope or diagnose a CLI access/not-found error. Never use a different CLI default.",
+      "context": {
+        "teamId": "team_j0CEiAAorasdEVQyeAJjpNfm",
+        "projectId": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp"
+      }
+    },
+    "error_code": "INVALID_ARGUMENT"
+  },
+  "isError": true
+}

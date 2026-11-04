@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "[\n  {\n    \"metadata\": {\n      \"observed_at\": \"2026-11-04T12:27:56.872985+00:00\",\n      \"new_ledger_rows\": 0,\n      \"unresolved_ai_holds\": 0,\n      \"other_active_transactions\": 0\n    }\n  }\n]"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

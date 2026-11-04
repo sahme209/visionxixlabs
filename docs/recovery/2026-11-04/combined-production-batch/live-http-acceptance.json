@@ -1,0 +1,140 @@
+{
+  "deployment": "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK",
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/",
+      "sha256": "92c446f086a53bf86d8402ca05e243e803fb0f00481bdb276bf65d739cf5769b",
+      "bytes": 104701,
+      "contentType": "text/html; charset=utf-8",
+      "deploymentIds": [
+        "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK"
+      ]
+    },
+    {
+      "path": "/product",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/product",
+      "sha256": "884ba89626cd3b78dcb026ac6f23988cedce1b16ea7148be9e017c3d95a79bcf",
+      "bytes": 86420,
+      "contentType": "text/html; charset=utf-8",
+      "deploymentIds": [
+        "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK"
+      ]
+    },
+    {
+      "path": "/integrations",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/integrations",
+      "sha256": "3c4b4496cb5a79310d1be07e4e9dfa50a40873fafc2146ea4759753bf6be1ce3",
+      "bytes": 79150,
+      "contentType": "text/html; charset=utf-8",
+      "deploymentIds": [
+        "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK"
+      ]
+    },
+    {
+      "path": "/security",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/security",
+      "sha256": "ba56cd5d5751b92404238695c03765aa1d8611adca874b8bbe507f944588ad1a",
+      "bytes": 80809,
+      "contentType": "text/html; charset=utf-8",
+      "deploymentIds": [
+        "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK"
+      ]
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/docs",
+      "sha256": "5032d3137c3641408157472a2ff891e1fbd9c251c00d0e1c2ab9171fec6ac26d",
+      "bytes": 115543,
+      "contentType": "text/html; charset=utf-8",
+      "deploymentIds": [
+        "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK"
+      ]
+    },
+    {
+      "path": "/demo",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/demo",
+      "sha256": "aa36d10df2f9d839254c453974e3168a696fb74a887f5f27ad47b2ab45cb2b1d",
+      "bytes": 80344,
+      "contentType": "text/html; charset=utf-8",
+      "deploymentIds": [
+        "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK"
+      ]
+    },
+    {
+      "path": "/download",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/download",
+      "sha256": "eb6bdd9447ee4611967d32138bb24c1c3530e88da240ed6ce8f21392368518cf",
+      "bytes": 54361,
+      "contentType": "text/html; charset=utf-8",
+      "deploymentIds": [
+        "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK"
+      ]
+    },
+    {
+      "path": "/pricing",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/plans",
+      "sha256": "234ba089de3dd22997dac5cc475933123419593a15d8c32a21b2e5c7fd66c3c9",
+      "bytes": 64132,
+      "contentType": "text/html; charset=utf-8",
+      "deploymentIds": [
+        "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK"
+      ]
+    },
+    {
+      "path": "/api/desktop/release-workspace",
+      "status": 401,
+      "finalUrl": "https://visionxixlabs.com/api/desktop/release-workspace",
+      "sha256": "152d7579def1b4c701503a3a410faccff98c1ff2765cd042fa695e1766343d0b",
+      "bytes": 47,
+      "contentType": "application/json",
+      "deploymentIds": []
+    }
+  ],
+  "canonicalIcons": [
+    {
+      "path": "/axiom-apple-icon-497d44ea000e.png",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/axiom-apple-icon-497d44ea000e.png",
+      "sha256": "497d44ea000e18f9ad5f00baee4cb592ccc7689de5302c48dec7c937c56ba401",
+      "bytes": 5313,
+      "contentType": "image/png",
+      "deploymentIds": [],
+      "matchesLocalCanonical": true
+    },
+    {
+      "path": "/axiom-favicon-1b77e225c532.png",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/axiom-favicon-1b77e225c532.png",
+      "sha256": "1b77e225c53238689dd4911ef93b26267ad3e7c857b06ce9f9aea742aa46aee5",
+      "bytes": 808,
+      "contentType": "image/png",
+      "deploymentIds": [],
+      "matchesLocalCanonical": true
+    },
+    {
+      "path": "/axiom-icon-cedd8eb1034f.png",
+      "status": 200,
+      "finalUrl": "https://visionxixlabs.com/axiom-icon-cedd8eb1034f.png",
+      "sha256": "cedd8eb1034fe90f0072bad4748d6701c0f8e9ab24c18642b82a88ae3cc51992",
+      "bytes": 18006,
+      "contentType": "image/png",
+      "deploymentIds": [],
+      "matchesLocalCanonical": true
+    }
+  ],
+  "desktopAuthRequired": true,
+  "allPublicPages200": true,
+  "allPagesCurrentDeployment": true,
+  "allIconsMatch": true,
+  "browserVisualAcceptance": false,
+  "installerBytesRedownloaded": false
+}

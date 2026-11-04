@@ -9,6 +9,10 @@ Updated November 3, 2026. Two coordinated workstreams. The user explicitly resum
 
 A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-target native replacement implemented, independently reviewed and locally verified~~ ([bounded integration](../recovery/2026-11-04/governance-document-replacement-root-review.md)): 30 backend checks, one actual isolated PostgreSQL journey with simulated authority/provider responses, 15 mocked frontend checks plus22 compatibility checks, types/frontend build. Default-OFF503 and existing mounting remain; no evidence timestamp renewal, live discovery, activation or full enforcement qualification. A7 bounded coding run-budget ledger is locally implemented, independently reviewed and verified:32 isolated database tests,8 installed-SDK tests with synthetic transport,100 compatibility checks and scoped types ([bounded review](../recovery/2026-11-04/coding-run-budget-root-review.md)). No production migration/activation or real AI/provider call. Default1000-cent hold/500-cent cap safely refuses; useful smaller quotes and the full security program remain open.
 
+## November 4 combined production release milestone
+
+~~One full completed website/backend source snapshot deployed and HTTP/source-verified~~ ([receipt](../recovery/2026-11-04/combined-production-batch/COMPLETION.md)):READYdpl_9M9w,source d3e591b9,7971storedsource hashes,8public pages/3canonicalicons and app401 verified. Separately approved additive budget schema applied once with existing row hashes unchanged. Known old identity migration untouched. No paid GitHub CI/new desktop installer release, Governance enrollment or provider actions. Source/documents/receipts are included in the single authorized final private backup push. All15parent requirements remain open; local-only/support/customer/editorial/browser/native limits are preserved.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains

@@ -1,0 +1,15 @@
+{
+  "deployment": "dpl_9M9wCNyji8LW8V6aKXuNZLkznjBK",
+  "revision": "d3e591b9f262435cf05fe690742f6898fcebf742",
+  "expected": 7974,
+  "observed": 7971,
+  "missing": [
+    ".gitignore",
+    "desktop/.gitignore",
+    "scripts/governance_local_issuer/.gitignore"
+  ],
+  "extra": [],
+  "mismatches": [],
+  "matching": 7971,
+  "rawTreeSha256": "5f89845d201d3b3fcf4216c36472dcb9486d947494158c5e39c38a3bc68c78c8"
+}
