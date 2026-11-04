@@ -1,0 +1,97 @@
+{
+  "status": "relocated-only-not-prepared-not-startable",
+  "sourceRevision": "d9b201be135966412033d6a5c2d92181ebd5a5f7",
+  "previewRoot": "/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49",
+  "buildOwned": "/private/tmp/axiom-product-hierarchy-build-d9b201be-gaddqu17",
+  "stage": "/private/tmp/axiom-product-hierarchy-build-d9b201be-gaddqu17/stage",
+  "proxy": "127.0.0.1:5240",
+  "backend": "127.0.0.1:5241",
+  "listenerCheck": {
+    "command": [
+      "/usr/sbin/lsof",
+      "-nP",
+      "-iTCP:5240",
+      "-iTCP:5241",
+      "-sTCP:LISTEN"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "",
+    "result": "no existing listeners observed; no sockets opened"
+  },
+  "manifestPlaceholder": "PENDING_BUILD_MANIFEST_NOT_STARTABLE",
+  "replacements": [
+    {
+      "old": "/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa",
+      "new": "/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49"
+    },
+    {
+      "old": "/private/tmp/axiom-product-hierarchy-build-4bf9082a-ogpyr_zt",
+      "new": "/private/tmp/axiom-product-hierarchy-build-d9b201be-gaddqu17"
+    },
+    {
+      "old": "4bf9082a1749a4bfa74846ab39ec2a24e1062fe7",
+      "new": "d9b201be135966412033d6a5c2d92181ebd5a5f7"
+    },
+    {
+      "old": "4bf9082a",
+      "new": "d9b201be"
+    },
+    {
+      "old": "5234",
+      "new": "5240"
+    },
+    {
+      "old": "5235",
+      "new": "5241"
+    },
+    {
+      "old": "bd8b239295ba44f647ce58fde5cef4a49681c962e4ff7fe81d8097dd15250707",
+      "new": "PENDING_BUILD_MANIFEST_NOT_STARTABLE"
+    }
+  ],
+  "inputs": [
+    {
+      "original": "/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa/launch_preview.py",
+      "relocated": "/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49/launch_preview.py",
+      "originalSha256": "b37a9ca24beb9ea905e8e23dde4bbcf2868633d3a625fd8a4aa6a30047e924c3",
+      "relocatedSha256": "b2b22d4bb5a4db5599caa45c6127e4257611cccd6c5a48d376a4febe3562e109"
+    },
+    {
+      "original": "/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa/backend.sb",
+      "relocated": "/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49/backend.sb",
+      "originalSha256": "cfa3c7fad62411d92acff9de2a85cba1ae0881d2ab6a2c8787ee3c17158ea6bd",
+      "relocatedSha256": "dd25f73489cd6b9444b95f6d504ba9eea5a6d1a5e641839f2a2d03e2e04835ee"
+    },
+    {
+      "original": "/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa/proxy.sb",
+      "relocated": "/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49/proxy.sb",
+      "originalSha256": "2d2db9f9f7e6de871e2d5920f3ff096f4a10c0dda2998810ff04dd5595e5423a",
+      "relocatedSha256": "ef00804164e15498e4da7815735282cc60cf8a959204b3d88d7ed7ca96621d7e"
+    },
+    {
+      "original": "/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa/preview_proxy.py",
+      "relocated": "/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49/preview_proxy.py",
+      "originalSha256": "ed5e92e82ce143fb9a5c34bb273994c6d4504e17e7de8d28ce37763d35d51316",
+      "relocatedSha256": "ffcce614407e5d2674e35ac418f1568be639a4e5e2114f9ec0c3fb0c1119eab0"
+    },
+    {
+      "original": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/product-hierarchy-preview/prepare-runtime.py",
+      "relocated": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/website-accessibility-pair/prepare-runtime.py",
+      "originalSha256": "32c47ab5da0603eb2f4d963a1f6ea30237fc1c5148e2761c048debe8ee17a421",
+      "relocatedSha256": "86dd42c29ea69ba0c682ed56e4251aa3d5c258c2134fa31623c0d5bbab1a8da7"
+    },
+    {
+      "original": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/product-hierarchy-preview/test_preview_bindings.py",
+      "relocated": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/website-accessibility-pair/test_preview_bindings.py",
+      "originalSha256": "72d009126fd2723548512d539f019d7b42ed611dae26c379ca313a423e296bc2",
+      "relocatedSha256": "19577f183fa9198e56ae762be24e1798e235133ffb2ba98a82c34819e3247180"
+    }
+  ],
+  "prepareExecuted": false,
+  "testsExecuted": false,
+  "previewStarted": false,
+  "cacheCreated": false,
+  "authority": "unavailable",
+  "pending": "Root must verify exact successful build and separately create/review only the fixed stage image-cache directory before running prepare-runtime.py. No manifest or launch binding exists."
+}

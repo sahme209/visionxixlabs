@@ -1,0 +1,7 @@
+# Exact d9b201be offline build and guarded preview
+
+The ordinary source-bound offline builder passed preparation, stage-only Prisma generation, Next compilation, full production TypeScript, static generation and required output verification. Executing issuer identity remains unavailable and executionAuthorized false; this is not Governance custody/enrollment qualification. The reviewed prior driver changed only its exact pinned source revision; underlying builder/engine/guard source hashes matched prior records. Root verified all six preview relocation artifacts differ only by approved fixed root/stage/source/port/manifest literals.
+
+Fresh preview http://127.0.0.1:5240/product and /integrations (wrapper /__axiom_preview), backend5241. Existing5234/5235 and paired native sessions preserved. Five pure source/guard binding checks passed, followed by25actual bounded local HTTP/asset/refusal checks. Static asset bytes matched the exact new manifest. Accounts/APIs/nonGET requests are blocked; inherited environment replaced with synthetic values, backend outbound networking denied. Only its exact owned0700image cache permits writes.
+
+Live owned handles: backend61047, proxy99625. Build89742 finished exit0. No browser/AT/responsive/contrast/performance acceptance or native update claimed. No provider/inference/production DB/schema/deploy/push/paid CI action. The source-only type gate is now separately passed with materialized matching-lock dependencies; earlier timeout evidence remains.

@@ -46,3 +46,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 website accessibility increment
 ~~Catalog clear-focus recovery and fully readable paused evidence cards~~:9+12focused DOM cases with real REDs/source reviews. [Evidence](../recovery/2026-11-04/website-accessibility-pair/README.md). No browser/AT or measured-contrast acceptance; no publication.
+
+### November4 current website preview refresh
+~~Exactd9scoped types/full offline build/output checks~~ now pass after matching-lock materialized dependency recovery; earlier type timeouts retained. [Product](http://127.0.0.1:5240/product), [Integrations](http://127.0.0.1:5240/integrations), source/guard5+HTTP25checks. Browser/AT/contrast/performance/native/live/Governance/publication remain unaccepted. Old previews preserved. [Receipt](../recovery/2026-11-04/website-accessibility-pair/current-build-preview/README.md).

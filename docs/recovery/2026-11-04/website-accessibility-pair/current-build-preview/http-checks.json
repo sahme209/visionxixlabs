@@ -1,0 +1,131 @@
+{
+  "source": "d9b201be135966412033d6a5c2d92181ebd5a5f7",
+  "rows": [
+    {
+      "path": "/product",
+      "status": 200,
+      "bytes": 84253
+    },
+    {
+      "path": "/integrations",
+      "status": 200,
+      "bytes": 77845
+    },
+    {
+      "path": "/demo",
+      "status": 200,
+      "bytes": 78891
+    },
+    {
+      "path": "/__axiom_preview",
+      "status": 200,
+      "bytes": 620
+    },
+    {
+      "asset": "/_next/static/chunks/1018-a830ec35d7e8e0f3.js",
+      "sha256": "6e765375c887aa5dd40fe3c77a06305c210558acc48f3d8f785f1983088d07cc",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/37882-b9dc7f2fb9b2a293.js",
+      "sha256": "b78a2a0ac5a9a13341e6ed4df15d672a3bb23f28bbf945c175df34c87c086946",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/38437-ab43c492a711661a.js",
+      "sha256": "e98c9bf352b5dadec83a45b1d4a2581f6d1435091995e4c44bbaca1eb0f2832c",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/42191-b07d1292cdea35fa.js",
+      "sha256": "6afe1d7ad8120a59f85961585909658b7028d36a07b47e0152e8b81ae191f56a",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/45155-434fcc427ea881f5.js",
+      "sha256": "49456ef21b098919894141bcf111689a96836efc97ce637ff3687bf0e345e573",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/4bd1b696-9ce25231cbb0ecf2.js",
+      "sha256": "07d3845ca7b65cf8c140e8d42130573f6e53327c18a2d9178bf3d4c27d46dad8",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/93197-59c54cbbe39d027f.js",
+      "sha256": "261bbd4ef0f23517cfa5c1d15adf18532a1c10ac6a83630decad8dcfaa82c97b",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/93794-7c5eb5b4643d7857.js",
+      "sha256": "57657be1240b28db88b6bec0e614c7fe900f6335a14d715f1b2950f676bac6d9",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/98500-202fb27570ee6051.js",
+      "sha256": "89482c98536997f67c9a6fc6322391963effbdaf429888d0b1cc9d3472f34bc4",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/app/demo/page-e83a77606466d334.js",
+      "sha256": "056acc37514ce5b135445693df5fbecb428641eb030bc96ea4efca1f21ff691e",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/app/integrations/page-7fd007f2c856fdfd.js",
+      "sha256": "1f40a55bb14144736de101060375f1481bc3fd2c5553973b6588637a48182af2",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/app/layout-a7cef48bd14197e7.js",
+      "sha256": "b919aded5acf2cdf4f5575baaeb0366d50ba71eee90674ca506303644f0cfbfb",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/app/product/page-dc7c3d54d2522fbf.js",
+      "sha256": "7d35676d2fa713b0d095e2864c5cfe40b0f5275bfac558d768225f1cc964c013",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/main-app-21e6c32f4eb8ae6c.js",
+      "sha256": "042b245655b0cd4693c49ef79fc468f2d3b80dece1949088e4aa201992a3e3f2",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/chunks/webpack-69f14800859f0b85.js",
+      "sha256": "e52ca52a44397d90c7f5d3341852bdcbda59fe566ed572736c34eb2fd00dd161",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/css/882965afda8961b6.css",
+      "sha256": "5740ec34fa69e9e9c4a27e93869e4c37a74800fb9e89de2205c8e0931e9dac91",
+      "status": 200
+    },
+    {
+      "asset": "/_next/static/css/fd496917896bbbdc.css",
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e",
+      "status": 200
+    },
+    {
+      "path": "/api/auth/session",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/account",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/product",
+      "method": "POST",
+      "status": 403
+    }
+  ],
+  "limits": "Local HTTP/assets only; no browser/AT/responsive/contrast or provider acceptance"
+}

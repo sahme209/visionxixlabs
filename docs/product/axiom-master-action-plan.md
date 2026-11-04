@@ -868,3 +868,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — website keyboard recovery and readable paused evidence
 
 ~~Integration Clear filters restores Search focus; essential scripted-demo evidence/warnings remain fully opaque when paused~~ ([source-bound focused evidence](../recovery/2026-11-04/website-accessibility-pair/README.md)). Actual RED2/9 became9/12focused passes; separate source reviews clear. No new animations/dependencies, catalog availability changes or authority. Browser/AT/contrast/performance/reduced-motion end-to-end and publication gates remain open. All15parents remain open.
+
+## November4 — materialized dependency recovery and updated website preview
+
+~~Exactd9source scoped types and ordinary full offline production build/output checks pass; guarded preview5240serves current website~~ ([evidence](../recovery/2026-11-04/website-accessibility-pair/current-build-preview/README.md)). Working dependency cloud placeholders obstructed earlier type resolution; a fresh source archive with matching-lock materialized local dependencies passed without network/hydration/root mutation. Original90s/10s timeouts preserved. Five guard checks and25HTTP/assets/refusal checks pass; browser/AT/responsive/contrast/performance/Governance/live/publication gates remain open. All15parents remain open.

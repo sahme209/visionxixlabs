@@ -1,0 +1,10 @@
+test_actual_launcher_pins_assets_runtime_metadata_and_cache_without_exec (__main__.PreparedSourceBindings) ... ok
+test_actual_new_build_manifest_and_source_identity (__main__.PreparedSourceBindings) ... ok
+test_authority_headers_and_methods_still_cannot_reach_backend (__main__.PreparedSourceBindings) ... ok
+test_fixed_ports_and_only_existing_exact_cache_permission (__main__.PreparedSourceBindings) ... ok
+test_new_manifest_targets_do_not_open_private_or_unknown_paths (__main__.PreparedSourceBindings) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.161s
+
+OK

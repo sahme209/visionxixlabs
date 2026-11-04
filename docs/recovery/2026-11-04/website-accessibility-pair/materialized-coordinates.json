@@ -1,0 +1,12 @@
+{
+  "owned": "/private/tmp/axiom-a11y-materialized-types-wvm8bwdh",
+  "sourceCommit": "d9b201be135966412033d6a5c2d92181ebd5a5f7",
+  "dependencyStage": "/private/tmp/axiom-product-hierarchy-build-4bf9082a-ogpyr_zt/stage",
+  "lockSha256": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+  "sourceFiles": [
+    "components/marketing/IntegrationCatalogBrowser.tsx",
+    "components/marketing/WorkflowStoryScene.tsx",
+    "components/marketing/__tests__/IntegrationCatalogBrowser.test.ts",
+    "components/marketing/__tests__/WorkflowStoryScene.readability.test.ts"
+  ]
+}

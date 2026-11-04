@@ -9,3 +9,7 @@ Separate independent source reviews found no important issues. Both test runs us
 ## Unresolved type gate
 
 The combined source/test TypeScript invocation timed out after90seconds without a result; its child was absent afterward. A separate10second bounded module-resolution diagnostic also timed out, ending while resolving existing Heroicons declarations. This does not establish a compiler error or identify the cause. No type pass, full build, updated served preview or publication is claimed. Both failures are preserved; do not automatically repeat an unchanged invocation or narrow away required types.
+
+## Later verified recovery
+
+The earlier type gate is superseded by the [exact-source materialized-dependency check](types-recovery.md), exit0, and the [fresh full offline build and guarded preview](current-build-preview/README.md). Both timeouts remain historical failures. No browser/AT/contrast acceptance or production deployment is inferred.

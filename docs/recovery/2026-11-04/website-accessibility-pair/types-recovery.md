@@ -1,0 +1,7 @@
+# Type-check recovery — exact source, materialized local dependencies
+
+The original working dependency folder contains Heroicons ServerStackIcon.d.ts and ServerIcon.d.ts as compressed,dataless zero-block placeholders. The bounded resolution trace ends immediately before their barrel exports. No placeholder read/hydration/download or dependency mutation was performed. This establishes a concrete filesystem obstruction, not a TypeScript source error.
+
+An existing earlier verified offline build has those declarations materialized. Its package.json and lock bytes exactly match current source; relevant TS/React/Next/Heroicons package versions match. A fresh Git archive of exact d9b201be source components/lib/package files, with unchanged compiler options and the same four source/test entry points, used those dependencies through a read-only symlink. Local source bytes matched current root files. Kernel network and dependency writes were denied; temporary HOME/TMP/cache were private.
+
+That scoped source/test type check completed exit0. Both original timeout and diagnostic remain preserved; no missing type was mocked or declaration skipped beyond the existing skipLibCheck compiler setting. The old dependency build does not substitute for a current full build, and matching lock/version metadata is not a new proof of every installed dependency byte. Full current build and guarded preview are tracked separately.

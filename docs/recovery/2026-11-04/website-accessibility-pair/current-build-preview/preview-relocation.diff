@@ -1,0 +1,162 @@
+--- /private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa/launch_preview.py
++++ /private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49/launch_preview.py
+@@ -8,8 +8,8 @@
+ import stat
+ import sys
+ 
+-ROOT = Path('/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa')
+-STAGE = Path('/private/tmp/axiom-product-hierarchy-build-4bf9082a-ogpyr_zt/stage')
++ROOT = Path('/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49')
++STAGE = Path('/private/tmp/axiom-product-hierarchy-build-d9b201be-gaddqu17/stage')
+ CACHE = STAGE / '.next/cache/images'
+ NODE = Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
+ PYTHON = Path('/usr/bin/python3')
+@@ -66,12 +66,12 @@
+            'PYTHONDONTWRITEBYTECODE': '1'}
+     if sys.argv[1] == 'backend':
+         env.update({'DATABASE_URL': 'postgresql://synthetic:synthetic@127.0.0.1:1/synthetic',
+-                    'NEXTAUTH_URL': 'http://127.0.0.1:5235',
++                    'NEXTAUTH_URL': 'http://127.0.0.1:5241',
+                     'NEXTAUTH_SECRET': 'synthetic-local-preview-not-a-real-secret',
+                     'AWS_EC2_METADATA_DISABLED': 'true'})
+         os.chdir(STAGE)
+         args = [str(SANDBOX), '-f', str(ROOT / 'backend.sb'), str(NODE),
+-                str(STAGE / 'node_modules/next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', '5235']
++                str(STAGE / 'node_modules/next/dist/bin/next'), 'start', '--hostname', '127.0.0.1', '--port', '5241']
+     else:
+         os.chdir(ROOT)
+         args = [str(SANDBOX), '-f', str(ROOT / 'proxy.sb'), str(PYTHON), str(ROOT / 'preview_proxy.py')]
+--- /private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa/backend.sb
++++ /private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49/backend.sb
+@@ -3,7 +3,7 @@
+ (deny network-outbound)
+ (deny network-inbound)
+ (deny network-bind)
+-(allow network-inbound (local ip "localhost:5235"))
+-(allow network-bind (local ip "localhost:5235"))
++(allow network-inbound (local ip "localhost:5241"))
++(allow network-bind (local ip "localhost:5241"))
+ (deny file-write*)
+-(allow file-write* (subpath "/private/tmp/axiom-product-hierarchy-build-4bf9082a-ogpyr_zt/stage/.next/cache/images"))
++(allow file-write* (subpath "/private/tmp/axiom-product-hierarchy-build-d9b201be-gaddqu17/stage/.next/cache/images"))
+--- /private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa/proxy.sb
++++ /private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49/proxy.sb
+@@ -3,7 +3,7 @@
+ (deny network-outbound)
+ (deny network-inbound)
+ (deny network-bind)
+-(allow network-outbound (remote ip "localhost:5235"))
+-(allow network-inbound (local ip "localhost:5234"))
+-(allow network-bind (local ip "localhost:5234"))
++(allow network-outbound (remote ip "localhost:5241"))
++(allow network-inbound (local ip "localhost:5240"))
++(allow network-bind (local ip "localhost:5240"))
+ (deny file-write*)
+--- /private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa/preview_proxy.py
++++ /private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49/preview_proxy.py
+@@ -9,20 +9,20 @@
+ import json
+ import re
+ 
+-ROOT = Path('/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa')
+-MANIFEST_SHA256 = 'bd8b239295ba44f647ce58fde5cef4a49681c962e4ff7fe81d8097dd15250707'
++ROOT = Path('/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49')
++MANIFEST_SHA256 = 'PENDING_BUILD_MANIFEST_NOT_STARTABLE'
+ manifest_bytes = (ROOT / 'asset-manifest.json').read_bytes()
+ if hashlib.sha256(manifest_bytes).hexdigest() != MANIFEST_SHA256:
+     raise RuntimeError('preview manifest identity mismatch')
+ MANIFEST = json.loads(manifest_bytes)
+-BACKEND = ('127.0.0.1', 5235)
+-LISTEN = ('127.0.0.1', 5234)
++BACKEND = ('127.0.0.1', 5241)
++LISTEN = ('127.0.0.1', 5240)
+ MAX_RESPONSE = 32 * 1024 * 1024
+ REQUEST_HEADERS = {'accept', 'accept-language'}
+ RESPONSE_HEADERS = {'content-encoding', 'content-language', 'etag', 'last-modified'}
+ DENIED = ('/api', '/auth', '/account', '/operator', '/dashboard', '/admin', '/billing', '/desktop', '/workspace-handoff')
+ CSP = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+-WRAPPER = b'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Axiom local preview - 4bf9082a</title></head><body style="margin:0;background:#101010"><div role="status" style="min-height:40px;box-sizing:border-box;padding:11px 18px;background:#ecebe5;color:#242424;font:12px system-ui">Local HTML/static preview - source 4bf9082a - accounts, forms and backend actions disabled</div><iframe title="Axiom local website" src="/" sandbox="allow-scripts allow-same-origin" style="width:100%;height:calc(100dvh - 40px);border:0;display:block"></iframe></body></html>'''
++WRAPPER = b'''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Axiom local preview - d9b201be</title></head><body style="margin:0;background:#101010"><div role="status" style="min-height:40px;box-sizing:border-box;padding:11px 18px;background:#ecebe5;color:#242424;font:12px system-ui">Local HTML/static preview - source d9b201be - accounts, forms and backend actions disabled</div><iframe title="Axiom local website" src="/" sandbox="allow-scripts allow-same-origin" style="width:100%;height:calc(100dvh - 40px);border:0;display:block"></iframe></body></html>'''
+ 
+ 
+ def clean_text(value):
+@@ -115,7 +115,7 @@
+         self.send_header('Cache-Control', 'no-store')
+         self.send_header('Content-Security-Policy', CSP)
+         self.send_header('X-Content-Type-Options', 'nosniff')
+-        self.send_header('X-Axiom-Preview-Source', '4bf9082a')
++        self.send_header('X-Axiom-Preview-Source', 'd9b201be')
+         for key, value in filtered_response_headers(headers):
+             self.send_header(key, value)
+         self.end_headers()
+@@ -158,5 +158,5 @@
+ 
+ if __name__ == '__main__':
+     # Execution is a separate approval step; preparation/tests never reach here.
+-    print('LOCAL_HTML_STATIC_PREVIEW http://127.0.0.1:5234/__axiom_preview source4bf9082a', flush=True)
++    print('LOCAL_HTML_STATIC_PREVIEW http://127.0.0.1:5240/__axiom_preview sourced9b201be', flush=True)
+     ThreadingHTTPServer(LISTEN, Proxy).serve_forever()
+--- /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/product-hierarchy-preview/prepare-runtime.py
++++ /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/website-accessibility-pair/prepare-runtime.py
+@@ -8,11 +8,11 @@
+ import stat
+ 
+ REPO = Path('/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion')
+-ROOT = Path('/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa')
+-OWNED = Path('/private/tmp/axiom-product-hierarchy-build-4bf9082a-ogpyr_zt')
++ROOT = Path('/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49')
++OWNED = Path('/private/tmp/axiom-product-hierarchy-build-d9b201be-gaddqu17')
+ STAGE = OWNED / 'stage'
+-REVISION = '4bf9082a1749a4bfa74846ab39ec2a24e1062fe7'
+-SOURCE = '4bf9082a'
++REVISION = 'd9b201be135966412033d6a5c2d92181ebd5a5f7'
++SOURCE = 'd9b201be'
+ NODE = Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
+ OLD = REPO / 'docs/recovery/2026-11-04/website-1b23c208-build-preview/guard-v3'
+ 
+@@ -73,7 +73,7 @@
+         inputs.append(path)
+     unique = dict.fromkeys(inputs)
+     binding = {'status': 'prepared-not-started', 'source': SOURCE, 'sourceRevision': REVISION,
+-        'backend': '127.0.0.1:5235', 'proxy': '127.0.0.1:5234',
++        'backend': '127.0.0.1:5241', 'proxy': '127.0.0.1:5240',
+         'files': [{'path': str(path), 'bytes': path.stat().st_size, 'sha256': sha(path)} for path in unique],
+         'cacheDirectory': {'path': str(cache), 'device': info.st_dev, 'inode': info.st_ino, 'uid': info.st_uid, 'mode': stat.S_IMODE(info.st_mode)},
+         'runtimeDataAddition': 'Only the fixed reviewed .next/cache/images directory; not issuer custody or whole-stage immutability'}
+--- /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/product-hierarchy-preview/test_preview_bindings.py
++++ /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/website-accessibility-pair/test_preview_bindings.py
+@@ -6,9 +6,9 @@
+ import unittest
+ from unittest.mock import patch
+ 
+-ROOT = Path('/private/tmp/axiom-product-hierarchy-preview-4bf9082a-bd4y55aa')
+-STAGE = Path('/private/tmp/axiom-product-hierarchy-build-4bf9082a-ogpyr_zt/stage')
+-REVISION = '4bf9082a1749a4bfa74846ab39ec2a24e1062fe7'
++ROOT = Path('/private/tmp/axiom-website-accessibility-preview-d9b201be-8ipayv49')
++STAGE = Path('/private/tmp/axiom-product-hierarchy-build-d9b201be-gaddqu17/stage')
++REVISION = 'd9b201be135966412033d6a5c2d92181ebd5a5f7'
+ 
+ 
+ def load(name, path):
+@@ -36,8 +36,8 @@
+             binding = launcher.verify_prepared_inputs()
+             execute.assert_not_called()
+         self.assertEqual(binding['sourceRevision'], REVISION)
+-        self.assertEqual(binding['backend'], '127.0.0.1:5235')
+-        self.assertEqual(binding['proxy'], '127.0.0.1:5234')
++        self.assertEqual(binding['backend'], '127.0.0.1:5241')
++        self.assertEqual(binding['proxy'], '127.0.0.1:5240')
+         self.assertEqual(binding['cacheDirectory']['path'], str(STAGE / '.next/cache/images'))
+ 
+     def test_new_manifest_targets_do_not_open_private_or_unknown_paths(self):
+@@ -48,8 +48,8 @@
+         self.assertIsNotNone(proxy.canonical_target(next(iter(manifest['nextStaticAssets']))))
+ 
+     def test_fixed_ports_and_only_existing_exact_cache_permission(self):
+-        self.assertEqual(proxy.BACKEND, ('127.0.0.1', 5235))
+-        self.assertEqual(proxy.LISTEN, ('127.0.0.1', 5234))
++        self.assertEqual(proxy.BACKEND, ('127.0.0.1', 5241))
++        self.assertEqual(proxy.LISTEN, ('127.0.0.1', 5240))
+         backend = (ROOT / 'backend.sb').read_text()
+         proxy_profile = (ROOT / 'proxy.sb').read_text()
+         self.assertIn('(deny network-outbound)', backend)
