@@ -1,0 +1,11 @@
+{
+  "lib/security/privateAuthorityDatabase.ts": "0baf90d2d6624d56c5ec6be220e33f53be7dbd48480bf5758ba7aa70752f07cd",
+  "lib/security/privateCredentialVault.ts": "4e0e93c0eefc21503a7c7f9aa008f656a8e2db5b61ace260cdee602ca71a2541",
+  "lib/security/credentialVaultCrypto.ts": "528e72f5edaa22b7d46e9f32a32dc3251eb0d7bbdd957cfe3d3aebcf841e6239",
+  "lib/security/credentialVault.ts": "27fb296b8f79c24a4328ab940b0879e77b0789df3083243b55be4aa7ed0245a2",
+  "lib/security/__tests__/privateResourceInstances.test.ts": "3ffffdc94210ed90fdf11ca1bf73e525a1b73ae0627e4c7589587d0bf4e5e09f",
+  "lib/security/__tests__/credentialVaultScoped.test.ts": "9e82c6a59516a8dc469caafc5a80d016d694e4db88475978772075348781a644",
+  "prisma/schema.prisma": "4e35ea3c8645656dbdae19c1ee6427bf526d9b82527de6ef046048dcdb6e617a",
+  "package-lock.json": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+  "scripts/run-vitest.mjs": "38a5f81f919e5bb6f1a76c769adc1713ee1c89f8d097a813e8d61c3121c08692"
+}
