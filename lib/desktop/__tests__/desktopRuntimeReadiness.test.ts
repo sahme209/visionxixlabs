@@ -42,7 +42,9 @@ describe("desktop runtime readiness", () => {
     const result = await readDesktopRuntimeReadiness();
 
     expect(result.ready).toBe(false);
-    expect(result.message).toContain("desktop sign-in is temporarily unavailable");
+    expect(result.message).toContain("Required service storage checks are unavailable");
+    expect(result.message).toContain("Installation, sign-in, and entitlement still require separate verification");
+    expect(result.message).not.toContain("storage is being prepared");
     expect(result.message).not.toContain("DesktopPairingChallengeRecord");
   });
 });

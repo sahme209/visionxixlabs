@@ -32,7 +32,7 @@ export default async function DownloadPreviewPage({ searchParams }: DownloadPrev
         </h1>
         <p className="mt-5 text-base leading-relaxed text-zinc-400">
           {runtimeUnavailable
-            ? "Installers have been built, but new desktop sign-in is unavailable while production storage is being prepared. Downloads will resume only after the complete sign-in and entitlement path is verified."
+            ? "Required service storage-access checks are currently unavailable. Return to downloads to check availability again."
             : "This page is the honest fallback when the release manifest has no matching platform asset. It does not substitute a browser product, source archive, waitlist, or promised release date."}
         </p>
         <div className="mt-8 rounded-2xl border border-white/20 bg-white/[0.04] p-6">
@@ -42,7 +42,7 @@ export default async function DownloadPreviewPage({ searchParams }: DownloadPrev
           </div>
           <p className="mt-3 text-sm leading-relaxed text-zinc-300">
             {runtimeUnavailable
-              ? "Publishing an installer is not enough: account pairing, access entitlement, and the first authenticated request must also work. The website now fails closed when that service path cannot be verified."
+              ? "The download gate checks access to required service storage. Successful storage checks do not verify installation, sign-in, or entitlement; each requires separate verification."
               : "The downloads page reads the public release manifest and shows the exact filename, architecture, signing state, installation friction, checksum availability, and release record for each asset."}
           </p>
         </div>

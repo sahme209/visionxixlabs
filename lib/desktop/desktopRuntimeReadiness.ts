@@ -27,7 +27,7 @@ export async function readDesktopRuntimeReadiness(): Promise<DesktopRuntimeReadi
     console.error("[DesktopRuntimeReadiness] Required production storage is unavailable", error);
     return {
       ready: false,
-      message: "Installers are built, but new desktop sign-in is temporarily unavailable while production storage is being prepared.",
+      message: "Required service storage checks are unavailable. Desktop downloads are temporarily paused. Installation, sign-in, and entitlement still require separate verification.",
     };
   }
 }
