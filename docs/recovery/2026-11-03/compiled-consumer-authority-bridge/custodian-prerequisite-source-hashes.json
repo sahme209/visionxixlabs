@@ -78,5 +78,6 @@
       "path": "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/keychain-reference-findings.md",
       "sha256": "e832ec6936049da058e5229ef719d30f09b291bbb37d1901ef777197dd1e944a"
     }
-  ]
+  ],
+  "follow_on": "privileged-provisioning-writer-decision.md; same unchanged locally hashed API declarations, no external reads or API calls"
 }
