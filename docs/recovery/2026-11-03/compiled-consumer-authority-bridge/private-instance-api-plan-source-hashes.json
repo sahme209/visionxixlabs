@@ -1,0 +1,12 @@
+{
+  "lib/db.ts": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4",
+  "lib/security/credentialVault.ts": "4a83e24129610e7c4872fac512f847828152691e1723ad21b8877bcdd3486c33",
+  "lib/connectors/github/platformGithubAppCredential.ts": "314780b99de75afb086f5a8de58d36beab9b2bbf4cb4e0248d57a2210b387b04",
+  "lib/connectors/github/githubConfig.ts": "cdff1295180d31b0daa12ebc6d2100007b1e4ac0a210824e2de1d77646ee8871",
+  "lib/connectors/github/githubAppAuth.ts": "a4e25c822d09c9738d9e2d2683d663b3ac3022163343172cdd050fce9f9749de",
+  "lib/desktop/desktopToken.ts": "cfdaf7b466a859da3fe3ebdf063f256c1e95962bfb250f570b3e87e190531a96",
+  "lib/desktop/desktopSession.ts": "a3caa67a1ed1c8737e067a5a1918ea0d10bb0a2d24f4903bdc2236d53fa64fa8",
+  "lib/desktop/desktopSessionStore.prisma.ts": "5490ac9aa797ee97fd91c4f8f0e76c12a2410f4ab811ea346495efc7b436f31d",
+  "lib/desktop/resolveRequestDesktopSession.ts": "0fb446513d3f9facdc87dd7609c06c4fd91ba131796741c85bcd3909caf5c326",
+  "lib/desktop/releaseProviderMergeCoordinator.ts": "c5c39961ba3e1ba17efb516ae8797c7dc0c1cc69ea6520dc1ec35e43a4210bf5"
+}
