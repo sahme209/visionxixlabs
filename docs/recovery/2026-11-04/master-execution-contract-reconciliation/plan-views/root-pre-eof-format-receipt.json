@@ -1,0 +1,66 @@
+{
+  "kind": "source-derived reporting only",
+  "sourcesAndOutputs": [
+    {
+      "path": "scripts/generate-plan-views.py",
+      "sha256": "550b625417fb96036ff5b21edf0ac940cf786b4ff23f76e725bb51ca0af59085"
+    },
+    {
+      "path": "tests/scripts/test_generate_plan_views.py",
+      "sha256": "f47c09d0b7ecb0d8d861fb12805d9ef110cb8127d98af356d7a8c0c4831385b9"
+    },
+    {
+      "path": "docs/product/axiom-master-action-plan.md",
+      "sha256": "322efc9625b7d54960fd5f355cadb8ef6fffd8984759df03e0354ddafb081e5f"
+    },
+    {
+      "path": "docs/product/current-execution-board.md",
+      "sha256": "92d7938476cc36bf90ac6e9d7ac50af0a50f0722de9ed9594f017428ddd8e55e"
+    },
+    {
+      "path": "package.json",
+      "sha256": "3f484e77eedd0eede93df152b8c1c4fedd139072b72dfa52957257d8d5a2e4d1"
+    },
+    {
+      "path": "desktop/package.json",
+      "sha256": "f5f51d3b8e93517349ac985809a4b2ab3877148a13f85fd94e2dc0b656d9dd14"
+    },
+    {
+      "path": "docs/product/plan-views/adoption-inventory.md",
+      "sha256": "52944443dc088b94f9ef203ec456b15b3c4b0f43953da1463c1384a969594e08"
+    },
+    {
+      "path": "docs/product/plan-views/capabilities.md",
+      "sha256": "833b2ae2fc193bf9a0a2a629c8a49cd07d1341e6378a5432a71c447794e505b1"
+    },
+    {
+      "path": "docs/product/plan-views/dependencies-decisions.md",
+      "sha256": "ac47f19f9f45b28efeec17468d57066217369a2daa69a6cd63a680b89d6f37ee"
+    },
+    {
+      "path": "docs/product/plan-views/execution-brief.md",
+      "sha256": "ac821538d8b09cf683e26543a78cfa592c8d54fab9834cad7570255db99a2a65"
+    }
+  ],
+  "finalGenerationAfterBoardUpdate": {
+    "exit": 0,
+    "views": 4
+  },
+  "finalDriftAndLocalLiteralLinkCheck": {
+    "exit": 0,
+    "externalLinksFetched": false,
+    "localLinkExistenceNotContentAcceptance": true
+  },
+  "authorPureTests": {
+    "passed": 5,
+    "sourceUnchangedAfterReview": true,
+    "notRepeatedAfterBoardOnlyUpdate": true
+  },
+  "parentScope": {
+    "originalAB": 15,
+    "futureC": 6,
+    "allOpen": true
+  },
+  "dependencyInventory": "direct root/desktop declarations only; resolved pins/licenses/maintenance/network and native/transitive/global scopes unverified",
+  "authorityGranted": false
+}

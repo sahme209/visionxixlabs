@@ -1,0 +1,51 @@
+{
+  "status": "local source-derived reporting only",
+  "parents": {
+    "originalAB": 15,
+    "futureC": 6,
+    "allRemainOpen": true
+  },
+  "decisionRows": 6,
+  "outputs": 4,
+  "pureTests": {
+    "passed": 5,
+    "failed": 0,
+    "log": "tests-final.log",
+    "earlierHarnessFailures": [
+      "tests-first.log",
+      "tests-second.log"
+    ]
+  },
+  "driftCheck": "PASS",
+  "localMarkdownLinkOccurrences": 282,
+  "missingLocalTargets": [],
+  "externalLinkOccurrencesNotFetched": 10,
+  "directManifestDeclarations": {
+    "package.json": {
+      "dependencies": 69,
+      "devDependencies": 17,
+      "optionalDependencies": 0,
+      "peerDependencies": 0
+    },
+    "desktop/package.json": {
+      "dependencies": 12,
+      "devDependencies": 9,
+      "optionalDependencies": 0,
+      "peerDependencies": 0
+    }
+  },
+  "licenseMaintenanceNetworkVerification": "unverified; native/transitive/global scope open",
+  "sourceAndOutputHashes": {
+    "docs/product/axiom-master-action-plan.md": "322efc9625b7d54960fd5f355cadb8ef6fffd8984759df03e0354ddafb081e5f",
+    "docs/product/current-execution-board.md": "51841f5f5a39799fef701c8c7a04c0fe635fb1b813eeb17f2a878fbd102b2b67",
+    "package.json": "3f484e77eedd0eede93df152b8c1c4fedd139072b72dfa52957257d8d5a2e4d1",
+    "desktop/package.json": "f5f51d3b8e93517349ac985809a4b2ab3877148a13f85fd94e2dc0b656d9dd14",
+    "scripts/generate-plan-views.py": "550b625417fb96036ff5b21edf0ac940cf786b4ff23f76e725bb51ca0af59085",
+    "tests/scripts/test_generate_plan_views.py": "f47c09d0b7ecb0d8d861fb12805d9ef110cb8127d98af356d7a8c0c4831385b9",
+    "docs/product/plan-views/capabilities.md": "e5adbbb9054e6d5c03a5158f492b75db2f4f2e6946e49a637f3be2d53a1b1f8c",
+    "docs/product/plan-views/dependencies-decisions.md": "5ec46088086b157430854aecac52400ad351e1fb9e01f73502749965a9d1433b",
+    "docs/product/plan-views/execution-brief.md": "ec318db484014e1362ddff32bee031ca0031c1a571f5177226322da5be36662e",
+    "docs/product/plan-views/adoption-inventory.md": "d20468039f53bcf8769043c968564d7a9f442d9b26be4531a8b1360cf9397cca"
+  },
+  "limits": "No product authority, parent completion, customer acceptance, adoption, install, network, provider, browser, database or AI evaluation."
+}

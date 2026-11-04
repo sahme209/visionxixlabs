@@ -1,0 +1,64 @@
+{
+  "status": "local whole-Releases context-boundary repair",
+  "baselineCommit": "550d3f25a907dae4db3189dc9f2b17e03664399f",
+  "executionPacket": {
+    "path": "docs/recovery/2026-11-04/releases-context-boundary/EXECUTION-PACKET.md",
+    "sha256": "27b3735191df8a7596acd7848fe805fd2184813d5e992752a4b893d4fda69c3d"
+  },
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsWorkspace.tsx",
+      "sha256": "afbd3221e757ea829140531b87e0815718fb6217f9bd497fe7963156e6241277"
+    },
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "d9faf3d594f59adac90b5c567439b52214bfbc3a0015192b01153c06eaae7d98"
+    },
+    {
+      "path": "lib/desktop/__tests__/deploymentRequestsWorkspace.test.ts",
+      "sha256": "58451c7d61bb804882a822420bf7be9a9733d688b36c8edd58d30de2108e8cbb"
+    }
+  ],
+  "red": {
+    "failed": 10,
+    "passed": 0,
+    "exit": 1,
+    "target": "actual pre-boundary DeploymentRequestsView; test import later switched to actual wrapper"
+  },
+  "wrapperOnlyDiagnostic": {
+    "failed": 4,
+    "passed": 6,
+    "exit": 1,
+    "reason": "Keyed remount alone cannot prevent old async refresh/closure follow-up reads."
+  },
+  "focusedGreen": {
+    "passed": 12,
+    "failed": 0,
+    "exit": 0,
+    "log": "focused-green.log"
+  },
+  "compatibility": {
+    "passed": 40,
+    "failed": 0,
+    "files": 2,
+    "exit": 0,
+    "scope": "new12 boundary cases plus prior28 releaseResolutionView cases",
+    "log": "compat-green.log"
+  },
+  "desktopTypes": {
+    "exit": 0,
+    "log": "types.log"
+  },
+  "preservedContracts": "preserved-contracts.json",
+  "preservationDiagnostic": "preservation-diagnostic.json",
+  "scope": "Config-object/context-revision keyed production wrapper resets all Releases state/subtrees; captured original-view owner checks existing async entries, completions, observation batches and late follow-up reads. Retained stale mounted controls refuse before notification; normal notifications remount immediately. No new role/action/provider permission.",
+  "testBoundaries": "Actual wrapper, actual view and actual focused-release renderer; only service boundary and unrelated ticket/merge panels are mocked. Synthetic old/new responses and fake-timer observation checks. No real provider/data/session traffic.",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache and writes denied outside owned temp",
+  "recovery": "Remount/owner refusal does not cancel, undo or establish failure of already-dispatched work. Read original authorized saved records; no automatic retry.",
+  "limits": "No framework adoption, credentials/customer data/AI/provider/native/browser/DB/build/deployment or publication. Existing source maps/registry/master/index untouched; source requalification remains a root follow-up."
+}

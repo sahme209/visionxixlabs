@@ -1,0 +1,21 @@
+{
+  "exactSingleInsertionRemovalRestoresHead": true,
+  "baseHead": "550d3f25a907dae4db3189dc9f2b17e03664399f",
+  "masterBeforeSha256": "1ca2334a91d9b21ed166beb19cd44f373f406ca13ea444f4e648936496f52c6c",
+  "masterAfterSha256": "322efc9625b7d54960fd5f355cadb8ef6fffd8984759df03e0354ddafb081e5f",
+  "sectionSha256": "7e13198bff4a17f08688c27226364516ee5ce53a5f89b2420cb1109bcb1929ca",
+  "newAuthorityGranted": false,
+  "futureC": "Planned / not authorized for implementation",
+  "requiredViews": [
+    "capability matrix",
+    "dependency and decision register",
+    "current execution brief",
+    "adoption inventory"
+  ],
+  "extraAcceptance": [
+    "genuine positive and refusal customer journey",
+    "evidence-linked competitor differentiation",
+    "versioned narrow action/AI evaluation boundaries",
+    "linked artifact resolution and historical evidence preservation"
+  ]
+}

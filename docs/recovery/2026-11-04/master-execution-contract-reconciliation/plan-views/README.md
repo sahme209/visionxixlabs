@@ -1,0 +1,7 @@
+# Four source-derived reporting views
+
+The user's new execution contract is preserved verbatim in the parent reconciliation. The four views derive from the master, explicit bounded evidence tags/current unit/decision table in the linked execution board, and root/desktop direct package declarations. They preserve15original plus six planned future parents; no checkbox completion, percentage, current access, adoption, security guarantee or operations permission is inferred.
+
+The stdlib generator has four fixed outputs, checks all target paths before writing and offers `--check` for drift. Five actual pure tests pass, including missing/duplicate/unknown scope/classes, reproducibility/drift/local targets and late-position symlink preflight. Two earlier fixture-root diagnostics remain recorded, not successful acceptance. Local literal Markdown existence is checked; anchors, external destinations and linked-content correctness remain separate gates.
+
+Author receipts/output digests preceded the final board evidence update and are explicitly historical. Root then regenerated all four and ran the new-input drift/local-link check successfully; final digests are in root-final-receipt.json. No repeated source tests were needed after that data-only change. Direct manifest declarations are not installed/resolved versions; licenses and maintenance/network behavior are unqualified, and native/transitive/global tools remain open. No dependency or framework was installed.

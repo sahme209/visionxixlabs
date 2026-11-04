@@ -1,0 +1,15 @@
+{
+  "exit": 0,
+  "owned": "/private/tmp/axiom-releases-context-boundary-l6f1zg4d",
+  "scope": "full current desktop noEmit TypeScript",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-releases-context-boundary-l6f1zg4d/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "--project",
+    "desktop/tsconfig.json",
+    "--noEmit"
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "exit": 0,
+  "owned": "/private/tmp/axiom-plan-views-eof-gywfcjx6",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-plan-views-eof-gywfcjx6/local.sb",
+    "/usr/bin/python3",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/scripts",
+    "-p",
+    "test_generate_plan_views.py",
+    "-v"
+  ],
+  "sourceChanged": "canonical single EOF newline in generated Markdown",
+  "network": "kernel denied",
+  "writes": "owned temp only",
+  "earlierGreenPreserved": true
+}

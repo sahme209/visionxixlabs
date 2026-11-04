@@ -1,0 +1,15 @@
+{
+  "allStatedContractsPreserved": true,
+  "contracts": [
+    "exact full DeploymentIntakeForm",
+    "initial draft/date conversion/revision hydration/validateStep",
+    "payload/manualSteps/submissionId",
+    "service request call expressions and arguments",
+    "five-second interval expression",
+    "all29 interactive JSX nodes"
+  ],
+  "interactiveNodeCount": 29,
+  "addedLocalRevisionReads": 2,
+  "sha256": "505e8a9472d3fc0061967b3aaba6c58f370a364defad492dcb6e34bc95a8dc26",
+  "note": "The initial naive all-client-call comparisons included two intentional local getContextRevision reads and a chained then callback whose owner check changed; the final comparison selects only direct desktopClient method calls. Remote request expressions are unchanged; local accessor delta is explicitly checked."
+}

@@ -1,0 +1,5 @@
+{
+  "format": "verbatim-process-log",
+  "sha256": "86854912933c24e81f6f640c3c8b48e83a27b60ce73ddaf581fe0a550861dc4d",
+  "text": "test_decision_schema_packet_and_unknown_master_heading_refuse (test_generate_plan_views.PlanViewsTests) ... ok\ntest_determinism_fixed_outputs_drift_and_source_change (test_generate_plan_views.PlanViewsTests) ... ok\ntest_exact_parent_set_and_mixed_classes (test_generate_plan_views.PlanViewsTests) ... ok\ntest_link_resolution_missing_traversal_and_external_not_fetched (test_generate_plan_views.PlanViewsTests) ... ok\ntest_missing_link_prevents_any_output_and_symlink_output_refused (test_generate_plan_views.PlanViewsTests) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.012s\n\nOK\n"
+}

@@ -1,0 +1,258 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "inspectedAt": "2026-11-04",
+  "baseRevision": "550d3f25a907dae4db3189dc9f2b17e03664399f",
+  "snapshot": "Exact working-tree SHA pins after local whole-Releases context repair; not a claim patched files existed at base Git revision.",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "nativeAccepted": false,
+  "runtimeOrProviderExecutionByThisTask": false,
+  "rangeConvention": "One-based inclusive; SHA256 over exact original bytes including line endings.",
+  "sources": [
+    {
+      "key": "app-mount",
+      "path": "desktop/src/App.tsx",
+      "sha256": "d9faf3d594f59adac90b5c567439b52214bfbc3a0015192b01153c06eaae7d98",
+      "lineCount": 209,
+      "ranges": [
+        {
+          "start": 7,
+          "end": 13,
+          "sha256": "f8b9b551116e75d0474bda1f8455ccd2e6b477d8dac0277815db5775113c98d7"
+        },
+        {
+          "start": 164,
+          "end": 187,
+          "sha256": "6b896ff508e26c859eb055bc54901115fde7d8b92321a80afd887e03861d0dd9"
+        }
+      ]
+    },
+    {
+      "key": "wrapper",
+      "path": "desktop/src/views/DeploymentRequestsWorkspace.tsx",
+      "sha256": "afbd3221e757ea829140531b87e0815718fb6217f9bd497fe7963156e6241277",
+      "lineCount": 13,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 13,
+          "sha256": "afbd3221e757ea829140531b87e0815718fb6217f9bd497fe7963156e6241277"
+        }
+      ]
+    },
+    {
+      "key": "view-state",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 258,
+          "end": 308,
+          "sha256": "3c5154444fa5a54d52b432092c6fb5ab23e30451311057c2bcb81d6fc0235b6c"
+        }
+      ]
+    },
+    {
+      "key": "async-reads",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 310,
+          "end": 346,
+          "sha256": "28269303d9f0ab40ef09fbff52357fbf25a2aab538d5880f10a73e653d66da07"
+        }
+      ]
+    },
+    {
+      "key": "observer",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 348,
+          "end": 374,
+          "sha256": "3e3fbfcb36aae18445ef4b555f6f26a091a5f3c318f025cf46a5526b0fc7b844"
+        }
+      ]
+    },
+    {
+      "key": "action-completions",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 376,
+          "end": 410,
+          "sha256": "9a4e099b8db78248a7c3f2a73ffad85ea847460cc3f096ae07e0fd3a3a60b682"
+        },
+        {
+          "start": 428,
+          "end": 507,
+          "sha256": "acc80fedbff59efe447c8afc074de863e7a0fb2566f7ea89f31e7c65dd983c2e"
+        }
+      ]
+    },
+    {
+      "key": "revision-read",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 412,
+          "end": 425,
+          "sha256": "a79ca21a03c00f1d173d4b5a136df1088a1e5b4f5401b491b71cd09ebac41c9e"
+        }
+      ]
+    },
+    {
+      "key": "intake-mount",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 527,
+          "end": 541,
+          "sha256": "b978272a939b5c450fe5402f07e6892ee685b645f4b0389fd50670360e9344af"
+        }
+      ]
+    },
+    {
+      "key": "intake-owner",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 960,
+          "end": 995,
+          "sha256": "866c4fcbdd5874107d4a8ea7352002a120523215693fa74786392d264d391e9d"
+        }
+      ]
+    },
+    {
+      "key": "intake-save",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 1122,
+          "end": 1146,
+          "sha256": "3b178ecfeed9ec95f1743ebadfd6cb99ec93cef74cea88dc462c3cfe01e6a710"
+        }
+      ]
+    },
+    {
+      "key": "focused-release",
+      "path": "desktop/src/components/FocusedReleaseWorkspace.tsx",
+      "sha256": "d203627868f47058c6bfa88a325e7bd5fb85801976626738ab5d3a85b79f8c44",
+      "lineCount": 31,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 31,
+          "sha256": "d203627868f47058c6bfa88a325e7bd5fb85801976626738ab5d3a85b79f8c44"
+        }
+      ]
+    },
+    {
+      "key": "test-source",
+      "path": "lib/desktop/__tests__/deploymentRequestsWorkspace.test.ts",
+      "sha256": "58451c7d61bb804882a822420bf7be9a9733d688b36c8edd58d30de2108e8cbb",
+      "lineCount": 53,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 53,
+          "sha256": "58451c7d61bb804882a822420bf7be9a9733d688b36c8edd58d30de2108e8cbb"
+        }
+      ]
+    },
+    {
+      "key": "receipt",
+      "path": "docs/recovery/2026-11-04/releases-context-boundary/receipt.json",
+      "sha256": "ff220fa85258ed6b0a5b8887e598ff23987885345c0f34757c7403f03e2cb11d",
+      "lineCount": 64,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 64,
+          "sha256": "ff220fa85258ed6b0a5b8887e598ff23987885345c0f34757c7403f03e2cb11d"
+        }
+      ]
+    },
+    {
+      "key": "types",
+      "path": "docs/recovery/2026-11-04/releases-context-boundary/types-receipt.json",
+      "sha256": "91b671ccf765f00fbe95bba1a612f30754e1ad778bf196c25fd9ea3ebd3032ea",
+      "lineCount": 15,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 15,
+          "sha256": "91b671ccf765f00fbe95bba1a612f30754e1ad778bf196c25fd9ea3ebd3032ea"
+        }
+      ]
+    },
+    {
+      "key": "preserved",
+      "path": "docs/recovery/2026-11-04/releases-context-boundary/preserved-contracts.json",
+      "sha256": "150252c4cc19f977df921913a38a20a88f9a28d62f71bfdc29b7d38bacb00f4a",
+      "lineCount": 15,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 15,
+          "sha256": "150252c4cc19f977df921913a38a20a88f9a28d62f71bfdc29b7d38bacb00f4a"
+        }
+      ]
+    },
+    {
+      "key": "review",
+      "path": "docs/recovery/2026-11-04/releases-context-boundary/independent-review.md",
+      "sha256": "8317dc1e22cede1d0b68e71eb246a92d129edf627703513bad6b512e2d91738e",
+      "lineCount": 3,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 3,
+          "sha256": "8317dc1e22cede1d0b68e71eb246a92d129edf627703513bad6b512e2d91738e"
+        }
+      ]
+    },
+    {
+      "key": "recovery-record",
+      "path": "docs/recovery/2026-11-04/releases-context-boundary/README.md",
+      "sha256": "e9e2f6c486a982d8d84c92440f222fbf6498a0f80e0308a4f03a500942571294",
+      "lineCount": 11,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 11,
+          "sha256": "e9e2f6c486a982d8d84c92440f222fbf6498a0f80e0308a4f03a500942571294"
+        }
+      ]
+    },
+    {
+      "key": "packet",
+      "path": "docs/recovery/2026-11-04/releases-context-boundary/EXECUTION-PACKET.md",
+      "sha256": "27b3735191df8a7596acd7848fe805fd2184813d5e992752a4b893d4fda69c3d",
+      "lineCount": 12,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "27b3735191df8a7596acd7848fe805fd2184813d5e992752a4b893d4fda69c3d"
+        }
+      ]
+    }
+  ]
+}

@@ -7,7 +7,7 @@ import { WorkspaceViewBoundary } from "./components/WorkspaceViewBoundary";
 import { AgentChatView, type AgentSettingsDestination, type AgentSkillRequest, type AgentLocalCodeRequest, type AgentAirflowRequest } from "./views/AgentChatView";
 import { WelcomeView } from "./views/WelcomeView";
 import { AxiomBotView } from "./views/AxiomBotView";
-import { DeploymentRequestsView } from "./views/DeploymentRequestsView";
+import { DeploymentRequestsWorkspace as DeploymentRequestsView } from "./views/DeploymentRequestsWorkspace";
 import { DocsView } from "./views/DocsView";
 import { SettingsView } from "./views/SettingsView";
 import { PluginsSkillsView } from "./views/PluginsSkillsView";

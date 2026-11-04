@@ -280,6 +280,8 @@ export function DeploymentRequestsView() {
   }, [draftContext, draftConfig]);
   const intakeEpoch = useRef(0);
   const mounted = useRef(false);
+  const viewOwner = useRef({ config: desktopClient.config, revision: desktopClient.getContextRevision() }).current;
+  const ownsView = useCallback(() => mounted.current && viewOwner.config === desktopClient.config && viewOwner.revision === desktopClient.getContextRevision(), [viewOwner]);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; intakeEpoch.current++; }; }, []);
   function invalidateRevisionRead() { intakeEpoch.current++; setLoadingRevisionId(undefined); }
   const [revision, setRevision] = useState<RevisionSeed>();
@@ -306,26 +308,31 @@ export function DeploymentRequestsView() {
   const [terraformRequestId, setTerraformRequestId] = useState<string>();
 
   const loadExecutions = useCallback(async () => {
+    if (!ownsView()) return;
     const result = await desktopClient.listDeploymentExecutions();
+    if (!ownsView()) return;
     if (result.ok) setExecutions(result.data.executions);
-  }, []);
+  }, [ownsView]);
 
   const load = useCallback(async () => {
+    if (!ownsView()) return;
     setLoading(true);
     setLoadError(undefined);
     const result = await desktopClient.deploymentRequests();
+    if (!ownsView()) return;
     if (result.ok) {
       setRequests(result.data);
       setLastSuccessfulLoadAt(new Date());
     } else setLoadError(result.error);
     setLoading(false);
     void loadExecutions();
-  }, [loadExecutions]);
+  }, [loadExecutions, ownsView]);
 
   useEffect(() => {
+    if (!ownsView()) return;
     let cancelled = false;
     desktopClient.deploymentRequests().then((result) => {
-      if (cancelled) return;
+      if (cancelled || !ownsView()) return;
       if (result.ok) {
         setRequests(result.data);
         setLastSuccessfulLoadAt(new Date());
@@ -333,7 +340,7 @@ export function DeploymentRequestsView() {
       setLoading(false);
     });
     return () => { cancelled = true; };
-  }, []);
+  }, [ownsView]);
 
   useEffect(() => { void loadExecutions(); }, [loadExecutions]);
 
@@ -347,12 +354,12 @@ export function DeploymentRequestsView() {
     if (!pending.length) return;
     let cancelled = false, inFlight = false;
     const observe = async () => {
-      if (cancelled || inFlight) return;
+      if (cancelled || inFlight || !ownsView()) return;
       inFlight = true;
       try {
         // Await every sibling, including rejected reads, before another batch.
         const results = await Promise.allSettled(pending.map(async (execution) => desktopClient.observeDeploymentExecution(execution.id)));
-        if (cancelled) return;
+        if (cancelled || !ownsView()) return;
         const updates = new Map(results.flatMap((result) => result.status === "fulfilled" && result.value.ok ? [[result.value.data.id, result.value.data] as const] : []));
         if (updates.size) setExecutions((current) => current.map((execution) => updates.get(execution.id) ?? execution));
       } finally {
@@ -364,9 +371,10 @@ export function DeploymentRequestsView() {
     return () => { cancelled = true; window.clearInterval(timer); };
     // The key changes only when the set of active runs or their status changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeExecutionKey]);
+  }, [activeExecutionKey, ownsView]);
 
   async function generatePlaybook(requestId: string) {
+    if (!ownsView()) return;
     setGeneratingRequestId(requestId);
     setGenerationErrors((current) => {
       const next = { ...current };
@@ -374,6 +382,7 @@ export function DeploymentRequestsView() {
       return next;
     });
     const result = await desktopClient.generateDeploymentPlaybook(requestId);
+    if (!ownsView()) return;
     setGeneratingRequestId(undefined);
     if (!result.ok) {
       setGenerationErrors((current) => ({ ...current, [requestId]: result.error }));
@@ -383,6 +392,7 @@ export function DeploymentRequestsView() {
   }
 
   async function loadLatestPlaybook(requestId: string) {
+    if (!ownsView()) return;
     setLoadingPlaybookId(requestId);
     setGenerationErrors((current) => {
       const next = { ...current };
@@ -390,6 +400,7 @@ export function DeploymentRequestsView() {
       return next;
     });
     const result = await desktopClient.latestDeploymentPlaybook(requestId);
+    if (!ownsView()) return;
     setLoadingPlaybookId(undefined);
     if (!result.ok) {
       setGenerationErrors((current) => ({ ...current, [requestId]: result.error }));
@@ -399,6 +410,7 @@ export function DeploymentRequestsView() {
   }
 
   async function startRevision(requestId: string) {
+    if (!ownsView()) return;
     const epoch = ++intakeEpoch.current, config = desktopClient.config, context = desktopClient.getContextRevision();
     const owns = () => mounted.current && epoch === intakeEpoch.current && config === desktopClient.config && context === desktopClient.getContextRevision();
     setLoadingRevisionId(requestId);
@@ -414,6 +426,7 @@ export function DeploymentRequestsView() {
   }
 
   async function loadRevisionHistory(requestId: string) {
+    if (!ownsView()) return;
     setLoadingHistoryId(requestId);
     setHistoryErrors((current) => {
       const next = { ...current };
@@ -421,6 +434,7 @@ export function DeploymentRequestsView() {
       return next;
     });
     const result = await desktopClient.deploymentRequestHistory(requestId);
+    if (!ownsView()) return;
     setLoadingHistoryId(undefined);
     if (!result.ok) {
       setHistoryErrors((current) => ({ ...current, [requestId]: result.error }));
@@ -430,6 +444,7 @@ export function DeploymentRequestsView() {
   }
 
   async function loadOperations(requestId: string) {
+    if (!ownsView()) return;
     setLoadingOperationsId(requestId);
     setOperationErrors((current) => {
       const next = { ...current };
@@ -437,6 +452,7 @@ export function DeploymentRequestsView() {
       return next;
     });
     const result = await desktopClient.deploymentOperations(requestId);
+    if (!ownsView()) return;
     setLoadingOperationsId(undefined);
     if (!result.ok) {
       setOperationErrors((current) => ({ ...current, [requestId]: result.error }));
@@ -446,6 +462,7 @@ export function DeploymentRequestsView() {
   }
 
   async function collectGitHubEvidence(requestId: string) {
+    if (!ownsView()) return;
     setCollectingGitHubEvidenceId(requestId);
     setGitHubEvidenceErrors((current) => {
       const next = { ...current };
@@ -453,6 +470,7 @@ export function DeploymentRequestsView() {
       return next;
     });
     const result = await desktopClient.collectGitHubReleaseEvidence(requestId);
+    if (!ownsView()) return;
     setCollectingGitHubEvidenceId(undefined);
     if (!result.ok) {
       const message = result.error === "github_read_validation_required"
@@ -465,6 +483,7 @@ export function DeploymentRequestsView() {
   }
 
   async function closeRequest(request: RequestSummary) {
+    if (!ownsView()) return;
     setClosingBusy(true);
     setClosureError(undefined);
     const result = await desktopClient.closeDeploymentRequest(
@@ -473,6 +492,7 @@ export function DeploymentRequestsView() {
       closureEvidenceId,
       closureSummary,
     );
+    if (!ownsView()) return;
     setClosingBusy(false);
     if (!result.ok) {
       setClosureError(result.error);

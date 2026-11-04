@@ -1,0 +1,10 @@
+{
+  "guideSha256": "c9730701574c9844c956da06bc4f0ae22fa1561ab2942e4fa8a8ffed4b388d10",
+  "manifestSha256": "7bdce8a64741126318043859f5e0273db6a6306587fb9bd222ab5edf02644b8b",
+  "uniqueSourceFiles": 11,
+  "evidenceKeys": 18,
+  "inclusiveRanges": 20,
+  "allWholeAndRangeHashesRootVerified": true,
+  "independentReview": "clear; actualmount/owner/recovery/working-snapshot/contextstate distinctions checked without rerun",
+  "customerOrNativeAcceptance": false
+}

@@ -1,0 +1,9 @@
+{
+  "failedCheck": "Initial literal all desktopClient-call comparison",
+  "reason": "Extraction initially included local accessor additions and a chained Promise callback rather than only direct client method invocations. This was an evidence-script classification error, not a changed service request argument.",
+  "resolution": "Final AST selector requires direct desktopClient.method(...) calls, preserves every exact service call expression, and separately requires exactly two added local revision reads. verify-preserved.cjs passes.",
+  "failedChecks": [
+    "Initial string-prefix comparison included two new local revision accessor calls.",
+    "Second string-prefix comparison still included deploymentRequests().then(...) and its intentionally changed callback body."
+  ]
+}

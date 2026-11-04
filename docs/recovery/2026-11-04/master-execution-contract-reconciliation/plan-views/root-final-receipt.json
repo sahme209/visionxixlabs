@@ -1,0 +1,68 @@
+{
+  "kind": "source-derived reporting only",
+  "sourcesAndOutputs": [
+    {
+      "path": "scripts/generate-plan-views.py",
+      "sha256": "ccfa9ecf35bba3acbc269803f7c5ddb01fb0b65d23554cbb49fe219dd92b17fd"
+    },
+    {
+      "path": "tests/scripts/test_generate_plan_views.py",
+      "sha256": "f47c09d0b7ecb0d8d861fb12805d9ef110cb8127d98af356d7a8c0c4831385b9"
+    },
+    {
+      "path": "docs/product/axiom-master-action-plan.md",
+      "sha256": "322efc9625b7d54960fd5f355cadb8ef6fffd8984759df03e0354ddafb081e5f"
+    },
+    {
+      "path": "docs/product/current-execution-board.md",
+      "sha256": "92d7938476cc36bf90ac6e9d7ac50af0a50f0722de9ed9594f017428ddd8e55e"
+    },
+    {
+      "path": "package.json",
+      "sha256": "3f484e77eedd0eede93df152b8c1c4fedd139072b72dfa52957257d8d5a2e4d1"
+    },
+    {
+      "path": "desktop/package.json",
+      "sha256": "f5f51d3b8e93517349ac985809a4b2ab3877148a13f85fd94e2dc0b656d9dd14"
+    },
+    {
+      "path": "docs/product/plan-views/adoption-inventory.md",
+      "sha256": "915a3abc2445b4ef1f9170b37edd7ed56f77a857e89ba0b7079473ab535fb59a"
+    },
+    {
+      "path": "docs/product/plan-views/capabilities.md",
+      "sha256": "49f0460072d97375dc8be157efebe738c90cf8f40a5deae6d87cf28119e0bff6"
+    },
+    {
+      "path": "docs/product/plan-views/dependencies-decisions.md",
+      "sha256": "6f11af2c18310e53efb3f042814329076d7a02ea35f120a6968bbc49220adaba"
+    },
+    {
+      "path": "docs/product/plan-views/execution-brief.md",
+      "sha256": "ac821538d8b09cf683e26543a78cfa592c8d54fab9834cad7570255db99a2a65"
+    }
+  ],
+  "finalGenerationAfterBoardUpdate": {
+    "exit": 0,
+    "views": 4,
+    "canonicalSingleEofNewline": true
+  },
+  "finalDriftAndLocalLiteralLinkCheck": {
+    "exit": 0,
+    "externalLinksFetched": false,
+    "localLinkExistenceNotContentAcceptance": true
+  },
+  "authorPureTests": {
+    "passed": 5,
+    "sourceChangedAfterInitialReview": "single final newline formatting; narrowly reviewed",
+    "newChangedSourceTestRun": "eof-format-tests-receipt.json",
+    "notRepeatedUnchangedProductTests": true
+  },
+  "parentScope": {
+    "originalAB": 15,
+    "futureC": 6,
+    "allOpen": true
+  },
+  "dependencyInventory": "direct root/desktop declarations only; resolved pins/licenses/maintenance/network and native/transitive/global scopes unverified",
+  "authorityGranted": false
+}

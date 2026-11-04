@@ -1,11 +1,11 @@
 {
   "format": "axiom.master-plan-reconciliation/1",
-  "recorded_at": "2026-11-04T22:40:37.439155+00:00",
+  "recorded_at": "2026-11-04T22:45:47.620325+00:00",
   "master_path": "docs/product/axiom-master-action-plan.md",
-  "master_sha256": "1ca2334a91d9b21ed166beb19cd44f373f406ca13ea444f4e648936496f52c6c",
-  "master_git_blob": "b3d5ab5fed7855c6f3e69ec442670d6ae9a8f9df",
+  "master_sha256": "322efc9625b7d54960fd5f355cadb8ef6fffd8984759df03e0354ddafb081e5f",
+  "master_git_blob": "2406f253d93820e3cdd786c03c88c146141330f4",
   "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
-  "current_method": "Known context-isolation/source-requalification milestone inserted after exact checkpoint comparison; prior GetLayers/Prompt Motion/C additions preserved.",
+  "current_method": "New16line user execution-contract section fully read and exact insertion preserved; current unit packet required before runtime edit.",
   "open_parents": [
     "A1",
     "A2",
@@ -52,7 +52,7 @@
   ],
   "new_workstream_c": {
     "scope": "private founder command center and autonomous customer support",
-    "stage": "future phased; Phase0 specification only alongside B4/B5",
+    "stage": "Planned / not authorized for implementation; future six parents preserved",
     "permission": "no new spending/credentials/provider/privileged/deploy/communications authorization",
     "evidence": "docs/recovery/2026-11-04/master-workstream-c-reconciliation/receipt.json"
   },
@@ -67,5 +67,10 @@
       "unreviewed assets/code import",
       "deployment"
     ]
+  },
+  "execution_contract": {
+    "evidence": "docs/recovery/2026-11-04/master-execution-contract-reconciliation/receipt.json",
+    "scope": "execution/plan-quality acceptance, not new operations authority",
+    "views": "source-derived capability/dependency/brief/adoption views required; not yet complete"
   }
 }
