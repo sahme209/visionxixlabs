@@ -337,12 +337,19 @@ export function DeploymentRequestsView() {
   useEffect(() => {
     const pending = executions.filter((execution) => execution.status !== "completed" && execution.status !== "tracking_unavailable");
     if (!pending.length) return;
-    let cancelled = false;
+    let cancelled = false, inFlight = false;
     const observe = async () => {
-      const results = await Promise.all(pending.map((execution) => desktopClient.observeDeploymentExecution(execution.id)));
-      if (cancelled) return;
-      const updates = new Map(results.filter((result) => result.ok).map((result) => [result.data.id, result.data]));
-      if (updates.size) setExecutions((current) => current.map((execution) => updates.get(execution.id) ?? execution));
+      if (cancelled || inFlight) return;
+      inFlight = true;
+      try {
+        // Await every sibling, including rejected reads, before another batch.
+        const results = await Promise.allSettled(pending.map(async (execution) => desktopClient.observeDeploymentExecution(execution.id)));
+        if (cancelled) return;
+        const updates = new Map(results.flatMap((result) => result.status === "fulfilled" && result.value.ok ? [[result.value.data.id, result.value.data] as const] : []));
+        if (updates.size) setExecutions((current) => current.map((execution) => updates.get(execution.id) ?? execution));
+      } finally {
+        inFlight = false;
+      }
     };
     void observe();
     const timer = window.setInterval(() => void observe(), 5000);

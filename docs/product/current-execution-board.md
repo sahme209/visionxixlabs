@@ -64,3 +64,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 grouped desktop keyboard milestone
 ~~Four current surfaces preserve composition keys~~:31+31focused cases, desktoptypes/rootbaseline+hashproof and independentreview pass. [Evidence/remaining limits](../recovery/2026-11-04/desktop-keyboard-batch/README.md). No actual nativeIME/credential/provider/AT or whole-app acceptance.
+
+### November4 release observation efficiency repair
+~~One observation batch per current effect until every sibling settles~~:12focused cases/0unhandled, desktoptypes/rootsource+JSXproof and independentreview pass. [Scope/limits](../recovery/2026-11-04/release-observer-singleflight/README.md). No global transport cancellation/provider/live qualification.

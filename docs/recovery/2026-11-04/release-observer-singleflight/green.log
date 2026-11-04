@@ -1,0 +1,21 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22moffers a ticket-first path without opening full execution intake[32m 68[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mkeeps draft actions limited to completion and history[32m 19[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mshows the original ticket details while completing the guarded intake[32m 29[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdoes not replace a newly opened ticket draft with a delayed completion read[32m 20[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mmarks future intake steps unavailable and keeps prior steps navigable without losing input[32m 30[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mseparates the final Continue click from the submit control[32m 54[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains the exact batch selection when opening an immutable revision[32m 26[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mkeeps one observation batch in flight across multiple five-second ticks and resumes on the next tick after settlement[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains a rejected execution record and keeps the batch held until its delayed sibling settles[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22msettles a synchronous observer throw without skipping its sibling or falsely completing a run[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdiscards a replaced effect’s delayed completed result while the newer saved status remains current[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mnever polls completed or tracking-unavailable workflow records[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m   Start at [22m 16:18:48
+[2m   Duration [22m 773ms[2m (transform 173ms, setup 0ms, import 284ms, tests 262ms, environment 177ms)[22m
+

@@ -892,3 +892,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — grouped desktop composition fixes
 
 ~~Command palette, recovery sign-in, focused release and ticket-provider shortcuts preserve composition before acting~~ ([source-bound evidence](../recovery/2026-11-04/desktop-keyboard-batch/README.md)). Actual7/20RED failures became31+31focused passes; desktoptypes and independentreview pass. Root8hashes+4reverse-guard Gitbaseline comparisons pass. Local rendered/mock verification only; repository/global-dialog/dormant-source candidates and native/AT/customer acceptance remain separately open. No credential/provider/native action or publication. All15parents remain open.
+
+## November4 — bounded release observation batches
+
+~~The current effect does not overlap status-observation batches, and rejected reads no longer escape~~ ([evidence](../recovery/2026-11-04/release-observer-singleflight/README.md)). Actual3RED/9passes+5unhandled errors became12focused passes/0unhandled; desktoptypes and independentreview pass. Schedule/transport/key/JSX unchanged; all siblings settle before gate release, cancelled effects cannot apply. Old physical transport across effect replacement remains possible/no global cancellation claim. No actual provider/DB/native action or publication; all15parents remain open.

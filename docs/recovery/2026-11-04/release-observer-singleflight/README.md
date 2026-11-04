@@ -1,0 +1,9 @@
+# Release observation batches — local repair
+
+The view-level five-second timer previously started another observation batch even while the same effect's earlier reads were pending. Promise.all rejection also escaped and could discard sibling results. The effect now skips cancelled/in-flight batches, awaits allSettled over async-wrapped existing observer calls, applies only fulfilled successful results and releases in finally. A synchronous throw is a rejected sibling, not a reason to skip later calls. Rejected records remain unchanged.
+
+ActualRED3failed/9passed plus5unhandled errors became12focused passes with zero unhandled errors. Cases cover delayed observations across multiple ticks, resumed polling after settlement, rejected and synchronous-throw siblings, old-effect cancellation, and completed/tracking-unavailable cessation. Full desktop TypeScript passed. Independent review clear. Root current source/test hashes match; all252JSX elements/self-closing nodes/fragments independently compare byte-for-byte with actual Git304a4ff1 (the agent's243count excludes fragments). No layout/control/permission change.
+
+Guarantee is one batch per current effect. Replacing an effect can leave its old physical transport requests pending because this client API has no abort argument; their results cannot apply. This is not global transport cancellation/single flight, an execution retry, action permission, actual provider acceptance or complete Governance. Schedule/key/transport arguments and all saved uncertainty records remain intact.
+
+Tests use local service fixtures under scrubbed environment, private writes and kernel network denial. No actual provider/DB/native/AI call, production action, app restart, full build or publication. The earlier hidden-release audit found substantive reads deliberate rather than automatic per hidden child; expiry/proof timers remain necessary.

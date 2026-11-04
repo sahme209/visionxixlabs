@@ -1,0 +1,158 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22moffers a ticket-first path without opening full execution intake[32m 69[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mkeeps draft actions limited to completion and history[32m 19[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mshows the original ticket details while completing the guarded intake[32m 30[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdoes not replace a newly opened ticket draft with a delayed completion read[32m 19[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mmarks future intake steps unavailable and keeps prior steps navigable without losing input[32m 33[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mseparates the final Continue click from the submit control[32m 53[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains the exact batch selection when opening an immutable revision[32m 25[2mms[22m[39m
+ [31m×[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mkeeps one observation batch in flight across multiple five-second ticks and resumes on the next tick after settlement[32m 4[2mms[22m[39m
+[31m   → expected "vi.fn()" to be called 2 times, but got 10 times[39m
+ [31m×[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains a rejected execution record and keeps the batch held until its delayed sibling settles[32m 2[2mms[22m[39m
+[31m   → expected "vi.fn()" to be called 2 times, but got 8 times[39m
+ [31m×[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22msettles a synchronous observer throw without skipping its sibling or falsely completing a run[32m 3[2mms[22m[39m
+[31m   → expected "vi.fn()" to be called 2 times, but got 1 times[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mdiscards a replaced effect’s delayed completed result while the newer saved status remains current[32m 5[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mnever polls completed or tracking-unavailable workflow records[32m 2[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mkeeps one observation batch in flight across multiple five-second ticks and resumes on the next tick after settlement
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called 2 times, but got 10 times[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m73:70[22m[39m
+    [90m 71|[39m  const a=observationDeferred(),b=observationDeferred();m.observe.mockI…
+    [90m 72|[39m  await mountExecutions([workflow,{...workflow,id:'execution-b'}]);expe…
+    [90m 73|[39m  await act(async()=>vi.advanceTimersByTime(20000));expect(m.observe).t…
+    [90m   |[39m                                                                      [31m^[39m
+    [90m 74|[39m  await act(async()=>{a.resolve({ok:true,data:{...workflow,workflowRunI…
+    [90m 75|[39m  expect(screen.getByText('Workflow run: observed-a')).toBeTruthy();exp…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22mretains a rejected execution record and keeps the batch held until its delayed sibling settles
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called 2 times, but got 8 times[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m81:70[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/desktop/__tests__/releaseResolutionView.test.ts[2m > [22msettles a synchronous observer throw without skipping its sibling or falsely completing a run
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called 2 times, but got 1 times[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m88:85[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Unhandled Errors [49m[22m[31m⎯⎯⎯⎯⎯⎯[39m
+[31m[1m
+Vitest caught 5 unhandled errors during the test run.
+This might cause false positive tests. Resolve unhandled errors to make sure your tests are not affected.[22m[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: Synthetic read rejection[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m80:95[22m[39m
+    [90m 78|[39m it('retains a rejected execution record and keeps the batch held until…
+    [90m 79|[39m  const a=observationDeferred(),b=observationDeferred();m.observe.mockI…
+    [90m 80|[39m  await mountExecutions([workflow,{...workflow,id:'execution-b'}]);awai…
+    [90m   |[39m                                                                                               [31m^[39m
+    [90m 81|[39m  await act(async()=>vi.advanceTimersByTime(15000));expect(m.observe).t…
+    [90m 82|[39m  await act(async()=>b.resolve({ok:true,data:{...workflow,id:'execution…
+[90m [2m❯[22m node_modules/@testing-library/react/dist/act-compat.js:[2m47:24[22m[39m
+[90m [2m❯[22m process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:[2m814:22[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> node_modules/@testing-library/react/dist/act-compat.js:[2m46:25[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m80:73[22m[39m
+[90m [2m❯[22m node_modules/@vitest/runner/dist/chunk-artifact.js:[2m1903:20[22m[39m
+
+[31mThis error originated in "[1mlib/desktop/__tests__/releaseResolutionView.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mretains a rejected execution record and keeps the batch held until its delayed sibling settles[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: Synthetic read rejection[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m80:95[22m[39m
+    [90m 78|[39m it('retains a rejected execution record and keeps the batch held until…
+    [90m 79|[39m  const a=observationDeferred(),b=observationDeferred();m.observe.mockI…
+    [90m 80|[39m  await mountExecutions([workflow,{...workflow,id:'execution-b'}]);awai…
+    [90m   |[39m                                                                                               [31m^[39m
+    [90m 81|[39m  await act(async()=>vi.advanceTimersByTime(15000));expect(m.observe).t…
+    [90m 82|[39m  await act(async()=>b.resolve({ok:true,data:{...workflow,id:'execution…
+[90m [2m❯[22m node_modules/@testing-library/react/dist/act-compat.js:[2m47:24[22m[39m
+[90m [2m❯[22m process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:[2m814:22[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> node_modules/@testing-library/react/dist/act-compat.js:[2m46:25[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m80:73[22m[39m
+[90m [2m❯[22m node_modules/@vitest/runner/dist/chunk-artifact.js:[2m1903:20[22m[39m
+
+[31mThis error originated in "[1mlib/desktop/__tests__/releaseResolutionView.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mretains a rejected execution record and keeps the batch held until its delayed sibling settles[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: Synthetic read rejection[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m80:95[22m[39m
+    [90m 78|[39m it('retains a rejected execution record and keeps the batch held until…
+    [90m 79|[39m  const a=observationDeferred(),b=observationDeferred();m.observe.mockI…
+    [90m 80|[39m  await mountExecutions([workflow,{...workflow,id:'execution-b'}]);awai…
+    [90m   |[39m                                                                                               [31m^[39m
+    [90m 81|[39m  await act(async()=>vi.advanceTimersByTime(15000));expect(m.observe).t…
+    [90m 82|[39m  await act(async()=>b.resolve({ok:true,data:{...workflow,id:'execution…
+[90m [2m❯[22m node_modules/@testing-library/react/dist/act-compat.js:[2m47:24[22m[39m
+[90m [2m❯[22m process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:[2m814:22[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> node_modules/@testing-library/react/dist/act-compat.js:[2m46:25[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m80:73[22m[39m
+[90m [2m❯[22m node_modules/@vitest/runner/dist/chunk-artifact.js:[2m1903:20[22m[39m
+
+[31mThis error originated in "[1mlib/desktop/__tests__/releaseResolutionView.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mretains a rejected execution record and keeps the batch held until its delayed sibling settles[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: Synthetic read rejection[39m
+[36m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m80:95[22m[39m
+    [90m 78|[39m it('retains a rejected execution record and keeps the batch held until…
+    [90m 79|[39m  const a=observationDeferred(),b=observationDeferred();m.observe.mockI…
+    [90m 80|[39m  await mountExecutions([workflow,{...workflow,id:'execution-b'}]);awai…
+    [90m   |[39m                                                                                               [31m^[39m
+    [90m 81|[39m  await act(async()=>vi.advanceTimersByTime(15000));expect(m.observe).t…
+    [90m 82|[39m  await act(async()=>b.resolve({ok:true,data:{...workflow,id:'execution…
+[90m [2m❯[22m node_modules/@testing-library/react/dist/act-compat.js:[2m47:24[22m[39m
+[90m [2m❯[22m process.env.NODE_ENV.exports.act node_modules/react/cjs/react.development.js:[2m814:22[22m[39m
+[90m [2m❯[22m Proxy.<anonymous> node_modules/@testing-library/react/dist/act-compat.js:[2m46:25[22m[39m
+[90m [2m❯[22m lib/desktop/__tests__/releaseResolutionView.test.ts:[2m80:73[22m[39m
+[90m [2m❯[22m node_modules/@vitest/runner/dist/chunk-artifact.js:[2m1903:20[22m[39m
+
+[31mThis error originated in "[1mlib/desktop/__tests__/releaseResolutionView.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1mretains a rejected execution record and keeps the batch held until its delayed sibling settles[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+
+[31m⎯⎯⎯⎯[39m[1m[41m Unhandled Rejection [49m[22m[31m⎯⎯⎯⎯⎯[39m
+[31m[1mError[22m: Synthetic synchronous read failure[39m
+[36m [2m❯[22m Object.<anonymous> lib/desktop/__tests__/releaseResolutionView.test.ts:[2m87:107[22m[39m
+
+[90m [2m❯[22m Object.Mock [as observeDeploymentExecution] node_modules/@vitest/spy/dist/index.js:[2m332:34[22m[39m
+[90m [2m❯[22m desktop/src/views/DeploymentRequestsView.tsx:[2m342:82[22m[39m
+[90m [2m❯[22m observe desktop/src/views/DeploymentRequestsView.tsx:[2m342:49[22m[39m
+[90m [2m❯[22m desktop/src/views/DeploymentRequestsView.tsx:[2m347:10[22m[39m
+[90m [2m❯[22m Object.react_stack_bottom_frame node_modules/react-dom/cjs/react-dom-client.development.js:[2m25989:20[22m[39m
+[90m [2m❯[22m runWithFiberInDEV node_modules/react-dom/cjs/react-dom-client.development.js:[2m874:13[22m[39m
+[90m [2m❯[22m commitHookEffectListMount node_modules/react-dom/cjs/react-dom-client.development.js:[2m13249:29[22m[39m
+[90m [2m❯[22m commitHookPassiveMountEffects node_modules/react-dom/cjs/react-dom-client.development.js:[2m13336:11[22m[39m
+
+[31mThis error originated in "[1mlib/desktop/__tests__/releaseResolutionView.test.ts[22m" test file. It doesn't mean the error was thrown inside the file itself, but while it was running.[39m
+[31mThe latest test that might've caused the error is "[1msettles a synchronous observer throw without skipping its sibling or falsely completing a run[22m". It might mean one of the following:
+- The error was thrown, while Vitest was running this test.
+- If the error occurred after the test had been completed, this was the last documented test before it was thrown.[39m
+[31m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m9 passed[39m[22m[90m (12)[39m
+[2m     Errors [22m [1m[31m5 errors[39m[22m
+[2m   Start at [22m 16:18:34
+[2m   Duration [22m 780ms[2m (transform 169ms, setup 0ms, import 287ms, tests 262ms, environment 178ms)[22m
+

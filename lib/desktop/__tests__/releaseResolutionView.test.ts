@@ -1,12 +1,12 @@
 /** @vitest-environment jsdom */
 import {createElement} from 'react';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
-import {cleanup,fireEvent,render,screen} from '@testing-library/react';
-const m=vi.hoisted(()=>({requests:vi.fn(),executions:vi.fn(),revision:vi.fn(),config:{}}));
-vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{deploymentRequests:m.requests,listDeploymentExecutions:m.executions,deploymentRequestForRevision:m.revision,config:m.config,subscribeContext:()=>()=>{},getContextRevision:()=>0}}));
+import {cleanup,fireEvent,render,screen,act} from '@testing-library/react';
+const m=vi.hoisted(()=>({observe:vi.fn(),requests:vi.fn(),executions:vi.fn(),revision:vi.fn(),config:{}}));
+vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{deploymentRequests:m.requests,listDeploymentExecutions:m.executions,observeDeploymentExecution:m.observe,deploymentRequestForRevision:m.revision,config:m.config,subscribeContext:()=>()=>{},getContextRevision:()=>0}}));
 const releaseContext={window:null,scope:{applicationCount:1,repositoryCount:0,targetEnvironment:null},approval:{prStatus:'pending',noPrRequired:false},readiness:{developmentReady:false,productionReady:false,validationStepCount:0,deferredValidation:false,approvalDecision:'needs_attention',blockers:['Resolve release details']},recovery:{rollbackAvailability:'unknown',backupRequired:false,evidenceCount:0},observation:{status:'not_connected',recordedMonitoringPlan:false}};
 import {DeploymentRequestsView} from '../../../desktop/src/views/DeploymentRequestsView';
-beforeEach(()=>{vi.clearAllMocks();m.requests.mockResolvedValue({ok:true,data:[]});m.executions.mockResolvedValue({ok:true,data:{executions:[]}})});afterEach(cleanup);
+beforeEach(()=>{vi.clearAllMocks();m.observe.mockResolvedValue({ok:false,error:"Unavailable"});m.requests.mockResolvedValue({ok:true,data:[]});m.executions.mockResolvedValue({ok:true,data:{executions:[]}})});afterEach(()=>{cleanup();vi.useRealTimers()});
 it('offers a ticket-first path without opening full execution intake',async()=>{
  render(createElement(DeploymentRequestsView));await screen.findByText(/No deployment requests exist/);
  fireEvent.click(screen.getByText('Start from ticket'));
@@ -62,4 +62,39 @@ it('retains the exact batch selection when opening an immutable revision',async(
  render(createElement(DeploymentRequestsView));await screen.findByRole('button',{name:/^Bound release/});fireEvent.click(screen.getByText('Revise'));
  await screen.findByRole('button',{name:'Remove batch daily specific-run',hidden:true});
  expect(screen.getByText('2026-10-24T00:00:00.000001Z')).toBeTruthy();
+});
+
+const workflow={id:'execution-a',environmentId:'environment',repositoryFullName:'fixture/repository',sourceRef:null,sourceKind:null,sourceCommitSha:null,branchPolicyId:null,pullRequestUrl:null,workflowRunId:null,workflowUrl:null,source:'github',status:'in_progress',conclusion:null,rollbackStatus:'not_requested',lastObservedAt:null,completedAt:null,createdAt:'2030-01-01T00:00:00Z',updatedAt:'2030-01-01T00:00:00Z'};
+function observationDeferred(){let resolve!:(value:any)=>void,reject!:(error:Error)=>void;const promise=new Promise<any>((yes,no)=>{resolve=yes;reject=no});return{promise,resolve,reject}}
+async function mountExecutions(rows:Array<typeof workflow>){vi.useFakeTimers();m.executions.mockResolvedValue({ok:true,data:{executions:rows}});await act(async()=>{render(createElement(DeploymentRequestsView))})}
+it('keeps one observation batch in flight across multiple five-second ticks and resumes on the next tick after settlement',async()=>{
+ const a=observationDeferred(),b=observationDeferred();m.observe.mockImplementation((id:string)=>id===workflow.id?a.promise:b.promise);
+ await mountExecutions([workflow,{...workflow,id:'execution-b'}]);expect(m.observe).toHaveBeenCalledTimes(2);
+ await act(async()=>vi.advanceTimersByTime(20000));expect(m.observe).toHaveBeenCalledTimes(2);
+ await act(async()=>{a.resolve({ok:true,data:{...workflow,workflowRunId:'observed-a'}});b.resolve({ok:false,error:'Read unavailable'})});
+ expect(screen.getByText('Workflow run: observed-a')).toBeTruthy();expect(m.observe).toHaveBeenCalledTimes(2);
+ await act(async()=>vi.advanceTimersByTime(4999));expect(m.observe).toHaveBeenCalledTimes(2);await act(async()=>vi.advanceTimersByTime(1));expect(m.observe).toHaveBeenCalledTimes(4);
+});
+it('retains a rejected execution record and keeps the batch held until its delayed sibling settles',async()=>{
+ const a=observationDeferred(),b=observationDeferred();m.observe.mockImplementation((id:string)=>id===workflow.id?a.promise:b.promise);
+ await mountExecutions([workflow,{...workflow,id:'execution-b'}]);await act(async()=>a.reject(new Error('Synthetic read rejection')));
+ await act(async()=>vi.advanceTimersByTime(15000));expect(m.observe).toHaveBeenCalledTimes(2);
+ await act(async()=>b.resolve({ok:true,data:{...workflow,id:'execution-b',workflowRunId:'sibling-observed'}}));
+ expect(screen.getByText('Workflow run: sibling-observed')).toBeTruthy();expect(screen.getAllByText('GitHub workflow: in progress')).toHaveLength(2);expect(screen.queryByText(/GitHub workflow: completed/)).toBeNull();
+ await act(async()=>vi.advanceTimersByTime(5000));expect(m.observe).toHaveBeenCalledTimes(4);
+});
+it('settles a synchronous observer throw without skipping its sibling or falsely completing a run',async()=>{
+ const sibling=observationDeferred();m.observe.mockImplementation((id:string)=>{if(id===workflow.id)throw Error('Synthetic synchronous read failure');return sibling.promise});
+ await mountExecutions([workflow,{...workflow,id:'execution-b'}]);expect(m.observe).toHaveBeenCalledTimes(2);await act(async()=>vi.advanceTimersByTime(15000));expect(m.observe).toHaveBeenCalledTimes(2);
+ await act(async()=>sibling.resolve({ok:false,error:'Unavailable'}));expect(screen.getAllByText('GitHub workflow: in progress')).toHaveLength(2);await act(async()=>vi.advanceTimersByTime(5000));expect(m.observe).toHaveBeenCalledTimes(4);
+});
+it('discards a replaced effect’s delayed completed result while the newer saved status remains current',async()=>{
+ const old=observationDeferred(),current=observationDeferred();m.observe.mockReturnValueOnce(old.promise).mockReturnValueOnce(current.promise);
+ await mountExecutions([{...workflow,status:'queued'}]);expect(m.observe).toHaveBeenCalledTimes(1);
+ m.executions.mockResolvedValueOnce({ok:true,data:{executions:[workflow]}});await act(async()=>fireEvent.click(screen.getByRole('button',{name:'Refresh'})));expect(m.observe).toHaveBeenCalledTimes(2);
+ await act(async()=>old.resolve({ok:true,data:{...workflow,status:'completed',workflowRunId:'stale-old'}}));expect(screen.getByText('GitHub workflow: in progress')).toBeTruthy();expect(screen.queryByText('Workflow run: stale-old')).toBeNull();
+ await act(async()=>current.resolve({ok:true,data:{...workflow,workflowRunId:'current-run'}}));expect(screen.getByText('Workflow run: current-run')).toBeTruthy();
+});
+it('never polls completed or tracking-unavailable workflow records',async()=>{
+ await mountExecutions([{...workflow,status:'completed'},{...workflow,id:'execution-b',status:'tracking_unavailable'}]);await act(async()=>vi.advanceTimersByTime(30000));expect(m.observe).not.toHaveBeenCalled();expect(screen.getByText('GitHub workflow: completed')).toBeTruthy();expect(screen.getByText('GitHub workflow: tracking unavailable')).toBeTruthy();
 });
