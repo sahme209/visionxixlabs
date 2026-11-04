@@ -26,12 +26,8 @@ import "server-only";
 import { encryptScopedCredential, decryptScopedCredential } from "@/lib/security/credentialVault";
 import { prisma } from "@/lib/db";
 
-export const PLATFORM_GITHUB_APP_SINGLETON_KEY = "platform_github_app";
-
-/** AAD context binding — a decrypted secret cannot be replayed into a different field. */
-function credentialContext(field: "clientSecret" | "webhookSecret" | "privateKey"): string {
-  return `platform_github_app:${PLATFORM_GITHUB_APP_SINGLETON_KEY}:${field}`;
-}
+import { PLATFORM_GITHUB_APP_SINGLETON_KEY, credentialContext } from "./platformGithubAppCredentialContext";
+export { PLATFORM_GITHUB_APP_SINGLETON_KEY } from "./platformGithubAppCredentialContext";
 
 export interface PlatformGithubAppCredentialRow {
   id: string;
