@@ -2,6 +2,8 @@
 
 **Design proposal only.** This reconciles the custody and placement/resource-channel documents; it does not approve code, services, grants, provisioning, tests or qualification. In particular it does not resume or describe the blocked security test. The existing Node/Prisma/business-policy graph must remain the actual compiled consumer; a second native SQL/policy engine is not proposed.
 
+Companion placement/resource-channel design: [process placement](process-placement-and-request-channel.md) and [owned-message resource authentication](owned-message-resource-authentication.md), role wording reconciled at `f4677554`. Those documents and this initializer graph must be reviewed together; none claims current resource qualification.
+
 ## Two distinct owners, not two policy engines
 
 | Component | Owns | Must not do / present qualification |
