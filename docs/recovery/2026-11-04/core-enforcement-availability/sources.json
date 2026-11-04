@@ -1,0 +1,50 @@
+{
+  "revision": "b80a85a9b74a7deff9c4a691643644316c41f8ed",
+  "scope": "Finite source-only availability audit; hashes are provenance, not authority",
+  "sources": [
+    {
+      "path": "docs/product/axiom-master-action-plan.md",
+      "sha256": "01fad4f55bb02950288e32de1cdb3b19fbbc149a257dd89e513cd5b0769583f9"
+    },
+    {
+      "path": "docs/recovery/2026-10-30/governance-completion-gates.md",
+      "sha256": "93591784c2e2dc72cec74d94f28f986eec7446069c59be2148568206036825f7"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/in-memory-policy-qualification-execution-instruction.md",
+      "sha256": "5a1d227ec2864d2bfd6f1bec8294d37de3e2e41fe9c98e49bce945358c3aab85"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/composed-custodian-boundary-decision.md",
+      "sha256": "e31ab1265c58ff6a62dcb19c53b6b88d3ec1a5409ebce40f612dbfe321805214"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/private-merge-composition/local-completion/README.md",
+      "sha256": "91a3bc805954eec4b4779ae83b9c6481976e82d130bbbf53bed7e1d955d2672f"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+      "sha256": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/index.cjs",
+      "sha256": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4"
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeBootstrap.ts",
+      "sha256": "ba74b3a38c57124b6b391f5adf11cfd542082ac77620cabfe80b07d1399aeff9"
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeComposition.ts",
+      "sha256": "52d0297aff96d8857ae9f19331204606659afe66ba56de8ae4ee252ed53fbe5c"
+    },
+    {
+      "path": "lib/governance/intelligence/privateGovernanceMergeRequestService.ts",
+      "sha256": "0d4865541d09f697465bf8c1420b8ad713601cdeb4571817cf3bda46b6a7ee46"
+    },
+    {
+      "path": "lib/governance/intelligence/requestServiceCore.ts",
+      "sha256": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d"
+    }
+  ]
+}
