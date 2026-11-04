@@ -1,0 +1,19 @@
+{
+  "sourceRevision": "06afd3eac50f2e021dd084b19e67fb7d6fd51518",
+  "classification": "internal-unpublished-source-only",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "scope": "active RepositoryWorkspaceView top-level acquisition and checkout selection only; nested workspace controls not covered",
+  "files": {
+    "desktop/src/App.tsx": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+    "desktop/src/views/RepositoryWorkspaceView.tsx": "30706b3e71ef47c3ad333b710f15b802203f5c90102cfd6b4caa0cba646dc8fd",
+    "desktop/src/views/RepositoriesView.tsx": "40572ab65746dec6ddec278b162dd2cac83ce8d9c3958cc26e9b9a06bae1920b",
+    "desktop/src/lib/desktopClient.ts": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+    "desktop/src/lib/localWorkspaceSelection.ts": "d7d8e9c196bf64525d930f283d93c2b9cc6ec388638cfded6a3267b1b543c06e",
+    "desktop/src-tauri/src/git.rs": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66",
+    "desktop/src-tauri/src/main.rs": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf",
+    "app/api/desktop/github/repositories/route.ts": "6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525",
+    "app/api/desktop/github/clone-token/route.ts": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927"
+  },
+  "verification": "source inspection only; no tests, native commands, UI, provider access, media or retrieval evaluation"
+}
