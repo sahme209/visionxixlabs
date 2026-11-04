@@ -1,0 +1,911 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/__tests__/desktopFirstRunContract.test.ts (20 tests | 4 failed) 25ms
+     × separates verified identity from approved workspace access and enforces the gate server-side 7ms
+     × does not expose desktop sample mode and accepts both verified credential kinds for deployment requests 2ms
+     × requires current workspace authority before validating shared integrations 1ms
+     × rechecks accepted workspace membership for long-lived desktop sessions 1ms
+ ❯ lib/workforce/pipelines/__tests__/unimplementedStageRun.test.ts (1 test | 1 failed) 8ms
+   × records an unavailable notification as failed and never marks the run completed 7ms
+ ❯ components/__tests__/navigationResponsiveMenu.test.ts (4 tests | 2 failed) 106ms
+   × closes the mobile dialog and releases both scroll locks when desktop navigation takes over 76ms
+   × moves focus from the desktop More menu to the visible home link when narrowed 9ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/__tests__/navigationResponsiveMenu.test.ts > closes the mobile dialog and releases both scroll locks when desktop navigation takes over
+AssertionError: expected <body style="overflow: auto;">…(1)</body> to be <a …(3)>…(2)</a> // Object.is equality
+
+- Expected
++ Received
+
+@@ -1,5 +1,22 @@
++ <body
++   style="overflow: auto;"
++ >
++   <div>
++     <nav
++       aria-label="Primary navigation"
++       class="site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"
++     >
++       <div
++         class="mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 h-16 xl:h-[72px]"
++       >
++         <button
++           class="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-3 focus:z-10 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-black focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-orange-300"
++           type="button"
++         >
++           Skip to content
++         </button>
+          <a
+            aria-label="Vision XIX Labs home"
+            class="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"
+            href="/"
+          >
+@@ -14,7 +31,86 @@
+              style="color: transparent;"
+              width="28"
+            />
+            <span>
+              Vision XIX Labs
++           </span>
++         </a>
++         <div
++           class="hidden items-center gap-7 xl:flex"
++         >
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/product"
++           >
++             Product
++           </a>
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/integrations"
++           >
++             Integrations
++           </a>
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/security"
++           >
++             Security
++           </a>
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/docs"
++           >
++             Docs
++           </a>
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/demo"
++           >
++             Demo
++           </a>
++           <div
++             class="relative"
++           >
++             <button
++               aria-controls="more-navigation"
++               aria-expanded="false"
++               class="flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"
++               type="button"
++             >
++               More 
++               <span
++                 aria-hidden="true"
++                 class="text-[10px]"
++               >
++                 ⌄
+                </span>
++             </button>
++           </div>
++         </div>
++         <div
++           class="hidden items-center gap-3 xl:flex"
++         >
++           <a
++             class="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"
++             href="/auth/signin"
++           >
++             Sign in
++           </a>
++           <a
++             class="rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"
++             href="/download"
++           >
++             Download
+            </a>
++         </div>
++         <button
++           aria-controls="mobile-navigation"
++           aria-expanded="false"
++           aria-label="Open navigation menu"
++           class="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"
++           type="button"
++         />
++       </div>
++     </nav>
++   </div>
++ </body>
+
+ ❯ components/__tests__/navigationResponsiveMenu.test.ts:24:34
+     22|   fireEvent(window, new Event("resize"));
+     23|   expect(screen.queryByRole("dialog", { name: "Site navigation" })).to…
+     24|   expect(document.activeElement).toBe(screen.getByRole("link", { name:…
+       |                                  ^
+     25|   expect(document.body.style.overflow).toBe("auto");
+     26|   expect(document.documentElement.style.overflow).toBe("scroll");
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  components/__tests__/navigationResponsiveMenu.test.ts > moves focus from the desktop More menu to the visible home link when narrowed
+AssertionError: expected <body style><div>…(1)</div></body> to be <a …(3)>…(2)</a> // Object.is equality
+
+- Expected
++ Received
+
+@@ -1,5 +1,22 @@
++ <body
++   style=""
++ >
++   <div>
++     <nav
++       aria-label="Primary navigation"
++       class="site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"
++     >
++       <div
++         class="mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 h-16 xl:h-[72px]"
++       >
++         <button
++           class="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-3 focus:z-10 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-black focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-orange-300"
++           type="button"
++         >
++           Skip to content
++         </button>
+          <a
+            aria-label="Vision XIX Labs home"
+            class="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"
+            href="/"
+          >
+@@ -14,7 +31,86 @@
+              style="color: transparent;"
+              width="28"
+            />
+            <span>
+              Vision XIX Labs
++           </span>
++         </a>
++         <div
++           class="hidden items-center gap-7 xl:flex"
++         >
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/product"
++           >
++             Product
++           </a>
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/integrations"
++           >
++             Integrations
++           </a>
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/security"
++           >
++             Security
++           </a>
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/docs"
++           >
++             Docs
++           </a>
++           <a
++             class="text-sm text-zinc-400 transition-colors hover:text-white"
++             href="/demo"
++           >
++             Demo
++           </a>
++           <div
++             class="relative"
++           >
++             <button
++               aria-controls="more-navigation"
++               aria-expanded="false"
++               class="flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"
++               type="button"
++             >
++               More 
++               <span
++                 aria-hidden="true"
++                 class="text-[10px]"
++               >
++                 ⌄
+                </span>
++             </button>
++           </div>
++         </div>
++         <div
++           class="hidden items-center gap-3 xl:flex"
++         >
++           <a
++             class="px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"
++             href="/auth/signin"
++           >
++             Sign in
++           </a>
++           <a
++             class="rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"
++             href="/download"
++           >
++             Download
+            </a>
++         </div>
++         <button
++           aria-controls="mobile-navigation"
++           aria-expanded="false"
++           aria-label="Open navigation menu"
++           class="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"
++           type="button"
++         />
++       </div>
++     </nav>
++   </div>
++ </body>
+
+ ❯ components/__tests__/navigationResponsiveMenu.test.ts:63:34
+     61|   fireEvent(window, new Event("resize"));
+     62|   expect(screen.queryByRole("group", { name: "More destinations" })).t…
+     63|   expect(document.activeElement).toBe(screen.getByRole("link", { name:…
+       |                                  ^
+     64| });
+     65|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  lib/__tests__/desktopFirstRunContract.test.ts > desktop first-run contract > separates verified identity from approved workspace access and enforces the gate server-side
+AssertionError: expected 'import "server-only";\n\nimport type …' to contain 'options.requireActiveAccess !== false'
+
+- Expected
++ Received
+
+- options.requireActiveAccess !== false
++ import "server-only";
++
++ import type { NextRequest } from "next/server";
++ import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
++ import type { RequiredScope } from "@/lib/security/apiKeyScope";
++ import { prisma } from "@/lib/db";
++ import { bearerFromHeader, verifyDesktopToken } from "./desktopToken";
++ import {
++     resolveActiveSession,
++     touchDesktopSession,
++ } from "./desktopSession";
++ import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
++ import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
++ import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
++ import { createLogger } from "@/lib/observability/logger";
++ import {
++     capabilitiesForRole,
++     hasDesktopCapability,
++     isWorkspaceAdminRole,
++     type DesktopCapability,
++     type DesktopWorkspaceRole,
++ } from "./desktopAuthorization";
++
++ const log = createLogger("desktop.resolveRequestDesktopSession");
++
++ export interface DesktopRequestPrincipal {
++     id: string;
++     userId: string;
++     organizationId: string;
++     credentialKind: "desktop_session" | "api_key";
++     role: DesktopWorkspaceRole | null;
++     capabilities: DesktopCapability[];
++ }
++
++ interface ResolveOptions {
++     requiredScope: RequiredScope;
++     route: string;
++     requireActiveAccess?: boolean;
++     /** Shared provider-state transitions require a paired user session, not
++      * a reusable API key. Existing read routes retain API-key support. */
++     allowApiKey?: boolean;
++     /** Shared integration state can only be changed by a currently confirmed
++      * workspace owner or admin. The desktop token identifies a device; it
++      * does not itself freeze role authority for its 30-day lifetime. */
++     requireWorkspaceAdmin?: boolean;
++     /** Capability checks are evaluated from the current accepted membership
++      * on every request, so role changes revoke authority immediately. */
++     requiredCapability?: DesktopCapability;
++     /**
++      * Desktop tokens are long-lived device credentials, not a substitute for
++      * current workspace membership. Recheck the durable membership on every
++      * desktop-session request. A removed or unaccepted member loses access
++      * immediately. Scoped API-key automation remains a separate authority.
++      */
++     requireWorkspaceMembership?: boolean;
++     /** Read-only authority rechecks may run while the caller holds session locks.
++      * Authentication, membership and entitlement checks still run; only the
++      * incidental lastSeenAt write is omitted. Server option, never request input. */
++     recordHeartbeat?: boolean;
++ }
++
++ async function readActiveWorkspaceRole(userId: string, organizationId: string): Promise<DesktopWorkspaceRole | null> {
++     try {
++         const membership = await prisma.orgMembership.findUnique({
++             where: { userId_organizationId: { userId, organizationId } },
++             select: { acceptedAt: true, role: true },
++         });
++         return membership?.acceptedAt !== null && membership?.acceptedAt !== undefined
++             ? membership.role as DesktopWorkspaceRole
++             : null;
++     } catch {
++         // A membership-store failure must not extend a long-lived desktop
++         // token beyond the workspace's current authority.
++         return null;
++     }
++ }
++
++ /**
++  * Sign-in's own personal-workspace membership bootstrap
++  * (ensurePersonalWorkspaceMembership, called from lib/auth.ts) is
++  * deliberately best-effort and never blocks sign-in — so it can lag
++  * behind, or fail outright on a transient DB blip, leaving a freshly
++  * signed-in user with a structurally valid desktop session but no
++  * accepted membership row yet. That surfaced as every operational route
++  * (deployments, etc.) denying with a bare "desktop_session_required"
++  * forever, with no way for the user to recover short of signing out and
++  * back in. Self-heal it here: only for the user's OWN derived personal
++  * workspace (never a shared/invited org — those must come from a real
++  * invite acceptance), retry the same idempotent upsert sign-in already
++  * performs unconditionally, then recheck membership once.
++  */
++ async function selfHealPersonalWorkspaceMembership(userId: string, organizationId: string): Promise<void> {
++     try {
++         const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
++         if (!user?.email) {
++             log.error("self-heal skipped: no user row (or no email) found for this session's userId", { userId, organizationId });
++             return;
++         }
++         const derivedPersonalWorkspaceId = String(deriveWorkspaceIdFromEmail(user.email));
++         if (derivedPersonalWorkspaceId !== organizationId) {
++             log.error("self-heal skipped: session organizationId does not match this identity's derived personal workspace", {
++                 userId,
++                 sessionOrganizationId: organizationId,
++                 derivedPersonalWorkspaceId,
++             });
++             return;
++         }
++         await ensurePersonalWorkspaceMembership({ userId, email: user.email });
++     } catch (err) {
++         log.error("self-heal membership bootstrap retry failed", {
++             userId,
++             organizationId,
++             errorMessage: err instanceof Error ? err.message : String(err),
++             errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
++         });
++         // best-effort — a failure here just means the caller's membership
++         // recheck below still fails and the request is denied, same as today.
++     }
++ }
++
++ /**
++  * Resolves an authenticated native-app session without leaking token parse
++  * failures into a 500 response. Expired, revoked, malformed, and unknown
++  * credentials all produce the same unauthenticated result.
++  */
++ export const resolveRequestDesktopSession = createDesktopSessionResolverCore({
++  tokenCodec: { verifyDesktopToken }, sessions: { resolveActiveSession, touchDesktopSession },
++  readActiveWorkspaceRole, selfHealPersonalWorkspaceMembership, readDesktopCommercialAccess,
++ }, authenticateApiKey, log);
++ import { createDesktopSessionResolverCore } from "./desktopSessionResolverCore";
++
+
+ ❯ lib/__tests__/desktopFirstRunContract.test.ts:37:22
+     35|     expect(accessPolicy).toContain("allowed: true");
+     36|     expect(accessRoute).toContain("requireActiveAccess: false");
+     37|     expect(resolver).toContain("options.requireActiveAccess !== false"…
+       |                      ^
+     38|     // Reformatted to a multi-line block when failure-observability lo…
+     39|     // was added (see resolveRequestDesktopSessionLogging.test.ts) — s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  lib/__tests__/desktopFirstRunContract.test.ts > desktop first-run contract > does not expose desktop sample mode and accepts both verified credential kinds for deployment requests
+AssertionError: expected 'import "server-only";\n\nimport type …' to contain 'token.startsWith("vxlk_")'
+
+- Expected
++ Received
+
+- token.startsWith("vxlk_")
++ import "server-only";
++
++ import type { NextRequest } from "next/server";
++ import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
++ import type { RequiredScope } from "@/lib/security/apiKeyScope";
++ import { prisma } from "@/lib/db";
++ import { bearerFromHeader, verifyDesktopToken } from "./desktopToken";
++ import {
++     resolveActiveSession,
++     touchDesktopSession,
++ } from "./desktopSession";
++ import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
++ import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
++ import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
++ import { createLogger } from "@/lib/observability/logger";
++ import {
++     capabilitiesForRole,
++     hasDesktopCapability,
++     isWorkspaceAdminRole,
++     type DesktopCapability,
++     type DesktopWorkspaceRole,
++ } from "./desktopAuthorization";
++
++ const log = createLogger("desktop.resolveRequestDesktopSession");
++
++ export interface DesktopRequestPrincipal {
++     id: string;
++     userId: string;
++     organizationId: string;
++     credentialKind: "desktop_session" | "api_key";
++     role: DesktopWorkspaceRole | null;
++     capabilities: DesktopCapability[];
++ }
++
++ interface ResolveOptions {
++     requiredScope: RequiredScope;
++     route: string;
++     requireActiveAccess?: boolean;
++     /** Shared provider-state transitions require a paired user session, not
++      * a reusable API key. Existing read routes retain API-key support. */
++     allowApiKey?: boolean;
++     /** Shared integration state can only be changed by a currently confirmed
++      * workspace owner or admin. The desktop token identifies a device; it
++      * does not itself freeze role authority for its 30-day lifetime. */
++     requireWorkspaceAdmin?: boolean;
++     /** Capability checks are evaluated from the current accepted membership
++      * on every request, so role changes revoke authority immediately. */
++     requiredCapability?: DesktopCapability;
++     /**
++      * Desktop tokens are long-lived device credentials, not a substitute for
++      * current workspace membership. Recheck the durable membership on every
++      * desktop-session request. A removed or unaccepted member loses access
++      * immediately. Scoped API-key automation remains a separate authority.
++      */
++     requireWorkspaceMembership?: boolean;
++     /** Read-only authority rechecks may run while the caller holds session locks.
++      * Authentication, membership and entitlement checks still run; only the
++      * incidental lastSeenAt write is omitted. Server option, never request input. */
++     recordHeartbeat?: boolean;
++ }
++
++ async function readActiveWorkspaceRole(userId: string, organizationId: string): Promise<DesktopWorkspaceRole | null> {
++     try {
++         const membership = await prisma.orgMembership.findUnique({
++             where: { userId_organizationId: { userId, organizationId } },
++             select: { acceptedAt: true, role: true },
++         });
++         return membership?.acceptedAt !== null && membership?.acceptedAt !== undefined
++             ? membership.role as DesktopWorkspaceRole
++             : null;
++     } catch {
++         // A membership-store failure must not extend a long-lived desktop
++         // token beyond the workspace's current authority.
++         return null;
++     }
++ }
++
++ /**
++  * Sign-in's own personal-workspace membership bootstrap
++  * (ensurePersonalWorkspaceMembership, called from lib/auth.ts) is
++  * deliberately best-effort and never blocks sign-in — so it can lag
++  * behind, or fail outright on a transient DB blip, leaving a freshly
++  * signed-in user with a structurally valid desktop session but no
++  * accepted membership row yet. That surfaced as every operational route
++  * (deployments, etc.) denying with a bare "desktop_session_required"
++  * forever, with no way for the user to recover short of signing out and
++  * back in. Self-heal it here: only for the user's OWN derived personal
++  * workspace (never a shared/invited org — those must come from a real
++  * invite acceptance), retry the same idempotent upsert sign-in already
++  * performs unconditionally, then recheck membership once.
++  */
++ async function selfHealPersonalWorkspaceMembership(userId: string, organizationId: string): Promise<void> {
++     try {
++         const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
++         if (!user?.email) {
++             log.error("self-heal skipped: no user row (or no email) found for this session's userId", { userId, organizationId });
++             return;
++         }
++         const derivedPersonalWorkspaceId = String(deriveWorkspaceIdFromEmail(user.email));
++         if (derivedPersonalWorkspaceId !== organizationId) {
++             log.error("self-heal skipped: session organizationId does not match this identity's derived personal workspace", {
++                 userId,
++                 sessionOrganizationId: organizationId,
++                 derivedPersonalWorkspaceId,
++             });
++             return;
++         }
++         await ensurePersonalWorkspaceMembership({ userId, email: user.email });
++     } catch (err) {
++         log.error("self-heal membership bootstrap retry failed", {
++             userId,
++             organizationId,
++             errorMessage: err instanceof Error ? err.message : String(err),
++             errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
++         });
++         // best-effort — a failure here just means the caller's membership
++         // recheck below still fails and the request is denied, same as today.
++     }
++ }
++
++ /**
++  * Resolves an authenticated native-app session without leaking token parse
++  * failures into a 500 response. Expired, revoked, malformed, and unknown
++  * credentials all produce the same unauthenticated result.
++  */
++ export const resolveRequestDesktopSession = createDesktopSessionResolverCore({
++  tokenCodec: { verifyDesktopToken }, sessions: { resolveActiveSession, touchDesktopSession },
++  readActiveWorkspaceRole, selfHealPersonalWorkspaceMembership, readDesktopCommercialAccess,
++ }, authenticateApiKey, log);
++ import { createDesktopSessionResolverCore } from "./desktopSessionResolverCore";
++
+
+ ❯ lib/__tests__/desktopFirstRunContract.test.ts:221:22
+    219|     expect(signIn).not.toContain("onPreview");
+    220|     expect(signIn).toContain("never substitutes sample records");
+    221|     expect(resolver).toContain('token.startsWith("vxlk_")');
+       |                      ^
+    222|     expect(resolver).toContain('credentialKind: "api_key"');
+    223|     expect(resolver).toContain('credentialKind: "desktop_session"');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  lib/__tests__/desktopFirstRunContract.test.ts > desktop first-run contract > requires current workspace authority before validating shared integrations
+AssertionError: expected 'import "server-only";\n\nimport type …' to contain 'options.requireWorkspaceAdmin'
+
+- Expected
++ Received
+
+- options.requireWorkspaceAdmin
++ import "server-only";
++
++ import type { NextRequest } from "next/server";
++ import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
++ import type { RequiredScope } from "@/lib/security/apiKeyScope";
++ import { prisma } from "@/lib/db";
++ import { bearerFromHeader, verifyDesktopToken } from "./desktopToken";
++ import {
++     resolveActiveSession,
++     touchDesktopSession,
++ } from "./desktopSession";
++ import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
++ import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
++ import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
++ import { createLogger } from "@/lib/observability/logger";
++ import {
++     capabilitiesForRole,
++     hasDesktopCapability,
++     isWorkspaceAdminRole,
++     type DesktopCapability,
++     type DesktopWorkspaceRole,
++ } from "./desktopAuthorization";
++
++ const log = createLogger("desktop.resolveRequestDesktopSession");
++
++ export interface DesktopRequestPrincipal {
++     id: string;
++     userId: string;
++     organizationId: string;
++     credentialKind: "desktop_session" | "api_key";
++     role: DesktopWorkspaceRole | null;
++     capabilities: DesktopCapability[];
++ }
++
++ interface ResolveOptions {
++     requiredScope: RequiredScope;
++     route: string;
++     requireActiveAccess?: boolean;
++     /** Shared provider-state transitions require a paired user session, not
++      * a reusable API key. Existing read routes retain API-key support. */
++     allowApiKey?: boolean;
++     /** Shared integration state can only be changed by a currently confirmed
++      * workspace owner or admin. The desktop token identifies a device; it
++      * does not itself freeze role authority for its 30-day lifetime. */
++     requireWorkspaceAdmin?: boolean;
++     /** Capability checks are evaluated from the current accepted membership
++      * on every request, so role changes revoke authority immediately. */
++     requiredCapability?: DesktopCapability;
++     /**
++      * Desktop tokens are long-lived device credentials, not a substitute for
++      * current workspace membership. Recheck the durable membership on every
++      * desktop-session request. A removed or unaccepted member loses access
++      * immediately. Scoped API-key automation remains a separate authority.
++      */
++     requireWorkspaceMembership?: boolean;
++     /** Read-only authority rechecks may run while the caller holds session locks.
++      * Authentication, membership and entitlement checks still run; only the
++      * incidental lastSeenAt write is omitted. Server option, never request input. */
++     recordHeartbeat?: boolean;
++ }
++
++ async function readActiveWorkspaceRole(userId: string, organizationId: string): Promise<DesktopWorkspaceRole | null> {
++     try {
++         const membership = await prisma.orgMembership.findUnique({
++             where: { userId_organizationId: { userId, organizationId } },
++             select: { acceptedAt: true, role: true },
++         });
++         return membership?.acceptedAt !== null && membership?.acceptedAt !== undefined
++             ? membership.role as DesktopWorkspaceRole
++             : null;
++     } catch {
++         // A membership-store failure must not extend a long-lived desktop
++         // token beyond the workspace's current authority.
++         return null;
++     }
++ }
++
++ /**
++  * Sign-in's own personal-workspace membership bootstrap
++  * (ensurePersonalWorkspaceMembership, called from lib/auth.ts) is
++  * deliberately best-effort and never blocks sign-in — so it can lag
++  * behind, or fail outright on a transient DB blip, leaving a freshly
++  * signed-in user with a structurally valid desktop session but no
++  * accepted membership row yet. That surfaced as every operational route
++  * (deployments, etc.) denying with a bare "desktop_session_required"
++  * forever, with no way for the user to recover short of signing out and
++  * back in. Self-heal it here: only for the user's OWN derived personal
++  * workspace (never a shared/invited org — those must come from a real
++  * invite acceptance), retry the same idempotent upsert sign-in already
++  * performs unconditionally, then recheck membership once.
++  */
++ async function selfHealPersonalWorkspaceMembership(userId: string, organizationId: string): Promise<void> {
++     try {
++         const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
++         if (!user?.email) {
++             log.error("self-heal skipped: no user row (or no email) found for this session's userId", { userId, organizationId });
++             return;
++         }
++         const derivedPersonalWorkspaceId = String(deriveWorkspaceIdFromEmail(user.email));
++         if (derivedPersonalWorkspaceId !== organizationId) {
++             log.error("self-heal skipped: session organizationId does not match this identity's derived personal workspace", {
++                 userId,
++                 sessionOrganizationId: organizationId,
++                 derivedPersonalWorkspaceId,
++             });
++             return;
++         }
++         await ensurePersonalWorkspaceMembership({ userId, email: user.email });
++     } catch (err) {
++         log.error("self-heal membership bootstrap retry failed", {
++             userId,
++             organizationId,
++             errorMessage: err instanceof Error ? err.message : String(err),
++             errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
++         });
++         // best-effort — a failure here just means the caller's membership
++         // recheck below still fails and the request is denied, same as today.
++     }
++ }
++
++ /**
++  * Resolves an authenticated native-app session without leaking token parse
++  * failures into a 500 response. Expired, revoked, malformed, and unknown
++  * credentials all produce the same unauthenticated result.
++  */
++ export const resolveRequestDesktopSession = createDesktopSessionResolverCore({
++  tokenCodec: { verifyDesktopToken }, sessions: { resolveActiveSession, touchDesktopSession },
++  readActiveWorkspaceRole, selfHealPersonalWorkspaceMembership, readDesktopCommercialAccess,
++ }, authenticateApiKey, log);
++ import { createDesktopSessionResolverCore } from "./desktopSessionResolverCore";
++
+
+ ❯ lib/__tests__/desktopFirstRunContract.test.ts:233:22
+    231|     expect(resolver).toContain("isWorkspaceAdminRole");
+    232|     expect(resolver).toContain("hasDesktopCapability");
+    233|     expect(resolver).toContain("options.requireWorkspaceAdmin");
+       |                      ^
+    234|     const authorization = readFileSync(join(root, "lib/desktop/desktop…
+    235|     expect(authorization).toContain('role === "owner" || role === "adm…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  lib/__tests__/desktopFirstRunContract.test.ts > desktop first-run contract > rechecks accepted workspace membership for long-lived desktop sessions
+AssertionError: expected 'import "server-only";\n\nimport type …' to contain 'options.requireWorkspaceMembership !=…'
+
+- Expected
++ Received
+
+- options.requireWorkspaceMembership !== false
++ import "server-only";
++
++ import type { NextRequest } from "next/server";
++ import { authenticateApiKey } from "@/lib/security/authenticateApiKey";
++ import type { RequiredScope } from "@/lib/security/apiKeyScope";
++ import { prisma } from "@/lib/db";
++ import { bearerFromHeader, verifyDesktopToken } from "./desktopToken";
++ import {
++     resolveActiveSession,
++     touchDesktopSession,
++ } from "./desktopSession";
++ import { readDesktopCommercialAccess } from "./desktopCommercialAccess";
++ import { ensurePersonalWorkspaceMembership } from "@/lib/auth/ensurePersonalWorkspaceMembership";
++ import { deriveWorkspaceIdFromEmail } from "@/lib/auth/workspaceId";
++ import { createLogger } from "@/lib/observability/logger";
++ import {
++     capabilitiesForRole,
++     hasDesktopCapability,
++     isWorkspaceAdminRole,
++     type DesktopCapability,
++     type DesktopWorkspaceRole,
++ } from "./desktopAuthorization";
++
++ const log = createLogger("desktop.resolveRequestDesktopSession");
++
++ export interface DesktopRequestPrincipal {
++     id: string;
++     userId: string;
++     organizationId: string;
++     credentialKind: "desktop_session" | "api_key";
++     role: DesktopWorkspaceRole | null;
++     capabilities: DesktopCapability[];
++ }
++
++ interface ResolveOptions {
++     requiredScope: RequiredScope;
++     route: string;
++     requireActiveAccess?: boolean;
++     /** Shared provider-state transitions require a paired user session, not
++      * a reusable API key. Existing read routes retain API-key support. */
++     allowApiKey?: boolean;
++     /** Shared integration state can only be changed by a currently confirmed
++      * workspace owner or admin. The desktop token identifies a device; it
++      * does not itself freeze role authority for its 30-day lifetime. */
++     requireWorkspaceAdmin?: boolean;
++     /** Capability checks are evaluated from the current accepted membership
++      * on every request, so role changes revoke authority immediately. */
++     requiredCapability?: DesktopCapability;
++     /**
++      * Desktop tokens are long-lived device credentials, not a substitute for
++      * current workspace membership. Recheck the durable membership on every
++      * desktop-session request. A removed or unaccepted member loses access
++      * immediately. Scoped API-key automation remains a separate authority.
++      */
++     requireWorkspaceMembership?: boolean;
++     /** Read-only authority rechecks may run while the caller holds session locks.
++      * Authentication, membership and entitlement checks still run; only the
++      * incidental lastSeenAt write is omitted. Server option, never request input. */
++     recordHeartbeat?: boolean;
++ }
++
++ async function readActiveWorkspaceRole(userId: string, organizationId: string): Promise<DesktopWorkspaceRole | null> {
++     try {
++         const membership = await prisma.orgMembership.findUnique({
++             where: { userId_organizationId: { userId, organizationId } },
++             select: { acceptedAt: true, role: true },
++         });
++         return membership?.acceptedAt !== null && membership?.acceptedAt !== undefined
++             ? membership.role as DesktopWorkspaceRole
++             : null;
++     } catch {
++         // A membership-store failure must not extend a long-lived desktop
++         // token beyond the workspace's current authority.
++         return null;
++     }
++ }
++
++ /**
++  * Sign-in's own personal-workspace membership bootstrap
++  * (ensurePersonalWorkspaceMembership, called from lib/auth.ts) is
++  * deliberately best-effort and never blocks sign-in — so it can lag
++  * behind, or fail outright on a transient DB blip, leaving a freshly
++  * signed-in user with a structurally valid desktop session but no
++  * accepted membership row yet. That surfaced as every operational route
++  * (deployments, etc.) denying with a bare "desktop_session_required"
++  * forever, with no way for the user to recover short of signing out and
++  * back in. Self-heal it here: only for the user's OWN derived personal
++  * workspace (never a shared/invited org — those must come from a real
++  * invite acceptance), retry the same idempotent upsert sign-in already
++  * performs unconditionally, then recheck membership once.
++  */
++ async function selfHealPersonalWorkspaceMembership(userId: string, organizationId: string): Promise<void> {
++     try {
++         const user = await prisma.user.findUnique({ where: { id: userId }, select: { email: true } });
++         if (!user?.email) {
++             log.error("self-heal skipped: no user row (or no email) found for this session's userId", { userId, organizationId });
++             return;
++         }
++         const derivedPersonalWorkspaceId = String(deriveWorkspaceIdFromEmail(user.email));
++         if (derivedPersonalWorkspaceId !== organizationId) {
++             log.error("self-heal skipped: session organizationId does not match this identity's derived personal workspace", {
++                 userId,
++                 sessionOrganizationId: organizationId,
++                 derivedPersonalWorkspaceId,
++             });
++             return;
++         }
++         await ensurePersonalWorkspaceMembership({ userId, email: user.email });
++     } catch (err) {
++         log.error("self-heal membership bootstrap retry failed", {
++             userId,
++             organizationId,
++             errorMessage: err instanceof Error ? err.message : String(err),
++             errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
++         });
++         // best-effort — a failure here just means the caller's membership
++         // recheck below still fails and the request is denied, same as today.
++     }
++ }
++
++ /**
++  * Resolves an authenticated native-app session without leaking token parse
++  * failures into a 500 response. Expired, revoked, malformed, and unknown
++  * credentials all produce the same unauthenticated result.
++  */
++ export const resolveRequestDesktopSession = createDesktopSessionResolverCore({
++  tokenCodec: { verifyDesktopToken }, sessions: { resolveActiveSession, touchDesktopSession },
++  readActiveWorkspaceRole, selfHealPersonalWorkspaceMembership, readDesktopCommercialAccess,
++ }, authenticateApiKey, log);
++ import { createDesktopSessionResolverCore } from "./desktopSessionResolverCore";
++
+
+ ❯ lib/__tests__/desktopFirstRunContract.test.ts:246:22
+    244|     expect(resolver).toContain("readActiveWorkspaceRole");
+    245|     expect(resolver).toContain("membership?.acceptedAt !== null");
+    246|     expect(resolver).toContain("options.requireWorkspaceMembership !==…
+       |                      ^
+    247|     expect(resolver).toContain("A removed or unaccepted member loses a…
+    248|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  lib/workforce/pipelines/__tests__/unimplementedStageRun.test.ts > records an unavailable notification as failed and never marks the run completed
+AssertionError: expected "vi.fn()" to be called with arguments: [ ObjectContaining{…} ]
+
+Received:
+
+  1st vi.fn() call:
+
+  [
+-   ObjectContaining {
+-     "data": ObjectContaining {
+-       "outputDetail": ObjectContaining {
+-         "executorUnavailable": true,
+-         "externalActionPerformed": false,
++   {
++     "data": {
++       "completedAt": 2026-11-04T13:07:49.730Z,
++       "errorMessage": "Run cost budget could not be verified. No stage execution was started.",
++       "outputDetail": {
++         "budgetUnavailable": true,
++       },
++       "status": "failed",
+      },
++     "where": {
++       "id": "stage",
+      },
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ lib/workforce/pipelines/__tests__/unimplementedStageRun.test.ts:15:283
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  3 failed | 56 passed | 8 skipped (67)
+      Tests  7 failed | 754 passed | 166 skipped (927)
+   Start at  08:07:48
+   Duration  3.69s (transform 8.71s, setup 0ms, import 14.95s, tests 1.98s, environment 1.04s)
+

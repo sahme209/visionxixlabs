@@ -14,12 +14,14 @@ it("closes the mobile dialog and releases both scroll locks when desktop navigat
   fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
   expect(screen.getByRole("dialog", { name: "Site navigation" })).toBeDefined();
   expect(document.body.style.overflow).toBe("hidden");
+  screen.getByRole("dialog").querySelector<HTMLAnchorElement>("a")!.focus();
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1279 });
   fireEvent(window, new Event("resize"));
   expect(screen.getByRole("dialog", { name: "Site navigation" })).toBeDefined();
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1280 });
   fireEvent(window, new Event("resize"));
   expect(screen.queryByRole("dialog", { name: "Site navigation" })).toBeNull();
+  expect(document.activeElement).toBe(screen.getByRole("link", { name: "Vision XIX Labs home" }));
   expect(document.body.style.overflow).toBe("auto");
   expect(document.documentElement.style.overflow).toBe("scroll");
 });
@@ -38,4 +40,25 @@ it("keeps the viewport menu outside the header blur containing block", () => {
   fireEvent.keyDown(document, { key: "Escape" });
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(document.activeElement).toBe(screen.getByRole("button", { name: "Open navigation menu" }));
+});
+
+it("preserves focus outside a menu during responsive closure", () => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1100 });
+  vi.stubGlobal("requestAnimationFrame", (callback: FrameRequestCallback) => { callback(0); return 0; });
+  render(createElement(Navigation));
+  fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
+  const external = document.createElement("button"); document.body.append(external); external.focus();
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1280 });
+  fireEvent(window, new Event("resize"));
+  expect(document.activeElement).toBe(external); external.remove();
+});
+it("moves focus from the desktop More menu to the visible home link when narrowed", () => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1280 });
+  render(createElement(Navigation));
+  fireEvent.click(screen.getByRole("button", { name: /More/ }));
+  screen.getByRole("link", { name: "Pricing" }).focus();
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: 1279 });
+  fireEvent(window, new Event("resize"));
+  expect(screen.queryByRole("group", { name: "More destinations" })).toBeNull();
+  expect(document.activeElement).toBe(screen.getByRole("link", { name: "Vision XIX Labs home" }));
 });

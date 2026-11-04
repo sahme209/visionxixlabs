@@ -1,0 +1,1 @@
+Read-only specialized source review first found CJS-only source hashing despite ESM imports. Corrected with import.meta.resolve and both actual ESM hashes. Follow-up review cleared SDK-to-adapter synthetic capture, one invocation, output/routing assertions and honest manager/provider/upstream/billing exclusions. No reruns or external calls.

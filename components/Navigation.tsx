@@ -29,6 +29,8 @@ export function Navigation() {
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const homeLinkRef = useRef<HTMLAnchorElement>(null);
+  const restoreResponsiveFocus = useRef(false);
   const moreButtonRef = useRef<HTMLButtonElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
   const focusMoreLink = useRef(false);
@@ -40,6 +42,13 @@ export function Navigation() {
     setMobileMenuOpen(false);
     setMoreOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (restoreResponsiveFocus.current && !mobileMenuOpen && !moreOpen) {
+      restoreResponsiveFocus.current = false;
+      homeLinkRef.current?.focus();
+    }
+  }, [mobileMenuOpen, moreOpen]);
 
   useEffect(() => {
     if (!moreOpen) return;
@@ -57,7 +66,12 @@ export function Navigation() {
         moreButtonRef.current?.focus();
       }
     };
-    const resize = () => { if (window.innerWidth < 1280) setMoreOpen(false); };
+    const resize = () => {
+      if (window.innerWidth < 1280) {
+        restoreResponsiveFocus.current = !!moreRef.current?.contains(document.activeElement);
+        setMoreOpen(false);
+      }
+    };
     document.addEventListener("pointerdown", outside);
     document.addEventListener("keydown", key);
     window.addEventListener("resize", resize);
@@ -116,7 +130,10 @@ export function Navigation() {
     // Match xl navigation visibility: a hidden dialog must not retain focus
     // trapping or scroll locks after a tablet/desktop resize.
     const onResize = () => {
-      if (window.innerWidth >= 1280) setMobileMenuOpen(false);
+      if (window.innerWidth >= 1280) {
+        restoreResponsiveFocus.current = !!menuRef.current?.contains(document.activeElement);
+        setMobileMenuOpen(false);
+      }
     };
     document.body.style.overflow = "hidden";
     document.documentElement.style.overflow = "hidden";
@@ -173,7 +190,7 @@ export function Navigation() {
         >
           Skip to content
         </button>
-        <Link href="/" onClick={closeMenu} className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
+        <Link ref={homeLinkRef} href="/" onClick={closeMenu} className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
           <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" priority />
           <span>Vision XIX Labs</span>
         </Link>

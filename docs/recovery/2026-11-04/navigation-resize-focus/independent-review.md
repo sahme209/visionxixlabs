@@ -1,0 +1,1 @@
+Read-only specialized source review: no actionable findings. Restoration occurs after dialog removal/header inert cleanup; ownership checks preserve external focus. Existing Escape and scroll cleanup retained. Four focused DOM checks are not browser/AT acceptance. No reruns or network.

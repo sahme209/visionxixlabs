@@ -25,6 +25,10 @@ A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-targe
 
 ~~Pinned installed Gateway adapter output-limit/routing serialization verified offline~~ ([bounded probe](../recovery/2026-11-04/coding-quote-installed-adapter/README.md)): one synthetic capture, no network/provider call. Full manager/provider path, upstream enforcement and billable bounds remain unqualified; no quote implementation or A7 completion.
 
+## November 4 responsive navigation correction
+
+~~Focused-menu breakpoint focus loss repaired~~ ([local evidence](../recovery/2026-11-04/navigation-resize-focus/README.md)): two reproduced assertions, four focused DOM tests pass; external focus and scroll cleanup retained. Initial accidental broader test selection exposed five additional unresolved failures; no clean-suite/browser/AT claim. Full installed SDK→Gateway serialization also captured offline with zero network calls; manager/provider/billable qualification still open.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains
