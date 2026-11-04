@@ -1,0 +1,176 @@
+{
+  "sourceRevision": "4bf9082a1749a4bfa74846ab39ec2a24e1062fe7",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/product",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 84253
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/1018-a830ec35d7e8e0f3.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 116356
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/37882-b9dc7f2fb9b2a293.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 31830
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/38437-ab43c492a711661a.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 14428
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/42191-b07d1292cdea35fa.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 9637
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/45155-9ff7c2992afbd0a6.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 28224
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/4bd1b696-9ce25231cbb0ecf2.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 203728
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/93197-59c54cbbe39d027f.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 18019
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/93794-7c5eb5b4643d7857.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 242806
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/98500-202fb27570ee6051.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 7675
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/app/layout-3c33d83f39f28dc8.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 21868
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/app/product/page-de91181f0f333b3a.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 5464
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/main-app-28115d1c575fd245.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 532
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 112594
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/chunks/webpack-69f14800859f0b85.js",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 3203
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/css/882965afda8961b6.css",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 211120
+    },
+    {
+      "method": "GET",
+      "path": "/_next/static/css/fd496917896bbbdc.css",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 5370
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/session",
+      "status": 403,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 39
+    },
+    {
+      "method": "GET",
+      "path": "/auth/signin",
+      "status": 403,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 39
+    },
+    {
+      "method": "POST",
+      "path": "/product",
+      "status": 403,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 42
+    },
+    {
+      "method": "GET",
+      "path": "/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75",
+      "status": 200,
+      "source": "4bf9082a",
+      "setCookie": null,
+      "bytes": 712
+    }
+  ],
+  "productStaticAssetsMatched": 16,
+  "browserVisualAcceptance": false,
+  "productionChanged": false
+}

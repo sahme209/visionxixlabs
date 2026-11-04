@@ -41,6 +41,10 @@ A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-targe
 
 ~~Two-column draft applied once to a fresh populated old-schema test database with five ledger rows and matching financial records preserved~~ ([evidence](../recovery/2026-11-04/quote-schema-rehearsal/README.md)). Local synthetic records only; owned server stopped. Production target/backup/concurrency/cutover/rollout authority and all15parent requirements remain open.
 
+## November 4 visible Product hierarchy and full local build
+
+~~Task-explicit Product hero and first-screen conceptual workflow implemented and source/HTTP verified locally~~ ([evidence](../recovery/2026-11-04/product-hierarchy/README.md)):2new rendered checks+3existing interactions, exact fullofflinebuild/types/303pages/output verification,16referencedassets byte-matched, safe separate5234preview with private/action403. Old5210preserved. Browser-rendered/AT/responsive/performance acceptance and wholevisualprogram remain open; no screenshot or livepublication claim. This fullbuild also verifies the unchanged latest quote/backend runtime locally; real pricing/custody/activation remain unqualified.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains

@@ -32,3 +32,7 @@ Four NEW actual PostgreSQL cases passed with the real admission, claim/coordinat
 The composed fixture exposed a manager mismatch before execution: prompt was redacted but system text was consumed raw. The manager now consumes and forwards identical bounded/redacted prompt and system, preserving absent/empty distinction. Preparation failures discard only in-process authority and retain funding. Meaningful unit RED/GREEN is recorded (manager7focused pass; billing5, including filtered discardRED/GREEN). Scoped runtime types pass against the private current-schema client. Peer review cleared manager/discard and the final packet; total fetch attempts are explicitly asserted, not inferred from accepted-destination captures.
 
 No new visual work, root-client generation, full production build, real pricing fetch, inference, production schema change, push or deployment occurred. Canonical quote eligibility and actual executor-mode activation remain unavailable.
+
+## Later combined local build
+
+The ordinary exact4bf9082a website/backend build (same quoted runtime plus Product hierarchy changes) passed compilation, Next TypeScript,303static pages and output verification in a new isolated stage. See ../product-hierarchy/README.md. This supersedes the earlier missing-full-build limitation only. No quote pricing qualification, production migration/rollout or native issuer activation follows from it.

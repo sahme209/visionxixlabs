@@ -13,7 +13,7 @@
   "correctedSettlementWholeFileSourceBinding": "not asserted due parallel test append",
   "finalAllocationDirectSourcesUnchanged": true,
   "runtimeScopedTypes": "PASS with private current-schema generated Prisma client",
-  "fullProductionBuild": false,
+  "fullProductionBuild": true,
   "productionEligibility": false,
   "providerPricingReads": 0,
   "inferenceCalls": 0,
@@ -21,5 +21,6 @@
   "composedActualLocalCases": 4,
   "composedTransport": "synthetic successful responses with real installed SDK and local database",
   "managerFocused": 7,
-  "billingAdmissionFocused": 5
+  "billingAdmissionFocused": 5,
+  "fullProductionBuildScope": "ordinary LOCAL build, exact4bf9082a, no deployment or issuer qualification"
 }
