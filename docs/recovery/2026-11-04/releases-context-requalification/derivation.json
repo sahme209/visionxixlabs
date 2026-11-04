@@ -1,0 +1,10 @@
+{
+  "commit": "0c69fe8832452277e633d1c3de6cbd58da12e34a",
+  "rawSourceSha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+  "derivedStrippedSha256": "37dfbbdfa537239590a1e9a409e768146f1725af1dcace663fce6719372940da",
+  "runtimeEqualsRawGit": true,
+  "registeredAttributes": 29,
+  "fieldCallsites": 52,
+  "exactEntireIntakeUnchanged": true,
+  "intakeFunctionSha256": "5a6619e285db3183ca39bc1568c004f4592b67f3450d389033181555c5d24ed2"
+}

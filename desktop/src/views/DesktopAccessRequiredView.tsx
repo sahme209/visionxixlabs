@@ -9,10 +9,12 @@ export function DesktopAccessRequiredView({
   identity,
   onAccessGranted,
   onSignedOut,
+  onSignOut,
 }: {
   identity: VerifiedDesktopIdentity;
   onAccessGranted: (identity: VerifiedDesktopIdentity) => void;
   onSignedOut: () => void;
+  onSignOut?: () => Promise<void>;
 }) {
   const [checking, setChecking] = useState(false);
   const [openingBilling, setOpeningBilling] = useState(false);
@@ -56,6 +58,7 @@ export function DesktopAccessRequiredView({
     setChecking(false);
     setError(null);
     try {
+      if (onSignOut) { await onSignOut(); return; }
       await signOutDesktopCredentials();
       if (mounted.current) onSignedOut();
     } catch (cause) {

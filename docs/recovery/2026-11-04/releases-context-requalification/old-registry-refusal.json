@@ -1,0 +1,5 @@
+{
+  "exit": 1,
+  "text": "Documentation binding checks refused: binding test hash mismatch\n",
+  "execution": "registry preflight only; stopped before any source-check child"
+}

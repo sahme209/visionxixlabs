@@ -4,32 +4,60 @@
   "publicationApproved": false,
   "domBinding": false,
   "runtimeMetadataAdded": false,
-  "baselineCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+  "baselineCommit": "0c69fe8832452277e633d1c3de6cbd58da12e34a",
   "functionalSourceHistory": [
     {
       "commit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
       "sha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
       "status": "historical pending-save mapping; preserved under work/release-intake-context-requalification/prior-19821435/"
+    },
+    {
+      "commit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+      "sha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+      "status": "historical intake-context-only mapping; preserved under work/releases-context-requalification/prior-4f31/"
     }
   ],
-  "scope": "All52 named Field/TextArea/SelectField/Check callsites in DeploymentIntakeForm only; source-only identifiers and imported dynamic fields excluded.",
+  "scope": "All52 named Field/TextArea/SelectField/Check callsites in DeploymentIntakeForm only. Production wrapper/App lifecycle is separately documented, not field enumeration.",
+  "intakeFunctionSha256": "5a6619e285db3183ca39bc1568c004f4592b67f3450d389033181555c5d24ed2",
   "sources": [
     {
       "path": "desktop/src/views/DeploymentRequestsView.tsx",
-      "sha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1"
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b"
     },
     {
       "path": "docs/product/knowledge/releases-intake-fields.json",
-      "sha256": "00efc592835bee93fdddb42537e9a30800387273708231fa4bd2258b1500bf45"
+      "sha256": "ca431f884b42a0a740ce48b43ccd43ae4165f6c5673c3e343c469aee241f7728"
     },
     {
       "path": "docs/product/knowledge/releases-intake-fields.md",
-      "sha256": "03bc291e7f20fb99b4b1904a9c1a9d3f09ea47a4afedbbf8216bda83fd0edcf6"
+      "sha256": "4f3f9ee4e1a3dee4a21780e6dd359bee8966c4e6794c4056a36408932556edae"
     },
     {
       "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
-      "sha256": "4fcb816be59debcca1e039a5009cfa397c4bb641150137c3f7b9c6638bc1a368"
+      "sha256": "8091bcbed8cb90a067a90d3348759d557940e19d25fc1cd9ef13d9567246acac"
     }
   ],
-  "validation": "Old source/locator contracts meaningfully failed2/5 against context repair. Requalified five-check AST suite passes. All52 IDs, purposes and callsite-node hashes preserved; current source locators, serializers and parent/child context-owner references pinned. No runtime edits or native/customer acceptance."
+  "relatedProductionBoundarySources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsWorkspace.tsx",
+      "sha256": "afbd3221e757ea829140531b87e0815718fb6217f9bd497fe7963156e6241277",
+      "scope": "separate production lifecycle provenance, not additional field/control enumeration"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "d9faf3d594f59adac90b5c567439b52214bfbc3a0015192b01153c06eaae7d98",
+      "scope": "separate production lifecycle provenance, not additional field/control enumeration"
+    },
+    {
+      "path": "docs/product/knowledge/releases-context-boundary.md",
+      "sha256": "c9730701574c9844c956da06bc4f0ae22fa1561ab2942e4fa8a8ffed4b388d10",
+      "scope": "separate production lifecycle provenance, not additional field/control enumeration"
+    },
+    {
+      "path": "docs/product/knowledge/releases-context-boundary.sources.json",
+      "sha256": "7bdce8a64741126318043859f5e0273db6a6306587fb9bd222ab5edf02644b8b",
+      "scope": "separate production lifecycle provenance, not additional field/control enumeration"
+    }
+  ],
+  "validation": "Actual stale contracts failed2/5 against whole-view repair; current affected five-check AST suite passes. All52 IDs, purposes and callsite-node hashes plus exact full intake function unchanged. Current source locators and enclosing callback-owner refs requalified. No runtime edits or native/customer acceptance."
 }

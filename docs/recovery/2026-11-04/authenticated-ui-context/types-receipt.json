@@ -1,0 +1,15 @@
+{
+  "exit": 0,
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-auth-ui-context-2ehr1int/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "node_modules/typescript/bin/tsc",
+    "--project",
+    "desktop/tsconfig.json",
+    "--noEmit"
+  ],
+  "owned": "/private/tmp/axiom-auth-ui-context-2ehr1int",
+  "scope": "full desktop noEmit TypeScript"
+}

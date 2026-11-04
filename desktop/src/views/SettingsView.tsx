@@ -105,7 +105,7 @@ const sections: Array<{ id: Section; label: string; icon: typeof CircleUserRound
   { id: "integrations", group: "Development & connections", label: "Integrations", icon: Link2 },
 ];
 
-export function SettingsView({ identity, initialSection, onClose, onOpenRepository }: { identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" | "plan" | "integrations"; onOpenRepository?: () => void; onClose?: () => void }) {
+export function SettingsView({ identity, initialSection, onClose, onOpenRepository, onSignOut }: { onSignOut?: () => Promise<void>; identity: VerifiedDesktopIdentity; initialSection?: "models" | "agents" | "plan" | "integrations"; onOpenRepository?: () => void; onClose?: () => void }) {
   const [governancePreview, setGovernancePreview] = useState<"records" | "limits">();
   const [search, setSearch] = useState("");
   const [active, setActive] = useState<Section>(initialSection ?? "general");
@@ -153,6 +153,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
 
   async function signOut() {
     try {
+      if (onSignOut) { await onSignOut(); return; }
       await signOutDesktopCredentials();
       window.location.reload();
     } catch (cause) {

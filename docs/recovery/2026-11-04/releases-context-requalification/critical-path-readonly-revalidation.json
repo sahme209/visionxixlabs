@@ -1,0 +1,41 @@
+{
+  "head": "04ed79b2b7d7ec4e5113568fa9d833a02d17768a",
+  "scope": "current finite core-code custody/issuer/coverage gate source hashes; no helper/probe/preflight invoked",
+  "sourceRecords": [
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+      "sha256": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca",
+      "matchesPriorBoundedAudit": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/index.cjs",
+      "sha256": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4",
+      "matchesPriorBoundedAudit": true
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeBootstrap.ts",
+      "sha256": "ba74b3a38c57124b6b391f5adf11cfd542082ac77620cabfe80b07d1399aeff9",
+      "matchesPriorBoundedAudit": true
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeComposition.ts",
+      "sha256": "52d0297aff96d8857ae9f19331204606659afe66ba56de8ae4ee252ed53fbe5c",
+      "matchesPriorBoundedAudit": true
+    },
+    {
+      "path": "lib/governance/intelligence/privateGovernanceMergeRequestService.ts",
+      "sha256": "0d4865541d09f697465bf8c1420b8ad713601cdeb4571817cf3bda46b6a7ee46",
+      "matchesPriorBoundedAudit": true
+    },
+    {
+      "path": "lib/governance/intelligence/requestServiceCore.ts",
+      "sha256": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d",
+      "matchesPriorBoundedAudit": true
+    }
+  ],
+  "allSelectedCoreCodeUnchanged": true,
+  "priorMasterNarrativeNotRequalifiedByThisHashCheck": true,
+  "gatesRemain": "supplier operational0/private initializer/channel unavailable/enrollment coverage refusal; pending909decision is not execution authority",
+  "governanceCompletion": false,
+  "noOperationsOrAuthorityChanged": true
+}

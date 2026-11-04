@@ -34,6 +34,7 @@ test('independently discovers every actual named helper callsite and verifies ex
 test('source custody and constraint/recovery function references bind actual unchanged source bytes',()=>{
  assert.equal(sha(source),inventory.sourceSha256);
  const file=ts.createSourceFile(inventory.source,source,99,true,4),functions=new Map(),variables=new Map();function walk(n){if(ts.isFunctionDeclaration(n)&&n.name)functions.set(n.name.text,n);if(ts.isVariableDeclaration(n))variables.set(n.name.getText(file),n);ts.forEachChild(n,walk)}walk(file);
+ assert.equal(sha(functions.get(inventory.scopeFunction).getText(file)),inventory.intakeFunctionSha256);assert.equal(inventory.intakeFunctionSha256,inventory.intakeFunctionProvenance.nodeSha256);
  for(const ref of [...inventory.fields.flatMap(c=>c.sourceRefs),...inventory.contextOwnershipSourceRefs]){const fn=(ref.nodeKind==='variable-declaration'?variables:functions).get(ref.role);assert(fn);assert.equal(sha(fn.getText(file)),ref.nodeSha256);assert.equal(file.getLineAndCharacterOfPosition(fn.getStart(file)).line+1,ref.startLine);assert.equal(file.getLineAndCharacterOfPosition(fn.end).line+1,ref.endLine)}
 });
 test('rejects changed label, value, update, required flag, condition and declared options',()=>{

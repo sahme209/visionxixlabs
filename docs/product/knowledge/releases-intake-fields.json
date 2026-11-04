@@ -5,9 +5,9 @@
   "publicationApproved": false,
   "domBinding": false,
   "runtimeMetadataAdded": false,
-  "baselineCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+  "baselineCommit": "0c69fe8832452277e633d1c3de6cbd58da12e34a",
   "source": "desktop/src/views/DeploymentRequestsView.tsx",
-  "sourceSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+  "sourceSha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
   "scopeFunction": "DeploymentIntakeForm",
   "guide": "docs/product/knowledge/releases-workspace-controls.md",
   "declarations": 52,
@@ -17,7 +17,7 @@
     "SelectField": 8,
     "Check": 6
   },
-  "constraintsScope": "Current local draft, helper props, validateStep and submit only; no exhaustive server/provider validation or approval evidence.",
+  "constraintsScope": "Current local field callsites, helper props, validation/serialization and enclosing source lifecycle references; separate wrapper scope is linked, not enumerated as fields. No exhaustive server/provider validation or approval evidence.",
   "exclusions": [
     "WorkflowCatalogue",
     "WorkflowDefinitionInputs (including workflowInputs custom fields)",
@@ -62,8 +62,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -76,15 +76,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -97,7 +97,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1145,
+      "sourceLine": 1165,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -141,8 +141,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -155,15 +155,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "SelectField",
-          "startLine": 1303,
-          "endLine": 1315,
+          "startLine": 1323,
+          "endLine": 1335,
           "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
         }
       ],
@@ -172,7 +172,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1146,
+      "sourceLine": 1166,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -220,8 +220,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -234,15 +234,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -255,7 +255,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1150,
+      "sourceLine": 1170,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -303,8 +303,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -317,15 +317,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -338,7 +338,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1151,
+      "sourceLine": 1171,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -386,8 +386,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -400,15 +400,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -421,7 +421,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1152,
+      "sourceLine": 1172,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -469,8 +469,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -483,15 +483,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -504,7 +504,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1153,
+      "sourceLine": 1173,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -548,8 +548,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -562,15 +562,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -590,7 +590,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1156,
+      "sourceLine": 1176,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -634,8 +634,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -648,15 +648,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -676,7 +676,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1157,
+      "sourceLine": 1177,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -720,8 +720,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -734,15 +734,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "SelectField",
-          "startLine": 1303,
-          "endLine": 1315,
+          "startLine": 1323,
+          "endLine": 1335,
           "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
         }
       ],
@@ -751,7 +751,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1158,
+      "sourceLine": 1178,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -795,8 +795,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -809,15 +809,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "SelectField",
-          "startLine": 1303,
-          "endLine": 1315,
+          "startLine": 1323,
+          "endLine": 1335,
           "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
         }
       ],
@@ -826,7 +826,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1160,
+      "sourceLine": 1180,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -870,8 +870,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -884,15 +884,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -912,7 +912,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1165,
+      "sourceLine": 1185,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -956,8 +956,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -970,15 +970,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -998,7 +998,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1166,
+      "sourceLine": 1186,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1042,8 +1042,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1056,15 +1056,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -1077,7 +1077,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1167,
+      "sourceLine": 1187,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1121,8 +1121,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1135,15 +1135,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -1156,7 +1156,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1168,
+      "sourceLine": 1188,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1200,8 +1200,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1214,15 +1214,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -1235,7 +1235,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1169,
+      "sourceLine": 1189,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1279,8 +1279,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1293,15 +1293,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -1321,7 +1321,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1170,
+      "sourceLine": 1190,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1365,8 +1365,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1379,15 +1379,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Check",
-          "startLine": 1317,
-          "endLine": 1326,
+          "startLine": 1337,
+          "endLine": 1346,
           "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
         }
       ],
@@ -1396,7 +1396,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1171,
+      "sourceLine": 1191,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1444,8 +1444,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1458,15 +1458,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -1486,7 +1486,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1174,
+      "sourceLine": 1194,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1534,8 +1534,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1548,15 +1548,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "SelectField",
-          "startLine": 1303,
-          "endLine": 1315,
+          "startLine": 1323,
+          "endLine": 1335,
           "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
         }
       ],
@@ -1565,7 +1565,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1175,
+      "sourceLine": 1195,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1609,8 +1609,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1623,15 +1623,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -1644,7 +1644,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1179,
+      "sourceLine": 1199,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1688,8 +1688,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1702,15 +1702,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -1723,7 +1723,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1180,
+      "sourceLine": 1200,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1767,8 +1767,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1781,15 +1781,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -1802,7 +1802,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1184,
+      "sourceLine": 1204,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1846,8 +1846,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1860,15 +1860,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -1881,7 +1881,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1185,
+      "sourceLine": 1205,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -1925,8 +1925,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -1939,15 +1939,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -1960,7 +1960,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1186,
+      "sourceLine": 1206,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2004,8 +2004,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2018,15 +2018,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -2035,7 +2035,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1187,
+      "sourceLine": 1207,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2079,8 +2079,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2093,15 +2093,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "TextArea",
-          "startLine": 1291,
-          "endLine": 1301,
+          "startLine": 1311,
+          "endLine": 1321,
           "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
         }
       ],
@@ -2110,7 +2110,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1192,
+      "sourceLine": 1212,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2158,8 +2158,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2172,15 +2172,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -2193,7 +2193,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1195,
+      "sourceLine": 1215,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2241,8 +2241,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2255,15 +2255,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "TextArea",
-          "startLine": 1291,
-          "endLine": 1301,
+          "startLine": 1311,
+          "endLine": 1321,
           "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
         }
       ],
@@ -2276,7 +2276,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1196,
+      "sourceLine": 1216,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2320,8 +2320,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2334,15 +2334,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -2362,7 +2362,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1202,
+      "sourceLine": 1222,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2406,8 +2406,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2420,15 +2420,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Check",
-          "startLine": 1317,
-          "endLine": 1326,
+          "startLine": 1337,
+          "endLine": 1346,
           "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
         }
       ],
@@ -2437,7 +2437,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1203,
+      "sourceLine": 1223,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2481,8 +2481,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2495,15 +2495,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Check",
-          "startLine": 1317,
-          "endLine": 1326,
+          "startLine": 1337,
+          "endLine": 1346,
           "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
         }
       ],
@@ -2512,7 +2512,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1204,
+      "sourceLine": 1224,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2556,8 +2556,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2570,15 +2570,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "TextArea",
-          "startLine": 1291,
-          "endLine": 1301,
+          "startLine": 1311,
+          "endLine": 1321,
           "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
         }
       ],
@@ -2591,7 +2591,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1205,
+      "sourceLine": 1225,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2635,8 +2635,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2649,15 +2649,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "SelectField",
-          "startLine": 1303,
-          "endLine": 1315,
+          "startLine": 1323,
+          "endLine": 1335,
           "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
         }
       ],
@@ -2666,7 +2666,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1206,
+      "sourceLine": 1226,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2710,8 +2710,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2724,15 +2724,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Check",
-          "startLine": 1317,
-          "endLine": 1326,
+          "startLine": 1337,
+          "endLine": 1346,
           "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
         }
       ],
@@ -2741,7 +2741,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1208,
+      "sourceLine": 1228,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2789,8 +2789,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2803,15 +2803,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "TextArea",
-          "startLine": 1291,
-          "endLine": 1301,
+          "startLine": 1311,
+          "endLine": 1321,
           "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
         }
       ],
@@ -2824,7 +2824,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1211,
+      "sourceLine": 1231,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2872,8 +2872,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2886,15 +2886,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "SelectField",
-          "startLine": 1303,
-          "endLine": 1315,
+          "startLine": 1323,
+          "endLine": 1335,
           "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
         }
       ],
@@ -2903,7 +2903,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1212,
+      "sourceLine": 1232,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -2947,8 +2947,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -2961,15 +2961,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "TextArea",
-          "startLine": 1291,
-          "endLine": 1301,
+          "startLine": 1311,
+          "endLine": 1321,
           "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
         }
       ],
@@ -2982,7 +2982,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1216,
+      "sourceLine": 1236,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3026,8 +3026,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3040,15 +3040,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Check",
-          "startLine": 1317,
-          "endLine": 1326,
+          "startLine": 1337,
+          "endLine": 1346,
           "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
         }
       ],
@@ -3057,7 +3057,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1217,
+      "sourceLine": 1237,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3105,8 +3105,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3119,15 +3119,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -3140,7 +3140,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1220,
+      "sourceLine": 1240,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3188,8 +3188,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3202,15 +3202,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -3223,7 +3223,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1221,
+      "sourceLine": 1241,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3271,8 +3271,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3285,15 +3285,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -3313,7 +3313,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1222,
+      "sourceLine": 1242,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3361,8 +3361,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3375,15 +3375,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -3396,7 +3396,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1223,
+      "sourceLine": 1243,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3444,8 +3444,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3458,15 +3458,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "TextArea",
-          "startLine": 1291,
-          "endLine": 1301,
+          "startLine": 1311,
+          "endLine": 1321,
           "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
         }
       ],
@@ -3479,7 +3479,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1224,
+      "sourceLine": 1244,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3523,8 +3523,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3537,15 +3537,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "SelectField",
-          "startLine": 1303,
-          "endLine": 1315,
+          "startLine": 1323,
+          "endLine": 1335,
           "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
         }
       ],
@@ -3554,7 +3554,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1230,
+      "sourceLine": 1250,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3602,8 +3602,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3616,15 +3616,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "TextArea",
-          "startLine": 1291,
-          "endLine": 1301,
+          "startLine": 1311,
+          "endLine": 1321,
           "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
         }
       ],
@@ -3637,7 +3637,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1234,
+      "sourceLine": 1254,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3685,8 +3685,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3699,15 +3699,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -3720,7 +3720,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1235,
+      "sourceLine": 1255,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3764,8 +3764,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3778,15 +3778,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Check",
-          "startLine": 1317,
-          "endLine": 1326,
+          "startLine": 1337,
+          "endLine": 1346,
           "nodeSha256": "0ea5658b05ea4ce274ccf2359c871f223e670572df421ca9f9cfa789869e8901"
         }
       ],
@@ -3795,7 +3795,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1238,
+      "sourceLine": 1258,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3843,8 +3843,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3857,15 +3857,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         },
         {
@@ -3885,7 +3885,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1239,
+      "sourceLine": 1259,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -3929,8 +3929,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -3943,15 +3943,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "SelectField",
-          "startLine": 1303,
-          "endLine": 1315,
+          "startLine": 1323,
+          "endLine": 1335,
           "nodeSha256": "9fafbb3f35fec4cdce59c7f44fcd9d030b7697c2dc09138d72bba49ea2c057b3"
         }
       ],
@@ -3960,7 +3960,7 @@
       "stepPresenceValidation": null,
       "requiredSemantics": "no required prop supplied at this callsite",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1240,
+      "sourceLine": 1260,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -4004,8 +4004,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -4018,15 +4018,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "TextArea",
-          "startLine": 1291,
-          "endLine": 1301,
+          "startLine": 1311,
+          "endLine": 1321,
           "nodeSha256": "3ded31012794685239635bfe729cf4c91b6673427c7679cd0255fd23a858e153"
         }
       ],
@@ -4039,7 +4039,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1242,
+      "sourceLine": 1262,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -4083,8 +4083,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -4097,15 +4097,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -4118,7 +4118,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1243,
+      "sourceLine": 1263,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -4162,8 +4162,8 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "update",
-          "startLine": 966,
-          "endLine": 969,
+          "startLine": 986,
+          "endLine": 989,
           "nodeSha256": "d11614b37273169887d0ca5c5f09c2b5f5c8fa2a3d7448416af8910e5e87ed28"
         },
         {
@@ -4176,15 +4176,15 @@
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "submit",
-          "startLine": 971,
-          "endLine": 1120,
+          "startLine": 991,
+          "endLine": 1140,
           "nodeSha256": "0389a01213d760b2d300e27593cdeeb79e97a84ac22016b190dd41aa86a2e237"
         },
         {
           "source": "desktop/src/views/DeploymentRequestsView.tsx",
           "role": "Field",
-          "startLine": 1279,
-          "endLine": 1289,
+          "startLine": 1299,
+          "endLine": 1309,
           "nodeSha256": "b68a5eb45cf1a37ad62c5e654e4704a633ad251145b67760718edd54c78f823b"
         }
       ],
@@ -4197,7 +4197,7 @@
       },
       "requiredSemantics": "static required prop forwarded by local helper to native field",
       "finalServiceValidation": "createDeploymentRequest / reviseDeploymentRequest may refuse after local checks; this source mapping does not enumerate server validation",
-      "sourceLine": 1244,
+      "sourceLine": 1264,
       "disabledContext": [
         {
           "ancestor": "fieldset",
@@ -4217,6 +4217,11 @@
       "commit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
       "sha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
       "status": "historical pending-save mapping; preserved under work/release-intake-context-requalification/prior-19821435/"
+    },
+    {
+      "commit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+      "sha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+      "status": "historical intake-context-only mapping; preserved under work/releases-context-requalification/prior-4f31/"
     }
   ],
   "contextOwnershipSourceRefs": [
@@ -4224,8 +4229,8 @@
       "source": "desktop/src/views/DeploymentRequestsView.tsx",
       "role": "DeploymentRequestsView",
       "startLine": 258,
-      "endLine": 816,
-      "nodeSha256": "8ca7e1731820af027c8aebc833529471e3309f50f7816722e18e7b4c053dee5f"
+      "endLine": 836,
+      "nodeSha256": "24628d76f463a33916161888da6ac6ce7b3f88be8b603cbded550e723f7afd6a"
     },
     {
       "source": "desktop/src/views/DeploymentRequestsView.tsx",
@@ -4254,17 +4259,44 @@
       "source": "desktop/src/views/DeploymentRequestsView.tsx",
       "role": "intakeOwner",
       "nodeKind": "variable-declaration",
-      "startLine": 952,
-      "endLine": 952,
+      "startLine": 972,
+      "endLine": 972,
       "nodeSha256": "f8691367fccc4fab924f40f5ebe965c10c421c01401df213ef66043c6cb2ae8f"
     },
     {
       "source": "desktop/src/views/DeploymentRequestsView.tsx",
       "role": "ownsIntake",
       "nodeKind": "variable-declaration",
-      "startLine": 953,
-      "endLine": 953,
+      "startLine": 973,
+      "endLine": 973,
       "nodeSha256": "100ffecbe0fdac8cc3ea810925fa0671d1810daec99196727837a456c8c7c79b"
+    },
+    {
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "role": "viewOwner",
+      "nodeKind": "variable-declaration",
+      "startLine": 283,
+      "endLine": 283,
+      "nodeSha256": "fba7a14363b7bc451257e8cf85baef7a69bfa40adf2ac505e83c2a0a9d14d6bd"
+    },
+    {
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "role": "ownsView",
+      "nodeKind": "variable-declaration",
+      "startLine": 284,
+      "endLine": 284,
+      "nodeSha256": "c490fa20f3f5f2e35e4cd8258a08bb9b5a787d3c6daa1a2e25355e0359c77509"
     }
-  ]
+  ],
+  "intakeFunctionSha256": "5a6619e285db3183ca39bc1568c004f4592b67f3450d389033181555c5d24ed2",
+  "intakeFunctionProvenance": {
+    "unchangedFromSourceCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+    "nodeSha256": "5a6619e285db3183ca39bc1568c004f4592b67f3450d389033181555c5d24ed2",
+    "scope": "Exact entire DeploymentIntakeForm implementation, including its existing intrinsic metadata and named helper callsites."
+  },
+  "relatedProductionContextBoundary": {
+    "guide": "docs/product/knowledge/releases-context-boundary.md",
+    "manifest": "docs/product/knowledge/releases-context-boundary.sources.json",
+    "scope": "The52 records enumerate only helper callsites in DeploymentIntakeForm. The enclosing view now has captured-owner callback guards; the production wrapper/App remount boundary is separately documented and not a field, source ID or retrieval integration."
+  }
 }

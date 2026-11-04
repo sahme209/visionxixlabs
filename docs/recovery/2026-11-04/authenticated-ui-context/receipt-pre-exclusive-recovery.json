@@ -1,0 +1,77 @@
+{
+  "status": "local accepted-identity UI context repair",
+  "baselineCommit": "04ed79b2 (packet source baseline; exact final working-file hashes below)",
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "e34ced5bf812bdf0edadaaaedd9c26fd52460997bbf465df00181f5d7ec83faa"
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70"
+    },
+    {
+      "path": "desktop/src/views/DesktopAccessRequiredView.tsx",
+      "sha256": "877d4936a5a6d47f141529ff62f921078e8ce09526bf4713b245db0dca7e38ce"
+    },
+    {
+      "path": "lib/desktop/__tests__/authenticatedUiContext.test.ts",
+      "sha256": "6689526ba9bacf56ff3f89329ad69049970b7833a4fa9ff275280e1193d0aa65"
+    },
+    {
+      "path": "lib/desktop/__tests__/botConnectAppsNavigation.test.ts",
+      "sha256": "411719f51fbc0fc4fa23889983184a61e4c06dcd3613efe2b36da702c035f1d4"
+    }
+  ],
+  "initialHarnessDiagnostic": {
+    "failed": 7,
+    "passed": 2,
+    "unhandledErrors": 1,
+    "log": "red.log",
+    "reason": "access-required fixture omitted billingStatus; not authoritative RED"
+  },
+  "correctedRed": {
+    "failed": 7,
+    "passed": 2,
+    "exit": 1,
+    "log": "corrected-red.log"
+  },
+  "focusedGreen": {
+    "passed": 15,
+    "failed": 0,
+    "exit": 0,
+    "log": "green-final.log"
+  },
+  "compatibilityDiagnostic": {
+    "passed": 50,
+    "failed": 1,
+    "files": 5,
+    "log": "compat.log",
+    "reason": "old Bot catalogue retention assertion conflicts with intended root remount/reverification"
+  },
+  "changedCompatibilityCase": "Only botConnectAppsNavigation credential replacement case now asserts new verified root lifecycle, explicit catalogue reentry and unchanged provenance refusals.",
+  "affectedCase": {
+    "passed": 1,
+    "skipped": 7,
+    "log": "compat-affected.log"
+  },
+  "compatibilityFinal": {
+    "passed": 51,
+    "failed": 0,
+    "files": 5,
+    "log": "compat-final.log"
+  },
+  "desktopTypes": {
+    "exit": 0,
+    "log": "types.log"
+  },
+  "unchangedAuthoritySources": [
+    "desktop/src/lib/desktopClient.ts",
+    "desktop/src/lib/credentialVerificationCoordinator.ts",
+    "desktop/src/lib/activeDesktopCredential.ts"
+  ],
+  "scope": "App exact-config accepted identity; current-owner root signout callback; manual missing-owner cleanup retry through existing helper only. Optional Settings/AccessRequired callback plumbing.",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMP/cache; writes denied outside owned temporary directory",
+  "limits": "No actual secure-vault/credential/provider/DB/native/browser/customer action or server authorization qualification. Old sent persistence not cancelled. No durable or cross-window secure-store transaction guarantee. Native/full security/Governance acceptance open."
+}

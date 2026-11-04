@@ -1,0 +1,51 @@
+{
+  "status": "local auth UI ownership repair; not production/native/security completion",
+  "finalSources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348"
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70"
+    },
+    {
+      "path": "desktop/src/views/DesktopAccessRequiredView.tsx",
+      "sha256": "877d4936a5a6d47f141529ff62f921078e8ce09526bf4713b245db0dca7e38ce"
+    },
+    {
+      "path": "lib/desktop/__tests__/authenticatedUiContext.test.ts",
+      "sha256": "3f81e3245304927f8f8704731ef25cddde509a5fffdcf4d3c536c95c3e7aedbc"
+    },
+    {
+      "path": "lib/desktop/__tests__/botConnectAppsNavigation.test.ts",
+      "sha256": "411719f51fbc0fc4fa23889983184a61e4c06dcd3613efe2b36da702c035f1d4"
+    }
+  ],
+  "finalExactSourceFocusedTests": {
+    "passed": 16,
+    "exit": 0,
+    "log": "final-copy-aligned-green.log.json"
+  },
+  "compatibility": {
+    "passed": 51,
+    "files": 5,
+    "log": "exclusive-recovery-compat.log.json",
+    "scope": "actual coordinator/helper and lifecycle/navigation fixtures; before literal-only final wording update; control flow unchanged"
+  },
+  "desktopTypes": {
+    "exit": 0,
+    "scope": "full desktop noEmit before literal-only copy update; no new types or branching"
+  },
+  "unchangedAuthoritySourcesComparedWithGit": [
+    "desktop/src/lib/desktopClient.ts",
+    "desktop/src/lib/credentialVerificationCoordinator.ts",
+    "desktop/src/lib/activeDesktopCredential.ts"
+  ],
+  "rootRaceFinding": "earlier failed-cleanup branch allowed signin alongside cleanup; new failing regression\u2192exclusive retry-only failure/pending recovery; reviewed final",
+  "copyCorrection": "Transport terminology replaced with user-visible workspace/device wording; two stale-warning assertion failures preserved then final16pass",
+  "currentOwnerAndSingleFlight": true,
+  "actualVaultProviderOrNativeAcceptance": false,
+  "savedStoreCrossWindowConcurrencyQualification": false,
+  "rolloutAuthorityConsumedOrUsed": false
+}

@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-releases-context-requalification-_ms_gbtw/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--test",
+    "docs/product/knowledge/releases-intake-bindings.test.cjs"
+  ],
+  "environmentKeys": [
+    "HOME",
+    "NODE_DISABLE_COMPILE_CACHE",
+    "PATH",
+    "TMPDIR",
+    "XDG_CACHE_HOME"
+  ],
+  "exitCode": 0,
+  "stdoutBase64": "4pyUIHNvdXJjZS1vbmx5IGludmVudG9yeSBkZXNjcmliZXMgYWxsIDUyIG5hbWVkIGNhbGxzaXRlcyB3aXRoIGZpbml0ZSBoZWxwZXIgY291bnRzIGFuZCByZWFsIGd1aWRlIGhlYWRpbmdzICgwLjc2MTI1bXMpCuKclCBpbmRlcGVuZGVudGx5IGRpc2NvdmVycyBldmVyeSBhY3R1YWwgbmFtZWQgaGVscGVyIGNhbGxzaXRlIGFuZCB2ZXJpZmllcyBleGFjdCBwcm9wcyBhbmQgZW5jbG9zaW5nIGNvbmRpdGlvbnMgKDE5LjUyODg3NW1zKQrinJQgc291cmNlIGN1c3RvZHkgYW5kIGNvbnN0cmFpbnQvcmVjb3ZlcnkgZnVuY3Rpb24gcmVmZXJlbmNlcyBiaW5kIGFjdHVhbCB1bmNoYW5nZWQgc291cmNlIGJ5dGVzICg5LjE3MDEyNW1zKQrinJQgcmVqZWN0cyBjaGFuZ2VkIGxhYmVsLCB2YWx1ZSwgdXBkYXRlLCByZXF1aXJlZCBmbGFnLCBjb25kaXRpb24gYW5kIGRlY2xhcmVkIG9wdGlvbnMgKDM3LjQ5NjIwOG1zKQrinJQgcmVqZWN0cyBpbmNvbXBsZXRlL2R1cGxpY2F0ZS91bmtub3duL3N3YXBwZWQgcmVjb3JkcyBhbmQgYW4gZXh0cmEgYWN0dWFsIGZpZWxkIGNhbGxzaXRlICgxOS4xMzM3OTFtcykK4oS5IHRlc3RzIDUK4oS5IHN1aXRlcyAwCuKEuSBwYXNzIDUK4oS5IGZhaWwgMArihLkgY2FuY2VsbGVkIDAK4oS5IHNraXBwZWQgMArihLkgdG9kbyAwCuKEuSBkdXJhdGlvbl9tcyAxNzcuOTAyMzc1Cg==",
+  "stderrBase64": "",
+  "stdoutSha256": "f2aadd100dc4682d63adb1999baa283b53964f88ffd9502506ed9779802a60ba",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "encoding": "base64 preserves verbatim process bytes",
+  "kernelNetworkDenied": true
+}

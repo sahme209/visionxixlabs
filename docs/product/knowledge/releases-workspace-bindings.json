@@ -3,14 +3,14 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+  "baselineCommit": "0c69fe8832452277e633d1c3de6cbd58da12e34a",
   "guide": "docs/product/knowledge/releases-workspace-controls.md",
   "declarations": 29,
   "countMethod": "All intrinsic button/input/select/textarea/summary/a in the complete DeploymentRequestsView.tsx, including local helper declarations; mapped instances repeat family metadata, custom/imported internals excluded.",
   "files": [
     {
       "source": "desktop/src/views/DeploymentRequestsView.tsx",
-      "baselineSha256": "bb37a17a87037fdfe7e66c4a941b867e705b030837a3e612898d554954331f70",
+      "baselineSha256": "37dfbbdfa537239590a1e9a409e768146f1725af1dcace663fce6719372940da",
       "declarations": 29,
       "tagCounts": {
         "button": 19,
@@ -19,7 +19,7 @@
         "textarea": 1,
         "summary": 4
       },
-      "functionalSourceSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1"
+      "functionalSourceSha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b"
     }
   ],
   "unbound": [
@@ -307,11 +307,11 @@
   },
   "baselineDerivation": {
     "method": "strip registered metadata from functional source commit",
-    "sourceCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+    "sourceCommit": "0c69fe8832452277e633d1c3de6cbd58da12e34a",
     "metadataAlreadyPresent": true,
     "registeredAttributeCount": 29,
-    "rawSourceSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
-    "strippedSourceSha256": "bb37a17a87037fdfe7e66c4a941b867e705b030837a3e612898d554954331f70"
+    "rawSourceSha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+    "strippedSourceSha256": "37dfbbdfa537239590a1e9a409e768146f1725af1dcace663fce6719372940da"
   },
   "functionalBaselineHistory": [
     {
@@ -325,6 +325,23 @@
         "strippedSourceSha256": "514fd74af81c6bf7d1edac75fb971444c8047474c65acac152a82aa947d9cb61"
       },
       "status": "historical pending-save functional baseline; preserved under work/release-intake-context-requalification/prior-19821435/"
+    },
+    {
+      "sourceCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+      "baselineDerivation": {
+        "method": "strip registered metadata from functional source commit",
+        "sourceCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+        "metadataAlreadyPresent": true,
+        "registeredAttributeCount": 29,
+        "rawSourceSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+        "strippedSourceSha256": "bb37a17a87037fdfe7e66c4a941b867e705b030837a3e612898d554954331f70"
+      },
+      "status": "historical intake-context-only source mapping; preserved under work/releases-context-requalification/prior-4f31/"
     }
-  ]
+  ],
+  "relatedProductionContextBoundary": {
+    "guide": "docs/product/knowledge/releases-context-boundary.md",
+    "manifest": "docs/product/knowledge/releases-context-boundary.sources.json",
+    "scope": "App mounts DeploymentRequestsWorkspace, whose key replaces the complete view. This29-declaration inventory enumerates DeploymentRequestsView only; wrapper/App implementation is separately documented, not an added control-binding scope."
+  }
 }

@@ -17,6 +17,7 @@ import { DesktopSignInView } from "./views/DesktopSignInView";
 import { DesktopAccessRequiredView } from "./views/DesktopAccessRequiredView";
 import { desktopClient, type VerifiedDesktopIdentity } from "./lib/desktopClient";
 import { createCredentialVerificationCoordinator, type CredentialVerificationCoordinator } from "./lib/credentialVerificationCoordinator";
+import { signOutDesktopCredentials } from "./lib/activeDesktopCredential";
 import { readDesktopPreferences } from "./lib/preferences";
 import { useNativeMenuActions } from "./lib/useNativeMenuActions";
 
@@ -46,15 +47,22 @@ export default function App() {
   const [canRetrySavedSignIn, setCanRetrySavedSignIn] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
   const [identity, setIdentity] = useState<VerifiedDesktopIdentity | null>(null);
+  const credentialContext = useSyncExternalStore(desktopClient.subscribeContext, () => desktopClient.config, () => desktopClient.config);
+  const acceptedContext = useRef<typeof desktopClient.config | null>(null);
+  const signOutFlight = useRef(false);
+  const appMounted = useRef(false);
+  const [signOutStatus, setSignOutStatus] = useState<{context: typeof desktopClient.config; failed: boolean} | null>(null);
   const credentialVerification = useRef<CredentialVerificationCoordinator | null>(null);
 
   useEffect(() => {
+    appMounted.current = true;
     void readDesktopPreferences().catch(() => undefined);
     const coordinator = createCredentialVerificationCoordinator<VerifiedDesktopIdentity>({
       // setSession/setApiBase replace config, including a same-token reload.
       readContext: () => ({ version: desktopClient.config, present: desktopClient.hasAuth() }),
       verify: () => desktopClient.verifyCurrentCredential(),
       onVerified: (verified) => {
+        acceptedContext.current = desktopClient.config;
         setIdentity(verified);
         setAuthError(null);
         setCanRetrySavedSignIn(false);
@@ -63,27 +71,60 @@ export default function App() {
       onRejected: (error, failureKind) => {
         // Lock the current transport synchronously. A network/schema failure
         // is not authority to delete saved credentials from the secure vault.
+        acceptedContext.current = null;
         desktopClient.setSession(undefined);
         setIdentity(null);
         setCanRetrySavedSignIn(failureKind === "unavailable");
         setAuthError(error);
         setAuthState("unauthenticated");
       },
-      onMissing: () => { setIdentity(null); setAuthState("unauthenticated"); },
+      onMissing: () => { acceptedContext.current = null; setIdentity(null); setAuthState("unauthenticated"); },
     });
     credentialVerification.current = coordinator;
-    void coordinator.verify();
     const verifyAfterBrowserReturn = () => { void coordinator.verify(); };
     window.addEventListener("focus", verifyAfterBrowserReturn);
     return () => {
+      appMounted.current = false;
       coordinator.dispose();
       if (credentialVerification.current === coordinator) credentialVerification.current = null;
       window.removeEventListener("focus", verifyAfterBrowserReturn);
     };
   }, []);
 
-  if (authState === "checking") return <BootScreen status="Verifying saved sign-in" />;
-  if (authState === "unauthenticated") {
+  useEffect(() => {
+    if (acceptedContext.current !== credentialContext || !desktopClient.hasAuth()) void credentialVerification.current?.verify();
+  }, [credentialContext]);
+
+  async function signOut(reload: boolean, expected: typeof desktopClient.config, requireMissing = false) {
+    if (!appMounted.current || signOutFlight.current || desktopClient.config !== expected || (requireMissing && desktopClient.hasAuth())) return;
+    signOutFlight.current = true;
+    const pending = signOutDesktopCredentials();
+    const lockedContext = desktopClient.config;
+    const owns = () => appMounted.current && desktopClient.config === lockedContext && !desktopClient.hasAuth();
+    setSignOutStatus({context: lockedContext, failed: false});
+    credentialVerification.current?.invalidate();
+    if (owns()) { acceptedContext.current = null; setIdentity(null); setAuthState("unauthenticated"); setAuthError(null); setCanRetrySavedSignIn(false); }
+    try {
+      await pending;
+      if (owns()) { setSignOutStatus(null); if (reload) window.location.reload(); }
+    } catch {
+      if (owns()) { setSignOutStatus({context: lockedContext, failed: true}); setAuthError("Sign-out could not be saved completely. Your workspace is locked, but saved sign-in details may remain on this device. Retry saved credential cleanup when secure storage is available before reopening the app."); }
+    } finally { signOutFlight.current = false; }
+  }
+
+  if (signOutStatus?.context === credentialContext && !signOutStatus.failed && !desktopClient.hasAuth()) return <BootScreen status="Finishing sign-out" />;
+  if (signOutStatus?.context === credentialContext && signOutStatus.failed && !desktopClient.hasAuth()) return (
+    <main className="flex min-h-screen items-center justify-center bg-axiom-bg p-6 text-white">
+      <section aria-labelledby="sign-out-recovery-heading" className="w-full max-w-lg rounded-xl border border-white/10 bg-zinc-950 p-6">
+        <h1 id="sign-out-recovery-heading" className="text-xl font-semibold">Finish signing out</h1>
+        <p role="alert" className="mt-4 text-sm text-zinc-300">{authError}</p>
+        <button type="button" className="mt-5 rounded-lg border border-white/20 px-4 py-2 text-sm" onClick={() => void signOut(false, signOutStatus.context, true)}>Retry saved credential cleanup</button>
+      </section>
+    </main>
+  );
+  const identityOwned = acceptedContext.current === credentialContext && desktopClient.hasAuth();
+  if ((authState === "checking" || !identityOwned) && desktopClient.hasAuth()) return <BootScreen status="Verifying saved sign-in" />;
+  if (authState === "unauthenticated" || !identityOwned) {
     return (
       <DesktopSignInView
         initialError={authError}
@@ -92,6 +133,7 @@ export default function App() {
           credentialVerification.current?.invalidate();
           setAuthError(null);
           setCanRetrySavedSignIn(false);
+          acceptedContext.current = desktopClient.config;
           setIdentity(verifiedIdentity);
           setAuthState(verifiedIdentity.access.allowed ? "authenticated" : "access_required");
         }}
@@ -103,9 +145,11 @@ export default function App() {
     return (
       <DesktopAccessRequiredView
         identity={identity}
+        onSignOut={() => signOut(false, credentialContext)}
         onAccessGranted={(verifiedIdentity) => {
           credentialVerification.current?.invalidate();
           setCanRetrySavedSignIn(false);
+          acceptedContext.current = desktopClient.config;
           setIdentity(verifiedIdentity);
           setAuthState("authenticated");
         }}
@@ -119,10 +163,10 @@ export default function App() {
       />
     );
   }
-  return <AuthenticatedWorkspace identity={identity} />;
+  return <AuthenticatedWorkspace identity={identity} onSignOut={() => signOut(true, credentialContext)} />;
 }
 
-function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentity }) {
+function AuthenticatedWorkspace({ identity, onSignOut }: { identity: VerifiedDesktopIdentity; onSignOut: () => Promise<void> }) {
   const contextRevision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision);
   const identityKey=JSON.stringify(identity);
   const [botAppsReturn,setBotAppsReturn]=useState<{context:typeof desktopClient.config;revision:number;identityKey:string}|null>(null);
@@ -184,7 +228,7 @@ function AuthenticatedWorkspace({ identity }: { identity: VerifiedDesktopIdentit
           {activeView === "airflow-automation" && <AirflowAutomationView onInspect={(dagId, runId) => { setRequestedAirflow({dagId, runId, context: desktopClient.config, workspace: identity.organizationId}); navigate("agent"); }} />}
           {activeView === "plugins-skills" && <PluginsSkillsView key={botAppsOwned?"bot-apps":"catalogue"} initialFilter={botAppsOwned?"plugins":"all"} onReturnToBot={botAppsOwned?()=>{if(botAppsReturn?.context===desktopClient.config&&botAppsReturn.revision===desktopClient.getContextRevision()&&botAppsReturn.identityKey===JSON.stringify(identity))navigate("axiom-bot")}:undefined} onUseSkill={skillId => { setRequestedSkill({ skillId, context: desktopClient.config, workspace: identity.organizationId }); navigate("agent"); }} canManage={identity.role === "owner" || identity.role === "admin"} onOpenSettings={() => { const origin=botAppsOwned?botAppsReturn:null; navigate("settings"); if(origin)setBotAppsReturn(origin); setSettingsDestination("integrations"); }} onOpenAirflow={() => navigate("airflow-automation")} />}
           {activeView === "docs" && <DocsView onNavigate={navigate} />}
-          {activeView === "settings" && <SettingsView onOpenRepository={() => navigate("repository-workspace")} identity={identity} initialSection={settingsDestination} onClose={() => setActiveView(settingsReturnView.current)} />}
+          {activeView === "settings" && <SettingsView onSignOut={onSignOut} onOpenRepository={() => navigate("repository-workspace")} identity={identity} initialSection={settingsDestination} onClose={() => setActiveView(settingsReturnView.current)} />}
         </WorkspaceViewBoundary></div>}
       </main>
       <WorkspaceCommands open={commandsOpen} onOpenChange={setCommandsOpen} onNavigate={navigate} />

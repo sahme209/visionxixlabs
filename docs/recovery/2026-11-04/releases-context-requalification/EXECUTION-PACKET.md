@@ -1,0 +1,12 @@
+# Whole-Releases repair: source-map requalification packet
+
+1. Problem/outcome: the verified0c69 whole-view repair changed source bytes and line/function locators. Restore truthful current29/52 finite source mappings without weakening source custody or rewriting history.
+2. Owner/dependencies: help agent updates existing eight mapping/guide/test files; root verifies/registers, adapter independently reviews. Existing TypeScript parser, registered offline checker and committed0c69 runtime only.
+3. Baseline: HEAD04ed79b2 receipt over runtime0c69; current viewSHAa134ccff…; old maps/article r2 pin4f31 and are explicitly historical.12new/40overlapping rendered cases/types/review already pass and will not be repeated.
+4. Change/non-goals: update exact Git/raw/stripped baseline, source locators/function refs/context documentation and manifests; preserve29IDs/nodes,52IDs/purposes/nodes, original metadata provenance and unchanged intake semantics. No runtime or new admission capability. Prior articles remain historical; do not execute retrieval or expand old approval.
+5. Boundaries: reversible local docs/test metadata only; scrubbed network-denied parser tests. No provider/customer/credential/DB/native/browser/AI/CI/push/deploy/schema/grant/spend or independent approval action. Preserve written ServiceNow UNKNOWN.
+6. Acceptance: capture justified stale affected contracts once; requalify affected cases then independently inspect changed CJS pins before registry updates. Root verifies raw actual Git,29metadata stripping, both manifests and preserved identities. One registered combined check after final input changes; no repeat unchanged suites.
+7. Proof: focused AST integrity and root/read-only review evidence. Not visual, native, supported-customer, editorial, retrieval or full Governance acceptance.
+8. Recovery: Git revert docs unit; historical4f31 and earlier source receipts/articles unchanged. No provider effects or schema to undo, no cancelled/replayed work.
+9. Spend/approval: $0 external spend. Existing local repair/documentation authorization only. Specific909experiment/browser/liveclosure/rollout permissions remain outside this unit.
+10. Evidence/next: save raw diagnostics as verbatim JSON log envelopes, final source hashes, registry proof and review here; update board and regenerate reporting views after final source state. Then select the next highest-priority authorized unblocked task; full21-parent mission remains active.

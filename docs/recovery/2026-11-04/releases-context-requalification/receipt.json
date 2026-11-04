@@ -1,0 +1,104 @@
+{
+  "status": "whole-view source-map requalification only",
+  "executionPacket": "docs/recovery/2026-11-04/releases-context-requalification/EXECUTION-PACKET.md",
+  "runtimeCommit": "0c69fe8832452277e633d1c3de6cbd58da12e34a",
+  "rawRuntimeSha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+  "derivedStrippedSha256": "37dfbbdfa537239590a1e9a409e768146f1725af1dcace663fce6719372940da",
+  "runtimeEqualsRawGit": true,
+  "family29": {
+    "count": 29,
+    "idsAndOriginalNodesPreserved": true,
+    "stale": {
+      "failed": 1,
+      "passed": 4,
+      "exit": 1,
+      "logEnvelope": "families-stale.json"
+    },
+    "green": {
+      "passed": 5,
+      "failed": 0,
+      "exit": 0,
+      "logEnvelope": "families-green.json"
+    }
+  },
+  "named52": {
+    "count": 52,
+    "idsPurposesAndOriginalNodesPreserved": true,
+    "exactEntireIntakeUnchanged": true,
+    "intakeFunctionSha256": "5a6619e285db3183ca39bc1568c004f4592b67f3450d389033181555c5d24ed2",
+    "stale": {
+      "failed": 2,
+      "passed": 3,
+      "exit": 1,
+      "logEnvelope": "fields-stale.json"
+    },
+    "green": {
+      "passed": 5,
+      "failed": 0,
+      "exit": 0,
+      "logEnvelope": "fields-green.json"
+    }
+  },
+  "artifacts": [
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.json",
+      "sha256": "c8323f197f41bc39ba9af54ced0dcf47209437370816ca7061e274957cb6dfc6"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.md",
+      "sha256": "a5770afb7ba1b8dff0c356c74c91aaa8b098ef00bb9bb2c728fc1b997e7a4bfa"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.sources.json",
+      "sha256": "f500de4fa6fb285766fd838883ccd7f62d0f8a7bff10f5023a8d3fa4bb2d2d41"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.test.cjs",
+      "sha256": "8fec2afe9a722dd1b73b1cc61caf8778c6a7a2ec50e38d798b618eaa31a92511"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.json",
+      "sha256": "ca431f884b42a0a740ce48b43ccd43ae4165f6c5673c3e343c469aee241f7728"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.md",
+      "sha256": "4f3f9ee4e1a3dee4a21780e6dd359bee8966c4e6794c4056a36408932556edae"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.sources.json",
+      "sha256": "93aa7bed15bcf3735fe7b4c5c66a26aad0bbaf4fd79574e022d0357cd2da3a5f"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
+      "sha256": "8091bcbed8cb90a067a90d3348759d557940e19d25fc1cd9ef13d9567246acac"
+    }
+  ],
+  "separateProductionSources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsWorkspace.tsx",
+      "sha256": "afbd3221e757ea829140531b87e0815718fb6217f9bd497fe7963156e6241277",
+      "scope": "separate production lifecycle provenance, not additional field/control enumeration"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "d9faf3d594f59adac90b5c567439b52214bfbc3a0015192b01153c06eaae7d98",
+      "scope": "separate production lifecycle provenance, not additional field/control enumeration"
+    },
+    {
+      "path": "docs/product/knowledge/releases-context-boundary.md",
+      "sha256": "c9730701574c9844c956da06bc4f0ae22fa1561ab2942e4fa8a8ffed4b388d10",
+      "scope": "separate production lifecycle provenance, not additional field/control enumeration"
+    },
+    {
+      "path": "docs/product/knowledge/releases-context-boundary.sources.json",
+      "sha256": "7bdce8a64741126318043859f5e0273db6a6306587fb9bd222ab5edf02644b8b",
+      "scope": "separate production lifecycle provenance, not additional field/control enumeration"
+    }
+  ],
+  "historicalRecords": "prior-4f31/ preserves prior8 mapping bytes and receipt. Earlier source receipts and article r2 were not modified.",
+  "boundaryScope": "These parser contracts enumerate the original view/inner fields; wrapper/App lifecycle provenance and linked supplement stay separate. No new source IDs or authority.",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache and writes restricted to owned private temp for parser tests",
+  "externalSpend": 0,
+  "limits": "No runtime/registry/master/index/article/commit edits; no combined or behavioral suite, build, provider/DB/native/browser/AI execution or customer/editorial/media acceptance."
+}

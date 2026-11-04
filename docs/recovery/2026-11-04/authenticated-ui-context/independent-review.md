@@ -1,0 +1,5 @@
+# Independent review and root correction
+
+Initial semantic review missed a same-window race: failed cleanup displayed enabled sign-in beside a cleanup retry. Root required a new negative regression and rejected acceptance until normal sign-in stayed unmounted through failed/pending cleanup. Earlier clear/15case results are superseded, not final acceptance. Corrected source review is clear: exact config binds accepted identity; departed context UI disappears; actual coordinator suppresses stale results; revision-only changes do not reauthenticate; root-owned helper operation/current failed-owner retry/synchronousflight preserve failure feedback and refuse stale B reload/error/cleanup invocation. Only successful current cleanup restores ordinary sign-in.
+
+Final user-facing wording and both warning assertions were narrowly reviewed, with no control-flow/helper change. Root ran final16focused cases successfully on those exact bytes. Prior51compatibility and full desktop types remain separately scoped before that literal-only update, not mislabeled as another exact-source run. No reviewer rerun, real vault, provider, identity/custody or native acceptance occurred.
