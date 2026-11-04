@@ -1,0 +1,23 @@
+{
+  "status": "bounded_local_HTTP_and_cache_checks_pass",
+  "fullFreshBackendLogNoEPERMUnhandledCacheError": true,
+  "runtimeDataCacheEntries": [
+    {
+      "path": "6I66rvxMSQx4jsuS5hm4yfgMQOlmPeE8lJLTl3LLbf8",
+      "kind": "directory",
+      "bytes": 96,
+      "sha256": null
+    },
+    {
+      "path": "6I66rvxMSQx4jsuS5hm4yfgMQOlmPeE8lJLTl3LLbf8/14400.1793792971970.qMZCF1OZAQZ6DoXfrNFdOk_oiBV49DcRDJjARNgtW-Y.Vy8iNDA0OC0xYTFhNTY5MTZkMSI.png",
+      "kind": "file",
+      "bytes": 6963,
+      "sha256": "a8c64217539901067a0e85dfacd15d3a4fe8881578f437110c98c044d82d5be6"
+    }
+  ],
+  "cacheConfinedToExactAuthorizedDirectory": true,
+  "protectedPublicAndStaticFilesUnchanged": 1185,
+  "frozenInputsCodeConfigBuildIdUnchanged": true,
+  "entireStageUnchangedClaim": false,
+  "browserATRSCNativeCustodyOrEnrollmentAcceptance": false
+}

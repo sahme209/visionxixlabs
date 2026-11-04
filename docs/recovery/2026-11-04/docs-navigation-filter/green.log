@@ -1,0 +1,20 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-b4-docs-search-20261104[39m
+
+ [32m✓[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mfilters existing guide titles with trimmed case-insensitive text and retains ordinary destinations[32m 58[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mmatches existing section names while keeping their guide groups[32m 8[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mreports an empty title match, then clears the filter and returns focus to its field[32m 21[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mretains mobile Escape and route-change close behavior while filtering[32m 12[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mstarts compact on narrow screens while preserving desktop navigation and the article[32m 51[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mopens and closes through a native button with an exact controlled navigation panel[32m 14[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mEscape from a guide link closes the disclosure and restores keyboard focus[32m 21[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22ma client route change closes expanded contents without trapping focus in the collapsed panel[32m 19[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mdesktop client navigation never sends focus to the narrow-only disclosure button[32m 14[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mEscape on the disclosure button also closes expanded contents[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m10 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 02:10:57
+[2m   Duration [22m 1.08s[2m (transform 29ms, setup 0ms, import 223ms, tests 225ms, environment 525ms)[22m
+

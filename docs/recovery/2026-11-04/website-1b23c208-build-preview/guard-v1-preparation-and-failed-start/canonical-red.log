@@ -1,0 +1,46 @@
+test_nonasset_suffix_cannot_grant_route (__main__.Regressions) ... FAIL
+test_optimizer_cannot_target_api (__main__.Regressions) ... FAIL
+test_response_navigation_headers_never_forward (__main__.Regressions) ... FAIL
+test_validation_and_forwarding_use_same_canonical_target (__main__.Regressions) ... FAIL
+
+======================================================================
+FAIL: test_nonasset_suffix_cannot_grant_route (__main__.Regressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/axiom-preview-harness-1b23c208-20261104/test_harness.py", line 19, in test_nonasset_suffix_cannot_grant_route
+    def test_nonasset_suffix_cannot_grant_route(self):self.assertFalse(permitted('/not-a-published-asset.png'))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_optimizer_cannot_target_api (__main__.Regressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/axiom-preview-harness-1b23c208-20261104/test_harness.py", line 17, in test_optimizer_cannot_target_api
+    def test_optimizer_cannot_target_api(self):self.assertFalse(permitted('/_next/image?url=%2Fapi%2Fauth%2Fsession&w=640&q=75'))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_response_navigation_headers_never_forward (__main__.Regressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/axiom-preview-harness-1b23c208-20261104/test_harness.py", line 22, in test_response_navigation_headers_never_forward
+    self.assertFalse(any(k.lower() in blocked for k,v in response_headers([('Refresh','0;url=https://example.invalid'),('Link','<https://example.invalid>;rel=preload'),('Location','/api/auth/session'),('Set-Cookie','synthetic=1')])))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_validation_and_forwarding_use_same_canonical_target (__main__.Regressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/axiom-preview-harness-1b23c208-20261104/test_harness.py", line 18, in test_validation_and_forwarding_use_same_canonical_target
+    def test_validation_and_forwarding_use_same_canonical_target(self):self.assertEqual(canonical('/%64ocs/permissions-model'),'/docs/permissions-model')
+AssertionError: '/%64ocs/permissions-model' != '/docs/permissions-model'
+- /%64ocs/permissions-model
+?  ^^^
++ /docs/permissions-model
+?  ^
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+FAILED (failures=4)

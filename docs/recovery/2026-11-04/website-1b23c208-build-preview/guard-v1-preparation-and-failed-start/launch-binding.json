@@ -1,0 +1,63 @@
+{
+  "status": "prepared-not-started",
+  "source": "1b23c208",
+  "backend": "127.0.0.1:5225",
+  "proxy": "127.0.0.1:5224",
+  "files": [
+    {
+      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/preview_proxy.py",
+      "bytes": 8076,
+      "sha256": "848520a1e54264938d7cc85cf090a95763c6e3977cbce1deb6121a370083062b"
+    },
+    {
+      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/launch_preview.py",
+      "bytes": 3016,
+      "sha256": "c7a348fc02a242704c7102eef2aeace2b0ff8b0c48d668c9457b5273e141dc8a"
+    },
+    {
+      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/backend.sb",
+      "bytes": 215,
+      "sha256": "059e7f0dbc126dfcd9734e6c378b2b3696587181dd28d79af5c07bae6c8de47d"
+    },
+    {
+      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/proxy.sb",
+      "bytes": 269,
+      "sha256": "46f86b5f5539744276ca89198678fea63dea0cf2f43fc2665bdde71da60f60fc"
+    },
+    {
+      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/asset-manifest.json",
+      "bytes": 359311,
+      "sha256": "e1d235bbd1216020a14f7272fce86190ded5bc801c206cb13693d84e674cd794"
+    },
+    {
+      "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "bytes": 122129232,
+      "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b"
+    },
+    {
+      "path": "/usr/bin/python3",
+      "bytes": 200560,
+      "sha256": "ed6f5284033aa2aae6a58427c25ba3ab119947b40365627b24e5d51a4b70a1cd"
+    },
+    {
+      "path": "/usr/bin/sandbox-exec",
+      "bytes": 135136,
+      "sha256": "10cf4a46a575e4747d2419cf343800db0d11ae6e6e9b8415998d3d8f336b2a92"
+    },
+    {
+      "path": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage/node_modules/next/dist/bin/next",
+      "bytes": 28419,
+      "sha256": "925f10f488ca8bf8fcf062aeef14024b33b1739e90b539f7f8af264dd85ab3c3"
+    },
+    {
+      "path": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/BUILD_ID",
+      "bytes": 21,
+      "sha256": "239c273cd79a7b229d8d2b6652a35bd71038f44673b2dded6a6719d75b26849d"
+    },
+    {
+      "path": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage/next.config.ts",
+      "bytes": 6245,
+      "sha256": "491566295d50eddd8dae881ae9c143648c2a2af0ccbf7a050da62a8db4a2bd9f"
+    }
+  ]
+}

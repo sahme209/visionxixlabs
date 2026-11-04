@@ -1,0 +1,9 @@
+test_cache_identity_or_caller_path_mismatch_refuses (__main__.V3Preparation) ... ok
+test_exact_fixed_launcher_inputs_and_cache_without_launch (__main__.V3Preparation) ... ok
+test_only_exact_cache_write_exception_backend_no_outbound (__main__.V3Preparation) ... ok
+test_symlink_or_nondirectory_cache_refuses (__main__.V3Preparation) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.129s
+
+OK

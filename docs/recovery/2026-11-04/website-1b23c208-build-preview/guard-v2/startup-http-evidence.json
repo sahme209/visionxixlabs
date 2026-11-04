@@ -1,0 +1,45 @@
+{
+  "status": "STOP_optimizer_cache_write_failure_despite_HTTP_assertion_pass",
+  "files": [
+    {
+      "path": "startup-http-result.json",
+      "bytes": 1639,
+      "sha256": "b504e8ed1e89be69a64375babbcbee502c77f82e809b5605be7987149652506e"
+    },
+    {
+      "path": "startup-http-report.md",
+      "bytes": 2993,
+      "sha256": "f2a14b766a6863f42dadfd24d0ccb34f3ef207b598025fefd0fe46cd3d9aaa04"
+    },
+    {
+      "path": "backend-start.log",
+      "bytes": 906,
+      "sha256": "02156c873490a47faa9b0d9cf631f355619d7df36235473ca20db17ce6962928"
+    },
+    {
+      "path": "proxy-start.log",
+      "bytes": 79,
+      "sha256": "3754b1ce1c5dd77e5877b8bff9b5684bd6e4eb90c2850f3c5f13cfbf2107aeaa"
+    },
+    {
+      "path": "http_acceptance.py",
+      "bytes": 4669,
+      "sha256": "46cb7ab06d3343f3bda0a553f12009600dd35270f69106b137c663dea7ecd5d6"
+    },
+    {
+      "path": "http-acceptance.log",
+      "bytes": 111,
+      "sha256": "364121fb37d0d8394f064e6c8d1c91d8a4519100c97f1986c2e641b308a12254"
+    },
+    {
+      "path": "http-acceptance-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "http-evidence/results.json",
+      "bytes": 27934,
+      "sha256": "9ee8143775c6927eb2f8b80cb64603c1aeddcf8ddc2cd92f43723a30f11b069c"
+    }
+  ]
+}

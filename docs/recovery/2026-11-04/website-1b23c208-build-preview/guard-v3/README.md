@@ -1,0 +1,19 @@
+# V3 preview preparation: one exact runtime image-cache exception
+
+READY for independent review; PREPARED NOT STARTED. No v3 sandbox application/startup/HTTP/browser/build. No appcode/public/static/buildmetadata edits or deletion, install, provider/auth/DB/native/credential/helper/Keychain/Security/AI operation. No broader cache/write/network permission.
+
+Root explicitly authorized stopping only confirmed-owned v2 backend55115/session76949 and proxy55138/session4783. Fresh ps/lsof/cwd ownership verification chunk29450b matched expected user/ports/stage/v2script; TERM once chunk1be025; sessions exited143 (chunks384623/40c5a5), final lsof/ps empty exit1 chunkc8fb8b. No other previews/processes touched. v1 exit65 and v2 HTTP/cache-EPERM evidence/code remain intact. Stop receipt archived here; historical reports are not rewritten.
+
+Root separately authorized creating exactly `/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache/images`. All path ancestors checked as real directories/no symlinks; owned build/stage/.next/cache ownership matched current user; path resolved exactly and images did not exist. Created one directory mode0700, current-user owned. Device/inode/uid/mode and ancestor observation in cache-creation-receipt.json. This is an explicit runtime DATA addition to the owned build, **not a claim the entire stage is unchanged**, a new source archive identity, immutable custody or issuer qualification. No clone/symlink/redirection/rebuild workaround. Directory remains empty after pure tests.
+
+Only backend.sb gains one allow-file-write* subpath exception for this exact images directory, retaining global write denial, outbound denial and localhost5225 inbound/bind. Proxy all-write denial and loopback5224/5225 rules remain unchanged. No blanket.next/cache/stage allowance. Actual programbind/backendHTTPtarget remain127.0.0.1 and sameports. Route/image/header guard is byte-identical after owned ROOT relocation. Asset manifest remains byte-identical. All35publicassets+1150staticfiles rehashed unchanged, and pinned code/config/BUILD_ID/runtime inputs rechecked. No original-source-archive promotion.
+
+Launcher adds a fixed CACHE constant and current directory checks: canonical exact path, real directory ancestors, same device/inode/current-owner/mode0700 binding; no caller path. The allowlisted directory identity is stored in launch-binding.json, and ROOT/hash relocation is explicit. Replacement, ownership/mode change, symlink and malformed binding refuse before os.execve. It does not auto-create/repair cache at startup or authorize further writes if more failures arise.
+
+Focused pure command only (no previous14guard suite rerun):
+
+`/usr/bin/env -i PATH=/usr/bin:/bin HOME=/private/tmp/axiom-preview-harness-1b23c208-v3-20261104 TMPDIR=/private/tmp/axiom-preview-harness-1b23c208-v3-20261104 PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 /private/tmp/axiom-preview-harness-1b23c208-v3-20261104/test_v3_preparation.py`
+
+Capturedexit0/chunkd4a654;4focusedtests pass in0.129s. Cases: exact launcher/cache preflight with execve mocked/uninvoked; inode/owner/mode/callerpath mismatch; symlink replacement; only exact backend cache exception/no backend outbound/no proxy writes. No profile compiler/probe/server was invoked. Textual profile checks are not actual OS write/containment qualification. No cache writes beyond creating the authorized directory occurred.
+
+exact-v3.diff records all changes from v2. Original pure RED/disconfirmed-backslash/canonical-hardening evidence remains in original/v2 paths and is not reinterpreted. HTTP200 with cacheEPERM remains a failed clean-preview acceptance; v3 has no runtime result yet. New startup and owned HTTP checks require root authorization following independent review; another cache/write requirement must STOP, not broaden. Browser/AT/RSC/source-custody/enrollment acceptance remain open.

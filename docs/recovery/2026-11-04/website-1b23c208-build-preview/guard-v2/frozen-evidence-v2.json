@@ -1,0 +1,74 @@
+{
+  "status": "frozen-v2-prepared-not-started",
+  "source": "1b23c208",
+  "originalFrozenSha256": "42e52d74b8e73596942a0636af39afcac28e68d2e745769e29cc91be3f30ed6f",
+  "originalFrozenFilesUnchanged": true,
+  "onlyProfileHostSelectorsAndOwnedPathBindingsChanged": true,
+  "files": [
+    {
+      "path": "preview_proxy.py",
+      "bytes": 8079,
+      "sha256": "cb3c2914673b81e4aeb9f1011cf53de2b0f293b61e159496a9ee4efbbd7ff222"
+    },
+    {
+      "path": "test_harness.py",
+      "bytes": 7110,
+      "sha256": "6a7f07b985d7027454e7750c28b65494ef6dc83010142a8b9b6badce17ef67f7"
+    },
+    {
+      "path": "launch_preview.py",
+      "bytes": 3019,
+      "sha256": "d5bf9250a0e1d451b3295153cb7b10ddcfc41d515b7778408bf7c449050368a7"
+    },
+    {
+      "path": "backend.sb",
+      "bytes": 215,
+      "sha256": "1e8af0cd437a4cb6e2e0fa7b8f643424b26b4e179cf9bc6963912764237c2175"
+    },
+    {
+      "path": "proxy.sb",
+      "bytes": 269,
+      "sha256": "5ed4af69d5b11ebc6b7cc90c1821bf712f3de39a0ad9883ab83a8b94af2a6eb0"
+    },
+    {
+      "path": "asset-manifest.json",
+      "bytes": 359311,
+      "sha256": "e1d235bbd1216020a14f7272fce86190ded5bc801c206cb13693d84e674cd794"
+    },
+    {
+      "path": "launch-binding.json",
+      "bytes": 2286,
+      "sha256": "6fcd728228944e68769b6fc11aa83794bad237f457caca2c81aaa00a6ddbc25f"
+    },
+    {
+      "path": "exact-v2.diff",
+      "bytes": 4300,
+      "sha256": "c3a144b87ba7253e11287241792b705b0e6cff90933ad676a415026a17809c51"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3184,
+      "sha256": "5496ae5ef0bc49a25fba303599c0ead8a83d22d68bd14f9088a9a1ea9489739c"
+    },
+    {
+      "path": "focused-profile-green.log",
+      "bytes": 292,
+      "sha256": "c617f1253bc2e1e7b42733af11ed11758fac461b293a19b6715158d954bf065f"
+    },
+    {
+      "path": "focused-profile-green-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "wrong-cwd-original-focused.log",
+      "bytes": 292,
+      "sha256": "c617f1253bc2e1e7b42733af11ed11758fac461b293a19b6715158d954bf065f"
+    },
+    {
+      "path": "wrong-cwd-original-focused-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "status": "frozen-prepared-not-started",
+  "source": "1b23c208",
+  "files": [
+    {
+      "path": "preview_proxy.py",
+      "bytes": 8076,
+      "sha256": "848520a1e54264938d7cc85cf090a95763c6e3977cbce1deb6121a370083062b"
+    },
+    {
+      "path": "test_harness.py",
+      "bytes": 7110,
+      "sha256": "2032089bf04faeb7c2c14f718bb31b2e9b42846f34fa39eb19bb37fc4b87a54f"
+    },
+    {
+      "path": "launch_preview.py",
+      "bytes": 3016,
+      "sha256": "c7a348fc02a242704c7102eef2aeace2b0ff8b0c48d668c9457b5273e141dc8a"
+    },
+    {
+      "path": "backend.sb",
+      "bytes": 215,
+      "sha256": "059e7f0dbc126dfcd9734e6c378b2b3696587181dd28d79af5c07bae6c8de47d"
+    },
+    {
+      "path": "proxy.sb",
+      "bytes": 269,
+      "sha256": "46f86b5f5539744276ca89198678fea63dea0cf2f43fc2665bdde71da60f60fc"
+    },
+    {
+      "path": "asset-manifest.json",
+      "bytes": 359311,
+      "sha256": "e1d235bbd1216020a14f7272fce86190ded5bc801c206cb13693d84e674cd794"
+    },
+    {
+      "path": "launch-binding.json",
+      "bytes": 2271,
+      "sha256": "a5fe780b287396f16e74398845ee05dd4da9f8e9156a3edb871360f437be31f2"
+    },
+    {
+      "path": "README.md",
+      "bytes": 6438,
+      "sha256": "93343cc201825db805e7f041b59ca3b17fd70efde73116d3d1d35d21a1462640"
+    },
+    {
+      "path": "red.log",
+      "bytes": 2112,
+      "sha256": "9cccbf87cf917e6a62a43eee809bc0e29b5bb0b6c17cc6aef51ac34fa6f31287"
+    },
+    {
+      "path": "canonical-red.log",
+      "bytes": 2838,
+      "sha256": "bc54dfa50c120efa428a09ca4883ba980e628900478d713a913cee9a5ce6db7d"
+    },
+    {
+      "path": "actual-forward-red.log",
+      "bytes": 2757,
+      "sha256": "aef4510bb03bf73b9caead10c90d6535ea3af513ef48e79f9b7e42e02281a608"
+    },
+    {
+      "path": "green.log",
+      "bytes": 1973,
+      "sha256": "7e89cb40dc3a827641a16c0f277ec1aa0e69c0887da4d2682675332a3bed5713"
+    },
+    {
+      "path": "final-green.log",
+      "bytes": 996,
+      "sha256": "6b73ffdc0406dfa16ffdb9379ccc71b87287ff4f6e99070e8c0b636a5f5150e7"
+    },
+    {
+      "path": "prepared-green.log",
+      "bytes": 1190,
+      "sha256": "a081be69642a7e536104ba39bfbf24f043f04ada4da6e89b980adfdb3390ed74"
+    }
+  ]
+}

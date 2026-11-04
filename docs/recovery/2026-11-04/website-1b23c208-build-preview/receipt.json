@@ -1,0 +1,100 @@
+{
+  "sourceRevision": "1b23c2081caeff174c6c67927ad33f09c82a9d08",
+  "sourceArchive": {
+    "archiveSha256": "75dee0e2655b2fc1d68c333686c0527c87f29cece22f1125d7921df3c9a9d653",
+    "sourceBytes": 74377448,
+    "sourceObservationSha256": "e4cd7ec24e1392cb99d3bffda2a3a1a9ee4916b8a4c35a9d2e8195224710f700",
+    "verifiedRegularFiles": 7514,
+    "verifiedSymlinks": 0
+  },
+  "compilerExit": 0,
+  "buildOutputsVerified": true,
+  "executionAuthorized": false,
+  "runtimeQualification": "unavailable",
+  "buildCompatibilityVerified": false,
+  "rawEvidence": [
+    {
+      "path": "source-inputs.json",
+      "sha256": "8b5431f7447294b9519542c8355aea39e37fe72e9e6b510be5884be4fb547e6d",
+      "bytes": 230
+    },
+    {
+      "path": "preparation.json",
+      "sha256": "caab1aaf821bfb54d59de7a07f39d737ef50e523c4f07215d40738302b4bfb3d",
+      "bytes": 1777
+    },
+    {
+      "path": "binding.json",
+      "sha256": "0e0996dc3543daf57408882c76dae3d20ff68e2fc54889709f164e6a3066b997",
+      "bytes": 1213
+    },
+    {
+      "path": "run.py",
+      "sha256": "4855347273b888bbb98009b2ead3981531a48d69f3ace2f06c2814d15a29a650",
+      "bytes": 2319
+    },
+    {
+      "path": "runner.log",
+      "sha256": "3914ffbd2aa7eb197bfbf10a94aafd16c9d1bfe5a755800b46c1fce532a2f967",
+      "bytes": 180707
+    },
+    {
+      "path": "terminal-summary.json",
+      "sha256": "3109ed91d26f7e9e28ae2fc15ace722a18bd7ebb53bead487ef68bd21f5f816c",
+      "bytes": 180588
+    },
+    {
+      "path": "build-run/attempt.json",
+      "sha256": "358556b499b1c9e7f3d6ee5b8d57396c38c330b0c92b85917cefc3c658ce7aa7",
+      "bytes": 7051
+    },
+    {
+      "path": "build-run/result.json",
+      "sha256": "3109ed91d26f7e9e28ae2fc15ace722a18bd7ebb53bead487ef68bd21f5f816c",
+      "bytes": 180588
+    },
+    {
+      "path": "build-run/next-build.log",
+      "sha256": "2dd3f562e8963bb6353e06437d627d8382177ef91c1968beb262fd84fca29673",
+      "bytes": 43314
+    },
+    {
+      "path": "build-run/contract.log",
+      "sha256": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+      "bytes": 185
+    },
+    {
+      "path": "build-run/node-version.log",
+      "sha256": "f2ec568164f99546161909b0189b57bb5be3e80f8e2ccd8a51a4aed8c4055a04",
+      "bytes": 9
+    },
+    {
+      "path": "build-run/private-bootstrap-emission.log",
+      "sha256": "124292c61cb58c14da9bfdb0af842003c8cb8894b8af76996ac8e941cb526b2b",
+      "bytes": 65
+    }
+  ],
+  "previewStatus": "PASS_bounded_owned_local_HTTP_preview",
+  "previewSource": "1b23c208",
+  "previewURL": "http://127.0.0.1:5224/docs",
+  "wrapperURL": "http://127.0.0.1:5224/__axiom_preview",
+  "httpChecks": {
+    "passed": 23,
+    "status200": 12,
+    "status403": 11,
+    "optimizerRequests": 1
+  },
+  "ownedProcesses": {
+    "backend": {
+      "pid": 55811,
+      "session": 7154,
+      "port": 5225
+    },
+    "proxy": {
+      "pid": 55833,
+      "session": 74983,
+      "port": 5224
+    }
+  },
+  "browserATNativeIssuerAcceptance": false
+}

@@ -1,0 +1,30 @@
+test_authority_and_router_headers_are_stripped (__main__.Compatibility) ... ok
+test_fixed_backend_and_wrapper (__main__.Compatibility) ... ok
+test_optimizer_strict_query_and_inner_exact_asset (__main__.Compatibility) ... ok
+test_private_external_and_encoded_routes_are_denied (__main__.Compatibility) ... ok
+test_public_docs_navigation_and_trailing_slash (__main__.Compatibility) ... ok
+test_required_brand_images_and_static_are_functional (__main__.Compatibility) ... FAIL
+test_response_headers_explicit_allowlist (__main__.Compatibility) ... ok
+test_unsupported_methods_cannot_open_backend (__main__.Compatibility) ... ok
+test_nonasset_suffix_cannot_grant_route (__main__.Regressions) ... ok
+test_optimizer_cannot_target_api (__main__.Regressions) ... ok
+test_response_navigation_headers_never_forward (__main__.Regressions) ... ok
+test_validation_and_forwarding_use_same_canonical_target (__main__.Regressions) ... ok
+
+======================================================================
+FAIL: test_required_brand_images_and_static_are_functional (__main__.Compatibility)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/axiom-preview-harness-1b23c208-20261104/test_harness.py", line 29, in test_required_brand_images_and_static_are_functional
+    for target in manifest['nextStaticAssets']:self.assertEqual(module.canonical_target(target),target)
+AssertionError: '/_next/static/chunks/app/accept-invite/%5Btoken%5D/page-7ea2c4693dd70d92.js' != '/_next/static/chunks/app/accept-invite/[token]/page-7ea2c4693dd70d92.js'
+- /_next/static/chunks/app/accept-invite/%5Btoken%5D/page-7ea2c4693dd70d92.js
+?                                        ^^^     ^^^
++ /_next/static/chunks/app/accept-invite/[token]/page-7ea2c4693dd70d92.js
+?                                        ^     ^
+
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.001s
+
+FAILED (failures=1)

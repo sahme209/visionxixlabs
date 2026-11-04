@@ -1,0 +1,20 @@
+▲ Next.js 16.4.2
+- Local:         http://127.0.0.1:5225
+- Network:       http://127.0.0.1:5225
+✓ Ready in 59ms
+✓ Running next.config.ts took 18ms
+[platform] Stores configured: prisma — {"audit":true,"memory":false,"desktopSession":true}
+⨯ unhandledRejection: Error: EPERM: operation not permitted, mkdir '/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache/images'
+    at ignore-listed frames {
+  errno: -1,
+  code: 'EPERM',
+  syscall: 'mkdir',
+  path: '/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache/images'
+}
+⨯ Failed to write image to cache 6I66rvxMSQx4jsuS5hm4yfgMQOlmPeE8lJLTl3LLbf8 Error: EPERM: operation not permitted, mkdir '/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache/images'
+    at ignore-listed frames {
+  errno: -1,
+  code: 'EPERM',
+  syscall: 'mkdir',
+  path: '/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache/images'
+}

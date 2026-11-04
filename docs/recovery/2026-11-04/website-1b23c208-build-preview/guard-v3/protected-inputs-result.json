@@ -1,0 +1,11 @@
+{
+  "v2FrozenFilesUnchanged": true,
+  "routeImageHeaderLogicUnchangedAfterRootRelocation": true,
+  "proxyProfileUnchanged": true,
+  "assetManifestUnchanged": true,
+  "publicAndStaticAssetFilesRehashedUnchanged": 1185,
+  "launchInputsCodeConfigBuildIdRuntimeHashesMatch": true,
+  "runtimeDataAdditionOnly": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache/images",
+  "cacheInitiallyEmptyAfterPureTests": true,
+  "entireStageUnchangedClaim": false
+}

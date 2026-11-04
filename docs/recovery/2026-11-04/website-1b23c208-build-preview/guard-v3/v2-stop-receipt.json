@@ -1,0 +1,18 @@
+{
+  "ownershipVerifiedChunk": "29450b",
+  "verifiedPIDs": [
+    55115,
+    55138
+  ],
+  "ports": [
+    5225,
+    5224
+  ],
+  "TERMChunk": "1be025",
+  "backendSession": 76949,
+  "backendSessionExit": 143,
+  "proxySession": 4783,
+  "proxySessionExit": 143,
+  "finalNoListenerOrPIDChunk": "c8fb8b",
+  "oldUserPreviewsTouched": false
+}

@@ -1,0 +1,50 @@
+{
+  "status": "PASS_bounded_owned_local_HTTP_preview",
+  "files": [
+    {
+      "path": "startup-http-result.json",
+      "bytes": 1257,
+      "sha256": "64d381767ac3710f608ccc41d5574d0951ab0e7200786682f476194945e04151"
+    },
+    {
+      "path": "startup-http-report.md",
+      "bytes": 4087,
+      "sha256": "ff2603819d2dd040addf422d20bd9614816f2c4c9db59d7874890c9b7a56dd2f"
+    },
+    {
+      "path": "backend-start.log",
+      "bytes": 245,
+      "sha256": "5344778d93953779bef21280d3b2aa1ad4526be72620e9eb61e5f16f33494fc6"
+    },
+    {
+      "path": "proxy-start.log",
+      "bytes": 79,
+      "sha256": "3754b1ce1c5dd77e5877b8bff9b5684bd6e4eb90c2850f3c5f13cfbf2107aeaa"
+    },
+    {
+      "path": "http_acceptance.py",
+      "bytes": 4669,
+      "sha256": "7447574f27c1526849fdaa3ac3c6992408d3ceebca4dba9aa139b533de8711bc"
+    },
+    {
+      "path": "http-acceptance.log",
+      "bytes": 111,
+      "sha256": "364121fb37d0d8394f064e6c8d1c91d8a4519100c97f1986c2e641b308a12254"
+    },
+    {
+      "path": "http-acceptance-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "http-evidence/results.json",
+      "bytes": 27934,
+      "sha256": "ee65b356561fc91401c0fd59ad5603f05d7fddc22d2753d85b0d6d6ce9dde441"
+    },
+    {
+      "path": "cache-protected-inputs-result.json",
+      "bytes": 837,
+      "sha256": "12dd22882156a516b54ae9c9bc216eedd1ea8c49f3ded0794283de4e72c72ac2"
+    }
+  ]
+}

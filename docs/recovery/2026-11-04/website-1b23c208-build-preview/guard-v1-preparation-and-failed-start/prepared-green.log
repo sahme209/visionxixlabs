@@ -1,0 +1,19 @@
+test_authority_and_router_headers_are_stripped (__main__.Compatibility) ... ok
+test_fixed_backend_and_wrapper (__main__.Compatibility) ... ok
+test_optimizer_strict_query_and_inner_exact_asset (__main__.Compatibility) ... ok
+test_prepared_launcher_binds_only_fixed_inputs_without_launch (__main__.Compatibility) ... ok
+test_prepared_profiles_deny_outbound_backend_and_all_writes (__main__.Compatibility) ... ok
+test_private_external_and_encoded_routes_are_denied (__main__.Compatibility) ... ok
+test_public_docs_navigation_and_trailing_slash (__main__.Compatibility) ... ok
+test_required_brand_images_and_static_are_functional (__main__.Compatibility) ... ok
+test_response_headers_explicit_allowlist (__main__.Compatibility) ... ok
+test_unsupported_methods_cannot_open_backend (__main__.Compatibility) ... ok
+test_canonical_forwarding_contract (__main__.ForwardingHardening) ... ok
+test_nonasset_suffix_cannot_grant_route (__main__.Regressions) ... ok
+test_optimizer_cannot_target_api (__main__.Regressions) ... ok
+test_response_navigation_headers_never_forward (__main__.Regressions) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.144s
+
+OK

@@ -1,0 +1,1078 @@
+{
+  "simulationOnly": true,
+  "customerEligible": false,
+  "records": [
+    {
+      "label": "wrapper",
+      "target": "/__axiom_preview",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 620,
+      "sha256": "3cd5f25b89e2fcbe56f75547c080f367c5dd32156cfa2ec7d10929b9005516d5",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "620"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "docs",
+      "target": "/docs",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 114164,
+      "sha256": "b7149e5cc642d2cd9278a6e1388d0e2ce9672836d29762681428e821a9f47b9f",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "114164"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "ETag",
+          "\"1lugwuvjm42g1z\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "one-doc",
+      "target": "/docs/permissions-model",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 97993,
+      "sha256": "6dc96aa5a59f00e35823851d5a5529f8c0eee21b4f6aba9879f48d2ae16e6c4b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "97993"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "ETag",
+          "\"mxujp0bme623ku\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "product",
+      "target": "/product",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 84967,
+      "sha256": "97b53f05abf50c0f3cbb4625ffbf131d8ca52f3e0099f3d5dd2a791556d45599",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "84967"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "ETag",
+          "\"nb8egs0krx1tiz\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "security",
+      "target": "/security",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 79504,
+      "sha256": "1154be61de21bda01d26b8e9daa2e7ef0feecd55e1caf6cd2cd8ac20052ce5bd",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "79504"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "ETag",
+          "\"ug481qf2rs1pa9\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "demo",
+      "target": "/demo",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 78891,
+      "sha256": "5a057d92a2e9f3e9934d01c95cc42d86c775ccabd3e7617b1659e11a3db919bf",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "78891"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "css-1",
+      "target": "/_next/static/css/532cba65621fdb11.css",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 211024,
+      "sha256": "0b1fba9092923810f92d0bac777389ba34903307040bef94c700d40c23bc79e7",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/css; charset=UTF-8"
+        ],
+        [
+          "Content-Length",
+          "211024"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "Last-Modified",
+          "Wed, 04 Nov 2026 07:15:45 GMT"
+        ],
+        [
+          "ETag",
+          "W/\"33850-1a1a569eed5\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "css-2",
+      "target": "/_next/static/css/fd496917896bbbdc.css",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 5370,
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/css; charset=UTF-8"
+        ],
+        [
+          "Content-Length",
+          "5370"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "Last-Modified",
+          "Wed, 04 Nov 2026 07:15:45 GMT"
+        ],
+        [
+          "ETag",
+          "W/\"14fa-1a1a569eed5\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "font",
+      "target": "/fonts/0aa834ed78bf6d07-s.woff2",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 12064,
+      "sha256": "af7486955880be1c2b972e9c766acffb776768d669b6576ed9a0919ce72e7ca6",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "font/woff2"
+        ],
+        [
+          "Content-Length",
+          "12064"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "Last-Modified",
+          "Wed, 04 Nov 2026 07:14:50 GMT"
+        ],
+        [
+          "ETag",
+          "W/\"2f20-1a1a56916cd\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "favicon",
+      "target": "/axiom-favicon-1b77e225c532.png",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 808,
+      "sha256": "1b77e225c53238689dd4911ef93b26267ad3e7c857b06ce9f9aea742aa46aee5",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "image/png"
+        ],
+        [
+          "Content-Length",
+          "808"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "Last-Modified",
+          "Wed, 04 Nov 2026 07:14:50 GMT"
+        ],
+        [
+          "ETag",
+          "W/\"328-1a1a56916cc\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "logo",
+      "target": "/vision-xix-logo.png",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 16456,
+      "sha256": "680c38d3c8bd178f2fbc1dbc9d079e16b7b6c130ebe90a0c9c2479d7ec98bee9",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "image/png"
+        ],
+        [
+          "Content-Length",
+          "16456"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "Last-Modified",
+          "Wed, 04 Nov 2026 07:14:50 GMT"
+        ],
+        [
+          "ETag",
+          "W/\"4048-1a1a56916d1\""
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "one-optimizer",
+      "target": "/_next/image?url=%2Fvision-xix-logo.png&w=640&q=75",
+      "method": "GET",
+      "expectedStatus": 200,
+      "status": 200,
+      "bytes": 6963,
+      "sha256": "a8c64217539901067a0e85dfacd15d3a4fe8881578f437110c98c044d82d5be6",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "image/png"
+        ],
+        [
+          "Content-Length",
+          "6963"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ],
+        [
+          "ETag",
+          "qMZCF1OZAQZ6DoXfrNFdOk_oiBV49DcRDJjARNgtW-Y"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-api",
+      "target": "/api/auth/session",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-auth",
+      "target": "/auth/signin",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-account",
+      "target": "/account/help",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-traversal",
+      "target": "/docs/%2e%2e/api/auth/session",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-double-encoding",
+      "target": "/%2561pi/auth/session",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-optimizer-private",
+      "target": "/_next/image?url=%2Fapi%2Fauth%2Fsession&w=640&q=75",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-optimizer-remote",
+      "target": "/_next/image?url=https%3A%2F%2Fexample.invalid%2Fa.png&w=640&q=75",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-optimizer-duplicate",
+      "target": "/_next/image?url=%2Fvision-xix-logo.png&url=%2Fapi%2Fa&w=640&q=75",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-fake-asset",
+      "target": "/not-a-published-asset.png",
+      "method": "GET",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 39,
+      "sha256": "788e22dc7aaddd55dd6596754cadfd2db6c44440f7ecbe38941c7f6b9bba187b",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "text/html; charset=utf-8"
+        ],
+        [
+          "Content-Length",
+          "39"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-post-contact",
+      "target": "/api/contact",
+      "method": "POST",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 42,
+      "sha256": "2674c7cd1dbf5c4259f4bc8fe8d7e73d62b4b09f6f88e15dd67abd3db23751a5",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "application/json"
+        ],
+        [
+          "Content-Length",
+          "42"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    },
+    {
+      "label": "deny-put-public",
+      "target": "/product",
+      "method": "PUT",
+      "expectedStatus": 403,
+      "status": 403,
+      "bytes": 42,
+      "sha256": "2674c7cd1dbf5c4259f4bc8fe8d7e73d62b4b09f6f88e15dd67abd3db23751a5",
+      "headers": [
+        [
+          "Server",
+          "BaseHTTP/0.6 Python/3.9.6"
+        ],
+        [
+          "Date",
+          "Wed, 04 Nov 2026 07:40:08 GMT"
+        ],
+        [
+          "Content-Type",
+          "application/json"
+        ],
+        [
+          "Content-Length",
+          "42"
+        ],
+        [
+          "Cache-Control",
+          "no-store"
+        ],
+        [
+          "Content-Security-Policy",
+          "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; form-action 'none'; object-src 'none'; base-uri 'none'; frame-src 'self'; frame-ancestors 'self'"
+        ],
+        [
+          "X-Content-Type-Options",
+          "nosniff"
+        ],
+        [
+          "X-Axiom-Preview-Source",
+          "1b23c208"
+        ]
+      ],
+      "passed": true
+    }
+  ]
+}

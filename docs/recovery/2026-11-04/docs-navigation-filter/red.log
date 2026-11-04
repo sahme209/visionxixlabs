@@ -1,0 +1,3247 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-b4-docs-search-20261104[39m
+
+ [31m×[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mfilters existing guide titles with trimmed case-insensitive text and retains ordinary destinations[32m 126[2mms[22m[39m
+[31m   → Unable to find an accessible element with the role "searchbox" and name "Find a guide"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Documentation navigation":
+  [36m<nav[31m
+    [33maria-label[31m=[32m"Documentation navigation"[31m
+    [33mclass[31m=[32m"space-y-6"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  --------------------------------------------------
+  link:
+
+  Name "Overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs"[31m
+  [36m/>[31m
+
+  Name "Quickstart checklist":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/quickstart-checklist"[31m
+  [36m/>[31m
+
+  Name "Getting started":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/getting-started"[31m
+  [36m/>[31m
+
+  Name "Architecture overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/architecture"[31m
+  [36m/>[31m
+
+  Name "AWS setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/aws-setup"[31m
+  [36m/>[31m
+
+  Name "Azure setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/azure-setup"[31m
+  [36m/>[31m
+
+  Name "GCP setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/gcp-setup"[31m
+  [36m/>[31m
+
+  Name "Approval workflow":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/approval-workflow"[31m
+  [36m/>[31m
+
+  Name "AWS ECS rollback":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/rollback"[31m
+  [36m/>[31m
+
+  Name "ReleaseOps overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops"[31m
+  [36m/>[31m
+
+  Name "CI/CD connectors":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops/connectors"[31m
+  [36m/>[31m
+
+  Name "Readiness scoring":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops/readiness"[31m
+  [36m/>[31m
+
+  Name "Install the desktop app":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/desktop-install"[31m
+  [36m/>[31m
+
+  Name "Integration setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/integration-setup"[31m
+  [36m/>[31m
+
+  Name "Security model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/security-model"[31m
+  [36m/>[31m
+
+  Name "Permissions model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[31m
+    [33mhref[31m=[32m"/docs/permissions-model"[31m
+  [36m/>[31m
+
+  Name "Troubleshooting":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/troubleshooting"[31m
+  [36m/>[31m
+
+  Name "FAQ":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/faq"[31m
+  [36m/>[31m
+
+  Name "Glossary":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/glossary"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<nav[31m
+      [33maria-label[31m=[32m"Documentation navigation"[31m
+      [33mclass[31m=[32m"space-y-6"[31m
+    [36m>[31m
+      [36m<div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+        [36m>[31m
+          [0mStart here[0m
+        [36m</p>[31m
+        [36m<ul[31m
+          [33mclass[31m=[32m"space-y-0.5"[31m
+        [36m>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mOverview[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/quickstart-checklist"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mQuickstart checklist[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/getting-started"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mGetting started[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/architecture"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+               ...[39m
+ [31m×[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mmatches existing section names while keeping their guide groups[32m 46[2mms[22m[39m
+[31m   → Unable to find an accessible element with the role "searchbox" and name "Find a guide"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Documentation navigation":
+  [36m<nav[31m
+    [33maria-label[31m=[32m"Documentation navigation"[31m
+    [33mclass[31m=[32m"space-y-6"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  --------------------------------------------------
+  link:
+
+  Name "Overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs"[31m
+  [36m/>[31m
+
+  Name "Quickstart checklist":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/quickstart-checklist"[31m
+  [36m/>[31m
+
+  Name "Getting started":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/getting-started"[31m
+  [36m/>[31m
+
+  Name "Architecture overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/architecture"[31m
+  [36m/>[31m
+
+  Name "AWS setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/aws-setup"[31m
+  [36m/>[31m
+
+  Name "Azure setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/azure-setup"[31m
+  [36m/>[31m
+
+  Name "GCP setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/gcp-setup"[31m
+  [36m/>[31m
+
+  Name "Approval workflow":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/approval-workflow"[31m
+  [36m/>[31m
+
+  Name "AWS ECS rollback":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/rollback"[31m
+  [36m/>[31m
+
+  Name "ReleaseOps overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops"[31m
+  [36m/>[31m
+
+  Name "CI/CD connectors":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops/connectors"[31m
+  [36m/>[31m
+
+  Name "Readiness scoring":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops/readiness"[31m
+  [36m/>[31m
+
+  Name "Install the desktop app":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/desktop-install"[31m
+  [36m/>[31m
+
+  Name "Integration setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/integration-setup"[31m
+  [36m/>[31m
+
+  Name "Security model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/security-model"[31m
+  [36m/>[31m
+
+  Name "Permissions model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[31m
+    [33mhref[31m=[32m"/docs/permissions-model"[31m
+  [36m/>[31m
+
+  Name "Troubleshooting":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/troubleshooting"[31m
+  [36m/>[31m
+
+  Name "FAQ":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/faq"[31m
+  [36m/>[31m
+
+  Name "Glossary":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/glossary"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<nav[31m
+      [33maria-label[31m=[32m"Documentation navigation"[31m
+      [33mclass[31m=[32m"space-y-6"[31m
+    [36m>[31m
+      [36m<div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+        [36m>[31m
+          [0mStart here[0m
+        [36m</p>[31m
+        [36m<ul[31m
+          [33mclass[31m=[32m"space-y-0.5"[31m
+        [36m>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mOverview[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/quickstart-checklist"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mQuickstart checklist[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/getting-started"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mGetting started[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/architecture"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+               ...[39m
+ [31m×[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mreports an empty title match, then clears the filter and returns focus to its field[32m 36[2mms[22m[39m
+[31m   → Unable to find an accessible element with the role "searchbox" and name "Find a guide"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Documentation navigation":
+  [36m<nav[31m
+    [33maria-label[31m=[32m"Documentation navigation"[31m
+    [33mclass[31m=[32m"space-y-6"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  --------------------------------------------------
+  link:
+
+  Name "Overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs"[31m
+  [36m/>[31m
+
+  Name "Quickstart checklist":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/quickstart-checklist"[31m
+  [36m/>[31m
+
+  Name "Getting started":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/getting-started"[31m
+  [36m/>[31m
+
+  Name "Architecture overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/architecture"[31m
+  [36m/>[31m
+
+  Name "AWS setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/aws-setup"[31m
+  [36m/>[31m
+
+  Name "Azure setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/azure-setup"[31m
+  [36m/>[31m
+
+  Name "GCP setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/gcp-setup"[31m
+  [36m/>[31m
+
+  Name "Approval workflow":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/approval-workflow"[31m
+  [36m/>[31m
+
+  Name "AWS ECS rollback":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/rollback"[31m
+  [36m/>[31m
+
+  Name "ReleaseOps overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops"[31m
+  [36m/>[31m
+
+  Name "CI/CD connectors":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops/connectors"[31m
+  [36m/>[31m
+
+  Name "Readiness scoring":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops/readiness"[31m
+  [36m/>[31m
+
+  Name "Install the desktop app":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/desktop-install"[31m
+  [36m/>[31m
+
+  Name "Integration setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/integration-setup"[31m
+  [36m/>[31m
+
+  Name "Security model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/security-model"[31m
+  [36m/>[31m
+
+  Name "Permissions model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[31m
+    [33mhref[31m=[32m"/docs/permissions-model"[31m
+  [36m/>[31m
+
+  Name "Troubleshooting":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/troubleshooting"[31m
+  [36m/>[31m
+
+  Name "FAQ":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/faq"[31m
+  [36m/>[31m
+
+  Name "Glossary":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/glossary"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<nav[31m
+      [33maria-label[31m=[32m"Documentation navigation"[31m
+      [33mclass[31m=[32m"space-y-6"[31m
+    [36m>[31m
+      [36m<div>[31m
+        [36m<p[31m
+          [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+        [36m>[31m
+          [0mStart here[0m
+        [36m</p>[31m
+        [36m<ul[31m
+          [33mclass[31m=[32m"space-y-0.5"[31m
+        [36m>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mOverview[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/quickstart-checklist"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mQuickstart checklist[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/getting-started"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+                [36m/>[31m
+              [36m</svg>[31m
+              [36m<span[31m
+                [33mclass[31m=[32m"truncate"[31m
+              [36m>[31m
+                [0mGetting started[0m
+              [36m</span>[31m
+            [36m</a>[31m
+          [36m</li>[31m
+          [36m<li>[31m
+            [36m<a[31m
+              [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+              [33mhref[31m=[32m"/docs/architecture"[31m
+            [36m>[31m
+              [36m<svg[31m
+                [33maria-hidden[31m=[32m"true"[31m
+                [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                [33mdata-slot[31m=[32m"icon"[31m
+                [33mfill[31m=[32m"none"[31m
+                [33mstroke[31m=[32m"currentColor"[31m
+                [33mstroke-width[31m=[32m"1.5"[31m
+                [33mviewBox[31m=[32m"0 0 24 24"[31m
+                [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+              [36m>[31m
+                [36m<path[31m
+                  [33md[31m=[32m"M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"[31m
+                  [33mstroke-linecap[31m=[32m"round"[31m
+                  [33mstroke-linejoin[31m=[32m"round"[31m
+               ...[39m
+ [31m×[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mretains mobile Escape and route-change close behavior while filtering[32m 59[2mms[22m[39m
+[31m   → Unable to find an accessible element with the role "searchbox" and name "Find a guide"
+
+Here are the accessible roles:
+
+  complementary:
+
+  Name "":
+  [36m<aside[31m
+    [33mclass[31m=[32m"lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "Documentation contents":
+  [36m<button[31m
+    [33maria-controls[31m=[32m"docs-contents-panel"[31m
+    [33maria-expanded[31m=[32m"true"[31m
+    [33mclass[31m=[32m"flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"mb-1 text-[10px] font-semibold uppercase tracking-widest text-orange-400"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"text-sm text-zinc-300"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "Documentation navigation":
+  [36m<nav[31m
+    [33maria-label[31m=[32m"Documentation navigation"[31m
+    [33mclass[31m=[32m"space-y-6"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  Name "":
+  [36m<li />[31m
+
+  --------------------------------------------------
+  link:
+
+  Name "Overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs"[31m
+  [36m/>[31m
+
+  Name "Quickstart checklist":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/quickstart-checklist"[31m
+  [36m/>[31m
+
+  Name "Getting started":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/getting-started"[31m
+  [36m/>[31m
+
+  Name "Architecture overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/architecture"[31m
+  [36m/>[31m
+
+  Name "AWS setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/aws-setup"[31m
+  [36m/>[31m
+
+  Name "Azure setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/azure-setup"[31m
+  [36m/>[31m
+
+  Name "GCP setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/gcp-setup"[31m
+  [36m/>[31m
+
+  Name "Approval workflow":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/approval-workflow"[31m
+  [36m/>[31m
+
+  Name "AWS ECS rollback":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/rollback"[31m
+  [36m/>[31m
+
+  Name "ReleaseOps overview":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops"[31m
+  [36m/>[31m
+
+  Name "CI/CD connectors":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops/connectors"[31m
+  [36m/>[31m
+
+  Name "Readiness scoring":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/releaseops/readiness"[31m
+  [36m/>[31m
+
+  Name "Install the desktop app":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/desktop-install"[31m
+  [36m/>[31m
+
+  Name "Integration setup":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/integration-setup"[31m
+  [36m/>[31m
+
+  Name "Security model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/security-model"[31m
+  [36m/>[31m
+
+  Name "Permissions model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[31m
+    [33mhref[31m=[32m"/docs/permissions-model"[31m
+  [36m/>[31m
+
+  Name "Troubleshooting":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/troubleshooting"[31m
+  [36m/>[31m
+
+  Name "FAQ":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/faq"[31m
+  [36m/>[31m
+
+  Name "Glossary":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+    [33mhref[31m=[32m"/docs/glossary"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<aside[31m
+      [33mclass[31m=[32m"lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]"[31m
+    [36m>[31m
+      [36m<button[31m
+        [33maria-controls[31m=[32m"docs-contents-panel"[31m
+        [33maria-expanded[31m=[32m"true"[31m
+        [33mclass[31m=[32m"flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden"[31m
+        [33mtype[31m=[32m"button"[31m
+      [36m>[31m
+        [0mDocumentation contents[0m
+        [36m<svg[31m
+          [33maria-hidden[31m=[32m"true"[31m
+          [33mclass[31m=[32m"h-4 w-4 shrink-0 text-zinc-400 transition-transform rotate-180"[31m
+          [33mdata-slot[31m=[32m"icon"[31m
+          [33mfill[31m=[32m"none"[31m
+          [33mstroke[31m=[32m"currentColor"[31m
+          [33mstroke-width[31m=[32m"1.5"[31m
+          [33mviewBox[31m=[32m"0 0 24 24"[31m
+          [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+        [36m>[31m
+          [36m<path[31m
+            [33md[31m=[32m"m19.5 8.25-7.5 7.5-7.5-7.5"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+          [36m/>[31m
+        [36m</svg>[31m
+      [36m</button>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"block mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0"[31m
+        [33mid[31m=[32m"docs-contents-panel"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"mb-6 border-b border-white/[0.04] pb-4"[31m
+        [36m>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"mb-1 text-[10px] font-semibold uppercase tracking-widest text-orange-400"[31m
+          [36m>[31m
+            [0mDocumentation[0m
+          [36m</p>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-sm text-zinc-300"[31m
+          [36m>[31m
+            [0mSelf-serve guides for the Axiom platform.[0m
+          [36m</p>[31m
+        [36m</div>[31m
+        [36m<nav[31m
+          [33maria-label[31m=[32m"Documentation navigation"[31m
+          [33mclass[31m=[32m"space-y-6"[31m
+        [36m>[31m
+          [36m<div>[31m
+            [36m<p[31m
+              [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+            [36m>[31m
+              [0mStart here[0m
+            [36m</p>[31m
+            [36m<ul[31m
+              [33mclass[31m=[32m"space-y-0.5"[31m
+            [36m>[31m
+              [36m<li>[31m
+                [36m<a[31m
+                  [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+                  [33mhref[31m=[32m"/docs"[31m
+                [36m>[31m
+                  [36m<svg[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                    [33mdata-slot[31m=[32m"icon"[31m
+                    [33mfill[31m=[32m"none"[31m
+                    [33mstroke[31m=[32m"currentColor"[31m
+                    [33mstroke-width[31m=[32m"1.5"[31m
+                    [33mviewBox[31m=[32m"0 0 24 24"[31m
+                    [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                  [36m>[31m
+                    [36m<path[31m
+                      [33md[31m=[32m"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                    [36m/>[31m
+                  [36m</svg>[31m
+                  [36m<span[31m
+                    [33mclass[31m=[32m"truncate"[31m
+                  [36m>[31m
+                    [0mOverview[0m
+                  [36m</span>[31m
+                [36m</a>[31m
+              [36m</li>[31m
+              [36m<li>[31m
+                [36m<a[31m
+                  [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+                  [33mhref[31m=[32m"/docs/quickstart-checklist"[31m
+                [36m>[31m
+                  [36m<svg[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "[31m
+                    [33mdata-slot[31m=[32m"icon"[31m
+                    [33mfill[31m=[32m"none"[31m
+                    [33mstroke[31m=[32m"currentColor"[31m
+                    [33mstroke-width[31m=[32m"1.5"[31m
+                    [33mviewBox[31m=[32m"0 0 24 24"[31m
+                    [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+                  [36m>[31m
+                    [36m<path[31m
+                      [33md[31m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[31m
+                      [33mstroke-linecap[31m=[32m"round"[31m
+                      [33mstroke-linejoin[31m=[32m"round"[31m
+                    [36m/>[31m
+                  [36m</svg>[31m
+                  [36m<span[31m
+                    [33mclass[31m=[32m"truncate"[31m
+                  [36m>[31m
+                    [0mQuickstart checklist[0m
+                  [36m</span>[31m
+                [36m</a>[31m
+              [36m</li>[31m
+              [36m<li>[31m
+                [36m<a[31m
+                  [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[31m
+                  [33mhref[31m=[32m"/docs/getting-started"[31m
+                [36m>[31m
+                  [36m<svg[31m
+                    [33maria-hidden[31m=[32m"true"[31m
+                    [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 "...[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mstarts compact on narrow screens while preserving desktop navigation and the article[32m 84[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mopens and closes through a native button with an exact controlled navigation panel[32m 26[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mEscape from a guide link closes the disclosure and restores keyboard focus[32m 41[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22ma client route change closes expanded contents without trapping focus in the collapsed panel[32m 35[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mdesktop client navigation never sends focus to the narrow-only disclosure button[32m 22[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/contents-disclosure.test.ts[2m > [22mEscape on the disclosure button also closes expanded contents[32m 14[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 4 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mfilters existing guide titles with trimmed case-insensitive text and retains ordinary destinations
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "searchbox" and name "Find a guide"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Documentation navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Documentation navigation"[39m
+    [33mclass[39m=[32m"space-y-6"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Quickstart checklist":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/quickstart-checklist"[39m
+  [36m/>[39m
+
+  Name "Getting started":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/getting-started"[39m
+  [36m/>[39m
+
+  Name "Architecture overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/architecture"[39m
+  [36m/>[39m
+
+  Name "AWS setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/aws-setup"[39m
+  [36m/>[39m
+
+  Name "Azure setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/azure-setup"[39m
+  [36m/>[39m
+
+  Name "GCP setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/gcp-setup"[39m
+  [36m/>[39m
+
+  Name "Approval workflow":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/approval-workflow"[39m
+  [36m/>[39m
+
+  Name "AWS ECS rollback":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/rollback"[39m
+  [36m/>[39m
+
+  Name "ReleaseOps overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops"[39m
+  [36m/>[39m
+
+  Name "CI/CD connectors":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops/connectors"[39m
+  [36m/>[39m
+
+  Name "Readiness scoring":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops/readiness"[39m
+  [36m/>[39m
+
+  Name "Install the desktop app":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/desktop-install"[39m
+  [36m/>[39m
+
+  Name "Integration setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/integration-setup"[39m
+  [36m/>[39m
+
+  Name "Security model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/security-model"[39m
+  [36m/>[39m
+
+  Name "Permissions model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[39m
+    [33mhref[39m=[32m"/docs/permissions-model"[39m
+  [36m/>[39m
+
+  Name "Troubleshooting":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/troubleshooting"[39m
+  [36m/>[39m
+
+  Name "FAQ":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/faq"[39m
+  [36m/>[39m
+
+  Name "Glossary":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/glossary"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<nav[39m
+      [33maria-label[39m=[32m"Documentation navigation"[39m
+      [33mclass[39m=[32m"space-y-6"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+        [36m>[39m
+          [0mStart here[0m
+        [36m</p>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"space-y-0.5"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mOverview[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/quickstart-checklist"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mQuickstart checklist[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/getting-started"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mGetting started[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/architecture"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+               ...
+[90m [2m❯[22m Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m app/docs/__tests__/guide-navigation-search.test.ts:[2m13:24[22m[39m
+    [90m 11|[39m it("filters existing guide titles with trimmed case-insensitive text a…
+    [90m 12|[39m   [34mrender[39m([34mcreateElement[39m([33mDocsSidebar[39m))[33m;[39m
+    [90m 13|[39m   const field = screen.getByRole("searchbox", { name: "Find a guide" }…
+    [90m   |[39m                        [31m^[39m
+    [90m 14|[39m   [34mexpect[39m(document[33m.[39mactiveElement)[33m.[39mnot[33m.[39m[34mtoBe[39m(field)[33m;[39m
+    [90m 15|[39m   expect(screen.getByText(/Filters guide titles and section names/)).t…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mmatches existing section names while keeping their guide groups
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "searchbox" and name "Find a guide"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Documentation navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Documentation navigation"[39m
+    [33mclass[39m=[32m"space-y-6"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Quickstart checklist":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/quickstart-checklist"[39m
+  [36m/>[39m
+
+  Name "Getting started":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/getting-started"[39m
+  [36m/>[39m
+
+  Name "Architecture overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/architecture"[39m
+  [36m/>[39m
+
+  Name "AWS setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/aws-setup"[39m
+  [36m/>[39m
+
+  Name "Azure setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/azure-setup"[39m
+  [36m/>[39m
+
+  Name "GCP setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/gcp-setup"[39m
+  [36m/>[39m
+
+  Name "Approval workflow":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/approval-workflow"[39m
+  [36m/>[39m
+
+  Name "AWS ECS rollback":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/rollback"[39m
+  [36m/>[39m
+
+  Name "ReleaseOps overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops"[39m
+  [36m/>[39m
+
+  Name "CI/CD connectors":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops/connectors"[39m
+  [36m/>[39m
+
+  Name "Readiness scoring":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops/readiness"[39m
+  [36m/>[39m
+
+  Name "Install the desktop app":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/desktop-install"[39m
+  [36m/>[39m
+
+  Name "Integration setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/integration-setup"[39m
+  [36m/>[39m
+
+  Name "Security model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/security-model"[39m
+  [36m/>[39m
+
+  Name "Permissions model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[39m
+    [33mhref[39m=[32m"/docs/permissions-model"[39m
+  [36m/>[39m
+
+  Name "Troubleshooting":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/troubleshooting"[39m
+  [36m/>[39m
+
+  Name "FAQ":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/faq"[39m
+  [36m/>[39m
+
+  Name "Glossary":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/glossary"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<nav[39m
+      [33maria-label[39m=[32m"Documentation navigation"[39m
+      [33mclass[39m=[32m"space-y-6"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+        [36m>[39m
+          [0mStart here[0m
+        [36m</p>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"space-y-0.5"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mOverview[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/quickstart-checklist"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mQuickstart checklist[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/getting-started"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mGetting started[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/architecture"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+               ...
+[90m [2m❯[22m Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m app/docs/__tests__/guide-navigation-search.test.ts:[2m28:27[22m[39m
+    [90m 26|[39m it("matches existing section names while keeping their guide groups", …
+    [90m 27|[39m   [34mrender[39m([34mcreateElement[39m([33mDocsSidebar[39m))[33m;[39m
+    [90m 28|[39m   fireEvent.change(screen.getByRole("searchbox", { name: "Find a guide…
+    [90m   |[39m                           [31m^[39m
+    [90m 29|[39m   [34mexpect[39m(screen[33m.[39m[34mgetByText[39m([32m"Desktop"[39m))[33m.[39m[34mtoBeDefined[39m()[33m;[39m
+    [90m 30|[39m   expect(screen.getAllByRole("link").map(link => link.getAttribute("hr…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mreports an empty title match, then clears the filter and returns focus to its field
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "searchbox" and name "Find a guide"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Documentation navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Documentation navigation"[39m
+    [33mclass[39m=[32m"space-y-6"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Quickstart checklist":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/quickstart-checklist"[39m
+  [36m/>[39m
+
+  Name "Getting started":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/getting-started"[39m
+  [36m/>[39m
+
+  Name "Architecture overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/architecture"[39m
+  [36m/>[39m
+
+  Name "AWS setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/aws-setup"[39m
+  [36m/>[39m
+
+  Name "Azure setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/azure-setup"[39m
+  [36m/>[39m
+
+  Name "GCP setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/gcp-setup"[39m
+  [36m/>[39m
+
+  Name "Approval workflow":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/approval-workflow"[39m
+  [36m/>[39m
+
+  Name "AWS ECS rollback":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/rollback"[39m
+  [36m/>[39m
+
+  Name "ReleaseOps overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops"[39m
+  [36m/>[39m
+
+  Name "CI/CD connectors":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops/connectors"[39m
+  [36m/>[39m
+
+  Name "Readiness scoring":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops/readiness"[39m
+  [36m/>[39m
+
+  Name "Install the desktop app":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/desktop-install"[39m
+  [36m/>[39m
+
+  Name "Integration setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/integration-setup"[39m
+  [36m/>[39m
+
+  Name "Security model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/security-model"[39m
+  [36m/>[39m
+
+  Name "Permissions model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[39m
+    [33mhref[39m=[32m"/docs/permissions-model"[39m
+  [36m/>[39m
+
+  Name "Troubleshooting":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/troubleshooting"[39m
+  [36m/>[39m
+
+  Name "FAQ":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/faq"[39m
+  [36m/>[39m
+
+  Name "Glossary":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/glossary"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<nav[39m
+      [33maria-label[39m=[32m"Documentation navigation"[39m
+      [33mclass[39m=[32m"space-y-6"[39m
+    [36m>[39m
+      [36m<div>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+        [36m>[39m
+          [0mStart here[0m
+        [36m</p>[39m
+        [36m<ul[39m
+          [33mclass[39m=[32m"space-y-0.5"[39m
+        [36m>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mOverview[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/quickstart-checklist"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mQuickstart checklist[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/getting-started"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+                [36m/>[39m
+              [36m</svg>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"truncate"[39m
+              [36m>[39m
+                [0mGetting started[0m
+              [36m</span>[39m
+            [36m</a>[39m
+          [36m</li>[39m
+          [36m<li>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+              [33mhref[39m=[32m"/docs/architecture"[39m
+            [36m>[39m
+              [36m<svg[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                [33mdata-slot[39m=[32m"icon"[39m
+                [33mfill[39m=[32m"none"[39m
+                [33mstroke[39m=[32m"currentColor"[39m
+                [33mstroke-width[39m=[32m"1.5"[39m
+                [33mviewBox[39m=[32m"0 0 24 24"[39m
+                [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+              [36m>[39m
+                [36m<path[39m
+                  [33md[39m=[32m"M9 6.75V15m6-6v8.25m.503 3.498 4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 0 0-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0Z"[39m
+                  [33mstroke-linecap[39m=[32m"round"[39m
+                  [33mstroke-linejoin[39m=[32m"round"[39m
+               ...
+[90m [2m❯[22m Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m app/docs/__tests__/guide-navigation-search.test.ts:[2m35:24[22m[39m
+    [90m 33|[39m it("reports an empty title match, then clears the filter and returns f…
+    [90m 34|[39m   [34mrender[39m([34mcreateElement[39m([33mDocsSidebar[39m))[33m;[39m
+    [90m 35|[39m   const field = screen.getByRole("searchbox", { name: "Find a guide" }…
+    [90m   |[39m                        [31m^[39m
+    [90m 36|[39m   fireEvent.change(field, { target: { value: "not-a-published-guide-xy…
+    [90m 37|[39m   [34mexpect[39m(screen[33m.[39m[34mqueryAllByRole[39m([32m"link"[39m))[33m.[39m[34mtoHaveLength[39m([34m0[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mretains mobile Escape and route-change close behavior while filtering
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "searchbox" and name "Find a guide"
+
+Here are the accessible roles:
+
+  complementary:
+
+  Name "":
+  [36m<aside[39m
+    [33mclass[39m=[32m"lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Documentation contents":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"docs-contents-panel"[39m
+    [33maria-expanded[39m=[32m"true"[39m
+    [33mclass[39m=[32m"flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mb-1 text-[10px] font-semibold uppercase tracking-widest text-orange-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-sm text-zinc-300"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  navigation:
+
+  Name "Documentation navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Documentation navigation"[39m
+    [33mclass[39m=[32m"space-y-6"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Quickstart checklist":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/quickstart-checklist"[39m
+  [36m/>[39m
+
+  Name "Getting started":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/getting-started"[39m
+  [36m/>[39m
+
+  Name "Architecture overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/architecture"[39m
+  [36m/>[39m
+
+  Name "AWS setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/aws-setup"[39m
+  [36m/>[39m
+
+  Name "Azure setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/azure-setup"[39m
+  [36m/>[39m
+
+  Name "GCP setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/gcp-setup"[39m
+  [36m/>[39m
+
+  Name "Approval workflow":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/approval-workflow"[39m
+  [36m/>[39m
+
+  Name "AWS ECS rollback":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/rollback"[39m
+  [36m/>[39m
+
+  Name "ReleaseOps overview":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops"[39m
+  [36m/>[39m
+
+  Name "CI/CD connectors":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops/connectors"[39m
+  [36m/>[39m
+
+  Name "Readiness scoring":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/releaseops/readiness"[39m
+  [36m/>[39m
+
+  Name "Install the desktop app":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/desktop-install"[39m
+  [36m/>[39m
+
+  Name "Integration setup":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/integration-setup"[39m
+  [36m/>[39m
+
+  Name "Security model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/security-model"[39m
+  [36m/>[39m
+
+  Name "Permissions model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[39m
+    [33mhref[39m=[32m"/docs/permissions-model"[39m
+  [36m/>[39m
+
+  Name "Troubleshooting":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/troubleshooting"[39m
+  [36m/>[39m
+
+  Name "FAQ":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/faq"[39m
+  [36m/>[39m
+
+  Name "Glossary":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+    [33mhref[39m=[32m"/docs/glossary"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<aside[39m
+      [33mclass[39m=[32m"lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]"[39m
+    [36m>[39m
+      [36m<button[39m
+        [33maria-controls[39m=[32m"docs-contents-panel"[39m
+        [33maria-expanded[39m=[32m"true"[39m
+        [33mclass[39m=[32m"flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden"[39m
+        [33mtype[39m=[32m"button"[39m
+      [36m>[39m
+        [0mDocumentation contents[0m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"h-4 w-4 shrink-0 text-zinc-400 transition-transform rotate-180"[39m
+          [33mdata-slot[39m=[32m"icon"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-width[39m=[32m"1.5"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"m19.5 8.25-7.5 7.5-7.5-7.5"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+      [36m</button>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"block mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0"[39m
+        [33mid[39m=[32m"docs-contents-panel"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-6 border-b border-white/[0.04] pb-4"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mb-1 text-[10px] font-semibold uppercase tracking-widest text-orange-400"[39m
+          [36m>[39m
+            [0mDocumentation[0m
+          [36m</p>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-sm text-zinc-300"[39m
+          [36m>[39m
+            [0mSelf-serve guides for the Axiom platform.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<nav[39m
+          [33maria-label[39m=[32m"Documentation navigation"[39m
+          [33mclass[39m=[32m"space-y-6"[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<p[39m
+              [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+            [36m>[39m
+              [0mStart here[0m
+            [36m</p>[39m
+            [36m<ul[39m
+              [33mclass[39m=[32m"space-y-0.5"[39m
+            [36m>[39m
+              [36m<li>[39m
+                [36m<a[39m
+                  [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+                  [33mhref[39m=[32m"/docs"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                    [33mdata-slot[39m=[32m"icon"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-width[39m=[32m"1.5"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"truncate"[39m
+                  [36m>[39m
+                    [0mOverview[0m
+                  [36m</span>[39m
+                [36m</a>[39m
+              [36m</li>[39m
+              [36m<li>[39m
+                [36m<a[39m
+                  [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+                  [33mhref[39m=[32m"/docs/quickstart-checklist"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "[39m
+                    [33mdata-slot[39m=[32m"icon"[39m
+                    [33mfill[39m=[32m"none"[39m
+                    [33mstroke[39m=[32m"currentColor"[39m
+                    [33mstroke-width[39m=[32m"1.5"[39m
+                    [33mviewBox[39m=[32m"0 0 24 24"[39m
+                    [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                  [36m>[39m
+                    [36m<path[39m
+                      [33md[39m=[32m"M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"[39m
+                      [33mstroke-linecap[39m=[32m"round"[39m
+                      [33mstroke-linejoin[39m=[32m"round"[39m
+                    [36m/>[39m
+                  [36m</svg>[39m
+                  [36m<span[39m
+                    [33mclass[39m=[32m"truncate"[39m
+                  [36m>[39m
+                    [0mQuickstart checklist[0m
+                  [36m</span>[39m
+                [36m</a>[39m
+              [36m</li>[39m
+              [36m<li>[39m
+                [36m<a[39m
+                  [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent"[39m
+                  [33mhref[39m=[32m"/docs/getting-started"[39m
+                [36m>[39m
+                  [36m<svg[39m
+                    [33maria-hidden[39m=[32m"true"[39m
+                    [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 "...
+[90m [2m❯[22m Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m app/docs/__tests__/guide-navigation-search.test.ts:[2m51:24[22m[39m
+    [90m 49|[39m   const toggle = screen.getByRole("button", { name: "Documentation con…
+    [90m 50|[39m   fireEvent[33m.[39m[34mclick[39m(toggle)[33m;[39m
+    [90m 51|[39m   const field = screen.getByRole("searchbox", { name: "Find a guide" }…
+    [90m   |[39m                        [31m^[39m
+    [90m 52|[39m   fireEvent.change(field, { target: { value: "Permissions" } }); field…
+    [90m 53|[39m   fireEvent[33m.[39m[34mkeyDown[39m(field[33m,[39m { key[33m:[39m [32m"Escape"[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m4 failed[39m[22m[2m | [22m[1m[32m6 passed[39m[22m[90m (10)[39m
+[2m   Start at [22m 02:10:28
+[2m   Duration [22m 2.04s[2m (transform 56ms, setup 0ms, import 464ms, tests 491ms, environment 904ms)[22m
+

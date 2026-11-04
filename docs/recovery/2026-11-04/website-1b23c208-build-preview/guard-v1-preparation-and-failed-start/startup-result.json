@@ -1,0 +1,16 @@
+{
+  "status": "backend_start_failed_stopped_no_retry",
+  "frozenEvidenceSha256": "42e52d74b8e73596942a0636af39afcac28e68d2e745769e29cc91be3f30ed6f",
+  "preflightChunk": "604f28",
+  "preflight": "frozen hashes/input checks pass; ports5224/5225 no listener output",
+  "backendInvocation": "exec /usr/bin/env -i PATH=/usr/bin:/bin HOME=/private/tmp/axiom-preview-harness-1b23c208-20261104 TMPDIR=/private/tmp/axiom-preview-harness-1b23c208-20261104 PYTHONDONTWRITEBYTECODE=1 /usr/bin/python3 /private/tmp/axiom-preview-harness-1b23c208-20261104/launch_preview.py backend > /private/tmp/axiom-preview-harness-1b23c208-20261104/backend-start.log 2>&1",
+  "backendToolChunk": "9a1f67",
+  "backendExit": 65,
+  "sessionHandle": null,
+  "ownedLivePID": null,
+  "proxyStarted": false,
+  "httpAcceptanceExecuted": false,
+  "cleanupRequired": false,
+  "logSha256": "0feb4d3c7b5434bfe294815d65c424f28b1bfd88b0c4f0e55ba6012390835346",
+  "guardsChanged": false
+}

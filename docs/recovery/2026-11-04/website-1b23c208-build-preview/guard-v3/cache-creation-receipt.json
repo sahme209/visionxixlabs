@@ -1,0 +1,65 @@
+{
+  "status": "explicitly-authorized-owned-runtime-data-addition",
+  "cacheDirectory": {
+    "path": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache/images",
+    "device": 16777233,
+    "inode": 13890648,
+    "uid": 501,
+    "mode": 448
+  },
+  "ancestorsObservedBeforeCreation": [
+    {
+      "path": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache",
+      "device": 16777233,
+      "inode": 13878433,
+      "uid": 501,
+      "mode": 493
+    },
+    {
+      "path": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next",
+      "device": 16777233,
+      "inode": 13878431,
+      "uid": 501,
+      "mode": 493
+    },
+    {
+      "path": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage",
+      "device": 16777233,
+      "inode": 13769511,
+      "uid": 501,
+      "mode": 448
+    },
+    {
+      "path": "/private/tmp/axiom-website-1b23c208-eh6g339f",
+      "device": 16777233,
+      "inode": 13769493,
+      "uid": 501,
+      "mode": 448
+    },
+    {
+      "path": "/private/tmp",
+      "device": 16777233,
+      "inode": 5743978,
+      "uid": 0,
+      "mode": 1023
+    },
+    {
+      "path": "/private",
+      "device": 16777233,
+      "inode": 5728010,
+      "uid": 0,
+      "mode": 493
+    },
+    {
+      "path": "/",
+      "device": 16777233,
+      "inode": 2,
+      "uid": 0,
+      "mode": 493
+    }
+  ],
+  "initialCacheEntries": [],
+  "sourceStageEntireTreeUnchangedClaim": false,
+  "noCodePublicStaticBuildMetadataEdits": true,
+  "noSymlinkCloneRebuildWorkaround": true
+}

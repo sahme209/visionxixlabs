@@ -1,0 +1,41 @@
+{
+  "status": "PASS_bounded_owned_local_HTTP_preview",
+  "sourceBuild": "1b23c208",
+  "frozenV3Sha256": "a10f71bd13beee10bcc92b86dddfec8fb14a86a0fdb55170abd19170e8267407",
+  "publicURL": "http://127.0.0.1:5224/__axiom_preview",
+  "backend": {
+    "pid": 55811,
+    "session": 7154,
+    "address": "127.0.0.1:5225",
+    "startupChunk": "8b557e",
+    "readyChunk": "9a85a7",
+    "readyReportedMs": 52
+  },
+  "proxy": {
+    "pid": 55833,
+    "session": 74983,
+    "address": "127.0.0.1:5224",
+    "startupChunk": "c04b5e",
+    "readyChunk": "fa3262"
+  },
+  "processesKeptRunning": true,
+  "http": {
+    "toolChunk": "ae1d43",
+    "exit": 0,
+    "totalRequests": 23,
+    "status200": 12,
+    "status403": 11,
+    "optimizerAttempts": 1,
+    "redirectsFollowed": 0,
+    "retries": 0
+  },
+  "postcheckChunk": "e1b06e",
+  "fullFreshBackendLogClean": true,
+  "cacheResult": "one6963bytePNGplusonekeydirectory; regular current-user-owned entries confined to exactauthorizedimages folder",
+  "protectedPublicStaticFilesUnchanged": 1185,
+  "frozenInputsCodeConfigBuildIdUnchanged": true,
+  "runtimeDataAdditionExplicit": true,
+  "entireStageUnchangedClaim": false,
+  "priorV1V2FailuresPreserved": true,
+  "browserATRSCNativeCustodyIssuerEnrollmentAcceptance": false
+}

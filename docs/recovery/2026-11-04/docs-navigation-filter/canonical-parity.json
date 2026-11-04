@@ -1,0 +1,14 @@
+{
+  "implementation": "1b23c2081caeff174c6c67927ad33f09c82a9d08",
+  "reviewedActor": "f8d81c64d345b8b475aa8bd206f147c7ef066fe5",
+  "files": [
+    {
+      "path": "components/docs/DocsSidebar.tsx",
+      "sha256": "84b4f5913507ef9ee59b82137a9521aacb3371225148e57cbe5a06b9994ce44f"
+    },
+    {
+      "path": "app/docs/__tests__/guide-navigation-search.test.ts",
+      "sha256": "d59ac03afd613e4091b9cd7c05a2687224e3d03f6aa94a47d23ecd9af694d4b3"
+    }
+  ]
+}

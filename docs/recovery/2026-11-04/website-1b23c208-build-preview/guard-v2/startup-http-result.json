@@ -1,0 +1,52 @@
+{
+  "status": "STOP_optimizer_cache_write_failure_despite_HTTP_assertion_pass",
+  "source": "1b23c208",
+  "frozenV2Sha256": "34e5662e967ddb1a5bdece092f5286707aafa594196fc4531db2f866051e3e15",
+  "preflightChunk": "3011e6",
+  "backend": {
+    "pid": 55115,
+    "session": 76949,
+    "startChunk": "353e5d",
+    "readyChunk": "e586e5",
+    "address": "127.0.0.1:5225",
+    "readyReportedMs": 59
+  },
+  "proxy": {
+    "pid": 55138,
+    "session": 4783,
+    "startChunk": "6958c7",
+    "readyChunk": "bb6a6a",
+    "address": "127.0.0.1:5224"
+  },
+  "http": {
+    "toolChunk": "061d05",
+    "capturedExit": 0,
+    "requests": 23,
+    "allowed200": 12,
+    "forbidden403": 11,
+    "optimizerAttempts": 1,
+    "optimizerStatus": 200,
+    "optimizerImageType": "image/png",
+    "optimizerBytes": 6963,
+    "followedRedirects": 0,
+    "retries": 0,
+    "qualification": "HTTP assertions only; does not override later discovered backend cache failure"
+  },
+  "cacheFailure": {
+    "observedChunk": "8e8efc",
+    "code": "EPERM",
+    "operation": "mkdir",
+    "path": "/private/tmp/axiom-website-1b23c208-eh6g339f/stage/.next/cache/images",
+    "messages": [
+      "unhandledRejection",
+      "Failed to write image to cache"
+    ],
+    "cacheDirectoryExistsAfter": false,
+    "action": "Stopped all further HTTP/startup attempts; no permission change/restart/cache workaround"
+  },
+  "currentProcessState": "Both owned listeners still running at last lsof; unchanged pending root decision",
+  "oldPreviewsTouched": false,
+  "frozenInputsAndAllManifestAssetsUnchanged": true,
+  "cleanPreviewAccepted": false,
+  "browserATRSCNativeAcceptance": false
+}

@@ -1,0 +1,77 @@
+{
+  "status": "frozen-v3-prepared-not-started",
+  "source": "1b23c208",
+  "v2FrozenSha256": "34e5662e967ddb1a5bdece092f5286707aafa594196fc4531db2f866051e3e15",
+  "files": [
+    {
+      "path": "preview_proxy.py",
+      "bytes": 8079,
+      "sha256": "8764944888beb3a4aa6ac53609f6f48f7e103d0f6d66ce0e06136385bb3c98d5"
+    },
+    {
+      "path": "launch_preview.py",
+      "bytes": 3860,
+      "sha256": "9b03f131a853b7972b74adfca53fd07afe7721555c18eaa4cab0db3d50d1ad10"
+    },
+    {
+      "path": "backend.sb",
+      "bytes": 317,
+      "sha256": "0bf3978295f738f2b5c4003bcdf8ff119836a44b82dace10324d6638df5fbf7b"
+    },
+    {
+      "path": "proxy.sb",
+      "bytes": 269,
+      "sha256": "5ed4af69d5b11ebc6b7cc90c1821bf712f3de39a0ad9883ab83a8b94af2a6eb0"
+    },
+    {
+      "path": "asset-manifest.json",
+      "bytes": 359311,
+      "sha256": "e1d235bbd1216020a14f7272fce86190ded5bc801c206cb13693d84e674cd794"
+    },
+    {
+      "path": "launch-binding.json",
+      "bytes": 2644,
+      "sha256": "6b788e716f203534ded5b2f6229f894c305ca040cb7d5ea3f45b119efdfb93c5"
+    },
+    {
+      "path": "cache-creation-receipt.json",
+      "bytes": 1515,
+      "sha256": "e6f6832d0bfe8911bc70cf746f4c0539c3713a91eabad6ca66161a04726c3225"
+    },
+    {
+      "path": "v2-stop-receipt.json",
+      "bytes": 332,
+      "sha256": "3ea875d9a41884527081091703c8f62815011f4c611615249221a7841529d968"
+    },
+    {
+      "path": "protected-inputs-result.json",
+      "bytes": 463,
+      "sha256": "57f441e18e22f260690c8c07c6c5370769cfbfae3acb3d02ad9a1b485f2ba505"
+    },
+    {
+      "path": "exact-v3.diff",
+      "bytes": 4741,
+      "sha256": "1d97332f80d046974d013b63254800a72f9b76bcc9b8afa4753a4be3fb99e015"
+    },
+    {
+      "path": "test_v3_preparation.py",
+      "bytes": 2234,
+      "sha256": "4dc68a6b33e7238c1533651315b19e6e2c2fffdaf02a827759bb3317d15911a3"
+    },
+    {
+      "path": "focused-cache-green.log",
+      "bytes": 437,
+      "sha256": "6bb961debbc3288b019bc9056ee0c13b6a9d69316df2508152b467747b711698"
+    },
+    {
+      "path": "focused-cache-green-exit.txt",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3889,
+      "sha256": "8168e94ec6625317334135f4b4066b35ac08dd2b60888ca1e9e9440c04730def"
+    }
+  ]
+}

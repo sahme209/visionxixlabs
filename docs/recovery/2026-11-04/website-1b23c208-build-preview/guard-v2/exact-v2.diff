@@ -1,0 +1,98 @@
+--- original/preview_proxy.py
++++ v2/preview_proxy.py
+@@ -9,7 +9,7 @@
+ import json
+ import re
+ 
+-ROOT = Path('/private/tmp/axiom-preview-harness-1b23c208-20261104')
++ROOT = Path('/private/tmp/axiom-preview-harness-1b23c208-v2-20261104')
+ MANIFEST_SHA256 = 'e1d235bbd1216020a14f7272fce86190ded5bc801c206cb13693d84e674cd794'
+ manifest_bytes = (ROOT / 'asset-manifest.json').read_bytes()
+ if hashlib.sha256(manifest_bytes).hexdigest() != MANIFEST_SHA256:
+--- original/launch_preview.py
++++ v2/launch_preview.py
+@@ -8,7 +8,7 @@
+ import stat
+ import sys
+ 
+-ROOT = Path('/private/tmp/axiom-preview-harness-1b23c208-20261104')
++ROOT = Path('/private/tmp/axiom-preview-harness-1b23c208-v2-20261104')
+ STAGE = Path('/private/tmp/axiom-website-1b23c208-eh6g339f/stage')
+ NODE = Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
+ PYTHON = Path('/usr/bin/python3')
+--- original/backend.sb
++++ v2/backend.sb
+@@ -3,6 +3,6 @@
+ (deny network-outbound)
+ (deny network-inbound)
+ (deny network-bind)
+-(allow network-inbound (local ip "127.0.0.1:5225"))
+-(allow network-bind (local ip "127.0.0.1:5225"))
++(allow network-inbound (local ip "localhost:5225"))
++(allow network-bind (local ip "localhost:5225"))
+ (deny file-write*)
+--- original/proxy.sb
++++ v2/proxy.sb
+@@ -3,7 +3,7 @@
+ (deny network-outbound)
+ (deny network-inbound)
+ (deny network-bind)
+-(allow network-outbound (remote ip "127.0.0.1:5225"))
+-(allow network-inbound (local ip "127.0.0.1:5224"))
+-(allow network-bind (local ip "127.0.0.1:5224"))
++(allow network-outbound (remote ip "localhost:5225"))
++(allow network-inbound (local ip "localhost:5224"))
++(allow network-bind (local ip "localhost:5224"))
+ (deny file-write*)
+--- original/test_harness.py
++++ v2/test_harness.py
+@@ -79,6 +79,6 @@
+    backend=(ROOT/'backend.sb').read_text();proxy=(ROOT/'proxy.sb').read_text()
+    self.assertIn('(deny network-outbound)',backend);self.assertNotIn('(allow network-outbound',backend)
+    self.assertIn('(deny file-write*)',backend);self.assertIn('(deny file-write*)',proxy)
+-   self.assertIn('(remote ip "127.0.0.1:5225")',proxy)
+-   self.assertIn('(local ip "127.0.0.1:5224")',proxy)
++   self.assertIn('(remote ip "localhost:5225")',proxy)
++   self.assertIn('(local ip "localhost:5224")',proxy)
+ if __name__=='__main__':unittest.main(argv=[sys.argv[0]],verbosity=2)
+--- original/launch-binding.json
++++ v2/launch-binding.json
+@@ -5,27 +5,27 @@
+   "proxy": "127.0.0.1:5224",
+   "files": [
+     {
+-      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/preview_proxy.py",
+-      "bytes": 8076,
+-      "sha256": "848520a1e54264938d7cc85cf090a95763c6e3977cbce1deb6121a370083062b"
++      "path": "/private/tmp/axiom-preview-harness-1b23c208-v2-20261104/preview_proxy.py",
++      "bytes": 8079,
++      "sha256": "cb3c2914673b81e4aeb9f1011cf53de2b0f293b61e159496a9ee4efbbd7ff222"
+     },
+     {
+-      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/launch_preview.py",
+-      "bytes": 3016,
+-      "sha256": "c7a348fc02a242704c7102eef2aeace2b0ff8b0c48d668c9457b5273e141dc8a"
++      "path": "/private/tmp/axiom-preview-harness-1b23c208-v2-20261104/launch_preview.py",
++      "bytes": 3019,
++      "sha256": "d5bf9250a0e1d451b3295153cb7b10ddcfc41d515b7778408bf7c449050368a7"
+     },
+     {
+-      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/backend.sb",
++      "path": "/private/tmp/axiom-preview-harness-1b23c208-v2-20261104/backend.sb",
+       "bytes": 215,
+-      "sha256": "059e7f0dbc126dfcd9734e6c378b2b3696587181dd28d79af5c07bae6c8de47d"
++      "sha256": "1e8af0cd437a4cb6e2e0fa7b8f643424b26b4e179cf9bc6963912764237c2175"
+     },
+     {
+-      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/proxy.sb",
++      "path": "/private/tmp/axiom-preview-harness-1b23c208-v2-20261104/proxy.sb",
+       "bytes": 269,
+-      "sha256": "46f86b5f5539744276ca89198678fea63dea0cf2f43fc2665bdde71da60f60fc"
++      "sha256": "5ed4af69d5b11ebc6b7cc90c1821bf712f3de39a0ad9883ab83a8b94af2a6eb0"
+     },
+     {
+-      "path": "/private/tmp/axiom-preview-harness-1b23c208-20261104/asset-manifest.json",
++      "path": "/private/tmp/axiom-preview-harness-1b23c208-v2-20261104/asset-manifest.json",
+       "bytes": 359311,
+       "sha256": "e1d235bbd1216020a14f7272fce86190ded5bc801c206cb13693d84e674cd794"
+     },
