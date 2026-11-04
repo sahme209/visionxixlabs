@@ -1,0 +1,9 @@
+# Signup flow mutual exclusion — bounded local repair
+
+Existing signup credentials submit stayed enabled during pending Google/GitHub OAuth. The same mounted form could dispatch credential signup while OAuth was pending, or duplicate credential submissions while its fetch was pending. No authentication bypass or successful provider/account operation was demonstrated.
+
+Implementation32e8d5a3 exactly matches independently reviewed actor8766817b on both changed files. One shared synchronous ref guards both handlers and releases in finally; the credential button reflects OAuth busy state. Direct-submit terms/challenge checks mirror existing disabled UI constraints. Payload, provider availability, email-proof handoff, callbacks, redirects and server policies are unchanged. This is per-mounted-form mutual exclusion, not a global cross-window authentication lock.
+
+Actual focused RED: two expected failures/three compatibility passes. GREEN: five tests/two files, exit0. Deferred mocked OAuth and fetch cover pending interactions both directions, forced duplicate form submissions, release after failure and existing proof-required behavior. These are synthetic rendered component tests, not browser implicit-Enter or live authentication acceptance. Scoped TypeScript over two test roots/transitive source passed; not a full build/types claim. Existing esbuild/oxc warning is retained. Root inspected raw logs/diff/tests and canonical byte parity; independent read-only reviewer workspace_persistence_privacy_repair found no findings and did not rerun tests.
+
+No actual signup, email, OAuth, database, native app, browser, credential, deployment or paid operation occurred. Existing source guides/history remain intact; the new browser-signup guide will explicitly bind the reviewed updated source rather than silently rebinding historical receipts. Current guarded preview remains its older exact build and does not include this repair.

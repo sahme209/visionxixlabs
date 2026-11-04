@@ -1,0 +1,14 @@
+{
+  "implementation": "32e8d5a3f5107e7f91e650d537d16d9adb928e0b",
+  "reviewedActor": "8766817b6c2bf8089e16be30b917f376a5e08085",
+  "files": [
+    {
+      "path": "app/auth/signup/AuthFormClient.tsx",
+      "sha256": "38a9c4ac0d1d199e6539553855b654a8b3f8d2a48d5d69469b7fd8bceeda6b78"
+    },
+    {
+      "path": "app/auth/signup/__tests__/overlappingFlows.test.ts",
+      "sha256": "42b949adfd29092ef5af6e8e11c1f743dd628ddf8aed8be1d8f4d00167c91e3c"
+    }
+  ]
+}

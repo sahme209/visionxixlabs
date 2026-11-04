@@ -1,0 +1,3 @@
+38a9c4ac0d1d199e6539553855b654a8b3f8d2a48d5d69469b7fd8bceeda6b78  app/auth/signup/AuthFormClient.tsx
+42b949adfd29092ef5af6e8e11c1f743dd628ddf8aed8be1d8f4d00167c91e3c  app/auth/signup/__tests__/overlappingFlows.test.ts
+a77ff830e03bcf31489ba344cd4b5d9f159cfd3ea67c1a25b356dd13b26fb906  app/auth/signup/__tests__/verificationHandoff.test.ts

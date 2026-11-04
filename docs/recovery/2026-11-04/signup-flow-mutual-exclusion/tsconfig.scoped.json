@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": false,
+    "baseUrl": "/private/tmp/axiom-a4-signup-guard-20261104",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "jsx": "react-jsx"
+  },
+  "files": [
+    "/private/tmp/axiom-a4-signup-guard-20261104/app/auth/signup/__tests__/overlappingFlows.test.ts",
+    "/private/tmp/axiom-a4-signup-guard-20261104/app/auth/signup/__tests__/verificationHandoff.test.ts"
+  ]
+}
