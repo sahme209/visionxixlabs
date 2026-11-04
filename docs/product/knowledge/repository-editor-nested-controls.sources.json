@@ -1,0 +1,146 @@
+{
+  "status": "INTERNAL DRAFT \u2014 unpublished",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "mediaAccepted": false,
+  "editorialAccepted": false,
+  "releaseAccepted": false,
+  "sourceCommit": "e5737ed6ddf26aea8536aed8549121cca80260dd",
+  "method": "Static source integrity only; whole-file and exact inclusive-line-range SHA-256; no runtime evidence.",
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "startLine": 168,
+      "endLine": 173,
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "rangeSha256": "9c760257deaf677e7402e0c4a1a80a1276b12ac7f633acadd8f8625eae700ae1",
+      "anchors": [
+        "<RepositoryWorkspaceView",
+        "setRequestedLocalCode"
+      ]
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "startLine": 138,
+      "endLine": 183,
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "rangeSha256": "b8996fb97d1472753a1fb142da7f513b8b9a176a09075e6dcf5855353284bc47",
+      "anchors": [
+        "function setConfirmation",
+        "const owns = useCallback"
+      ]
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "startLine": 286,
+      "endLine": 360,
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "rangeSha256": "61025d1aa66bac34ebd5bb3c7d8c0b0b5cc40bb4b3837a4144c5d2218d8a862e",
+      "anchors": [
+        "function selectFile",
+        "function chooseRepository",
+        "async function openFile"
+      ]
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "startLine": 474,
+      "endLine": 478,
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "rangeSha256": "1477c84b8886cc940784635ad00151b16d406e4d77e735a5059577b0bd8862d5",
+      "anchors": [
+        "async function confirmAction"
+      ]
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "startLine": 661,
+      "endLine": 680,
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "rangeSha256": "0256abcced1f3983714068f1eeb068eb3fa0734dca31c0abb9695213bbf32653",
+      "anchors": [
+        "function askAboutSelection",
+        "Prepare Agent draft"
+      ]
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "startLine": 847,
+      "endLine": 861,
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "rangeSha256": "678ec3e4d20bc8302973257acea130088ee0d7aa9062bd740745f1c628a77dce",
+      "anchors": [
+        "Ask Agent about selection",
+        "Local unsaved file diff"
+      ]
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "startLine": 891,
+      "endLine": 899,
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "rangeSha256": "bf1e6e41cb635e3607216dd524073ec5dfbbd7dec4acd6f269570152de86776f",
+      "anchors": [
+        "role=\"alertdialog\"",
+        "autoFocus",
+        "confirmation.confirmLabel"
+      ]
+    },
+    {
+      "path": "desktop/src/components/FileDiff.tsx",
+      "startLine": 1,
+      "endLine": 31,
+      "sha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3",
+      "rangeSha256": "538fb0e0aea968a9489459002169278bc61b3ca98e5b29addc87f0c179bac174",
+      "anchors": [
+        "const pageCount",
+        "Previous diff page",
+        "Next diff page"
+      ]
+    },
+    {
+      "path": "desktop/src/lib/lineDiff.ts",
+      "startLine": 1,
+      "endLine": 81,
+      "sha256": "d6c9c4ae3738d38815499adae285d45a9125efb5c04d7d84e8b9807af3e1ad3f",
+      "rangeSha256": "d6c9c4ae3738d38815499adae285d45a9125efb5c04d7d84e8b9807af3e1ad3f",
+      "anchors": [
+        "300_000",
+        "function compactContext"
+      ]
+    },
+    {
+      "path": "desktop/src/lib/localCodeContext.ts",
+      "startLine": 15,
+      "endLine": 37,
+      "sha256": "a5cc9fd6d95c2c5e58eda24c53603744f7da5d9c001706a3331276359cb0132e",
+      "rangeSha256": "2e1a89513a5946c43d845492bcbe5ea445e989987871484acc8efa5820be1a6d",
+      "anchors": [
+        "export function localCodeContextPrompt",
+        "isSensitiveRepositoryEvidencePath"
+      ]
+    },
+    {
+      "path": "lib/axiom/agentRuntime/repositoryEvidencePolicy.ts",
+      "startLine": 1,
+      "endLine": 12,
+      "sha256": "f39337cc9bba62c1120847e58cc77aae00a42406e8879ee3936e71bb1b2ad6b4",
+      "rangeSha256": "f39337cc9bba62c1120847e58cc77aae00a42406e8879ee3936e71bb1b2ad6b4",
+      "anchors": [
+        "export function isSensitiveRepositoryEvidencePath"
+      ]
+    },
+    {
+      "path": "desktop/src/views/AgentChatView.tsx",
+      "startLine": 584,
+      "endLine": 617,
+      "sha256": "2927dc0cda60a73092e408fff8974295987faa3534dc0a051bb37be48e09074f",
+      "rangeSha256": "1e633b7f25374763cd38a9a9cb4943d3355034125fa8d57033969817154c94c2",
+      "anchors": [
+        "processedLocalCode.current",
+        "setOperationMode(\"inspect\")",
+        "setInput(current"
+      ]
+    }
+  ]
+}
