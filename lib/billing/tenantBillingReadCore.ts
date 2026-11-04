@@ -39,8 +39,10 @@ export interface BillingPlanRecord {
 export function createBillingPlanReaderCore(repository: BillingPlanReadRepository, configuration: {
  publicBillingPolicyEnabled: () => boolean;
  configuredPublicBillingIdentity: () => PublicBillingIdentity;
+ strictCurrentRecords?: boolean;
 }) {
  const { publicBillingPolicyEnabled, configuredPublicBillingIdentity } = configuration;
+ const strictCurrentRecords = configuration.strictCurrentRecords === true;
 async function readBillingPlanWithAvailability(organizationId: string): Promise<{ plan: BillingPlanRecord; available: boolean }> {
   let available = true;
   let unresolvedPublicPlan: PublicPlanId | undefined;
@@ -58,6 +60,9 @@ async function readBillingPlanWithAvailability(organizationId: string): Promise<
     if (row?.tier.startsWith("public_")) {
       unresolvedPublicPlan=row.tier==="public_pro_v1"?"pro":row.tier==="public_enterprise_v1"?"enterprise":"free";
       throw new Error("public_plan_requires_contract");
+    }
+    if (strictCurrentRecords && row && (!isBillingTier(row.tier) || !isBillingStatus(row.status))) {
+      throw new Error("billing_current_record_unavailable");
     }
     if (row && isBillingTier(row.tier) && isBillingStatus(row.status)) {
       // Trial product retired: coerce any legacy 'trial' tier or 'trialing'

@@ -23,3 +23,10 @@ it("refuses unqualified public projections and unavailable public entitlement st
   await expect(createPrivateDesktopCommercialAccessReader(repo as never, { kind: "public", identity: { accountId: "acct_synthetic", livemode: false } })("org")).rejects.toThrow("desktop_commercial_access_unavailable");
   expect(() => createPrivateDesktopCommercialAccessReader(repo as never, { kind: "public", identity: { accountId: "invalid", livemode: false } })).toThrow();
 });
+
+it("refuses an unknown current billing record instead of treating it as legitimate absence", async () => {
+  for (const row of [{ tier: "unknown", status: "active" }, { tier: "growth", status: "unknown" }]) {
+    const repo = { tenantBillingPlan: { findUnique: async () => row }, $transaction: vi.fn() };
+    await expect(createPrivateDesktopCommercialAccessReader(repo as never, { kind: "legacy" })("org")).rejects.toThrow("desktop_commercial_access_unavailable");
+  }
+});

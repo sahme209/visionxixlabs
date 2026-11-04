@@ -11,6 +11,7 @@ export function createPrivateDesktopCommercialAccessReader(repo: BillingPlanRead
  const identity = config.kind === "public" ? { accountId: config.identity?.accountId, livemode: config.identity?.livemode } : undefined;
  if (publicMode && (!identity || typeof identity.accountId !== "string" || !/^acct_[A-Za-z0-9]+$/.test(identity.accountId) || typeof identity.livemode !== "boolean")) throw Error("private_billing_configuration_unavailable");
  const reader = createBillingPlanReaderCore(repo, {
+  strictCurrentRecords: true,
   publicBillingPolicyEnabled: () => publicMode,
   configuredPublicBillingIdentity: () => { if (!identity) throw Error("private_billing_configuration_unavailable"); return { ...identity }; },
  });
