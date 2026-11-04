@@ -330,3 +330,49 @@ it("retains a draft on Enter while queued work awaits canceled-response recovery
   expect(queue.textContent).not.toContain("Keep this new draft");
   expect(wire.messages()).toHaveLength(1);
 });
+
+
+it.each([
+  { key: "Enter", isComposing: true },
+  { key: "Enter", keyCode: 229 },
+  { key: "Escape", isComposing: true },
+  { key: "Escape", keyCode: 229 },
+])("preserves saved-title search while confirming or dismissing an IME candidate (%j)", async keyEvent => {
+  const wire = fixture();
+  render(createElement(AgentChatView));
+  await screen.findByRole("option", { name: "Fixture model" });
+  await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe(summary.id));
+  fireEvent.click(screen.getByText("Chat options"));
+  fireEvent.click(screen.getByRole("button", { name: "Search chats" }));
+  const search = screen.getByRole("searchbox", { name: "Search conversations" });
+  fireEvent.change(search, { target: { value: "未確定" } });
+  fireEvent.change(screen.getByRole("textbox"), { target: { value: "Keep this unsent draft" } });
+  const historyQueries = () => wire.fetcher.mock.calls.filter(([url]) => new URL(String(url)).searchParams.has("q"));
+  expect(historyQueries()).toHaveLength(0);
+  fireEvent.keyDown(search, keyEvent);
+  expect(screen.queryByRole("searchbox", { name: "Search conversations" })).toBe(search);
+  expect((search as HTMLInputElement).value).toBe("未確定");
+  expect(historyQueries()).toHaveLength(0);
+  expect(wire.messages()).toHaveLength(0);
+  expect((screen.getByRole("textbox") as HTMLTextAreaElement).value).toBe("Keep this unsent draft");
+});
+
+it("keeps explicit saved-title Enter search and Escape dismissal outside composition", async () => {
+  const wire = fixture();
+  render(createElement(AgentChatView));
+  await screen.findByRole("option", { name: "Fixture model" });
+  await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe(summary.id));
+  fireEvent.click(screen.getByText("Chat options"));
+  fireEvent.click(screen.getByRole("button", { name: "Search chats" }));
+  const search = screen.getByRole("searchbox", { name: "Search conversations" });
+  fireEvent.keyDown(search, { key: "Enter" });
+  const historyQueries = () => wire.fetcher.mock.calls.filter(([url]) => new URL(String(url)).searchParams.has("q"));
+  expect(historyQueries()).toHaveLength(0);
+  fireEvent.change(search, { target: { value: "Wire" } });
+  fireEvent.keyDown(search, { key: "Enter" });
+  await waitFor(() => expect(historyQueries()).toHaveLength(1));
+  expect(new URL(String(historyQueries()[0][0])).searchParams.get("q")).toBe("Wire");
+  fireEvent.keyDown(search, { key: "Escape" });
+  expect(screen.queryByRole("searchbox", { name: "Search conversations" })).toBeNull();
+  expect(wire.messages()).toHaveLength(0);
+});

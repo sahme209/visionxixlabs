@@ -1,0 +1,18 @@
+{
+  "source_hashes": {
+    "desktop/src/views/AgentChatView.tsx": "0b7543ba31d29e31cdb05cd82e27b41d5add7cb20e2379909b5247026ae396e7",
+    "lib/desktop/__tests__/agentStreamingApplication.test.ts": "62306abf41a55f4b92bd33cb6969cfaf9ffd63d9eb33a6e2b125a30526f51230"
+  },
+  "red": {
+    "failed": 4,
+    "passed": 1
+  },
+  "green": {
+    "passed": 5,
+    "skipped": 27
+  },
+  "scoped_types_exit": 0,
+  "review": "no important findings",
+  "native_acceptance": false,
+  "production_changed": false
+}

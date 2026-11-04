@@ -1,0 +1,4 @@
+(version 1)
+(allow default)
+(deny network*)
+(deny file-write* (subpath "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion"))
