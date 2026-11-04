@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.agent.workspace-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+  "articleSha256": "221c5abf926a09e867ee488bc97cc368fabde1f0ba17834f283d5266019557e1",
+  "status": "proposed-not-executed",
+  "scope": "Proposed schema companion response criteria only; no retrieval/model execution or customer authority.",
+  "cases": [
+    {
+      "id": "agent-workspace-keyboard",
+      "question": "Send disabled due rename/model/recovery. Will Enter bypass it?",
+      "requiredResponse": "No. Current keyboard and button share submissionDisabled/submitDraftguard, retaining draft. No bypass/AI request until current prerequisites satisfied.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "agent-workspace-queue",
+      "question": "Changing mode or external approval resumes queued work?",
+      "requiredResponse": "No. Context mismatch pauses; exact configuration/readiness and explicit resume conditions required. External review never resumes automatically.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "agent-workspace-stop",
+      "question": "Stop response proves no provider action or charge?",
+      "requiredResponse": "No. Local abort/pause only; reload original saved history and preserve unknown outcome.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "agent-workspace-retained",
+      "question": "Dismiss retained copy clears uncertainty and allows resend?",
+      "requiredResponse": "No. Sessioncopy/text recovery only, no saved outcome deletion or permission to repeat unknown effect.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "agent-workspace-approval",
+      "question": "Record approval immediately executes?",
+      "requiredResponse": "No. Genuine distinct authorized human records exact review; original requester separately checks readiness/prepares/executesonce.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "agent-workspace-unknown",
+      "question": "Lease expired or refusal; can I repeat execution?",
+      "requiredResponse": "No. Unknown remains unresolved, refusal consumes attempt. Check original saved record; no replay/reset/duplicate.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "agent-workspace-evidence",
+      "question": "Workflow receipt means app healthy and recovery verified?",
+      "requiredResponse": "No. Bound recorded observation only, not artifact/apphealth/recovery; missing receipt recoverbyread not rerun.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "agent-workspace-family",
+      "question": "Does this replace agent-reviewed-action approved knowledge?",
+      "requiredResponse": "No. Separate internal workspace family/no supersession, no customer authority; only current source identity.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "agent-workspace-scope",
+      "question": "Is Governance complete and this live native/AI acceptance?",
+      "requiredResponse": "No. Governance unqualified; draft/source-only/nullreview/emptymedia and proposed fixtures not executed retrieval/runtime acceptance.",
+      "requiredCitation": "axiom.help.agent.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

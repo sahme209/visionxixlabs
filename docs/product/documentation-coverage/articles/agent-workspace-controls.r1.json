@@ -1,0 +1,250 @@
+{
+  "schema": 1,
+  "id": "axiom.help.agent.workspace-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Agent workspace: guarded requests, exact review and separate requester execution",
+  "productVersion": "local-source-preview:2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+  "screenIds": [
+    "proposed.axiom.screen.agent.workspace"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.agent.conversation",
+    "proposed.axiom.control.agent.search-titles",
+    "proposed.axiom.control.agent.rename",
+    "proposed.axiom.control.agent.workspace-context",
+    "proposed.axiom.control.agent.request-draft",
+    "proposed.axiom.control.agent.send",
+    "proposed.axiom.control.agent.queue",
+    "proposed.axiom.control.agent.stop-response",
+    "proposed.axiom.control.agent.reload-conversation",
+    "proposed.axiom.control.agent.restore-retained",
+    "proposed.axiom.control.agent.review-proposal",
+    "proposed.axiom.control.agent.record-approval",
+    "proposed.axiom.control.agent.check-outcome",
+    "proposed.axiom.control.agent.check-readiness",
+    "proposed.axiom.control.agent.prepare-reviewed",
+    "proposed.axiom.control.agent.execute-once",
+    "proposed.axiom.control.agent.cancel-unused",
+    "proposed.axiom.control.agent.recorded-evidence"
+  ],
+  "goal": "Use finite mounted Agent controls while distinguishing explicit AI requests, session queue/draft recovery, genuine exact independent review and separate original-requester one-attempt execution.",
+  "prerequisites": [
+    "Internal source-only current preview, not current shipped/native/service acceptance. Selected workspace/session/currentconversation and verified model/context prerequisites must be independently satisfied.",
+    "Model/provider choice/credits/current AI setup differ from operation authority. No AI/provider call is authorized or performed by this draft.",
+    "Required independent review is a genuine personal decision by another eligible current human, never AI/requester impersonation."
+  ],
+  "permissions": [
+    "Chat reply/risk badge/model/mode/prompt/context/evidence/approval do not grant execution authority. Backend current membership/exact proposal/expiry/Agent-tool policy remain decisive.",
+    "Approval endpoint requires paired desktop session/agent:approve; requester may stop own pending proposal under current workspace:read, stopping another requires approver authority.",
+    "Requester execution is separate, current exact original requester only, fixed supported source/current commercial access/flag/persisted approval policy gated. Governance remains incomplete/unqualified, not certified by this article."
+  ],
+  "steps": [
+    {
+      "instruction": "Select Agent conversation or Search chats to filter loaded titles; Enter/Search all saved titles queries saved titles, not message content. New chat saves a conversation while retaining bounded session draft. Rename via Chat options, save expected title then read authoritative title.",
+      "effect": "read",
+      "expectedState": "Busy rename/load/send prevents incompatible selection. Failed reads preserve active draft; title verification failure requires Refresh title, not replay lost write. New chat does not prove prior work stopped."
+    },
+    {
+      "instruction": "Set Workspace context: verified returned repository/branch/environment or explicit manual repository/branch/file. Retry catalogs/connections for current reads.",
+      "effect": "local-preference",
+      "expectedState": "Manual context unverified until service authorizes; branch/repository change clears file. Environment/model/mode preference is advisory, not current target access or execution permission."
+    },
+    {
+      "instruction": "Compose Agent request; suggestions fill only. Enter sends by default, ShiftEnter newline; verified command-enter preference uses Cmd/CtrlEnter; AltEnter/IME does not send. Send/Queue message/Interrupt & queue all use shared guarded submission.",
+      "effect": "propose",
+      "expectedState": "Current keyboard path shares submissionDisabled with button: rename/model/recovery/loading/conversation/proposal/nonempty/code-context failures block submission and retain draft. Exact server/model/session checks remain decisive; no new AI request permitted by this article."
+    },
+    {
+      "instruction": "Choose Chat/Edit repository file, Specialized Agent, bounded Model-call limit, Inspect/Engineer/DeepOps or permitted verified Agent model only for intended current context. Retry models/Model settings address unready setup.",
+      "effect": "local-preference",
+      "expectedState": "Modes configure decision steps/read/proposal behavior, not execution; credits apply every AI call including repairs. Missing/disabled/unverified model blocks sends; imported skills/Airflow/local selections add draft not automatic send."
+    },
+    {
+      "instruction": "Inspect session queue; Edit moves one item into empty draft, Remove removes it and pauses. Resume queue requires no send/recovery/load/proposal and exact request-configuration match.",
+      "effect": "local-preference",
+      "expectedState": "Queue max20items/500000instructioncharacters. Nonempty draft preserved on Edit error. Context change pauses incompatible work. Auto continuation additionally requires verified usage/noissue/proposal and fresh saved read; external review never resumes queue automatically."
+    },
+    {
+      "instruction": "Stop response or leave active view to pause queue/abort local response; Reload saved conversation reads original saved turns/actions for matching context.",
+      "effect": "recover",
+      "expectedState": "Streaming draft is decision/usage-verification pending. Stop is not canceled provider dispatch/zerocharge/outcome proof. Failed/unreadable response retains text and pauses; saved read is not AI retry."
+    },
+    {
+      "instruction": "After recovery, Restore retained request only into empty draft or Dismiss retained copy to remove session copy. Restore request draft from needs-attention similarly restores without send.",
+      "effect": "recover",
+      "expectedState": "Retained excerpt max160characters/sessiononly. Different instruction blocked until restore/dismiss; neither clears saved uncertainty or authorizes resend. Startup Retry without conversation only retries startup."
+    },
+    {
+      "instruction": "Review approval details/FileDiff/arguments and every diff page when large. Review in local editor opens draft only. Genuine eligible independent human personally Record approval under current authority; Reject/Cancel proposal only as permitted.",
+      "effect": "human-review",
+      "expectedState": "Record approval records exact review, not execution. Missing guarded source bindings/current review require fresh proposal. Requester cannot impersonate independent reviewer. Refresh decision reconciles saved state read-only/pauses queue; compatibility executed labels do not prove approval endpoint executes."
+    },
+    {
+      "instruction": "Original requester uses Check saved action outcome and Check execution readiness. Prepare reviewed action only when currently eligible/no saved operation, then recheck readiness and Execute approved action once only for exact prepared record.",
+      "effect": "execute",
+      "expectedState": "Preparation saves no provider effect. Service flag/current exact paired requester/commercial access/fixed supported source and persisted review/policy checks govern; no runtime flag access or activation claimed. Governance unavailable/incomplete, consumed/expired/unsupported review blocks progression."
+    },
+    {
+      "instruction": "Use Cancel unused action only for matching prepared record; after lost/malformed prepare/execute/cancel response, read original saved action outcome.",
+      "effect": "recover",
+      "expectedState": "Uncertainty hold allows read-only checks, not resend. Preparation uncertainty clears only verified absent/prepared record; execute/cancel needs matching terminal record. Refusal consumes attempt; cancel is not rollback of dispatched work."
+    },
+    {
+      "instruction": "Inspect Evidence used/recorded repository snapshots and eligible commit/PR/workflow receipts. Refresh workflow receipt is explicit authorized observation for bound record.",
+      "effect": "read",
+      "expectedState": "Evidence read/display not fresh repository authority; untrusted content not instructions. Workflow status/run/rollback-step does not verify artifact promotion/apphealth/recovery. Missing receipt requires history read, never repeat execution. Copy copies only, links navigate, Jump to latest scrolls."
+    }
+  ],
+  "expectedOutcome": "Preserve draft and original saved record when blocked/unknown; distinguish AI usage/read evidence/review from authorized one-attempt provider execution without replaying uncertain effects.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial accepted:false. Media accepted:false. Native accepted:false. Runtime accepted:false. Release accepted:false. Shipped accepted:false. Nullhumanreview/emptymedia; no authentic walkthrough/current access/installer/platform or provider success claim.",
+    "Allproposed. IDs authoring candidates, not runtime/help bindings. No ingestion/retrieval activation/customer approval/new feature/authority created.",
+    "Historical91ea8743 guide/manifest/review remain intact.18of19historicentries unchanged; AgentChatView alone differs by reviewed56fa9c63 shared submissionDisabled extraction/submitDraftguard/button reuse (3insertions2deletions). New current range receipt explicitly binds exact2f0bd307bytes without rewriting historical coordinates.",
+    "This family axiom.help.agent.workspace-controls is distinct from existing agent-reviewed-action revisions. No supersession/replacement of those records or earlier guide implied.",
+    "Finite mounted screen/visible children/direct review-execution seams only; excludes all profiles/tools/backends, local editor follow-on controls, cockpit reviewer/native dialogs/external GitHub/settings destinations and full provider outcomes.",
+    "Saved completed means execution record completion, not deployment health. Readiness is not authority, receipt absence not no effect; provider usage tokens/steps not customer credit-charge proof.",
+    "Fixture proposed-not-executed prose, not executed retrieval/model evaluation. Source hashes/ranges prove identity only, not semantic/runtime/accessibility/keyboard/native/customer acceptance."
+  ],
+  "recovery": [
+    "Blocked shared submission guard retains draft; do not bypass disabled UI through Enter/queue. Fix current prerequisites and inspect currentmodel/conversation/context before deliberate send.",
+    "Stop/interrupt pausesqueue and abortslocal response, no provider cancellation/charge/outcome guarantee. Reload matching saved conversation before restore/dismiss; neither local text action authorizes resend unknown effect.",
+    "Lost decision/receipt requires saved history/Refresh decision, never another approval or execution to recover display. External review does not auto-resume queue.",
+    "Uncertain prepare/execute/cancel holds mutations. Original saved outcome only; lease elapsed remains unknown, no reset/duplicate/replay. Refusal consumes attempt.",
+    "Readiness expiry/context/model/target/version change requires fresh check; wrong requester/session/Governance/currentaccess/unsupported source block execution.",
+    "Queue Edit requires emptydraft; configuration mismatch pauses. Keep bounded retained draft when switching capacity fails. Rename uncertain write needs authoritative title refresh, not lost-write replay."
+  ],
+  "searchTerms": [
+    "Agent request",
+    "Enter",
+    "Queue message",
+    "Interrupt & queue",
+    "Stop response",
+    "Reload saved conversation",
+    "Restore retained request",
+    "Record approval",
+    "Check execution readiness",
+    "Prepare reviewed action",
+    "Execute approved action once",
+    "Check saved action outcome",
+    "Refresh decision",
+    "Evidence used"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/views/AgentChatView.tsx",
+      "sha256": "ad734ae3b5fc40b586d74a547f03ac90233991a41d90d7d9ad73514a77bd8313"
+    },
+    {
+      "path": "desktop/src/components/AgentApprovedActions.tsx",
+      "sha256": "0e4484a9507baf5f7ef2743b38e101355800b02b863880a80f77a827f818e51f"
+    },
+    {
+      "path": "desktop/src/components/AgentModelSelector.tsx",
+      "sha256": "7d9ce3d10aa28a41e8d41cef5b60f8916ccf55db5168529513d3705b2711120d"
+    },
+    {
+      "path": "desktop/src/components/ConversationRename.tsx",
+      "sha256": "586fdf21c1f91da11daee1d84f70f918a9f2d9c1492237fdfcb0e22228251c1e"
+    },
+    {
+      "path": "desktop/src/components/AgentGithubReceipts.tsx",
+      "sha256": "1fb6a4b71f71fc592bd1498cf2a7c133a96ca0afeed0b504a135373cf69bf1a1"
+    },
+    {
+      "path": "desktop/src/components/AgentRestartReceipts.tsx",
+      "sha256": "acedbffc1a56799cafde829ba058aa8694f9df7a729ad6d22276b8c51236d6fe"
+    },
+    {
+      "path": "desktop/src/components/DeploymentWorkflowEvidence.tsx",
+      "sha256": "dc6a460f24553325b05bdf30df539bc3ccf6d59ad31ef8036ddb6c6f685b7e6b"
+    },
+    {
+      "path": "desktop/src/components/AgentMessageContent.tsx",
+      "sha256": "7e85a6f2275bcd712a1fc4841d019adc50a8a68cb6b46a25f46ee49d06fa7ea3"
+    },
+    {
+      "path": "desktop/src/components/Disclosure.tsx",
+      "sha256": "8dc049048b429fdcb0f280d416730f5915dfd1ef71cf8b8fd656ccdd9c1806af"
+    },
+    {
+      "path": "desktop/src/components/FileDiff.tsx",
+      "sha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3"
+    },
+    {
+      "path": "desktop/src/lib/useDismissibleDetails.ts",
+      "sha256": "f5fea6b786c03e32c063a99b0384be3965f86a9b2aa812cfbe5812464d133979"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/lib/agentActionExecutionControls.ts",
+      "sha256": "ef397dc5d016215e380a123ee32d7f016da26964535ab5f442561e7e164c2f5e"
+    },
+    {
+      "path": "desktop/src/lib/agentActionExecutionRecovery.ts",
+      "sha256": "9284e52c612eb00552c9171078633bae1f455506c1a28032ccdc665e30fe0037"
+    },
+    {
+      "path": "lib/desktop/agentActionExecutionRequestService.ts",
+      "sha256": "d5d10dd4c0e8a1933b23d11fb6c0a062a02ef744e7f60ed38bbde5cd92e5355c"
+    },
+    {
+      "path": "lib/desktop/agentActionEligibility.ts",
+      "sha256": "ef7e553d15fa050a5b0fabfd92f9a69536a6704c9d699089ea13fe3fe032c8b5"
+    },
+    {
+      "path": "app/api/desktop/agent/actions/[id]/approve/route.ts",
+      "sha256": "438489dba11156e52acd181743a15102b3f4b493a19f587b751154b722597733"
+    },
+    {
+      "path": "app/api/desktop/agent/actions/[id]/reject/route.ts",
+      "sha256": "635821cfc469779ad8cc559b79e393fd85eceb5323177e3b2042b34b2875bfb1"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/browserApprovalDecision.ts",
+      "sha256": "ed1f028d771ebe8862cb4aeca95f238bace2d11ac924b6e437b9e1d3941abf93"
+    },
+    {
+      "path": "docs/product/knowledge/agent-workspace-controls.md",
+      "sha256": "f0e79e1a7dda8f2e19fe42e2cbf010f21b7207e72f90c5bb96fe58ec16d07e63"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/agent-workspace-guide/source-bindings.json",
+      "sha256": "e9e28f32602730e7869a977bb5542f0b6673b567cd022eeae22828ac95a9db24"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/agent-workspace-guide/source-review.md",
+      "sha256": "9b598b952d6625c2645d635e8ffa12e7ea1a09d264a864bfa6e65805c56c680a"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/agent-workspace-guide/binding-verification.json",
+      "sha256": "1379a3776eeebc6a9a609f635af3107e7c713dfe5bc30ba1dd054bec94596777"
+    },
+    {
+      "path": "docs/product/documentation-coverage/agent-workspace-controls.r1.sources.json",
+      "sha256": "6371a4df163159409a439bc24224e40103aaa9cdd49db7a67cd6f65fc323b941"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/agent-workspace-controls.md",
+      "docs/recovery/2026-11-03/agent-workspace-guide/source-bindings.json",
+      "docs/recovery/2026-11-03/agent-workspace-guide/source-review.md",
+      "docs/recovery/2026-11-03/agent-workspace-guide/binding-verification.json",
+      "docs/product/documentation-coverage/agent-workspace-controls.r1.sources.json"
+    ],
+    "verifiedVersion": "local-source-preview:2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
