@@ -53,6 +53,15 @@ export function statusFor(s: DesktopSession, now: Date = new Date()): DesktopSes
 }
 
 export function createPrivateDesktopSessionService(sessionStore: DesktopSessionStore, clock: () => Date) {
+ return createDesktopSessionServiceCore(sessionStore, clock, true);
+}
+
+/** Legacy wrappers explicitly retain existing record handling. */
+export function createDesktopSessionServiceCore(sessionStore: DesktopSessionStore, clock: () => Date, validateRecords: boolean) {
+ const isActive = (session: DesktopSession, id: string, now: Date) => {
+  if (validateRecords && (session.id !== id || !Number.isFinite(now.getTime()) || !Number.isFinite(Date.parse(session.expiresAt)))) return false;
+  return statusFor(session, now) === "active";
+ };
  const getStore = async () => sessionStore;
 async function createDesktopSession(input: CreateSessionInput): Promise<DesktopSession> {
   const ttlDays = Math.min(input.ttlDays ?? DEFAULT_TTL_DAYS, MAX_TTL_DAYS);
@@ -82,7 +91,7 @@ async function resolveActiveSession(id: string): Promise<DesktopSession | undefi
   const sessionStore = await getStore();
   const session = await sessionStore.getById(id);
   if (!session) return undefined;
-  if (statusFor(session, clock()) !== "active") return undefined;
+  if (!isActive(session, id, clock())) return undefined;
   return session;
 }
 
@@ -91,7 +100,7 @@ async function touchDesktopSession(id: string): Promise<void> {
   const sessionStore = await getStore();
   const s = await sessionStore.getById(id);
   if (!s) return;
-  if (statusFor(s, clock()) !== "active") return;
+  if (!isActive(s, id, clock())) return;
   await sessionStore.update({ ...s, lastSeenAt: clock().toISOString() });
 }
 
@@ -105,7 +114,7 @@ async function revokeDesktopSession(id: string, reason: string): Promise<void> {
 
 async function listActiveSessions(userId: UserId): Promise<DesktopSession[]> {
   const all = await (await getStore()).listByUser(userId);
-  return all.filter((s) => statusFor(s, clock()) === "active");
+  return all.filter((s) => isActive(s, s.id, clock()));
 }
 
 return Object.freeze({ createDesktopSession, getDesktopSession, resolveActiveSession, touchDesktopSession, revokeDesktopSession, listActiveSessions });

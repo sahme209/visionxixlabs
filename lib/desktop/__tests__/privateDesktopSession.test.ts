@@ -59,3 +59,16 @@ it("private Prisma adapter maps real record fields and scopes lookup to the supp
  await createPrivateDesktopSessionService(store, () => new Date("2026-01-02")).revokeDesktopSession("row", "revoked");
  expect((await store.getById("row"))?.revokedAt).toBe("2026-01-02T00:00:00.000Z");
 });
+
+it("refuses malformed expiry, invalid clock and a record returned for a different signed ID", async () => {
+ const row = { id: "signed", userId: "u" as UserId, organizationId: "org" as OrganizationId, deviceFingerprint: "f", deviceLabel: "t", platform: "unknown" as const, issuedAt: "2026-01-01", expiresAt: "2027-01-01", lastSeenAt: "2026-01-01" };
+ const store: DesktopSessionStore = { create: async () => {}, getById: async () => row, listByUser: async () => [row], update: async () => {} };
+ const service = createPrivateDesktopSessionService(store, () => new Date("2026-01-01"));
+ expect(await service.resolveActiveSession("signed")).toEqual(row);
+ expect(await service.resolveActiveSession("other")).toBeUndefined();
+ row.expiresAt = "invalid";
+ expect(await service.resolveActiveSession("signed")).toBeUndefined();
+ expect(await service.listActiveSessions(row.userId)).toEqual([]);
+ row.expiresAt = "2027-01-01";
+ expect(await createPrivateDesktopSessionService(store, () => new Date(NaN)).resolveActiveSession("signed")).toBeUndefined();
+});

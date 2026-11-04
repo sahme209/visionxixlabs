@@ -8,7 +8,7 @@
 
 import "server-only";
 
-import type { DesktopSession, DesktopSessionStore } from "./desktopSession";
+import type { DesktopSession, DesktopSessionStore } from "./privateDesktopSession";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 
 type SessionRow = {
@@ -44,10 +44,10 @@ function fromRow(row: SessionRow): DesktopSession {
 }
 
 type PrismaSessionModel = {
-  create: (args: unknown) => Promise<unknown>;
-  findUnique: (args: unknown) => Promise<SessionRow | null>;
-  findMany: (args: unknown) => Promise<SessionRow[]>;
-  update: (args: unknown) => Promise<unknown>;
+  create: (args: { data: SessionRow }) => PromiseLike<unknown>;
+  findUnique: (args: { where: { id: string } }) => PromiseLike<SessionRow | null>;
+  findMany: (args: { where: { userId: string }; orderBy: { issuedAt: "desc" } }) => PromiseLike<SessionRow[]>;
+  update: (args: { where: { id: string }; data: Pick<SessionRow, "deviceLabel" | "platform" | "desktopVersion" | "expiresAt" | "lastSeenAt" | "revokedAt" | "revokeReason"> }) => PromiseLike<unknown>;
 };
 
 export function createPrivatePrismaDesktopSessionStore(repo: { desktopSessionRecord: PrismaSessionModel }): DesktopSessionStore {

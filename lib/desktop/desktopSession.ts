@@ -120,12 +120,12 @@ export function statusFor(s: DesktopSession, now: Date = new Date()): DesktopSes
 // Operations
 // ---------------------------------------------------------------------------
 
-const legacyService = createPrivateDesktopSessionService({
+const legacyService = createDesktopSessionServiceCore({
  create: async s => (await store()).create(s),
  getById: async id => (await store()).getById(id),
  listByUser: async id => (await store()).listByUser(id),
  update: async s => (await store()).update(s),
-}, () => new Date());
+}, () => new Date(), false);
 export const { createDesktopSession, getDesktopSession, resolveActiveSession, touchDesktopSession, revokeDesktopSession, listActiveSessions } = legacyService;
 export { createPrivateDesktopSessionService } from "./privateDesktopSession";
-import { createPrivateDesktopSessionService } from "./privateDesktopSession";
+import { createDesktopSessionServiceCore } from "./privateDesktopSession";
