@@ -1,0 +1,192 @@
+{
+  "schema": 1,
+  "id": "axiom.help.desktop.apps-skills-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Desktop Apps & skills: filters, saved skill metadata and provider entry controls",
+  "productVersion": "local-source-preview:e0919cd33243db35345446bab3f4354be43280e3",
+  "screenIds": [
+    "proposed.axiom.screen.desktop.apps-skills"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.desktop.apps-skills.refresh",
+    "proposed.axiom.control.desktop.apps-skills.search",
+    "proposed.axiom.control.desktop.apps-skills.filter",
+    "proposed.axiom.control.desktop.apps-skills.connection-settings",
+    "proposed.axiom.control.desktop.apps-skills.provider-entry",
+    "proposed.axiom.control.desktop.apps-skills.verify-access",
+    "proposed.axiom.control.desktop.apps-skills.recover-validation",
+    "proposed.axiom.control.desktop.apps-skills.github-installation-review",
+    "proposed.axiom.control.desktop.apps-skills.nested-actions",
+    "proposed.axiom.control.desktop.apps-skills.outlook-toggle",
+    "proposed.axiom.control.desktop.apps-skills.skill-tools",
+    "proposed.axiom.control.desktop.apps-skills.skill-metadata",
+    "proposed.axiom.control.desktop.apps-skills.use-in-agent",
+    "proposed.axiom.control.desktop.apps-skills.mcp-check",
+    "proposed.axiom.control.desktop.apps-skills.mcp-search"
+  ],
+  "goal": "Distinguish desktop local filters/navigation, current status/validation, organization skill metadata and composer insertion from actual provider grants, AI sends or approved actions.",
+  "prerequisites": [
+    "Internal source-only draft; current installed support/service/access/connection state require separate current checks. Desktop view is not public marketing catalog.",
+    "Current owned desktop context/revision/workspace; owner/admin UI canManage differs from server authority. Paired server capability/catalog/storage checks may refuse a visible control.",
+    "Nested Slack/Teams/Linear/Outlook/cloud controls remain separately governed; genuine exact independent review required where their guides specify, never satisfied by opening panel."
+  ],
+  "permissions": [
+    "Filter/status/catalog labels/skill names/tool disclosure do not grant provider/tool/AI execution authority. Installed provider can include needs-attention, not healthy-only.",
+    "Skill metadata is organization/workspace installation state plus audit, not grant to tools; UI error/rollback not storage rollback. Server workspace administrator rule remains decisive.",
+    "Use in Agent inserts draft only after current enabled skill/context checks, not Send. AI/provider actions require separate current constraints/explicit intent.",
+    "MCP topic leaves to public documentation service. Use public technical terms only; no private code/secrets/PII. Availability check not installed search entitlement."
+  ],
+  "steps": [
+    {
+      "instruction": "Open desktop Apps & skills, not public website /integrations. Bot-origin entry selects Apps and offers Back to Axiom Bot only while original context/revision/identity remains owned; other entry starts All.",
+      "effect": "read",
+      "expectedState": "App mounts PluginsSkillsView; canManage UI only owner/admin. Connection settings goes to Settings; Airflow Open goes to Batches. Navigation is not provider execution or consent."
+    },
+    {
+      "instruction": "Refresh capabilities/Retry reloads skills, integration status and Airflow connection. Search apps and skills filters loaded names/details/categories locally; choose one All/Apps/Skills/Developer tools(MCP)/Installed/Enabled/Disabled filter.",
+      "effect": "local-preference",
+      "expectedState": "Browse and Status are alternative values, not intersected groups. Installed skills status not not_installed; providers exclude not_connected/checking/unavailable, thus includes needs-attention states, not healthy-only. Enabled/Disabled hide provider rows. Empty matches are local filter outcome."
+    },
+    {
+      "instruction": "Inspect current returned provider row and choose Connect/Configure/Manage/Open only when owned context/admin/config/status permit. Browser links must match supported configured HTTPS provider hosts.",
+      "effect": "read",
+      "expectedState": "Rows/catalog labels not proof every operation available. Service-unconfigured Connect disabled. Opening browser is not final consent/grant; server can refuse UI-offered control."
+    },
+    {
+      "instruction": "Use Verify access only when appropriate, then inspect returned current validation/status and provider-specific guidance. For held Slack/Teams validation use Reload status/Review consent.",
+      "effect": "recover",
+      "expectedState": "Validation may update saved connection state but is not message approval/health guarantee. Matching new receipt/pending rules clear hold, not every Refresh. Never replay unknown validation/token rotation simply to bypass hold."
+    },
+    {
+      "instruction": "For revoked GitHub, inspect existing-installation account type/repository selection and unexpired challenge before Reconnect verified installation. Use Dismiss review or Reload GitHub status after uncertainty.",
+      "effect": "propose",
+      "expectedState": "Confirmation sets reload hold before send. Dismiss local review is not provider installation removal; unconfirmed result needs status reload. Other connection options opens separate browser Connect, no actual installation/permission acceptance here."
+    },
+    {
+      "instruction": "For returned connected Slack, Manage/Notification reviews opens nested controls; Teams/Linear Actions opens shared panel. Open Outlook appears only All/Apps when separate keyword matching passes.",
+      "effect": "read",
+      "expectedState": "Opening panels no human approval/actionauthority. Outlook can be hidden by Installed/Enabled/Disabled/MCP even while connected and loads its own status. Close does not revoke/undo. Nested provider controls use separate guides."
+    },
+    {
+      "instruction": "Review skill tools expands local guidance/tool names. Add/Enable/Disable/Remove changes workspace installation metadata only when current canManage/storage/idle/server policy permits.",
+      "effect": "propose",
+      "expectedState": "GET paired pipeline:read/noAPIkeys; POST additionallyworkspace admin/catalog validation. Add/enable upsertsenabled, disable existing row/remove installation; audit followsmutation. Audit failure can return503after metadata changed; no proven rollback."
+    },
+    {
+      "instruction": "After unconfirmed skill change Refresh current state before another deliberate mutation. Use in Agent only for enabled skill/current storage/callback/idle.",
+      "effect": "recover",
+      "expectedState": "App passes context/workspace selection; Agent rechecks current enabled skills and inserts composer draft, not Send/AI/tool authority. Failure/unknown leaves changes unavailable until fresh state; fallback curated catalog not installed."
+    },
+    {
+      "instruction": "Under Developer tools(MCP), Check connection reads service availability even without installed enabled skill. Enter public Documentation topic then Search docs only when enabled/idle/nonempty.",
+      "effect": "read",
+      "expectedState": "Topic max300characters sent to Microsoft public docs; no secrets/private code/PII. Handler bounds2048byteJSON/rate/audit and pipeline:read. Check availability separate from installed search entitlement; not cloud scan."
+    },
+    {
+      "instruction": "Open only returned safe result-title links; preserve current workspace/context during any pending action.",
+      "effect": "read",
+      "expectedState": "At most10HTTPSlearn.microsoft.com results. Unavailable/auditfailure not proof no public docsrequest occurred. Changing workspace/closing/abort cannot undo provider consent or dispatched work; stale responses not current authority."
+    }
+  ],
+  "expectedOutcome": "Find applicable desktop control/filter and reconcile original current state without converting navigation/status/metadata/validation into grant, approval or execution evidence.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial accepted:false. Media accepted:false. Native accepted:false. Runtime accepted:false. Release accepted:false. Shipped accepted:false. Null human review/empty media; no authentic walkthrough/current provider health/access/media acceptance.",
+    "proposed. IDs authoring-only candidates, not runtime/help bindings. No ingestion/retrieval activation/customerpublication/new feature/capability/authority.",
+    "Preserved guide/manifest retain be276403code baseline and manifest pre-independent-review phase; later independent-review record remains separate. Article binds current e0919cd3 nine code files+guide/manifest/laterreview=12sources, no historical rewrites.",
+    "Finite top-level mounted desktop surface/direct skills/MCP references only; excludes full nested Slackmanager/reviews/TeamsLinear/Outlook/cloudsetup, all providerlogin/MFA/grants/roles/tokens, backend-wide/complete catalog/security/native/accessibility acceptance.",
+    "Source identity/hash validation not semantic/runtime/cloud/provider liveness proof. Governance enrollment/issuer coverage unqualified; no complete Appshelp/customeracceptance claim.",
+    "Fixture proposed-not-executed prose only, no retrieval/model evaluation. Source flags/config/credentials/accounts/provider status not read; no installed grant/session was inspected."
+  ],
+  "recovery": [
+    "Unknown skillmutation may have changed metadata before auditfailure; refreshcurrent state before another deliberate change, never assume no effect from503/missingreply.",
+    "Held Slack/Teamsvalidation clears only matching receipt/pending rules. Reloadstatus/reviewconsent rather than repeatunknown validation/token rotation; genericrefresh not universal reset.",
+    "GitHub reconnect confirmation creates reloadhold; unconfirmed result needs current status. Dismissreview local only, not installationrevocation.",
+    "Workspace/context change discards stale ownership but not remoteconsent/work. Reopen undercurrent identity; no adoption of old result as grant.",
+    "No matching capabilities/failed catalog/fallback curated skills do not prove organization integration absence or installedstate. Keep issue/distinguish unavailable from empty.",
+    "Publicdocs auditfailure/unavailability not proof request never left. Checkconnection separatefrom search entitlement; no repeatwork to infer private grant."
+  ],
+  "searchTerms": [
+    "Apps & skills",
+    "Installed",
+    "Enabled",
+    "Disabled",
+    "Open Outlook",
+    "Verify access",
+    "Reload status",
+    "Reconnect verified installation",
+    "Add skill",
+    "Use in Agent",
+    "Developer tools MCP",
+    "Documentation topic",
+    "Check connection",
+    "Search docs"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88"
+    },
+    {
+      "path": "desktop/src/views/PluginsSkillsView.tsx",
+      "sha256": "bbf5ac0521d7564e38973bcf022c4f001d3911607e17ad5369ef4431ec84bab8"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/views/AgentChatView.tsx",
+      "sha256": "ad734ae3b5fc40b586d74a547f03ac90233991a41d90d7d9ad73514a77bd8313"
+    },
+    {
+      "path": "desktop/src/lib/skillInvocation.ts",
+      "sha256": "331d2f9e501462f006a5fa2941c02d0ae3cf609b6194c37bb6b257d4bb96a0f8"
+    },
+    {
+      "path": "desktop/src/components/DesktopMcpTools.tsx",
+      "sha256": "be13c796d1a54aae26094f3c4e35eca31239a679ebfc7a18758f53e5d13a725a"
+    },
+    {
+      "path": "app/api/desktop/agent/skills/route.ts",
+      "sha256": "b94751c4a51532b350435940afbb8ddf9b7a0035221adb062d0717e24a0bc18a"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/skillManagement.ts",
+      "sha256": "4b9481f99901d0b69f7777f203f53429c174172501c23e461c66472aa58b24bb"
+    },
+    {
+      "path": "app/api/desktop/mcp/microsoft-learn/route.ts",
+      "sha256": "fdc492f42d29b9f8615e42aa11c652b023dcdce10fb875815a113d899b23b982"
+    },
+    {
+      "path": "docs/product/knowledge/desktop-apps-skills-controls.md",
+      "sha256": "616f9498b4bfbbb4f68a64489cd4640324a6afb680c99c08d312cb93184f121f"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/desktop-apps-skills-guide/source-bindings.json",
+      "sha256": "ebcef5b20eb20f139d0620e492aed5bb22a7e33b596c01c7fa8f5962b21bc245"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/desktop-apps-skills-guide/independent-review.md",
+      "sha256": "299717aaa76cc88cf9e9c2e1e655e16c9b4033a54c50bedc34e83b44a47791ee"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/desktop-apps-skills-controls.md",
+      "docs/recovery/2026-11-04/desktop-apps-skills-guide/source-bindings.json",
+      "docs/recovery/2026-11-04/desktop-apps-skills-guide/independent-review.md"
+    ],
+    "verifiedVersion": "local-source-preview:e0919cd33243db35345446bab3f4354be43280e3",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

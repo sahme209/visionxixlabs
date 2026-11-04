@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.desktop.apps-skills-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:e0919cd33243db35345446bab3f4354be43280e3",
+  "articleSha256": "0e42d0fcae838e5a5fae81444f3dd86a6397debed73c1d20c3687e2e69ae2fd9",
+  "status": "proposed-not-executed",
+  "scope": "Proposed schema companion response criteria only; no retrieval/model execution or customer authority.",
+  "cases": [
+    {
+      "id": "desktop-apps-skills-filter",
+      "question": "Can I combine Apps and Installed, and is Installed healthyonly?",
+      "requiredResponse": "No. One alternative filter state, not intersections. Installedprovider excludes not_connected/checking/unavailable and can include needs attention.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "desktop-apps-skills-outlook",
+      "question": "Outlook missing under Installed means disconnected?",
+      "requiredResponse": "No. OnlyAll/Apps plus separate keywords showcard; filterscanhideexistingconnection. Checkactualcurrent status separately.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "desktop-apps-skills-grant",
+      "question": "Connect or current status grants actions?",
+      "requiredResponse": "No. Navigation/returnedstatus not consent/approval/currenthealth. Server canrefuse UI, nested action authority separate.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "desktop-apps-skills-skills",
+      "question": "Add returned503. Safe to repeat assuming rollback?",
+      "requiredResponse": "No. Metadata maychange before audit failure; refresh state first, UI error not storage rollback.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "desktop-apps-skills-agent",
+      "question": "Use in Agent sendsAI immediately?",
+      "requiredResponse": "No. Context-bound currentenabled skill selection edits composer only, no Send/tool grant.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "desktop-apps-skills-validation",
+      "question": "Can Refresh clearunknown validation/reconnect hold?",
+      "requiredResponse": "Not necessarily. Matchingnew receipt/pending rules and specific status recovery; never replay unknown validation to bypasshold.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "desktop-apps-skills-mcp",
+      "question": "Check connection means installed and privatequery stayslocal?",
+      "requiredResponse": "No. Check availability independentof search entitlement; topic sentpublic Microsoft docs, public terms only/no secretsprivate codePII.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "desktop-apps-skills-scope",
+      "question": "This public catalog article proves complete Appshelp/customeracceptance?",
+      "requiredResponse": "No. Actualdesktop finite top-levelsource-only draft, nested guides separate/null review/emptymedia, no complete Apps/customer/media/native acceptance.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "desktop-apps-skills-history",
+      "question": "Manifest says pendingreview. Was it silently upgraded?",
+      "requiredResponse": "No. Historicalpre-review manifest preserved; later independent review separately bound, does not confer customer/runtime acceptance.",
+      "requiredCitation": "axiom.help.desktop.apps-skills-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}
