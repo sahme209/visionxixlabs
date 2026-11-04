@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /private/tmp/axiom-b4-slack-20261104 || exit 90
+exec /usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-b4-slack-evidence TMPDIR=/private/tmp/axiom-b4-slack-evidence NODE_ENV=test /usr/bin/sandbox-exec -f /private/tmp/axiom-b4-slack-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node docs/product/documentation-coverage/validate-support-knowledge.cjs --root /private/tmp/axiom-b4-slack-20261104 --article docs/product/documentation-coverage/articles/slack-reviewed-action-controls.r1.json --evaluation docs/product/documentation-coverage/slack-reviewed-action-controls-evaluation.r1.json --version local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4 "$@"

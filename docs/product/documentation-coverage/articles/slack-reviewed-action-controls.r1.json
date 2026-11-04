@@ -1,0 +1,215 @@
+{
+  "schema": 1,
+  "id": "axiom.help.slack.reviewed-action-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Slack notification: exact task-bound review, prepare and send once",
+  "productVersion": "local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4",
+  "screenIds": [
+    "proposed.axiom.screen.bot.slack-workflow",
+    "proposed.axiom.screen.slack.notification-reviews"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.slack.load-channels",
+    "proposed.axiom.control.slack.select-channel",
+    "proposed.axiom.control.slack.more-channels",
+    "proposed.axiom.control.slack.message",
+    "proposed.axiom.control.slack.save-review",
+    "proposed.axiom.control.slack.reload-history",
+    "proposed.axiom.control.slack.task-linked-reviews",
+    "proposed.axiom.control.slack.review-exact-message",
+    "proposed.axiom.control.slack.approve",
+    "proposed.axiom.control.slack.prepare",
+    "proposed.axiom.control.slack.confirm-send",
+    "proposed.axiom.control.slack.send-once",
+    "proposed.axiom.control.slack.cancel-unused",
+    "proposed.axiom.control.slack.cancel-prepared",
+    "proposed.axiom.control.slack.recover",
+    "proposed.axiom.control.slack.close"
+  ],
+  "goal": "Distinguish exact Slack drafting, genuine independent human approval, separate requester preparation and one-attempt sending from verified delivery or permission to retry.",
+  "prerequisites": [
+    "Internal source draft only. Installed-version support, current activation/connection and native usability remain separately unverified.",
+    "Open Axiom Bot \u2192 App actions \u2192 Slack notification with a clean saved task. Unsaved/edited task provider-change entries are disabled. Opening does not execute.",
+    "Current verified paired desktop session, accepted workspace membership and commercial access are required; API keys do not authorize this route."
+  ],
+  "permissions": [
+    "workspace:read is required for reading. connections:manage is required for requesting/preparing/executing; agent:approve is required for independent review. Current server checks decide authority, not role names or visible controls alone.",
+    "Requester is the named executor. A genuine different eligible human must personally approve exact workspace/channel/text; neither requester nor executor may self-approve. No agent, article or checkbox makes this decision.",
+    "Current active unrevoked requester-consented Slack connection must match connection ID/revision/workspace and include channels:read and chat:write. Channel must be public, unarchived and Axiom a member; no implicit join, invitation or scope expansion.",
+    "Current original requester, executor and distinct reviewer sessions/membership/capabilities are rechecked where required. The same executor may prepare under a new authenticated session only if original requester/reviewer sessions remain valid; operation is bound to preparing session."
+  ],
+  "steps": [
+    {
+      "instruction": "Open Slack notification for the clean saved task; inspect task version. Close only closes the workflow panel.",
+      "effect": "read",
+      "expectedState": "Separate from Bot AI Send. The server binds task organization, creator, version and content hash; later edits invalidate eligibility instead of updating the reviewed message."
+    },
+    {
+      "instruction": "Use Load Slack channels; choose Slack channel and More channels if offered. Nonmember channels are disabled and say invite Axiom first.",
+      "effect": "read",
+      "expectedState": "Reads an explicit authorized public-channel page, no provider message. Invitation/setup requires its own authorization; loading/error is not current connection or delivery proof."
+    },
+    {
+      "instruction": "Enter exact Message in Slack message: nonblank, at most4,000 UTF-8 bytes, no unsupported control or isolated surrogate characters.",
+      "effect": "local-preference",
+      "expectedState": "Typing is local. Byte limit differs from Bot instruction character limit; no Enter-to-send shortcut. Busy or unresolved mutation hold disables editing."
+    },
+    {
+      "instruction": "Save for independent review after task-linked history and a valid member channel are available. Inspect workspace/channel/text, task version and expiry.",
+      "effect": "propose",
+      "expectedState": "Saves one requested review, not a Slack message. Successful request clears editor. Initial expiry is15minutes; history and preparation do not renew it. Unresolved request retains original channel/text/task/version/request ID."
+    },
+    {
+      "instruction": "Reload notification history after an unconfirmed mutation. In a non-task-specific review view, Task-linked reviews loads linked records.",
+      "effect": "read",
+      "expectedState": "Existing request ID and exact channel/text/task/version resolve an original draft; a missing result stays unresolved. With latest-record truncation, absence from the list is not evidence that no operation exists."
+    },
+    {
+      "instruction": "A separate eligible human personally checks Review exact Slack message after reading the exact workspace/channel/text record, then chooses Approve exact message.",
+      "effect": "human-review",
+      "expectedState": "Requested version0 becomes approved version1 only after current independent authority checks. Checkbox is bound to ID/version/intent digest and clears on request. Waiting for another eligible member must not be bypassed."
+    },
+    {
+      "instruction": "Requester/executor personally reviews the approved exact record, checks Review exact Slack message, then chooses Prepare approved message.",
+      "effect": "propose",
+      "expectedState": "Rechecks approval/expiry/task/connection/channel evidence/credentials/service; creates session-bound prepared version0. Preparation is not dispatch, renewed expiry or reusable authority."
+    },
+    {
+      "instruction": "Review prepared workspace/channel/text, check Confirm approved Slack send, then explicitly choose Send approved message.",
+      "effect": "execute",
+      "expectedState": "Requires enabled current write availability and exact workspace/channel/connection revision plus claim/credential/final-send guards. Claims at most one attempt and consumes independent approval; no delivery promise or retry slot."
+    },
+    {
+      "instruction": "Use Cancel unused message for an eligible requested/approved review; Cancel prepared notification cancels an eligible unused operation.",
+      "effect": "recover",
+      "expectedState": "Current original authority and expected versions still apply. Does not retract a message, cancel a consumed dispatch, clear uncertainty or create another attempt."
+    },
+    {
+      "instruction": "Recover saved notification on the original dispatching/unknown operation; preserve Outcome unconfirmed. Do not resend this message.",
+      "effect": "recover",
+      "expectedState": "Reads durable record and may mark elapsed dispatch lease unknown. No Slack absence query, resubmission, deadline extension, attempt reset or proof of delivery."
+    },
+    {
+      "instruction": "Read sent as matching saved Slack channel/message timestamp acknowledgement only.",
+      "effect": "read",
+      "expectedState": "HTTP success alone is insufficient: fixed transport checks HTTP200, parsed ok=true, exact channel, timestamp and current guards. Saved acknowledgement still does not verify delivery or human reading; deliveryVerified stays false."
+    },
+    {
+      "instruction": "If disabled, connection needs validation or access fails, preserve history and use separately authorized administrator/setup workflows. Workspace changes require reopening the panel.",
+      "effect": "read",
+      "expectedState": "Visible reviews/controls are not current activation. Workspace changes clear local displayed text/review and abort client work; Close/abort is not provider cancellation or proof no message exists."
+    }
+  ],
+  "expectedOutcome": "Identify exact task-bound Slack review and separate one-attempt operation while retaining independent human decisions and unresolved outcomes without duplicate sends.",
+  "limitations": [
+    "Customer eligible:false; publication approved:false; editorial/media/runtime/native/release/shipped acceptance:false. Null review fields and empty media; no screenshots/video/current connection/native/browser/provider acceptance.",
+    "Proposed IDs are authoring-only, not runtime bindings. No ingestion, retrieval execution, model evaluation, feature, authority, activation or provider action is created.",
+    "Historical guide f0312f54 provenance is preserved. This article binds current4f8c94e1 listed source files, whose bytes are unchanged across these snapshots. Finite comparison is not a complete transitive/deployed review; inclusive ranges are in the recovery source receipt.",
+    "Review states requested/approved/consumed/cancelled differ from operation states prepared/dispatching/sent/unknown/refused/cancelled. Refused is not a reusable attempt; prepared is not a provider acknowledgement.",
+    "Context-bound in-memory recovery holder is not a documented restart-persistent operation locator. Closing/reopening does not authorize repeating unknown execution.",
+    "Existing uncovered-Governance/outbound checks remain mandatory; no Governance activation or complete execution coverage is established. Flags/current access/sessions/credentials were not observed.",
+    "Scope is public-channel task-linked notifications and direct review/history boundary, not DMs/private channels/files/edits/deletes/scheduling/full Slack search or all setup/revocation controls.",
+    "Evaluation is proposed-not-executed prose. Schema/source integrity is not semantic/editorial acceptance or executed retrieval/model/runtime validation."
+  ],
+  "recovery": [
+    "After unconfirmed mutation reload original history with original request identity/channel/text/task/version; missing record remains unresolved. Never invent replacement to bypass uncertainty.",
+    "Recover saved notification checks same durable operation only; no provider absence query or resend. Truncated/empty list is not evidence no attempt exists.",
+    "Changed task/version, expired approval, revoked/session/connection changes do not gain authority from checkbox/history/refresh or account switch; current server checks remain decisive.",
+    "Close/abort/workspace change cannot undo provider attempt; even sent Slack acknowledgement does not prove delivery or reading."
+  ],
+  "searchTerms": [
+    "Slack",
+    "Save for independent review",
+    "Approve exact message",
+    "Prepare approved message",
+    "Send approved message",
+    "Recover saved notification",
+    "unknown",
+    "task version",
+    "Reload notification history",
+    "Slack channel"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/components/BotAppActionLauncher.tsx",
+      "sha256": "db1972fc75e387591c071ff7d3b905b8690dfe0c79582db555e7e543a35ae3c4"
+    },
+    {
+      "path": "desktop/src/components/BotConnectedActionsPanel.tsx",
+      "sha256": "6d49b0a7ee3c635ad984cf6f8248bfe49317a1c45a890edf476a43fb5678ded2"
+    },
+    {
+      "path": "desktop/src/components/SlackNotificationPanel.tsx",
+      "sha256": "0988f88f4819bc31976c8cd70702023b247ec7fa81b9e74048b945c30c0585ed"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/lib/slackNotificationsTransport.ts",
+      "sha256": "7e1e9d8b68f2fe97be7611e2febbcf2d777576b080f590dd95898f15c0e60286"
+    },
+    {
+      "path": "lib/desktop/slackNotificationsHttp.ts",
+      "sha256": "bd0e9f6c7d805f5b3dcfeaf65392db9a56b3b8fa0683d63d6b193b4f531b0232"
+    },
+    {
+      "path": "lib/desktop/slackNotificationsContract.ts",
+      "sha256": "0a206e8d50c69ec3b8eb42ded34cc4c319ff2be34d44a40fd8bfc319c58036e0"
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationContract.ts",
+      "sha256": "62bb54a374be5315c3751f46b5f527475372821975d9955833e1b54fd340e7b7"
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationApprovalStore.ts",
+      "sha256": "c3b39e248a9d1b656b2f62121dd6485b4da1334215552362df8eee13d5d0e674"
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationStore.ts",
+      "sha256": "af32d4c6ea451ef6906503aa8c1857c099a4bd1877a86ef66c85e1b4f0afe908"
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationTransport.ts",
+      "sha256": "437902a5ecd1cff60e7c8664de9c37593aed7edf71dc1975f237b42cae4a051c"
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationExecutor.ts",
+      "sha256": "ab5f58f5f42e51d1ab2e5601f531db629aacecc25b4e9b6216d8abc9baa53596"
+    },
+    {
+      "path": "lib/integrations/slack/tenantSlackChannels.ts",
+      "sha256": "daee73f780110907b6346d68efec5bd91566cc6c71a2269ed6e7c79410cea72c"
+    },
+    {
+      "path": "lib/axiom/bot/actionTaskBinding.ts",
+      "sha256": "63499033bbface2de3f1313627d035dc2b42c5996f59dc52a4664d83c71d0820"
+    },
+    {
+      "path": "docs/product/knowledge/slack-reviewed-action-controls.md",
+      "sha256": "9b472f29440eff96e3b8462761509454cde672189500fffd892c4003c3289e2e"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/slack-structured-knowledge-author/source-bindings.json",
+      "sha256": "f467de553b1fb5c559f9ed697676915a387c245b464d3cda8d358a24b409ffe8"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/slack-reviewed-action-controls.md",
+      "docs/recovery/2026-11-04/slack-structured-knowledge-author/source-bindings.json"
+    ],
+    "verifiedVersion": "local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

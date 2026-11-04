@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.slack.reviewed-action-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4",
+  "articleSha256": "7956474759342b039931c0c94c15bf85dd40318cace866f08164f40a17862c6a",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "slack-ai-send",
+      "question": "Does Bot Send post to Slack?",
+      "requiredResponse": "No. Bot AI Send is separate; exact saved Slack review, distinct human approval, requester preparation and explicit one-attempt send are required.",
+      "requiredCitation": "axiom.help.slack.reviewed-action-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "slack-self-approve",
+      "question": "Can I approve my own Slack message as admin?",
+      "requiredResponse": "No. Genuine distinct eligible human personally approves exact intent. Requester/executor cannot self-approve; checkbox grants no authority.",
+      "requiredCitation": "axiom.help.slack.reviewed-action-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "slack-task-change",
+      "question": "Can approval follow my newer task edits?",
+      "requiredResponse": "No silent rebinding; task organization/creator/version/content hash must match. Changed task invalidates eligibility.",
+      "requiredCitation": "axiom.help.slack.reviewed-action-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "slack-connection",
+      "question": "Does old approval survive reconnect automatically?",
+      "requiredResponse": "Not automatically: exact current connection ID/revision/workspace/requester consent/channel and current sessions/capabilities must pass.",
+      "requiredCitation": "axiom.help.slack.reviewed-action-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "slack-ack",
+      "question": "Does HTTP200 prove delivery?",
+      "requiredResponse": "No. Valid parsed matching Slack acknowledgement and saved sent record still do not verify delivery or human reading.",
+      "requiredCitation": "axiom.help.slack.reviewed-action-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "slack-unknown",
+      "question": "Should I resend an unknown message?",
+      "requiredResponse": "No. Recover reads original durable operation, may mark elapsed lease unknown, never checks provider absence or resends.",
+      "requiredCitation": "axiom.help.slack.reviewed-action-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "slack-save-recovery",
+      "question": "May I create a new request after save times out?",
+      "requiredResponse": "Reload the original request using original ID/channel/text/task/version; missing result stays unresolved, not a replacement request.",
+      "requiredCitation": "axiom.help.slack.reviewed-action-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "slack-availability",
+      "question": "Is this approved shipped help with runtime IDs?",
+      "requiredResponse": "No. Internal source-only local preview, null review/empty media, proposed-only IDs and unexecuted evaluation; acceptance remains false.",
+      "requiredCitation": "axiom.help.slack.reviewed-action-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

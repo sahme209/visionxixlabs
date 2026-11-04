@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.slack.reviewed-action-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4",
+  "sourceFiles": 16,
+  "evaluationCases": 8,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

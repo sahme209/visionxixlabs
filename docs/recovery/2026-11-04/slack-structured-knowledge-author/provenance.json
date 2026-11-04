@@ -1,0 +1,46 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "4f8c94e1592c15420ed8c72da31f2451624406c4",
+  "branch": "codex/b4-slack-structured-knowledge",
+  "worktree": "/private/tmp/axiom-b4-slack-20261104",
+  "validation": {
+    "schemaAndSourceIntegrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 16,
+    "codeSources": 14,
+    "inclusiveRawRanges": 14,
+    "proposedEvaluationCases": 8,
+    "retrievalExecuted": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/slack-reviewed-action-controls.md": "9b472f29440eff96e3b8462761509454cde672189500fffd892c4003c3289e2e"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-slack-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-slack-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-slack-evidence/bindings.sh"
+  ],
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/validate.sh": "2186f3e71508d1b7adf8ec8faffd27e5c6fadc5294251b015ea3e64f4a10596a",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/bindings.sh": "89a12b07e199762735d2a9d84d35bd744786365bf54b29542255bcd7bb1990c9",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/binding-integrity.json": "15ef93242aa95ff1f88fded97bac28d85549e50154a9e734b40a8a8c476af356",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/validate.log": "42268d85a603aacd83cbd64ff5937d4bc1eaedf5ac304c7dbc6f798a1fb18376",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/README.md": "bd3dbfdeed9b5c4061531ce3af104df4ea6aed5bcb00482a0cd29ee4c04249aa",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/source-bindings.json": "f467de553b1fb5c559f9ed697676915a387c245b464d3cda8d358a24b409ffe8",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/binding-integrity.cjs": "3674e9efb9cbb5ed6f8dd5b31996c62a915785f770f05d84e0503fe86e4e48e0",
+    "docs/recovery/2026-11-04/slack-structured-knowledge-author/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03"
+  },
+  "bundleSha256": {
+    "docs/product/documentation-coverage/articles/slack-reviewed-action-controls.r1.json": "7956474759342b039931c0c94c15bf85dd40318cace866f08164f40a17862c6a",
+    "docs/product/documentation-coverage/slack-reviewed-action-controls-evaluation.r1.json": "aec1bb15e57a5ee9bcdc0e7e22ca5e63d487810a5243f6c824b58cf220d639de"
+  },
+  "limits": "Source-only internal article, no customer/editorial/media/native/runtime/release acceptance; no mutable master hash"
+}

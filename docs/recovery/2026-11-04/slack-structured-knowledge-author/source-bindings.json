@@ -1,0 +1,153 @@
+{
+  "status": "internal-current-source-authoring",
+  "baselineCommit": "4f8c94e1592c15420ed8c72da31f2451624406c4",
+  "historicalGuideSource": "f0312f54a08eed23fa672981889c6e7846ad713e",
+  "historicalGuidePreserved": true,
+  "guide": {
+    "path": "docs/product/knowledge/slack-reviewed-action-controls.md",
+    "sha256": "9b472f29440eff96e3b8462761509454cde672189500fffd892c4003c3289e2e"
+  },
+  "comparison": {
+    "method": "git diff --name-only historicalGuideSource baselineCommit -- listed code files",
+    "changedListedCodeFiles": [],
+    "scope": "Finite listed files only; not complete transitive or deployed/runtime qualification"
+  },
+  "rangeConvention": "inclusive 1-based raw lines retaining original newlines",
+  "sources": [
+    {
+      "path": "desktop/src/components/BotAppActionLauncher.tsx",
+      "wholeFileSha256": "db1972fc75e387591c071ff7d3b905b8690dfe0c79582db555e7e543a35ae3c4",
+      "range": {
+        "startLine": 1,
+        "endLine": 15,
+        "sha256": "db1972fc75e387591c071ff7d3b905b8690dfe0c79582db555e7e543a35ae3c4"
+      }
+    },
+    {
+      "path": "desktop/src/components/BotConnectedActionsPanel.tsx",
+      "wholeFileSha256": "6d49b0a7ee3c635ad984cf6f8248bfe49317a1c45a890edf476a43fb5678ded2",
+      "range": {
+        "startLine": 1,
+        "endLine": 15,
+        "sha256": "6d49b0a7ee3c635ad984cf6f8248bfe49317a1c45a890edf476a43fb5678ded2"
+      }
+    },
+    {
+      "path": "desktop/src/components/SlackNotificationPanel.tsx",
+      "wholeFileSha256": "0988f88f4819bc31976c8cd70702023b247ec7fa81b9e74048b945c30c0585ed",
+      "range": {
+        "startLine": 1,
+        "endLine": 20,
+        "sha256": "0988f88f4819bc31976c8cd70702023b247ec7fa81b9e74048b945c30c0585ed"
+      }
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "range": {
+        "startLine": 1115,
+        "endLine": 1134,
+        "sha256": "524bf02e876f2cc495fca87db4439100fc257f9b488e840506c0ea85e12e0bbd"
+      }
+    },
+    {
+      "path": "desktop/src/lib/slackNotificationsTransport.ts",
+      "wholeFileSha256": "7e1e9d8b68f2fe97be7611e2febbcf2d777576b080f590dd95898f15c0e60286",
+      "range": {
+        "startLine": 1,
+        "endLine": 41,
+        "sha256": "7e1e9d8b68f2fe97be7611e2febbcf2d777576b080f590dd95898f15c0e60286"
+      }
+    },
+    {
+      "path": "lib/desktop/slackNotificationsHttp.ts",
+      "wholeFileSha256": "bd0e9f6c7d805f5b3dcfeaf65392db9a56b3b8fa0683d63d6b193b4f531b0232",
+      "range": {
+        "startLine": 1,
+        "endLine": 71,
+        "sha256": "bd0e9f6c7d805f5b3dcfeaf65392db9a56b3b8fa0683d63d6b193b4f531b0232"
+      }
+    },
+    {
+      "path": "lib/desktop/slackNotificationsContract.ts",
+      "wholeFileSha256": "0a206e8d50c69ec3b8eb42ded34cc4c319ff2be34d44a40fd8bfc319c58036e0",
+      "range": {
+        "startLine": 1,
+        "endLine": 18,
+        "sha256": "0a206e8d50c69ec3b8eb42ded34cc4c319ff2be34d44a40fd8bfc319c58036e0"
+      }
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationContract.ts",
+      "wholeFileSha256": "62bb54a374be5315c3751f46b5f527475372821975d9955833e1b54fd340e7b7",
+      "range": {
+        "startLine": 1,
+        "endLine": 19,
+        "sha256": "62bb54a374be5315c3751f46b5f527475372821975d9955833e1b54fd340e7b7"
+      }
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationApprovalStore.ts",
+      "wholeFileSha256": "c3b39e248a9d1b656b2f62121dd6485b4da1334215552362df8eee13d5d0e674",
+      "range": {
+        "startLine": 1,
+        "endLine": 50,
+        "sha256": "c3b39e248a9d1b656b2f62121dd6485b4da1334215552362df8eee13d5d0e674"
+      }
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationStore.ts",
+      "wholeFileSha256": "af32d4c6ea451ef6906503aa8c1857c099a4bd1877a86ef66c85e1b4f0afe908",
+      "range": {
+        "startLine": 1,
+        "endLine": 76,
+        "sha256": "af32d4c6ea451ef6906503aa8c1857c099a4bd1877a86ef66c85e1b4f0afe908"
+      }
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationTransport.ts",
+      "wholeFileSha256": "437902a5ecd1cff60e7c8664de9c37593aed7edf71dc1975f237b42cae4a051c",
+      "range": {
+        "startLine": 1,
+        "endLine": 25,
+        "sha256": "437902a5ecd1cff60e7c8664de9c37593aed7edf71dc1975f237b42cae4a051c"
+      }
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationExecutor.ts",
+      "wholeFileSha256": "ab5f58f5f42e51d1ab2e5601f531db629aacecc25b4e9b6216d8abc9baa53596",
+      "range": {
+        "startLine": 1,
+        "endLine": 16,
+        "sha256": "ab5f58f5f42e51d1ab2e5601f531db629aacecc25b4e9b6216d8abc9baa53596"
+      }
+    },
+    {
+      "path": "lib/integrations/slack/tenantSlackChannels.ts",
+      "wholeFileSha256": "daee73f780110907b6346d68efec5bd91566cc6c71a2269ed6e7c79410cea72c",
+      "range": {
+        "startLine": 1,
+        "endLine": 19,
+        "sha256": "daee73f780110907b6346d68efec5bd91566cc6c71a2269ed6e7c79410cea72c"
+      }
+    },
+    {
+      "path": "lib/axiom/bot/actionTaskBinding.ts",
+      "wholeFileSha256": "63499033bbface2de3f1313627d035dc2b42c5996f59dc52a4664d83c71d0820",
+      "range": {
+        "startLine": 1,
+        "endLine": 15,
+        "sha256": "63499033bbface2de3f1313627d035dc2b42c5996f59dc52a4664d83c71d0820"
+      }
+    }
+  ],
+  "customerEligible": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "runtimeAccepted": false,
+  "nativeAccepted": false,
+  "releaseAccepted": false,
+  "evaluationStatus": "proposed-not-executed",
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}
