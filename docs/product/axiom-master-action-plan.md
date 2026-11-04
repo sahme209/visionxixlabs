@@ -754,3 +754,11 @@ Eighteen stored article revisions include history, not18customer-approved docume
 - [x] B4 finite desktop Apps & skills source guide fills a separate top-level inventory gap with9file/range bindings and independent review, explicitly excluding nested connector/backends/native acceptance. [Guide](knowledge/desktop-apps-skills-controls.md).
 
 Twenty stored revisions include history; proposed cases are not executed retrieval and allcustomer/editorial/media/native/runtime acceptance remains open. All15parents remain open.
+
+
+## November4 — desktop Apps and Documentation knowledge batch
+
+- [x] B4/B5 bounded desktop Apps & skills draft:9code/range bindings unchanged,12article sources/nine proposed cases; newbundle integrity/customer refusal and independent source review pass. Single filter/status/grant/skill metadata/uncertainty/composer handoff/MCP privacy remain separate. [Evidence](../recovery/2026-11-04/desktop-apps-skills-structured-knowledge/README.md).
+- [x] B4/B5 bounded native Documentation draft:6historical bindings unchanged plusSidebar/Commands for8code/ranges,13article hashes/seven proposed cases; newbundle integrity/customer refusal and independent source review pass. Five journey buttons/seven links are navigation, not current content/version/provider proof; child effects remain separately guarded. [Review](../recovery/2026-11-04/native-documentation-structured-knowledge-author/independent-review.md).
+
+Twenty-two stored revisions include history; fixtures remain proposed, not retrieval evaluations. No native/customer/media/editorial/Governance/runtime acceptance or publication; all15parents remain open.

@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.desktop.apps-skills-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:e0919cd33243db35345446bab3f4354be43280e3",
+  "sourceFiles": 12,
+  "evaluationCases": 9,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /private/tmp/axiom-b4-apps-20261104 || exit 90
+exec /usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-b4-apps-evidence TMPDIR=/private/tmp/axiom-b4-apps-evidence NODE_ENV=test /usr/bin/sandbox-exec -f /private/tmp/axiom-b4-apps-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node docs/product/documentation-coverage/validate-support-knowledge.cjs --root /private/tmp/axiom-b4-apps-20261104 --article docs/product/documentation-coverage/articles/desktop-apps-skills-controls.r1.json --evaluation docs/product/documentation-coverage/desktop-apps-skills-controls-evaluation.r1.json --version local-source-preview:e0919cd33243db35345446bab3f4354be43280e3 "$@"

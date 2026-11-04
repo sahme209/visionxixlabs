@@ -153,3 +153,13 @@ The [guide-to-article source linkage queue](guide-article-linkage.md) maps index
 ## Cloud setup and public catalog internal drafts (November4)
 
 [Cloud article](articles/cloud-connection-controls.r1.json) and [twelve proposed cases](cloud-connection-controls-evaluation.r1.json) preserve guided/advanced/provider-grant/readiness boundaries. [Evidence](../../recovery/2026-11-04/cloud-connections-structured-knowledge/README.md). [Public website catalog article](articles/public-integrations-catalog-controls.r1.json) and [eight proposed cases](public-integrations-catalog-controls-evaluation.r1.json) describe browsing, not desktop/account access. [Review](../../recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/independent-review.md). Newbundle integrity passes/customer refusal remains; no retrieval/runtime/customer acceptance.
+
+
+## Desktop Apps & skills internal structured draft (November4)
+
+[Article revision1](articles/desktop-apps-skills-controls.r1.json) and [nine proposed cases](desktop-apps-skills-controls-evaluation.r1.json) keep catalog/status, skill metadata, provider consent, current authority and Agent composer handoff distinct. Newbundle integrity passed; customer mode refused. [Evidence](../../recovery/2026-11-04/desktop-apps-skills-structured-knowledge/README.md). No retrieval/runtime/customer acceptance.
+
+
+## Native Documentation internal structured draft (November4)
+
+[Article revision1](articles/native-documentation-controls.r1.json) and [seven proposed cases](native-documentation-controls-evaluation.r1.json) distinguish journey/web navigation from installed-version/content/provider acceptance. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/native-documentation-structured-knowledge-author/independent-review.md). Historical copy review stays historical; no executed retrieval, complete help or AI ingestion/runtime acceptance.

@@ -1,0 +1,21 @@
+{
+  "result": "PASS",
+  "wholeFileBindings": 9,
+  "exactRawRanges": 9,
+  "paths": [
+    "desktop/src/App.tsx",
+    "desktop/src/views/PluginsSkillsView.tsx",
+    "desktop/src/lib/desktopClient.ts",
+    "desktop/src/views/AgentChatView.tsx",
+    "desktop/src/lib/skillInvocation.ts",
+    "desktop/src/components/DesktopMcpTools.tsx",
+    "app/api/desktop/agent/skills/route.ts",
+    "lib/axiom/agentRuntime/skillManagement.ts",
+    "app/api/desktop/mcp/microsoft-learn/route.ts"
+  ],
+  "supportingPaths": [
+    "docs/product/knowledge/desktop-apps-skills-controls.md",
+    "docs/recovery/2026-11-04/desktop-apps-skills-guide/source-bindings.json",
+    "docs/recovery/2026-11-04/desktop-apps-skills-guide/independent-review.md"
+  ]
+}
