@@ -1,0 +1,221 @@
+{
+  "format": "axiom.product-control-bindings/1",
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "e74052c8",
+  "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+  "baselineSha256": "30706b3e71ef47c3ad333b710f15b802203f5c90102cfd6b4caa0cba646dc8fd",
+  "boundFamilies": 22,
+  "declarations": 23,
+  "countMethod": "22 of 27 source-guide families; family 6 has separate Files and Changes row declarations. Static data attribute values describe families, never unique DOM identities.",
+  "unbound": [
+    {
+      "families": [
+        7,
+        8,
+        9
+      ],
+      "reason": "Shared confirmation nodes and dynamic confirmation labels remain unbound."
+    },
+    {
+      "families": [
+        24,
+        25
+      ],
+      "reason": "Shared FileDiff pagination nodes remain unbound."
+    },
+    {
+      "families": [
+        27
+      ],
+      "reason": "Ask Agent entry bound; shared Prepare Agent draft confirmation and Cancel remain unbound."
+    }
+  ],
+  "controls": [
+    {
+      "helpId": "repositories.editor.files",
+      "family": 1,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": ">Files</button>",
+      "nodeSha256": "930ed496e542a6ed53cd9264214f4f65dde4889b8bdfad3a235618e935cf52ca"
+    },
+    {
+      "helpId": "repositories.editor.changes",
+      "family": 2,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": ">Changes</button>",
+      "nodeSha256": "9831d412bbe54b0a8698ae426a83a6bc1ba7cb2008cdfa5a91fa41bb42b73acf"
+    },
+    {
+      "helpId": "repositories.editor.filter-files",
+      "family": 3,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "input",
+      "anchor": "placeholder=\"Filter files\"",
+      "nodeSha256": "6e869e8a9a9344e5f8008fc5c5e99132636983eff4ca62fb84f05c9f51003ba9"
+    },
+    {
+      "helpId": "repositories.editor.file-filter-mode",
+      "family": 4,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "setShowAllFiles",
+      "nodeSha256": "9ac0da1e276bb4cbe1c30c3fbaa26e69ee0140e757074cbc43746ac9d6e54d84"
+    },
+    {
+      "helpId": "repositories.editor.refresh-changes",
+      "family": 5,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": ">Refresh changes</button>",
+      "nodeSha256": "1cb38979b11c0dfd345a9fa05de99afad7c93fc3a23126726c99bd28b0651322"
+    },
+    {
+      "helpId": "repositories.editor.changed-file-row",
+      "family": 6,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "key={change.path}",
+      "nodeSha256": "7534c273003e4208799db4efa97e8ca62e684a25c5bd844513903d46d42dcd88"
+    },
+    {
+      "helpId": "repositories.editor.file-row",
+      "family": 6,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "key={file}",
+      "nodeSha256": "8bbce26cf9b6587440e7bea0f137d7c5482b88e5f2a81856481966f41f907ab1"
+    },
+    {
+      "helpId": "repositories.editor.editing-tools",
+      "family": 10,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "summary",
+      "anchor": ">Editing tools</summary>",
+      "nodeSha256": "814d50c24fdd2b328440dfe8a69ffc1c5e0c47ce755b08385e2712c07cf39c6b"
+    },
+    {
+      "helpId": "repositories.editor.line-number",
+      "family": 11,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "input",
+      "anchor": "aria-label=\"Line number\"",
+      "nodeSha256": "b64e49f75f9bdfbc35480915a8bb0e6b34f54754ef57ce985942653e2fde8747"
+    },
+    {
+      "helpId": "repositories.editor.go-to-line",
+      "family": 12,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": ">Go to line</button>",
+      "nodeSha256": "7965254ce5bc714cc05d5733fddaf7576a5d8ff6a2be12d18221a2af1c300e55"
+    },
+    {
+      "helpId": "repositories.editor.find",
+      "family": 13,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "aria-label=\"Find in file\"",
+      "nodeSha256": "e37fafc32f74fa1da471dc51e0874e293ed319c3381f908c39442e18461b2dab"
+    },
+    {
+      "helpId": "repositories.editor.find-text",
+      "family": 14,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "input",
+      "anchor": "aria-label=\"Find literal text\"",
+      "nodeSha256": "c9fad262417a8ff30a8cae225b7ad5f128f98ca8546c27d13dae59d5de044da5"
+    },
+    {
+      "helpId": "repositories.editor.replacement-text",
+      "family": 15,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "input",
+      "anchor": "aria-label=\"Replacement literal text\"",
+      "nodeSha256": "2f729d624944d69a617cc33016d2e3d3929c6bdf88393a800087795a6ae1dfd2"
+    },
+    {
+      "helpId": "repositories.editor.replace-match",
+      "family": 16,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": ">Replace selected match</button>",
+      "nodeSha256": "c3a7aa0809385945a23b005d750b9d0603f251f737a00d4faff544bd1563e327"
+    },
+    {
+      "helpId": "repositories.editor.previous-match",
+      "family": 17,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "aria-label=\"Previous match\"",
+      "nodeSha256": "639e14777ab4261835604e07c29d88e296cc7732345fab451d06366f9a95430d"
+    },
+    {
+      "helpId": "repositories.editor.next-match",
+      "family": 18,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "aria-label=\"Next match\"",
+      "nodeSha256": "62009e4880506bcd29f892d0d28d9adb6215e1e69e9c77acc364620d0111486b"
+    },
+    {
+      "helpId": "repositories.editor.close-search",
+      "family": 19,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "aria-label=\"Close file search\"",
+      "nodeSha256": "445f56081d1c0193b0cefd41b526048534b5cfb7a2790b8916bdf73d415a0bbf"
+    },
+    {
+      "helpId": "repositories.editor.undo",
+      "family": 20,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "aria-label=\"Undo edit\"",
+      "nodeSha256": "6d46dea284dce138bfb2d170c3d95879fee790360d06327313a856cf11f6a204"
+    },
+    {
+      "helpId": "repositories.editor.redo",
+      "family": 21,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "aria-label=\"Redo edit\"",
+      "nodeSha256": "463255f9dbe5cb35867e7721315c0e5bf7ce9d10e1270f452988d9dd37c02c37"
+    },
+    {
+      "helpId": "repositories.editor.save",
+      "family": 22,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": ">Save ⌘S</button>",
+      "nodeSha256": "f9479e44278e5b33f8390b3b8de203bcc8f2bfbbc42a136091b7694381976808"
+    },
+    {
+      "helpId": "repositories.editor.review",
+      "family": 23,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "aria-label=\"Review local changes\"",
+      "nodeSha256": "3e30a5c189c167b4461b7f8dca6e0e14452818e0607b85e1dbe9e36aa9ca0f78"
+    },
+    {
+      "helpId": "repositories.editor.buffer",
+      "family": 26,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "textarea",
+      "anchor": "ref={editorRef}",
+      "nodeSha256": "cac08ed3a09f6297d5b335fe311fba2382a1c458d1e617528515b114cca5dfce"
+    },
+    {
+      "helpId": "repositories.editor.ask-selection",
+      "family": 27,
+      "source": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "anchor": "aria-label=\"Ask Agent about selection\"",
+      "nodeSha256": "a424156c201f4cc5fef5abfd1ea4689a20998b5ccac9a82ca135eec8b69094ca"
+    }
+  ]
+}

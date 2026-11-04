@@ -1,0 +1,26 @@
+{
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "e74052c8a49886ee4ca47c1f6ca7dd2a7d3bd0b7",
+  "bindingScope": "22 of 27 guide families; Ask Agent entry only, shared confirmations and diff pagination remain unbound",
+  "sources": [
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-bindings.json",
+      "sha256": "c2465a3fc57840da46c81ae930913819381a3764a4edf0276787cf1c9c94ec96"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-bindings.test.cjs",
+      "sha256": "e0fe50da9a08fda6c6f6b9ac6bbcdf372c4e5072cd85cbcde8fe6738f990b3f5"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-bindings.md",
+      "sha256": "0b26d3a12068ea81130bbc237bf53e8cb0c536bb687536af09c7c4b259be26d1"
+    }
+  ],
+  "validation": "4 focused AST tests pass under sandbox-exec kernel network denial; attribute removal independently compared byte for byte with git baseline."
+}
