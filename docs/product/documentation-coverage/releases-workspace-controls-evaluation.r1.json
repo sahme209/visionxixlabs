@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.releases.workspace-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:47f1941b1879b540ce8c62876d59ff415d58d491",
+  "articleSha256": "425dfcddea71df63ccf80169afb3ce97d5db1879a70b867e08fe10fc10f04d97",
+  "status": "proposed-not-executed",
+  "scope": "Proposed schema companion response criteria only; no retrieval/model execution or customer authority.",
+  "cases": [
+    {
+      "id": "releases-workspace-mount",
+      "question": "Which Releases component is current?",
+      "requiredResponse": "DeploymentRequestsView via deployment-requests, not dormant ReleasesView. Selection/navigation does not cancel operations; current authority remains separate.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-ready",
+      "question": "Ready for human approval means deploy now?",
+      "requiredResponse": "No. Recorded next-step/readiness/PR values are guidance/assertions, not independent approval or execution authority.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-intake",
+      "question": "Does Save draft or Save revision deploy/create a native ticket?",
+      "requiredResponse": "No. Axiom records/version history only; exact workflow/batch discovery aids intake, not execution approval.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-plans",
+      "question": "Can no-PR or draft requests always show Saved operation plans?",
+      "requiredResponse": "No. Mount through ReleaseMergeReview requires submitted and noPrRequiredfalse; backend existence/history does not establish current availability.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-review",
+      "question": "Does simulation approval authorize merge or deployment?",
+      "requiredResponse": "No. Distinct eligible human personally approves each exact applicable action. Requester executes separately once; Governance incomplete/unavailable blocks authority.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-unknown",
+      "question": "Deployment reply unknown. Should I dispatch again?",
+      "requiredResponse": "No. Recover original saved deployment record then load execution. No reset/replay/duplicate/renewal; acknowledgement is not deployment success.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-evidence",
+      "question": "Workflow/batches passed. Is app healthy and ticket closed?",
+      "requiredResponse": "No. Observations may be general or release-bound; exact accepted-run evidence/readiness is separate from delivery/health/recovery/native ticket closure.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-terraform",
+      "question": "Can inspected plan/profile export apply Terraform?",
+      "requiredResponse": "No. Apply remains disabled; producer/profile/import identity is evidence, not current lock/authority or CI/apply dispatch.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-closure",
+      "question": "Record closure closes Jira/ServiceNow and retries UNKNOWN note?",
+      "requiredResponse": "No. Closes only Axiom current request; native lifecycle/readback separate. Consumed UNKNOWN note never resend/reset/renew/descend. Read current request after uncertain close.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "releases-workspace-publication",
+      "question": "Does this prove released Governance and customer activation?",
+      "requiredResponse": "No. Internal source-only local preview/null review/empty media; no runtime flag/enrollment/shipped/provider success or executed retrieval acceptance.",
+      "requiredCitation": "axiom.help.releases.workspace-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

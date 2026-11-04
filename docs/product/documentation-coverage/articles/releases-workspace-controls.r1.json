@@ -1,0 +1,274 @@
+{
+  "schema": 1,
+  "id": "axiom.help.releases.workspace-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Releases workspace: recorded context, exact reviews and deliberate execution",
+  "productVersion": "local-source-preview:47f1941b1879b540ce8c62876d59ff415d58d491",
+  "screenIds": [
+    "proposed.axiom.screen.releases.workspace"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.releases.select-request",
+    "proposed.axiom.control.releases.refresh",
+    "proposed.axiom.control.releases.recorded-details",
+    "proposed.axiom.control.releases.next-step",
+    "proposed.axiom.control.releases.new-release",
+    "proposed.axiom.control.releases.ticket-draft",
+    "proposed.axiom.control.releases.intake",
+    "proposed.axiom.control.releases.revise",
+    "proposed.axiom.control.releases.workflow-fields",
+    "proposed.axiom.control.releases.batch-selection",
+    "proposed.axiom.control.releases.history",
+    "proposed.axiom.control.releases.playbook",
+    "proposed.axiom.control.releases.terraform-evidence",
+    "proposed.axiom.control.releases.saved-plans",
+    "proposed.axiom.control.releases.independent-review",
+    "proposed.axiom.control.releases.exact-approval",
+    "proposed.axiom.control.releases.execute-once",
+    "proposed.axiom.control.releases.accepted-run-evidence",
+    "proposed.axiom.control.releases.batch-monitor",
+    "proposed.axiom.control.releases.record-closure"
+  ],
+  "goal": "Identify current Releases context and deliberate next control while separating draft/intake, recorded readiness, exact independent review, one-attempt provider execution and outcome reconciliation.",
+  "prerequisites": [
+    "Internal source-only local-preview draft, not customer-approved content. Current selected workspace/session and exact per-control service enablement/authority must be independently checked.",
+    "Mounted DeploymentRequestsView, not dormant ReleasesView. Historical cards/backend routes alone do not establish mounted/available current actions.",
+    "Independent review must be genuine and personal under a different eligible current identity. No impersonation/automatic checkbox or requester-as-independent substitution."
+  ],
+  "permissions": [
+    "Scope/ownership/recorded PR approval/readiness checkboxes are recorded assertions, not independent provider/deployment approval.",
+    "Current authority/version/window/digest/source/target/Governance checks decide each consequential action; Governance incomplete/unavailable cannot be inferred accepted from this article.",
+    "Simulation, provider merge and deployment approvals remain separate decisions. Approval records review, not execution; requester/designated executor separately requests exact current action once.",
+    "Artifact/profile/read-only observations do not grant cloud/provider/CI authority. No actual enrollment, runtime flag access, provider success, shipped activation or accepted provisioning is claimed."
+  ],
+  "steps": [
+    {
+      "instruction": "Open Releases in current customer navigation and select the intended request under YOUR RELEASES. Use arrows/Home/End for selection; inspect title/status/Version/update time/Request identifiers.",
+      "effect": "read",
+      "expectedState": "Actual mount is deployment-requests \u2192 DeploymentRequestsView, not dormant ReleasesView. Selection is navigation, not cancellation; keyed release panels remain mounted."
+    },
+    {
+      "instruction": "Expand Recorded release details and read Release next step, scope/readiness/window/recovery and recorded observation context. Refresh to reload requests/workflow records; distinguish current empty list from failed read or retained stale records.",
+      "effect": "read",
+      "expectedState": "Next step/Ready for human approval are recorded guidance, not approval. Service last responded identifies stale context. Open Approval Center opens separate browser destination, not an approval action."
+    },
+    {
+      "instruction": "Use New release or Start from ticket. Ticket-first Save draft stores only an Axiom draft; Complete release details later preserves original ticket request. For full intake Continue through Window, Scope, Execution, Validation and Recovery; review reached steps with Back.",
+      "effect": "propose",
+      "expectedState": "Local completeness is not persistence. Enter exact scope/owners/branches/PR context, workflow/ref/inputs, UTC instants, validation obligations and recovery facts. Display zone is recorded separately from local datetime parsing. Submit/revise saves a version, not deployment; closed requests disable revision/playbook."
+    },
+    {
+      "instruction": "Find workflows for exact supported repository/ref, choose Repository workflow and Read workflow fields. Repair typed/required inputs, Remove undeclared ones or Apply missing defaults only where missing. Under Required batches read connection, choose exact DAG/run/logical date and Use selected batch.",
+      "effect": "read",
+      "expectedState": "Discovery is not dispatch authority. Listed file does not establish workflow-dispatch support. Batch selections max25; changed connections/duplicates block addition. Batch completion never approves release."
+    },
+    {
+      "instruction": "Use Review history and Review execution controls for recorded version/operation metadata. Planning tools \u2192 Generate next playbook saves generated content/digest; Review persisted/historical playbook and Collect GitHub evidence inspect stored/current observations.",
+      "effect": "read",
+      "expectedState": "History/ledger read controls create no approval/dispatch. Superseded playbook is historical. General workflow observations are not verified release-bound evidence; protection/passed checks alone do not authorize execution."
+    },
+    {
+      "instruction": "Review Terraform evidence \u2192 Read saved plan metadata \u2192 Inspect exact artifact digest/scope/version/environment/expiry. If authorized, Customer CI plan evidence reads/saves exact review profile, rereads Protected CI profile export and imports a separately completed protected CI run.",
+      "effect": "read",
+      "expectedState": "Terraform apply stays disabled. Metadata/verified producer bytes/current backend observation do not confer current authority or held lock. Import does not start CI/Terraform/apply. Local profile revoke does not revoke provider grants; configuration export is not credential/permit."
+    },
+    {
+      "instruction": "For submitted release with No production PR required false, Review merge/Refresh merge targets and Read merge plan; then Saved operation plans \u2192 Load saved plans, Load plan targets, Read current plan and Save exact plan only when permitted.",
+      "effect": "propose",
+      "expectedState": "ReleaseMergeReview owns mounted saved-plan children; no promise for draft/closed/no-PR/other status. Preview changes invalidate old context. Save exact snapshot/digest/version/deadline is not execution authority; at most5saved plans shown."
+    },
+    {
+      "instruction": "A genuine eligible independent person uses Read fresh review preview, inspects same exact saved digest/version and Record independent review or Reject plan. Separately inspect the applicable execution approval panel.",
+      "effect": "human-review",
+      "expectedState": "Simulation approval, provider merge approval and deployment approval are distinct. Approve exact plan for simulation never authorizes GitHub merge. Governance unavailable blocks current authority; Governance remains incomplete, not certified by this guide."
+    },
+    {
+      "instruction": "For provider merge review exact repo/PR/method/head/observed base/Governance baseline before Review exact provider merge policy \u2192 Approve exact provider merge. For deployment Load verified deployment review and compare immutable tag/source/workflow/inputs/executor/window/digest before exact approval.",
+      "effect": "human-review",
+      "expectedState": "Different eligible human personally approves; creator/requester/executor cannot approve deployment. Requester is designated merge executor. Checkboxes cannot substitute for human review; approval dispatches nothing and must be reloaded if unconfirmed."
+    },
+    {
+      "instruction": "Only for currently authorized enabled exact action, requester/designated executor loads execution, prepares reviewed merge/deployment, inspects saved target and personally confirms exact execution before Execute.",
+      "effect": "execute",
+      "expectedState": "Preparation does not merge/dispatch. One attempt only. Merge enforces source head; observed target base is not atomic condition. Workflow acknowledgement/run link is not successful deployment. Current server authority/source/approval checks decide availability."
+    },
+    {
+      "instruction": "Read release/plan-bound Deployment evidence with Load release workflow evidence and, when permitted, Collect accepted run evidence/Refresh workflow observation. Check exact run/attempt/source/time. For selected batches Check batches and read Monitor batches/Refresh monitor; only authorized enabled operator may Start watching for selected duration.",
+      "effect": "read",
+      "expectedState": "Collection/reconciliation starts no workflow. Stop tracking stops local tracking, not provider run; Stop watching stops monitor only. Workflow/batch success does not prove delivery, app health, approval or ticket closure; unverified history stays unverified."
+    },
+    {
+      "instruction": "Use Tickets Jira/ServiceNow tabs for their distinct controls; follow separate exact lifecycle guides. For eligible non-draft/nonclosed Axiom request, Record external outcome and close request records reference/summary using current version.",
+      "effect": "propose",
+      "expectedState": "Record closure closes only Axiom request, not Jira/ServiceNow. Existing consumed UNKNOWN ServiceNow note must never be resent/reset/renewed/descended; use separate original written-note observation. An unconfirmed close requires reading current request, not assuming failure from stuck busy form."
+    }
+  ],
+  "expectedOutcome": "Choose an applicable mounted control against current exact request/plan/version and inspect original outcomes without treating saved context, approval, acknowledgement or closure as verified provider completion.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial accepted:false. Media accepted:false. Native accepted:false. Runtime accepted:false. Release accepted:false. Shipped accepted:false. Null human review/empty media; no authentic screenshots/current enrollment/provider success or shipped availability.",
+    "proposed. IDs are documentation candidates only, not runtime/help bindings. No ingestion/retrieval activation/customer publication/new feature/authority created.",
+    "Historic2d291236 guide/manifest/review/binding-verification remain unchanged. Current47f1941b binds24codefiles/31rawranges through unchanged manifest plus4supportingrecords=28unique sources; identity is not runtime/semantic validation.",
+    "Finite mounted overview excludes complete Jira form/lifecycle, full ServiceNow native lifecycle, workflow JSON editor subcontrols, provider settings/provisioning, Governance editing, native provider pages, dormant ReleasesView and all-backend acceptance.",
+    "No runtime flags, actual enrollment/configuration/credential values or current access were read. Terraform apply remains disabled; source form inventory is not provisioning acceptance.",
+    "General workflow success/receipt/batch completion does not verify artifact delivery/application health/recovery/native ticket closure. Axiom record closure is separate from Jira/ServiceNow closure.",
+    "Fixture proposed-not-executed prose, not executed retrieval/model quality evidence. No all-controls/source-to-control completion or customer release approval."
+  ],
+  "recovery": [
+    "Retained stale requests after failed refresh are not current empty success; restore network/session and Refresh, inspect Service last responded and exact version before relying on data.",
+    "After uncertain plan/review/preparation/execution mutation, load original saved plans/release/execution record first. dispatching/unknown means unconfirmed; never reset/duplicate/renew/replay consumed attempt or send another merge/deployment. Refused is stored outcome, not blanket replacement permission.",
+    "Recover saved merge record/Recover saved deployment record reconcile original operation, then Load execution. They do not resend, rollback provider action or extend authority/deadline.",
+    "Selection/ref/inputs/version/digest/window changes invalidate previews; reread targets/current plans rather than reuse stale approval. Closed status/read controls do not reopen release.",
+    "Unconfirmed evidence/monitor mutation requires original saved evidence/status reload before another action. Stop tracking/monitoring does not stop provider workflow; expired monitor requires manual checks.",
+    "Unconfirmed closure may leave busy form after thrown transport error; read current request before further change, never infer failure from stuck form. Axiom closure is not native ticket completion.",
+    "Consumed UNKNOWN ServiceNow note remains immutable/no resend/reset/renew/descendant; separate written-note observation only. Axiom review cannot replace native ServiceNow approval/lifecycle."
+  ],
+  "searchTerms": [
+    "Releases",
+    "YOUR RELEASES",
+    "Recorded release details",
+    "Release next step",
+    "New release",
+    "Start from ticket",
+    "Saved operation plans",
+    "Record independent review",
+    "Review deployment access",
+    "Execute reviewed merge",
+    "Execute reviewed deployment",
+    "Recover saved deployment record",
+    "Record closure",
+    "Terraform apply disabled"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88"
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+    },
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "0d51713c1193b657a364a829b29595b415e0f67ecb17ebfa8e7a490aea4b99ee"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/components/FocusedReleaseWorkspace.tsx",
+      "sha256": "51823287d1507ea8236d4970f1df1800724d266b68a5ba350f3284a4d80719b7"
+    },
+    {
+      "path": "desktop/src/components/ResolutionDraftForm.tsx",
+      "sha256": "99656158df7479cb59faf961295e06f0065041fb8abf67d6b5128b94d772815b"
+    },
+    {
+      "path": "desktop/src/components/WorkflowCatalogue.tsx",
+      "sha256": "d71cb1f2ebe171596092b811babcd94d78004a41af73a2c8e136d8342ef2e196"
+    },
+    {
+      "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+      "sha256": "38f48423fcccec7f3b9a001daf8019685716af74f5dc5eb93c6a65fe65a3c29f"
+    },
+    {
+      "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+      "sha256": "7b9b2617ddc3ea2cbeffe0e9bdfdf36c8a27b8a9ed76fcd619abf1815781d243"
+    },
+    {
+      "path": "desktop/src/components/DeploymentWorkflowEvidence.tsx",
+      "sha256": "dc6a460f24553325b05bdf30df539bc3ccf6d59ad31ef8036ddb6c6f685b7e6b"
+    },
+    {
+      "path": "desktop/src/components/TerraformPlanReview.tsx",
+      "sha256": "5bdb3a285867e3bb0bc1a894ea9481cd2ac8996b6e56e11eb4914778bf68fc04"
+    },
+    {
+      "path": "desktop/src/components/TerraformCustomerPlanProfile.tsx",
+      "sha256": "74d897adfb7f607bc6e2e55c7a6dc6865ffbeebaa139ce8379f6a19a36cf01d7"
+    },
+    {
+      "path": "desktop/src/components/ReleaseMergeReview.tsx",
+      "sha256": "2104d72b392347211a4348d94685c6b6fd3fb27d42dba1a1ea1d2635cfe1f0a0"
+    },
+    {
+      "path": "desktop/src/components/ReleaseOperationPlans.tsx",
+      "sha256": "a915c936ea8a7e8a32e37afacfdb6dce207c00083ea169e65be8f6c33ecbbc1e"
+    },
+    {
+      "path": "desktop/src/components/ReleaseExecutionApproval.tsx",
+      "sha256": "d55c430097d651d290bbb51a6cfd9dd92f044d6253809ca5e613b88808fa6de8"
+    },
+    {
+      "path": "desktop/src/components/ReleaseProviderMergeApproval.tsx",
+      "sha256": "8a9be64d668a998166c191c7862793411713ea59f179c8965937932fb30bcb56"
+    },
+    {
+      "path": "desktop/src/components/ReleaseProviderMergeExecution.tsx",
+      "sha256": "9e394c8710b9fc35f8df0c891f961bb2f27b8a7a9aa115076a0bd58778bfabe5"
+    },
+    {
+      "path": "desktop/src/components/ReleaseDeploymentApproval.tsx",
+      "sha256": "b784746e5e21fd78efe184d6f31f5ad45225a2b07e2ad0899fd5e742c1c4bd38"
+    },
+    {
+      "path": "desktop/src/components/ReleaseDeploymentExecution.tsx",
+      "sha256": "67af41937f2c00519e276b3d1e0e4feb61bbafaa36dfa3f2e89b79402a96d5f4"
+    },
+    {
+      "path": "desktop/src/components/ReleaseWorkflowEvidence.tsx",
+      "sha256": "27e29c7adbb1384fb9cb97873d7829525cb80cff2fda09a4993ca4bd76f65536"
+    },
+    {
+      "path": "desktop/src/components/ReleaseBatchReadiness.tsx",
+      "sha256": "6c9afd7238605b852b4b5509a10ea87b042e974744e4fa8edcb2659a512ea826"
+    },
+    {
+      "path": "desktop/src/components/ReleaseBatchMonitor.tsx",
+      "sha256": "ce25845f60411f1315edd8028714b5156aac4d212e097e1204ee9db835753a23"
+    },
+    {
+      "path": "desktop/src/components/ReleaseTicketWorkspace.tsx",
+      "sha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902"
+    },
+    {
+      "path": "docs/product/knowledge/servicenow-evidence-and-closure-controls.md",
+      "sha256": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-controls.md",
+      "sha256": "f96c4c62726961e8006475a54e8c7f8e2bac6014c299df078227ee239a4d719b"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/releases-workspace-guide/source-bindings.json",
+      "sha256": "f5b5cf203242a0e5b3dba19aae107c7b6e1a049c46ca0dd0533b2ddbb159e09d"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/releases-workspace-guide/source-review.md",
+      "sha256": "eb9af56c620fd74074d276fd2d003946e148e4bf24fd0f0176000b5fff130a54"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/releases-workspace-guide/binding-verification.json",
+      "sha256": "a778160e6fad0be16b210ac70b6dab0789bf227bd2fe7afbd3f8964050f5dbdc"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/releases-workspace-controls.md",
+      "docs/recovery/2026-11-03/releases-workspace-guide/source-bindings.json",
+      "docs/recovery/2026-11-03/releases-workspace-guide/source-review.md",
+      "docs/recovery/2026-11-03/releases-workspace-guide/binding-verification.json"
+    ],
+    "verifiedVersion": "local-source-preview:47f1941b1879b540ce8c62876d59ff415d58d491",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
