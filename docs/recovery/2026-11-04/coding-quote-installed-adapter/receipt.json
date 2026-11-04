@@ -1,0 +1,13 @@
+{
+  "kind": "offline-installed-adapter-probe",
+  "result": "pass",
+  "networkCalls": 0,
+  "providerCalls": 0,
+  "fullQuoteQualification": false,
+  "sources": {
+    "node_modules/@ai-sdk/gateway/dist/index.js": "f159a5c36adbd879c03db1969aac513edcd61d052fc8e02755ab6ddafd62c2d8",
+    "node_modules/@ai-sdk/gateway/package.json": "2e2b5f03a8ea6e6b759da55016d065145c5187102ff9e01cf775549c1eee2475",
+    "node_modules/ai/package.json": "796dcc1650df74fe462bca6d555c34ba2a55cf81827783b3080ceff9c51d63c8",
+    "lib/ai/providers/VercelGatewayProvider.ts": "2aafa6fbd4ae1e2ea91da2994a71f0b586c95c297093bdd8ff01f6e43aad93cf"
+  }
+}

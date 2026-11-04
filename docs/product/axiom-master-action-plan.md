@@ -21,6 +21,10 @@ A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-targe
 
 ~~Four authorized official documentation read attempts completed~~ ([findings](../recovery/2026-11-04/coding-quote-official-docs/FINDINGS.md)); one requested version6 URL redirected to current v7, so only three canonical destinations and no pinned-v6 qualification. Routing/pricing field terminology is clarified; live metadata, estimator/transport/billable bounds and useful-quote implementation remain unapproved/unqualified. ~~Registered pipeline controls source supplement reviewed and new-bundle validated~~ ([guide](knowledge/pipeline-workspace-controls.md)): five direct control families/22files/28ranges; ten cases proposed, no customer/media/editorial/actual runtime acceptance. All15parents remain open; no deployment/push or business-provider/AI actions.
 
+## November 4 installed-adapter evidence
+
+~~Pinned installed Gateway adapter output-limit/routing serialization verified offline~~ ([bounded probe](../recovery/2026-11-04/coding-quote-installed-adapter/README.md)): one synthetic capture, no network/provider call. Full manager/provider path, upstream enforcement and billable bounds remain unqualified; no quote implementation or A7 completion.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains
