@@ -1,6 +1,6 @@
 # Actual private merge composition: finite source-backed proposal
 
-Source baseline: `5d99d326` (full revision and SHA-256 inputs in `source-hashes.json`). **Proposal only; implementation approval required.** No runtime code, issuer, service, bootstrap, resource provisioning, route, grant or security mechanism changes accompany this review. No build, test, DB, secret or provider access was performed. Read together with master A2, the role/initialization graph, approved private-instance API plan and completed local API receipt. Those APIs are integrated; their receipt is local correctness/build evidence, not custody or execution authority.
+Source baseline: `5d99d326` (full revision and SHA-256 inputs in `source-hashes.json`). **Unit 1 approved for local code and isolated tests** via `call_XxKLU4Spnphsc3GjVwOTr9Yb[0]` (“Approve local release-auth refactor”). Unit 2 and operational/native qualification remain proposal-only, without implementation or activation approval. No runtime code, issuer, service, bootstrap, resource provisioning, route, grant or security mechanism changes accompany this review. No build, test, DB, secret or provider access was performed. Read together with master A2, the role/initialization graph, approved private-instance API plan and completed local API receipt. Those APIs are integrated; their receipt is local correctness/build evidence, not custody or execution authority.
 
 ## Finding and next unit
 
