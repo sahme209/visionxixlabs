@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-auth-native-0axxqghj/compile-null-sink.sb",
+    "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "--features",
+    "tauri/custom-protocol"
+  ],
+  "cwd": "/private/tmp/axiom-auth-native-0axxqghj/stage/desktop/src-tauri",
+  "profileDelta": "write-data literal /dev/null only; independently reviewed",
+  "networkDenied": true,
+  "nativeLaunch": false
+}

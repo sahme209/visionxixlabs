@@ -1,0 +1,31 @@
+{
+  "sourceHead": "5b6c0d2d65a1b60e0cf0e0863766a9a8854fba7e",
+  "debugNativeCompileExit": 0,
+  "profile": "dev/unoptimized + debuginfo, custom-protocol",
+  "binary": {
+    "path": "/private/tmp/axiom-auth-native-0axxqghj/target/debug/axiom-desktop",
+    "bytes": 53613664,
+    "sha256": "fd3e51a064a3fb61a50f5a2aba3c7f650f2f295d8d9dca421e6789c61924a73c",
+    "machO": "ARM64 executable header verified; not executed"
+  },
+  "retainedNonExecutableArtifact": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/native-auth-91651299/axiom-desktop.debug.unlaunched",
+    "mode": "0600",
+    "sha256": "fd3e51a064a3fb61a50f5a2aba3c7f650f2f295d8d9dca421e6789c61924a73c"
+  },
+  "trackedNativeInputs": 80,
+  "allStagedNativeAndLockBytesUnchanged": true,
+  "allSixFrontendHashesUnchangedAndListedInOwnedDependencyFile": true,
+  "ownedOwnCrateCompilationObserved": true,
+  "originalCachedPrimaryExecutableUnchanged": true,
+  "oldPrimaryExcludedBeforeCompile": true,
+  "networkDenied": true,
+  "newPackagesFetched": false,
+  "newCredentialsReadOrCopied": false,
+  "appExecuted": false,
+  "developerIDSigningOrSignatureTrustQualified": false,
+  "bundleOrInstallerOrCustomerAcceptance": false,
+  "nativeFunctionsOrIssuer909ExperimentExecuted": false,
+  "initialFailurePreserved": "101, source-backed Stdio::null diagnosis; corrected exact/dev/null write-data allowance reviewed",
+  "remainingWarning": "unused valid_binding function; no performance/runtime acceptance"
+}

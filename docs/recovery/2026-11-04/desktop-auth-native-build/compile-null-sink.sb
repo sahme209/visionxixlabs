@@ -1,0 +1,1 @@
+(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath "/private/tmp/axiom-auth-native-0axxqghj"))(deny process-exec (literal "/private/tmp/axiom-auth-native-0axxqghj/target/debug/axiom-desktop"))(allow file-write-data (literal "/dev/null"))

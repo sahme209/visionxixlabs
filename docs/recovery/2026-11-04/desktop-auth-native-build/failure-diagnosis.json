@@ -1,0 +1,15 @@
+{
+  "firstExit": 101,
+  "source": "cached rustix1.1.5 build.rs",
+  "sourceSha256": "f7609b919173e7121493266d0f89db724a1e47bb105ebd05397f869639603eec",
+  "observedLines": {
+    "probeOutput": "OUT_DIR/rustix_test_can_compile",
+    "stdout": "Stdio::null() line260",
+    "stderr": "Stdio::null() line274",
+    "spawnPanic": "line276 PermissionDenied"
+  },
+  "reason": "existing compiler feature probe needs writable /dev/null; initial all-outside-write denial prevents its spawn setup",
+  "sourceOrDependencyDefectEstablished": false,
+  "proposedProfileDelta": "allow file-write-data ONLY literal /dev/null; no other external file writes",
+  "noPackagePatchDownloadOrProductionEffect": true
+}

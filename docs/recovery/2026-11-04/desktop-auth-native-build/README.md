@@ -1,0 +1,9 @@
+# Offline current native debug embedding compile
+
+The current tracked desktop-native source compiled offline with `--locked --features tauri/custom-protocol`, using existing dependencies/toolchain and a private cloned target. The old copied executable was removed before build. Actual log shows own axiom-desktop crate compiling from the owned stage; final exit0. ARM64 Mach-O header and new binary SHA are verified. All staged native/config/lock bytes and six copied frontend hashes remain unchanged; the owned dependency file references all six. Original cached primary executable is unchanged.
+
+The debug executable is retained as a non-executable0600 data artifact outside the repository in local recovery; exact path/hash are in artifact-manifest.json. No executable was launched, app installed, OS service/scheme registered, Developer-ID key used, bundle/installer signed or published, account/vault/provider touched, or pending909experiment invoked. Compilation of native observation/credential source is not execution of those functions or Governance qualification.
+
+The first offline compile exited101: cached rustix's compiler probe uses Stdio::null and the initial profile denied even /dev/null writes. Failed source-backed diagnosis/profile/log remain preserved. Independent review cleared a follow-up allowing file-write-data only to literal /dev/null; network and persistent-write limits and Axiom-executable denial stayed intact. Corrected compile passed without source/crate patch, dependency download or further retry. This ordinary compiler correction does not reuse any consumed security/service experiment permission.
+
+Debug/debuginfo size is not a release installer-size estimate. The unused-function warning is retained. Actual native UI, signing/trust, safe session restoration, cross-window credential custody, customer installation, production behavior and complete Governance remain unverified; the running paired apps were untouched.
