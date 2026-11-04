@@ -1,0 +1,82 @@
+{
+  "sourceBase": "006ad4e9",
+  "method": "Current source and historical receipts inspected; no tests rerun",
+  "files": [
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "7c1d382a9d448fc8dbb2959ba6c1fd0fc188170e41459fe1b769d08ac05932b0"
+    },
+    {
+      "path": "desktop/src/views/GovernanceWorkspacePreview.tsx",
+      "sha256": "d48e805e27cddddb7907a6be14167c1bab69c4d72f0471f58bfcf51d5bbf139f"
+    },
+    {
+      "path": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "sha256": "aa58746be73a807e973d96ab78e32898715dd6e605f9030288ab6ff8e49897b4"
+    },
+    {
+      "path": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "sha256": "db586c750e00a46d2551f89f41558fa7e90b3e00e32c54257f9acf87d51e1a4e"
+    },
+    {
+      "path": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "sha256": "568a74d4cefb98268745a7fa8b495abb00213954ce91ed81c0e9eb2c9483dde4"
+    },
+    {
+      "path": "desktop/src/lib/governanceExecutionPolicy.ts",
+      "sha256": "3da2dbcf268977d84998d283435dad9413e0424c3a8ce127ae32cc8ca00cee91"
+    },
+    {
+      "path": "desktop/src/lib/executionPolicyRecoveryStore.ts",
+      "sha256": "e51b4c81fa3599a765592d43ca6ce0c9e29ae22b28a90d744aa2a5591bfc310e"
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyHttp.ts",
+      "sha256": "09ff9bbed6041a112f9481f50cb1f1b3fcd894cd04019ee72e61d16d6c430212"
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyStore.ts",
+      "sha256": "78bab2e5335738bac8ffab7ee232de72483d32641cfcbc648abcbef2c09b5f97"
+    },
+    {
+      "path": "lib/desktop/__tests__/governanceExecutionPolicyRestart.test.ts",
+      "sha256": "85ca4a36d6d084ca41c7e8a19823ca5bfe42c4b8bc93ebcc2237b9800a1839dd"
+    },
+    {
+      "path": "lib/desktop/__tests__/governanceExecutionPolicyProposal.test.ts",
+      "sha256": "d73c3f81b482381322714b67adfcaa077e023cd7faba2287811b3c80c6336d1d"
+    },
+    {
+      "path": "lib/desktop/__tests__/governanceExecutionLimitsEntry.test.ts",
+      "sha256": "97008f952567203e38aa332b28b1b07c359067554fc9d290148e2010e7d0f67a"
+    }
+  ],
+  "result": "Proposal authoring, DEV entry and scoped original-request restart hold already implemented locally; do not duplicate",
+  "notProven": [
+    "native/live human acceptance",
+    "effective custody",
+    "same-artifact real consumer",
+    "complete mutation/fleet coverage",
+    "baseline enrollment",
+    "production activation"
+  ],
+  "remaining_gate_sources": [
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+      "sha256": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/index.cjs",
+      "sha256": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4"
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeBootstrap.ts",
+      "sha256": "ba74b3a38c57124b6b391f5adf11cfd542082ac77620cabfe80b07d1399aeff9"
+    },
+    {
+      "path": "lib/governance/intelligence/requestServiceCore.ts",
+      "sha256": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d"
+    }
+  ],
+  "remaining_gate_conclusion": "Operational supplier is false; issuer unavailable/private business channel unmounted; private bootstrap fixed execution false; request composition coverage empty and activation refuses. No ordinary wiring patch can supply missing qualification."
+}

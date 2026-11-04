@@ -1,5 +1,7 @@
 # Governance completion gates
 
+**November4 current-source supplement:** the dated checkpoints below are historical. Local execution-limit proposal authoring, narrow DEV entry and original-request restart hold are implemented; do not re-create them. [Current source-hashed reconciliation](../2026-11-04/governance-current-workflow-reconciliation/README.md) links later evidence. Actual supplier operational gate remains false, issuer/business channel unavailable, coverage empty and activation refused. Custody/compiled-consumer/fleet/coverage/native/live qualification remains incomplete. No new experiment, grant or activation is authorized.
+
 Current checkpoint: local numeric issuer1388, actual merge composition10e
 (exact production build/types passed), and the subsequent local execution-policy
 HTTP composition described in the November1 receipt. Production activation is

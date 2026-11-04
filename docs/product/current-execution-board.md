@@ -38,3 +38,6 @@ Check master contents at each work-batch boundary against the [last reconciliati
 
 ### November4 local ticket clarity milestone
 Exact provider/ticket/action card context:19focused checks, desktop types and independent review pass. Source only; genuine ServiceNow observation/native lifecycle/closure and full Governance remain open. No provider action or deployment.
+
+### November4 Governance source reconciliation
+Existing local limit proposal authoring, DEV-only Settings entry and original-request restart hold are confirmed in current source; do not rebuild them from stale README checkpoints. [Exact source inspection](../recovery/2026-11-04/governance-current-workflow-reconciliation/README.md). No tests rerun or full enforcement qualification. Runtime/custody/coverage/native/live gates remain unchanged.

@@ -856,3 +856,7 @@ The user explicitly approved the reviewed coding run-budget ledger/local Prisma 
 ## November4 — exact ticket action cards
 
 ~~Saved Jira/ServiceNow action cards identify the actual reviewed ticket, action kind and status, with distinct accessible heading/record references~~ ([local evidence](../recovery/2026-11-04/ticket-action-card-context/README.md)). Five behavioral RED cases became nineteen focused passes; desktop types and independent review pass. All handlers and approval/expiry/no-resend guards remain unchanged. Simulated DOM/request-scoping only: no genuine approval, dispatch, native acceptance or production activation. All15parents remain open.
+
+## November4 — Governance work-selection reconciliation
+
+Current source confirms existing local execution-limit proposal authoring, DEV entry and original-request restart hold; stale historical module statements are explicitly superseded ([source-hashed reconciliation](../recovery/2026-11-04/governance-current-workflow-reconciliation/README.md)). No reimplementation or repeated tests. Custody, real compiled consumer, complete coverage/enrollment and genuine native/live acceptance remain open. All15parents remain open.

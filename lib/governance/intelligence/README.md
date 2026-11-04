@@ -311,3 +311,33 @@ or the absence of unrecorded work.45 focused checks, scoped types/frontend build
 one actual isolatedPG journey and review pass; authentication was simulated.
 Proposal authoring and unrecorded pending restart recovery remain unfinished.
 See docs/recovery/2026-11-01/governance-policy-directory.md.
+
+### November 4 source reconciliation: proposal entry and restart recovery
+
+The preceding paragraphs preserve historical checkpoints and their original test
+counts. Their statements that proposal authoring and pending-request restart
+recovery remain unfinished are superseded for the bounded local prototype by
+these later increments:
+
+- [Native limit proposal authoring](../../../docs/recovery/2026-11-01/governance-native-limit-authoring.md)
+  implements exact loaded-baseline scope, current-member executor selection,
+  actions, numeric ceiling, future expiry, current parent lookup and one explicit
+  save for separate independent review. Saving neither approves nor activates.
+- [Settings execution-limits entry](../../../docs/recovery/2026-11-02/governance-native-execution-limits-entry-progress.md)
+  makes those existing forms reachable only in the DEV-only narrow limits lane
+  after an exact same-workspace baseline read. The original evidence lane stays
+  read-only; neither entry is exposed by production Settings.
+- [Original-request restart recovery](../../../docs/recovery/2026-11-02/governance-native-limits-restart-recovery-progress.md)
+  persists a strict scoped locator before submission and holds unresolved work
+  across unmount/restart. Proposal locators contain only operation and nonce,
+  never proposal contents or replay payloads. Deliberate historical lookup still
+  requires the original current paired session; absence never licenses resend.
+  Local storage is neither authority nor proof of complete history after loss.
+
+This reconciliation inspected current source and existing tests; it ran no new
+runtime, database, native or provider verification. These increments do not
+establish signed-native acceptance, genuine independent human decisions,
+complete executor coverage, baseline enrollment, issuer custody or production
+activation. Limit-pointer activation remains separate from baseline enrollment
+and provider execution. Existing default-OFF/live gates and unknown histories
+remain intact; no full Governance completion or shipped capability is claimed.
