@@ -12,3 +12,12 @@ chmod 600 /private/tmp/axiom-cssm-policy-artifacts/*
 Verification inspection: otool -L pure-test; nm -u builder-never-run.bundle; git diff --cached --check
 Initial builder compile errors corrected: nonexistent kSecACLAuthorizationDBRead replaced with SDK kSecACLAuthorizationKeychainItemRead; zero-count NULL nonnull mismatch replaced with unused static storage (no warning suppression retained).
 Earlier framework link with -Wl,-undefined,error passed but emitted deprecation warning; final link uses default undefined-symbol error behavior.
+
+Review correction 1 (atomic claim):
+clang -std=c11 -Wall -Wextra -Werror -fsanitize=address,undefined packages/verified-issuer-runtime/native/cssm_policy_once_test.c -pthread -o /private/tmp/axiom-cssm-policy-artifacts/once-test
+/private/tmp/axiom-cssm-policy-artifacts/once-test
+clang -std=c11 -Wall -Wextra -Werror -Wno-deprecated-declarations -c packages/verified-issuer-runtime/native/cssm_policy_builder.c -o /private/tmp/axiom-cssm-policy-artifacts/builder.o
+clang -bundle /private/tmp/axiom-cssm-policy-artifacts/builder.o /private/tmp/axiom-cssm-policy-artifacts/copy.o -framework Security -framework CoreFoundation -o /private/tmp/axiom-cssm-policy-artifacts/builder-never-run.bundle
+chmod 600 /private/tmp/axiom-cssm-policy-artifacts/*
+Output: PASS: exactly one of 32 concurrent claims; subsequent attempt refused after consumed failure
+Compile/link exit0, no diagnostics; builder bundle never run or loaded. No copier test rerun (copier unchanged).

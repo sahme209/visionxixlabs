@@ -1,0 +1,8 @@
+{
+  "packages/verified-issuer-runtime/native/cssm_policy_builder.c": "46abfc09b4eeb2ed03af9f42bb480795f0e26d340db5c614b70308cf51b915ad",
+  "packages/verified-issuer-runtime/native/cssm_policy_once.h": "573d53fccd0fd6861c5da42d388c790166f10b864e3b2f9687f419ebbe133d88",
+  "packages/verified-issuer-runtime/native/cssm_policy_once_test.c": "6cb5c1839b61afe16a378c07a4e2f8502ecb6a2ec9017937a4a464093499b387",
+  "/private/tmp/axiom-cssm-policy-artifacts/once-test": "f48643ea0cc939da551a44d4f1b507622b5d8a86ae96a00ba0ad3185571ace79",
+  "/private/tmp/axiom-cssm-policy-artifacts/builder.o": "853e0f28ae2bae54b4bd88701d194b18a43f4c2e8e53d1c24adec51e9e806665",
+  "/private/tmp/axiom-cssm-policy-artifacts/builder-never-run.bundle": "1c0b73a39a80036a38086b71123d4f692ed94fef7487223c866d983157fa6186"
+}

@@ -1,6 +1,7 @@
 /* Compile-only, unbound one-shot configuration preparation. NEVER RUN as part of
  * verification. No item, service, credential or supplier integration exists. */
 #include "cssm_policy_copy.h"
+#include "cssm_policy_once.h"
 #include <Security/Security.h>
 #include <stdlib.h>
 static const char proposed_path[] = "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/origin-broker";
@@ -13,10 +14,9 @@ static SecACLRef acl;
 static CFArrayRef applications, authorizations;
 static CSSM_ACL_OWNER_PROTOTYPE *exported_owner;
 static CSSM_ACL_ENTRY_INFO *exported_entries;
-static unsigned attempted;
+static atomic_flag attempted=ATOMIC_FLAG_INIT;
 int ax_cssm_prepare_once(void) {
- if(attempted) return 0;
- attempted=1;
+ if(!ax_cssm_claim_once(&attempted)) return 0;
  CSSM_ACL_PROCESS_SUBJECT_SELECTOR selector={CSSM_ACL_PROCESS_SELECTOR_CURRENT_VERSION,CSSM_ACL_MATCH_UID,0,0};
  CSSM_LIST_ELEMENT nodes[2]={0};
  nodes[0].ElementType=CSSM_LIST_ELEMENT_WORDID;
