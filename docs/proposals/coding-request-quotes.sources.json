@@ -3,7 +3,7 @@
   "sourceCommit": "e146877a65603d88ed51d35c80fd2caeeccbdf2d",
   "proposal": {
     "path": "docs/proposals/coding-request-quotes.md",
-    "sha256": "c09083f0e259973f1d09daa4a2ed8c5145926c25b7c994261c01ae31ad40b277"
+    "sha256": "39bf8436bf7c2d52450721cc8b60ee9f4211845552071a0560967d114c9e37ea"
   },
   "bindingMeaning": "Finite source locators supporting this proposal; whole-file hashes bind identity, ranges bind inclusive raw line bytes. Not a full repository/runtime/provider/pricing/security audit.",
   "operations": {
