@@ -35,3 +35,6 @@ Five failures exposed by the navigation test selection were traced to stale fixt
 ## Master-plan additions
 
 Check master contents at each work-batch boundary against the [last reconciliation checkpoint](../recovery/2026-11-04/master-plan-change-checkpoint.json), read changed requirements and update this board before selecting work. Preserve unexpected user edits when updating the master; do not replace it with an older snapshot. This is a continuation protocol, not a new scheduler or authorization. Prompt Motion was detected in the latest B2 reread; its page has not been inspected and no asset/code adoption is inferred.
+
+### November4 local ticket clarity milestone
+Exact provider/ticket/action card context:19focused checks, desktop types and independent review pass. Source only; genuine ServiceNow observation/native lifecycle/closure and full Governance remain open. No provider action or deployment.

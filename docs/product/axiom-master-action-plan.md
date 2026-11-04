@@ -852,3 +852,7 @@ The user explicitly approved the reviewed coding run-budget ledger/local Prisma 
 ## November4 — four approved fee-documentation destinations inspected
 
 [Official-source findings](../recovery/2026-11-04/coding-fee-documentation/FINDINGS.md) clarify routing/caching, cache lifetimes/regions, Messages versus Managed Agents search defaults and direct-provider input/output accounting. The separate read exception is consumed; no metadata refetch, inference or fee-contract change. The proposed new fee-accounting contract remains unapproved; estimator, trusted source/freshness and exact transport applicability remain open. All15parents remain open.
+
+## November4 — exact ticket action cards
+
+~~Saved Jira/ServiceNow action cards identify the actual reviewed ticket, action kind and status, with distinct accessible heading/record references~~ ([local evidence](../recovery/2026-11-04/ticket-action-card-context/README.md)). Five behavioral RED cases became nineteen focused passes; desktop types and independent review pass. All handlers and approval/expiry/no-resend guards remain unchanged. Simulated DOM/request-scoping only: no genuine approval, dispatch, native acceptance or production activation. All15parents remain open.

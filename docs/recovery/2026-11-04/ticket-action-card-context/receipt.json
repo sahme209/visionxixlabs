@@ -1,0 +1,32 @@
+{
+  "status": "local DOM presentation qualification only",
+  "baselineCommit": "0c4c2abdedf48b7accd671ae681247f8d31e0a8c",
+  "sourceFiles": [
+    {
+      "path": "desktop/src/components/AssociatedTicketActionsPanel.tsx",
+      "sha256": "ec6c18b86f1b920e0bac097451dff6cb888f3e678e314a57bee4ae7b45ee6a0d"
+    },
+    {
+      "path": "lib/desktop/__tests__/associatedTicketActionsPanel.test.ts",
+      "sha256": "adc79448d6ed612c8402bcadff046c6ace2498246c675a37417375e4fecd3265"
+    }
+  ],
+  "red": {
+    "failed": 5,
+    "passed": 14,
+    "exit": 1
+  },
+  "green": {
+    "passed": 19,
+    "failed": 0,
+    "exit": 0
+  },
+  "behaviorAttributes": {
+    "count": 99,
+    "baselineEqualsCurrent": true,
+    "sha256": "163e7398f04a2e9523df4218eb6f3df01e903f456dd8751e2e186faffcdb4ecf"
+  },
+  "network": "kernel denied",
+  "environment": "scrubbed; dedicated private HOME/TMPDIR/cache and writes allowed only within private temp directory",
+  "limits": "Local mocked read/approval responses test rendered target clarity and request scoping, not genuine independent human review, native accessibility, provider dispatch or server authority."
+}

@@ -1,0 +1,28 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mloads existing review history once and requires its own checkbox before provider approval[32m 63[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mnever offers a resend after a consumed unknown action[32m 6[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mholds uncertain writes until a deliberate history refresh and does not retry[32m 16[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mrequires an approved policy and refuses ServiceNow closure when native lifecycle has no terminal choice[32m 23[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mdisables a reviewed provider action at its deadline without another user interaction or request[32m 8[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mdeliberately reads only the uncertain action outcome and never resends it[32m 18[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mkeeps uncertain execution held when a direct read still shows its old approval[32m 16[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mrecovers an exact saved result after reopening even when full history is unavailable[32m 7[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mchecks exact ServiceNow absence before deliberately preparing a separate review, never sending automatically[32m 19[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mnever offers a fresh note for uncertain writes or a child attempt[32m 7[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mchecks a consumed historical note without loading it under the new association or sending it[32m 10[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mruns only a read-only prerequisite inspection for the explicit consumed action[32m 8[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22moffers read-only reconciliation for a consumed unknown ServiceNow note and opens its returned review[32m 61[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mchecks native closure for an observed note using its exact review, without offering a resend[32m 19[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mnames exact jira link and closure cards and scopes approval to the selected saved action[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mnames exact servicenow link and closure cards and scopes approval to the selected saved action[32m 15[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mlabels an unavailable jira review target without inventing one[32m 5[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mlabels an unavailable servicenow review target without inventing one[32m 6[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/associatedTicketActionsPanel.test.ts[2m > [22mgives repeated saved action cards distinct heading and record IDs across mounted panels[32m 7[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m19 passed[39m[22m[90m (19)[39m
+[2m   Start at [22m 15:37:28
+[2m   Duration [22m 635ms[2m (transform 40ms, setup 0ms, import 76ms, tests 330ms, environment 180ms)[22m
+

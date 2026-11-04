@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import {createElement} from 'react';import {afterEach,beforeEach,expect,it,vi} from 'vitest';import {cleanup,render,screen,fireEvent,waitFor,act} from '@testing-library/react';
+import {createElement} from 'react';import {afterEach,beforeEach,expect,it,vi} from 'vitest';import {cleanup,render,screen,fireEvent,waitFor,act,within} from '@testing-library/react';
 const m=vi.hoisted(()=>({request:vi.fn(),policy:vi.fn(),prepareObservation:vi.fn(),config:{},revision:0}));vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{config:m.config,getContextRevision:()=>m.revision,associatedTicketAction:m.request,ticketGovernanceReview:m.policy,prepareServiceNowWrittenObservation:m.prepareObservation}}));
 vi.mock('../../../desktop/src/components/CatalogIcon',()=>({ProviderLogo:()=>null}));
 import {AssociatedTicketActionsPanel} from '../../../desktop/src/components/AssociatedTicketActionsPanel';
@@ -101,3 +101,39 @@ it('runs only a read-only prerequisite inspection for the explicit consumed acti
 
 it('offers read-only reconciliation for a consumed unknown ServiceNow note and opens its returned review',async()=>{const snReview={...review,binding:{kind:'ticket_release_association',expiresAt:'2030-01-01T00:15:00.000Z',ticket:{provider:'servicenow'}}},unknown={...row,id:'servicenow_action_'+hash,status:'unknown',attemptCount:1,providerWritePerformed:null,transportMode:'provider',canApprove:false,review:{kind:'link'}},observation={...review,id:'ticket_review_'+'e'.repeat(64),binding:{kind:'servicenow_written_link_observation_v1'}},onObservationPrepared=vi.fn();m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',actions:[unknown],truncated:false}});m.prepareObservation.mockResolvedValue({ok:true,data:observation});render(createElement(AssociatedTicketActionsPanel,{review:snReview,onObservationPrepared}));fireEvent.click(await screen.findByRole('button',{name:'Review the existing written note'}));await waitFor(()=>expect(onObservationPrepared).toHaveBeenCalledWith(observation));expect(m.prepareObservation.mock.calls[0][0]).toMatchObject({actionId:unknown.id,expectedVersion:unknown.version,association:{reviewId:review.id,bindingDigest:hash}});expect(m.request.mock.calls.every(([,input])=>input.action!=='dispatch')).toBe(true)});
 it('checks native closure for an observed note using its exact review, without offering a resend',async()=>{const snReview={...review,binding:{kind:'ticket_release_association',ticket:{provider:'servicenow'}}},observedLink={actionId:'servicenow_action_'+hash,actionVersion:3,observation:{reviewId:'ticket_review_'+'e'.repeat(64),bindingDigest:'f'.repeat(64)}};m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',actions:[],truncated:false}});render(createElement(AssociatedTicketActionsPanel,{review:snReview,observedLink}as any));const button=await screen.findByRole('button',{name:'Check native closure for the observed note'});expect(button.hasAttribute('disabled')).toBe(true);m.policy.mockResolvedValue({ok:true,data:{...review,binding:{kind:'servicenow_terminal_policy'}}});fireEvent.change(screen.getByLabelText('Approved terminal policy review ID'),{target:{value:review.id}});fireEvent.click(screen.getByRole('button',{name:'Load approved terminal policy'}));await screen.findByText(/Approved terminal-state policy loaded/);m.request.mockResolvedValue({ok:true,data:{provider:'servicenow',closeOptions:{linkActionId:observedLink.actionId,linkVersion:3,terminalPolicy:{reviewId:review.id,bindingDigest:hash},writtenLinkObservation:observedLink.observation,expiresAt:'2030-01-01T00:15:00Z',transitions:[],fields:[]}}});fireEvent.click(button);await screen.findByText(/native lifecycle or required fields do not currently support closure/);expect(m.request.mock.calls.at(-1)?.[1]).toMatchObject({action:'servicenow_close_options',writtenLinkObservation:observedLink.observation});expect(screen.getByRole('button',{name:'Save deployment link for separate review'}).hasAttribute('disabled')).toBe(true);expect(m.request.mock.calls.every(([,input])=>input.action!=='dispatch')).toBe(true)});
+
+it.each(['jira','servicenow'] as const)('names exact %s link and closure cards and scopes approval to the selected saved action',async provider=>{
+ const actionReview={...review,binding:{kind:'ticket_release_association',ticket:{provider}}};
+ const firstTarget=provider==='jira'?'KAN-4':'CHG0030002',secondTarget=provider==='jira'?'KAN-9':'CHG0030009';
+ const first={...row,id:provider+'_action_'+hash,review:{...row.review,...(provider==='jira'?{issueKey:firstTarget}:{issueNumber:firstTarget})}};
+ const second={...row,id:provider+'_action_'+'b'.repeat(64),version:3,kind:'close',review:{...row.review,kind:'close',...(provider==='jira'?{issueKey:secondTarget}:{issueNumber:secondTarget})}};
+ m.request.mockResolvedValueOnce({ok:true,data:{provider,actions:[first,second],truncated:false}});
+ render(createElement(AssociatedTicketActionsPanel,{review:actionReview}));
+ const label=provider==='jira'?'Jira':'ServiceNow';
+ const link=await screen.findByRole('article',{name:`${label} · ${firstTarget} · Deployment evidence link · awaiting approval`});
+ const closure=screen.getByRole('article',{name:`${label} · ${secondTarget} · Ticket closure · awaiting approval`});
+ for(const [card,action] of [[link,first],[closure,second]] as const){
+  const heading=document.getElementById(card.getAttribute('aria-labelledby')!);expect(heading?.tagName).toBe('H6');expect(card.contains(heading)).toBe(true);
+  const record=document.getElementById(card.getAttribute('aria-describedby')!);expect(card.contains(record)).toBe(true);expect(record?.textContent).toBe(`${action.id} · review version ${action.version} · attempt ${action.attemptCount}/1`);
+ }
+ const approve=within(closure).getByRole('button',{name:'Approve exact provider action'});expect(approve.hasAttribute('disabled')).toBe(true);
+ fireEvent.click(within(closure).getByLabelText('I reviewed this exact provider target and content.'));
+ expect(within(link).getByRole('button',{name:'Approve exact provider action'}).hasAttribute('disabled')).toBe(true);
+ m.request.mockResolvedValueOnce({ok:true,data:{provider,action:{...second,version:4,status:'approved',canApprove:false}}});fireEvent.click(approve);
+ await waitFor(()=>expect(m.request).toHaveBeenCalledTimes(2));
+ expect(m.request.mock.calls[1][1]).toMatchObject({action:'approve',actionId:second.id,expectedVersion:3,bindingDigest:hash});
+ expect(m.request.mock.calls.filter(([,input])=>input.action==='approve')).toHaveLength(1);expect(m.request.mock.calls.every(([,input])=>input.action!=='dispatch')).toBe(true);
+});
+it.each(['jira','servicenow'] as const)('labels an unavailable %s review target without inventing one',async provider=>{
+ m.request.mockResolvedValue({ok:true,data:{provider,actions:[{...row,id:provider+'_action_'+hash,review:{kind:'link',linkTitle:'Saved content only'}}],truncated:false}});
+ render(createElement(AssociatedTicketActionsPanel,{review:{...review,binding:{kind:'ticket_release_association',ticket:{provider}}}}));
+ const card=await screen.findByRole('article',{name:`${provider==='jira'?'Jira':'ServiceNow'} · Target unavailable · Deployment evidence link · awaiting approval`});
+ expect(within(card).getByRole('heading',{level:6}).textContent).toContain('Target unavailable');expect(m.request).toHaveBeenCalledTimes(1);
+});
+it('gives repeated saved action cards distinct heading and record IDs across mounted panels',async()=>{
+ render(createElement('div',null,createElement(AssociatedTicketActionsPanel,{review}),createElement(AssociatedTicketActionsPanel,{review})));
+ const cards=await screen.findAllByRole('article',{name:'Jira · KAN-4 · Deployment evidence link · awaiting approval'});expect(cards).toHaveLength(2);
+ const ids=cards.flatMap(card=>['aria-labelledby','aria-describedby'].map(attr=>card.getAttribute(attr)!));expect(new Set(ids).size).toBe(4);
+ for(const card of cards)for(const attr of ['aria-labelledby','aria-describedby']){const node=document.getElementById(card.getAttribute(attr)!);expect(node).not.toBeNull();expect(card.contains(node)).toBe(true)}
+ expect(m.request).toHaveBeenCalledTimes(2);expect(m.request.mock.calls.every(([,input])=>input.action==='list')).toBe(true);
+});
