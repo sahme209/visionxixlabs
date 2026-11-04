@@ -1,0 +1,469 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_INDEPENDENT_SOURCE_REVIEW",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "runtimeBinding": false,
+  "sourceBaseline": {
+    "commit": "2d29123635942d32dcde65b36a9b19458fe5fd13",
+    "date": "2026-11-03"
+  },
+  "scope": "Finite actual desktop Releases mount and the documented main controls; client/source semantics only, no all-backend audit.",
+  "mount": {
+    "navigation": "desktop/src/lib/customerNavigation.ts",
+    "viewId": "deployment-requests",
+    "app": "desktop/src/App.tsx",
+    "mountedView": "desktop/src/views/DeploymentRequestsView.tsx",
+    "excludedDormantView": "desktop/src/views/ReleasesView.tsx",
+    "savedOperationPlanMountCondition": "submitted release and noPrRequired === false, through ReleaseMergeReview"
+  },
+  "hashConvention": {
+    "algorithm": "SHA-256",
+    "wholeFile": "Exact file bytes",
+    "range": "Inclusive one-based lines; concatenate original bytes preserving each original line ending",
+    "manifestSelfHash": "Excluded to avoid self-reference; review receipt may hash this frozen file externally",
+    "mutableMasterPlanWholeHashBound": false
+  },
+  "artifact": {
+    "path": "docs/product/knowledge/releases-workspace-controls.md",
+    "sha256": "f96c4c62726961e8006475a54e8c7f8e2bac6014c299df078227ee239a4d719b"
+  },
+  "proposedContentIds": [
+    {
+      "id": "releases.workspace-controls",
+      "heading": "Find the current workspace and read its context",
+      "proposedOnly": true,
+      "runtimeBound": false
+    },
+    {
+      "id": "releases.request-intake",
+      "heading": "Create or complete a request",
+      "proposedOnly": true,
+      "runtimeBound": false
+    },
+    {
+      "id": "releases.workflow-and-batches",
+      "heading": "Discover workflow fields and select exact batch dependencies",
+      "proposedOnly": true,
+      "runtimeBound": false
+    },
+    {
+      "id": "releases.planning-evidence",
+      "heading": "Review history, planning and evidence",
+      "proposedOnly": true,
+      "runtimeBound": false
+    },
+    {
+      "id": "releases.terraform-evidence",
+      "heading": "Saved Terraform plan evidence",
+      "proposedOnly": true,
+      "runtimeBound": false
+    },
+    {
+      "id": "releases.exact-plans-review",
+      "heading": "Review exact merge plans and separate approvals",
+      "proposedOnly": true,
+      "runtimeBound": false
+    },
+    {
+      "id": "releases.provider-execution-recovery",
+      "heading": "Deliberate provider execution and recovery",
+      "proposedOnly": true,
+      "runtimeBound": false
+    },
+    {
+      "id": "releases.accepted-run-evidence",
+      "heading": "Read evidence for the accepted run",
+      "proposedOnly": true,
+      "runtimeBound": false
+    },
+    {
+      "id": "releases.tickets-and-outcome",
+      "heading": "Tickets and recording an external outcome",
+      "proposedOnly": true,
+      "runtimeBound": false
+    }
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "lineCount": 209,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 164,
+          "endLine": 183,
+          "sha256": "be487fbb375c1173ae829c82aa9dcf57a1273d8eb25daac10b1688e49871d8b9"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "wholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "lineCount": 29,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 15,
+          "sha256": "5282946e47ded231edf1c9172f48df937f81f7ece376c909915e784a015d8c29"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "wholeFileSha256": "0d51713c1193b657a364a829b29595b415e0f67ecb17ebfa8e7a490aea4b99ee",
+      "lineCount": 1304,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 109,
+          "endLine": 272,
+          "sha256": "21608be8ad966a4cc18ee01556651ec16798541f90ed0b1f789a228d2df6e484"
+        },
+        {
+          "startLine": 273,
+          "endLine": 450,
+          "sha256": "c0c53c0ad2ba691042821b82af0d011f31f05e8bebb5aec8be61ed272b7e15ba"
+        },
+        {
+          "startLine": 452,
+          "endLine": 799,
+          "sha256": "93f79f9849829b14c9b5417d2d3d6313fd72c55ebc9f95f4738317ac78010796"
+        },
+        {
+          "startLine": 803,
+          "endLine": 900,
+          "sha256": "2c5e5ad2d4a286f5fefa34246dbd62d83320bf90538a9187ab3e121b1c111e8d"
+        },
+        {
+          "startLine": 901,
+          "endLine": 1304,
+          "sha256": "1e560f568434d86ff1ae2afc9a44b739f245be489a9e7b802ced23a4c532b7e1"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "lineCount": 2192,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 592,
+          "endLine": 617,
+          "sha256": "4402b6df12234d497b8edd6090f38f97e64ba3da1d5677801f0927bcb576b7f2"
+        },
+        {
+          "startLine": 1508,
+          "endLine": 1571,
+          "sha256": "abc875c643d689837d7c2786da603c30349fb429a67be0e6f9d820e4050a8a51"
+        },
+        {
+          "startLine": 1710,
+          "endLine": 1858,
+          "sha256": "cc463a0ff034f62ed833524627c3449bb596ecd352ab60d7589624a8ae01c1ea"
+        },
+        {
+          "startLine": 1880,
+          "endLine": 2000,
+          "sha256": "5c22aa045eab966b6115ced2c64311c90470fcb0e0af81fb1d9e8b4c78a6147f"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/FocusedReleaseWorkspace.tsx",
+      "wholeFileSha256": "51823287d1507ea8236d4970f1df1800724d266b68a5ba350f3284a4d80719b7",
+      "lineCount": 30,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 30,
+          "sha256": "51823287d1507ea8236d4970f1df1800724d266b68a5ba350f3284a4d80719b7"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ResolutionDraftForm.tsx",
+      "wholeFileSha256": "99656158df7479cb59faf961295e06f0065041fb8abf67d6b5128b94d772815b",
+      "lineCount": 60,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 60,
+          "sha256": "99656158df7479cb59faf961295e06f0065041fb8abf67d6b5128b94d772815b"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/WorkflowCatalogue.tsx",
+      "wholeFileSha256": "d71cb1f2ebe171596092b811babcd94d78004a41af73a2c8e136d8342ef2e196",
+      "lineCount": 38,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 38,
+          "sha256": "d71cb1f2ebe171596092b811babcd94d78004a41af73a2c8e136d8342ef2e196"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+      "wholeFileSha256": "38f48423fcccec7f3b9a001daf8019685716af74f5dc5eb93c6a65fe65a3c29f",
+      "lineCount": 90,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 90,
+          "sha256": "38f48423fcccec7f3b9a001daf8019685716af74f5dc5eb93c6a65fe65a3c29f"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+      "wholeFileSha256": "7b9b2617ddc3ea2cbeffe0e9bdfdf36c8a27b8a9ed76fcd619abf1815781d243",
+      "lineCount": 68,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 68,
+          "sha256": "7b9b2617ddc3ea2cbeffe0e9bdfdf36c8a27b8a9ed76fcd619abf1815781d243"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/DeploymentWorkflowEvidence.tsx",
+      "wholeFileSha256": "dc6a460f24553325b05bdf30df539bc3ccf6d59ad31ef8036ddb6c6f685b7e6b",
+      "lineCount": 17,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 17,
+          "sha256": "dc6a460f24553325b05bdf30df539bc3ccf6d59ad31ef8036ddb6c6f685b7e6b"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/TerraformPlanReview.tsx",
+      "wholeFileSha256": "5bdb3a285867e3bb0bc1a894ea9481cd2ac8996b6e56e11eb4914778bf68fc04",
+      "lineCount": 75,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 75,
+          "sha256": "5bdb3a285867e3bb0bc1a894ea9481cd2ac8996b6e56e11eb4914778bf68fc04"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/TerraformCustomerPlanProfile.tsx",
+      "wholeFileSha256": "74d897adfb7f607bc6e2e55c7a6dc6865ffbeebaa139ce8379f6a19a36cf01d7",
+      "lineCount": 82,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 82,
+          "sha256": "74d897adfb7f607bc6e2e55c7a6dc6865ffbeebaa139ce8379f6a19a36cf01d7"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseMergeReview.tsx",
+      "wholeFileSha256": "2104d72b392347211a4348d94685c6b6fd3fb27d42dba1a1ea1d2635cfe1f0a0",
+      "lineCount": 54,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 54,
+          "sha256": "2104d72b392347211a4348d94685c6b6fd3fb27d42dba1a1ea1d2635cfe1f0a0"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseOperationPlans.tsx",
+      "wholeFileSha256": "a915c936ea8a7e8a32e37afacfdb6dce207c00083ea169e65be8f6c33ecbbc1e",
+      "lineCount": 72,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 72,
+          "sha256": "a915c936ea8a7e8a32e37afacfdb6dce207c00083ea169e65be8f6c33ecbbc1e"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseExecutionApproval.tsx",
+      "wholeFileSha256": "d55c430097d651d290bbb51a6cfd9dd92f044d6253809ca5e613b88808fa6de8",
+      "lineCount": 25,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 25,
+          "sha256": "d55c430097d651d290bbb51a6cfd9dd92f044d6253809ca5e613b88808fa6de8"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseProviderMergeApproval.tsx",
+      "wholeFileSha256": "8a9be64d668a998166c191c7862793411713ea59f179c8965937932fb30bcb56",
+      "lineCount": 16,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 16,
+          "sha256": "8a9be64d668a998166c191c7862793411713ea59f179c8965937932fb30bcb56"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseProviderMergeExecution.tsx",
+      "wholeFileSha256": "9e394c8710b9fc35f8df0c891f961bb2f27b8a7a9aa115076a0bd58778bfabe5",
+      "lineCount": 18,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 18,
+          "sha256": "9e394c8710b9fc35f8df0c891f961bb2f27b8a7a9aa115076a0bd58778bfabe5"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseDeploymentApproval.tsx",
+      "wholeFileSha256": "b784746e5e21fd78efe184d6f31f5ad45225a2b07e2ad0899fd5e742c1c4bd38",
+      "lineCount": 21,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 21,
+          "sha256": "b784746e5e21fd78efe184d6f31f5ad45225a2b07e2ad0899fd5e742c1c4bd38"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseDeploymentExecution.tsx",
+      "wholeFileSha256": "67af41937f2c00519e276b3d1e0e4feb61bbafaa36dfa3f2e89b79402a96d5f4",
+      "lineCount": 17,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 17,
+          "sha256": "67af41937f2c00519e276b3d1e0e4feb61bbafaa36dfa3f2e89b79402a96d5f4"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseWorkflowEvidence.tsx",
+      "wholeFileSha256": "27e29c7adbb1384fb9cb97873d7829525cb80cff2fda09a4993ca4bd76f65536",
+      "lineCount": 13,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 13,
+          "sha256": "27e29c7adbb1384fb9cb97873d7829525cb80cff2fda09a4993ca4bd76f65536"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseBatchReadiness.tsx",
+      "wholeFileSha256": "6c9afd7238605b852b4b5509a10ea87b042e974744e4fa8edcb2659a512ea826",
+      "lineCount": 30,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 30,
+          "sha256": "6c9afd7238605b852b4b5509a10ea87b042e974744e4fa8edcb2659a512ea826"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseBatchMonitor.tsx",
+      "wholeFileSha256": "ce25845f60411f1315edd8028714b5156aac4d212e097e1204ee9db835753a23",
+      "lineCount": 55,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 55,
+          "sha256": "ce25845f60411f1315edd8028714b5156aac4d212e097e1204ee9db835753a23"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseTicketWorkspace.tsx",
+      "wholeFileSha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902",
+      "lineCount": 22,
+      "evidenceKind": "source_inspection",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 22,
+          "sha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902"
+        }
+      ]
+    },
+    {
+      "path": "docs/product/knowledge/servicenow-evidence-and-closure-controls.md",
+      "wholeFileSha256": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336",
+      "lineCount": 88,
+      "evidenceKind": "linked_internal_guide",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 88,
+          "sha256": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336"
+        }
+      ]
+    }
+  ],
+  "omittedNestedScopes": [
+    "Complete Jira discovery and lifecycle action/recovery controls",
+    "Full ServiceNow native lifecycle: linked internal guide only",
+    "Complete manual workflow JSON editor subcontrols",
+    "Provider setup and Governance editing",
+    "External GitHub, CI and ServiceNow pages",
+    "Cloud/storage/customer CI producer provisioning",
+    "Dormant ReleasesView and browser Change tickets handoff",
+    "Every backend route/store invariant and runtime/native acceptance matrix"
+  ],
+  "safetyBoundaries": [
+    "Real independent human review remains mandatory; no impersonation",
+    "Already-written ServiceNow UNKNOWN note remains consumed; never resend, reset, renew or create a descendant",
+    "Provider preparation is not dispatch; acknowledgement/workflow success is not whole-release success",
+    "Unknown outcomes reconcile original saved records; no replay/reset from this guide",
+    "Internal documentation only; no customer publication, runtime help binding, media, editorial or release acceptance"
+  ],
+  "verificationPerformed": [
+    "Read local source and linked existing internal guide",
+    "Computed exact whole-file and inclusive-range SHA-256 bindings",
+    "Checked baseline HEAD and file range bounds"
+  ],
+  "verificationNotPerformed": [
+    "Tests",
+    "Build",
+    "Browser/native UI",
+    "Network/provider actions",
+    "Database",
+    "Security scan",
+    "Runtime/flag validation",
+    "Accessibility acceptance",
+    "Customer/editorial/release acceptance"
+  ]
+}

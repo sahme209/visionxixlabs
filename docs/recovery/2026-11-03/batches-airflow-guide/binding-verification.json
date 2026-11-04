@@ -1,0 +1,8 @@
+{
+  "status": "PASS",
+  "sourceBindings": 22,
+  "distinctSourceFiles": 20,
+  "ranges": 22,
+  "documentHash": "e3751bc08147047d372e467b676ec8db94b67b75efc19822cbed690674c9992b",
+  "runtimeAcceptance": false
+}

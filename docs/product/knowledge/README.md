@@ -15,6 +15,8 @@
 | Connect Outlook or read mailbox/calendar metadata | [Outlook controls](outlook-controls.md) | Selected fields do not narrow the entire Microsoft consent grant. Actions require separate access/review. |
 | Prepare a Slack notification | [Slack reviewed action](slack-reviewed-action-controls.md) | Genuine independent review and requester execution remain separate. |
 | Prepare a Teams message or Linear issue | [Teams/Linear controls](teams-linear-controls.md) | Provider, target, task/version and connection binding matter; approvals are not interchangeable. |
+| Prepare and follow a release request | [Releases workspace controls](releases-workspace-controls.md) | Scope, exact plans, approval, execution, evidence and Axiom record closure are distinct. |
+| Inspect Airflow batches and rules | [Batches controls](batches-airflow-controls.md) | Observations, direct DAG runs, automations and approval/execution paths differ; pause is not provider cancellation. |
 | Reconcile ServiceNow evidence and closure | [ServiceNow controls](servicenow-evidence-and-closure-controls.md) | Written unknown notes must not be resent. Native lifecycle, fresh human decisions and exact closure remain required. |
 | Inspect the execution-limit prototype | [Limits preview](governance-execution-limits.md) | Internal DEV preview; not completed or enabled Governance. |
 | Bypass the website header with a keyboard | [Skip control source guide](../../recovery/2026-11-03/marketing-keyboard-bypass/internal-source-guide.md) | Local focus change only; actual browser and assistive-technology acceptance remain pending. |
@@ -30,4 +32,4 @@ Structured Agent, deployment, Bot and repository article drafts, evaluation requ
 3. Obtain genuine editorial/release decisions and separately verify customer/public eligibility. Metadata alone cannot make those decisions.
 4. Update the coverage queue and exact bindings. Keep missing controls and unaccepted states open; do not infer whole-app coverage from this index.
 
-Home, Releases, Batches, full Settings and the remaining nested workflows still need their full source-to-control inventory; Agent and every guide still require their media, native and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.
+Home, full Settings and the explicitly omitted nested workflows still need their source-to-control inventory; Releases, Batches, Agent and every guide still require their media, native and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.
