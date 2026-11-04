@@ -1,0 +1,25 @@
+{
+  "status": "frozen-READY",
+  "base": "b80a85a9b74a7deff9c4a691643644316c41f8ed",
+  "red": {
+    "exit": 1,
+    "failed": 1,
+    "passed": 3
+  },
+  "green": {
+    "exit": 0,
+    "passed": 4
+  },
+  "sources": [
+    {
+      "path": "components/docs/DocsSidebar.tsx",
+      "sha256": "ed8874553e9121d1645de63b3e80d21f43f196c347f33e866279defc9ad741a1"
+    },
+    {
+      "path": "app/docs/__tests__/guide-navigation-search.test.ts",
+      "sha256": "4867ee7ee50be7ea9d3627acf4e75d5a3068b58b017cbfb4f6cd53d4a66ce9ca"
+    }
+  ],
+  "runtimeBrowserAccessibilityAcceptance": false,
+  "additionalTypesOrBuildRun": false
+}

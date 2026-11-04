@@ -1,0 +1,366 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-docs-current-page-20261104[39m
+
+ [31m×[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mfilters existing guide titles with trimmed case-insensitive text and retains ordinary destinations[32m 64[2mms[22m[39m
+[31m   → Unable to find an accessible element with the role "link" and name "Permissions model"
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"text-xs leading-5 text-zinc-400"[31m
+    [33mid[31m=[32m"_r_0_-scope"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  searchbox:
+
+  Name "Find a guide":
+  [36m<input[31m
+    [33maria-controls[31m=[32m"_r_0_-results"[31m
+    [33maria-describedby[31m=[32m"_r_0_-scope"[31m
+    [33mclass[31m=[32m"min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"[31m
+    [33mid[31m=[32m"_r_0_-query"[31m
+    [33mplaceholder[31m=[32m"Guide title or section"[31m
+    [33mtype[31m=[32m"search"[31m
+    [33mvalue[31m=[32m"  pErMiSsIoNs  "[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  button:
+
+  Name "Clear guide filter":
+  [36m<button[31m
+    [33mclass[31m=[32m"min-h-11 rounded-lg px-2 text-xs text-zinc-300 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[31m
+    [33mtype[31m=[32m"button"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<p[31m
+    [33maria-atomic[31m=[32m"true"[31m
+    [33maria-live[31m=[32m"polite"[31m
+    [33mclass[31m=[32m"text-xs leading-5 text-zinc-400"[31m
+    [33mrole[31m=[32m"status"[31m
+  [36m/>[31m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[31m
+    [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[31m
+    [33mclass[31m=[32m"space-y-0.5"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[31m
+
+  --------------------------------------------------
+  link:
+
+  Name "Permissions model":
+  [36m<a[31m
+    [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[31m
+    [33mhref[31m=[32m"/docs/permissions-model"[31m
+  [36m/>[31m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<nav[31m
+  [33maria-label[31m=[32m"Documentation navigation"[31m
+  [33mclass[31m=[32m"space-y-6"[31m
+[36m>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"space-y-2 px-3"[31m
+  [36m>[31m
+    [36m<label[31m
+      [33mclass[31m=[32m"block text-sm font-medium text-zinc-200"[31m
+      [33mfor[31m=[32m"_r_0_-query"[31m
+    [36m>[31m
+      [0mFind a guide[0m
+    [36m</label>[31m
+    [36m<p[31m
+      [33mclass[31m=[32m"text-xs leading-5 text-zinc-400"[31m
+      [33mid[31m=[32m"_r_0_-scope"[31m
+    [36m>[31m
+      [0mFilters guide titles and section names in this navigation. It does not search article text or provide answers.[0m
+    [36m</p>[31m
+    [36m<input[31m
+      [33maria-controls[31m=[32m"_r_0_-results"[31m
+      [33maria-describedby[31m=[32m"_r_0_-scope"[31m
+      [33mclass[31m=[32m"min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"[31m
+      [33mid[31m=[32m"_r_0_-query"[31m
+      [33mplaceholder[31m=[32m"Guide title or section"[31m
+      [33mtype[31m=[32m"search"[31m
+      [33mvalue[31m=[32m"  pErMiSsIoNs  "[31m
+    [36m/>[31m
+    [36m<button[31m
+      [33mclass[31m=[32m"min-h-11 rounded-lg px-2 text-xs text-zinc-300 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[31m
+      [33mtype[31m=[32m"button"[31m
+    [36m>[31m
+      [0mClear guide filter[0m
+    [36m</button>[31m
+    [36m<p[31m
+      [33maria-atomic[31m=[32m"true"[31m
+      [33maria-live[31m=[32m"polite"[31m
+      [33mclass[31m=[32m"text-xs leading-5 text-zinc-400"[31m
+      [33mrole[31m=[32m"status"[31m
+    [36m>[31m
+      [0m1 guide shown[0m
+    [36m</p>[31m
+  [36m</div>[31m
+  [36m<div[31m
+    [33mclass[31m=[32m"space-y-6"[31m
+    [33mid[31m=[32m"_r_0_-results"[31m
+  [36m>[31m
+    [36m<div>[31m
+      [36m<p[31m
+        [33mclass[31m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[31m
+      [36m>[31m
+        [0mTrust & security[0m
+      [36m</p>[31m
+      [36m<ul[31m
+        [33mclass[31m=[32m"space-y-0.5"[31m
+      [36m>[31m
+        [36m<li>[31m
+          [36m<a[31m
+            [33mclass[31m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[31m
+            [33mhref[31m=[32m"/docs/permissions-model"[31m
+          [36m>[31m
+            [36m<svg[31m
+              [33maria-hidden[31m=[32m"true"[31m
+              [33mclass[31m=[32m"h-3.5 w-3.5 shrink-0 text-orange-400"[31m
+              [33mdata-slot[31m=[32m"icon"[31m
+              [33mfill[31m=[32m"none"[31m
+              [33mstroke[31m=[32m"currentColor"[31m
+              [33mstroke-width[31m=[32m"1.5"[31m
+              [33mviewBox[31m=[32m"0 0 24 24"[31m
+              [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+            [36m>[31m
+              [36m<path[31m
+                [33md[31m=[32m"M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"[31m
+                [33mstroke-linecap[31m=[32m"round"[31m
+                [33mstroke-linejoin[31m=[32m"round"[31m
+              [36m/>[31m
+            [36m</svg>[31m
+            [36m<span[31m
+              [33mclass[31m=[32m"truncate"[31m
+            [36m>[31m
+              [0mPermissions model[0m
+            [36m</span>[31m
+          [36m</a>[31m
+        [36m</li>[31m
+      [36m</ul>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</nav>[31m[39m
+ [32m✓[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mmatches existing section names while keeping their guide groups[32m 8[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mreports an empty title match, then clears the filter and returns focus to its field[32m 18[2mms[22m[39m
+ [32m✓[39m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mretains mobile Escape and route-change close behavior while filtering[32m 16[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m app/docs/__tests__/guide-navigation-search.test.ts[2m > [22mfilters existing guide titles with trimmed case-insensitive text and retains ordinary destinations
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an accessible element with the role "link" and name "Permissions model"
+
+Here are the accessible roles:
+
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"text-xs leading-5 text-zinc-400"[39m
+    [33mid[39m=[32m"_r_0_-scope"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  searchbox:
+
+  Name "Find a guide":
+  [36m<input[39m
+    [33maria-controls[39m=[32m"_r_0_-results"[39m
+    [33maria-describedby[39m=[32m"_r_0_-scope"[39m
+    [33mclass[39m=[32m"min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"[39m
+    [33mid[39m=[32m"_r_0_-query"[39m
+    [33mplaceholder[39m=[32m"Guide title or section"[39m
+    [33mtype[39m=[32m"search"[39m
+    [33mvalue[39m=[32m"  pErMiSsIoNs  "[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "Clear guide filter":
+  [36m<button[39m
+    [33mclass[39m=[32m"min-h-11 rounded-lg px-2 text-xs text-zinc-300 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  status:
+
+  Name "":
+  [36m<p[39m
+    [33maria-atomic[39m=[32m"true"[39m
+    [33maria-live[39m=[32m"polite"[39m
+    [33mclass[39m=[32m"text-xs leading-5 text-zinc-400"[39m
+    [33mrole[39m=[32m"status"[39m
+  [36m/>[39m
+
+  --------------------------------------------------paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  list:
+
+  Name "":
+  [36m<ul[39m
+    [33mclass[39m=[32m"space-y-0.5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  listitem:
+
+  Name "":
+  [36m<li />[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Permissions model":
+  [36m<a[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[39m
+    [33mhref[39m=[32m"/docs/permissions-model"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<nav[39m
+  [33maria-label[39m=[32m"Documentation navigation"[39m
+  [33mclass[39m=[32m"space-y-6"[39m
+[36m>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"space-y-2 px-3"[39m
+  [36m>[39m
+    [36m<label[39m
+      [33mclass[39m=[32m"block text-sm font-medium text-zinc-200"[39m
+      [33mfor[39m=[32m"_r_0_-query"[39m
+    [36m>[39m
+      [0mFind a guide[0m
+    [36m</label>[39m
+    [36m<p[39m
+      [33mclass[39m=[32m"text-xs leading-5 text-zinc-400"[39m
+      [33mid[39m=[32m"_r_0_-scope"[39m
+    [36m>[39m
+      [0mFilters guide titles and section names in this navigation. It does not search article text or provide answers.[0m
+    [36m</p>[39m
+    [36m<input[39m
+      [33maria-controls[39m=[32m"_r_0_-results"[39m
+      [33maria-describedby[39m=[32m"_r_0_-scope"[39m
+      [33mclass[39m=[32m"min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300"[39m
+      [33mid[39m=[32m"_r_0_-query"[39m
+      [33mplaceholder[39m=[32m"Guide title or section"[39m
+      [33mtype[39m=[32m"search"[39m
+      [33mvalue[39m=[32m"  pErMiSsIoNs  "[39m
+    [36m/>[39m
+    [36m<button[39m
+      [33mclass[39m=[32m"min-h-11 rounded-lg px-2 text-xs text-zinc-300 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+      [33mtype[39m=[32m"button"[39m
+    [36m>[39m
+      [0mClear guide filter[0m
+    [36m</button>[39m
+    [36m<p[39m
+      [33maria-atomic[39m=[32m"true"[39m
+      [33maria-live[39m=[32m"polite"[39m
+      [33mclass[39m=[32m"text-xs leading-5 text-zinc-400"[39m
+      [33mrole[39m=[32m"status"[39m
+    [36m>[39m
+      [0m1 guide shown[0m
+    [36m</p>[39m
+  [36m</div>[39m
+  [36m<div[39m
+    [33mclass[39m=[32m"space-y-6"[39m
+    [33mid[39m=[32m"_r_0_-results"[39m
+  [36m>[39m
+    [36m<div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest"[39m
+      [36m>[39m
+        [0mTrust & security[0m
+      [36m</p>[39m
+      [36m<ul[39m
+        [33mclass[39m=[32m"space-y-0.5"[39m
+      [36m>[39m
+        [36m<li>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors bg-orange-500/10 text-orange-300 border border-orange-500/20"[39m
+            [33mhref[39m=[32m"/docs/permissions-model"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3.5 w-3.5 shrink-0 text-orange-400"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"truncate"[39m
+            [36m>[39m
+              [0mPermissions model[0m
+            [36m</span>[39m
+          [36m</a>[39m
+        [36m</li>[39m
+      [36m</ul>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</nav>[39m
+[90m [2m❯[22m Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m app/docs/__tests__/guide-navigation-search.test.ts:[2m19:28[22m[39m
+    [90m 17|[39m   const nav = screen.getByRole("navigation", { name: "Documentation na…
+    [90m 18|[39m   [34mexpect[39m([34mwithin[39m(nav)[33m.[39m[34mgetAllByRole[39m([32m"link"[39m))[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+    [90m 19|[39m   const link = within(nav).getByRole("link", { name: "Permissions mode…
+    [90m   |[39m                            [31m^[39m
+    [90m 20|[39m   [34mexpect[39m(link[33m.[39m[34mgetAttribute[39m([32m"href"[39m))[33m.[39m[34mtoBe[39m([32m"/docs/permissions-model"[39m)[33m;[39m
+    [90m 21|[39m   [34mexpect[39m(link[33m.[39mclassName)[33m.[39m[34mtoContain[39m([32m"bg-orange-500/10"[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 07:39:44
+[2m   Duration [22m 778ms[2m (transform 32ms, setup 0ms, import 214ms, tests 107ms, environment 397ms)[22m
+

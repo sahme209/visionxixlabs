@@ -140,6 +140,7 @@ export function DocsSidebar() {
                   ) : (
                     <Link
                       href={item.href}
+                      aria-current={isActive ? "page" : undefined}
                       className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${
                         isActive
                           ? "bg-orange-500/10 text-orange-300 border border-orange-500/20"

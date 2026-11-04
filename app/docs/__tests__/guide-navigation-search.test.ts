@@ -16,7 +16,7 @@ it("filters existing guide titles with trimmed case-insensitive text and retains
   fireEvent.change(field, { target: { value: "  pErMiSsIoNs  " } });
   const nav = screen.getByRole("navigation", { name: "Documentation navigation" });
   expect(within(nav).getAllByRole("link")).toHaveLength(1);
-  const link = within(nav).getByRole("link", { name: "Permissions model" });
+  const link = within(nav).getByRole("link", { name: "Permissions model", current: "page" });
   expect(link.getAttribute("href")).toBe("/docs/permissions-model");
   expect(link.className).toContain("bg-orange-500/10");
   expect(screen.getByText("Trust & security")).toBeDefined();
