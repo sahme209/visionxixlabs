@@ -1,0 +1,8 @@
+{
+  "removedOnlyLiteralAttributes": true,
+  "before": 29,
+  "after": 0,
+  "equalsGit304aBaseline": true,
+  "sha256": "0d51713c1193b657a364a829b29595b415e0f67ecb17ebfa8e7a490aea4b99ee",
+  "status": "Metadata withdrawn pending observer fix; prepared binding artifacts and prior logs are superseded and unaccepted; no tests rerun."
+}

@@ -486,11 +486,11 @@ export function DeploymentRequestsView() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <button type="button" onClick={() => void load()} className="btn-secondary">
+          <button data-help-id="releases.workspace.refresh" type="button" onClick={() => void load()} className="btn-secondary">
             Refresh
           </button>
-          <button type="button" onClick={() => { invalidateRevisionRead(); setShowForm(false); setRevision(undefined); setResolutionDraftStarted(true); setShowResolutionDraft(value => !value); }} className="btn-secondary">{showResolutionDraft ? "Cancel draft" : "Start from ticket"}</button>
-          <button type="button" onClick={() => { invalidateRevisionRead(); setShowResolutionDraft(false); setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
+          <button data-help-id="releases.workspace.ticket-draft-toggle" type="button" onClick={() => { invalidateRevisionRead(); setShowForm(false); setRevision(undefined); setResolutionDraftStarted(true); setShowResolutionDraft(value => !value); }} className="btn-secondary">{showResolutionDraft ? "Cancel draft" : "Start from ticket"}</button>
+          <button data-help-id="releases.workspace.intake-toggle" type="button" onClick={() => { invalidateRevisionRead(); setShowResolutionDraft(false); setRevision(undefined); setShowForm((value) => !value); }} className="btn-primary">
             {showForm ? "Cancel intake" : "New release"}
           </button>
         </div>
@@ -519,7 +519,7 @@ export function DeploymentRequestsView() {
             </div>
             <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Latest {Math.min(executions.length, 5)}</span>
           </div>
-          <details className="mt-3"><summary className="cursor-pointer py-1 text-xs text-zinc-400">Browse recorded workflow runs</summary><div className="mt-3 space-y-2">
+          <details className="mt-3"><summary data-help-id="releases.workspace.workflow-runs" className="cursor-pointer py-1 text-xs text-zinc-400">Browse recorded workflow runs</summary><div className="mt-3 space-y-2">
             {executions.slice(0, 5).map((execution) => (
               <div key={execution.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-black/15 px-3 py-2.5">
                 <div className="min-w-0">
@@ -578,7 +578,7 @@ export function DeploymentRequestsView() {
                   <p className="text-base font-semibold tracking-tight text-white truncate">{request.title}</p>
                   <p className="mt-1 text-xs text-zinc-500">Version {request.version} · Updated {new Date(request.updatedAt).toLocaleString()}</p>
                   <details className="mt-2 text-[11px] text-zinc-500">
-                    <summary className="cursor-pointer hover:text-zinc-300">Request identifiers</summary>
+                    <summary data-help-id="releases.workspace.request-identifiers" className="cursor-pointer hover:text-zinc-300">Request identifiers</summary>
                     <p className="mt-2 break-all font-mono">Request {request.id}</p>
                     <p className="mt-1 break-all font-mono">Correlation {request.correlationId}</p>
                   </details>
@@ -592,15 +592,15 @@ export function DeploymentRequestsView() {
                 <p className="text-xs text-zinc-500">Exact approvals and verified evidence are required before execution.</p>
                 <div className="flex flex-wrap gap-2">
                   {request.status === "draft" ? <>
-                    <button type="button" className="btn-primary" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? "Opening…" : "Complete release details"}</button>
-                    <button type="button" className="btn-secondary" disabled={loadingHistoryId === request.id} onClick={() => void loadRevisionHistory(request.id)}>Review history</button>
+                    <button data-help-id="releases.workspace.complete-details" type="button" className="btn-primary" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? "Opening…" : "Complete release details"}</button>
+                    <button data-help-id="releases.workspace.draft-history" type="button" className="btn-secondary" disabled={loadingHistoryId === request.id} onClick={() => void loadRevisionHistory(request.id)}>Review history</button>
                   </> : <>
 
                   <details className="relative self-start text-xs text-zinc-400">
-                    <summary className="btn-secondary cursor-pointer list-none">Planning tools</summary>
+                    <summary data-help-id="releases.workspace.planning-tools" className="btn-secondary cursor-pointer list-none">Planning tools</summary>
                     <div className="mt-2 flex flex-wrap gap-2 rounded-lg border border-white/10 p-2">
-                  <button type="button" className="btn-secondary" onClick={() => setTerraformRequestId(current => current === request.id ? undefined : request.id)}>Review Terraform evidence</button>
-                  <button
+                  <button data-help-id="releases.workspace.terraform-evidence" type="button" className="btn-secondary" onClick={() => setTerraformRequestId(current => current === request.id ? undefined : request.id)}>Review Terraform evidence</button>
+                  <button data-help-id="releases.workspace.playbook-generate"
                     type="button"
                     className="btn-secondary disabled:opacity-50"
                     disabled={request.status === "closed" || generatingRequestId === request.id}
@@ -610,7 +610,7 @@ export function DeploymentRequestsView() {
                   </button>
                     </div>
                   </details>
-                  <button
+                  <button data-help-id="releases.workspace.revise"
                     type="button"
                     className="btn-secondary disabled:opacity-50"
                     disabled={request.status === "closed" || loadingRevisionId === request.id}
@@ -618,7 +618,7 @@ export function DeploymentRequestsView() {
                   >
                     {loadingRevisionId === request.id ? "Opening…" : "Revise"}
                   </button>
-                  <button
+                  <button data-help-id="releases.workspace.request-history"
                     type="button"
                     className="btn-secondary disabled:opacity-50"
                     disabled={loadingHistoryId === request.id}
@@ -626,7 +626,7 @@ export function DeploymentRequestsView() {
                   >
                     {loadingHistoryId === request.id ? "Loading history…" : "Review history"}
                   </button>
-                  <button
+                  <button data-help-id="releases.workspace.execution-controls"
                     type="button"
                     className="btn-primary disabled:opacity-50"
                     disabled={loadingOperationsId === request.id}
@@ -634,7 +634,7 @@ export function DeploymentRequestsView() {
                   >
                     {loadingOperationsId === request.id ? "Loading controls…" : "Review execution controls"}
                   </button>
-                  <button
+                  <button data-help-id="releases.workspace.github-evidence"
                     type="button"
                     className="btn-secondary disabled:opacity-50"
                     disabled={collectingGitHubEvidenceId === request.id}
@@ -667,17 +667,17 @@ export function DeploymentRequestsView() {
                   <p className="text-xs font-medium text-zinc-100">Record external outcome</p>
                   <p className="mt-1 text-[10px] leading-4 text-zinc-500">Attach the external validation or change reference. This closes only the Axiom record; it cannot deploy, merge, or approve anything.</p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                    <input value={closureEvidenceId} onChange={(event) => setClosureEvidenceId(event.target.value)} placeholder="Validation or change reference" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
-                    <input value={closureSummary} onChange={(event) => setClosureSummary(event.target.value)} placeholder="Recorded outcome summary" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
+                    <input data-help-id="releases.workspace.closure-reference" value={closureEvidenceId} onChange={(event) => setClosureEvidenceId(event.target.value)} placeholder="Validation or change reference" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
+                    <input data-help-id="releases.workspace.closure-summary" value={closureSummary} onChange={(event) => setClosureSummary(event.target.value)} placeholder="Recorded outcome summary" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
                   </div>
                   {closureError && <p role="alert" className="mt-2 text-xs text-rose-300">Closure was not recorded: {closureError}</p>}
                   <div className="mt-3 flex justify-end gap-2">
-                    <button type="button" onClick={() => { setClosingRequestId(undefined); setClosureError(undefined); }} className="btn-secondary">Cancel</button>
-                    <button type="button" disabled={closingBusy} onClick={() => void closeRequest(request)} className="btn-primary disabled:opacity-50">{closingBusy ? "Recording…" : "Record closure"}</button>
+                    <button data-help-id="releases.workspace.closure-cancel" type="button" onClick={() => { setClosingRequestId(undefined); setClosureError(undefined); }} className="btn-secondary">Cancel</button>
+                    <button data-help-id="releases.workspace.closure-record" type="button" disabled={closingBusy} onClick={() => void closeRequest(request)} className="btn-primary disabled:opacity-50">{closingBusy ? "Recording…" : "Record closure"}</button>
                   </div>
                 </div>
               ) : (
-                <button type="button" onClick={() => { setClosingRequestId(request.id); setClosureEvidenceId(""); setClosureSummary(""); setClosureError(undefined); }} className="mt-3 text-[11px] font-medium text-zinc-400 transition hover:text-white">
+                <button data-help-id="releases.workspace.closure-open" type="button" onClick={() => { setClosingRequestId(request.id); setClosureEvidenceId(""); setClosureSummary(""); setClosureError(undefined); }} className="mt-3 text-[11px] font-medium text-zinc-400 transition hover:text-white">
                   Record external outcome and close request →
                 </button>
               )}
@@ -746,7 +746,7 @@ export function DeploymentRequestsView() {
                   <p className="text-[10px] font-mono text-zinc-500 mt-1 break-all">
                     SHA-256 {request.latestPlaybook.contentHash} · stored {new Date(request.latestPlaybook.createdAt).toLocaleString()}
                   </p>
-                  <button
+                  <button data-help-id="releases.workspace.playbook-read"
                     type="button"
                     className="mt-2 text-[11px] font-medium text-violet-200 transition hover:text-white disabled:opacity-50"
                     disabled={loadingPlaybookId === request.id}
@@ -818,7 +818,7 @@ function ReleaseContext({ request, stale }: { request: RequestSummary; stale:boo
   return (
     <div className="mt-3" aria-label="Release context">
       <CustomerJourneyPanel label="Release next step" journey={releaseJourney({status:request.status,approvalDecision:context.readiness.approvalDecision,blockers:context.readiness.blockers,prStatus:context.approval.prStatus,noPrRequired:context.approval.noPrRequired,rollbackAvailability:context.recovery.rollbackAvailability,stale})}/>
-      <details className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-400"><summary className="cursor-pointer py-1">Recorded release details</summary>
+      <details className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-400"><summary data-help-id="releases.workspace.recorded-details" className="cursor-pointer py-1">Recorded release details</summary>
       <div className={`mb-2 rounded-lg border px-3 py-2 ${readiness ? "border-emerald-500/20 bg-emerald-500/5" : "border-white/20 bg-white/5"}`}>
         <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-zinc-100"}`}>
           {readiness ? "Ready for human approval" : "Not ready for human approval"}
@@ -1110,7 +1110,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
         </div>
         <div className="mt-4 grid grid-cols-5 gap-2" aria-label="Intake progress">
           {INTAKE_STEPS.map((label, index) => (
-            <button key={label} type="button" disabled={index > step || submitting} aria-current={index === step ? "step" : undefined} onClick={() => { if (index <= step) { setStep(index); setError(undefined); } }} className={`rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors ${index === step ? "border-violet-500/40 bg-violet-500/10 text-violet-200" : index < step ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-300" : "cursor-default border-white/5 text-zinc-600"}`}>
+            <button data-help-id="releases.workspace.intake-step" key={label} type="button" disabled={index > step || submitting} aria-current={index === step ? "step" : undefined} onClick={() => { if (index <= step) { setStep(index); setError(undefined); } }} className={`rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors ${index === step ? "border-violet-500/40 bg-violet-500/10 text-violet-200" : index < step ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-300" : "cursor-default border-white/5 text-zinc-600"}`}>
               {index + 1}. {label}
             </button>
           ))}
@@ -1222,10 +1222,10 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
 
       {error && <p role="alert" className="text-sm text-rose-300">{error}</p>}
       <div className="flex items-center justify-between gap-3">
-        <button type="button" disabled={step === 0 || submitting} onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(undefined); }} className="btn-secondary disabled:opacity-40">Back</button>
+        <button data-help-id="releases.workspace.intake-back" type="button" disabled={step === 0 || submitting} onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(undefined); }} className="btn-secondary disabled:opacity-40">Back</button>
         <p className="text-xs text-zinc-500">{completingResolutionDraft ? "This submits the completed release request and preserves the original draft. It does not deploy." : revision ? "Saves a new version and keeps the request history. It does not deploy." : "Saves this request to your workspace. It does not deploy."}</p>
         {step < INTAKE_STEPS.length - 1 ? (
-          <button key="continue-step" type="button" className="btn-primary" onClick={(event) => {
+          <button data-help-id="releases.workspace.intake-continue" key="continue-step" type="button" className="btn-primary" onClick={(event) => {
             event.preventDefault();
             const issue = (step === 2 ? workflowInputIssue ?? batchIssue : undefined) ?? validateStep(step, draft);
             if (issue) { setError(issue); return; }
@@ -1233,7 +1233,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
             setStep((current) => Math.min(INTAKE_STEPS.length - 1, current + 1));
           }}>Continue</button>
         ) : (
-          <button key="submit-request" type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
+          <button data-help-id="releases.workspace.intake-submit" key="submit-request" type="submit" disabled={submitting} className="btn-primary disabled:opacity-50">
             {submitting ? (completingResolutionDraft ? "Submitting…" : revision ? "Saving revision…" : "Submitting…") : (completingResolutionDraft ? "Submit completed request" : revision ? "Save revision" : "Submit release request")}
           </button>
         )}
@@ -1257,7 +1257,7 @@ function Field({ label, value, onChange, required, type = "text" }: {
   return (
     <label className="text-xs text-zinc-400 space-y-1">
       <span>{label}</span>
-      <input className="w-full rounded-lg bg-black/20 border border-white/10 px-3 py-2 text-sm text-white"
+      <input data-help-id="releases.workspace.text-field" className="w-full rounded-lg bg-black/20 border border-white/10 px-3 py-2 text-sm text-white"
         type={type} value={value} required={required} onChange={(event) => onChange(event.target.value)} />
     </label>
   );
@@ -1269,7 +1269,7 @@ function TextArea({ label, value, onChange, required }: {
   return (
     <label className="text-xs text-zinc-400 space-y-1 col-span-2">
       <span>{label}</span>
-      <textarea className="w-full min-h-20 rounded-lg bg-black/20 border border-white/10 px-3 py-2 text-sm text-white font-mono"
+      <textarea data-help-id="releases.workspace.multiline-field" className="w-full min-h-20 rounded-lg bg-black/20 border border-white/10 px-3 py-2 text-sm text-white font-mono"
         value={value} required={required} onChange={(event) => onChange(event.target.value)} />
     </label>
   );
@@ -1281,7 +1281,7 @@ function SelectField({ label, value, onChange, options }: {
   return (
     <label className="text-xs text-zinc-400 space-y-1">
       <span>{label}</span>
-      <select className="w-full rounded-lg bg-zinc-950 border border-white/10 px-3 py-2 text-sm text-white"
+      <select data-help-id="releases.workspace.select-field" className="w-full rounded-lg bg-zinc-950 border border-white/10 px-3 py-2 text-sm text-white"
         value={value} onChange={(event) => onChange(event.target.value)}>
         {options.map((option) => <option key={option} value={option}>{option.replaceAll("_", " ")}</option>)}
       </select>
@@ -1294,7 +1294,7 @@ function Check({ label, checked, onChange }: {
 }) {
   return (
     <label className="flex items-center gap-2 text-xs text-zinc-300 py-2">
-      <input type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
+      <input data-help-id="releases.workspace.checkbox-field" type="checkbox" checked={checked} onChange={(event) => onChange(event.target.checked)} />
       {label}
     </label>
   );

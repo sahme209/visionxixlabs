@@ -1,0 +1,300 @@
+{
+  "format": "axiom.product-control-bindings/1",
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "88e937510aeaf7d547a75227a1187d2bd60edc15",
+  "guide": "docs/product/knowledge/releases-workspace-controls.md",
+  "declarations": 29,
+  "countMethod": "All intrinsic button/input/select/textarea/summary/a in the complete DeploymentRequestsView.tsx, including local helper declarations; mapped instances repeat family metadata, custom/imported internals excluded.",
+  "files": [
+    {
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "baselineSha256": "a8b0f8f100ca14729a1e6c60a4967c43b3c972e9bf3ae605604a5d14dd94ad42",
+      "declarations": 29,
+      "tagCounts": {
+        "button": 19,
+        "input": 4,
+        "select": 1,
+        "textarea": 1,
+        "summary": 4
+      }
+    }
+  ],
+  "unbound": [
+    "FocusedReleaseWorkspace",
+    "CustomerJourneyPanel",
+    "ResolutionDraftForm",
+    "ReleaseTicketWorkspace (and nested ticket/approval/action controls)",
+    "ReleaseMergeReview",
+    "ReleaseBatchReadiness / ReleaseBatchMonitor",
+    "ReleaseBatchSelection",
+    "WorkflowCatalogue / WorkflowDefinitionInputs",
+    "DeploymentWorkflowEvidence",
+    "TerraformPlanReview",
+    "ExternalLink / ViewShell imported internals"
+  ],
+  "controls": [
+    {
+      "helpId": "releases.workspace.refresh",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Find the current workspace and read its context",
+      "anchor": "<button type=\"button\" onClick={() => void load()} className=\"btn-secondary\"> Refresh </button>",
+      "nodeSha256": "c85d956bb0ccf757ff7b81dfb5ef5d4c68048598ce109298da3f848a642a6ca5"
+    },
+    {
+      "helpId": "releases.workspace.ticket-draft-toggle",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Create or complete a request",
+      "anchor": "<button type=\"button\" onClick={() => { invalidateRevisionRead(); setShowForm(false); setRevision(undefined); setResolutionDraftStarted(true); setShowResolutionDraft(value => !value); }} className=\"btn-secondary",
+      "nodeSha256": "44963ec38d77107dd6fc323687e8d50b8902f48ec7d1f6d319b82a7b57f56c4f"
+    },
+    {
+      "helpId": "releases.workspace.intake-toggle",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Create or complete a request",
+      "anchor": "<button type=\"button\" onClick={() => { invalidateRevisionRead(); setShowResolutionDraft(false); setRevision(undefined); setShowForm((value) => !value); }} className=\"btn-primary\"> {showForm ? \"Cancel intake\" : ",
+      "nodeSha256": "e638fed9df4b87d5fe2f58d32e38df6ede1cb549e5f9c5c1f314251d2336d052"
+    },
+    {
+      "helpId": "releases.workspace.workflow-runs",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "summary",
+      "guideSection": "Review history, planning and evidence",
+      "anchor": "<summary className=\"cursor-pointer py-1 text-xs text-zinc-400\">Browse recorded workflow runs</summary>",
+      "nodeSha256": "f05bd114a441b56f5451ab8ad10a377d07c9bcd04d8ec1240cfea3cce77f6acb"
+    },
+    {
+      "helpId": "releases.workspace.request-identifiers",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "summary",
+      "guideSection": "Find the current workspace and read its context",
+      "anchor": "<summary className=\"cursor-pointer hover:text-zinc-300\">Request identifiers</summary>",
+      "nodeSha256": "56f61a7c19020e9c6fe63b848aec2dd5c1d2cbfc5a4c973b21e4ad687c021da6"
+    },
+    {
+      "helpId": "releases.workspace.complete-details",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Create or complete a request",
+      "anchor": "<button type=\"button\" className=\"btn-primary\" disabled={loadingRevisionId === request.id} onClick={() => void startRevision(request.id)}>{loadingRevisionId === request.id ? \"Opening…\" : \"Complete release detail",
+      "nodeSha256": "a37401ca68bde1558babcbb9b8df2235259ac2620166da030dbe1dbf013c25ce"
+    },
+    {
+      "helpId": "releases.workspace.draft-history",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Review history, planning and evidence",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={loadingHistoryId === request.id} onClick={() => void loadRevisionHistory(request.id)}>Review history</button>",
+      "nodeSha256": "e57e9276acf3efcfb8abab5b8f9f834df7e59525bbf85f2abc61bf8ec7a95ee1"
+    },
+    {
+      "helpId": "releases.workspace.planning-tools",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "summary",
+      "guideSection": "Review history, planning and evidence",
+      "anchor": "<summary className=\"btn-secondary cursor-pointer list-none\">Planning tools</summary>",
+      "nodeSha256": "8c426197da0d0273bc36cc3e0d6c3727db48ed34c6c7063ddb727bccebe09446"
+    },
+    {
+      "helpId": "releases.workspace.terraform-evidence",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Saved Terraform plan evidence",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" onClick={() => setTerraformRequestId(current => current === request.id ? undefined : request.id)}>Review Terraform evidence</button>",
+      "nodeSha256": "3083168a1b9ede0d8dbfe04ef302a7040194c3f7bd27b8d311fd52e99498c10f"
+    },
+    {
+      "helpId": "releases.workspace.playbook-generate",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Review history, planning and evidence",
+      "anchor": "<button type=\"button\" className=\"btn-secondary disabled:opacity-50\" disabled={request.status === \"closed\" || generatingRequestId === request.id} onClick={() => void generatePlaybook(request.id)} > {generatingRe",
+      "nodeSha256": "7a9ad60db6857e20152efd9fcf20453af4f80d8cf2bdb730e1a3504cefa752b0"
+    },
+    {
+      "helpId": "releases.workspace.revise",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Create or complete a request",
+      "anchor": "<button type=\"button\" className=\"btn-secondary disabled:opacity-50\" disabled={request.status === \"closed\" || loadingRevisionId === request.id} onClick={() => void startRevision(request.id)} > {loadingRevisionId",
+      "nodeSha256": "ea5f6ff701372e140add17fae90d5cf90fc54adc6f1d6e4e7d0049f2f2255883"
+    },
+    {
+      "helpId": "releases.workspace.request-history",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Review history, planning and evidence",
+      "anchor": "<button type=\"button\" className=\"btn-secondary disabled:opacity-50\" disabled={loadingHistoryId === request.id} onClick={() => void loadRevisionHistory(request.id)} > {loadingHistoryId === request.id ? \"Loading ",
+      "nodeSha256": "b5af9ee6ff67207a5261f670a0909502fb8b3f35f291fc28793279e9c7137b54"
+    },
+    {
+      "helpId": "releases.workspace.execution-controls",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Review history, planning and evidence",
+      "anchor": "<button type=\"button\" className=\"btn-primary disabled:opacity-50\" disabled={loadingOperationsId === request.id} onClick={() => void loadOperations(request.id)} > {loadingOperationsId === request.id ? \"Loading c",
+      "nodeSha256": "2cfb790033275619984feb950f58b589b7e99c83fd8f54ec45fa1e9dfa6ebcd0"
+    },
+    {
+      "helpId": "releases.workspace.github-evidence",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Review history, planning and evidence",
+      "anchor": "<button type=\"button\" className=\"btn-secondary disabled:opacity-50\" disabled={collectingGitHubEvidenceId === request.id} onClick={() => void collectGitHubEvidence(request.id)} > {collectingGitHubEvidenceId === ",
+      "nodeSha256": "9834161b00c15f856726ce264fa84eceecf0f229ab4fe47a34bf60693ceb7f22"
+    },
+    {
+      "helpId": "releases.workspace.closure-reference",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "input",
+      "guideSection": "Tickets and recording an external outcome",
+      "anchor": "<input value={closureEvidenceId} onChange={(event) => setClosureEvidenceId(event.target.value)} placeholder=\"Validation or change reference\" className=\"rounded-lg border border-white/10 bg-black/20 px-3 py-2 te",
+      "nodeSha256": "d1b5ff734f47bd280babdd4ea6302f15ed32900b36eda0e4001ccb88187edb4d"
+    },
+    {
+      "helpId": "releases.workspace.closure-summary",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "input",
+      "guideSection": "Tickets and recording an external outcome",
+      "anchor": "<input value={closureSummary} onChange={(event) => setClosureSummary(event.target.value)} placeholder=\"Recorded outcome summary\" className=\"rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-w",
+      "nodeSha256": "8e89a45d12548764be0abb5eda89e01328e6053072a66407ae533164415c75d3"
+    },
+    {
+      "helpId": "releases.workspace.closure-cancel",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Tickets and recording an external outcome",
+      "anchor": "<button type=\"button\" onClick={() => { setClosingRequestId(undefined); setClosureError(undefined); }} className=\"btn-secondary\">Cancel</button>",
+      "nodeSha256": "356a59fbfa7c2c970d03fc8196f71f276484180909a2d7c1972eadd8ff982f3e"
+    },
+    {
+      "helpId": "releases.workspace.closure-record",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Tickets and recording an external outcome",
+      "anchor": "<button type=\"button\" disabled={closingBusy} onClick={() => void closeRequest(request)} className=\"btn-primary disabled:opacity-50\">{closingBusy ? \"Recording…\" : \"Record closure\"}</button>",
+      "nodeSha256": "d11d2acee7b06be8a6cf2482ba02ff5203577f4999abe3a768fbcc8e0d01d508"
+    },
+    {
+      "helpId": "releases.workspace.closure-open",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Tickets and recording an external outcome",
+      "anchor": "<button type=\"button\" onClick={() => { setClosingRequestId(request.id); setClosureEvidenceId(\"\"); setClosureSummary(\"\"); setClosureError(undefined); }} className=\"mt-3 text-[11px] font-medium text-zinc-400 tran",
+      "nodeSha256": "4a31814fe4a50867f18d32152c7eab6bcfbf380f986dc5407a0380635d852b18"
+    },
+    {
+      "helpId": "releases.workspace.playbook-read",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentRequestsView",
+      "tag": "button",
+      "guideSection": "Review history, planning and evidence",
+      "anchor": "<button type=\"button\" className=\"mt-2 text-[11px] font-medium text-violet-200 transition hover:text-white disabled:opacity-50\" disabled={loadingPlaybookId === request.id} onClick={() => void loadLatestPlaybook(",
+      "nodeSha256": "720d629794225c74f06fb815872196c5c9d5ce1bdd39ab195dc582b5f87506ae"
+    },
+    {
+      "helpId": "releases.workspace.recorded-details",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "ReleaseContext",
+      "tag": "summary",
+      "guideSection": "Find the current workspace and read its context",
+      "anchor": "<summary className=\"cursor-pointer py-1\">Recorded release details</summary>",
+      "nodeSha256": "c1580c0fa5fe39058f499a7f090f8086651db0f6afb896f027d42b9b7d259583"
+    },
+    {
+      "helpId": "releases.workspace.intake-step",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "tag": "button",
+      "guideSection": "Create or complete a request",
+      "anchor": "<button key={label} type=\"button\" disabled={index > step || submitting} aria-current={index === step ? \"step\" : undefined} onClick={() => { if (index <= step) { setStep(index); setError(undefined); } }} classNa",
+      "nodeSha256": "5cf2615bb8fe5245788ab5b756b9903c4fa38ad06449d138d790dd3147ee1c2a"
+    },
+    {
+      "helpId": "releases.workspace.intake-back",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "tag": "button",
+      "guideSection": "Create or complete a request",
+      "anchor": "<button type=\"button\" disabled={step === 0 || submitting} onClick={() => { setStep((current) => Math.max(0, current - 1)); setError(undefined); }} className=\"btn-secondary disabled:opacity-40\">Back</button>",
+      "nodeSha256": "f5eed76b9f76451bc19c288ba73d700be376c26fa0663433bdc9edad7983a23a"
+    },
+    {
+      "helpId": "releases.workspace.intake-continue",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "tag": "button",
+      "guideSection": "Create or complete a request",
+      "anchor": "<button key=\"continue-step\" type=\"button\" className=\"btn-primary\" onClick={(event) => { event.preventDefault(); const issue = (step === 2 ? workflowInputIssue ?? batchIssue : undefined) ?? validateStep(step, dr",
+      "nodeSha256": "fc05b0bdfd305c7dfadc38a39d24f9dc7f17941ffe2926cdb290db9ca30aef9b"
+    },
+    {
+      "helpId": "releases.workspace.intake-submit",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "DeploymentIntakeForm",
+      "tag": "button",
+      "guideSection": "Create or complete a request",
+      "anchor": "<button key=\"submit-request\" type=\"submit\" disabled={submitting} className=\"btn-primary disabled:opacity-50\"> {submitting ? (completingResolutionDraft ? \"Submitting…\" : revision ? \"Saving revision…\" : \"Submitti",
+      "nodeSha256": "3e1ca035efe9b18a2ff372f202d120d22484ab015a1c2a911d642e4dd63b6098"
+    },
+    {
+      "helpId": "releases.workspace.text-field",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "Field",
+      "tag": "input",
+      "guideSection": "Create or complete a request",
+      "anchor": "<input className=\"w-full rounded-lg bg-black/20 border border-white/10 px-3 py-2 text-sm text-white\" type={type} value={value} required={required} onChange={(event) => onChange(event.target.value)} />",
+      "nodeSha256": "b6219b20ed85449e5d6810653b087a9df38b71404b7c6c661732d528acfec5e7"
+    },
+    {
+      "helpId": "releases.workspace.multiline-field",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "TextArea",
+      "tag": "textarea",
+      "guideSection": "Create or complete a request",
+      "anchor": "<textarea className=\"w-full min-h-20 rounded-lg bg-black/20 border border-white/10 px-3 py-2 text-sm text-white font-mono\" value={value} required={required} onChange={(event) => onChange(event.target.value)} />",
+      "nodeSha256": "970e5c3ff4bde3f2d596e6a97cac55972b3cf5b92d37c72229029ea242a342d3"
+    },
+    {
+      "helpId": "releases.workspace.select-field",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "SelectField",
+      "tag": "select",
+      "guideSection": "Create or complete a request",
+      "anchor": "<select className=\"w-full rounded-lg bg-zinc-950 border border-white/10 px-3 py-2 text-sm text-white\" value={value} onChange={(event) => onChange(event.target.value)}> {options.map((option) => <option key={opti",
+      "nodeSha256": "c7c6c79062e8c5578021abf97aea503af4baf5dcf64a94bb6296b57f318b566b"
+    },
+    {
+      "helpId": "releases.workspace.checkbox-field",
+      "source": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sourceFunction": "Check",
+      "tag": "input",
+      "guideSection": "Create or complete a request",
+      "anchor": "<input type=\"checkbox\" checked={checked} onChange={(event) => onChange(event.target.checked)} />",
+      "nodeSha256": "b8988d4bf7c3b1a128149c3e9be486928c236c40471ac8f99a500431b90bf6bb"
+    }
+  ]
+}

@@ -67,3 +67,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 release observation efficiency repair
 ~~One observation batch per current effect until every sibling settles~~:12focused cases/0unhandled, desktoptypes/rootsource+JSXproof and independentreview pass. [Scope/limits](../recovery/2026-11-04/release-observer-singleflight/README.md). No global transport cancellation/provider/live qualification.
+
+### November4 finite Releases control map
+~~29direct intrinsic declarations mapped~~:5ASTcontracts with actualRED/root4hashes/fullGit88ebaseline proof/independentreview. [Map](knowledge/releases-workspace-bindings.md). Helper/mapped families not unique fields; imported/native/customer/media/editorial/retrieval acceptance excluded.

@@ -1,0 +1,169 @@
+✔ finite unpublished inventory specifies one complete source file and 29 unique control declarations (0.726375ms)
+✖ independently enumerates every intrinsic control and binds exact original JSX nodes (17.850792ms)
+✔ stripping only inserted attributes restores every complete baseline source file (0.3435ms)
+✖ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (18.168416ms)
+✖ rejects new unbound controls, display metadata, cross-function and outside-function bindings (8.553125ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 140.568584
+
+✖ failing tests:
+
+test at docs/product/knowledge/releases-workspace-bindings.test.cjs:43:1
+✖ independently enumerates every intrinsic control and binds exact original JSX nodes (17.850792ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'missing or duplicate releases.workspace.refresh',
+  +   'missing or duplicate releases.workspace.ticket-draft-toggle',
+  +   'missing or duplicate releases.workspace.intake-toggle',
+  +   'missing or duplicate releases.workspace.workflow-runs',
+  +   'missing or duplicate releases.workspace.request-identifiers',
+  +   'missing or duplicate releases.workspace.complete-details',
+  +   'missing or duplicate releases.workspace.draft-history',
+  +   'missing or duplicate releases.workspace.planning-tools',
+  +   'missing or duplicate releases.workspace.terraform-evidence',
+  +   'missing or duplicate releases.workspace.playbook-generate',
+  +   'missing or duplicate releases.workspace.revise',
+  +   'missing or duplicate releases.workspace.request-history',
+  +   'missing or duplicate releases.workspace.execution-controls',
+  +   'missing or duplicate releases.workspace.github-evidence',
+  +   'missing or duplicate releases.workspace.closure-reference',
+  +   'missing or duplicate releases.workspace.closure-summary',
+  +   'missing or duplicate releases.workspace.closure-cancel',
+  +   'missing or duplicate releases.workspace.closure-record',
+  +   'missing or duplicate releases.workspace.closure-open',
+  +   'missing or duplicate releases.workspace.playbook-read',
+  +   'missing or duplicate releases.workspace.recorded-details',
+  +   'missing or duplicate releases.workspace.intake-step',
+  +   'missing or duplicate releases.workspace.intake-back',
+  +   'missing or duplicate releases.workspace.intake-continue',
+  +   'missing or duplicate releases.workspace.intake-submit',
+  +   'missing or duplicate releases.workspace.text-field',
+  +   'missing or duplicate releases.workspace.multiline-field',
+  +   'missing or duplicate releases.workspace.select-field',
+  +   'missing or duplicate releases.workspace.checkbox-field'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/releases-workspace-bindings.test.cjs:43:103)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                       'missing or duplicate releases.workspace.refresh',
+      'missing or duplicate releases.workspace.ticket-draft-toggle', 'missing or duplicate releases.workspace.intake-toggle',
+      'missing or duplicate releases.workspace.workflow-runs',       'missing or duplicate releases.workspace.request-identifiers',
+      'missing or duplicate releases.workspace.complete-details',    'missing or duplicate releases.workspace.draft-history',
+      'missing or duplicate releases.workspace.planning-tools',      'missing or duplicate releases.workspace.terraform-evidence',
+      'missing or duplicate releases.workspace.playbook-generate',   'missing or duplicate releases.workspace.revise',
+      'missing or duplicate releases.workspace.request-history',     'missing or duplicate releases.workspace.execution-controls',
+      'missing or duplicate releases.workspace.github-evidence',     'missing or duplicate releases.workspace.closure-reference',
+      'missing or duplicate releases.workspace.closure-summary',     'missing or duplicate releases.workspace.closure-cancel',
+      'missing or duplicate releases.workspace.closure-record',      'missing or duplicate releases.workspace.closure-open',
+      'missing or duplicate releases.workspace.playbook-read',       'missing or duplicate releases.workspace.recorded-details',
+      'missing or duplicate releases.workspace.intake-step',         'missing or duplicate releases.workspace.intake-back',
+      'missing or duplicate releases.workspace.intake-continue',     'missing or duplicate releases.workspace.intake-submit',
+      'missing or duplicate releases.workspace.text-field',          'missing or duplicate releases.workspace.multiline-field',
+      'missing or duplicate releases.workspace.select-field',        'missing or duplicate releases.workspace.checkbox-field'
+    ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/releases-workspace-bindings.test.cjs:47:1
+✖ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (18.168416ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(mutate(source.replace(attr,'data-help-id={"releases.workspace.closure-reference"}'))).includes('nonliteral ID'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/releases-workspace-bindings.test.cjs:51:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/releases-workspace-bindings.test.cjs:57:1
+✖ rejects new unbound controls, display metadata, cross-function and outside-function bindings (8.553125ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(mutate(source.replace('<summary data-help-id="releases.workspace.request-identifiers"','<span data-help-id="releases.workspace.unexpected">Unexpected</span><summary data-help-id="releases.workspace.request-identifiers"'))).includes('unknown ID releases.workspace.unexpected'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/releases-workspace-bindings.test.cjs:60:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

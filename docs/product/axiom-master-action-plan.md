@@ -896,3 +896,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — bounded release observation batches
 
 ~~The current effect does not overlap status-observation batches, and rejected reads no longer escape~~ ([evidence](../recovery/2026-11-04/release-observer-singleflight/README.md)). Actual3RED/9passes+5unhandled errors became12focused passes/0unhandled; desktoptypes and independentreview pass. Schedule/transport/key/JSX unchanged; all siblings settle before gate release, cancelled effects cannot apply. Old physical transport across effect replacement remains possible/no global cancellation claim. No actual provider/DB/native action or publication; all15parents remain open.
+
+## November4 — finite Releases workspace source map
+
+~~All29direct intrinsic Releases declarations have literal metadata and original-node/current-baseline proof~~ ([mapping](knowledge/releases-workspace-bindings.md), [review](../recovery/2026-11-04/release-workspace-bindings/root-review.md)). Actual3RED/2passes became5ASTpasses on post-observer88esource; root4hash/wholeGitbaseline and independentreview pass.19buttons4inputs1select1textarea4summaries; generic fields/mapped controls are families, imported panels excluded. Superseded pre-fix metadata withdrawn/unaccepted. No native/media/editorial/customer/retrieval/publication acceptance; all15parents remain open.

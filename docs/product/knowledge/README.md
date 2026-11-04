@@ -27,6 +27,7 @@
 | Prepare a Slack notification | [Slack reviewed action](slack-reviewed-action-controls.md) | Genuine independent review and requester execution remain separate. |
 | Prepare a Teams message or Linear issue | [Teams/Linear controls](teams-linear-controls.md) | Provider, target, task/version and connection binding matter; approvals are not interchangeable. |
 | Prepare and follow a release request | [Releases workspace controls](releases-workspace-controls.md) | Scope, exact plans, approval, execution, evidence and Axiom record closure are distinct. |
+| Map directly authored Releases controls | [Releases static bindings](releases-workspace-bindings.md) |29source declarations; generic fields/mapped rows are families and imported panels remain excluded. |
 | Inspect Airflow batches and rules | [Batches controls](batches-airflow-controls.md) | Observations, direct DAG runs, automations and approval/execution paths differ; pause is not provider cancellation. |
 | Discover Jira fields and review an exact ticket action | [Jira release controls](jira-release-controls.md) | Preview, saved draft, provenance association, exact provider approval and execution are separate; historical actions are never replayed. |
 | Reconcile ServiceNow evidence and closure | [ServiceNow controls](servicenow-evidence-and-closure-controls.md) | Written unknown notes must not be resent. Native lifecycle, fresh human decisions and exact closure remain required. |
