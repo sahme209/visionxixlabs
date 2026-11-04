@@ -1,0 +1,10 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "[\n  [],\n  [],\n  [],\n  [],\n  [],\n  [\n    {\n      \"preserved_row_metadata\": \"{\\\"runs\\\": {\\\"rows\\\": 518, \\\"digest\\\": \\\"362984ffa0e99b2936ffa4f030219ab1\\\"}, \\\"holds\\\": {\\\"rows\\\": 25, \\\"digest\\\": \\\"f4387a2726184ed981a6676c8bf5d236\\\"}, \\\"stages\\\": {\\\"rows\\\": 3626, \\\"digest\\\": \\\"9e1884564b699d943fde283fc920b14d\\\"}}\"\n    }\n  ],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [],\n  [\n    {\n      \"result\": {\n        \"before\": {\n          \"runs\": {\n            \"rows\": 518,\n            \"digest\": \"362984ffa0e99b2936ffa4f030219ab1\"\n          },\n          \"holds\": {\n            \"rows\": 25,\n            \"digest\": \"f4387a2726184ed981a6676c8bf5d236\"\n          },\n          \"stages\": {\n            \"rows\": 3626,\n            \"digest\": \"9e1884564b699d943fde283fc920b14d\"\n          }\n        },\n        \"wal_lsn\": \"0/12F7EDD0\",\n        \"applied_at\": \"2026-11-04T12:14:40.547545+00:00\",\n        \"new_ledger_rows\": 0,\n        \"schema_verified\": true,\n        \"existing_rows_unchanged\": true\n      }\n    }\n  ]\n]"
+    }
+  ],
+  "structuredContent": null,
+  "isError": false
+}

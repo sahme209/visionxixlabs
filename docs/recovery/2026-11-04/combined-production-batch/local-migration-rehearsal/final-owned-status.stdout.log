@@ -1,0 +1,2 @@
+pg_ctl: server is running (PID: 72068)
+/opt/homebrew/Cellar/postgresql@17/17.11_1/bin/postgres "-D" "/private/tmp/axiom-schema-migration-pg-wyfgofmb/data" "-k" "/private/tmp/axiom-schema-migration-pg-wyfgofmb/socket" "-p" "55440" "-c" "listen_addresses=" "-c" "unix_socket_permissions=0700"

@@ -1,0 +1,10 @@
+{
+  "status": "PREPARED NOT EXECUTED; root review required before invocation",
+  "runnerSha256": "0978f04851017fab13d0369783988674c656ddecd711d240a8872c16c3f7cf23",
+  "syntax": "stdlib ast.parse succeeded without executing runner",
+  "productionDatabaseAccess": false,
+  "productionMigrationApprovalInferred": false,
+  "selectedScope": "fresh local full old7ea schema -> exact additive SQL once; synthetic preservation/catalog/constraint checks only",
+  "network": "IP denied, private owned Unix socket only",
+  "runtimeAdmissionOrProviderQualification": false
+}

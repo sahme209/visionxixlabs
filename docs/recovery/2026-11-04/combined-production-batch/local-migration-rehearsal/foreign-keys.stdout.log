@@ -1,0 +1,3 @@
+[{"name":"PipelineAICallReservation_organizationId_runId_fkey","parent":"PipelineRun","delete_action":"r","update_action":"c","validated":true,"columns":["organizationId","runId"],"parent_columns":["organizationId","id"]}, 
+ {"name":"PipelineAICallReservation_organizationId_workspaceReservat_fkey","parent":"AIUsageReservation","delete_action":"r","update_action":"c","validated":true,"columns":["organizationId","workspaceReservationId"],"parent_columns":["organizationId","id"]}, 
+ {"name":"PipelineAICallReservation_runId_stageRunId_fkey","parent":"PipelineStageRun","delete_action":"r","update_action":"c","validated":true,"columns":["runId","stageRunId"],"parent_columns":["runId","id"]}]
