@@ -63,7 +63,7 @@ if (require.main === canonicalModule) {
     if (require.cache[addon]) refuse();
     const nativeExports = require(addon); // Fresh native constructor or refusal.
     const nativeModule = require.cache[addon];
-    if (!nativeModule || nativeModule.exports !== nativeExports || !Object.isFrozen(nativeExports) || Object.keys(nativeExports).join(',') !== 'assertCurrentOrigin' || typeof nativeExports.assertCurrentOrigin !== 'function' || !Object.isFrozen(nativeExports.assertCurrentOrigin)) refuse();
+    if (!nativeModule || nativeModule.exports !== nativeExports || !Object.isFrozen(nativeExports) || Object.keys(nativeExports).join(',') !== 'assertCurrentOrigin,consumeBootstrapResources' || typeof nativeExports.assertCurrentOrigin !== 'function' || !Object.isFrozen(nativeExports.assertCurrentOrigin) || typeof nativeExports.consumeBootstrapResources !== 'function' || !Object.isFrozen(nativeExports.consumeBootstrapResources)) refuse();
     const assertCurrentOrigin = nativeExports.assertCurrentOrigin;
     apply(assertCurrentOrigin, undefined, []);
     // Reverify the actual closure after native preimport checks. A stale file
@@ -75,17 +75,39 @@ if (require.main === canonicalModule) {
     // Successful primitives remain observations until the actual compiled
     // consumer and full original matrix qualify. No flag/manifest can flip this.
     if (readIssuerIdentity() !== observation) refuse();
-    // Fixed manifest-bound compiled server; no caller entrypoint/port/callback.
-    const required = JSON.parse(fs.readFileSync(path.join(root, '.next/required-server-files.json'), 'utf8'));
-    if (!required || !required.config || typeof required.config !== 'object') refuse();
-    process.env.__NEXT_PRIVATE_STANDALONE_CONFIG = JSON.stringify(required.config);
-    const { startServer } = require(path.join(root, 'node_modules/next/dist/server/lib/start-server.js'));
-    if (typeof startServer !== 'function') refuse();
-    Promise.resolve(startServer({ dir: root, dev: false, hostname: '127.0.0.1', port: 32167, allowRetry: false })).catch(() => {
+    // Private profile never enters the legacy global-DB Next startup. The
+    // separately reviewed business channel is intentionally still unmounted.
+    let material;
+    let lifetime;
+    const cleanup = async () => {
       privateRuntime = null;
-      process.stderr.write('verified_issuer_server_unavailable\n');
-      process.exitCode = 1;
-    });
+      if (lifetime) { const owned = lifetime; lifetime = null; await owned.close(); }
+    };
+    (async () => {
+      try {
+        material = apply(nativeExports.consumeBootstrapResources, undefined, []);
+        if (actualRoot() !== root || readIssuerIdentity() !== observation || verifyPackageFiles(root).packageDigest !== files.packageDigest) refuse();
+        // This fixed emitted artifact is covered by the package file manifest.
+        // No business resource imports occur before native fd0 consumption.
+        const { initializePrivateReleaseMergeBootstrap } = require(path.join(root, '.next/server/__axiom_private__/release-merge-bootstrap.cjs'));
+        lifetime = await initializePrivateReleaseMergeBootstrap(material);
+        if (actualRoot() !== root || readIssuerIdentity() !== observation || verifyPackageFiles(root).packageDigest !== files.packageDigest) refuse();
+        // No approved channel exists yet: release resources and remain unavailable.
+        await cleanup();
+        process.stderr.write('verified_issuer_private_business_channel_unavailable\n');
+        process.exitCode = 1;
+      } catch {
+        await cleanup().catch(() => {});
+        process.stderr.write('verified_issuer_private_initialization_unavailable\n');
+        process.exitCode = 1;
+      } finally {
+        if (material) {
+          if (material.vaultKey instanceof Uint8Array) material.vaultKey.fill(0);
+          if (material.sessionSigningKey instanceof Uint8Array) material.sessionSigningKey.fill(0);
+          material = null;
+        }
+      }
+    })();
   } catch {
     privateRuntime = null;
     process.stderr.write('verified_issuer_launch_unavailable\n');

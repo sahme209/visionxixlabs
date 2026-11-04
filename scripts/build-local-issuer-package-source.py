@@ -465,6 +465,8 @@ def verify_build_outputs(stage):
     if not target.is_file()and not target.is_dir():fail('next_trace_target_missing')
    metadata[trace.relative_to(stage).as_posix()]={'sha256':sha(body),'size':len(body)}
  if not traces:fail('next_trace_metadata_missing')
+ bootstrap=_build_bytes(stage/'.next/server/__axiom_private__/release-merge-bootstrap.cjs',32*1024*1024)
+ metadata['.next/server/__axiom_private__/release-merge-bootstrap.cjs']={'sha256':sha(bootstrap),'size':len(bootstrap)}
  return {'requiredMetadata':metadata,'routeCount':len(routes),'traceCount':traces,'traceEntryCount':entries,
          'completeExecutableClosure':'unavailable','loadedCodeIdentity':'unavailable'}
 
@@ -485,7 +487,7 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
  node_identity=tool.stable_file_hash(node);inputs=prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node)
  overlay=inputs.get('sourceArchive',{}).get('nativeOverlay')
  if overlay is not None and overlay['plannedBuildRun']!=str(owned):fail('native_overlay_build_run_mismatch')
- names=['attempt.json','result.json','node-version.log','contract.log','next-build.log','tmp']
+ names=['attempt.json','result.json','node-version.log','contract.log','next-build.log','private-bootstrap-emission.log','tmp']
  if any((owned/name).exists()or(owned/name).is_symlink()for name in names):fail('fresh_build_logs_required')
  handles={}
  try:
@@ -496,7 +498,7 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
   env={'PATH':str(node.parent)+':/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','TZ':'UTC','TMPDIR':str(tmp),'XDG_CACHE_HOME':str(tmp),'NEXT_TELEMETRY_DISABLED':'1','NODE_ENV':'production',
        'DATABASE_URL':'postgresql://local_build:local_build@127.0.0.1:1/local_build','AUTH_SECRET':'isolated-local-build-not-a-live-credential-20261102','NEXTAUTH_SECRET':'isolated-local-build-not-a-live-credential-20261102',
        'CHECKPOINT_DISABLE':'1','PRISMA_GENERATE_SKIP_AUTOINSTALL':'true'}
-  profile=tool._generation_profile(stage,tmp,[owned/name for name in ['node-version.log','contract.log','next-build.log']],protected,read_protected=[repo,cache,Path.home()/'.cache/prisma'])
+  profile=tool._generation_profile(stage,tmp,[owned/name for name in ['node-version.log','contract.log','next-build.log','private-bootstrap-emission.log']],protected,read_protected=[repo,cache,Path.home()/'.cache/prisma'])
   prefix=['/usr/bin/sandbox-exec','-p',profile,str(node)]
   result={'format':'axiom.local-next-build-result/1','status':'unavailable','contractCheckStarted':False,'buildStarted':False,'buildOutputsVerified':False,'buildCompatibilityVerified':False,
           'processBounds':'original_process_group_only','descendantQuiescence':'unavailable','runtimeQualification':'unavailable','completeExecutableClosure':'unavailable','executingIssuerIdentity':'unavailable','activationQualification':'unavailable','executionAuthorized':False}
@@ -516,6 +518,7 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
    result['contractCheckStarted']=True;run(['scripts/check-vercel-build.mjs'],'contract.log')
    if prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node)!=inputs or tool.stable_file_hash(node)!=node_identity:fail('build_inputs_changed_before_compiler')
    result['buildStarted']=True;result['exit']=run(['node_modules/next/dist/bin/next','build','--webpack'],'next-build.log')
+   run(['scripts/emit-private-release-bootstrap.cjs'],'private-bootstrap-emission.log')
    outputs=verify_build_outputs(stage)
    outputs['frameworkGeneratedDeclaration']=verify_framework_declaration(stage)
    if prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node,phase='after_build')!=inputs or tool.stable_file_hash(node)!=node_identity:fail('build_inputs_changed_after_compiler')
