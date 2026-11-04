@@ -120,56 +120,12 @@ export function statusFor(s: DesktopSession, now: Date = new Date()): DesktopSes
 // Operations
 // ---------------------------------------------------------------------------
 
-export async function createDesktopSession(input: CreateSessionInput): Promise<DesktopSession> {
-  const ttlDays = Math.min(input.ttlDays ?? DEFAULT_TTL_DAYS, MAX_TTL_DAYS);
-  const now = new Date();
-  const session: DesktopSession = {
-    id: input.id ?? `dsk_${crypto.randomUUID().replaceAll("-", "")}`,
-    userId: input.userId,
-    organizationId: input.organizationId,
-    deviceFingerprint: input.deviceFingerprint,
-    deviceLabel: input.deviceLabel,
-    platform: input.platform ?? "unknown",
-    desktopVersion: input.desktopVersion,
-    issuedAt: now.toISOString(),
-    expiresAt: new Date(now.getTime() + ttlDays * 86_400_000).toISOString(),
-    lastSeenAt: now.toISOString(),
-  };
-  await (await store()).create(session);
-  return session;
-}
-
-export async function getDesktopSession(id: string): Promise<DesktopSession | undefined> {
-  return (await store()).getById(id);
-}
-
-/** Resolve the session for an inbound desktop request — returns undefined if revoked / expired. */
-export async function resolveActiveSession(id: string): Promise<DesktopSession | undefined> {
-  const sessionStore = await store();
-  const session = await sessionStore.getById(id);
-  if (!session) return undefined;
-  if (statusFor(session) !== "active") return undefined;
-  return session;
-}
-
-/** Record a heartbeat. Updates `lastSeenAt` only; cheap, idempotent. */
-export async function touchDesktopSession(id: string): Promise<void> {
-  const sessionStore = await store();
-  const s = await sessionStore.getById(id);
-  if (!s) return;
-  if (statusFor(s) !== "active") return;
-  await sessionStore.update({ ...s, lastSeenAt: new Date().toISOString() });
-}
-
-export async function revokeDesktopSession(id: string, reason: string): Promise<void> {
-  const sessionStore = await store();
-  const s = await sessionStore.getById(id);
-  if (!s) return;
-  if (s.revokedAt) return;
-  await sessionStore.update({ ...s, revokedAt: new Date().toISOString(), revokeReason: reason });
-}
-
-export async function listActiveSessions(userId: UserId): Promise<DesktopSession[]> {
-  const all = await (await store()).listByUser(userId);
-  return all.filter((s) => statusFor(s) === "active");
-}
+const legacyService = createPrivateDesktopSessionService({
+ create: async s => (await store()).create(s),
+ getById: async id => (await store()).getById(id),
+ listByUser: async id => (await store()).listByUser(id),
+ update: async s => (await store()).update(s),
+}, () => new Date());
+export const { createDesktopSession, getDesktopSession, resolveActiveSession, touchDesktopSession, revokeDesktopSession, listActiveSessions } = legacyService;
+export { createPrivateDesktopSessionService } from "./privateDesktopSession";
+import { createPrivateDesktopSessionService } from "./privateDesktopSession";

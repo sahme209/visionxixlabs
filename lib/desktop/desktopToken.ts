@@ -16,10 +16,8 @@
 
 import "server-only";
 
-import { createHmac, timingSafeEqual } from "node:crypto";
 import { AxiomErrors } from "@/lib/errors/axiomErrors";
 
-const TOKEN_PREFIX = "axm.desk.";
 const MIN_KEY_BYTES = 32;
 
 function resolveSigningKey(): Buffer {
@@ -35,51 +33,14 @@ function resolveSigningKey(): Buffer {
   return Buffer.from(value, "utf8");
 }
 
-function sign(sessionId: string, key: Buffer): string {
-  return createHmac("sha256", key).update(sessionId).digest("hex");
-}
-
-export interface TokenComponents {
-  sessionId: string;
-  signature: string;
-}
-
+export { createPrivateDesktopTokenCodec } from "./privateDesktopToken";
+export type { TokenComponents } from "./privateDesktopToken";
+import { createDesktopTokenCodecWithKeyResolver } from "./privateDesktopToken";
 export function mintDesktopToken(sessionId: string): string {
-  if (!sessionId) {
-    throw AxiomErrors.validation("desktop.token.no_session", "Cannot mint token without sessionId.");
-  }
-  const sig = sign(sessionId, resolveSigningKey());
-  return `${TOKEN_PREFIX}${sessionId}.${sig}`;
+ return createDesktopTokenCodecWithKeyResolver(resolveSigningKey).mintDesktopToken(sessionId);
 }
-
-/**
- * Parse and HMAC-verify a token. Returns the sessionId on success. Does
- * NOT check session existence / expiry / revocation — callers must
- * follow up with `desktopSession.getSession`.
- */
-export function verifyDesktopToken(token: string): TokenComponents {
-  if (!token || !token.startsWith(TOKEN_PREFIX)) {
-    throw AxiomErrors.validation("desktop.token.bad_prefix", "Invalid desktop token.");
-  }
-  const body = token.slice(TOKEN_PREFIX.length);
-  const dot = body.lastIndexOf(".");
-  if (dot <= 0) {
-    throw AxiomErrors.validation("desktop.token.malformed", "Desktop token is malformed.");
-  }
-  const sessionId = body.slice(0, dot);
-  const signature = body.slice(dot + 1);
-  // Buffer's hexadecimal decoder ignores trailing non-hex characters and an
-  // unmatched nibble. Reject those forms before comparing signature bytes.
-  if (signature.length !== 64 || !/^[a-f0-9]{64}$/i.test(signature)) {
-    throw AxiomErrors.validation("desktop.token.bad_signature", "Desktop token signature is malformed.");
-  }
-  const expected = sign(sessionId, resolveSigningKey());
-  const a = Buffer.from(signature, "hex");
-  const b = Buffer.from(expected, "hex");
-  if (a.length !== b.length || !timingSafeEqual(a, b)) {
-    throw AxiomErrors.validation("desktop.token.bad_signature", "Desktop token signature does not match.");
-  }
-  return { sessionId, signature };
+export function verifyDesktopToken(token: string) {
+ return createDesktopTokenCodecWithKeyResolver(resolveSigningKey).verifyDesktopToken(token);
 }
 
 /** Extract the bearer token from an Authorization header. */

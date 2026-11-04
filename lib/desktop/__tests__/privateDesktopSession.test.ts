@@ -1,0 +1,61 @@
+import { describe, expect, it } from "vitest";
+import { createPrivateDesktopTokenCodec } from "../privateDesktopToken";
+import { createPrivateDesktopSessionService, type DesktopSession, type DesktopSessionStore } from "../privateDesktopSession";
+import { createPrivateRequestDesktopSessionResolver } from "../privateRequestDesktopSessionResolver";
+import type { OrganizationId, UserId } from "@/lib/domain/ids";
+
+describe("private session authority", () => {
+ it("checks actual HMAC, live store, membership, commercial access and expiry with isolated instances", async () => {
+  const key = new Uint8Array(32).fill(7);
+  const codec = createPrivateDesktopTokenCodec(key);
+  key.fill(8);
+  const token = codec.mintDesktopToken("dsk_a");
+  expect(codec.verifyDesktopToken(token).sessionId).toBe("dsk_a");
+  expect(() => createPrivateDesktopTokenCodec(key).verifyDesktopToken(token)).toThrow();
+  expect(() => codec.verifyDesktopToken(token + "x")).toThrow();
+  expect(() => createPrivateDesktopTokenCodec(new Uint8Array(0))).toThrow();
+  let now = new Date("2026-01-01");
+  const rows = new Map<string, DesktopSession>();
+  const store: DesktopSessionStore = { create: async s => { rows.set(s.id, s); }, getById: async id => rows.get(id), listByUser: async id => [...rows.values()].filter(s => s.userId === id), update: async s => { rows.set(s.id, s); } };
+  const sessions = createPrivateDesktopSessionService(store, () => now);
+  await sessions.createDesktopSession({ id: "dsk_a", userId: "u" as UserId, organizationId: "org" as OrganizationId, deviceFingerprint: "f", deviceLabel: "test" });
+  let role: "admin" | "read_only" | null = "admin";
+  let allowed = true;
+  let accepted = true;
+  const resolve = createPrivateRequestDesktopSessionResolver({ tokenCodec: codec, sessions, repo: { orgMembership: { findUnique: async () => role ? { acceptedAt: accepted ? now : null, role } : null } }, readDesktopCommercialAccess: async () => ({ allowed }), selfHealPersonalWorkspaceMembership: null });
+  const request = (value: string) => ({ headers: new Headers({ authorization: `Bearer ${value}` }) });
+  const options = { requiredScope: "read" as never, route: "test", requiredCapability: "github:write" as const };
+  expect((await resolve(request(token), options))?.organizationId).toBe("org");
+  accepted = false;
+  expect(await resolve(request(token), options)).toBeUndefined();
+  accepted = true;
+  role = "read_only";
+  expect(await resolve(request(token), options)).toBeUndefined();
+  role = null;
+  expect(await resolve(request(token), options)).toBeUndefined();
+  role = "admin"; allowed = false;
+  expect(await resolve(request(token), options)).toBeUndefined();
+  allowed = true;
+  expect(await resolve(request("vxlk_any"), { ...options, allowApiKey: true })).toBeUndefined();
+  await sessions.revokeDesktopSession("dsk_a", "test");
+  expect(await resolve(request(token), options)).toBeUndefined();
+  await sessions.createDesktopSession({ id: "dsk_b", userId: "u" as UserId, organizationId: "org" as OrganizationId, deviceFingerprint: "f", deviceLabel: "test" });
+  now = new Date("2026-03-01");
+  expect(await resolve(request(codec.mintDesktopToken("dsk_b")), options)).toBeUndefined();
+  expect(await createPrivateDesktopSessionService({ ...store, getById: async () => undefined }, () => now).resolveActiveSession("dsk_a")).toBeUndefined();
+ });
+});
+
+it("private Prisma adapter maps real record fields and scopes lookup to the supplied model", async () => {
+ const { createPrivatePrismaDesktopSessionStore } = await import("../privateDesktopSessionStore.prisma");
+ let written: any;
+ let lookup: any;
+ const model = { create: async (args: any) => { written = args.data; }, findUnique: async (args: any) => { lookup = args; return written; }, findMany: async () => [written], update: async (args: any) => { written = { ...written, ...args.data }; } };
+ const store = createPrivatePrismaDesktopSessionStore({ desktopSessionRecord: model });
+ const s = await createPrivateDesktopSessionService(store, () => new Date("2026-01-01")).createDesktopSession({ id: "row", userId: "u" as UserId, organizationId: "org" as OrganizationId, deviceFingerprint: "f", deviceLabel: "test" });
+ expect(written.issuedAt).toBeInstanceOf(Date);
+ expect(await store.getById("row")).toEqual(s);
+ expect(lookup).toEqual({ where: { id: "row" } });
+ await createPrivateDesktopSessionService(store, () => new Date("2026-01-02")).revokeDesktopSession("row", "revoked");
+ expect((await store.getById("row"))?.revokedAt).toBe("2026-01-02T00:00:00.000Z");
+});
