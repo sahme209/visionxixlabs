@@ -14,6 +14,8 @@
 | Inspect and edit repository text | [Editor controls](repository-editor-controls.md), [nested confirmations and diff pages](repository-editor-nested-controls.md) | Discard, cancellation, saving and uncertain outcomes differ. |
 | Map editor help metadata | [Static bindings](repository-editor-bindings.md) | Family attributes are not unique DOM identities or completed customer help. |
 | Browse available integrations | [Catalog controls](integrations-catalog-controls.md) | A catalog entry is not a connected account or granted capability. |
+| Review a guided AWS, Azure or Google Cloud connection | [Guided cloud controls](guided-cloud-connection-controls.md) | Saved proposal, external consent, validated connection and deployment authority are different. |
+| Enroll an existing AWS role or Azure principal for bounded reads | [Advanced read-only enrollment](read-only-cloud-enrollment-controls.md) | Local dismissal or disconnect does not revoke provider grants or issued credentials; inventory is bounded. |
 | Connect Outlook or read mailbox/calendar metadata | [Outlook controls](outlook-controls.md) | Selected fields do not narrow the entire Microsoft consent grant. Actions require separate access/review. |
 | Prepare a Slack notification | [Slack reviewed action](slack-reviewed-action-controls.md) | Genuine independent review and requester execution remain separate. |
 | Prepare a Teams message or Linear issue | [Teams/Linear controls](teams-linear-controls.md) | Provider, target, task/version and connection binding matter; approvals are not interchangeable. |
@@ -36,4 +38,4 @@ Structured Agent, deployment, Bot and repository article drafts, evaluation requ
 3. Obtain genuine editorial/release decisions and separately verify customer/public eligibility. Metadata alone cannot make those decisions.
 4. Update the coverage queue and exact bindings. Keep missing controls and unaccepted states open; do not infer whole-app coverage from this index.
 
-Explicitly omitted nested workflows, including cloud/enrollment subforms and provider/browser/account flows, still need their source-to-control inventory. Native Documentation, Jira, Home, Settings, Releases, Batches, Agent and every guide still require their media, native, editorial and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.
+Explicitly omitted provider/browser/account setup and native authentication/session subflows still need their source-to-control inventory and operational walkthroughs. Native Documentation, Jira, Home, Settings, Releases, Batches, Agent and every guide still require their media, native, editorial and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.

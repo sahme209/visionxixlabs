@@ -1,0 +1,338 @@
+{
+  "schemaVersion": 1,
+  "status": "frozen_READY_internal_source_review_only",
+  "baselineCommit": "b7ec472b4abb725196e4416db81eca9827ea35b2",
+  "scope": "Settings Integrations Advanced cloud account connections AWS/Azure finite UI and direct call boundaries",
+  "customerEligible": false,
+  "acceptance": {
+    "runtime": false,
+    "native": false,
+    "media": false,
+    "editorial": false,
+    "publication": false,
+    "release": false,
+    "shipped": false,
+    "b4Complete": false
+  },
+  "contentIds": "Proposed documentation identifiers only; not runtime bindings",
+  "hashPolicy": "SHA256 raw bytes; byte ranges zero-based inclusive; line ranges one-based inclusive. Whole-file ranges deliberately include the entire frozen source file. No mutable master hash.",
+  "evidenceLimits": [
+    "source inspection only",
+    "no tests/build/browser/network/provider/database/native/security helper or credential reads",
+    "backend authority/challenge references are finite supporting source observations, not backend acceptance",
+    "provider portal and guided enrollment flows omitted"
+  ],
+  "guide": {
+    "path": "docs/product/knowledge/read-only-cloud-enrollment-controls.md",
+    "sha256": "3e6c1645c845d269b5ab3331fd8a603bab7851f08c5f81ca4335efea01743966",
+    "byteLength": 14595
+  },
+  "sources": [
+    {
+      "proposedContentId": "internal.advanced-cloud.source.1",
+      "path": "desktop/src/views/SettingsView.tsx",
+      "wholeFile": {
+        "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+        "byteLength": 140014
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 2002,
+          "startByteInclusive": 0,
+          "endByteInclusive": 140013,
+          "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.2",
+      "path": "desktop/src/components/AwsReadOnlyEnrollment.tsx",
+      "wholeFile": {
+        "sha256": "d8f00e116e5752bee795be85a11bf9fd9b7a310aea6792efd0b46393afa18567",
+        "byteLength": 24358
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 316,
+          "startByteInclusive": 0,
+          "endByteInclusive": 24357,
+          "sha256": "d8f00e116e5752bee795be85a11bf9fd9b7a310aea6792efd0b46393afa18567",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.3",
+      "path": "desktop/src/components/AzureReadOnlyEnrollment.tsx",
+      "wholeFile": {
+        "sha256": "58ca174df410a2e9cf3b85cab0d73dacea0c1fe494da92d5541c1e74d50a2d3b",
+        "byteLength": 16281
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 236,
+          "startByteInclusive": 0,
+          "endByteInclusive": 16280,
+          "sha256": "58ca174df410a2e9cf3b85cab0d73dacea0c1fe494da92d5541c1e74d50a2d3b",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.4",
+      "path": "desktop/src/components/CloudOnboardingStatus.tsx",
+      "wholeFile": {
+        "sha256": "47db4315006860b4784e0dd3d33d52e434a4cd782a051f21fc10fb97481eb13d",
+        "byteLength": 1630
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 16,
+          "startByteInclusive": 0,
+          "endByteInclusive": 1629,
+          "sha256": "47db4315006860b4784e0dd3d33d52e434a4cd782a051f21fc10fb97481eb13d",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.5",
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFile": {
+        "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+        "byteLength": 165599
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 2192,
+          "startByteInclusive": 0,
+          "endByteInclusive": 165598,
+          "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.6",
+      "path": "desktop/src/lib/awsEnrollmentContract.ts",
+      "wholeFile": {
+        "sha256": "745aa411a755baa7e63fe90c1fa10769e586eb8b64a5857095663a67533652a5",
+        "byteLength": 4116
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 60,
+          "startByteInclusive": 0,
+          "endByteInclusive": 4115,
+          "sha256": "745aa411a755baa7e63fe90c1fa10769e586eb8b64a5857095663a67533652a5",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.7",
+      "path": "desktop/src/lib/azureEnrollmentContract.ts",
+      "wholeFile": {
+        "sha256": "235f6650137b8697d50412ba5e69a9fdd920c67cc7e9035cb46799db882c3edc",
+        "byteLength": 4100
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 59,
+          "startByteInclusive": 0,
+          "endByteInclusive": 4099,
+          "sha256": "235f6650137b8697d50412ba5e69a9fdd920c67cc7e9035cb46799db882c3edc",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.8",
+      "path": "desktop/src/lib/azureEnrollmentClient.ts",
+      "wholeFile": {
+        "sha256": "3bb82927f04f5bab5b29d76415bdaa57f80f58ca1a75898ef0e400ed068b89f2",
+        "byteLength": 6079
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 59,
+          "startByteInclusive": 0,
+          "endByteInclusive": 6078,
+          "sha256": "3bb82927f04f5bab5b29d76415bdaa57f80f58ca1a75898ef0e400ed068b89f2",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.9",
+      "path": "lib/cloud/onboardingReadinessContract.ts",
+      "wholeFile": {
+        "sha256": "e56058345c49196eb1c0b50e1c4377c30fac853bf20d2b163319f4b168e4a7fc",
+        "byteLength": 2530
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 21,
+          "startByteInclusive": 0,
+          "endByteInclusive": 2529,
+          "sha256": "e56058345c49196eb1c0b50e1c4377c30fac853bf20d2b163319f4b168e4a7fc",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.10",
+      "path": "lib/cloud/aws/enrollment/service.ts",
+      "wholeFile": {
+        "sha256": "ef1749fb7c370e6af2dc20b49cfad246677c089637a9565e198584ea8d051b23",
+        "byteLength": 20327
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 203,
+          "startByteInclusive": 0,
+          "endByteInclusive": 20326,
+          "sha256": "ef1749fb7c370e6af2dc20b49cfad246677c089637a9565e198584ea8d051b23",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.11",
+      "path": "lib/cloud/aws/enrollment/runtime.ts",
+      "wholeFile": {
+        "sha256": "dc760a572e9b08d54fd88b02731798238ab5a835fc7410f55c0944d76a3d493a",
+        "byteLength": 4249
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 31,
+          "startByteInclusive": 0,
+          "endByteInclusive": 4248,
+          "sha256": "dc760a572e9b08d54fd88b02731798238ab5a835fc7410f55c0944d76a3d493a",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.12",
+      "path": "lib/cloud/azure/enrollment/service.ts",
+      "wholeFile": {
+        "sha256": "aa08ab3deee0bbfc72528dab04b2c4b8c00778569afb90b04a12d3c2a3bcd314",
+        "byteLength": 16307
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 240,
+          "startByteInclusive": 0,
+          "endByteInclusive": 16306,
+          "sha256": "aa08ab3deee0bbfc72528dab04b2c4b8c00778569afb90b04a12d3c2a3bcd314",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.13",
+      "path": "lib/cloud/azure/enrollment/runtime.ts",
+      "wholeFile": {
+        "sha256": "06c0927f10581d711711a14c316c8f821a238531a8df10ecead8242469d508eb",
+        "byteLength": 5133
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 65,
+          "startByteInclusive": 0,
+          "endByteInclusive": 5132,
+          "sha256": "06c0927f10581d711711a14c316c8f821a238531a8df10ecead8242469d508eb",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.14",
+      "path": "app/api/desktop/cloud/aws/enrollment/route.ts",
+      "wholeFile": {
+        "sha256": "068d39524a9686076a709c55b00992a343e152c8a55fb0ee2d762f9d7e1b84a8",
+        "byteLength": 668
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 12,
+          "startByteInclusive": 0,
+          "endByteInclusive": 667,
+          "sha256": "068d39524a9686076a709c55b00992a343e152c8a55fb0ee2d762f9d7e1b84a8",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.15",
+      "path": "app/api/desktop/cloud/aws/enrollment/[id]/complete/route.ts",
+      "wholeFile": {
+        "sha256": "1c02a6042895b811ce306c7cd41426f7522bd0a7910c86e7a685c116a11201f7",
+        "byteLength": 1079
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 16,
+          "startByteInclusive": 0,
+          "endByteInclusive": 1078,
+          "sha256": "1c02a6042895b811ce306c7cd41426f7522bd0a7910c86e7a685c116a11201f7",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.16",
+      "path": "app/api/desktop/cloud/azure/enrollment/route.ts",
+      "wholeFile": {
+        "sha256": "a3c81f0385663277064986e9d6ef39f266348eb0418b604f8687bb28e4f5680c",
+        "byteLength": 789
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 15,
+          "startByteInclusive": 0,
+          "endByteInclusive": 788,
+          "sha256": "a3c81f0385663277064986e9d6ef39f266348eb0418b604f8687bb28e4f5680c",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    },
+    {
+      "proposedContentId": "internal.advanced-cloud.source.17",
+      "path": "docs/product/knowledge/settings-workspace-controls.md",
+      "wholeFile": {
+        "sha256": "a857e4865b107ba2c478a2c5108da33cdaa23f5cc98b90c7ae126bd429d5f151",
+        "byteLength": 20412
+      },
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 110,
+          "startByteInclusive": 0,
+          "endByteInclusive": 20411,
+          "sha256": "a857e4865b107ba2c478a2c5108da33cdaa23f5cc98b90c7ae126bd429d5f151",
+          "encoding": "raw bytes; no newline normalization"
+        }
+      ]
+    }
+  ]
+}
