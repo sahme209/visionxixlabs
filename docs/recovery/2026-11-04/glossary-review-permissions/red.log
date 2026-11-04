@@ -1,0 +1,45 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-b4-glossary-20261104[39m
+
+ [31m×[39m app/docs/glossary/__tests__/reviewDefinitions.test.ts[2m > [22mdefines action proposals using independent review without administrator-only authority[32m 18[2mms[22m[39m
+[31m   → expected 'A persisted request for an agent tool…' to contain 'authorized independent human reviewer'[39m
+ [31m×[39m app/docs/glossary/__tests__/reviewDefinitions.test.ts[2m > [22mqualifies separate requester execution as a local preview with current permission and version limits[32m 3[2mms[22m[39m
+[31m   → expected 'The server-side boundary that prevent…' to contain 'authorized independent human reviewer'[39m
+ [32m✓[39m app/docs/glossary/__tests__/reviewDefinitions.test.ts[2m > [22mretains the other glossary terms and existing footer link[32m 33[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m app/docs/glossary/__tests__/reviewDefinitions.test.ts[2m > [22mdefines action proposals using independent review without administrator-only authority
+[31m[1mAssertionError[22m: expected 'A persisted request for an agent tool…' to contain 'authorized independent human reviewer'[39m
+
+Expected: [32m"authorized independent human reviewer"[39m
+Received: [31m"A persisted request for an agent tool call. Low-risk reads can complete inline; medium- and high-risk writes wait for an explicit administrator decision."[39m
+
+[36m [2m❯[22m app/docs/glossary/__tests__/reviewDefinitions.test.ts:[2m10:15[22m[39m
+    [90m  8|[39m it("defines action proposals using independent review without administ…
+    [90m  9|[39m  render(createElement(GlossaryPage)); const text = definition("Action …
+    [90m 10|[39m  expect(text).toContain("authorized independent human reviewer"); expe…
+    [90m   |[39m               [31m^[39m
+    [90m 11|[39m })[33m;[39m
+    [90m 12|[39m it("qualifies separate requester execution as a local preview with cur…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/docs/glossary/__tests__/reviewDefinitions.test.ts[2m > [22mqualifies separate requester execution as a local preview with current permission and version limits
+[31m[1mAssertionError[22m: expected 'The server-side boundary that prevent…' to contain 'authorized independent human reviewer'[39m
+
+Expected: [32m"authorized independent human reviewer"[39m
+Received: [31m"The server-side boundary that prevents a proposed write from executing until an authorized workspace administrator approves it."[39m
+
+[36m [2m❯[22m app/docs/glossary/__tests__/reviewDefinitions.test.ts:[2m14:15[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 00:17:59
+[2m   Duration [22m 587ms[2m (transform 29ms, setup 0ms, import 166ms, tests 55ms, environment 308ms)[22m
+

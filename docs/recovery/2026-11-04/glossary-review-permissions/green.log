@@ -1,0 +1,13 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-b4-glossary-20261104[39m
+
+ [32m✓[39m app/docs/glossary/__tests__/reviewDefinitions.test.ts[2m > [22mdefines action proposals using independent review without administrator-only authority[32m 16[2mms[22m[39m
+ [32m✓[39m app/docs/glossary/__tests__/reviewDefinitions.test.ts[2m > [22mqualifies separate requester execution as a local preview with current permission and version limits[32m 3[2mms[22m[39m
+ [32m✓[39m app/docs/glossary/__tests__/reviewDefinitions.test.ts[2m > [22mretains the other glossary terms and existing footer link[32m 33[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m3 passed[39m[22m[90m (3)[39m
+[2m   Start at [22m 00:18:13
+[2m   Duration [22m 369ms[2m (transform 18ms, setup 0ms, import 88ms, tests 51ms, environment 178ms)[22m
+

@@ -685,3 +685,10 @@ All15A1–A9/B1–B6 parents remain open; no production or Governance activation
 - [x] B6 bounded exact-source build:002de651 offline preparation/generation/production TypeScript/output checks passed, executionAuthorizedfalse. Guarded preview [5222](http://127.0.0.1:5222/__axiom_preview):fourpages/twoexactCSS/three403checks. [Receipt](../recovery/2026-11-04/keyboard-batch-production-build/README.md). No browser/native/Governance activation or production acceptance.
 
 All15parents remain open.
+
+
+## November4 — glossary authority wording corrected
+
+- [x] B4 bounded glossary correction: two definitions now use capability-based independent review, distinct requester execution and local/non-production/version limitations. Rendered RED2thenGREEN3, scoped types and independent review pass. [Evidence](../recovery/2026-11-04/glossary-review-permissions/README.md). Not published or browser-accepted; existing5222preview predates this copy repair.
+
+Current core files remain byte-unchanged since prior0e057cab audit; supplier refuses and business channel remains unmounted. No newly approved core implementation before the pending exact909qualification decision is inferred. All15parents remain open.
