@@ -1,0 +1,5 @@
+# Current Agent guide — bounded source review
+
+Author agent_current_control_guide inspected current AgentChatView and mounted children plus direct review/requester seams at91ea8743. Independent reviewer website_claims_current_audit found no material control, authority or recovery defects. It identified one incorrect inline model-selector line endpoint (61 instead of53), corrected before integration; the manifest was already correct. Root added the existing eligible-view15-second read-only decision refresh and clarified that the guide help ID is authoring metadata, not an installed binding.
+
+Root verified19 whole-file hashes,27 inclusive source ranges and final guide digest. It inspected composer/history/proposal/approved-action, model, rename and disclosure source directly. No behavior test, build, browser, native action, Security helper, DB, provider or genuine editorial/release decision occurred. This is a source guide, not acceptance of current shipped runtime, media, support ingestion or all backend/tool policies. All customer/native/media/editorial/release gates remain false. Runtime source and existing passing builds remain unchanged.

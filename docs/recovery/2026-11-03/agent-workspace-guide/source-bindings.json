@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "helpId": "agent.workspace-controls",
+  "sourceCommit": "91ea8743d75c82237e474540e8611b146fc04deb",
+  "article": "docs/product/knowledge/agent-workspace-controls.md",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "status": "internal-source-draft",
+  "scope": "Finite mounted AgentChatView and visible child control families plus direct review/requester execution seams; not whole-app or backend-complete coverage.",
+  "hashAlgorithm": "SHA-256",
+  "rangeEncoding": "Exact source bytes from startLine through endLine inclusive, retaining original line endings. Whole-file hashes cover exact bytes.",
+  "sources": [
+    {
+      "path": "desktop/src/views/AgentChatView.tsx",
+      "sha256": "2927dc0cda60a73092e408fff8974295987faa3534dc0a051bb37be48e09074f",
+      "lineCount": 1646,
+      "anchors": [
+        {
+          "startLine": 199,
+          "endLine": 348,
+          "sha256": "8bbe976afe5b35b863c4b7a4da50244388362e4ffa9e5b479f354bb09e78fe53"
+        },
+        {
+          "startLine": 350,
+          "endLine": 618,
+          "sha256": "572857547d62c43a467018fa890f944a0bc4abb2c000887aa8b6ff67feec71f0"
+        },
+        {
+          "startLine": 619,
+          "endLine": 773,
+          "sha256": "f45079f4a20a348b2e978a1da6c818d97bc788d2cac6554b48581e52ee0815c7"
+        },
+        {
+          "startLine": 775,
+          "endLine": 862,
+          "sha256": "73e12f52cf5424ddf3bbc1bfc33e221d1f4df6a99ace17cb284e8b3e34d39ef0"
+        },
+        {
+          "startLine": 864,
+          "endLine": 1013,
+          "sha256": "e4962d41abc702d13ef3b8be23803d0bc7a4b24eb715dac7a3b881d0c2ce890a"
+        },
+        {
+          "startLine": 1015,
+          "endLine": 1221,
+          "sha256": "693cf268ce194e55e7eea8a454bcfdf18e9ef9a03dc3ccf0179d87bef04ce6d4"
+        },
+        {
+          "startLine": 1222,
+          "endLine": 1423,
+          "sha256": "001589af590f30ac289ae277a666eb7c413649ca28e6d2dac11b283202f1411e"
+        },
+        {
+          "startLine": 1425,
+          "endLine": 1536,
+          "sha256": "89a8eaaf472304b56bfa00bb9659d27a054ef8dac064afd2cc86656699c82b19"
+        },
+        {
+          "startLine": 1538,
+          "endLine": 1646,
+          "sha256": "ed2b5e32d855d8a40c53cfbd71ac327a8de326763c1b132ac1ce5f89ba634551"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/AgentApprovedActions.tsx",
+      "sha256": "0e4484a9507baf5f7ef2743b38e101355800b02b863880a80f77a827f818e51f",
+      "lineCount": 59,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 59,
+          "sha256": "0e4484a9507baf5f7ef2743b38e101355800b02b863880a80f77a827f818e51f"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/AgentModelSelector.tsx",
+      "sha256": "7d9ce3d10aa28a41e8d41cef5b60f8916ccf55db5168529513d3705b2711120d",
+      "lineCount": 53,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 53,
+          "sha256": "7d9ce3d10aa28a41e8d41cef5b60f8916ccf55db5168529513d3705b2711120d"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ConversationRename.tsx",
+      "sha256": "586fdf21c1f91da11daee1d84f70f918a9f2d9c1492237fdfcb0e22228251c1e",
+      "lineCount": 38,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 38,
+          "sha256": "586fdf21c1f91da11daee1d84f70f918a9f2d9c1492237fdfcb0e22228251c1e"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/AgentGithubReceipts.tsx",
+      "sha256": "1fb6a4b71f71fc592bd1498cf2a7c133a96ca0afeed0b504a135373cf69bf1a1",
+      "lineCount": 46,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 46,
+          "sha256": "1fb6a4b71f71fc592bd1498cf2a7c133a96ca0afeed0b504a135373cf69bf1a1"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/AgentRestartReceipts.tsx",
+      "sha256": "acedbffc1a56799cafde829ba058aa8694f9df7a729ad6d22276b8c51236d6fe",
+      "lineCount": 68,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 68,
+          "sha256": "acedbffc1a56799cafde829ba058aa8694f9df7a729ad6d22276b8c51236d6fe"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/DeploymentWorkflowEvidence.tsx",
+      "sha256": "dc6a460f24553325b05bdf30df539bc3ccf6d59ad31ef8036ddb6c6f685b7e6b",
+      "lineCount": 17,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 17,
+          "sha256": "dc6a460f24553325b05bdf30df539bc3ccf6d59ad31ef8036ddb6c6f685b7e6b"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/AgentMessageContent.tsx",
+      "sha256": "7e85a6f2275bcd712a1fc4841d019adc50a8a68cb6b46a25f46ee49d06fa7ea3",
+      "lineCount": 42,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 42,
+          "sha256": "7e85a6f2275bcd712a1fc4841d019adc50a8a68cb6b46a25f46ee49d06fa7ea3"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/Disclosure.tsx",
+      "sha256": "8dc049048b429fdcb0f280d416730f5915dfd1ef71cf8b8fd656ccdd9c1806af",
+      "lineCount": 18,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 18,
+          "sha256": "8dc049048b429fdcb0f280d416730f5915dfd1ef71cf8b8fd656ccdd9c1806af"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/FileDiff.tsx",
+      "sha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3",
+      "lineCount": 50,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 50,
+          "sha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/useDismissibleDetails.ts",
+      "sha256": "f5fea6b786c03e32c063a99b0384be3965f86a9b2aa812cfbe5812464d133979",
+      "lineCount": 25,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 25,
+          "sha256": "f5fea6b786c03e32c063a99b0384be3965f86a9b2aa812cfbe5812464d133979"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "lineCount": 2192,
+      "anchors": [
+        {
+          "startLine": 1390,
+          "endLine": 1440,
+          "sha256": "9565527dd811c79a809051c0cdd743e728a3f1b34cbdc31fd0aa0ae42b90ce89"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/agentActionExecutionControls.ts",
+      "sha256": "ef397dc5d016215e380a123ee32d7f016da26964535ab5f442561e7e164c2f5e",
+      "lineCount": 34,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 34,
+          "sha256": "ef397dc5d016215e380a123ee32d7f016da26964535ab5f442561e7e164c2f5e"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/agentActionExecutionRecovery.ts",
+      "sha256": "9284e52c612eb00552c9171078633bae1f455506c1a28032ccdc665e30fe0037",
+      "lineCount": 19,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 19,
+          "sha256": "9284e52c612eb00552c9171078633bae1f455506c1a28032ccdc665e30fe0037"
+        }
+      ]
+    },
+    {
+      "path": "lib/desktop/agentActionExecutionRequestService.ts",
+      "sha256": "d5d10dd4c0e8a1933b23d11fb6c0a062a02ef744e7f60ed38bbde5cd92e5355c",
+      "lineCount": 55,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 55,
+          "sha256": "d5d10dd4c0e8a1933b23d11fb6c0a062a02ef744e7f60ed38bbde5cd92e5355c"
+        }
+      ]
+    },
+    {
+      "path": "lib/desktop/agentActionEligibility.ts",
+      "sha256": "ef7e553d15fa050a5b0fabfd92f9a69536a6704c9d699089ea13fe3fe032c8b5",
+      "lineCount": 29,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 29,
+          "sha256": "ef7e553d15fa050a5b0fabfd92f9a69536a6704c9d699089ea13fe3fe032c8b5"
+        }
+      ]
+    },
+    {
+      "path": "app/api/desktop/agent/actions/[id]/approve/route.ts",
+      "sha256": "438489dba11156e52acd181743a15102b3f4b493a19f587b751154b722597733",
+      "lineCount": 31,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 31,
+          "sha256": "438489dba11156e52acd181743a15102b3f4b493a19f587b751154b722597733"
+        }
+      ]
+    },
+    {
+      "path": "app/api/desktop/agent/actions/[id]/reject/route.ts",
+      "sha256": "635821cfc469779ad8cc559b79e393fd85eceb5323177e3b2042b34b2875bfb1",
+      "lineCount": 34,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 34,
+          "sha256": "635821cfc469779ad8cc559b79e393fd85eceb5323177e3b2042b34b2875bfb1"
+        }
+      ]
+    },
+    {
+      "path": "lib/axiom/agentRuntime/browserApprovalDecision.ts",
+      "sha256": "ed1f028d771ebe8862cb4aeca95f238bace2d11ac924b6e437b9e1d3941abf93",
+      "lineCount": 92,
+      "anchors": [
+        {
+          "startLine": 1,
+          "endLine": 92,
+          "sha256": "ed1f028d771ebe8862cb4aeca95f238bace2d11ac924b6e437b9e1d3941abf93"
+        }
+      ]
+    }
+  ],
+  "acceptance": {
+    "runtimeTested": false,
+    "nativeTested": false,
+    "mediaAccepted": false,
+    "editorialApproved": false,
+    "releaseAccepted": false,
+    "customerIngested": false
+  },
+  "remainingGaps": [
+    "Current shipped installer and feature-flag verification",
+    "Authentic redacted media and accessibility/native acceptance",
+    "Independent editorial and release decisions",
+    "Separate Settings, cockpit reviewer, local editor and provider workflow guides",
+    "Full backend/tool-policy inventory is outside this mounted-screen guide"
+  ],
+  "masterPlanReference": "docs/product/axiom-master-action-plan.md is a descriptive acceptance reference only; intentionally no whole-file hash or frozen binding."
+}
