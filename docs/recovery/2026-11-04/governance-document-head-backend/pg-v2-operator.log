@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/private/tmp/axiom-a2-document-head-evidence/run-owned-pg-v2.py", line 83, in <module>
+    if failure is not None:raise failure
+  File "/private/tmp/axiom-a2-document-head-evidence/run-owned-pg-v2.py", line 61, in <module>
+    run([node,deps/'prisma/build/index.js','db','push','--schema',client/'schema.prisma','--skip-generate'],'pg-v2-empty-fixture-schema')
+  File "/private/tmp/axiom-a2-document-head-evidence/run-owned-pg-v2.py", line 44, in run
+    if result.returncode and not allow_failure:raise RuntimeError(label+' failed; stop without retry')
+RuntimeError: pg-v2-empty-fixture-schema failed; stop without retry

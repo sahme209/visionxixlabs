@@ -1,0 +1,8 @@
+Prisma schema loaded from ../axiom-provider-approval-pg-evidence-5t3dlieq/schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "localhost"
+
+Error: Schema engine exited. Error: Could not find schema-engine binary. Searched in:
+- /private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@prisma/engines/schema-engine-darwin-arm64
+- /private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/prisma/schema-engine-darwin-arm64
+- /private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/schema-engine-darwin-arm64
+- /private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/prisma/runtime/schema-engine-darwin-arm64

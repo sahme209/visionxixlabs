@@ -1,0 +1,5 @@
+Prisma schema loaded from ../axiom-provider-approval-pg-evidence-y057l6o9/schema.prisma
+Datasource "db": PostgreSQL database "neondb", schema "public" at "localhost"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 28ms
+

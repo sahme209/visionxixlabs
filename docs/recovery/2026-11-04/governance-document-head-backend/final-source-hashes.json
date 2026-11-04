@@ -1,0 +1,9 @@
+{
+  "lib/governance/intelligence/documentStore.ts": "528cc58781e6fd133adc0981562449db2e2f21c098fde0e72f5bbb6edec324bd",
+  "lib/governance/intelligence/requestServiceCore.ts": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d",
+  "lib/governance/intelligence/readHttp.ts": "5455ba4f0d020c438c9e1eab1f8e8cf202f6df684b29778d42807e60cdead081",
+  "lib/governance/intelligence/__tests__/documentHead.test.ts": "b035771167906acfd0eebb46098751b7ffe2045bc4dba56d3a84b96b3efc4343",
+  "lib/governance/intelligence/__tests__/readHttp.test.ts": "ee1a7c1992a9683fee72d8c1007305215b15d1a254a73acf16e2ec506a9785ee",
+  "lib/governance/intelligence/__tests__/documentHttp.test.ts": "e6a4b24f2a4acd9824d013c9e0a02eff596e19b49bf55e81cf9ec7ad21429cc9",
+  "lib/governance/intelligence/__tests__/requestService.pg.test.ts": "35e61d15bb5a5715cf189f024a8a4c310109b0b2d895e24657d40376abce1fbc"
+}

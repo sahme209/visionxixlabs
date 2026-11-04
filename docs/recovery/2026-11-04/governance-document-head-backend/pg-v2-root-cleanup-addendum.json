@@ -1,0 +1,12 @@
+{
+  "source": "Parent root report after independent read-only PID/data/status verification",
+  "pid": 64904,
+  "data": "/private/tmp/axiom-ticket-governance-pg-f3_q9274/data",
+  "action": "fast-stopped ONLY confirmed owned cluster",
+  "reportedExit": 0,
+  "originalReceiptUnchanged": true,
+  "selectedTestRan": false,
+  "setupFailure": "Pinned4087 Prisma CLI schema-engine executable absent",
+  "cleanupFailure": "sandbox-exec execvp /bin/ps Operation not permitted exit71",
+  "retry": "none; corrected runner must receive separate root review before invocation"
+}

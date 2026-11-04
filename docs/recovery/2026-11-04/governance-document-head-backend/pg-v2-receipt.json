@@ -1,0 +1,222 @@
+{
+  "root": "/private/tmp/axiom-ticket-governance-pg-f3_q9274",
+  "socket": "/private/tmp/axiom-ticket-governance-pg-f3_q9274/socket",
+  "client": "/private/tmp/axiom-provider-approval-pg-evidence-5t3dlieq",
+  "bindings": [
+    {
+      "name": "DurableAgentWorkflow",
+      "currentSha256": "69c474e5c4d7b95b1bfbcd42328b7e110445af4181128982a3973feef6878dde",
+      "generatedSha256": "609278ac2d45fb9b8fe2505fd65ac74807bb828d475b642b108ee19d97fce488",
+      "tokensEqual": true
+    },
+    {
+      "name": "DurableAgentWorkflowEvent",
+      "currentSha256": "842ba9be4c40d03ce94c73cc3c89b5702d1f4114aad9f65682a3cbfaa4fdcaf9",
+      "generatedSha256": "842ba9be4c40d03ce94c73cc3c89b5702d1f4114aad9f65682a3cbfaa4fdcaf9",
+      "tokensEqual": true
+    },
+    {
+      "name": "OrgMembership",
+      "currentSha256": "ff82951399f6eb72a5c012c6243f333e4ea287016d696676f4b1dc858c83fa4d",
+      "generatedSha256": "ff82951399f6eb72a5c012c6243f333e4ea287016d696676f4b1dc858c83fa4d",
+      "tokensEqual": true
+    },
+    {
+      "name": "OrgRole",
+      "currentSha256": "1a0a7d31f26d769f8d2d56c5f480d057424be850b9a405d09c8252a74f15ebb1",
+      "generatedSha256": "1a0a7d31f26d769f8d2d56c5f480d057424be850b9a405d09c8252a74f15ebb1",
+      "tokensEqual": true
+    }
+  ],
+  "fixtureSchemaSha256": "dc8cde561df217157365a00b07d8b7104692e1e4133129be5443f46e26072211",
+  "generatedCopy": {
+    "generated/default.d.ts": "d5eb5865d4cbaa9985cc3cfb920b230cdcf3363f1e70903a08dc4baab80b0ce1",
+    "generated/default.js": "61419abcd0ff0f9127dd52fee7bd236d49917050317e1cc87067c1f18f86e412",
+    "generated/edge.d.ts": "7378dd41401ba1acff435b9c317a5b919a3d38479ed3dbd4a25c8b4fd623a224",
+    "generated/edge.js": "47fb88229cccecb35a991cfe822ee8a45e8271338addf9e48326799c395f3866",
+    "generated/index-browser.js": "7d0f17022e1a38693977b8d823112dc5e8522f8f74d718c18bee527110361187",
+    "generated/index.d.ts": "d2ee37b388336cbe86229a4c2c3cb7304ac6ac26b8d70678b19daf8b7a17fe1d",
+    "generated/index.js": "d3be4efe111cfefd232d0df4210bffb3df933ec8d1374686931d05014f36f1bc",
+    "generated/libquery_engine-darwin-arm64.dylib.node": "e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d",
+    "generated/package.json": "1521327828bf1a86673cd51e30c3daac7ae630cf4d7f19c6cd814a1b02a95a8f",
+    "generated/schema.prisma": "811b29137db279b05feaccc908cdfeb1b0c7124c6deeebafe4581cfcfcf0ae4b",
+    "generated/wasm.d.ts": "d5eb5865d4cbaa9985cc3cfb920b230cdcf3363f1e70903a08dc4baab80b0ce1",
+    "generated/wasm.js": "7d0f17022e1a38693977b8d823112dc5e8522f8f74d718c18bee527110361187"
+  },
+  "environment": {
+    "PATH": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin",
+    "HOME": "/private/tmp/axiom-a2-document-head-evidence",
+    "TMPDIR": "/private/tmp/axiom-a2-document-head-evidence",
+    "LANG": "C",
+    "TZ": "UTC",
+    "NODE_ENV": "test",
+    "PGHOST": "/private/tmp/axiom-ticket-governance-pg-f3_q9274/socket",
+    "PGUSER": "recovery_fixture",
+    "PGDATABASE": "neondb",
+    "DATABASE_URL": "postgresql://recovery_fixture@localhost/neondb?host=%2Fprivate%2Ftmp%2Faxiom-ticket-governance-pg-f3_q9274%2Fsocket",
+    "PRISMA_GENERATE_SKIP_AUTOINSTALL": "true",
+    "CHECKPOINT_DISABLE": "1",
+    "PRISMA_HIDE_UPDATE_MESSAGE": "1",
+    "AXIOM_TICKET_GOVERNANCE_PG_SOCKET": "/private/tmp/axiom-ticket-governance-pg-f3_q9274/socket",
+    "AXIOM_TICKET_GOVERNANCE_PG_CLIENT": "/private/tmp/axiom-provider-approval-pg-evidence-5t3dlieq/generated/index.js"
+  },
+  "startRequested": true,
+  "started": true,
+  "stopped": false,
+  "commands": [
+    {
+      "label": "pg-v2-init",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-a2-document-head-evidence/pg-v2-deny.sb",
+        "/opt/homebrew/opt/postgresql@17/bin/initdb",
+        "-D",
+        "/private/tmp/axiom-ticket-governance-pg-f3_q9274/data",
+        "-U",
+        "recovery_fixture",
+        "--locale=C",
+        "--encoding=UTF8",
+        "--auth-local=trust",
+        "--auth-host=reject"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "pg-v2-start",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-a2-document-head-evidence/pg-v2-deny.sb",
+        "/opt/homebrew/opt/postgresql@17/bin/pg_ctl",
+        "-D",
+        "/private/tmp/axiom-ticket-governance-pg-f3_q9274/data",
+        "-l",
+        "/private/tmp/axiom-ticket-governance-pg-f3_q9274/server.log",
+        "-o",
+        "-k /private/tmp/axiom-ticket-governance-pg-f3_q9274/socket -c listen_addresses='' -c unix_socket_permissions=0700",
+        "-w",
+        "start"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "pg-v2-pre-createdb-identity",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-a2-document-head-evidence/pg-v2-deny.sb",
+        "/opt/homebrew/opt/postgresql@17/bin/psql",
+        "-X",
+        "-w",
+        "-h",
+        "/private/tmp/axiom-ticket-governance-pg-f3_q9274/socket",
+        "-U",
+        "recovery_fixture",
+        "-d",
+        "postgres",
+        "-Atc",
+        "SELECT json_build_object('user',current_user,'database',current_database(),'listen',current_setting('listen_addresses'),'data',current_setting('data_directory'))::text"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "pg-v2-createdb",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-a2-document-head-evidence/pg-v2-deny.sb",
+        "/opt/homebrew/opt/postgresql@17/bin/createdb",
+        "-w",
+        "neondb"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "pg-v2-pre-schema-identity",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-a2-document-head-evidence/pg-v2-deny.sb",
+        "/opt/homebrew/opt/postgresql@17/bin/psql",
+        "-X",
+        "-w",
+        "-h",
+        "/private/tmp/axiom-ticket-governance-pg-f3_q9274/socket",
+        "-U",
+        "recovery_fixture",
+        "-d",
+        "neondb",
+        "-Atc",
+        "SELECT json_build_object('user',current_user,'database',current_database(),'listen',current_setting('listen_addresses'),'data',current_setting('data_directory'))::text"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "pg-v2-empty-fixture-schema",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-a2-document-head-evidence/pg-v2-deny.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/prisma/build/index.js",
+        "db",
+        "push",
+        "--schema",
+        "/private/tmp/axiom-provider-approval-pg-evidence-5t3dlieq/schema.prisma",
+        "--skip-generate"
+      ],
+      "exit": 1
+    },
+    {
+      "label": "pg-v2-final-status",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-a2-document-head-evidence/pg-v2-deny.sb",
+        "/opt/homebrew/opt/postgresql@17/bin/pg_ctl",
+        "-D",
+        "/private/tmp/axiom-ticket-governance-pg-f3_q9274/data",
+        "status"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "pg-v2-owned-process",
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-a2-document-head-evidence/pg-v2-deny.sb",
+        "/bin/ps",
+        "-p",
+        "64904",
+        "-o",
+        "command="
+      ],
+      "exit": 71
+    }
+  ],
+  "simulation": "Real owned PG storage; paired auth/requester/reviewer/provider denial are synthetic. No actual human approval/provider qualification.",
+  "databaseChecks": [
+    {
+      "user": "recovery_fixture",
+      "database": "postgres",
+      "listen": "",
+      "data": "/private/tmp/axiom-ticket-governance-pg-f3_q9274/data"
+    },
+    {
+      "user": "recovery_fixture",
+      "database": "neondb",
+      "listen": "",
+      "data": "/private/tmp/axiom-ticket-governance-pg-f3_q9274/data"
+    }
+  ],
+  "originalError": {
+    "type": "RuntimeError",
+    "message": "pg-v2-empty-fixture-schema failed; stop without retry"
+  },
+  "cleanupError": {
+    "type": "RuntimeError",
+    "message": "pg-v2-owned-process failed; stop without retry"
+  }
+}

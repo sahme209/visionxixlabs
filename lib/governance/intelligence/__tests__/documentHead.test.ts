@@ -1,5 +1,9 @@
 import {expect,it,vi} from 'vitest';
 import {NextRequest} from 'next/server';
+const reader=vi.hoisted(()=>({actor:vi.fn()}));
+vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:reader.actor}));
+vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:()=>({allowed:true})}));
+import {createGovernanceReadHttp} from '../readHttp';
 import {randomUUID} from 'node:crypto';
 import {createGovernanceRequestServiceCore} from '../requestServiceCore';
 import {createGovernanceEvidenceStore} from '../evidenceStore';
@@ -21,3 +25,5 @@ it.each(['missing','corrupt-head','corrupt-blob','corrupt-history','foreign'] as
 it('requires enabled and current reader before and after metadata lookup',async()=>{const f=fixture(),saved=await f.upload();f.disable();const n=f.transactions();await expect(f.service.readDocumentHead(saved.snapshot.digest)).rejects.toThrow();expect(f.transactions()).toBe(n);const g=fixture(),other=await g.upload();g.revoke();await expect(g.service.readDocumentHead(other.snapshot.digest)).rejects.toThrow();const h=fixture(),a=await h.upload();h.authority.mockClear();h.authority.mockImplementation(async()=>{if(h.authority.mock.calls.length===5)throw Error('synthetic_revoked_during_read')});await expect(h.service.readDocumentHead(a.snapshot.digest)).rejects.toThrow('synthetic_revoked_during_read');expect(h.authority).toHaveBeenCalledTimes(5)});
 
 it('refuses a valid immutable non-document artifact rather than deriving a document target',async()=>{const f=fixture(),saved=await f.upload(),{digest,...input}=saved.snapshot,other=await f.saveSnapshot(parseEvidenceSnapshot({...input,source:'github',connectionId:'synthetic-connection',collectorVersion:'synthetic-v1'}));await expect(f.service.readDocumentHead(other.snapshot.digest)).rejects.toThrow('governance_document_unavailable')});
+
+it('returns generic409 for a valid HTTP request selecting a corrupt stored head schema',async()=>{const f=fixture(),saved=await f.upload();[...f.rows.values()].find(x=>x.workflowKind==='governance_document_head_v1').stateJson.sourceDigest='invalid-stored-digest';reader.actor.mockResolvedValue({id:f.scope.sessionId,userId:f.scope.actorUserId,organizationId:f.scope.organizationId,credentialKind:'desktop_session'});const handle=createGovernanceReadHttp(()=>f.service as any,()=>true),response=await handle(new NextRequest('https://axiom.test/read',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({operation:'read_document_head',artifactDigest:saved.snapshot.digest})}));expect(response.status).toBe(409);expect(await response.json()).toEqual({ok:false,error:'governance_read_unavailable'})});

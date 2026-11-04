@@ -1,5 +1,6 @@
 import {it,expect,vi,beforeEach} from 'vitest';import {NextRequest} from 'next/server';
 const m=vi.hoisted(()=>({actor:vi.fn(),rate:vi.fn()}));vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktopSession:m.actor}));vi.mock('@/lib/api/rateLimiter',()=>({consumeToken:m.rate}));
+import {z} from 'zod';
 import {createGovernanceReadHttp} from '../readHttp';
 const id='governance_revision_'+'a'.repeat(64);
 beforeEach(()=>{m.actor.mockReset().mockResolvedValue({id:'session',userId:'owner',organizationId:'org',credentialKind:'desktop_session'});m.rate.mockReset().mockReturnValue({allowed:true})});
@@ -25,3 +26,5 @@ it('reads an exact document artifact head without caller target authority',async
 it('keeps the new head read disabled and rejects extra caller authority',async()=>{const f=fixture(false);expect((await f.handle(request({operation:'read_document_head',artifactDigest:'a'.repeat(64)}))).status).toBe(503);expect(f.compose).not.toHaveBeenCalled();for(const extra of [{name:'other.md'},{selection:{}},{organizationId:'other'},{expectedVersion:0},{headId:'x'}]){const g=fixture();expect((await g.handle(request({operation:'read_document_head',artifactDigest:'a'.repeat(64),...extra}))).status).toBe(400);expect(g.compose).not.toHaveBeenCalled()}});
 
 it('preserves all existing historical read refusals while feature OFF',async()=>{for(const body of [{operation:'list_evidence'},{operation:'list_revisions'},{operation:'read_drift',id},{operation:'read_document_head',artifactDigest:'a'.repeat(64)}]){const f=fixture(false);m.actor.mockClear();expect((await f.handle(request(body))).status).toBe(503);expect(f.compose).not.toHaveBeenCalled();expect(m.actor).not.toHaveBeenCalled()}});
+
+it.each([new SyntaxError('SYNTHETIC_PRIVATE_STORAGE'),z.string().safeParse(7).error!])('normalizes backend head-read parse failure to unavailable after a valid request',async error=>{const f=fixture();f.service.readDocumentHead.mockRejectedValue(error);const response=await f.handle(request({operation:'read_document_head',artifactDigest:'a'.repeat(64)}));expect(response.status).toBe(409);expect(await response.json()).toEqual({ok:false,error:'governance_read_unavailable'})});
