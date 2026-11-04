@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.jira.release-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:f7b1cbc00387564423c47201eaa586395380ac84",
+  "sourceFiles": 21,
+  "evaluationCases": 9,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

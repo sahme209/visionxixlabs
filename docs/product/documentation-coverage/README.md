@@ -128,3 +128,13 @@ The [guide-to-article source linkage queue](guide-article-linkage.md) maps index
 ## Batches/Airflow internal structured draft (November4)
 
 [Article revision1](articles/batches-airflow-controls.r1.json) and [nine proposed cases](batches-airflow-controls-evaluation.r1.json) retain distinct read/run/automation/combined approval and uncertain dispatch semantics. Two known privacy-only route changes are explicitly reviewed, not silently rebound. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/batches-structured-knowledge-author/independent-review.md). No live Airflow, on-prem, Temporal, retrieval or runtime acceptance.
+
+
+## Jira internal structured source draft (November4)
+
+[Article revision1](articles/jira-release-controls.r1.json) and [nine proposed cases](jira-release-controls-evaluation.r1.json) preserve discovery/association/exact review/provider/native-closure distinctions and historical no-repeat boundaries. Newbundle integrity passed; customer mode refused. [Evidence](../../recovery/2026-11-04/jira-structured-knowledge/README.md). No current Jira or ServiceNow state or execution acceptance inferred.
+
+
+## ServiceNow internal structured source draft (November4)
+
+[Article revision1](articles/servicenow-evidence-closure-controls.r1.json) and [ten proposed cases](servicenow-evidence-closure-controls-evaluation.r1.json) preserve consumed written-UNKNOWN history and separate observation/native lifecycle/policy/exact closure gates. Historic guide locators are qualified rather than silently rebound; current ranges are separately recorded. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/servicenow-structured-knowledge-author/independent-review.md). No live ticket/journal state, closure, retrieval or runtime acceptance.

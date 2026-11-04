@@ -728,3 +728,11 @@ All15parents remain open. No customer/editorial/media/native/runtime/production 
 - [x] B4/B5 bounded Batches draft:20historicentries unchanged/twoknownprivacy-onlyroutechanges explicitly reviewed;24sources/23currentranges/nine proposed cases. Newbundle integrity/customer-refusal checks and independent source review pass. [Evidence](../recovery/2026-11-04/batches-structured-knowledge-author/independent-review.md). Preserve actual combined approval and bounded predispatch retries versus unknown postdispatch hold; no Agent-flow substitution.
 
 Fourteen stored article revisions include history; none of this establishes customer eligibility, executed retrieval, authentic media, runtime/Governance/provider or on-prem acceptance. All15parents remain open.
+
+
+## November4 — Jira and ServiceNow internal knowledge batch
+
+- [x] B4/B5 bounded Jira draft:17historicfiles/20ranges unchanged,21unique sources/nine proposed cases. Newbundle integrity/customer-refusal checks and independent source review pass. [Evidence](../recovery/2026-11-04/jira-structured-knowledge/README.md). Prior KAN-4 work remains historical with no repeat authority.
+- [x] B4/B5 bounded ServiceNow draft:24finite code files unchangedb6..f7/26unique article sources/24valid current ranges/ten proposed cases. Old imprecise locators are qualified and preserved, not claimed validated; newbundle integrity/customer refusal and independent source review pass. [Evidence](../recovery/2026-11-04/servicenow-structured-knowledge-author/independent-review.md). Written UNKNOWN history, genuine human observation/policy/closure, native lifecycle and live readback remain open.
+
+Sixteen stored article revisions include history; proposed cases are not executed retrieval. This is documentation authoring, not A3 live completion, provider action, runtime/Governance/media/editorial/customer acceptance. All15parents remain open.

@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /private/tmp/axiom-b4-jira-20261104 || exit 90
+exec /usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-b4-jira-evidence TMPDIR=/private/tmp/axiom-b4-jira-evidence NODE_ENV=test /usr/bin/sandbox-exec -f /private/tmp/axiom-b4-jira-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node docs/product/documentation-coverage/validate-support-knowledge.cjs --root /private/tmp/axiom-b4-jira-20261104 --article docs/product/documentation-coverage/articles/jira-release-controls.r1.json --evaluation docs/product/documentation-coverage/jira-release-controls-evaluation.r1.json --version local-source-preview:f7b1cbc00387564423c47201eaa586395380ac84 "$@"

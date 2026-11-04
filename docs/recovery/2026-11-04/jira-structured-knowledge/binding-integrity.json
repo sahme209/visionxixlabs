@@ -1,0 +1,25 @@
+{
+  "result": "PASS",
+  "wholeFileBindings": 17,
+  "rawRanges": 20,
+  "uniqueCodeFiles": 17,
+  "paths": [
+    "desktop/src/views/DeploymentRequestsView.tsx",
+    "desktop/src/components/ReleaseTicketWorkspace.tsx",
+    "desktop/src/components/JiraTicketDiscovery.tsx",
+    "desktop/src/components/JiraTicketLifecycle.tsx",
+    "desktop/src/components/TicketGovernancePanel.tsx",
+    "desktop/src/components/AssociatedTicketActionsPanel.tsx",
+    "desktop/src/lib/jiraTicketDiscovery.ts",
+    "desktop/src/lib/jiraTicketLifecycle.ts",
+    "desktop/src/lib/ticketGovernance.ts",
+    "desktop/src/lib/associatedTicketActions.ts",
+    "lib/releaseops/jiraFieldSupport.ts",
+    "lib/releaseops/jiraTicketLifecycleContract.ts",
+    "lib/releaseops/jiraTicketLifecycleStore.ts",
+    "desktop/src/components/ActionJourney.tsx",
+    "desktop/src/lib/desktopClient.ts",
+    "docs/product/knowledge/releases-workspace-controls.md",
+    "docs/product/knowledge/servicenow-evidence-and-closure-controls.md"
+  ]
+}
