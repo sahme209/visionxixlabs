@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.repositories.editor-nested-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:04bd66b826d52cdc5ed18c7309fc9d3f612accde",
+  "articleSha256": "1b579d2d9cedb54767bbcd1feb102abae228b56628f9b6266a76bec014ca39bb",
+  "status": "proposed-not-executed",
+  "scope": "Bounded proposed answer requirements only, not actual model answers or self-scored results. No retrieval/model execution; actual answers and independent scoring remain unperformed.",
+  "cases": [
+    {
+      "id": "repository-nested-discard-same-file",
+      "question": "Does selecting the same dirty file preserve my edits?",
+      "requiredResponse": "It still opens Discard unsaved changes? Cancel retains the editor; Discard and open clears the buffer/history before a file read. Read failure may leave an empty editor; there is no persistent stash.",
+      "requiredCitation": "axiom.help.repositories.editor-nested-controls revision 1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-nested-checkout",
+      "question": "Does switching checkout save my dirty file?",
+      "requiredResponse": "No. A different checkout prompts while dirty; Discard and switch clears owned editor state without save/commit/remote operation. Selecting the current checkout returns without a dialog.",
+      "requiredCitation": "axiom.help.repositories.editor-nested-controls revision 1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-nested-cancel-write",
+      "question": "Can Cancel or switching prove my timed-out Save stopped?",
+      "requiredResponse": "No. Dismissing a pending confirmation prevents its callback only. Submitted native work is not cancelled; inspect current disk content before retrying an uncertain Save.",
+      "requiredCitation": "axiom.help.repositories.editor-nested-controls revision 1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-nested-agent-append",
+      "question": "Does Prepare Agent draft send code or replace existing input?",
+      "requiredResponse": "No. It appends an unsent ordinary-code prompt to existing input with a blank line and selects Inspect / Code Review chat mode. Review all composer text before separate Send; it does not save or execute code.",
+      "requiredCitation": "axiom.help.repositories.editor-nested-controls revision 1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-nested-agent-snapshot",
+      "question": "Does the preparation dialog preview my selection, and can I move selection to change it?",
+      "requiredResponse": "The code-selection dialog has descriptive text but no excerpt preview. It captures the excerpt and full buffer; moving selection alone does not replace it. Cancel and reselect. Changed file/buffer or busy operation rejects preparation; obsolete ownership may suppress it.",
+      "requiredCitation": "axiom.help.repositories.editor-nested-controls revision 1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-nested-diff-pages",
+      "question": "Does Next diff page approve changes or cancel a pending save?",
+      "requiredResponse": "No. It changes display state only. Pagination applies above 2,000 rendered diff rows including context/omission markers, resets on before/after change, and neither proves review nor gates Save. It has no pagination Cancel.",
+      "requiredCitation": "axiom.help.repositories.editor-nested-controls revision 1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-nested-draft-version",
+      "question": "Can this article answer customer questions for my installed release?",
+      "requiredResponse": "This internal source-only local-preview draft is customer ineligible. Genuine review and exact applicable shipped-version/source evidence are unavailable; hash validation is not editorial approval or native/accessibility acceptance.",
+      "requiredCitation": "axiom.help.repositories.editor-nested-controls revision 1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    }
+  ]
+}

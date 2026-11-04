@@ -1,0 +1,47 @@
+{
+  "scope": "New input only; unchanged existing validator, kernel network denied; existing verified dependencies; no installs, model/retrieval execution, native/browser/provider/DB or old suites/build.",
+  "NODE_PATH": "/private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules",
+  "results": [
+    {
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1) (allow default) (deny network*)",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/private/tmp/axiom-repository-support-draft-04bd",
+        "--article",
+        "docs/product/documentation-coverage/articles/repository-editor-nested-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/repository-editor-nested-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:04bd66b826d52cdc5ed18c7309fc9d3f612accde"
+      ],
+      "exitCode": 0,
+      "stdout": "{\n  \"valid\": true,\n  \"articleId\": \"axiom.help.repositories.editor-nested-controls\",\n  \"revision\": 1,\n  \"productVersion\": \"local-source-preview:04bd66b826d52cdc5ed18c7309fc9d3f612accde\",\n  \"sourceFiles\": 9,\n  \"evaluationCases\": 7,\n  \"customerEligible\": false,\n  \"customerBlockers\": [\n    \"article_not_approved\",\n    \"article_not_public\",\n    \"local_preview_not_shipped\"\n  ],\n  \"evaluationStatus\": \"proposed-not-executed\"\n}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1) (allow default) (deny network*)",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/private/tmp/axiom-repository-support-draft-04bd",
+        "--article",
+        "docs/product/documentation-coverage/articles/repository-editor-nested-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/repository-editor-nested-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:04bd66b826d52cdc5ed18c7309fc9d3f612accde",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": "Support knowledge validation failed: customer retrieval ineligible: article_not_approved, article_not_public, local_preview_not_shipped\n"
+    }
+  ]
+}
