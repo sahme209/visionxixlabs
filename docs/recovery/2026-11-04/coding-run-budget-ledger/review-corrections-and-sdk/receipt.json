@@ -1,0 +1,185 @@
+{
+  "status": "review-findings-corrected-local-synthetic-validation-only",
+  "previousRuntimeCommit": "c2a45772e8837e7d0bf500a6ff20a22c243a224a",
+  "runtimeCorrectionCommit": "67ae1def9c201a41c75650061ad2b21822b50d80",
+  "testOnlyCompatibilityCommit": "9377f5063eca05b2a7786023059dce86c7670286",
+  "runtimeUnchangedBySdkFollowup": true,
+  "reviewRegression": {
+    "passed": 30,
+    "failed": 2,
+    "log": "review-red.log"
+  },
+  "reviewGreen": {
+    "passed": 32,
+    "failed": 0,
+    "exit": 0,
+    "log": "review-green.log"
+  },
+  "sdkCompatibility": {
+    "file": "lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts",
+    "passed": 8,
+    "failed": 0,
+    "exit": 0,
+    "invocations": 1,
+    "transport": "installed SDK with fixed synthetic gateway.invalid fetch; no external provider",
+    "log": "sdk/owned-pg.log"
+  },
+  "types": {
+    "reviewExit": 0,
+    "sdkRoots": 19,
+    "sdkTransitive": true,
+    "sdkExit": 0
+  },
+  "existingFocusedCompatibility": {
+    "passed": 100,
+    "failed": 0,
+    "log": "../compat.log",
+    "notRerunForDocsOnlyFollowup": true
+  },
+  "cleanup": {
+    "reviewOwnedRoot": "/private/tmp/axiom-budget-pg-jdeg68xk",
+    "reviewStopExit": 0,
+    "sdkOwnedRoot": "/private/tmp/axiom-agent-chain-ddbq8up5",
+    "sdkStopExit": 0
+  },
+  "productionMigration": false,
+  "realProviderOrCustomerAcceptance": false,
+  "defaultUsefulCodingQuoteComplete": false,
+  "fullGovernanceSecurityComplete": false,
+  "sources": [
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "94a1f91be7b4863e9f1baa8d4821921bf63a97192897cca0a0a27c4d7e50d978"
+    },
+    {
+      "path": "lib/billing/currentAIAllowance.ts",
+      "sha256": "9fec7cbbb610cc578fd66741f4bcb34f3e627a869487d54b8f8a2bf55d1fc381"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "87a9bf255730e5301abad5c72043b0bd6e8272c5e9981cd691dd2e78cf7ef019"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationV2.ts",
+      "sha256": "d17e84dec4656b22d94bb4b8db5814cd4abcc680a53ed178352bbccd3fd8d1ce"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+      "sha256": "64ba249ce5a3b16478cdc8b4257082e453f9d3ace11e400a6c7323fc0499d73e"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "sha256": "4d8c44429b5704705fcf1693417ece5beac2354ee0aa924512c079d40a5fb7c5"
+    },
+    {
+      "path": "lib/billing/publicBillingStore.ts",
+      "sha256": "23481fc24a6d181f19ec8ef15a5e9c97eddb4a43eba0bfebde084b39e8d3aff4"
+    },
+    {
+      "path": "lib/billing/publicCreditAllocation.ts",
+      "sha256": "4c7322d163b4b6a56ad64a3eed9ca88d3492c3a201b6619866c5e95fe61214b8"
+    },
+    {
+      "path": "lib/billing/publicCreditAuthority.ts",
+      "sha256": "59e66fd8f6ca6f6952b7f5501c9e214af85cb63fa5b34b3bc4b88bb762a9f6f9"
+    },
+    {
+      "path": "lib/billing/reconcileGatewayUsage.ts",
+      "sha256": "7e08c7a9cb46f537818af3f9b64a884cd7cac7eb3260bf32af448fc2145992f2"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts",
+      "sha256": "9e12232d6e87fd1cc2b6256d0c093d0fbe7ec38d6d872105a160d19b4e7c274d"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts",
+      "sha256": "739b9e26801764056fb459fa227cd11209117ed9f009cb6df414d79f0367f67c"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingRunBudget.test.ts",
+      "sha256": "fafe203a7b8a1252cf9fa8ffaac1c184da9b035291acd2a0a8288de9482a4725"
+    },
+    {
+      "path": "lib/workforce/pipelines/budgetConfigStore.ts",
+      "sha256": "1ff976054626099f503a2b037d87abd45e98ff67a1394f00affe60a49fc322fa"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeProposeRealExecutor.ts",
+      "sha256": "ec189bca8789f744720b7c57d68b565bbed22551e5ae7b2e06616f779ffe565a"
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunBudget.ts",
+      "sha256": "7f06f98aefd8fa0af2f9619ac4a5fc5f7cdb1d9ffa2a5ca95141f229b08fdb01"
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunReservation.ts",
+      "sha256": "d4eb3403f2d392195c998c6bc3413441cf4e16146a4b541ea8801600732ecfdd"
+    },
+    {
+      "path": "lib/workforce/pipelines/extractStageTelemetry.ts",
+      "sha256": "917c338f01efcf83aee9e0fa0d4a5ab0dbac059e3cd8ec851204841bb750ea8e"
+    },
+    {
+      "path": "lib/workforce/pipelines/pipelineRunner.ts",
+      "sha256": "fcda7302e01f8e4077551415a7340c4b69ec5c2783622e432017fce895270a4c"
+    },
+    {
+      "path": "lib/workforce/pipelines/stageExecutorRegistry.ts",
+      "sha256": "21902285dfce2b1817c89f6608590b32b124b3fe0ee937e0326dd8c617110504"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "c5c85e99016be6752308be8c60c550a44221abe572030a9ed783a3f6764c0377"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "review-green-runner.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "review-green.log",
+      "sha256": "077b2b47d5f29ea51c69c9170e39a2b94f0e90cdf07accb1c39e8eb1788e28f3"
+    },
+    {
+      "path": "review-red-runner.log",
+      "sha256": "b02606182159f4a2a9617eff0e102a406055f422ef47b7aedf40f60bb0f6b8cb"
+    },
+    {
+      "path": "review-red.log",
+      "sha256": "52ca773351b6fc177eb4b9aeafad11d713d6660ccef5599359eb3ad9af608f65"
+    },
+    {
+      "path": "review-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "sdk/owned-pg-location.json",
+      "sha256": "744cb5b3565fb131f474bf0b08d5e145f1298d332c762dd67fc5e7319757e0b8"
+    },
+    {
+      "path": "sdk/owned-pg.log",
+      "sha256": "2de7318317032f08898c50e89b60a982a6167bb7334f52d8e1107c299c197356"
+    },
+    {
+      "path": "sdk/run-owned-sdk-pg.py",
+      "sha256": "f58d890b82c7970cbe1a56a3707ab3fffb21ed0e284021d66ec84e503d7b17ac"
+    },
+    {
+      "path": "sdk/runner.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "sdk/tsconfig.json",
+      "sha256": "a354712be1b5de820d5f43dca04efc3f6edfffa248a2983f8e4971752b8ce806"
+    },
+    {
+      "path": "sdk/types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "sdk/vitest.config.mjs",
+      "sha256": "12d9f928ae31e8c54642f799e16ebac8082c8b1f64dd51761c5d45e0ba93e9c9"
+    }
+  ]
+}

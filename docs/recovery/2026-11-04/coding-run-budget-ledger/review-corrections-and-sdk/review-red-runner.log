@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/private/tmp/axiom-a7-run-budget-evidence/run-owned-pg.py", line 31, in <module>
+    run([node,'node_modules/vitest/vitest.mjs','run','--config',evidence/'pg-vitest.config.mjs','--configLoader','native','--reporter','verbose'])
+  File "/private/tmp/axiom-a7-run-budget-evidence/run-owned-pg.py", line 17, in run
+    if check and r.returncode:raise RuntimeError('owned fixture command failed')
+RuntimeError: owned fixture command failed

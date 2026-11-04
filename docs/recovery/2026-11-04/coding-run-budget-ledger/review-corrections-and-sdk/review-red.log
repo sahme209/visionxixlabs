@@ -1,0 +1,166 @@
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/initdb", "-D", "/private/tmp/axiom-budget-pg-ni9pkg11/data", "-U", "budget_fixture", "--locale=C", "--encoding=UTF8", "--auth-local=trust", "--auth-host=reject"]
+The files belonging to this database system will be owned by user "samirahmed".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory /private/tmp/axiom-budget-pg-ni9pkg11/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    '/opt/homebrew/opt/postgresql@17/bin/pg_ctl' -D /private/tmp/axiom-budget-pg-ni9pkg11/data -l logfile start
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-ni9pkg11/data", "-l", "/private/tmp/axiom-budget-pg-ni9pkg11/server.log", "-o", "-p 55439 -k /private/tmp/axiom-budget-pg-ni9pkg11/socket -c listen_addresses='' -c unix_socket_permissions=0700", "-w", "start"]
+waiting for server to start.... done
+server started
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-d", "postgres", "-At", "-c", "SELECT current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+budget_fixture||/private/tmp/axiom-budget-pg-ni9pkg11/data
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/createdb", "-w", "axiom_budget_fixture"]
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-At", "-c", "SELECT current_database()||'|'||current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+axiom_budget_fixture|budget_fixture||/private/tmp/axiom-budget-pg-ni9pkg11/data
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/prisma/build/index.js", "db", "push", "--schema", "/private/tmp/axiom-a7-run-budget-evidence/schema.prisma", "--skip-generate"]
+Prisma schema loaded from ../axiom-a7-run-budget-evidence/schema.prisma
+Datasource "db": PostgreSQL database "axiom_budget_fixture", schema "public" at "localhost:55439"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 206ms
+
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", "/private/tmp/axiom-a7-run-budget-evidence/pg-vitest.config.mjs", "--configLoader", "native", "--reporter", "verbose"]
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mactual code_propose refuses default1000 reservation against authoritative500 run cap before manager dispatch[32m 12[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mcaller strings alone cannot admit a paid coding call even with sufficient saved budget[32m 4[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mactual CAS issues once; duplicate queued claim cannot manufacture another handle[32m 3[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22madmits exact hold boundary and keeps pending first estimate when refusing refinement[32m 17[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mindependent concurrent phase admissions cannot consume the same run allowance[32m 15[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mseparate initial and refinement each admit once and use distinct holds[32m 24[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrechecks cancel before dispatch and retains both reserved ledgers[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrechecks tighten before dispatch and retains both reserved ledgers[32m 8[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrechecks member before dispatch and retains both reserved ledgers[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrechecks model before dispatch and retains both reserved ledgers[32m 5[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22munknown dispatch cannot release, expire, or replay and retains full allowance[32m 9[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22msettles exact provider cost separately from billed margin once without stage display double-counting[32m 14[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mmismatched generation leaves both linked ledgers pending[32m 9[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrecords full provider over-estimate, clips customer debit, and blocks later paid calls[32m 12[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlegacy safe predispatch void releases both ledgers and phase remains terminal[32m 8[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mpublic safe predispatch void releases both ledgers and phase remains terminal[32m 18[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mv2 safe predispatch void releases both ledgers and phase remains terminal[32m 13[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlegacy workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mpublic workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 8[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mv2 workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 10[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlegacy reserved coding capacity survives expiry sweep by another workspace admission[32m 5[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mcorrupt released ownership/dispatch/usage never vanishes from authoritative exposure[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mdefault refusal is the authoritative run cap, while the same manager seam is reachable with larger saved budget[32m 11[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mdispatch transaction abort cannot claim only one ledger[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlegacy settlement commits companion/workspace/usage together and provider cost remains separate[32m 14[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mpublic settlement commits companion/workspace/usage together and provider cost remains separate[32m 16[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mv2 settlement commits companion/workspace/usage together and provider cost remains separate[32m 26[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mcompeting distinct stage refinements serialize against the same run cap[32m 23[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22msafe void transaction abort cannot release only workspace capacity[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mactual runner completion cannot overwrite a cost settled before the executor returns with pending display zero[32m 107[2mms[22m[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mpublic enrollment cannot expire the workspace half of an aged reserved coding hold[32m 9[2mms[22m[39m
+[31m   → expected { error: null, …(2) } to deeply equal { …(3) }[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlate settlement replaces already-terminal pending cost detail and preserves unrelated detail[32m 12[2mms[22m[39m
+[31m   → expected { …(20) } to match object { status: 'succeeded', …(2) }
+(17 matching properties omitted from actual)[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m30 passed[39m[22m[90m (32)[39m
+[2m   Start at [22m 11:49:45
+[2m   Duration [22m 779ms[2m (transform 205ms, setup 0ms, import 204ms, tests 497ms, environment 0ms)[22m
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mpublic enrollment cannot expire the workspace half of an aged reserved coding hold
+[31m[1mAssertionError[22m: expected { error: null, …(2) } to deeply equal { …(3) }[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "companion": "reserved",[22m
+[32m-   "error": "legacy_ai_reconciliation_required",[39m
+[32m-   "workspace": "reserved",[39m
+[31m+   "error": null,[39m
+[31m+   "workspace": "expired",[39m
+[2m  }[22m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m265:72[22m[39m
+    [90m263|[39m  const workspace=await f.db.aIUsageReservation.findUniqueOrThrow({wher…
+    [90m264|[39m  const companion=await f.db.pipelineAICallReservation.findUniqueOrThro…
+    [90m265|[39m  expect({error,workspace:workspace.status,companion:companion.status})…
+    [90m   |[39m                                                                        [31m^[39m
+    [90m266|[39m })[33m;[39m
+    [90m267|[39m it('late settlement replaces already-terminal pending cost detail and …
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlate settlement replaces already-terminal pending cost detail and preserves unrelated detail
+[31m[1mAssertionError[22m: expected { …(20) } to match object { status: 'succeeded', …(2) }
+(17 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "costCents": 10,[22m
+[2m    "outputDetail": {[22m
+[2m      "cost": {[22m
+[32m-       "pendingSettlement": false,[39m
+[31m+       "pendingSettlement": true,[39m
+[2m        "recorded": true,[22m
+[32m-       "totalCents": 10,[39m
+[31m+       "totalCents": null,[39m
+[2m      },[22m
+[2m      "retained": "synthetic detail",[22m
+[2m    },[22m
+[2m    "status": "succeeded",[22m
+[2m  }[22m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m273:16[22m[39m
+    [90m271|[39m  [35mawait[39m [34msettle[39m(event[33m,[39m[34m10[39m)[33m;[39m
+    [90m272|[39m  const stage=await f.db.pipelineStageRun.findUniqueOrThrow({where:{id:…
+    [90m273|[39m  expect(stage).toMatchObject({status:'succeeded',costCents:10,outputDe…
+    [90m   |[39m                [31m^[39m
+    [90m274|[39m })[33m;[39m
+    [90m275|[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+EXIT 1
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-ni9pkg11/data", "status"]
+pg_ctl: server is running (PID: 67148)
+/opt/homebrew/Cellar/postgresql@17/17.11_1/bin/postgres "-D" "/private/tmp/axiom-budget-pg-ni9pkg11/data" "-p" "55439" "-k" "/private/tmp/axiom-budget-pg-ni9pkg11/socket" "-c" "listen_addresses=" "-c" "unix_socket_permissions=0700"
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-ni9pkg11/data", "-m", "fast", "-w", "stop"]
+waiting for server to shut down.... done
+server stopped
+
+EXIT 0

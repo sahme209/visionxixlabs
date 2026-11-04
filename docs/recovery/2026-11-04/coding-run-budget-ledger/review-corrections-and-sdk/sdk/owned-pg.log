@@ -1,0 +1,105 @@
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/initdb", "-D", "/private/tmp/axiom-agent-chain-ddbq8up5/data", "-U", "agent_fixture", "--locale=C", "--encoding=UTF8", "--auth-local=trust", "--auth-host=reject"]
+The files belonging to this database system will be owned by user "samirahmed".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory /private/tmp/axiom-agent-chain-ddbq8up5/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    '/opt/homebrew/opt/postgresql@17/bin/pg_ctl' -D /private/tmp/axiom-agent-chain-ddbq8up5/data -l logfile start
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-agent-chain-ddbq8up5/data", "-l", "/private/tmp/axiom-agent-chain-ddbq8up5/server.log", "-o", "-p 5432 -k /private/tmp/axiom-agent-chain-ddbq8up5/socket -c listen_addresses='' -c unix_socket_permissions=0700", "-w", "start"]
+waiting for server to start.... done
+server started
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-d", "postgres", "-At", "-c", "SELECT current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+agent_fixture||/private/tmp/axiom-agent-chain-ddbq8up5/data
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/createdb", "-w", "axiom_agent_fixture"]
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-At", "-c", "SELECT current_database()||'|'||current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+axiom_agent_fixture|agent_fixture||/private/tmp/axiom-agent-chain-ddbq8up5/data
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/prisma/build/index.js", "db", "push", "--schema", "/private/tmp/axiom-a7-run-budget-evidence/schema.prisma", "--skip-generate"]
+Prisma schema loaded from ../axiom-a7-run-budget-evidence/schema.prisma
+Datasource "db": PostgreSQL database "axiom_agent_fixture", schema "public" at "localhost:5432"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 212ms
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-v", "ON_ERROR_STOP=1", "--file", "/private/tmp/axiom-a7-run-budget-20261104/ops/recovery/20261022_public_billing_v1.sql"]
+BEGIN
+SET
+SET
+DO
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE INDEX
+CREATE INDEX
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+CREATE FUNCTION
+CREATE TRIGGER
+COMMIT
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", "/private/tmp/axiom-a7-run-budget-evidence/sdk/vitest.config.mjs", "--configLoader", "native", "--reporter", "verbose"]
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [32m✓[39m lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts[2m > [22mcoding proposal → admitted manager → installed SDK → actual PostgreSQL[2m > [22mrecords one hold and usage before returning a valid patch; same-stage replay cannot dispatch again[32m 38[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts[2m > [22mcoding proposal → admitted manager → installed SDK → actual PostgreSQL[2m > [22muses two separately accounted reservations for a successful refinement[32m 21[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts[2m > [22mcoding proposal → admitted manager → installed SDK → actual PostgreSQL[2m > [22mstops refinement when the real workspace policy is disabled after the first dispatch[32m 12[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts[2m > [22mcoding proposal → admitted manager → installed SDK → actual PostgreSQL[2m > [22mrefuses a Free pool smaller than the generic coding reservation before SDK dispatch[32m 11[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts[2m > [22mcoding proposal → admitted manager → installed SDK → actual PostgreSQL[2m > [22mrefuses legacy machine labels without charging a workspace owner[32m 3[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts[2m > [22mcoding proposal → admitted manager → installed SDK → actual PostgreSQL[2m > [22mretains an uncertain dispatch hold and refuses replay after a transport failure[32m 11[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts[2m > [22mcoding proposal → admitted manager → installed SDK → actual PostgreSQL[2m > [22mfails a still malformed refinement while keeping both completed attempts accounted[32m 17[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts[2m > [22mcoding proposal → admitted manager → installed SDK → actual PostgreSQL[2m > [22mrefuses refinement when the selected model changes after initial generation[32m 11[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m8 passed[39m[22m[90m (8)[39m
+[2m   Start at [22m 11:52:11
+[2m   Duration [22m 427ms[2m (transform 131ms, setup 0ms, import 205ms, tests 143ms, environment 0ms)[22m
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-agent-chain-ddbq8up5/data", "status"]
+pg_ctl: server is running (PID: 67559)
+/opt/homebrew/Cellar/postgresql@17/17.11_1/bin/postgres "-D" "/private/tmp/axiom-agent-chain-ddbq8up5/data" "-p" "5432" "-k" "/private/tmp/axiom-agent-chain-ddbq8up5/socket" "-c" "listen_addresses=" "-c" "unix_socket_permissions=0700"
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-agent-chain-ddbq8up5/data", "-m", "fast", "-w", "stop"]
+waiting for server to shut down.... done
+server stopped
+
+EXIT 0
