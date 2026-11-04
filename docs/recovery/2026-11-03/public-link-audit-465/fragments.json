@@ -1,0 +1,47 @@
+{
+  "scope": "seven discovered fragment destinations in source465 guarded local HTML; not browser navigation or focus acceptance",
+  "results": [
+    {
+      "path": "/demo",
+      "fragment": "product-tour",
+      "httpStatus": 200,
+      "presentInServerHTML": true
+    },
+    {
+      "path": "/docs/approval-workflow",
+      "fragment": "execution",
+      "httpStatus": 200,
+      "presentInServerHTML": true
+    },
+    {
+      "path": "/docs/integration-setup",
+      "fragment": "states",
+      "httpStatus": 200,
+      "presentInServerHTML": true
+    },
+    {
+      "path": "/download",
+      "fragment": "downloads",
+      "httpStatus": 200,
+      "presentInServerHTML": true
+    },
+    {
+      "path": "/support",
+      "fragment": "vision",
+      "httpStatus": 200,
+      "presentInServerHTML": true
+    },
+    {
+      "path": "/support",
+      "fragment": "join",
+      "httpStatus": 200,
+      "presentInServerHTML": true
+    },
+    {
+      "path": "/support",
+      "fragment": "sponsorship",
+      "httpStatus": 200,
+      "presentInServerHTML": true
+    }
+  ]
+}

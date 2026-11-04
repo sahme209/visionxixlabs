@@ -647,3 +647,8 @@ Local supplier/pipe/consumer/initializer preparation jointly links and the exact
 ## November 3 — trusted-installer design refinement
 
 User approved specification only. Four separately approved Apple source reads rejected the proposed ACL-object constructor and simple prompt-free recipe before implementation. The [corrected candidate](../recovery/2026-11-03/compiled-consumer-authority-bridge/synthetic-custodian-installation-policy-spec.md) and [composed boundary decision](../recovery/2026-11-03/compiled-consumer-authority-bridge/composed-custodian-boundary-decision.md) preserve full custody/compiled/fleet requirements. Effective supported OS policy and pre-main installed integrity remain unresolved; gatefalse/businessunmounted. No Keychain/service/provisioning action occurred.
+
+
+## November 3 — internal repository support draft
+
+One structured [nested repository-control draft](documentation-coverage/articles/repository-editor-nested-controls.r1.json),9 exact source files and7 explicitly proposed-not-executed evaluation cases passed the unchanged validator; customer mode intentionally rejects the internal/unapproved/local-preview bundle. Independent source review passed. No editorial/media/release acceptance, customer ingestion or executed retrieval is inferred. B4/B5 remain In Progress. Local link evidence also confirms seven discovered server-HTML fragment IDs; browser/focus/scroll acceptance remains open.
