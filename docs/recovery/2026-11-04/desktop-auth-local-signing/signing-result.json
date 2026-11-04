@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/usr/bin/codesign",
+    "--sign",
+    "4C2E59F247CA275001586AE020A9269464529452",
+    "--options",
+    "runtime",
+    "--timestamp=none",
+    "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-auth-signed-1pyabsch/Axiom Agent Local Preview.app"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.255,
+  "stdout": "",
+  "stderr": "",
+  "processReaped": true,
+  "launched": false,
+  "newGrantOrPromptApproved": false,
+  "automaticRetry": false
+}

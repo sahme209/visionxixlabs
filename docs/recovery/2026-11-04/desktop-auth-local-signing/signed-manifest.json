@@ -1,0 +1,41 @@
+{
+  "sourceRuntime": "91651299c36baefdec5108a9895adf588cb7a298",
+  "existingLeafSHA1": "4C2E59F247CA275001586AE020A9269464529452",
+  "signedApp": "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-auth-signed-1pyabsch/Axiom Agent Local Preview.app",
+  "signedBinarySha256": "4189cf227953b13d83bc257bd57a657c13ed37e2cbb3117de3a5d0b4390e418d",
+  "unsignedBinarySha256": "fd3e51a064a3fb61a50f5a2aba3c7f650f2f295d8d9dca421e6789c61924a73c",
+  "signatureVerification": [
+    {
+      "args": [
+        "--verify",
+        "--strict",
+        "--deep",
+        "--verbose=2"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-auth-signed-1pyabsch/Axiom Agent Local Preview.app: valid on disk\n/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-auth-signed-1pyabsch/Axiom Agent Local Preview.app: satisfies its Designated Requirement\n"
+    },
+    {
+      "args": [
+        "-d",
+        "--verbose=4"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "Executable=/private/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-auth-signed-1pyabsch/Axiom Agent Local Preview.app/Contents/MacOS/axiom-desktop\nIdentifier=com.visionxixlabs.axiom\nFormat=app bundle with Mach-O thin (arm64)\nCodeDirectory v=20500 size=104131 flags=0x10000(runtime) hashes=3247+3 location=embedded\nVersionPlatform=1\nVersionMin=720896\nVersionSDK=1705216\nHash type=sha256 size=32\nCandidateCDHash sha256=cbe446f1906611778c6b5fcb33b4e5a4027983db\nCandidateCDHashFull sha256=cbe446f1906611778c6b5fcb33b4e5a4027983db9ac900379888ff5cfa60fa58\nHash choices=sha256\nCMSDigest=cbe446f1906611778c6b5fcb33b4e5a4027983db9ac900379888ff5cfa60fa58\nCMSDigestType=2\nExecutable Segment base=0\nExecutable Segment limit=24199168\nExecutable Segment flags=0x1\nPage size=16384\nCDHash=cbe446f1906611778c6b5fcb33b4e5a4027983db\nSignature size=4680\nAuthority=Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W)\nAuthority=Developer ID Certification Authority\nAuthority=Apple Root CA\nSigned Time=Nov 4, 2026 at 18:58:24\nInfo.plist entries=15\nTeamIdentifier=FG5N98FE6W\nRuntime Version=26.5.0\nSealed Resources version=2 rules=13 files=1\nInternal requirements count=1 size=184\nTotal signatures=1\nChosen signature=1\n"
+    }
+  ],
+  "archive": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/native-auth-91651299/Axiom-Agent-Local-Preview-91651299.signed-unlaunched.zip",
+  "archiveBytes": 12579844,
+  "archiveSha256": "3ad918cb0353e7b13093ef1d44387782008fb4eaf42fec4c652b9ace9543016e",
+  "originalArchivePreserved": true,
+  "iconAndPlistUnchanged": true,
+  "timestampRequested": false,
+  "launched": false,
+  "installed": false,
+  "notarized": false,
+  "gatekeeperAccepted": false,
+  "sessionRestored": false,
+  "governanceQualified": false
+}

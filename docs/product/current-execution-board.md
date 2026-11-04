@@ -136,3 +136,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 coding fee evidence reconciliation
 ~~Four-read findings incorporated into the alternative proposal~~: [decision matrix](../proposals/coding-text-only-fee-qualification.md#evidence-disposition-after-the-approved-four-reads) now distinguishes direct-provider semantics from Gateway/installed transport and exposes that synthetic cache/region labels are not emitted enforcement. Existing SDK evidence is reused, not rerun. Strict contract unchanged; alternative unapproved, trusted pricing/input/output qualification and production quotes remain unavailable. No additional external reads, financial/runtime change or spending.
+
+### November4 current local desktop signature
+~~Existing-identity current debug preview signing~~: one exact-public-leaf-selected Developer-ID invocation succeeded; strict deep signature verification and TeamFG5/compiled identifier match. [Receipt](../recovery/2026-11-04/desktop-auth-local-signing/README.md). Signed and unsigned recovery archives preserved separately; existing apps/drafts untouched. Not launched/installed/notarized or Gatekeeper/session/native/Governance accepted. Controlled startup remains next, with shared-storage migration and current-work preservation explicit.
