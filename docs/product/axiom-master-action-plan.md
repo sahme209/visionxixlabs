@@ -17,6 +17,10 @@ A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-targe
 
 ~~Admin telemetry distinguishes pending/unknown cost from final zero~~ (40 focused mockedhandler/pure checks, scopedtypes) and ~~Docs active-page semantics corrected~~ (4 existing DOMinteraction checks) are independently reviewed and locally integrated ([bounded review](../recovery/2026-11-04/last-credit-local-batch/REVIEW.md)). No new deployment/push, realDBsnapshot/provider/browser/AT or fullGovernance acceptance. Currentproduction/remotebackup remain the prior authorized batch. Coreavailabilityaudit identifies custody/issuer/resource/channel/coverage gates and no substantive approved core implementation shortcut. All15parents remain open.
 
+## November 4 approved quote research and pipeline source coverage
+
+~~Four authorized official documentation read attempts completed~~ ([findings](../recovery/2026-11-04/coding-quote-official-docs/FINDINGS.md)); one requested version6 URL redirected to current v7, so only three canonical destinations and no pinned-v6 qualification. Routing/pricing field terminology is clarified; live metadata, estimator/transport/billable bounds and useful-quote implementation remain unapproved/unqualified. ~~Registered pipeline controls source supplement reviewed and new-bundle validated~~ ([guide](knowledge/pipeline-workspace-controls.md)): five direct control families/22files/28ranges; ten cases proposed, no customer/media/editorial/actual runtime acceptance. All15parents remain open; no deployment/push or business-provider/AI actions.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains
