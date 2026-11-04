@@ -5,6 +5,8 @@
 #include "origin_private_bootstrap.h"
 #include <fcntl.h>
 #include <unistd.h>
+#include <libproc.h>
+#include <sys/proc_info.h>
 #include "origin_process_identity.h"
 #include "protected_resource_inventory.h"
 #include <node_api.h>
@@ -82,8 +84,9 @@ static napi_value consume_bootstrap(napi_env env,napi_callback_info info){
  /* Reservation is irreversible, including invalid calls and Node allocation
   * failures. It precedes the first read and every material-bearing Node value. */
  if(atomic_flag_test_and_set(&o->bootstrap_attempted)){revoke_origin(o);return refuse(env,"origin_bootstrap_consumed");}
+ struct pipe_fdinfo input_pipe;
  AxiomPrivateBinding binding={0};AxiomPrivateMaterial material={0};int ok=0;
- if(argc||!pthread_main_np()||atomic_load(&o->invalid)||fixed_process_failure(1)||!axiom_origin_identity_current(&o->startup)||!axiom_origin_session_locally_valid(o->session))goto done;
+ if(proc_pidfdinfo(getpid(),STDIN_FILENO,PROC_PIDFDPIPEINFO,&input_pipe,sizeof(input_pipe))!=(int)sizeof(input_pipe)||argc||!pthread_main_np()||atomic_load(&o->invalid)||fixed_process_failure(1)||!axiom_origin_identity_current(&o->startup)||!axiom_origin_session_locally_valid(o->session))goto done;
  if(atomic_flag_test_and_set(&o->busy))goto done;
  int current=axiom_origin_session_assert(o->session);atomic_flag_clear(&o->busy);if(!current)goto done;
  if(!axiom_origin_session_bootstrap_binding(o->session,&binding.epoch,&binding.deadline,binding.client,binding.broker)||!axiom_private_frame_read(STDIN_FILENO,&binding,&material))goto done;

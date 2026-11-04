@@ -20,7 +20,7 @@ static int closed_stdio(void){
  int seen[3]={0};
  for(size_t i=0;i<3;i++){
   int fd=list[i].proc_fd;if(fd<0||fd>2||seen[fd]++)return 0;struct stat item;int flags=fcntl(fd,F_GETFL);if(flags<0||fstat(fd,&item))return 0;
-  if(fd==0){if(list[i].proc_fdtype!=PROX_FDTYPE_PIPE||(flags&O_ACCMODE)!=O_RDONLY||!S_ISFIFO(item.st_mode)||item.st_nlink!=0)return 0;}
+  if(fd==0){if(list[i].proc_fdtype!=PROX_FDTYPE_PIPE||(flags&O_ACCMODE)!=O_RDONLY||!S_ISFIFO(item.st_mode))return 0;}
   else if(list[i].proc_fdtype!=PROX_FDTYPE_PIPE||(flags&O_ACCMODE)!=O_WRONLY||!S_ISFIFO(item.st_mode))return 0;
  }
  return seen[0]&&seen[1]&&seen[2];

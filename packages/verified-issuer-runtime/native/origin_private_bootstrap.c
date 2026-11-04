@@ -31,7 +31,7 @@ static int valid_header(const unsigned char*frame,const AxiomPrivateBinding*b){
 }
 int axiom_private_frame_read(int fd,const AxiomPrivateBinding*b,AxiomPrivateMaterial*m){
  unsigned char frame[AXIOM_PRIVATE_FRAME_CAP]={0};int ok=0;axiom_private_material_wipe(m);
- if(!b||!m||!b->epoch||now_ns()>=b->deadline)goto done;struct stat st;if(fstat(fd,&st)||!S_ISFIFO(st.st_mode)||st.st_nlink!=0)goto done;int flags=fcntl(fd,F_GETFL);if(flags<0||(flags&O_ACCMODE)!=O_RDONLY||fcntl(fd,F_SETFL,flags|O_NONBLOCK))goto done;
+ if(!b||!m||!b->epoch||now_ns()>=b->deadline)goto done;struct stat st;if(fstat(fd,&st)||!S_ISFIFO(st.st_mode))goto done;int flags=fcntl(fd,F_GETFL);if(flags<0||(flags&O_ACCMODE)!=O_RDONLY||fcntl(fd,F_SETFL,flags|O_NONBLOCK))goto done;
  if(!read_part(fd,frame,AXIOM_PRIVATE_FRAME_HEADER,b->deadline))goto done;
  uint32_t total=get32(frame+16),dsn=get32(frame+20),session=get32(frame+24);
  if(!valid_header(frame,b))goto done;
