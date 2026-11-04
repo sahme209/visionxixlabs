@@ -1,0 +1,45 @@
+{
+  "format": "axiom.master-plan-reconciliation/1",
+  "recorded_at": "2026-11-04T20:15:06.430421+00:00",
+  "master_path": "docs/product/axiom-master-action-plan.md",
+  "reconciled_source_commit": "a78473efbf443750c09169c827028809c607bf04",
+  "master_sha256": "21a93513fc32fdb7ce072ce259b88990966d56cb3b29205fe229a41a781b69c9",
+  "master_git_blob": "72d744620b3b78fbdc8dfb070691a8b8d8b5f201",
+  "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
+  "current_method": "B2 fully reread; requirement additions compared against09c12406 after prior complete847-line read; later implementation milestones remain scope-limited",
+  "open_parents": [
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
+    "A6",
+    "A7",
+    "A8",
+    "A9",
+    "B1",
+    "B2",
+    "B3",
+    "B4",
+    "B5",
+    "B6"
+  ],
+  "new_requirement": {
+    "reference": "https://prompt-motion.com",
+    "scope": "B2 marketing motion research/original concepts",
+    "state": "not visited, adopted, installed or qualified",
+    "acceptance": [
+      "original Axiom concepts, no copying",
+      "provenance and exact license review before any assets/code",
+      "approved CSS/GSAP/Motion for React only when justified",
+      "reduced-motion and accessibility",
+      "desktop/mobile performance and B6 real-browser evidence"
+    ],
+    "does_not_authorize": [
+      "installation",
+      "purchases",
+      "deployment"
+    ]
+  },
+  "future_check": "At each batch boundary compare current master bytes against checkpoint; read changed requirements and reconcile numbered board before selecting next work; preserve unexpected user edits before any plan write. No new scheduler."
+}
