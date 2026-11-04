@@ -2,6 +2,8 @@
 
 Updated November 3, 2026. Two coordinated workstreams. The user explicitly resumed after plan finalization; authorized local execution is active. Existing authorized local work and evidence are preserved. This document and the persistent goal are the working target; add future requests here rather than losing them in chat. Latest local-source recovery: [November2 guide](../recovery/2026-11-02/README.md); the October29 baseline remains preserved.
 
+[Compact current execution board](current-execution-board.md) summarizes all15parents and their gates; every detailed requirement below remains binding.
+
 <!-- PRIORITIZED_CHECKLIST_START -->
 ## Prioritized numbered checklist — November 3
 
@@ -702,3 +704,11 @@ No customer, editorial, media, runtime, ingestion or publication acceptance; all
 
 
 - [x] B4 bounded browser pairing source guide closes the native guide’s explicit browser-control inventory gap, with9exact source/range bindings and independent review. [Guide](knowledge/browser-desktop-pairing-controls.md). Full authentication/browser/live pairing/clean-host/customer acceptance remain open.
+
+
+## November4 — app-action knowledge batch and current execution board
+
+- [x] B4/B5 bounded Teams/Linear and Slack structured drafts added with8proposedcases each. Both newbundles pass unchangedofflineintegrity and correctly refuse customer mode;16unique sourcehashes each, preserved historical guides and independent source reviews. Cases are not executed retrieval; empty media/null editorial review/proposed IDs remain. [Teams/Linear](../recovery/2026-11-04/teams-linear-structured-knowledge/README.md), [Slack](../recovery/2026-11-04/slack-structured-knowledge-author/independent-review.md).
+- [x] Compact execution board retains every15parent and the full master scope; source/claim review does not requalify historical runtime evidence. [Current board](current-execution-board.md).
+
+All15parents remain open;10stored article revisions include history and are not10customer-approved documents. No publishing/runtime/Governance or current provider access acceptance.

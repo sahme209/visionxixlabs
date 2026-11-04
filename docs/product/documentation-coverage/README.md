@@ -96,3 +96,13 @@ For the human-readable source-guide queue, see the [internal task index](../know
 ## Outlook internal structured source draft (November4)
 
 [Outlook article revision1](articles/outlook-controls.r1.json) and [eight proposed evaluation cases](outlook-controls-evaluation.r1.json) preserve connection/read boundaries versus independently reviewed email/calendar actions and unknown/no-resend recovery.28unique source hashes checked;27historic ranges across25codefiles remain unchanged. Newbundleofflineintegrity passed; customer eligibility intentionally refused. These are source metadata and proposed cases, not accepted media, editorial review or executed retrieval. [Evidence](../../recovery/2026-11-04/outlook-structured-knowledge/README.md).
+
+
+## Teams/Linear internal structured source draft (November4)
+
+[Article revision1](articles/teams-linear-controls.r1.json) and [eight proposed cases](teams-linear-controls-evaluation.r1.json) distinguish genuine review, exact task/connection/target binding, requester execution once and unknown recovery. Newbundleintegrity passed; customer mode refused. These are source drafts, not executed retrieval/live-provider evidence. [Receipt](../../recovery/2026-11-04/teams-linear-structured-knowledge/README.md).
+
+
+## Slack internal structured source draft (November4)
+
+[Slack article revision1](articles/slack-reviewed-action-controls.r1.json) and [eight proposed cases](slack-reviewed-action-controls-evaluation.r1.json) retain exact task/connection binding, independent review, requester preparation/send once and unknown/no-resend limits.16source hashes/14ranges verified; historical guide preserved. Newbundleintegrity passed; customer mode refused. No executed retrieval or live Slack acceptance. [Review/evidence](../../recovery/2026-11-04/slack-structured-knowledge-author/independent-review.md).

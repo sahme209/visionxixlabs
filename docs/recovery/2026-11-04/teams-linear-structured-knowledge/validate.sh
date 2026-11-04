@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /private/tmp/axiom-b4-teams-linear-20261104 || exit 90
+exec /usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-b4-teams-linear-evidence TMPDIR=/private/tmp/axiom-b4-teams-linear-evidence NODE_ENV=test /usr/bin/sandbox-exec -f /private/tmp/axiom-b4-teams-linear-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node docs/product/documentation-coverage/validate-support-knowledge.cjs --root /private/tmp/axiom-b4-teams-linear-20261104 --article docs/product/documentation-coverage/articles/teams-linear-controls.r1.json --evaluation docs/product/documentation-coverage/teams-linear-controls-evaluation.r1.json --version local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4 "$@"
