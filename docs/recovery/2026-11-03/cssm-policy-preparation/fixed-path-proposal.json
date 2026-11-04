@@ -1,0 +1,10 @@
+{
+  "generation": "c3b7bf334ce56a64575183b7a66e5109",
+  "fixedPreparationSupervisorPath": "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/origin-broker",
+  "status": "unallocated_source_preparation_only",
+  "installationCreated": false,
+  "executionAuthorized": false,
+  "authority": false,
+  "note": "Nonsecret source-bound path proposal only. No filesystem entry/service/item exists or is authorized by this record; actual trusted installation allocation/provenance requires separate qualification.",
+  "pathExistsAtPreparation": false
+}

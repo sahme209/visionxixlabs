@@ -1,0 +1,89 @@
+{
+  "sourceRevision": "4087adb589d65d7e1165d29d17e6cab496bbf1fb",
+  "preview": "http://127.0.0.1:5214/__axiom_preview",
+  "buildReused": true,
+  "backendNoOutbound": true,
+  "backendNoFileWrites": true,
+  "environmentContainsOnlySyntheticCredentials": true,
+  "pages": [
+    {
+      "path": "/product",
+      "method": "GET",
+      "status": 200,
+      "source": "4087adb5",
+      "setCookie": false,
+      "sha256": "3b46496b894c8906859604b3597f965789004fd882a7103e385ddbc22eae831c",
+      "bytes": 84653
+    },
+    {
+      "path": "/integrations",
+      "method": "GET",
+      "status": 200,
+      "source": "4087adb5",
+      "setCookie": false,
+      "sha256": "5827cc7a89425adb1c9e4d34be15117e9d93a17d81e868378672d040ab5307d6",
+      "bytes": 77531
+    },
+    {
+      "path": "/security",
+      "method": "GET",
+      "status": 200,
+      "source": "4087adb5",
+      "setCookie": false,
+      "sha256": "c118827afd4f081535cb5d1032925a2776a481d974bf143d63d8251b014f67ae",
+      "bytes": 79190
+    },
+    {
+      "path": "/docs",
+      "method": "GET",
+      "status": 200,
+      "source": "4087adb5",
+      "setCookie": false,
+      "sha256": "3f184678481e75e23c432aba822c25b5afad74bca90248cbd65eee981ccf3ea7",
+      "bytes": 112969
+    }
+  ],
+  "exactLocalAssets": [
+    {
+      "path": "/_next/static/css/8aa9051b2ede5471.css",
+      "method": "GET",
+      "status": 200,
+      "source": "4087adb5",
+      "setCookie": false,
+      "sha256": "0644dface4f04b483b8c9ec63342fcb51e9bd2e7a5265e73e744c2971e09eb53",
+      "bytes": 210475
+    },
+    {
+      "path": "/_next/static/css/fd496917896bbbdc.css",
+      "method": "GET",
+      "status": 200,
+      "source": "4087adb5",
+      "setCookie": false,
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e",
+      "bytes": 5370
+    }
+  ],
+  "blocked": [
+    {
+      "path": "/api/auth/session",
+      "method": "GET",
+      "status": 403,
+      "source": "4087adb5",
+      "setCookie": false,
+      "sha256": "787a4671ae1285dd996777b87b92fd6946a72e20c46f3846da138b52723d19a2",
+      "bytes": 95
+    },
+    {
+      "path": "/api/actions",
+      "method": "POST",
+      "status": 403,
+      "source": "4087adb5",
+      "setCookie": false,
+      "sha256": "13f0b79e61798d6a53db5bca6677941dc3ac2b0c65e3a1b57904a71c3109addb",
+      "bytes": 36
+    }
+  ],
+  "browserVisualAcceptance": false,
+  "nativeAppsRestarted": false,
+  "deployment": false
+}
