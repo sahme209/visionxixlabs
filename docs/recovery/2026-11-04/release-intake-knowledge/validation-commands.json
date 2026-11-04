@@ -1,0 +1,54 @@
+{
+  "owned": "/private/tmp/axiom-intake-knowledge-qfabu09i",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/private/tmp/axiom-intake-knowledge-qfabu09i/home",
+    "TMPDIR": "/private/tmp/axiom-intake-knowledge-qfabu09i/tmp",
+    "XDG_CACHE_HOME": "/private/tmp/axiom-intake-knowledge-qfabu09i/cache",
+    "NODE_DISABLE_COMPILE_CACHE": "1",
+    "LANG": "C",
+    "TZ": "UTC"
+  },
+  "profile": "(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-intake-knowledge-qfabu09i\"))",
+  "results": [
+    {
+      "mode": "draft",
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-intake-knowledge-qfabu09i/validation.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--article",
+        "docs/product/documentation-coverage/articles/release-intake-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/release-intake-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:198214356d2633a6b32a7b64bfc9109d9d01e65e"
+      ],
+      "exit": 0,
+      "output": "{\n  \"valid\": true,\n  \"articleId\": \"axiom.help.releases.intake-controls\",\n  \"revision\": 1,\n  \"productVersion\": \"local-source-preview:198214356d2633a6b32a7b64bfc9109d9d01e65e\",\n  \"sourceFiles\": 9,\n  \"evaluationCases\": 16,\n  \"customerEligible\": false,\n  \"customerBlockers\": [\n    \"article_not_approved\",\n    \"article_not_public\",\n    \"local_preview_not_shipped\"\n  ],\n  \"evaluationStatus\": \"proposed-not-executed\"\n}\n"
+    },
+    {
+      "mode": "customer",
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/private/tmp/axiom-intake-knowledge-qfabu09i/validation.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--article",
+        "docs/product/documentation-coverage/articles/release-intake-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/release-intake-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:198214356d2633a6b32a7b64bfc9109d9d01e65e",
+        "--customer"
+      ],
+      "exit": 1,
+      "output": "Support knowledge validation failed: customer retrieval ineligible: article_not_approved, article_not_public, local_preview_not_shipped\n"
+    }
+  ],
+  "retrievalOrEvaluationExecuted": false,
+  "frozen24DatasetTouched": false
+}

@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.releases.intake-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "sourceFiles": 9,
+  "evaluationCases": 16,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

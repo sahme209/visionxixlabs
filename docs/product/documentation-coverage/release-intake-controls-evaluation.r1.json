@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.releases.intake-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "articleSha256": "8a51174367818e24cd6c192fd0e32ea43ff6928081dcfa51271decc845cf7471",
+  "status": "proposed-not-executed",
+  "scope": "Proposed offline response/citation criteria only. No retrieval/model execution, genuine reviewer authority, customer eligibility or extension of the frozen24record evaluation.",
+  "cases": [
+    {
+      "id": "intake-source-ids",
+      "question": "Can I query these52help IDs as app field selectors?",
+      "requiredResponse": "No. The52releases.intake.* identifiers are documentation source-callsite IDs only; the screen ID is proposed. No DOM field identity, navigation or runtime coverage follows.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-approval-assertions",
+      "question": "Production ready and PR approval say approved. May I deploy?",
+      "requiredResponse": "No. releases.intake.production-ready, development-ready, pr-approval-status and no-pr-required record assertions. No independent decision, provider permission or policy waiver is created; downstream current exact checks and genuine review remain separate.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-contact-authority",
+      "question": "Does selecting a validation owner or entering deployment owner grant access?",
+      "requiredResponse": "No. releases.intake.deployment-contact, application-contact, escalation-contact and validation-owner record responsibility/contact text or categories; verify current actual identity/access separately.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-timezone",
+      "question": "Will choosing ET convert Window start from UTC?",
+      "requiredResponse": "No. releases.intake.window-start/window-end use machine-local date parsing and UTC conversion. releases.intake.display-time-zone is a separate label; clarify the intended zone/instant rather than inventing an offset, DST interpretation or ordering validation.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-manual-whitespace",
+      "question": "Why do manual owner fields appear for a blank-looking instruction?",
+      "requiredResponse": "releases.intake.manual-instruction raw truthiness controls visibility, including whitespace. Validation/serialization use trimmed nonempty text; recording a planned step never runs it or creates completed evidence.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-workflow-ref",
+      "question": "Is Workflow source ref the same stored draft field as Source branch?",
+      "requiredResponse": "No. releases.intake.workflow-ref is separate local state; blank falls back to releases.intake.source-branch. Only matching current-context observed workflowSource is included. No dispatch permission follows.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-required",
+      "question": "Does a required Repository URLs field prove access and valid PR approval?",
+      "requiredResponse": "No. HTML required, local trimmed presence checks and server acceptance differ. releases.intake.repository-urls and production-pr-urls do not establish URL syntax, current provider access or genuine independent review.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-deferred-validation",
+      "question": "Does checking Validation must be deferred schedule the follow-up and connect monitoring?",
+      "requiredResponse": "No. releases.intake.deferred-validation exposes proposed reason/trigger/date/owner/monitoring-plan fields; these neither approve deferral nor create scheduling/monitoring execution.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-recovery-proof",
+      "question": "Does Rollback availability yes plus Backup required verify recovery?",
+      "requiredResponse": "No. releases.intake.rollback-availability/instruction/owner and backup-required/evidence-ids are recorded plans/assertions/citations, not executed recovery, a backup or validation of evidence.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-captured-pending",
+      "question": "Can I edit the form after pressing Submit while it is Saving?",
+      "requiredResponse": "Release intake fields are disabled while pending. Synchronous update/submit guards preserve the captured payload and refuse duplicate submission; this is local UI behavior, not a new authority or durable idempotency guarantee.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-leave-pending",
+      "question": "I clicked Cancel intake during Saving. Is the save cancelled and safe to resend?",
+      "requiredResponse": "No. Leaving does not cancel or establish failure. The departed form cannot close a replacement via late success. Read intended saved requests/version; an unavailable record is not permission to replay. Escalate unresolved outcome; no automatic retry or durable recovery promise.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-revise",
+      "question": "Does Save revision deploy or modify the historical saved version?",
+      "requiredResponse": "No. The existing create/revise path records Axiom intake/version history with current request/version checks. It does not deploy, create a native ticket, independently approve or rewrite old saved history.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-unsupported-controls",
+      "question": "Do these52fields document every dynamic workflow input and batch control?",
+      "requiredResponse": "No. Imported WorkflowDefinitionInputs/WorkflowCatalogue/ReleaseBatchSelection internals are excluded; their issues can still block submission. Disclose missing applicable guidance rather than inventing source IDs or behavior.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-installed-version",
+      "question": "Does this source preview prove these fields exist in my installed app?",
+      "requiredResponse": "No. Exact source-only local preview does not establish shipped availability or native/media/editorial acceptance. Request the installed version and separately verified applicable release/runtime evidence; customer-approved evidence remains unavailable.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-evaluation-scope",
+      "question": "Did adding this article pass or extend the pending24recordretrieval evaluation?",
+      "requiredResponse": "No. The moving canonical article dataset changes, but frozen24snapshots/manifests and their specific approval remain separate. These cases are proposed-not-executed; no retrieval/model/customer result follows.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    },
+    {
+      "id": "intake-confirmed-fact",
+      "question": "Does the saved confirmed fact classification prove the evidence or the named confirmer independently approved it?",
+      "requiredResponse": "No. releases.intake.confirmed-fact, source-evidence-id and fact-confirmed-by are user-supplied inputs. The saved confirmed classification is not external fact/evidence validation, verified identity or an independent approval record. Use separately verified evidence and genuine review.",
+      "requiredCitation": "axiom.help.releases.intake-controls revision1, exact bound local-source-preview and relevant releases.intake.* control(s), with docs/product/knowledge/releases-intake-fields.md and its pinned source inventory; internal source inspection only. Customer answers must disclose approved applicable evidence is unavailable until genuine current-version editorial/release validation."
+    }
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "format": "axiom.master-plan-reconciliation/1",
-  "recorded_at": "2026-11-04T22:12:19.764536+00:00",
+  "recorded_at": "2026-11-04T22:23:22.944727+00:00",
   "master_path": "docs/product/axiom-master-action-plan.md",
-  "master_sha256": "3fce148be8799a72649df03464b0e091011a645cfa69ca9833495c0c9fc4962d",
-  "master_git_blob": "932471dd6db290c8adb7b70e051ef0252827df68",
+  "master_sha256": "7841c165ac8c44c395b02ce0827e6923b572fc12062dd382555f03eda7116a51",
+  "master_git_blob": "e2f07f12f6f19bea27c32c3eef9623826c63fcd3",
   "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
-  "current_method": "User-added C1\u2013C6 fully reconciled and preserved; known named-field/requalified-source milestone appended. Existing15A/B open and six C future items retained.",
+  "current_method": "Exact single GetLayers user insertion reconciled; prior A/B and future C scope preserved.",
   "open_parents": [
     "A1",
     "A2",
@@ -55,5 +55,17 @@
     "stage": "future phased; Phase0 specification only alongside B4/B5",
     "permission": "no new spending/credentials/provider/privileged/deploy/communications authorization",
     "evidence": "docs/recovery/2026-11-04/master-workstream-c-reconciliation/receipt.json"
+  },
+  "getlayers_requirement": {
+    "scope": "B2 public reference evaluation; no adoption",
+    "state": "four official text pages reviewed; visual/browser and commercial license acceptance open",
+    "evidence": "docs/recovery/2026-11-04/getlayers-reference-reconciliation/receipt.json",
+    "does_not_authorize": [
+      "account connection",
+      "remote MCP installation",
+      "purchases",
+      "unreviewed assets/code import",
+      "deployment"
+    ]
   }
 }

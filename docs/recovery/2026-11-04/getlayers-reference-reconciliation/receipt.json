@@ -1,0 +1,12 @@
+{
+  "authority": "new explicit B2 GetLayers reference-evaluation instruction; no broader provider authority",
+  "masterBeforeSha256": "3fce148be8799a72649df03464b0e091011a645cfa69ca9833495c0c9fc4962d",
+  "masterAfterSha256": "7841c165ac8c44c395b02ce0827e6923b572fc12062dd382555f03eda7116a51",
+  "additionSha256": "456eded9cd7b9966fa5468068bd9efe081d5cd2cd7ff2a34572f6ef678aadc15",
+  "exactSingleInsertionVerified": true,
+  "uniqueOfficialTextPages": 4,
+  "interactiveOrVisualAcceptance": false,
+  "licenseClearance": "unresolved; homepage/pricing wording mismatch, no selected asset",
+  "adoption": false,
+  "noAccountMcpInstallationImportPurchaseDeployment": true
+}

@@ -1,0 +1,46 @@
+{
+  "status": "new internal source-only draft; no customer authority",
+  "article": {
+    "path": "docs/product/documentation-coverage/articles/release-intake-controls.r1.json",
+    "sha256": "8a51174367818e24cd6c192fd0e32ea43ff6928081dcfa51271decc845cf7471",
+    "id": "axiom.help.releases.intake-controls",
+    "revision": 1,
+    "sourceControlIds": 52,
+    "steps": 56,
+    "sources": 9
+  },
+  "evaluation": {
+    "path": "docs/product/documentation-coverage/release-intake-controls-evaluation.r1.json",
+    "sha256": "ffa46baccc5e2d7e1bbc5557e5098ce70f66992d11f20065cea344695604d4df",
+    "proposedCases": 16,
+    "status": "proposed-not-executed",
+    "executed": false
+  },
+  "sourceVersion": "local-source-preview:198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "runtimeSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
+  "guideCommit": "96818a94",
+  "exactSourceIdOrderMatchesInventory": true,
+  "verification": {
+    "kind": "source-only",
+    "verifiedAt": null,
+    "reviewer": null,
+    "reviewedAt": null,
+    "media": []
+  },
+  "draftValidation": {
+    "exit": 0,
+    "valid": true,
+    "customerEligible": false
+  },
+  "customerValidation": {
+    "exit": 1,
+    "expectedBlockers": [
+      "article_not_approved",
+      "article_not_public",
+      "local_preview_not_shipped"
+    ]
+  },
+  "validationScope": "Existing standalone schema/source/hash/version/evaluation-format validator only, with scrubbed env/private cache/kernel network and outside-write denial. No proposed response cases, retrieval, AI, pipeline test or customer/editorial validation executed.",
+  "datasetBoundary": "New canonical article changes moving article-directory dataset. Frozen24 worktree/snapshots/manifests were not touched or evaluated. No old evaluation approval/result/count reused. Root separately owns preservation evidence.",
+  "preserved": "Existing article revisions, indexes, master, registry and runtime unchanged. No provider/DB/native/build/CI/deployment/commit."
+}
