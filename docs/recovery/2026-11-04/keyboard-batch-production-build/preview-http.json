@@ -1,0 +1,52 @@
+{
+  "sourceRevision": "002de65126b5b1c1fbd7e1cc3600ece5bdb274e9",
+  "url": "http://127.0.0.1:5222/__axiom_preview",
+  "browserAccepted": false,
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 103174
+    },
+    {
+      "path": "/product",
+      "status": 200,
+      "bytes": 84967
+    },
+    {
+      "path": "/demo",
+      "status": 200,
+      "bytes": 78891
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "bytes": 113283
+    },
+    {
+      "path": "/_next/static/css/532cba65621fdb11.css",
+      "sha256": "0b1fba9092923810f92d0bac777389ba34903307040bef94c700d40c23bc79e7",
+      "status": 200
+    },
+    {
+      "path": "/_next/static/css/fd496917896bbbdc.css",
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e",
+      "status": 200
+    },
+    {
+      "path": "/api/desktop/access",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/auth/signin",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/",
+      "method": "POST",
+      "status": 403
+    }
+  ]
+}

@@ -678,3 +678,10 @@ All A1–A9/B1–B6 parents remain open. Pending exact Governance experiment app
 - A4 bounded Bot draft source audit found no further concrete issue; exact inspected ranges retained [here](../recovery/2026-11-04/bot-draft-source-audit/README.md), not full usability acceptance.
 
 All15A1–A9/B1–B6 parents remain open; no production or Governance activation inferred.
+
+
+## November4 — combined production build and local preview
+
+- [x] B6 bounded exact-source build:002de651 offline preparation/generation/production TypeScript/output checks passed, executionAuthorizedfalse. Guarded preview [5222](http://127.0.0.1:5222/__axiom_preview):fourpages/twoexactCSS/three403checks. [Receipt](../recovery/2026-11-04/keyboard-batch-production-build/README.md). No browser/native/Governance activation or production acceptance.
+
+All15parents remain open.
