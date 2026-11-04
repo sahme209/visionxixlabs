@@ -1,6 +1,6 @@
 # Local Governance document replacement: design only
 
-Exact base and source hashes are in `governance-document-replacement.sources.json`; the wire DTO is in `governance-document-head-replacement.contract.json`. No implementation, tests, database or provider operations were performed. This completes the originally approved local versioned-document workflow: upload already supports exact expectedVersion CAS; native currently always sends null. No schema or new durable namespace is needed.
+Exact base and source hashes are in `governance-document-replacement.sources.json`; the wire DTO is in `governance-document-head-replacement.contract.json`. No implementation, tests, database or provider operations were performed. This unit addresses an unfinished part of the originally approved local versioned-document workflow: upload already supports exact expectedVersion CAS; native currently always sends null. No schema or new durable namespace is needed.
 
 ## Boundary
 
