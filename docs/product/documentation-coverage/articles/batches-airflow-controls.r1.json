@@ -1,0 +1,244 @@
+{
+  "schema": 1,
+  "id": "axiom.help.batches.airflow-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Batches: Airflow observations, direct runs, automation and approval boundaries",
+  "productVersion": "local-source-preview:47f1941b1879b540ce8c62876d59ff415d58d491",
+  "screenIds": [
+    "proposed.axiom.screen.batches.workflows",
+    "proposed.axiom.screen.batches.automations",
+    "proposed.axiom.screen.batches.approvals",
+    "proposed.axiom.screen.batches.connection"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.batches.workspace-refresh",
+    "proposed.axiom.control.batches.connection-setup",
+    "proposed.axiom.control.batches.connect",
+    "proposed.axiom.control.batches.disconnect",
+    "proposed.axiom.control.batches.dag-select",
+    "proposed.axiom.control.batches.run-review",
+    "proposed.axiom.control.batches.confirm-run",
+    "proposed.axiom.control.batches.run-history",
+    "proposed.axiom.control.batches.watch-runs",
+    "proposed.axiom.control.batches.inspect-tasks",
+    "proposed.axiom.control.batches.create-automation",
+    "proposed.axiom.control.batches.pause-enable",
+    "proposed.axiom.control.batches.approve-run",
+    "proposed.axiom.control.batches.restart-review",
+    "proposed.axiom.control.batches.reject",
+    "proposed.axiom.control.batches.investigate"
+  ],
+  "goal": "Distinguish bounded Airflow reads, reviewed direct DAG runs, configured automation, combined approval/execution and uncertain outcomes without claiming completed delivery or replay authority.",
+  "prerequisites": [
+    "Internal source-only local preview; actual installed support, current flags/connection/role/session/provider outcome and native usability remain unverified.",
+    "Batches mounts Workflows, Automations, Approvals and Connection. Inspect returned state before a consequential action; opening a tab is not a DAG run or approval.",
+    "Use current authorized paired desktop identity and connected Airflow setup; inspected routes exclude API-key authentication. Never supply credentials or approval decisions through this article."
+  ],
+  "permissions": [
+    "Reads require pipeline:read plus workspace:read. Connection writes require pipeline:trigger plus connections:manage. Rule creation/enabled changes require pipeline:trigger plus policy:manage. Direct DAG run requires pipeline:trigger plus deploy:execute; approve/reject requires pipeline:trigger plus agent:approve.",
+    "UI does not hide every action by role; server remains authoritative. Direct trigger rechecks current same session/membership/capability, persisted expiry/revocation, connection and mutation/Governance refusal before provider dispatch.",
+    "Human approval must be a genuine eligible human decision. Non-restart Approve & run is an existing combined approval/executor call; do not impose the Agent/Slack separate requester protocol or invent self/independence permissions. Restart approval additionally needs matching immutable review digest.",
+    "Existing outbound/Governance refusal and current source/dependency/destination checks remain mandatory. This workflow does not establish completed Governance enforcement, activation or full execution coverage."
+  ],
+  "steps": [
+    {
+      "instruction": "Use Connection status/Retry connection status; Open connection setup appears only for confirmed disconnection.",
+      "effect": "read",
+      "expectedState": "Loading/unavailable differs from disconnected; unavailable never removes existing connection or renders setup as proof of absence. Connected summary endpoint/version/DAG count is returned metadata, not ongoing health."
+    },
+    {
+      "instruction": "In separately authorized setup, enter HTTPS deployment URL and username/password or bearer token, then Validate & connect; Disconnect revokes matching connection.",
+      "effect": "propose",
+      "expectedState": "Client rejects credential-bearing/query/hash/unsupported URL paths, server validates independently. Successful setup clears password/token. Disconnect disables organization automations when connection exists, not already submitted Airflow work. Encryption/protection copy is not security certification."
+    },
+    {
+      "instruction": "Choose a returned unpaused DAG; Run now opens the named DAG review. Cancel closes review or Confirm DAG run starts the explicit request after current selection/catalog checks.",
+      "effect": "execute",
+      "expectedState": "Real tasks may affect external systems. Default empty configuration is sent; success says queued, not completed. Cancel before dispatch is local dismissal, not provider cancellation. No direct trigger auto-retry is promised."
+    },
+    {
+      "instruction": "Use Refresh run history or Watch runs; Investigate with Agent carries selected DAG/run and current workspace context to Agent.",
+      "effect": "read",
+      "expectedState": "Default bounded catalog up to500DAGs, runs50, no mounted catalog/older-run pagination. Watch polls15seconds only in active ready visible workflow context. Investigate handoff is not execution authority or evidence the Agent received/acted."
+    },
+    {
+      "instruction": "Inspect tasks on a run; Refresh tasks resets offset, Previous/Next move bounded pages.",
+      "effect": "read",
+      "expectedState": "Up to100 task instances/page, selected DAG/run identity checks, task state/try/map index observation only. No logs/XCom/templates/task retry/clear/cancel/deployment approval control. Error is not confirmed execution outcome."
+    },
+    {
+      "instruction": "Create automation using name, source DAG, success/schedule trigger and Then action; verify listed repository/source branch/environment for write actions and dependencies under Advanced.",
+      "effect": "propose",
+      "expectedState": "Schedules hourly/daily06:00UTC/Monday06:00UTC. Actions record completion/webhook notice, open PR or restart ECS service. Human approval locks on for GitHub/cloud. Payload fixes three configured predispatch retries/60second delay and notification flags, not scheduler/webhook liveness proof."
+    },
+    {
+      "instruction": "Use Pause/Enable only on verified active rule records.",
+      "effect": "propose",
+      "expectedState": "Updates enabled boolean, not schedule/action editing or cancellation of in-flight effects. No mounted delete button or existing-rule editor. Direct DELETE route is not a customer click path and refuses execution history."
+    },
+    {
+      "instruction": "In Approvals personally inspect exact source DAG/run/state. For non-restart use Reject or Approve & run; for restart use Review restart destination then Approve service restart with matching immutable digest.",
+      "effect": "human-review",
+      "expectedState": "Non-restart approval invokes executor in same request. Restart review shows target/revision/role/region/ECS/repository/ref/dependencies and invalidates on context change; no review match means no approval. Service restart is not source release/image promotion, health verification or image recovery."
+    },
+    {
+      "instruction": "Read status/attempt counts and Outcome unconfirmed \u2014 review before retrying. Use workspace/history refresh to observe original records.",
+      "effect": "recover",
+      "expectedState": "Claimed attempt/provider dispatch intent blocks automatic replay after provider-start or uncertain reservation release; predispatch failures may use configured retry policy when allowed. Do not assume universal one-attempt automation, or treat retry configuration as permission to resend unknown provider action. No mounted replay/manual retry/cancel/full audit explorer."
+    },
+    {
+      "instruction": "For errors follow bounded recovery guidance: correct inputs, refresh changed connection, inspect stale/missing review, or ask administrator about unavailable review storage.",
+      "effect": "recover",
+      "expectedState": "Two current DAG routes now expose only established publicAirflowError codes or fixed fallback, not arbitrary internal/provider diagnostic prefixes. Unknown code/thrown failure still uses generic unconfirmed guidance; no successful recovery, provider absence or automatic rollback follows from error text."
+    }
+  ],
+  "expectedOutcome": "Identify current observed state and exact authorized action boundary without confusing read/queued/approved/restart/unknown states with completed Airflow delivery, release promotion or permission for duplicate sends.",
+  "limitations": [
+    "Customer eligible:false; publication approved:false; editorial/media/native/runtime/release/shipped acceptance:false. Null review and empty media; proposed IDs are authoring-only, not installed runtime help bindings.",
+    "Historical2d291236 guide/manifest remain untouched.20 of22 historical binding entries match current bytes; two route files differ solely by already reviewed public-error privacy mapping. New current receipt explicitly records drift and adds direct helper;23ranges cover21unique code files.",
+    "Finite mounted Airflow/control/direct-handler inventory, not all Airflow, on-prem, Temporal/custom-engine support, scheduler liveness, webhook delivery, provider/cloud/GitHub installation, all transitive authorization paths or native/accessibility acceptance.",
+    "Current role/capability/flag/session/connection/credential/database/provider status was not read. UI labels, protection/encryption copy, returned readiness or HTTP acknowledgement do not certify security or completed application health.",
+    "Three configured automation retries are not permission to replay postdispatch unknown outcomes. Existing executor can retry eligible predispatch failure, while provider-start/release uncertainty retains reconciliation/hold. Do not replace unknown work with new requests solely to bypass the hold.",
+    "No Agent-style independent requester execution protocol is imposed on combined Approve & run. Human decision remains genuine and service-controlled; restart exact review digest remains mandatory.",
+    "Uncertainty notice/refresh/rejection/pause/Disconnect do not retract an external action or prove no side effect. Service restart does not promote a source artifact or establish image recovery.",
+    "Evaluation proposed-not-executed prose only; schema/source integrity is not retrieval/model/runtime validation, customer publication, media/editorial/release acceptance or complete B4/B5."
+  ],
+  "recovery": [
+    "Refresh original workspace/run/task history after uncertainty; do not blindly replay a mutation or manufacture a human approval.",
+    "For unavailable connection status retry status first; confirmed disconnect alone offers setup. Setup/connect and provider credentials remain separately authorized operations.",
+    "For changed/missing/stale immutable restart review, reject/wait for a new proposal as guidance permits; unavailable storage leaves approval unavailable. Do not invent digest or treat prior target as current.",
+    "Pause or Disconnect affects future configuration/availability, not already dispatched provider work. Review actual saved/provider outcome through authorized workflows before deliberate retry.",
+    "Unknown/public fallback errors preserve uncertainty; they do not establish absence, completed rollback or healthy provider service."
+  ],
+  "searchTerms": [
+    "Batches",
+    "Airflow",
+    "Run now",
+    "Confirm DAG run",
+    "Watch runs",
+    "Inspect tasks",
+    "Create automation",
+    "Pause",
+    "Approve & run",
+    "Review restart destination",
+    "Outcome unconfirmed",
+    "connection unavailable"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88"
+    },
+    {
+      "path": "desktop/src/views/AirflowAutomationView.tsx",
+      "sha256": "e33956e943ce613e2a564b01d16023718f05853610e01fab623eea9dba82addd"
+    },
+    {
+      "path": "desktop/src/components/AirflowRunTasks.tsx",
+      "sha256": "ee525dbd94574886b8f15a0c3e51562db9324529c5a73af9919a7fdb9daebb7f"
+    },
+    {
+      "path": "desktop/src/components/AirflowRestartReviewCard.tsx",
+      "sha256": "da08981ff21245e5697476dee7392037f3b6cc92b17d0846ec908f1426b802b1"
+    },
+    {
+      "path": "desktop/src/components/DesktopDialog.tsx",
+      "sha256": "b0ea5238d5e723e4492baaf15cb54fd64bc8c03c55ef69530d88fe5c42267cbd"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/lib/airflowConnectionUrl.ts",
+      "sha256": "326cbb310b70fb8f81fc19591eac067fd86aa77bfb63e08155e12092dd161e06"
+    },
+    {
+      "path": "app/api/desktop/airflow/connection/route.ts",
+      "sha256": "6f6960b0a88c3a6d4bbfa56b7b6a61f8b4eac28b273bfeb834148a1c51c13cbd"
+    },
+    {
+      "path": "app/api/desktop/airflow/dags/route.ts",
+      "sha256": "932adac7afcafbd01cf1c4f731cea871ab54a61c516d64cb6f5b113c777af085"
+    },
+    {
+      "path": "app/api/desktop/airflow/dags/[dagId]/runs/route.ts",
+      "sha256": "db69b3d581a1aaa09ba8d986730b08df5ce4acda55a9170bbef243c7c80f74fd"
+    },
+    {
+      "path": "app/api/desktop/airflow/dags/[dagId]/runs/[runId]/tasks/route.ts",
+      "sha256": "56723b584931d8d29f43f8171c823d49cdccb7f27cc69aaa071aefc6f3dc00b4"
+    },
+    {
+      "path": "app/api/desktop/airflow/automations/route.ts",
+      "sha256": "f143544c825ff98a3761a700d08b93d33cc7ea2fa62912e345b18e6f6aa2b326"
+    },
+    {
+      "path": "app/api/desktop/airflow/automations/[id]/route.ts",
+      "sha256": "b6631cc0ced7b095a5ac9c615e3b798e137a19bb95006107b5ceee8c92e9c50b"
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/approve/route.ts",
+      "sha256": "7aa01bed69aff72be38951607651078a805688d696cadeffaf703331b0ccaa5c"
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/reject/route.ts",
+      "sha256": "161c8894331b218b6089ed6de852ab7f5c216f209701bb4f2c05594e45b64135"
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/review/route.ts",
+      "sha256": "e605f3cc1bb96d0045445ca9202086d46b68782375b8d8c45fa6cb338079e533"
+    },
+    {
+      "path": "lib/integrations/airflow/airflowClient.ts",
+      "sha256": "bbb996a1f06950359d7377a00263f480ec3de57bbc9b4d3de41674a81ea2494e"
+    },
+    {
+      "path": "lib/integrations/airflow/connection.ts",
+      "sha256": "2d25a4c1672d7656bb1e6193c2161028fa923ed637302e1781e902785963b73e"
+    },
+    {
+      "path": "lib/integrations/airflow/automationExecutor.ts",
+      "sha256": "dc99fd78bfd826bf4dae9865d7c8542db6551dff582cae69683c9271137fa582"
+    },
+    {
+      "path": "lib/integrations/airflow/publicError.ts",
+      "sha256": "02780e89fd03df3d647979c6619235a23a912feae11a492a12367299db79f567"
+    },
+    {
+      "path": "docs/product/knowledge/batches-airflow-controls.md",
+      "sha256": "e3751bc08147047d372e467b676ec8db94b67b75efc19822cbed690674c9992b"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/batches-airflow-guide/source-bindings.json",
+      "sha256": "fb4f0951131e4bb910b28e228d40c16e644ff147b2cf97861f4cea100bba797e"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/batches-structured-knowledge-author/source-bindings.json",
+      "sha256": "fc2b9ea48abd88c8c46339ef29375b50579108fc3b982c927cde74663220b357"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/batches-airflow-controls.md",
+      "docs/recovery/2026-11-03/batches-airflow-guide/source-bindings.json",
+      "docs/recovery/2026-11-04/batches-structured-knowledge-author/source-bindings.json",
+      "docs/recovery/2026-11-04/batches-structured-knowledge-author/reviewed-route-drift.diff"
+    ],
+    "verifiedVersion": "local-source-preview:47f1941b1879b540ce8c62876d59ff415d58d491",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

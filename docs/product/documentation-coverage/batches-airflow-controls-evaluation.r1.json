@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.batches.airflow-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:47f1941b1879b540ce8c62876d59ff415d58d491",
+  "articleSha256": "e8b69adf39ff6926bf10545614dcc93dd9dfa0d269b5d63e8579ed892fdcf54c",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "batches-reads",
+      "question": "Does Watch runs start or retry DAG work?",
+      "requiredResponse": "No;15second bounded observation under active visible ready conditions. Run now/Confirm DAG run is separate real execution.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "batches-direct-run",
+      "question": "Does Cancel undo a DAG run?",
+      "requiredResponse": "Local review Cancel dismisses before dispatch only; no provider cancellation or outcome guarantee.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "batches-approval",
+      "question": "Must non-restart Approve & run follow the Agent separate executor protocol?",
+      "requiredResponse": "No. Existing non-restart control combines approval/executor request; genuine human authority remains required and restart additionally needs exact review digest.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "batches-restart",
+      "question": "Does Approve service restart promote source or verify health?",
+      "requiredResponse": "No. Exact immutable target review authorizes service restart boundary only, not source/image promotion, cloud health or recovery proof.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "batches-unknown",
+      "question": "May I resend unknown work because maxRetries is3?",
+      "requiredResponse": "No. Eligible predispatch failures may retry by policy; provider-start/uncertain release keeps reconciliation hold and no automatic replay. Do not create duplicates.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "batches-pause",
+      "question": "Does Pause or Disconnect cancel dispatched work?",
+      "requiredResponse": "No. Changes future enabled/connection state; cannot undo provider actions already submitted.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "batches-connection",
+      "question": "Does unavailable status mean disconnected or safe to reenter credentials?",
+      "requiredResponse": "No. Existing connections are not removed; retry status. Setup appears only for confirmed disconnected state.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "batches-privacy",
+      "question": "Can current DAG routes expose arbitrary internal error messages?",
+      "requiredResponse": "Inspected current routes map established public codes or fixed fallbacks through publicAirflowError; no general backend-wide privacy guarantee follows.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "batches-coverage",
+      "question": "Is this complete Airflow/Temporal/onprem shipped help?",
+      "requiredResponse": "No. Finite internal source-only local preview with null review/empty media/proposed IDs and unexecuted eval; no full provider/platform/customer/runtime acceptance.",
+      "requiredCitation": "axiom.help.batches.airflow-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "47f1941b1879b540ce8c62876d59ff415d58d491",
+  "branch": "codex/b4-batches-structured-knowledge",
+  "worktree": "/private/tmp/axiom-b4-batches-20261104",
+  "validation": {
+    "integrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 24,
+    "historicalBindingEntries": 22,
+    "unchangedHistoricalEntries": 20,
+    "changedHistoricalRouteEntries": 2,
+    "addedHelperFiles": 1,
+    "uniqueCodeFiles": 21,
+    "inclusiveRawRanges": 23,
+    "proposedEvaluationCases": 9,
+    "retrievalExecuted": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/batches-airflow-controls.md": "e3751bc08147047d372e467b676ec8db94b67b75efc19822cbed690674c9992b",
+    "docs/recovery/2026-11-03/batches-airflow-guide/source-bindings.json": "fb4f0951131e4bb910b28e228d40c16e644ff147b2cf97861f4cea100bba797e"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-batches-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-batches-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-batches-evidence/bindings.sh"
+  ],
+  "bundleSha256": {
+    "docs/product/documentation-coverage/articles/batches-airflow-controls.r1.json": "e8b69adf39ff6926bf10545614dcc93dd9dfa0d269b5d63e8579ed892fdcf54c",
+    "docs/product/documentation-coverage/batches-airflow-controls-evaluation.r1.json": "2565b64fc81c6812c5db5ac8064b3dfa7995991d5b10efaf1b5d551d29775411"
+  },
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/validate.sh": "97339cde47ff871c3f6ae972e34cc34910039c159cd33ac1759c68113094a179",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/bindings.sh": "aafe6359a6c50badb1033758bcfac01ae24586b56f471671a6652036d7486f66",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/binding-integrity.json": "5239ba220e2b8e8f32ff6c8ad56ca4d0876774acb007f46901e9214d438ad8f1",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/validate.log": "386a545cf5c0b07e63a0d367d004f4134c04ec8ca01b232a1adbb097b1184ad4",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/README.md": "4c5838770f21d6986cde614c08d23baf476454ff3d72ab2d374b4fc24429e9bf",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/source-bindings.json": "fc2b9ea48abd88c8c46339ef29375b50579108fc3b982c927cde74663220b357",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/binding-integrity.cjs": "b44aa2a948f614eb46e1625a67fafe270bad65d132338217491fe27d36f81124",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03",
+    "docs/recovery/2026-11-04/batches-structured-knowledge-author/reviewed-route-drift.diff": "4b895f639fdc3c531a382f1718d71d4fb16cde8a031264abccf0ea8b3aa684e3"
+  },
+  "limits": "Internal source-only local preview, null review/empty media/proposed IDs; no customer/editorial/media/native/runtime/release acceptance; no mutable master hash"
+}

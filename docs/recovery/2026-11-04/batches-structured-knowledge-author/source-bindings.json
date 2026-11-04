@@ -1,0 +1,422 @@
+{
+  "status": "internal-current-source-authoring",
+  "baselineCommit": "47f1941b1879b540ce8c62876d59ff415d58d491",
+  "historicalSnapshot": "2d29123635942d32dcde65b36a9b19458fe5fd13",
+  "historicalGuideAndManifestPreserved": true,
+  "historicalBindingEntries": 22,
+  "unchangedHistoricalWholeFileAndRangeEntries": 20,
+  "changedHistoricalRouteEntries": 2,
+  "uniqueCurrentCodeFiles": 21,
+  "currentInclusiveRawRanges": 23,
+  "driftReview": "Only two imports and three catch mappings change to publicAirflowError. Existing auth, status selection and dispatch are unchanged; allowlisted established code or fixed fallback replaces arbitrary diagnostic prefix. Guide facts remain applicable; no new authority or design.",
+  "rangeConvention": "inclusive 1-based original raw lines retaining original terminators",
+  "sources": [
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "wholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "range": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+      },
+      "historicalWholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "range": {
+        "startLine": 139,
+        "endLine": 185,
+        "sha256": "ec46482ca328d04110cee702b935d0819b25eb901f8845de1135e140ced51e9e"
+      },
+      "historicalWholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "historicalRange": {
+        "startLine": 139,
+        "endLine": 185,
+        "sha256": "ec46482ca328d04110cee702b935d0819b25eb901f8845de1135e140ced51e9e",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "desktop/src/views/AirflowAutomationView.tsx",
+      "wholeFileSha256": "e33956e943ce613e2a564b01d16023718f05853610e01fab623eea9dba82addd",
+      "range": {
+        "startLine": 1,
+        "endLine": 237,
+        "sha256": "e33956e943ce613e2a564b01d16023718f05853610e01fab623eea9dba82addd"
+      },
+      "historicalWholeFileSha256": "e33956e943ce613e2a564b01d16023718f05853610e01fab623eea9dba82addd",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 237,
+        "sha256": "e33956e943ce613e2a564b01d16023718f05853610e01fab623eea9dba82addd",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "desktop/src/components/AirflowRunTasks.tsx",
+      "wholeFileSha256": "ee525dbd94574886b8f15a0c3e51562db9324529c5a73af9919a7fdb9daebb7f",
+      "range": {
+        "startLine": 1,
+        "endLine": 33,
+        "sha256": "ee525dbd94574886b8f15a0c3e51562db9324529c5a73af9919a7fdb9daebb7f"
+      },
+      "historicalWholeFileSha256": "ee525dbd94574886b8f15a0c3e51562db9324529c5a73af9919a7fdb9daebb7f",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 33,
+        "sha256": "ee525dbd94574886b8f15a0c3e51562db9324529c5a73af9919a7fdb9daebb7f",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "desktop/src/components/AirflowRestartReviewCard.tsx",
+      "wholeFileSha256": "da08981ff21245e5697476dee7392037f3b6cc92b17d0846ec908f1426b802b1",
+      "range": {
+        "startLine": 1,
+        "endLine": 66,
+        "sha256": "da08981ff21245e5697476dee7392037f3b6cc92b17d0846ec908f1426b802b1"
+      },
+      "historicalWholeFileSha256": "da08981ff21245e5697476dee7392037f3b6cc92b17d0846ec908f1426b802b1",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 66,
+        "sha256": "da08981ff21245e5697476dee7392037f3b6cc92b17d0846ec908f1426b802b1",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "desktop/src/components/DesktopDialog.tsx",
+      "wholeFileSha256": "b0ea5238d5e723e4492baaf15cb54fd64bc8c03c55ef69530d88fe5c42267cbd",
+      "range": {
+        "startLine": 1,
+        "endLine": 54,
+        "sha256": "b0ea5238d5e723e4492baaf15cb54fd64bc8c03c55ef69530d88fe5c42267cbd"
+      },
+      "historicalWholeFileSha256": "b0ea5238d5e723e4492baaf15cb54fd64bc8c03c55ef69530d88fe5c42267cbd",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 54,
+        "sha256": "b0ea5238d5e723e4492baaf15cb54fd64bc8c03c55ef69530d88fe5c42267cbd",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "range": {
+        "startLine": 1210,
+        "endLine": 1231,
+        "sha256": "9a3656da5ef8a88e8da81c993b3334fa8bff1a7d1cacba80e594069ed7a953ab"
+      },
+      "historicalWholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "historicalRange": {
+        "startLine": 1210,
+        "endLine": 1231,
+        "sha256": "9a3656da5ef8a88e8da81c993b3334fa8bff1a7d1cacba80e594069ed7a953ab",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "desktop/src/lib/airflowConnectionUrl.ts",
+      "wholeFileSha256": "326cbb310b70fb8f81fc19591eac067fd86aa77bfb63e08155e12092dd161e06",
+      "range": {
+        "startLine": 1,
+        "endLine": 10,
+        "sha256": "326cbb310b70fb8f81fc19591eac067fd86aa77bfb63e08155e12092dd161e06"
+      },
+      "historicalWholeFileSha256": "326cbb310b70fb8f81fc19591eac067fd86aa77bfb63e08155e12092dd161e06",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 10,
+        "sha256": "326cbb310b70fb8f81fc19591eac067fd86aa77bfb63e08155e12092dd161e06",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "app/api/desktop/airflow/connection/route.ts",
+      "wholeFileSha256": "6f6960b0a88c3a6d4bbfa56b7b6a61f8b4eac28b273bfeb834148a1c51c13cbd",
+      "range": {
+        "startLine": 1,
+        "endLine": 97,
+        "sha256": "6f6960b0a88c3a6d4bbfa56b7b6a61f8b4eac28b273bfeb834148a1c51c13cbd"
+      },
+      "historicalWholeFileSha256": "6f6960b0a88c3a6d4bbfa56b7b6a61f8b4eac28b273bfeb834148a1c51c13cbd",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 97,
+        "sha256": "6f6960b0a88c3a6d4bbfa56b7b6a61f8b4eac28b273bfeb834148a1c51c13cbd",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "app/api/desktop/airflow/dags/route.ts",
+      "wholeFileSha256": "932adac7afcafbd01cf1c4f731cea871ab54a61c516d64cb6f5b113c777af085",
+      "range": {
+        "startLine": 1,
+        "endLine": 14,
+        "sha256": "932adac7afcafbd01cf1c4f731cea871ab54a61c516d64cb6f5b113c777af085"
+      },
+      "historicalWholeFileSha256": "171f935ff53e0a2f6b08c7855b7cfa2fe3e340010f13933d95609c7ee707e169",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 13,
+        "sha256": "171f935ff53e0a2f6b08c7855b7cfa2fe3e340010f13933d95609c7ee707e169",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": true
+    },
+    {
+      "path": "app/api/desktop/airflow/dags/[dagId]/runs/route.ts",
+      "wholeFileSha256": "db69b3d581a1aaa09ba8d986730b08df5ce4acda55a9170bbef243c7c80f74fd",
+      "range": {
+        "startLine": 1,
+        "endLine": 40,
+        "sha256": "db69b3d581a1aaa09ba8d986730b08df5ce4acda55a9170bbef243c7c80f74fd"
+      },
+      "historicalWholeFileSha256": "bdf34f234f8073f089158be3b1d1fb567e01cdc1acea202878ed7e7b632deb25",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 39,
+        "sha256": "bdf34f234f8073f089158be3b1d1fb567e01cdc1acea202878ed7e7b632deb25",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": true
+    },
+    {
+      "path": "app/api/desktop/airflow/dags/[dagId]/runs/[runId]/tasks/route.ts",
+      "wholeFileSha256": "56723b584931d8d29f43f8171c823d49cdccb7f27cc69aaa071aefc6f3dc00b4",
+      "range": {
+        "startLine": 1,
+        "endLine": 20,
+        "sha256": "56723b584931d8d29f43f8171c823d49cdccb7f27cc69aaa071aefc6f3dc00b4"
+      },
+      "historicalWholeFileSha256": "56723b584931d8d29f43f8171c823d49cdccb7f27cc69aaa071aefc6f3dc00b4",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 20,
+        "sha256": "56723b584931d8d29f43f8171c823d49cdccb7f27cc69aaa071aefc6f3dc00b4",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "app/api/desktop/airflow/automations/route.ts",
+      "wholeFileSha256": "f143544c825ff98a3761a700d08b93d33cc7ea2fa62912e345b18e6f6aa2b326",
+      "range": {
+        "startLine": 1,
+        "endLine": 61,
+        "sha256": "f143544c825ff98a3761a700d08b93d33cc7ea2fa62912e345b18e6f6aa2b326"
+      },
+      "historicalWholeFileSha256": "f143544c825ff98a3761a700d08b93d33cc7ea2fa62912e345b18e6f6aa2b326",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 61,
+        "sha256": "f143544c825ff98a3761a700d08b93d33cc7ea2fa62912e345b18e6f6aa2b326",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "app/api/desktop/airflow/automations/[id]/route.ts",
+      "wholeFileSha256": "b6631cc0ced7b095a5ac9c615e3b798e137a19bb95006107b5ceee8c92e9c50b",
+      "range": {
+        "startLine": 1,
+        "endLine": 39,
+        "sha256": "b6631cc0ced7b095a5ac9c615e3b798e137a19bb95006107b5ceee8c92e9c50b"
+      },
+      "historicalWholeFileSha256": "b6631cc0ced7b095a5ac9c615e3b798e137a19bb95006107b5ceee8c92e9c50b",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 39,
+        "sha256": "b6631cc0ced7b095a5ac9c615e3b798e137a19bb95006107b5ceee8c92e9c50b",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/approve/route.ts",
+      "wholeFileSha256": "7aa01bed69aff72be38951607651078a805688d696cadeffaf703331b0ccaa5c",
+      "range": {
+        "startLine": 1,
+        "endLine": 23,
+        "sha256": "7aa01bed69aff72be38951607651078a805688d696cadeffaf703331b0ccaa5c"
+      },
+      "historicalWholeFileSha256": "7aa01bed69aff72be38951607651078a805688d696cadeffaf703331b0ccaa5c",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 23,
+        "sha256": "7aa01bed69aff72be38951607651078a805688d696cadeffaf703331b0ccaa5c",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/reject/route.ts",
+      "wholeFileSha256": "161c8894331b218b6089ed6de852ab7f5c216f209701bb4f2c05594e45b64135",
+      "range": {
+        "startLine": 1,
+        "endLine": 17,
+        "sha256": "161c8894331b218b6089ed6de852ab7f5c216f209701bb4f2c05594e45b64135"
+      },
+      "historicalWholeFileSha256": "161c8894331b218b6089ed6de852ab7f5c216f209701bb4f2c05594e45b64135",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 17,
+        "sha256": "161c8894331b218b6089ed6de852ab7f5c216f209701bb4f2c05594e45b64135",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "app/api/desktop/airflow/executions/[id]/review/route.ts",
+      "wholeFileSha256": "e605f3cc1bb96d0045445ca9202086d46b68782375b8d8c45fa6cb338079e533",
+      "range": {
+        "startLine": 1,
+        "endLine": 28,
+        "sha256": "e605f3cc1bb96d0045445ca9202086d46b68782375b8d8c45fa6cb338079e533"
+      },
+      "historicalWholeFileSha256": "e605f3cc1bb96d0045445ca9202086d46b68782375b8d8c45fa6cb338079e533",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 28,
+        "sha256": "e605f3cc1bb96d0045445ca9202086d46b68782375b8d8c45fa6cb338079e533",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "lib/integrations/airflow/airflowClient.ts",
+      "wholeFileSha256": "bbb996a1f06950359d7377a00263f480ec3de57bbc9b4d3de41674a81ea2494e",
+      "range": {
+        "startLine": 100,
+        "endLine": 180,
+        "sha256": "b221a4f8dfed014abfdead5a07b73bb48d793c211d87017378a2d8ecaaf6119c"
+      },
+      "historicalWholeFileSha256": "bbb996a1f06950359d7377a00263f480ec3de57bbc9b4d3de41674a81ea2494e",
+      "historicalRange": {
+        "startLine": 100,
+        "endLine": 180,
+        "sha256": "b221a4f8dfed014abfdead5a07b73bb48d793c211d87017378a2d8ecaaf6119c",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "lib/integrations/airflow/connection.ts",
+      "wholeFileSha256": "2d25a4c1672d7656bb1e6193c2161028fa923ed637302e1781e902785963b73e",
+      "range": {
+        "startLine": 1,
+        "endLine": 48,
+        "sha256": "2d25a4c1672d7656bb1e6193c2161028fa923ed637302e1781e902785963b73e"
+      },
+      "historicalWholeFileSha256": "2d25a4c1672d7656bb1e6193c2161028fa923ed637302e1781e902785963b73e",
+      "historicalRange": {
+        "startLine": 1,
+        "endLine": 48,
+        "sha256": "2d25a4c1672d7656bb1e6193c2161028fa923ed637302e1781e902785963b73e",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "lib/integrations/airflow/automationExecutor.ts",
+      "wholeFileSha256": "dc99fd78bfd826bf4dae9865d7c8542db6551dff582cae69683c9271137fa582",
+      "range": {
+        "startLine": 19,
+        "endLine": 80,
+        "sha256": "5ce28659b6574e0813064070baf3633d1eb665e55063afd20da4823331d79e17"
+      },
+      "historicalWholeFileSha256": "dc99fd78bfd826bf4dae9865d7c8542db6551dff582cae69683c9271137fa582",
+      "historicalRange": {
+        "startLine": 19,
+        "endLine": 80,
+        "sha256": "5ce28659b6574e0813064070baf3633d1eb665e55063afd20da4823331d79e17",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "lib/integrations/airflow/automationExecutor.ts",
+      "wholeFileSha256": "dc99fd78bfd826bf4dae9865d7c8542db6551dff582cae69683c9271137fa582",
+      "range": {
+        "startLine": 100,
+        "endLine": 183,
+        "sha256": "3972058d0b61cab7d3b80d32c63df0e6744df4deaa8382673c9773662dbc68af"
+      },
+      "historicalWholeFileSha256": "dc99fd78bfd826bf4dae9865d7c8542db6551dff582cae69683c9271137fa582",
+      "historicalRange": {
+        "startLine": 100,
+        "endLine": 183,
+        "sha256": "3972058d0b61cab7d3b80d32c63df0e6744df4deaa8382673c9773662dbc68af",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "lib/integrations/airflow/automationExecutor.ts",
+      "wholeFileSha256": "dc99fd78bfd826bf4dae9865d7c8542db6551dff582cae69683c9271137fa582",
+      "range": {
+        "startLine": 190,
+        "endLine": 212,
+        "sha256": "f7c6e55e88f24bf7d5d9a5e2a6c3f67dfe7973cec5ef597f0e58dab6ce0eae2b"
+      },
+      "historicalWholeFileSha256": "dc99fd78bfd826bf4dae9865d7c8542db6551dff582cae69683c9271137fa582",
+      "historicalRange": {
+        "startLine": 190,
+        "endLine": 212,
+        "sha256": "f7c6e55e88f24bf7d5d9a5e2a6c3f67dfe7973cec5ef597f0e58dab6ce0eae2b",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      },
+      "changedSinceHistorical": false
+    },
+    {
+      "path": "lib/integrations/airflow/publicError.ts",
+      "wholeFileSha256": "02780e89fd03df3d647979c6619235a23a912feae11a492a12367299db79f567",
+      "range": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "02780e89fd03df3d647979c6619235a23a912feae11a492a12367299db79f567"
+      },
+      "reason": "Current direct error-mapping helper added by known privacy repair; not silently substituted into historical guide"
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "path": "docs/product/knowledge/batches-airflow-controls.md",
+      "sha256": "e3751bc08147047d372e467b676ec8db94b67b75efc19822cbed690674c9992b"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/batches-airflow-guide/source-bindings.json",
+      "sha256": "fb4f0951131e4bb910b28e228d40c16e644ff147b2cf97861f4cea100bba797e"
+    }
+  ],
+  "driftDiff": {
+    "path": "docs/recovery/2026-11-04/batches-structured-knowledge-author/reviewed-route-drift.diff",
+    "sha256": "4b895f639fdc3c531a382f1718d71d4fb16cde8a031264abccf0ea8b3aa684e3"
+  },
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}

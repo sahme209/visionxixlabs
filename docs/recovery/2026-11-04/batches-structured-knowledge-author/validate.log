@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.batches.airflow-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:47f1941b1879b540ce8c62876d59ff415d58d491",
+  "sourceFiles": 24,
+  "evaluationCases": 9,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}
