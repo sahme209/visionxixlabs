@@ -1,0 +1,247 @@
+{
+  "sourceRevision": "45b6a02151c1668b0ae1bca32ace7a0bab92accb",
+  "status": "linked_not_executed",
+  "root": "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z",
+  "executed": false,
+  "sourceFiles": {
+    "origin_session.h": "b2542b1a2e59675e522adf37190437634c2f16e6333b6e6c909e01bdff896701",
+    "origin_private_bootstrap.h": "c68e2954c7e6d1013f490fa28a92f60350b04e7087ca5001e57722452a419360",
+    "origin_runtime_protocol.c": "9c422d5b474c287b1c0bfdf2a3b28e132f226e421932d4ca3e431c056f9be648",
+    "origin_private_bootstrap.c": "0a7c214f2e3be10eaab98a8964dd889e2fa8aa410d23bcac3746e0a492f6bdc0",
+    "origin_session.c": "96e13398ccf85283ab9f07d0ff17e8cc3ff9677efc7729f5015d341f59163d4b",
+    "origin_root_binding.m": "a74167becb5225348ff6c14bba01e17b93d857c81a5d00a50fccae88cb44b252",
+    "origin_broker.c": "a5c3d95977343243a435913cf67abbb8fd1600d5c829eb8cd08a562427f6d9e3",
+    "origin_guard.c": "7652869e0283985b78f25e75bb5201a764bb19023820c8e5234bee6ad4c9c963",
+    "origin_private_resource_supplier.m": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca",
+    "origin_private_bootstrap_writer.c": "e3faf48fd6721cdc33db957625d7e75d24035d1c84dd31714fe778860c5ce4c9",
+    "origin_process_identity.c": "004193879c5af000873199fef26336457e7251da2b21611d91d7af8dec4ea78a",
+    "protected_resource_inventory.c": "b257135d421cf1ba69fb33ee347970dbdd978d1e43c56c3197018e969614ee4d"
+  },
+  "artifacts": {
+    "origin-broker": {
+      "sha256": "c33b3e3809c8ea6c4245285aca3c212bc412ee65b5730eeffbd46649fb0e215c",
+      "mode": "0o600"
+    },
+    "origin_guard.node": {
+      "sha256": "9881aa7450667697143e459111b3f803dfd02228de064abb4ec0e34ba426b144",
+      "mode": "0o600"
+    }
+  },
+  "commands": [
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-fblocks",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-std=c11",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_broker.c",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_broker.c.o"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-fblocks",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-std=c11",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_runtime_protocol.c",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_runtime_protocol.c.o"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-fblocks",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-std=c11",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_process_identity.c",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_process_identity.c.o"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-fblocks",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-std=c11",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/protected_resource_inventory.c",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/protected_resource_inventory.c.o"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-fblocks",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-fobjc-arc",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_root_binding.m",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_root_binding.m.o"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-fblocks",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-fobjc-arc",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_private_resource_supplier.m.o"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-fblocks",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-std=c11",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_private_bootstrap_writer.c",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_private_bootstrap_writer.c.o"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-fblocks",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-std=c11",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_private_bootstrap.c",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_private_bootstrap.c.o"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_broker.c.o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_runtime_protocol.c.o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_process_identity.c.o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/protected_resource_inventory.c.o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_root_binding.m.o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_private_resource_supplier.m.o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_private_bootstrap_writer.c.o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_private_bootstrap.c.o",
+        "-framework",
+        "Foundation",
+        "-framework",
+        "Security",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin-broker"
+      ],
+      "exit": 0,
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/usr/bin/xcrun",
+        "clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-O1",
+        "-fblocks",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-I/Users/samirahmed/.nvm/versions/node/v24.21.0/include/node",
+        "-bundle",
+        "-undefined",
+        "dynamic_lookup",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_guard.c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_session.c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_process_identity.c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/protected_resource_inventory.c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_private_bootstrap.c",
+        "-framework",
+        "Security",
+        "-framework",
+        "CoreFoundation",
+        "-o",
+        "/private/tmp/axiom-bootstrap-joint-link-hlm2mh_z/origin_guard.node"
+      ],
+      "exit": 0,
+      "stderr": ""
+    }
+  ],
+  "custodianGateImplemented": false,
+  "resourceDeliveryAccepted": false
+}
