@@ -1,0 +1,7 @@
+{
+  "base": "4de6191a889ef0f22c8781984200aefd1531722e",
+  "sha256": {
+    "components/Navigation.tsx": "774a41199cb4cf06119f6a547ecff1fa34748a84dabfffc79d3dff3dc00c97fc",
+    "components/__tests__/navigationKeyboardBypass.test.ts": "fcc6179f9140eac1c0ee5189bfa8c0706510ceed8ec77a6b5d24ea57f623cf45"
+  }
+}

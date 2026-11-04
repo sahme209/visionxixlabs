@@ -1,0 +1,10 @@
+{
+  "method": "Recursive file metadata scan; mtime >= local 2026-11-03T22:33:20, before first RED. No pre-run hash baseline, so cannot prove immutable dependency source. No restoration/deletion performed.",
+  "files": [
+    {
+      "path": ".vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json",
+      "mtime": "2026-11-03T22:33:21.809729",
+      "bytes": 136
+    }
+  ]
+}

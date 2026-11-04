@@ -1,0 +1,1267 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-marketing-keyboard-bypass-4de6
+
+ ❯ components/__tests__/navigationKeyboardBypass.test.ts (5 tests | 5 failed) 86ms
+   × puts one native bypass first in navigation focus order and focuses the current main 56ms
+   × preserves the main landmark existing ID and tabindex 8ms
+   × closes More before leaving navigation focus 11ms
+   × closes the mobile disclosure and restores scroll while retaining main focus 6ms
+   × safely leaves focus on the bypass when the page has no main 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/__tests__/navigationKeyboardBypass.test.ts > puts one native bypass first in navigation focus order and focuses the current main
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Skip to content"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Primary navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Primary navigation"[39m
+    [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Vision XIX Labs home":
+  [36m<a[39m
+    [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+    [33mhref[39m=[32m"/"[39m
+  [36m/>[39m
+
+  Name "Product":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/product"[39m
+  [36m/>[39m
+
+  Name "Integrations":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/integrations"[39m
+  [36m/>[39m
+
+  Name "Security":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/security"[39m
+  [36m/>[39m
+
+  Name "Docs":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Demo":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/demo"[39m
+  [36m/>[39m
+
+  Name "Sign in":
+  [36m<a[39m
+    [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/auth/signin"[39m
+  [36m/>[39m
+
+  Name "Download":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+    [33mhref[39m=[32m"/download"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  presentation:
+
+  Name "":
+  [36m<img[39m
+    [33malt[39m=[32m""[39m
+    [33mclass[39m=[32m"object-contain"[39m
+    [33mdata-nimg[39m=[32m"1"[39m
+    [33mdecoding[39m=[32m"async"[39m
+    [33mheight[39m=[32m"28"[39m
+    [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+    [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+    [33mstyle[39m=[32m"color: transparent;"[39m
+    [33mwidth[39m=[32m"28"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "More":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"more-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Open navigation menu":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"mobile-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Open navigation menu"[39m
+    [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary navigation"[39m
+        [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 h-16 xl:h-[72px]"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+            [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+            [33mhref[39m=[32m"/"[39m
+          [36m>[39m
+            [36m<img[39m
+              [33malt[39m=[32m""[39m
+              [33mclass[39m=[32m"object-contain"[39m
+              [33mdata-nimg[39m=[32m"1"[39m
+              [33mdecoding[39m=[32m"async"[39m
+              [33mheight[39m=[32m"28"[39m
+              [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+              [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+              [33mstyle[39m=[32m"color: transparent;"[39m
+              [33mwidth[39m=[32m"28"[39m
+            [36m/>[39m
+            [36m<span>[39m
+              [0mVision XIX Labs[0m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden items-center gap-7 xl:flex"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/product"[39m
+            [36m>[39m
+              [0mProduct[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/integrations"[39m
+            [36m>[39m
+              [0mIntegrations[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/security"[39m
+            [36m>[39m
+              [0mSecurity[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/docs"[39m
+            [36m>[39m
+              [0mDocs[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/demo"[39m
+            [36m>[39m
+              [0mDemo[0m
+            [36m</a>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-controls[39m=[32m"more-navigation"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mMore [0m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"text-[10px]"[39m
+                [36m>[39m
+                  [0m⌄[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden items-center gap-3 xl:flex"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/auth/signin"[39m
+            [36m>[39m
+              [0mSign in[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+              [33mhref[39m=[32m"/download"[39m
+            [36m>[39m
+              [0mDownload[0m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"mobile-navigation"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Open navigation menu"[39m
+            [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</nav>[39m
+      [36m<main>[39m
+        [0mCurrent page[0m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/__tests__/navigationKeyboardBypass.test.ts:22:23
+     20|   renderPage();
+     21|   const navigation = screen.getByRole('navigation');
+     22|   const skip = screen.getByRole('button', { name: 'Skip to content' });
+       |                       ^
+     23|   expect(screen.getAllByRole('button', { name: 'Skip to content' })).t…
+     24|   expect(skip.getAttribute('type')).toBe('button');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  components/__tests__/navigationKeyboardBypass.test.ts > preserves the main landmark existing ID and tabindex
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Skip to content"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Primary navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Primary navigation"[39m
+    [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Vision XIX Labs home":
+  [36m<a[39m
+    [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+    [33mhref[39m=[32m"/"[39m
+  [36m/>[39m
+
+  Name "Product":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/product"[39m
+  [36m/>[39m
+
+  Name "Integrations":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/integrations"[39m
+  [36m/>[39m
+
+  Name "Security":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/security"[39m
+  [36m/>[39m
+
+  Name "Docs":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Demo":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/demo"[39m
+  [36m/>[39m
+
+  Name "Sign in":
+  [36m<a[39m
+    [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/auth/signin"[39m
+  [36m/>[39m
+
+  Name "Download":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+    [33mhref[39m=[32m"/download"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  presentation:
+
+  Name "":
+  [36m<img[39m
+    [33malt[39m=[32m""[39m
+    [33mclass[39m=[32m"object-contain"[39m
+    [33mdata-nimg[39m=[32m"1"[39m
+    [33mdecoding[39m=[32m"async"[39m
+    [33mheight[39m=[32m"28"[39m
+    [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+    [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+    [33mstyle[39m=[32m"color: transparent;"[39m
+    [33mwidth[39m=[32m"28"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "More":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"more-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Open navigation menu":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"mobile-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Open navigation menu"[39m
+    [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main[39m
+    [33mid[39m=[32m"page-owned-target"[39m
+    [33mtabindex[39m=[32m"0"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary navigation"[39m
+        [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 h-16 xl:h-[72px]"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+            [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+            [33mhref[39m=[32m"/"[39m
+          [36m>[39m
+            [36m<img[39m
+              [33malt[39m=[32m""[39m
+              [33mclass[39m=[32m"object-contain"[39m
+              [33mdata-nimg[39m=[32m"1"[39m
+              [33mdecoding[39m=[32m"async"[39m
+              [33mheight[39m=[32m"28"[39m
+              [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+              [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+              [33mstyle[39m=[32m"color: transparent;"[39m
+              [33mwidth[39m=[32m"28"[39m
+            [36m/>[39m
+            [36m<span>[39m
+              [0mVision XIX Labs[0m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden items-center gap-7 xl:flex"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/product"[39m
+            [36m>[39m
+              [0mProduct[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/integrations"[39m
+            [36m>[39m
+              [0mIntegrations[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/security"[39m
+            [36m>[39m
+              [0mSecurity[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/docs"[39m
+            [36m>[39m
+              [0mDocs[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/demo"[39m
+            [36m>[39m
+              [0mDemo[0m
+            [36m</a>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-controls[39m=[32m"more-navigation"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mMore [0m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"text-[10px]"[39m
+                [36m>[39m
+                  [0m⌄[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden items-center gap-3 xl:flex"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/auth/signin"[39m
+            [36m>[39m
+              [0mSign in[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+              [33mhref[39m=[32m"/download"[39m
+            [36m>[39m
+              [0mDownload[0m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"mobile-navigation"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Open navigation menu"[39m
+            [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</nav>[39m
+      [36m<main[39m
+        [33mid[39m=[32m"page-owned-target"[39m
+        [33mtabindex[39m=[32m"0"[39m
+      [36m>[39m
+        [0mCurrent page[0m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/__tests__/navigationKeyboardBypass.test.ts:35:26
+     33| it('preserves the main landmark existing ID and tabindex', () => {
+     34|   renderPage({ id: 'page-owned-target', tabIndex: 0 });
+     35|   fireEvent.click(screen.getByRole('button', { name: 'Skip to content'…
+       |                          ^
+     36|   const main = screen.getByRole('main');
+     37|   expect(document.activeElement).toBe(main);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  components/__tests__/navigationKeyboardBypass.test.ts > closes More before leaving navigation focus
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Skip to content"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Primary navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Primary navigation"[39m
+    [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Vision XIX Labs home":
+  [36m<a[39m
+    [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+    [33mhref[39m=[32m"/"[39m
+  [36m/>[39m
+
+  Name "Product":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/product"[39m
+  [36m/>[39m
+
+  Name "Integrations":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/integrations"[39m
+  [36m/>[39m
+
+  Name "Security":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/security"[39m
+  [36m/>[39m
+
+  Name "Docs":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Demo":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/demo"[39m
+  [36m/>[39m
+
+  Name "Pricing":
+  [36m<a[39m
+    [33mclass[39m=[32m"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white"[39m
+    [33mhref[39m=[32m"/plans"[39m
+  [36m/>[39m
+
+  Name "Support (account required)":
+  [36m<a[39m
+    [33mclass[39m=[32m"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white"[39m
+    [33mhref[39m=[32m"/account/help"[39m
+  [36m/>[39m
+
+  Name "Status":
+  [36m<a[39m
+    [33mclass[39m=[32m"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white"[39m
+    [33mhref[39m=[32m"/status"[39m
+  [36m/>[39m
+
+  Name "Company":
+  [36m<a[39m
+    [33mclass[39m=[32m"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white"[39m
+    [33mhref[39m=[32m"/axiom"[39m
+  [36m/>[39m
+
+  Name "Sign in":
+  [36m<a[39m
+    [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/auth/signin"[39m
+  [36m/>[39m
+
+  Name "Download":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+    [33mhref[39m=[32m"/download"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  presentation:
+
+  Name "":
+  [36m<img[39m
+    [33malt[39m=[32m""[39m
+    [33mclass[39m=[32m"object-contain"[39m
+    [33mdata-nimg[39m=[32m"1"[39m
+    [33mdecoding[39m=[32m"async"[39m
+    [33mheight[39m=[32m"28"[39m
+    [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+    [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+    [33mstyle[39m=[32m"color: transparent;"[39m
+    [33mwidth[39m=[32m"28"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "More":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"more-navigation"[39m
+    [33maria-expanded[39m=[32m"true"[39m
+    [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Open navigation menu":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"mobile-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Open navigation menu"[39m
+    [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "More destinations":
+  [36m<div[39m
+    [33maria-label[39m=[32m"More destinations"[39m
+    [33mclass[39m=[32m"absolute right-0 top-full mt-2 min-w-60 rounded-xl border border-white/[0.09] bg-[#11120f] p-2 shadow-xl"[39m
+    [33mid[39m=[32m"more-navigation"[39m
+    [33mrole[39m=[32m"group"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary navigation"[39m
+        [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 h-16 xl:h-[72px]"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+            [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+            [33mhref[39m=[32m"/"[39m
+          [36m>[39m
+            [36m<img[39m
+              [33malt[39m=[32m""[39m
+              [33mclass[39m=[32m"object-contain"[39m
+              [33mdata-nimg[39m=[32m"1"[39m
+              [33mdecoding[39m=[32m"async"[39m
+              [33mheight[39m=[32m"28"[39m
+              [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+              [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+              [33mstyle[39m=[32m"color: transparent;"[39m
+              [33mwidth[39m=[32m"28"[39m
+            [36m/>[39m
+            [36m<span>[39m
+              [0mVision XIX Labs[0m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden items-center gap-7 xl:flex"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/product"[39m
+            [36m>[39m
+              [0mProduct[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/integrations"[39m
+            [36m>[39m
+              [0mIntegrations[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/security"[39m
+            [36m>[39m
+              [0mSecurity[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/docs"[39m
+            [36m>[39m
+              [0mDocs[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/demo"[39m
+            [36m>[39m
+              [0mDemo[0m
+            [36m</a>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-controls[39m=[32m"more-navigation"[39m
+                [33maria-expanded[39m=[32m"true"[39m
+                [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mMore [0m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"text-[10px]"[39m
+                [36m>[39m
+                  [0m⌄[0m
+                [36m</span>[39m
+              [36m</button>[39m
+              [36m<div[39m
+                [33maria-label[39m=[32m"More destinations"[39m
+                [33mclass[39m=[32m"absolute right-0 top-full mt-2 min-w-60 rounded-xl border border-white/[0.09] bg-[#11120f] p-2 shadow-xl"[39m
+                [33mid[39m=[32m"more-navigation"[39m
+                [33mrole[39m=[32m"group"[39m
+              [36m>[39m
+                [36m<a[39m
+                  [33mclass[39m=[32m"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white"[39m
+                  [33mhref[39m=[32m"/plans"[39m
+                [36m>[39m
+                  [0mPricing[0m
+                [36m</a>[39m
+                [36m<a[39m
+                  [33mclass[39m=[32m"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white"[39m
+                  [33mhref[39m=[32m"/account/help"[39m
+                [36m>[39m
+                  [0mSupport (account required)[0m
+                [36m</a>[39m
+                [36m<a[39m
+                  [33mclass[39m=[32m"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white"[39m
+                  [33mhref[39m=[32m"/status"[39m
+                [36m>[39m
+                  [0mStatus[0m
+                [36m</a>[39m
+                [36m<a[39m
+                  [33mclass[39m=[32m"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white"[39m
+                  [33mhref[39m=[32m"/axiom"[39m
+                [36m>[39m
+                  [0mCompany[0m
+                [36m</a>[39m
+              [36m</div>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden items-center gap-3 xl:flex"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/auth/signin"[39m
+            [36m>[39m
+              [0mSign in[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+              [33mhref[39m=[32m"/download"[39m
+            [36m>[39m
+              [0mDownload[0m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"mobile-navigation"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Open navigation menu"[39m
+            [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</nav>[39m
+      [36m<main>[39m
+        [0mCurrent page[0m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/__tests__/navigationKeyboardBypass.test.ts:45:26
+     43|   fireEvent.click(screen.getByRole('button', { name: 'More' }));
+     44|   expect(screen.getByRole('group', { name: 'More destinations' })).toB…
+     45|   fireEvent.click(screen.getByRole('button', { name: 'Skip to content'…
+       |                          ^
+     46|   expect(screen.queryByRole('group', { name: 'More destinations' })).t…
+     47|   expect(document.activeElement).toBe(screen.getByRole('main'));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  components/__tests__/navigationKeyboardBypass.test.ts > closes the mobile disclosure and restores scroll while retaining main focus
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Skip to content"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Primary navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Primary navigation"[39m
+    [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Vision XIX Labs home":
+  [36m<a[39m
+    [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+    [33mhref[39m=[32m"/"[39m
+  [36m/>[39m
+
+  Name "Product":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/product"[39m
+  [36m/>[39m
+
+  Name "Integrations":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/integrations"[39m
+  [36m/>[39m
+
+  Name "Security":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/security"[39m
+  [36m/>[39m
+
+  Name "Docs":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Demo":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/demo"[39m
+  [36m/>[39m
+
+  Name "Sign in":
+  [36m<a[39m
+    [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/auth/signin"[39m
+  [36m/>[39m
+
+  Name "Download":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+    [33mhref[39m=[32m"/download"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  presentation:
+
+  Name "":
+  [36m<img[39m
+    [33malt[39m=[32m""[39m
+    [33mclass[39m=[32m"object-contain"[39m
+    [33mdata-nimg[39m=[32m"1"[39m
+    [33mdecoding[39m=[32m"async"[39m
+    [33mheight[39m=[32m"28"[39m
+    [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+    [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+    [33mstyle[39m=[32m"color: transparent;"[39m
+    [33mwidth[39m=[32m"28"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "More":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"more-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Open navigation menu":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"mobile-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Open navigation menu"[39m
+    [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  main:
+
+  Name "":
+  [36m<main />[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div>[39m
+      [36m<nav[39m
+        [33maria-label[39m=[32m"Primary navigation"[39m
+        [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 h-16 xl:h-[72px]"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+            [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+            [33mhref[39m=[32m"/"[39m
+          [36m>[39m
+            [36m<img[39m
+              [33malt[39m=[32m""[39m
+              [33mclass[39m=[32m"object-contain"[39m
+              [33mdata-nimg[39m=[32m"1"[39m
+              [33mdecoding[39m=[32m"async"[39m
+              [33mheight[39m=[32m"28"[39m
+              [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+              [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+              [33mstyle[39m=[32m"color: transparent;"[39m
+              [33mwidth[39m=[32m"28"[39m
+            [36m/>[39m
+            [36m<span>[39m
+              [0mVision XIX Labs[0m
+            [36m</span>[39m
+          [36m</a>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden items-center gap-7 xl:flex"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/product"[39m
+            [36m>[39m
+              [0mProduct[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/integrations"[39m
+            [36m>[39m
+              [0mIntegrations[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/security"[39m
+            [36m>[39m
+              [0mSecurity[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/docs"[39m
+            [36m>[39m
+              [0mDocs[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/demo"[39m
+            [36m>[39m
+              [0mDemo[0m
+            [36m</a>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative"[39m
+            [36m>[39m
+              [36m<button[39m
+                [33maria-controls[39m=[32m"more-navigation"[39m
+                [33maria-expanded[39m=[32m"false"[39m
+                [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [0mMore [0m
+                [36m<span[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"text-[10px]"[39m
+                [36m>[39m
+                  [0m⌄[0m
+                [36m</span>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"hidden items-center gap-3 xl:flex"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+              [33mhref[39m=[32m"/auth/signin"[39m
+            [36m>[39m
+              [0mSign in[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+              [33mhref[39m=[32m"/download"[39m
+            [36m>[39m
+              [0mDownload[0m
+            [36m</a>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33maria-controls[39m=[32m"mobile-navigation"[39m
+            [33maria-expanded[39m=[32m"false"[39m
+            [33maria-label[39m=[32m"Open navigation menu"[39m
+            [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+            [33mtype[39m=[32m"button"[39m
+          [36m/>[39m
+        [36m</div>[39m
+      [36m</nav>[39m
+      [36m<main>[39m
+        [0mCurrent page[0m
+      [36m</main>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/__tests__/navigationKeyboardBypass.test.ts:51:23
+     49| it('closes the mobile disclosure and restores scroll while retaining m…
+     50|   renderPage();
+     51|   const skip = screen.getByRole('button', { name: 'Skip to content' });
+       |                       ^
+     52|   document.body.style.overflow = 'auto'; document.documentElement.styl…
+     53|   fireEvent.click(screen.getByRole('button', { name: 'Open navigation …
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  components/__tests__/navigationKeyboardBypass.test.ts > safely leaves focus on the bypass when the page has no main
+TestingLibraryElementError: Unable to find an accessible element with the role "button" and name "Skip to content"
+
+Here are the accessible roles:
+
+  navigation:
+
+  Name "Primary navigation":
+  [36m<nav[39m
+    [33maria-label[39m=[32m"Primary navigation"[39m
+    [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Vision XIX Labs home":
+  [36m<a[39m
+    [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+    [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+    [33mhref[39m=[32m"/"[39m
+  [36m/>[39m
+
+  Name "Product":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/product"[39m
+  [36m/>[39m
+
+  Name "Integrations":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/integrations"[39m
+  [36m/>[39m
+
+  Name "Security":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/security"[39m
+  [36m/>[39m
+
+  Name "Docs":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/docs"[39m
+  [36m/>[39m
+
+  Name "Demo":
+  [36m<a[39m
+    [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/demo"[39m
+  [36m/>[39m
+
+  Name "Sign in":
+  [36m<a[39m
+    [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+    [33mhref[39m=[32m"/auth/signin"[39m
+  [36m/>[39m
+
+  Name "Download":
+  [36m<a[39m
+    [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+    [33mhref[39m=[32m"/download"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  presentation:
+
+  Name "":
+  [36m<img[39m
+    [33malt[39m=[32m""[39m
+    [33mclass[39m=[32m"object-contain"[39m
+    [33mdata-nimg[39m=[32m"1"[39m
+    [33mdecoding[39m=[32m"async"[39m
+    [33mheight[39m=[32m"28"[39m
+    [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+    [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+    [33mstyle[39m=[32m"color: transparent;"[39m
+    [33mwidth[39m=[32m"28"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  button:
+
+  Name "More":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"more-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  Name "Open navigation menu":
+  [36m<button[39m
+    [33maria-controls[39m=[32m"mobile-navigation"[39m
+    [33maria-expanded[39m=[32m"false"[39m
+    [33maria-label[39m=[32m"Open navigation menu"[39m
+    [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+    [33mtype[39m=[32m"button"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<nav[39m
+      [33maria-label[39m=[32m"Primary navigation"[39m
+      [33mclass[39m=[32m"site-navigation fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-300 border-b border-transparent bg-[#090a08]/62"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mx-auto flex backdrop-blur-xl max-w-[1280px] items-center justify-between px-5 transition-[height] duration-300 sm:px-8 lg:px-10 h-16 xl:h-[72px]"[39m
+      [36m>[39m
+        [36m<a[39m
+          [33maria-label[39m=[32m"Vision XIX Labs home"[39m
+          [33mclass[39m=[32m"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100"[39m
+          [33mhref[39m=[32m"/"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m""[39m
+            [33mclass[39m=[32m"object-contain"[39m
+            [33mdata-nimg[39m=[32m"1"[39m
+            [33mdecoding[39m=[32m"async"[39m
+            [33mheight[39m=[32m"28"[39m
+            [33msrc[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=64&q=75"[39m
+            [33msrcset[39m=[32m"/_next/image?url=%2Fvision-xix-logo.png&w=32&q=75 1x, /_next/image?url=%2Fvision-xix-logo.png&w=64&q=75 2x"[39m
+            [33mstyle[39m=[32m"color: transparent;"[39m
+            [33mwidth[39m=[32m"28"[39m
+          [36m/>[39m
+          [36m<span>[39m
+            [0mVision XIX Labs[0m
+          [36m</span>[39m
+        [36m</a>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"hidden items-center gap-7 xl:flex"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+            [33mhref[39m=[32m"/product"[39m
+          [36m>[39m
+            [0mProduct[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+            [33mhref[39m=[32m"/integrations"[39m
+          [36m>[39m
+            [0mIntegrations[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+            [33mhref[39m=[32m"/security"[39m
+          [36m>[39m
+            [0mSecurity[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+            [33mhref[39m=[32m"/docs"[39m
+          [36m>[39m
+            [0mDocs[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-sm text-zinc-400 transition-colors hover:text-white"[39m
+            [33mhref[39m=[32m"/demo"[39m
+          [36m>[39m
+            [0mDemo[0m
+          [36m</a>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"relative"[39m
+          [36m>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"more-navigation"[39m
+              [33maria-expanded[39m=[32m"false"[39m
+              [33mclass[39m=[32m"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [0mMore [0m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"text-[10px]"[39m
+              [36m>[39m
+                [0m⌄[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"hidden items-center gap-3 xl:flex"[39m
+        [36m>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white"[39m
+            [33mhref[39m=[32m"/auth/signin"[39m
+          [36m>[39m
+            [0mSign in[0m
+          [36m</a>[39m
+          [36m<a[39m
+            [33mclass[39m=[32m"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white"[39m
+            [33mhref[39m=[32m"/download"[39m
+          [36m>[39m
+            [0mDownload[0m
+          [36m</a>[39m
+        [36m</div>[39m
+        [36m<button[39m
+          [33maria-controls[39m=[32m"mobile-navigation"[39m
+          [33maria-expanded[39m=[32m"false"[39m
+          [33maria-label[39m=[32m"Open navigation menu"[39m
+          [33mclass[39m=[32m"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m/>[39m
+      [36m</div>[39m
+    [36m</nav>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/__tests__/navigationKeyboardBypass.test.ts:64:23
+     62| it('safely leaves focus on the bypass when the page has no main', () =…
+     63|   render(createElement(Navigation));
+     64|   const skip = screen.getByRole('button', { name: 'Skip to content' });
+       |                       ^
+     65|   skip.focus();
+     66|   expect(() => fireEvent.click(skip)).not.toThrow();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  22:33:21
+   Duration  670ms (transform 23ms, setup 0ms, import 123ms, tests 86ms, environment 398ms)
+

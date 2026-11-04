@@ -140,6 +140,13 @@ export function Navigation() {
   };
 
   const closeMenu = () => { setMobileMenuOpen(false); setMoreOpen(false); };
+  const skipToContent = () => {
+    closeMenu();
+    const main = document.querySelector<HTMLElement>("main");
+    if (!main) return;
+    if (!main.hasAttribute("tabindex")) main.setAttribute("tabindex", "-1");
+    main.focus();
+  };
 
   return (
     <nav
@@ -159,6 +166,13 @@ export function Navigation() {
           scrolled ? "h-14 xl:h-16" : "h-16 xl:h-[72px]"
         }`}
       >
+        <button
+          type="button"
+          onClick={skipToContent}
+          className="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-3 focus:z-10 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-black focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-orange-300"
+        >
+          Skip to content
+        </button>
         <Link href="/" onClick={closeMenu} className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
           <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" priority />
           <span>Vision XIX Labs</span>
