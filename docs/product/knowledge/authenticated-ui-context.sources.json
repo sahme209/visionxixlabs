@@ -1,0 +1,348 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "inspectedAt": "2026-11-04",
+  "runtimeRevision": "91651299c36baefdec5108a9895adf588cb7a298",
+  "snapshot": "Runtime sources match exact Git revision; durable evidence pinned individually, not a claim all later documentation existed at runtime commit.",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "nativeServerOrVaultAccepted": false,
+  "testsExecutedByDocumentationTask": false,
+  "evidenceKeysAreRuntimeIds": false,
+  "rangeConvention": "One-based inclusive, exact original bytes including line endings.",
+  "sources": [
+    {
+      "key": "root-verification",
+      "path": "desktop/src/App.tsx",
+      "sha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348",
+      "lineCount": 253,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 44,
+          "end": 96,
+          "sha256": "09711b562c76bfd7b3a488aee6adabc527812608d35f512514f8159ceac01e46"
+        }
+      ]
+    },
+    {
+      "key": "root-signout",
+      "path": "desktop/src/App.tsx",
+      "sha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348",
+      "lineCount": 253,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 98,
+          "end": 113,
+          "sha256": "f7de6f0b27470a2e4f3f6a38d978b677b58411934f8469203f8902ab5152f50b"
+        }
+      ]
+    },
+    {
+      "key": "root-render",
+      "path": "desktop/src/App.tsx",
+      "sha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348",
+      "lineCount": 253,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 115,
+          "end": 175,
+          "sha256": "724593165195c6690ae8b84c03ca1fcb3dc50735c78f7a0a4edd8cccc3c6722c"
+        }
+      ]
+    },
+    {
+      "key": "root-plumbing",
+      "path": "desktop/src/App.tsx",
+      "sha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348",
+      "lineCount": 253,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 166,
+          "end": 169,
+          "sha256": "8e4ab627a1307748ba4c5e3403082dd48c4f8537c0c3b061c5348dd3104ff752"
+        },
+        {
+          "start": 231,
+          "end": 231,
+          "sha256": "ef4915462149a7b3629b070df1faf0e16b7524d857a2f851d356f143e25a6360"
+        }
+      ]
+    },
+    {
+      "key": "settings-entry",
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70",
+      "lineCount": 2003,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 108,
+          "end": 108,
+          "sha256": "75d1be393df03aba2da6cdb99243b167e056f49f357c6c0fb1a16563d58860b8"
+        },
+        {
+          "start": 154,
+          "end": 162,
+          "sha256": "1e1784c8efbb7b4c9c7084998eaab44e59070becd663fcc347c0ece7e24852e2"
+        },
+        {
+          "start": 219,
+          "end": 230,
+          "sha256": "b18052bcf14f2d8822482bc512f9d5f60d407d200ea239ad8bcf67b6cc523dad"
+        }
+      ]
+    },
+    {
+      "key": "access-entry",
+      "path": "desktop/src/views/DesktopAccessRequiredView.tsx",
+      "sha256": "877d4936a5a6d47f141529ff62f921078e8ce09526bf4713b245db0dca7e38ce",
+      "lineCount": 129,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 7,
+          "end": 18,
+          "sha256": "4c94822ac2c4eac7d938397ca782c4a9b7c4b301c0c98374af1a172c7f0fe3d3"
+        },
+        {
+          "start": 55,
+          "end": 70,
+          "sha256": "5f427a8854f0820662e5e5cf2e1714aba1c967f7f0c49bf397f6e2f477ff8be5"
+        },
+        {
+          "start": 120,
+          "end": 125,
+          "sha256": "6c714ae475006b17050e1f5205fb61548c9c9f360712bc0dc10e1e089b9d3770"
+        }
+      ]
+    },
+    {
+      "key": "client-context",
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1",
+      "lineCount": 2200,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 461,
+          "end": 493,
+          "sha256": "d45ff5da1f7dd0995afe99ec7bdc5c8b8bdeac7a7bc3c8c295892b0180fc3360"
+        }
+      ]
+    },
+    {
+      "key": "client-presence",
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1",
+      "lineCount": 2200,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 629,
+          "end": 632,
+          "sha256": "922ab878c0ce395a603e7139e27605035e9db65e99d7d3f53b40825b5fe4d398"
+        }
+      ]
+    },
+    {
+      "key": "coordinator",
+      "path": "desktop/src/lib/credentialVerificationCoordinator.ts",
+      "sha256": "686b23af528b7c56875ed41f46ef920279ca193f9ebc58749ea3ebc80995ac30",
+      "lineCount": 41,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 41,
+          "sha256": "686b23af528b7c56875ed41f46ef920279ca193f9ebc58749ea3ebc80995ac30"
+        }
+      ]
+    },
+    {
+      "key": "credential-save",
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229",
+      "lineCount": 150,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 30,
+          "end": 74,
+          "sha256": "de8c3c6e2984cf615cc3c78ff96338f6c031e9a174fe75e8cbdd69832cb3637d"
+        }
+      ]
+    },
+    {
+      "key": "credential-signout",
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229",
+      "lineCount": 150,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 116,
+          "end": 127,
+          "sha256": "529fcb1476d63fad335c89846c1cfee46e2c6821ab5b268d39161729f3e980e1"
+        }
+      ]
+    },
+    {
+      "key": "credential-recovery",
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229",
+      "lineCount": 150,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 129,
+          "end": 150,
+          "sha256": "f592b0d91374f657a979927ee108ef803457a0e804cca31e5bb4a9009ea7ea80"
+        }
+      ]
+    },
+    {
+      "key": "signin-lifecycle",
+      "path": "desktop/src/views/DesktopSignInView.tsx",
+      "sha256": "6d4b57d890407fbd768d45e718f8a7903b0d666e34e1918d626e12b669aeaba0",
+      "lineCount": 157,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 16,
+          "end": 101,
+          "sha256": "b6fb977216f77073be36190682bc75693b5ace700d125335d9505d48bf294c16"
+        }
+      ]
+    },
+    {
+      "key": "test-source",
+      "path": "lib/desktop/__tests__/authenticatedUiContext.test.ts",
+      "sha256": "3f81e3245304927f8f8704731ef25cddde509a5fffdcf4d3c536c95c3e7aedbc",
+      "lineCount": 87,
+      "matchesRuntimeGitRevision": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 87,
+          "sha256": "3f81e3245304927f8f8704731ef25cddde509a5fffdcf4d3c536c95c3e7aedbc"
+        }
+      ]
+    },
+    {
+      "key": "final-receipt",
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/root-final-receipt.json",
+      "sha256": "4aa74f531365d9932f9bf6783675ed18dc3f14265a0e245f206f228f6666751a",
+      "lineCount": 51,
+      "matchesRuntimeGitRevision": null,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 51,
+          "sha256": "4aa74f531365d9932f9bf6783675ed18dc3f14265a0e245f206f228f6666751a"
+        }
+      ]
+    },
+    {
+      "key": "recovery-summary",
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/README.md",
+      "sha256": "d5dbbb4ce0aed8aaadaee611a55036c49634ef1600b5e8e279025388cb31996a",
+      "lineCount": 9,
+      "matchesRuntimeGitRevision": null,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 9,
+          "sha256": "d5dbbb4ce0aed8aaadaee611a55036c49634ef1600b5e8e279025388cb31996a"
+        }
+      ]
+    },
+    {
+      "key": "race-red",
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/exclusive-recovery-red.log.json",
+      "sha256": "87c367e25fec3f9d6a11f695032d65d942328a010f46a545a30545cd663f82c0",
+      "lineCount": 5,
+      "matchesRuntimeGitRevision": null,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "87c367e25fec3f9d6a11f695032d65d942328a010f46a545a30545cd663f82c0"
+        }
+      ]
+    },
+    {
+      "key": "final-green",
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/final-copy-aligned-green.log.json",
+      "sha256": "f3c108996a72120aace398745028c8d23ceb3039e9e0ff8c7eb99c3ffa624a91",
+      "lineCount": 5,
+      "matchesRuntimeGitRevision": null,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "f3c108996a72120aace398745028c8d23ceb3039e9e0ff8c7eb99c3ffa624a91"
+        }
+      ]
+    },
+    {
+      "key": "compat",
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/exclusive-recovery-compat.log.json",
+      "sha256": "8dc48b348825aa1718ecaf2240d2f62944ec9429189ed2a9c148f6c198e679e5",
+      "lineCount": 5,
+      "matchesRuntimeGitRevision": null,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "8dc48b348825aa1718ecaf2240d2f62944ec9429189ed2a9c148f6c198e679e5"
+        }
+      ]
+    },
+    {
+      "key": "types",
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/exclusive-recovery-types-receipt.json",
+      "sha256": "43210bbbbaff09daa644cb46a960eb3865f722ce90cb89ad851624ac26d966d0",
+      "lineCount": 15,
+      "matchesRuntimeGitRevision": null,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 15,
+          "sha256": "43210bbbbaff09daa644cb46a960eb3865f722ce90cb89ad851624ac26d966d0"
+        }
+      ]
+    },
+    {
+      "key": "review",
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/independent-review.md",
+      "sha256": "7dd3d01508dba5f0fd3a0a4bc11e9af186ca9148baa4876135d38d85a91a4afd",
+      "lineCount": 5,
+      "matchesRuntimeGitRevision": null,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "7dd3d01508dba5f0fd3a0a4bc11e9af186ca9148baa4876135d38d85a91a4afd"
+        }
+      ]
+    },
+    {
+      "key": "packet",
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/EXECUTION-PACKET.md",
+      "sha256": "3e3d5ffca404fb6466d190ba12cdbd8e7ff24e8ffbf9890831b166515e66665a",
+      "lineCount": 20,
+      "matchesRuntimeGitRevision": null,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 20,
+          "sha256": "3e3d5ffca404fb6466d190ba12cdbd8e7ff24e8ffbf9890831b166515e66665a"
+        }
+      ]
+    }
+  ]
+}

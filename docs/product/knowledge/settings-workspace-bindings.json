@@ -3,7 +3,7 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "5ef92577c68727b05639f3c85867c8fe0ab4ed4a",
+  "baselineCommit": "91651299c36baefdec5108a9895adf588cb7a298",
   "declarations": 69,
   "addedDeclarations": 68,
   "preservedDeclarations": 1,
@@ -11,7 +11,7 @@
   "files": [
     {
       "source": "desktop/src/views/SettingsView.tsx",
-      "baselineSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "baselineSha256": "7a9d3539e8b1fd23b26efc3e96d900eed28cbc1083ac3fadcfb15b0372942619",
       "declarations": 69,
       "tagCounts": {
         "button": 48,
@@ -19,7 +19,8 @@
         "select": 12,
         "a": 1,
         "textarea": 2
-      }
+      },
+      "functionalSourceSha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70"
     }
   ],
   "unbound": [
@@ -37,7 +38,8 @@
       "guideSection": "Open and navigate Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={onClose} className=\"mb-6 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/[0.04] hover:text-white\"><ArrowLeft aria-hidden className=",
-      "nodeSha256": "c64edce68c07afc417ba29530dd6ed99eeb5ea70780ef667c56c4bd03726e34b"
+      "nodeSha256": "c64edce68c07afc417ba29530dd6ed99eeb5ea70780ef667c56c4bd03726e34b",
+      "sourceLine": 169
     },
     {
       "helpId": "settings.workspace.section-search",
@@ -48,7 +50,8 @@
       "guideSection": "Open and navigate Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<input type=\"search\" aria-label=\"Search settings\" placeholder=\"Search settings\" value={search} onChange={event => setSearch(event.target.value)} className=\"min-w-0 w-full bg-transparent text-xs text-z",
-      "nodeSha256": "33bc48d0f7aab11f44f8946fe4887574e7980ef70fc66fbe3a9f5d3f698239e8"
+      "nodeSha256": "33bc48d0f7aab11f44f8946fe4887574e7980ef70fc66fbe3a9f5d3f698239e8",
+      "sourceLine": 173
     },
     {
       "helpId": "settings.workspace.section-select",
@@ -59,7 +62,8 @@
       "guideSection": "Open and navigate Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button key={id} type=\"button\" onClick={() => { setActive(id); setSearch(\"\"); }} aria-current={active === id ? \"page\" : undefined} className={`relative flex w-full items-center gap-3 rounded-md py-2 p",
-      "nodeSha256": "b2428e8783b03d8c563c87063393c1897c00eaea822787714ed779f97d5a7087"
+      "nodeSha256": "b2428e8783b03d8c563c87063393c1897c00eaea822787714ed779f97d5a7087",
+      "sourceLine": 177
     },
     {
       "helpId": "settings.workspace.sign-out-cancel",
@@ -70,7 +74,8 @@
       "guideSection": "Open and navigate Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => setShowSignOut(false)} className=\"rounded-lg px-4 py-2 text-sm text-zinc-400 hover:bg-white/[0.05] hover:text-white\">Cancel</button>",
-      "nodeSha256": "fcd36f8f66561917e90677e9929d7b60bfea9fc9463cd530f1f8ac55d6ba0d9f"
+      "nodeSha256": "fcd36f8f66561917e90677e9929d7b60bfea9fc9463cd530f1f8ac55d6ba0d9f",
+      "sourceLine": 226
     },
     {
       "helpId": "settings.workspace.sign-out-confirm",
@@ -81,7 +86,8 @@
       "guideSection": "Open and navigate Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void signOut()} className=\"rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-100\">Log out</button>",
-      "nodeSha256": "86fba5b008c1a9d99deebf653d8ee25b8f3c1c3ae6fa046efe2dc8c700f91ad5"
+      "nodeSha256": "86fba5b008c1a9d99deebf653d8ee25b8f3c1c3ae6fa046efe2dc8c700f91ad5",
+      "sourceLine": 227
     },
     {
       "helpId": "settings.workspace.governance-evidence-preview",
@@ -92,7 +98,8 @@
       "guideSection": "Preferences and device session",
       "availability": "DEV-only prototype entry; no production availability established",
       "anchor": "<button type=\"button\" className=\"btn-secondary\" onClick={onOpenGovernance}>Inspect saved Governance</button>",
-      "nodeSha256": "ac7784db3bb9f90c417493c5c18282991458ec49e84e88390c1fa205ec2aeebc"
+      "nodeSha256": "ac7784db3bb9f90c417493c5c18282991458ec49e84e88390c1fa205ec2aeebc",
+      "sourceLine": 242
     },
     {
       "helpId": "governance.execution-limits.entry",
@@ -103,7 +110,8 @@
       "guideSection": "Preferences and device session",
       "availability": "DEV-only prototype entry; no production availability established",
       "anchor": "<button data-help-id=\"governance.execution-limits.entry\" type=\"button\" className=\"btn-secondary\" onClick={onOpenExecutionLimits}>Review execution limits preview</button>",
-      "nodeSha256": "a3fa02299a8996e09f9da0c5f48ea44eee9ddb81ca800724f0e9456fa37f0786"
+      "nodeSha256": "a3fa02299a8996e09f9da0c5f48ea44eee9ddb81ca800724f0e9456fa37f0786",
+      "sourceLine": 243
     },
     {
       "helpId": "settings.workspace.notification-test",
@@ -114,7 +122,8 @@
       "guideSection": "Preferences and device session",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: \"Axiom Agent\", body: \"Desktop notifications are ready.\" })} className=\"rounded-md border border",
-      "nodeSha256": "5475c8294574ddaf1f9d787a509d6402f6e3a37f0e8b9fcc214fd7eb0696a161"
+      "nodeSha256": "5475c8294574ddaf1f9d787a509d6402f6e3a37f0e8b9fcc214fd7eb0696a161",
+      "sourceLine": 247
     },
     {
       "helpId": "settings.workspace.sign-out-open",
@@ -125,7 +134,8 @@
       "guideSection": "Preferences and device session",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={onRequestSignOut} className=\"inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]\"><LogOut className=\"h",
-      "nodeSha256": "2e67ce83401aae7be77c14765b7a36864f692c1122a3952ef64f4bc02632290d"
+      "nodeSha256": "2e67ce83401aae7be77c14765b7a36864f692c1122a3952ef64f4bc02632290d",
+      "sourceLine": 267
     },
     {
       "helpId": "settings.workspace.usage-refresh",
@@ -136,7 +146,8 @@
       "guideSection": "Plan & usage: reads, cost and browser billing",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={!current||(!usage&&!current.error)} onClick={()=>setAttempt(value=>value+1)} className=\"shrink-0 text-zinc-200 underline disabled:opacity-40\">Refresh plan and usage</bu",
-      "nodeSha256": "74b04fbde0121a0b4b78ebed0ede3855a0c9220c0413aea9df85ef9f70781c0f"
+      "nodeSha256": "74b04fbde0121a0b4b78ebed0ede3855a0c9220c0413aea9df85ef9f70781c0f",
+      "sourceLine": 332
     },
     {
       "helpId": "settings.workspace.billing-cockpit-current",
@@ -147,7 +158,8 @@
       "guideSection": "Plan & usage: reads, cost and browser billing",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={()=>void open(`${WEB_BASE}/control/usage-billing`).catch(()=>setError(\"The billing cockpit could not be opened.\"))} className=\"text-xs text-zinc-200 underline\">View bill",
-      "nodeSha256": "eb031b89134e78c52d51c590b780c470ce9e120234d4e0459de9da416dc7c896"
+      "nodeSha256": "eb031b89134e78c52d51c590b780c470ce9e120234d4e0459de9da416dc7c896",
+      "sourceLine": 350
     },
     {
       "helpId": "settings.workspace.billing-portal-current",
@@ -157,8 +169,9 @@
       "sourceFunction": "PlanSection",
       "guideSection": "Plan & usage: reads, cost and browser billing",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
-      "anchor": "<button type=\"button\" disabled={opening} onClick={()=>void openBillingPortal()} className=\"rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50\">{opening?\"Opening\u2026\":\"Open",
-      "nodeSha256": "5409a6c7283dfcfcbc6386f121e0e7739646d3d0da776b34a7f5dd59f9a49db5"
+      "anchor": "<button type=\"button\" disabled={opening} onClick={()=>void openBillingPortal()} className=\"rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50\">{opening?\"Opening…\":\"Open",
+      "nodeSha256": "5409a6c7283dfcfcbc6386f121e0e7739646d3d0da776b34a7f5dd59f9a49db5",
+      "sourceLine": 351
     },
     {
       "helpId": "settings.workspace.billing-cockpit-legacy",
@@ -169,7 +182,8 @@
       "guideSection": "Plan & usage: reads, cost and browser billing",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={()=>void open(`${WEB_BASE}/control/usage-billing`).catch(()=>setError(\"The billing cockpit could not be opened.\"))} className=\"mt-3 text-xs text-zinc-200 underline\">View",
-      "nodeSha256": "a89f02c48b71f4bd6c905bad03f9192c785dbcfeead0fbc7a9b5f9806c1014c7"
+      "nodeSha256": "a89f02c48b71f4bd6c905bad03f9192c785dbcfeead0fbc7a9b5f9806c1014c7",
+      "sourceLine": 356
     },
     {
       "helpId": "settings.workspace.billing-portal-legacy",
@@ -180,7 +194,8 @@
       "guideSection": "Plan & usage: reads, cost and browser billing",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={opening||(identity.role!==\"owner\"&&identity.role!==\"admin\")} onClick={() => void openBillingPortal()} className=\"rounded-lg bg-white px-4 py-2 text-xs font-semibold tex",
-      "nodeSha256": "7218edea0f1437457ec0bb236ff995b9e73b7771f5be1055ba631a5173629a55"
+      "nodeSha256": "7218edea0f1437457ec0bb236ff995b9e73b7771f5be1055ba631a5173629a55",
+      "sourceLine": 370
     },
     {
       "helpId": "settings.workspace.members-refresh",
@@ -191,7 +206,8 @@
       "guideSection": "Permissions: current membership and role writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={load} disabled={Boolean(savingUserId)} className=\"mb-4 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 disabled:opacity-50\">Refresh members</button>",
-      "nodeSha256": "e4bbc3fc59e399ab7c601b46822b84b540141c43ebc97925b441be6242eefe67"
+      "nodeSha256": "e4bbc3fc59e399ab7c601b46822b84b540141c43ebc97925b441be6242eefe67",
+      "sourceLine": 523
     },
     {
       "helpId": "settings.workspace.members-cockpit",
@@ -202,7 +218,8 @@
       "guideSection": "Permissions: current membership and role writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void manageInCockpit()} disabled={openingBrowser === scope || Boolean(savingUserId)} className=\"mb-4 ml-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-",
-      "nodeSha256": "e8cbfb6d6f351554ecabe791e7bc2dbcbbccd2cb487abbf66ae933f2ca3a0bde"
+      "nodeSha256": "e8cbfb6d6f351554ecabe791e7bc2dbcbbccd2cb487abbf66ae933f2ca3a0bde",
+      "sourceLine": 524
     },
     {
       "helpId": "settings.workspace.member-role",
@@ -213,7 +230,8 @@
       "guideSection": "Permissions: current membership and role writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select aria-label={`Role for ${member.email}`} value={member.role} disabled={locked} onChange={(event) => void changeRole(member.userId, event.target.value as Exclude<WorkspaceMember[\"role\"], \"owner\"",
-      "nodeSha256": "b32f0fe1a87cab3e799e80cf9cc94e1ce4677cc23743fe0979ef68e6935e8d67"
+      "nodeSha256": "b32f0fe1a87cab3e799e80cf9cc94e1ce4677cc23743fe0979ef68e6935e8d67",
+      "sourceLine": 536
     },
     {
       "helpId": "settings.workspace.model-search",
@@ -224,7 +242,8 @@
       "guideSection": "Models: catalog browsing versus policy writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<input id=\"model-search\" maxLength={200} value={query} onChange={(event) => { setQuery(event.target.value); setCatalogPage(0); }} placeholder=\"Add or search model\" className=\"w-full rounded-lg border ",
-      "nodeSha256": "d5372a8af875a9b46afe4da4c82b2bf3ecbdfa9a8b9ec4f02aecb9169046ad3c"
+      "nodeSha256": "d5372a8af875a9b46afe4da4c82b2bf3ecbdfa9a8b9ec4f02aecb9169046ad3c",
+      "sourceLine": 688
     },
     {
       "helpId": "settings.workspace.model-filter",
@@ -235,7 +254,8 @@
       "guideSection": "Models: catalog browsing versus policy writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button key={String(approved)} type=\"button\" aria-pressed={approvedOnly === approved} onClick={() => { setApprovedOnly(approved); setCatalogPage(0); }} className={`rounded-md px-2.5 py-1.5 text-[11px]",
-      "nodeSha256": "59f1520a3c87bd63f489f22b811d50cee57c80544dfe3cc1bfbb8a30b5b052ba"
+      "nodeSha256": "59f1520a3c87bd63f489f22b811d50cee57c80544dfe3cc1bfbb8a30b5b052ba",
+      "sourceLine": 689
     },
     {
       "helpId": "settings.workspace.model-remove-unavailable",
@@ -246,7 +266,8 @@
       "guideSection": "Models: catalog browsing versus policy writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className=\"shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45\">Remove unavailable ap",
-      "nodeSha256": "0015c38cfebb8c81e20c0a197904233633631719579da6f9e53dbf79a46680de"
+      "nodeSha256": "0015c38cfebb8c81e20c0a197904233633631719579da6f9e53dbf79a46680de",
+      "sourceLine": 692
     },
     {
       "helpId": "settings.workspace.model-retry",
@@ -257,7 +278,8 @@
       "guideSection": "Models: catalog browsing versus policy writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => setAttempt((current) => current + 1)} className=\"shrink-0 text-xs text-zinc-300 underline underline-offset-2\">Retry models</button>",
-      "nodeSha256": "ca3f96feca87723ae0b780ef0af28ccfd3b4b5563216814cae2bb3a849fb20f2"
+      "nodeSha256": "ca3f96feca87723ae0b780ef0af28ccfd3b4b5563216814cae2bb3a849fb20f2",
+      "sourceLine": 694
     },
     {
       "helpId": "settings.workspace.model-make-default",
@@ -268,7 +290,8 @@
       "guideSection": "Models: catalog browsing versus policy writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" aria-label={`Make ${model.label} workspace default`} disabled={Boolean(savingModel)} onClick={() => void makeDefault(model.id)} className=\"text-xs text-zinc-300 underline underli",
-      "nodeSha256": "bcbe355f7f3906f2dff49cbdc89326c97ab183386350db58c94f9db5aa4ffb8b"
+      "nodeSha256": "bcbe355f7f3906f2dff49cbdc89326c97ab183386350db58c94f9db5aa4ffb8b",
+      "sourceLine": 703
     },
     {
       "helpId": "settings.workspace.model-approval-toggle",
@@ -279,7 +302,8 @@
       "guideSection": "Models: catalog browsing versus policy writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" role=\"switch\" aria-checked={enabled} aria-label={model.available || model.managed ? `${enabled ? \"Disable\" : \"Enable\"} ${model.label}` : `Remove unavailable approval ${model.id}`",
-      "nodeSha256": "a45de6cf48932df3868fd9c9e12af6df74fd7b7070dac2c8f492d3baac7f882e"
+      "nodeSha256": "a45de6cf48932df3868fd9c9e12af6df74fd7b7070dac2c8f492d3baac7f882e",
+      "sourceLine": 704
     },
     {
       "helpId": "settings.workspace.model-previous",
@@ -290,7 +314,8 @@
       "guideSection": "Models: catalog browsing versus policy writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={safeCatalogPage === 0} onClick={() => setCatalogPage(safeCatalogPage - 1)} className=\"rounded-md border border-white/10 px-3 py-1.5 hover:text-white disabled:opacity-40",
-      "nodeSha256": "7fa906510f0f1bf74ee266af589727a728901238fac7856a4bb1fd8827e9f922"
+      "nodeSha256": "7fa906510f0f1bf74ee266af589727a728901238fac7856a4bb1fd8827e9f922",
+      "sourceLine": 713
     },
     {
       "helpId": "settings.workspace.model-next",
@@ -301,7 +326,8 @@
       "guideSection": "Models: catalog browsing versus policy writes",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={catalogOffset + 50 >= rows.length} onClick={() => setCatalogPage(safeCatalogPage + 1)} className=\"rounded-md border border-white/10 px-3 py-1.5 hover:text-white disable",
-      "nodeSha256": "0983bca092a8335d2b7b91266ed227a84ef49658d3f02111a7638aa7ef5d464d"
+      "nodeSha256": "0983bca092a8335d2b7b91266ed227a84ef49658d3f02111a7638aa7ef5d464d",
+      "sourceLine": 714
     },
     {
       "helpId": "settings.workspace.repository-clone",
@@ -312,7 +338,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void cloneRepository()} disabled={status === \"cloning\" || !repositoryFullName.includes(\"/\") || !destination} className=\"inline-flex items-center gap-2 rounded-lg b",
-      "nodeSha256": "5d27e9c4f85350faa81c8fbf616e3c8fc133a25db97d29ace8bd12c9438b16dc"
+      "nodeSha256": "5d27e9c4f85350faa81c8fbf616e3c8fc133a25db97d29ace8bd12c9438b16dc",
+      "sourceLine": 777
     },
     {
       "helpId": "settings.workspace.pull-request-create",
@@ -323,7 +350,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void submit()} disabled={!canSubmit || busy} className=\"inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zin",
-      "nodeSha256": "97a24fa4881d71f30981af3f582b962dac2d7c313cb316cb40d64f5d487fc61b"
+      "nodeSha256": "97a24fa4881d71f30981af3f582b962dac2d7c313cb316cb40d64f5d487fc61b",
+      "sourceLine": 880
     },
     {
       "helpId": "settings.workspace.pull-request-link",
@@ -334,7 +362,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<a href={prUrl} target=\"_blank\" rel=\"noreferrer\" className=\"text-[12px] text-emerald-300 underline\">View pull request on GitHub</a>",
-      "nodeSha256": "9c19c3a7970f716841d6ca15c4fb24c57133e2b1aa4ab4d19f775a2df91817c6"
+      "nodeSha256": "9c19c3a7970f716841d6ca15c4fb24c57133e2b1aa4ab4d19f775a2df91817c6",
+      "sourceLine": 888
     },
     {
       "helpId": "settings.workspace.environments-create-standard-empty",
@@ -345,7 +374,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void createStandardSet()} disabled={creating} className=\"rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/[0.",
-      "nodeSha256": "7c02f476b1b22d0a9a6b180acec8665546b1a431fd1af6cb118c29636a0ae31c"
+      "nodeSha256": "7c02f476b1b22d0a9a6b180acec8665546b1a431fd1af6cb118c29636a0ae31c",
+      "sourceLine": 961
     },
     {
       "helpId": "settings.workspace.environments-create-standard-missing",
@@ -356,7 +386,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void createStandardSet()} disabled={creating} className=\"rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/[0.",
-      "nodeSha256": "b9ed9998a5d3d0accd33d88554341df0385ad9fae1254eedfba91b245656bf8e"
+      "nodeSha256": "b9ed9998a5d3d0accd33d88554341df0385ad9fae1254eedfba91b245656bf8e",
+      "sourceLine": 972
     },
     {
       "helpId": "settings.workspace.environment-target-toggle",
@@ -367,7 +398,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => setExpandedId(expandedId === env.id ? null : env.id)} className=\"rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-300 hover:bg-white/[0.06]\"> {e",
-      "nodeSha256": "e75e7641e9979a913c6fff3db2352fd1a16d949223dbbac4fcc380e2f6e1c5f1"
+      "nodeSha256": "e75e7641e9979a913c6fff3db2352fd1a16d949223dbbac4fcc380e2f6e1c5f1",
+      "sourceLine": 985
     },
     {
       "helpId": "settings.workspace.environment-tier",
@@ -378,7 +410,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={tier} onChange={(event) => setTier(event.target.value)} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/2",
-      "nodeSha256": "e4e5c7fe583886fc24a2cb3149537ef6da59711a9a67ec96edecde519e0a9cba"
+      "nodeSha256": "e4e5c7fe583886fc24a2cb3149537ef6da59711a9a67ec96edecde519e0a9cba",
+      "sourceLine": 1029
     },
     {
       "helpId": "settings.workspace.environment-create",
@@ -389,7 +422,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void submit()} disabled={busy || !slug || !name} className=\"inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text",
-      "nodeSha256": "67ba282f271719f146583c9e0271b3d051d7dbc7440ad88971ab5cd3487d9f0e"
+      "nodeSha256": "67ba282f271719f146583c9e0271b3d051d7dbc7440ad88971ab5cd3487d9f0e",
+      "sourceLine": 1035
     },
     {
       "helpId": "settings.workspace.deploy-target-save",
@@ -400,7 +434,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void save()} disabled={saving || !roleArn || !region || !ecsCluster || !ecsService} className=\"inline-flex items-center gap-2 rounded-lg border border-white/10 bg-",
-      "nodeSha256": "0dace83d2d3fa08a428887145ca581c79506fe4d4cc34329ec93547773254bb8"
+      "nodeSha256": "0dace83d2d3fa08a428887145ca581c79506fe4d4cc34329ec93547773254bb8",
+      "sourceLine": 1237
     },
     {
       "helpId": "settings.workspace.deploy-repository",
@@ -411,7 +446,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={deployRepo} onChange={(event) => { setDeployRepo(event.target.value); setReadiness(null); }} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-",
-      "nodeSha256": "abfa3c033b78f7c2e849e3023e171b56fef5efeba4ffb6917c63a8f6af86f151"
+      "nodeSha256": "abfa3c033b78f7c2e849e3023e171b56fef5efeba4ffb6917c63a8f6af86f151",
+      "sourceLine": 1251
     },
     {
       "helpId": "settings.workspace.deploy-source-kind",
@@ -422,7 +458,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={sourceKind} onChange={(event) => { setSourceKind(event.target.value as \"branch\" | \"tag\"); setReadiness(null); }} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-",
-      "nodeSha256": "c81e32bc93945b0c480ed2c23e74b74fa60c2b5e5b1504217cb7f58192e29eb7"
+      "nodeSha256": "c81e32bc93945b0c480ed2c23e74b74fa60c2b5e5b1504217cb7f58192e29eb7",
+      "sourceLine": 1259
     },
     {
       "helpId": "settings.workspace.deploy-readiness",
@@ -433,7 +470,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void checkReadiness()} disabled={checkingReadiness || deploying || !deployRepo || !sourceRef.trim()} className=\"inline-flex items-center justify-center gap-2 round",
-      "nodeSha256": "2268519a10ddfccc12bcb4f228ecd864f24f2727246fca1b492a74d761d39534"
+      "nodeSha256": "2268519a10ddfccc12bcb4f228ecd864f24f2727246fca1b492a74d761d39534",
+      "sourceLine": 1265
     },
     {
       "helpId": "settings.workspace.deploy-dispatch",
@@ -444,7 +482,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes(\"/\") || !sourceRef.trim() || !readiness || (emergencyBypass && bypassReason.trim().length < 20)} ",
-      "nodeSha256": "e2f4f962975dad18e056b524aa1ef3c6645b20d84fa527b40d91418f06661d43"
+      "nodeSha256": "e2f4f962975dad18e056b524aa1ef3c6645b20d84fa527b40d91418f06661d43",
+      "sourceLine": 1268
     },
     {
       "helpId": "settings.workspace.deploy-prior-receipt",
@@ -455,7 +494,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={promotedFromExecutionId} onChange={(event) => { setPromotedFromExecutionId(event.target.value); setReadiness(null); }} className=\"w-full rounded-lg border border-white/10 bg-black/25 px",
-      "nodeSha256": "468392e5cd115276b1c40cd31bab38066f239f63d3dc81dd4089ba659f5a768e"
+      "nodeSha256": "468392e5cd115276b1c40cd31bab38066f239f63d3dc81dd4089ba659f5a768e",
+      "sourceLine": 1276
     },
     {
       "helpId": "settings.workspace.deploy-emergency-bypass",
@@ -466,7 +506,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<input type=\"checkbox\" checked={emergencyBypass} onChange={(event) => { setEmergencyBypass(event.target.checked); setReadiness(null); }} className=\"mt-0.5\" />",
-      "nodeSha256": "fcd4fe94467b1e4b22d4ce707f35c6c60fe3d1495c9816d89eb8d82f0d7b489c"
+      "nodeSha256": "fcd4fe94467b1e4b22d4ce707f35c6c60fe3d1495c9816d89eb8d82f0d7b489c",
+      "sourceLine": 1288
     },
     {
       "helpId": "settings.workspace.deploy-bypass-reason",
@@ -477,7 +518,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<textarea aria-label=\"Emergency bypass reason\" value={bypassReason} onChange={(event) => { setBypassReason(event.target.value); setReadiness(null); }} placeholder=\"Explain the incident and why the nor",
-      "nodeSha256": "9c88d199111e18c745ffb36b0accba36c80a9b02a3cb6d025c7fc506d647541a"
+      "nodeSha256": "9c88d199111e18c745ffb36b0accba36c80a9b02a3cb6d025c7fc506d647541a",
+      "sourceLine": 1291
     },
     {
       "helpId": "settings.workspace.deploy-verified-pr-link",
@@ -488,7 +530,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void open(readiness.pullRequestUrl!)} className=\"underline underline-offset-2\">verified pull request</button>",
-      "nodeSha256": "f5580bdecd5909233108a3733a1fa7ccf9ecbd70b6510e048b84601ff47f8735"
+      "nodeSha256": "f5580bdecd5909233108a3733a1fa7ccf9ecbd70b6510e048b84601ff47f8735",
+      "sourceLine": 1299
     },
     {
       "helpId": "settings.workspace.deploy-status-refresh",
@@ -499,7 +542,8 @@
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void refreshExecution()} disabled={refreshingExecution} className=\"rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/[0.06] disabled:opa",
-      "nodeSha256": "700c62b0d5d615d2aa8291d1bee69351bb9bdeb59d73c6540e8eab45c4bb5876"
+      "nodeSha256": "700c62b0d5d615d2aa8291d1bee69351bb9bdeb59d73c6540e8eab45c4bb5876",
+      "sourceLine": 1323
     },
     {
       "helpId": "settings.workspace.deploy-evidence-link",
@@ -509,8 +553,9 @@
       "sourceFunction": "DeploymentTargetPanel",
       "guideSection": "Environments: records, target configuration and workflow dispatch",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
-      "anchor": "<button type=\"button\" onClick={() => void open(execution.workflowUrl!)} className=\"rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/[0.06]\"> View evidence \u2197 </button>",
-      "nodeSha256": "ddcf25bf04b3e296f1a415b4c235887d68669dbcc5294a16669a84c03a52beb5"
+      "anchor": "<button type=\"button\" onClick={() => void open(execution.workflowUrl!)} className=\"rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/[0.06]\"> View evidence ↗ </button>",
+      "nodeSha256": "ddcf25bf04b3e296f1a415b4c235887d68669dbcc5294a16669a84c03a52beb5",
+      "sourceLine": 1325
     },
     {
       "helpId": "settings.workspace.identity-provider-revoke",
@@ -521,7 +566,8 @@
       "guideSection": "Identity: pending metadata and SCIM preview",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void revoke()} disabled={busy} className=\"rounded-md border border-rose-500/30 bg-rose-500/[0.08] px-2.5 py-1 text-[11px] text-rose-200 hover:bg-rose-500/[0.14] di",
-      "nodeSha256": "2e4fd3ab98ecf50e956b22f3b9bcc20074ba126dd75f2f672be448e8b9f3d2f2"
+      "nodeSha256": "2e4fd3ab98ecf50e956b22f3b9bcc20074ba126dd75f2f672be448e8b9f3d2f2",
+      "sourceLine": 1398
     },
     {
       "helpId": "settings.workspace.identity-protocol",
@@ -532,7 +578,8 @@
       "guideSection": "Identity: pending metadata and SCIM preview",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={protocol} onChange={(event) => setProtocol(event.target.value)} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border",
-      "nodeSha256": "348ddda09797941adf4e39c5ec2fee2c6228536d4280fffa91f9fb6c5a997410"
+      "nodeSha256": "348ddda09797941adf4e39c5ec2fee2c6228536d4280fffa91f9fb6c5a997410",
+      "sourceLine": 1446
     },
     {
       "helpId": "settings.workspace.identity-mapped-role",
@@ -543,7 +590,8 @@
       "guideSection": "Identity: pending metadata and SCIM preview",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={role} onChange={(event) => setRole(event.target.value)} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/2",
-      "nodeSha256": "938d519f923da759197a091f5f70478408d16c7cde9d03753b4ae38954ea7af3"
+      "nodeSha256": "938d519f923da759197a091f5f70478408d16c7cde9d03753b4ae38954ea7af3",
+      "sourceLine": 1460
     },
     {
       "helpId": "settings.workspace.identity-require-mfa-pending",
@@ -554,7 +602,8 @@
       "guideSection": "Identity: pending metadata and SCIM preview",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<input type=\"checkbox\" checked={requireMfaClaim} onChange={(event) => setRequireMfaClaim(event.target.checked)} />",
-      "nodeSha256": "9937166f99d0a7b382bca7dc7ae625a1b1e758731ef22b969160ad470c75adf8"
+      "nodeSha256": "9937166f99d0a7b382bca7dc7ae625a1b1e758731ef22b969160ad470c75adf8",
+      "sourceLine": 1466
     },
     {
       "helpId": "settings.workspace.identity-provider-save-pending",
@@ -565,7 +614,8 @@
       "guideSection": "Identity: pending metadata and SCIM preview",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void submit()} disabled={busy || !canSubmit} className=\"inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zin",
-      "nodeSha256": "751d6c457f3d2d222f50365d3a8e709ccc345623201a157a769ffa9fbe1c5bc1"
+      "nodeSha256": "751d6c457f3d2d222f50365d3a8e709ccc345623201a157a769ffa9fbe1c5bc1",
+      "sourceLine": 1470
     },
     {
       "helpId": "settings.workspace.scim-compute-preview",
@@ -576,7 +626,8 @@
       "guideSection": "Identity: pending metadata and SCIM preview",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void preview()} disabled={busy} className=\"inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:b",
-      "nodeSha256": "7d8399350bc3f1d29019fd18e216c693a14690ec00d8a9e1369f299f2480ed34"
+      "nodeSha256": "7d8399350bc3f1d29019fd18e216c693a14690ec00d8a9e1369f299f2480ed34",
+      "sourceLine": 1513
     },
     {
       "helpId": "settings.workspace.repository-provider",
@@ -587,7 +638,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={provider} onChange={(event) => setProvider(event.target.value)} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border",
-      "nodeSha256": "a2b700cf11e5af0eaedd94fb08e511f78ff4625de40e8266d43074704fd30573"
+      "nodeSha256": "a2b700cf11e5af0eaedd94fb08e511f78ff4625de40e8266d43074704fd30573",
+      "sourceLine": 1590
     },
     {
       "helpId": "settings.workspace.repository-register",
@@ -598,7 +650,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void register()} disabled={busy || !remoteOwner || !remoteName} className=\"inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py",
-      "nodeSha256": "90deedd48b792111771259fb301a72e50cdda705cc3fe4bb2ce5875518621460"
+      "nodeSha256": "90deedd48b792111771259fb301a72e50cdda705cc3fe4bb2ce5875518621460",
+      "sourceLine": 1601
     },
     {
       "helpId": "settings.workspace.branch-policy-repository",
@@ -609,7 +662,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={repositoryId} onChange={(event) => setRepositoryId(event.target.value)} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focu",
-      "nodeSha256": "2b54cb7c37320b660e367e7864636f48ddf9afe4df74ad6d5ca5396995c9346b"
+      "nodeSha256": "2b54cb7c37320b660e367e7864636f48ddf9afe4df74ad6d5ca5396995c9346b",
+      "sourceLine": 1688
     },
     {
       "helpId": "settings.workspace.branch-policy-environment",
@@ -620,7 +674,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={environmentId} onChange={(event) => { setEnvironmentId(event.target.value); setRequirePromotionFromEnvironmentId(\"\"); }} className=\"w-full rounded-lg border border-white/10 bg-black/25 ",
-      "nodeSha256": "ba0d5333fcb203e33eb89111a21a5d04fa810a10668fe70f83180ba11265250b"
+      "nodeSha256": "ba0d5333fcb203e33eb89111a21a5d04fa810a10668fe70f83180ba11265250b",
+      "sourceLine": 1695
     },
     {
       "helpId": "settings.workspace.branch-policy-requirement",
@@ -631,7 +686,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<input type=\"checkbox\" checked={item.checked} disabled={item.locked} onChange={(event) => item.set(event.target.checked)} />",
-      "nodeSha256": "1fef2f8d1e6b12cc73f9162d266be71357d855ed7907499b0db354f6403f38f3"
+      "nodeSha256": "1fef2f8d1e6b12cc73f9162d266be71357d855ed7907499b0db354f6403f38f3",
+      "sourceLine": 1711
     },
     {
       "helpId": "settings.workspace.branch-policy-prior-environment",
@@ -642,7 +698,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select value={requirePromotionFromEnvironmentId} onChange={(event) => setRequirePromotionFromEnvironmentId(event.target.value)} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py",
-      "nodeSha256": "6ba202498d95ec152bb0b9ffe1ab6213c765286c8eadc95186b4e0f81edbc491"
+      "nodeSha256": "6ba202498d95ec152bb0b9ffe1ab6213c765286c8eadc95186b4e0f81edbc491",
+      "sourceLine": 1718
     },
     {
       "helpId": "settings.workspace.branch-policy-create",
@@ -653,7 +710,8 @@
       "guideSection": "Git & PRs: consequential actions inside Settings",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void create()} disabled={busy || !repositoryId || !environmentId || !branchPattern || (isProductionPolicy && !requirePromotionFromEnvironmentId)} className=\"inline",
-      "nodeSha256": "925ca9355f30a6e7da0b1e83fd5567b485e9b63b29cec00abf8483bea37e82dd"
+      "nodeSha256": "925ca9355f30a6e7da0b1e83fd5567b485e9b63b29cec00abf8483bea37e82dd",
+      "sourceLine": 1725
     },
     {
       "helpId": "settings.workspace.labeled-text-field",
@@ -664,7 +722,8 @@
       "guideSection": "Reusable local field helpers across documented sections",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<input disabled={disabled} value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs ",
-      "nodeSha256": "527a2e455d1bd2b30d421fd2e40280842f1d40851831dc601a4bccadd53ffba6"
+      "nodeSha256": "527a2e455d1bd2b30d421fd2e40280842f1d40851831dc601a4bccadd53ffba6",
+      "sourceLine": 1739
     },
     {
       "helpId": "settings.workspace.labeled-multiline-field",
@@ -675,7 +734,8 @@
       "guideSection": "Reusable local field helpers across documented sections",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<textarea disabled={disabled} value={value} rows={4} onChange={(event) => onChange(event.target.value)} className=\"w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 ",
-      "nodeSha256": "b11464c116d5611e188829b970e9ef2440f2f0910a5f1a312768ed2c7e150f6e"
+      "nodeSha256": "b11464c116d5611e188829b970e9ef2440f2f0910a5f1a312768ed2c7e150f6e",
+      "sourceLine": 1754
     },
     {
       "helpId": "settings.workspace.repository-workspaces-open",
@@ -686,7 +746,8 @@
       "guideSection": "Worktrees",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={onOpenRepository} className=\"btn-secondary\">Open repository workspaces</button>",
-      "nodeSha256": "8e0b991aecb773083cdabe9b704962620ddbbb258447b0a39eb5b7631b5d1b4f"
+      "nodeSha256": "8e0b991aecb773083cdabe9b704962620ddbbb258447b0a39eb5b7631b5d1b4f",
+      "sourceLine": 1770
     },
     {
       "helpId": "settings.workspace.connection-status-unavailable",
@@ -696,8 +757,9 @@
       "sourceFunction": "IntegrationsSection",
       "guideSection": "Integrations: mounting, consent, validation and unknown states",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
-      "anchor": "<button type=\"button\" disabled className=\"rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500\">{refreshing ? \"Checking\u2026\" : \"Status unavailable\"}</button>",
-      "nodeSha256": "1a09f0153fde021326a95582dab91e011dd95229056a69b73e8197fa538c9336"
+      "anchor": "<button type=\"button\" disabled className=\"rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500\">{refreshing ? \"Checking…\" : \"Status unavailable\"}</button>",
+      "nodeSha256": "1a09f0153fde021326a95582dab91e011dd95229056a69b73e8197fa538c9336",
+      "sourceLine": 1926
     },
     {
       "helpId": "settings.workspace.connection-configuration-unavailable",
@@ -708,7 +770,8 @@
       "guideSection": "Integrations: mounting, consent, validation and unknown states",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled aria-label={`Connect ${provider}`} title=\"The service connection is not configured.\" className=\"rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-500\">Connec",
-      "nodeSha256": "5eae62cef0c0bf8b51deb96e5e1e44d17a0c10e81978b9a0a689464cd70a4882"
+      "nodeSha256": "5eae62cef0c0bf8b51deb96e5e1e44d17a0c10e81978b9a0a689464cd70a4882",
+      "sourceLine": 1927
     },
     {
       "helpId": "settings.workspace.connection-status-reload",
@@ -719,7 +782,8 @@
       "guideSection": "Integrations: mounting, consent, validation and unknown states",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={refreshing} className=\"btn-secondary\" aria-label={`Reload ${provider==='teams'?'Teams':'Slack'} status`} onClick={()=>void loadCloudConnections()}>Reload status</button",
-      "nodeSha256": "6cbd8bbed45d16e7a03b8db6efdfd8d3be7602a8b8f316a3fd604e0af4a594d1"
+      "nodeSha256": "6cbd8bbed45d16e7a03b8db6efdfd8d3be7602a8b8f316a3fd604e0af4a594d1",
+      "sourceLine": 1928
     },
     {
       "helpId": "settings.workspace.connection-validate",
@@ -730,7 +794,8 @@
       "guideSection": "Integrations: mounting, consent, validation and unknown states",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={validating} onClick={() => void validate()} className=\"rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 disabled:opacity-50\">{validating",
-      "nodeSha256": "2ec52c3e0f81cccd7b7d9bb4f1fd7786656b5893d5830c35ca07a12784193bf2"
+      "nodeSha256": "2ec52c3e0f81cccd7b7d9bb4f1fd7786656b5893d5830c35ca07a12784193bf2",
+      "sourceLine": 1929
     },
     {
       "helpId": "settings.workspace.connection-consent-open",
@@ -741,7 +806,8 @@
       "guideSection": "Integrations: mounting, consent, validation and unknown states",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" disabled={connectingProvider !== null} onClick={() => void connectProvider(provider)} className=\"rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black hover:bg-zinc-100 ",
-      "nodeSha256": "7b3790a555899d96b147c20f9db613e4ec88f652bd44ee947992c92aed66761a"
+      "nodeSha256": "7b3790a555899d96b147c20f9db613e4ec88f652bd44ee947992c92aed66761a",
+      "sourceLine": 1931
     },
     {
       "helpId": "settings.workspace.connections-refresh",
@@ -752,7 +818,8 @@
       "guideSection": "Integrations: mounting, consent, validation and unknown states",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void loadCloudConnections()} disabled={refreshing} className=\"rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opac",
-      "nodeSha256": "2e06914090ffc357ec7c406f136b1501efc29143db4dd49ed11bf28e44ca1ccc"
+      "nodeSha256": "2e06914090ffc357ec7c406f136b1501efc29143db4dd49ed11bf28e44ca1ccc",
+      "sourceLine": 1970
     },
     {
       "helpId": "settings.workspace.preference-toggle",
@@ -763,7 +830,8 @@
       "guideSection": "Reusable local field helpers across documented sections",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" role=\"switch\" aria-checked={enabled} aria-label={title} disabled={disabled} onClick={onToggle} className={`relative h-6 w-11 shrink-0 rounded-full transition ${enabled ? \"bg-emer",
-      "nodeSha256": "3ba44169bacce5c226f8078d6b06cfcfdb5b7f73198d6b660039312110c2a989"
+      "nodeSha256": "3ba44169bacce5c226f8078d6b06cfcfdb5b7f73198d6b660039312110c2a989",
+      "sourceLine": 1988
     },
     {
       "helpId": "settings.workspace.preference-select",
@@ -774,7 +842,8 @@
       "guideSection": "Reusable local field helpers across documented sections",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<select aria-label={title} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className=\"rounded-lg border border-white/10 bg-[#17181a] px-3 py-2 text-xs text-zinc-20",
-      "nodeSha256": "e52d4cc48a70f63dbab49c0865ff9fef5cd1b09c63ffe6a28e7508f2ffdcf05d"
+      "nodeSha256": "e52d4cc48a70f63dbab49c0865ff9fef5cd1b09c63ffe6a28e7508f2ffdcf05d",
+      "sourceLine": 1989
     },
     {
       "helpId": "settings.workspace.browser-handoff",
@@ -785,7 +854,43 @@
       "guideSection": "Reusable local field helpers across documented sections",
       "availability": "Conditional source declaration; current access and runtime availability unverified",
       "anchor": "<button type=\"button\" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? \"mt-1\" : \"\"} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-",
-      "nodeSha256": "eac13a5eb715b5ec06bd3e29737123544b188512419d1fdf0f3def7bb3133df2"
+      "nodeSha256": "eac13a5eb715b5ec06bd3e29737123544b188512419d1fdf0f3def7bb3133df2",
+      "sourceLine": 2003
     }
-  ]
+  ],
+  "metadataOrigin": {
+    "sourceCommit": "5ef92577c68727b05639f3c85867c8fe0ab4ed4a",
+    "sourceSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+    "mappingCommit": "0c4c2abdedf48b7accd671ae681247f8d31e0a8c",
+    "mappedSourceSha256": "7c1d382a9d448fc8dbb2959ba6c1fd0fc188170e41459fe1b769d08ac05932b0",
+    "settingsAttributesIntroduced": 68,
+    "preexistingGovernanceId": "governance.execution-limits.entry",
+    "original69NodeHashesPreserved": true
+  },
+  "baselineDerivation": {
+    "method": "strip registered Settings metadata from functional source commit",
+    "sourceCommit": "91651299c36baefdec5108a9895adf588cb7a298",
+    "metadataAlreadyPresent": true,
+    "registeredSettingsAttributeCount": 68,
+    "preservedGovernanceId": "governance.execution-limits.entry",
+    "rawSourceSha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70",
+    "strippedSourceSha256": "7a9d3539e8b1fd23b26efc3e96d900eed28cbc1083ac3fadcfb15b0372942619"
+  },
+  "functionalParentSourceRefs": [
+    {
+      "source": "desktop/src/views/SettingsView.tsx",
+      "sourceFunction": "SettingsView",
+      "startLine": 108,
+      "endLine": 234,
+      "nodeSha256": "52ebbb4fe0d5521f57f984e28bd39e095f6f2de51b85070dc1bbc25d60b4250a"
+    },
+    {
+      "source": "desktop/src/views/SettingsView.tsx",
+      "sourceFunction": "signOut",
+      "startLine": 154,
+      "endLine": 162,
+      "nodeSha256": "c65dba36424fe456eeaf32fdccac544f5bcf3bfa63d98a5eef1512eba0c06ef9"
+    }
+  ],
+  "requalificationScope": "Existing69 intrinsic declarations only. The reviewed auth repair changed optional sign-out callback plumbing, not control identities or JSX nodes. No runtime metadata added in this unit."
 }

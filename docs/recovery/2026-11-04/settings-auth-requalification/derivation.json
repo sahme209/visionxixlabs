@@ -1,0 +1,9 @@
+{
+  "commit": "91651299c36baefdec5108a9895adf588cb7a298",
+  "rawSourceSha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70",
+  "derivedStrippedSha256": "7a9d3539e8b1fd23b26efc3e96d900eed28cbc1083ac3fadcfb15b0372942619",
+  "registeredSettingsAttributes": 68,
+  "preservedGovernanceAttributes": 1,
+  "all69OriginalNodeHashesPreserved": true,
+  "runtimeEqualsRawGit": true
+}

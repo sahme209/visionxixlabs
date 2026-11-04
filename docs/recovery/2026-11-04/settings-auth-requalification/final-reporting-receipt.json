@@ -1,0 +1,54 @@
+{
+  "kind": "updated source-derived reporting after verified repair",
+  "files": [
+    {
+      "path": "docs/product/current-execution-board.md",
+      "sha256": "328e0587c41ae090b00b9bd20fb3008d37e9ce566ad74d0715db5116a3e477db"
+    },
+    {
+      "path": "docs/product/axiom-master-action-plan.md",
+      "sha256": "322efc9625b7d54960fd5f355cadb8ef6fffd8984759df03e0354ddafb081e5f"
+    },
+    {
+      "path": "docs/product/knowledge/control-binding-checks.json",
+      "sha256": "17e97222ac9084f586ad79056fd4c61ec88d1ae0ecf112321d664f90a381d492"
+    },
+    {
+      "path": "scripts/generate-plan-views.py",
+      "sha256": "ccfa9ecf35bba3acbc269803f7c5ddb01fb0b65d23554cbb49fe219dd92b17fd"
+    },
+    {
+      "path": "docs/product/plan-views/adoption-inventory.md",
+      "sha256": "a681e2329c9bae34c5a1f26953cf306c0b2f7b32171ec9d8087d83e147228d30"
+    },
+    {
+      "path": "docs/product/plan-views/capabilities.md",
+      "sha256": "c09c0c1581474482fadaf5f43bf1697fd7d4c57017d50e61b6edc6f820b16fde"
+    },
+    {
+      "path": "docs/product/plan-views/dependencies-decisions.md",
+      "sha256": "f10651631ac56246d3d61c91fedbfdc2d2433989512d68b954d26ca8c68109d3"
+    },
+    {
+      "path": "docs/product/plan-views/execution-brief.md",
+      "sha256": "45407a9d052e26bebb6bf0b571120c438cf347753f8723ecd7a841cb776e3bf3"
+    }
+  ],
+  "viewsGenerated": 4,
+  "driftAndLocalLiteralLinkCheckExit": 0,
+  "newHelperOrPureTestSourceChanged": false,
+  "pureTestsNotRepeatedForOnlyDataChanges": true,
+  "registeredSourceChecks": {
+    "files": 8,
+    "passed": 39,
+    "failed": 0,
+    "skipped": 0,
+    "invocationsAfterInputsSettled": 1
+  },
+  "parentRequirements": {
+    "originalAB": 15,
+    "futureC": 6,
+    "allOpen": true
+  },
+  "publishingOrProviderAuthority": false
+}

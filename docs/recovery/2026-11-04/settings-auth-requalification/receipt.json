@@ -1,0 +1,61 @@
+{
+  "status": "source mapping requalification only",
+  "executionPacket": {
+    "path": "docs/recovery/2026-11-04/settings-auth-requalification/EXECUTION-PACKET.md",
+    "sha256": "66c0365ff477092c9ae3d27e7f7c5848ab5ea97f4f57241890e891fc67fe61dd"
+  },
+  "functionalSourceCommit": "91651299c36baefdec5108a9895adf588cb7a298",
+  "rawSourceSha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70",
+  "derivedStrippedSha256": "7a9d3539e8b1fd23b26efc3e96d900eed28cbc1083ac3fadcfb15b0372942619",
+  "runtimeEqualsRawGit": true,
+  "count": 69,
+  "registeredSettingsAttributes": 68,
+  "preservedGovernanceId": "governance.execution-limits.entry",
+  "preservedGovernanceCount": 1,
+  "all69IdsTagsAndOriginalNodeHashesPreserved": true,
+  "stale": {
+    "failed": 1,
+    "passed": 4,
+    "exit": 1,
+    "logEnvelope": "settings-stale.json"
+  },
+  "green": {
+    "passed": 5,
+    "failed": 0,
+    "exit": 0,
+    "logEnvelope": "settings-green.json"
+  },
+  "artifacts": [
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.json",
+      "sha256": "a0dca74549218c7390000dd4b6f36216f5c35d12cb2369f265e20df86b2420eb"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.md",
+      "sha256": "2af464ff00976b7f9d0c688d6582d9f981e1cbacd35c332f12348c764d25ed91"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.sources.json",
+      "sha256": "06dcf2c2a72f1e7185553d567af8790280c4d4f1bd8f7cd7f3cfc2034ccc8d69"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.test.cjs",
+      "sha256": "84d5c9ce1bdaf270a864dbe8dd4b2429db29daedba9cf1fdb8e5821937d3cae8"
+    }
+  ],
+  "metadataOrigin": {
+    "sourceCommit": "5ef92577c68727b05639f3c85867c8fe0ab4ed4a",
+    "sourceSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+    "mappingCommit": "0c4c2abdedf48b7accd671ae681247f8d31e0a8c",
+    "mappedSourceSha256": "7c1d382a9d448fc8dbb2959ba6c1fd0fc188170e41459fe1b769d08ac05932b0",
+    "settingsAttributesIntroduced": 68,
+    "preexistingGovernanceId": "governance.execution-limits.entry",
+    "original69NodeHashesPreserved": true
+  },
+  "historicalRecords": "prior-5ef-origin/ retains original4 mapping artifacts, original/mapped sources and insertion baseline comparison. Original work/settings-workspace-bindings evidence untouched.",
+  "scope": "Updated current raw/derived functional custody, per-control locators, exact SettingsView/signOut parent refs and source-only auth callback explanation. No control added and no DEV/unknown/swapped/dynamic/count assertions dropped.",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache and parser writes denied outside owned private temp",
+  "externalSpend": 0,
+  "limits": "No runtime/registry/combined/master/board/index/article/commit edits, behavioral tests, build, provider/DB/native/browser/AI actions or customer/editorial/media acceptance."
+}

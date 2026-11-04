@@ -1,0 +1,9 @@
+{
+  "actualGitRawEqualsCurrent": true,
+  "rawSha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70",
+  "strippedFunctionalSha256": "7a9d3539e8b1fd23b26efc3e96d900eed28cbc1083ac3fadcfb15b0372942619",
+  "allFourArtifactsAndManifestMatch": true,
+  "all69IdsTagsNodesPreserved": true,
+  "only68RegisteredAttributesRemoved": 68,
+  "governanceIdPreserved": true
+}

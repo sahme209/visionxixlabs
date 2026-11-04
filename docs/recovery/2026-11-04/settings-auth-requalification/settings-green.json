@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-settings-auth-requalification-oavhyhzb/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--test",
+    "docs/product/knowledge/settings-workspace-bindings.test.cjs"
+  ],
+  "environmentKeys": [
+    "HOME",
+    "NODE_DISABLE_COMPILE_CACHE",
+    "PATH",
+    "TMPDIR",
+    "XDG_CACHE_HOME"
+  ],
+  "exitCode": 0,
+  "stdoutBase64": "4pyUIGZpbml0ZSB1bnB1Ymxpc2hlZCBpbnZlbnRvcnkgcHJlc2VydmVzIG9yaWdpbmFsNjggU2V0dGluZ3MgYXR0cmlidXRlcyBhbmQgb25lIEdvdmVybmFuY2UgYmluZGluZyBhY3Jvc3MgYWxsNjkgZGVjbGFyYXRpb25zICgwLjYxODI5MW1zKQrinJQgaW5kZXBlbmRlbnRseSBlbnVtZXJhdGVzIGFsbCB3aG9sZS1maWxlIGludHJpbnNpYyBjb250cm9scyBhbmQgdmFsaWRhdGVzIGV4YWN0IG9yaWdpbmFsIEpTWCBub2RlcyAoMjUuNDkzMjkybXMpCuKclCByZWdpc3RlcmVkIFNldHRpbmdzIHN0cmlwcGluZyBwcmVzZXJ2ZXMgZnVuY3Rpb25hbCBzb3VyY2UgY3VzdG9keSBhbmQgdGhlIG9yaWdpbmFsIEdvdmVybmFuY2UgYXR0cmlidXRlICgyMy41MzM2NjdtcykK4pyUIHJlamVjdHMgbWlzc2luZywgZHVwbGljYXRlLCBkeW5hbWljLCB1bmtub3duLCB3cm9uZy10YWcgYW5kIHN3YXBwZWQtZmllbGQgbWV0YWRhdGEgKDYwLjAzNzU0MW1zKQrinJQgcmVqZWN0cyBhIG5ldyB1bmJvdW5kIGludHJpbnNpYyBjb250cm9sIGFuZCBwcmVzZXJ2ZXMgZXhpc3RpbmcgR292ZXJuYW5jZSBpZGVudGl0eSwgbm9kZSBhbmQgREVWIGdhdGUgKDIyLjc3NjEyNW1zKQrihLkgdGVzdHMgNQrihLkgc3VpdGVzIDAK4oS5IHBhc3MgNQrihLkgZmFpbCAwCuKEuSBjYW5jZWxsZWQgMArihLkgc2tpcHBlZCAwCuKEuSB0b2RvIDAK4oS5IGR1cmF0aW9uX21zIDIyOC40MTU3MDkK",
+  "stderrBase64": "",
+  "stdoutSha256": "a475c24c775d09db7871eb069aacd0eb9c5f51f8885fae1fe9000f4654ddedb8",
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "encoding": "base64 preserves verbatim process bytes",
+  "kernelNetworkDenied": true
+}

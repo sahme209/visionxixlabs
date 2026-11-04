@@ -2,25 +2,43 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "5ef92577c68727b05639f3c85867c8fe0ab4ed4a",
-  "bindingScope": "Whole SettingsView.tsx: 69 intrinsic declarations, 68 new literal settings attributes and one preserved existing Governance binding; imported internals excluded",
+  "baselineCommit": "91651299c36baefdec5108a9895adf588cb7a298",
+  "baselineDerivation": {
+    "method": "strip registered Settings metadata from functional source commit",
+    "sourceCommit": "91651299c36baefdec5108a9895adf588cb7a298",
+    "metadataAlreadyPresent": true,
+    "registeredSettingsAttributeCount": 68,
+    "preservedGovernanceId": "governance.execution-limits.entry",
+    "rawSourceSha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70",
+    "strippedSourceSha256": "7a9d3539e8b1fd23b26efc3e96d900eed28cbc1083ac3fadcfb15b0372942619"
+  },
+  "metadataOrigin": {
+    "sourceCommit": "5ef92577c68727b05639f3c85867c8fe0ab4ed4a",
+    "sourceSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+    "mappingCommit": "0c4c2abdedf48b7accd671ae681247f8d31e0a8c",
+    "mappedSourceSha256": "7c1d382a9d448fc8dbb2959ba6c1fd0fc188170e41459fe1b769d08ac05932b0",
+    "settingsAttributesIntroduced": 68,
+    "preexistingGovernanceId": "governance.execution-limits.entry",
+    "original69NodeHashesPreserved": true
+  },
+  "bindingScope": "Whole SettingsView.tsx: existing69 intrinsic declarations,68 original Settings metadata literals and one preserved Governance binding. No new runtime metadata; imported internals excluded.",
   "sources": [
     {
       "path": "desktop/src/views/SettingsView.tsx",
-      "sha256": "7c1d382a9d448fc8dbb2959ba6c1fd0fc188170e41459fe1b769d08ac05932b0"
+      "sha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70"
     },
     {
       "path": "docs/product/knowledge/settings-workspace-bindings.json",
-      "sha256": "7d1e33a48d339450b547dcbfbc495d91b567745ae17c884ee222dcc8e1ab315b"
-    },
-    {
-      "path": "docs/product/knowledge/settings-workspace-bindings.test.cjs",
-      "sha256": "0013e5d12fef242d0c025cb58e4f6703933189617446cda6653007f03197b4b3"
+      "sha256": "a0dca74549218c7390000dd4b6f36216f5c35d12cb2369f265e20df86b2420eb"
     },
     {
       "path": "docs/product/knowledge/settings-workspace-bindings.md",
-      "sha256": "342113567f8a5b2610c46fe71bc82c0da389903da0e2a8527ff73716bd6101ad"
+      "sha256": "2af464ff00976b7f9d0c688d6582d9f981e1cbacd35c332f12348c764d25ed91"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.test.cjs",
+      "sha256": "84d5c9ce1bdaf270a864dbe8dd4b2429db29daedba9cf1fdb8e5821937d3cae8"
     }
   ],
-  "validation": "5 focused AST tests pass under kernel network denial and private-only writes. Stripping only new settings attributes independently equals Git baseline including existing Governance metadata and gates. No native/customer acceptance."
+  "validation": "Old source contract meaningfully failed1/5 against auth repair; requalified five-check AST suite passes. All69 IDs/tags/original node hashes and Governance DEV gate preserved. Raw actual Git916 source and68-registered-attribute-derived stripped hash pinned; Governance metadata is never stripped. No runtime/behavioral/native/customer acceptance."
 }

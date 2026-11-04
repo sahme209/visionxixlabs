@@ -2,7 +2,8 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const inventory=require('./settings-workspace-bindings.json'),root=path.resolve(__dirname,'../../..');
 const sources=Object.fromEntries(inventory.files.map(f=>[f.source,fs.readFileSync(path.join(root,f.source),'utf8')]));
 const sha=text=>crypto.createHash('sha256').update(text).digest('hex');
-const strip=text=>text.replace(/ data-help-id="settings\.workspace\.[a-z-]+"/g,'');
+const registeredAttributes=inventory.controls.filter(c=>c.binding==='added').map(c=>' data-help-id="'+c.helpId+'"');
+const strip=text=>registeredAttributes.reduce((current,attr)=>current.split(attr).join(''),text);
 const tags=['button','input','select','textarea','summary','a'];
 function issues(texts){
  const errors=[],found=new Map();let total=0;
@@ -18,6 +19,7 @@ function issues(texts){
      const id=attr.initializer.text,c=inventory.controls.find(c=>c.helpId===id);found.set(id,(found.get(id)||0)+1);
      if(!c){errors.push('unknown ID '+id);continue;}
      if(c.source!==record.source)errors.push('wrong file '+id);
+     if(c.sourceLine!==file.getLineAndCharacterOfPosition(n.getStart(file)).line+1)errors.push('source locator drift '+id);
      if(c.tag!==tag)errors.push('wrong tag '+id);
      const element=ts.isJsxOpeningElement(n)?n.parent:n;
      if(sha(strip(element.getText(file)))!==c.nodeSha256)errors.push('wrong node '+id);
@@ -32,15 +34,20 @@ function issues(texts){
  for(const c of inventory.controls)if(found.get(c.helpId)!==1)errors.push('missing or duplicate '+c.helpId);
  return errors;
 }
-test('finite unpublished inventory separates 68 new and one preserved binding across all 69 declarations',()=>{
+test('finite unpublished inventory preserves original68 Settings attributes and one Governance binding across all69 declarations',()=>{
  assert.equal(inventory.customerEligible,false);assert.equal(inventory.publicationApproved,false);assert.equal(inventory.files.length,1);assert.equal(inventory.controls.length,69);assert.equal(new Set(inventory.controls.map(c=>c.helpId)).size,69);
  assert.equal(inventory.controls.filter(c=>c.binding==='added').length,68);assert.equal(inventory.controls.filter(c=>c.binding==='preserved-existing').length,1);
  assert.deepEqual(inventory.files[0].tagCounts,{button:48,input:6,select:12,a:1,textarea:2});
  for(const c of inventory.controls){assert.match(c.helpId,c.binding==='added'?/^settings\.workspace\.[a-z-]+$/:/^governance\.execution-limits\.entry$/);assert.equal(c.source,inventory.files[0].source);assert.match(c.nodeSha256,/^[a-f0-9]{64}$/)}
 });
 test('independently enumerates all whole-file intrinsic controls and validates exact original JSX nodes',()=>assert.deepEqual(issues(sources),[]));
-test('stripping ONLY new settings metadata restores the full baseline including the existing Governance attribute',()=>{
- const f=inventory.files[0];assert.equal(sha(strip(sources[f.source])),f.baselineSha256);assert(strip(sources[f.source]).includes('data-help-id="governance.execution-limits.entry"'));
+test('registered Settings stripping preserves functional source custody and the original Governance attribute',()=>{
+ const f=inventory.files[0],text=sources[f.source];assert.equal(inventory.baselineDerivation.method,'strip registered Settings metadata from functional source commit');assert.equal(inventory.baselineDerivation.sourceCommit,inventory.baselineCommit);assert.equal(inventory.baselineDerivation.metadataAlreadyPresent,true);assert.equal(registeredAttributes.length,68);assert.equal(inventory.baselineDerivation.registeredSettingsAttributeCount,68);assert.equal(inventory.metadataOrigin.sourceCommit,'5ef92577c68727b05639f3c85867c8fe0ab4ed4a');assert.equal(inventory.metadataOrigin.mappingCommit,'0c4c2abdedf48b7accd671ae681247f8d31e0a8c');
+ assert.equal(sha(text),f.functionalSourceSha256);assert.equal(f.functionalSourceSha256,inventory.baselineDerivation.rawSourceSha256);assert.equal(sha(strip(text)),f.baselineSha256);assert.equal(f.baselineSha256,inventory.baselineDerivation.strippedSourceSha256);
+ const governance='data-help-id="governance.execution-limits.entry"';assert.equal(text.split(governance).length-1,1);assert.equal(strip(text).split(governance).length-1,1);
+ const callback='if (onSignOut) { await onSignOut(); return; }';assert(strip(text).includes(callback));assert.notEqual(sha(strip(text.replace(callback,''))),f.baselineSha256);
+ const file=ts.createSourceFile(f.source,text,99,true,4),functions=new Map();function visit(n){if(ts.isFunctionDeclaration(n)&&n.name)functions.set(n.name.text,n);ts.forEachChild(n,visit)}visit(file);
+ for(const ref of inventory.functionalParentSourceRefs){const node=functions.get(ref.sourceFunction);assert(node);assert.equal(sha(node.getText(file)),ref.nodeSha256);assert.equal(file.getLineAndCharacterOfPosition(node.getStart(file)).line+1,ref.startLine);assert.equal(file.getLineAndCharacterOfPosition(node.end).line+1,ref.endLine)}
 });
 test('rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata',()=>{
  const file=inventory.files[0].source,source=sources[file],mutate=text=>({...sources,[file]:text}),attr='data-help-id="settings.workspace.section-search"';

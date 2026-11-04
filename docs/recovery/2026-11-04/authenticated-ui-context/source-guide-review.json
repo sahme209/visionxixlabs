@@ -1,0 +1,10 @@
+{
+  "guideSha256": "23158a430a5a429731569ee5eab3fd66a36e61773fdb6512794924fa7def95d4",
+  "manifestSha256": "d8bb370b85a4910c348cff62cd926938617dffe1dd524e53a05774f240240d35",
+  "uniqueFiles": 16,
+  "evidenceKeys": 22,
+  "inclusiveRanges": 27,
+  "wholeAndRangeHashesRootVerified": true,
+  "independentReview": "clear; actual source/config/recovery/notification/cancellation and evidence scopes reviewed without tests",
+  "nativeCustomerServerOrCustodyAcceptance": false
+}
