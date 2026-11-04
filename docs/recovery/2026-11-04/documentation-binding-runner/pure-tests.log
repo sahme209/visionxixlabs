@@ -1,0 +1,19 @@
+test_closed_registry_rejects_schema_duplicate_records_and_duplicate_json_keys (__main__.BindingChecks) ... ok
+test_fixed_child_command_scrubs_environment_and_retains_failure (__main__.BindingChecks) ... Private check log: /private/tmp/axiom-binding-runner-pure-tests-1i42lf7p/tmp/binding-runner-fixture-wlnab31i/owned/checks.log
+ok
+test_new_unregistered_and_missing_matching_tests_refuse (__main__.BindingChecks) ... ok
+test_normal_reaped_exit_retains_status_without_signalling_a_reused_group (__main__.BindingChecks) ... ok
+test_only_list_cli_option_is_accepted_and_never_launches (__main__.BindingChecks) ... usage: runner [-h] [--list]
+runner: error: unrecognized arguments: --node unexpected
+ok
+test_preflight_reads_hashes_without_import_or_execution (__main__.BindingChecks) ... ok
+test_symlinked_test_and_parent_refuse (__main__.BindingChecks) ... ok
+test_timeout_and_output_cap_kill_only_owned_process_group (__main__.BindingChecks) ... ok
+test_traversal_absolute_unknown_and_noncanonical_paths_refuse (__main__.BindingChecks) ... ok
+test_unsupported_platform_refuses_without_launch (__main__.BindingChecks) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.014s
+
+OK
+docs/product/knowledge/example-bindings.test.cjs

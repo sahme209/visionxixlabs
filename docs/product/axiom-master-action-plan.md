@@ -900,3 +900,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — finite Releases workspace source map
 
 ~~All29direct intrinsic Releases declarations have literal metadata and original-node/current-baseline proof~~ ([mapping](knowledge/releases-workspace-bindings.md), [review](../recovery/2026-11-04/release-workspace-bindings/root-review.md)). Actual3RED/2passes became5ASTpasses on post-observer88esource; root4hash/wholeGitbaseline and independentreview pass.19buttons4inputs1select1textarea4summaries; generic fields/mapped controls are families, imported panels excluded. Superseded pre-fix metadata withdrawn/unaccepted. No native/media/editorial/customer/retrieval/publication acceptance; all15parents remain open.
+
+## November4 — consolidated registered source checks
+
+~~One bounded offline command verifies all7registered mapping test files without silently skipping new/missing/hash-changed suites~~ ([evidence](../recovery/2026-11-04/documentation-binding-runner/README.md)).10pure/mockrunner tests, explicit preflight and ONEactualcombined run34passed/0failed/0skipped; independentreview/rootpins/set/hashchecks pass. Existing contracts unchanged; no install/CI/deploy/customer/provider/DB or security/issuer qualification. Two light-theme source text surfaces had no definite failing literal pair ([limited spot check](../recovery/2026-11-04/light-theme-source-spotcheck/README.md)); no stylesheet changed and rendered/AT contrast remains open. All15parents remain open.

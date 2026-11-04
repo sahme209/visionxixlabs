@@ -1,0 +1,43 @@
+Private check log: /private/tmp/axiom-documentation-bindings-pfw_7lrn/checks.log
+✔ finite unpublished inventory specifies all eight whole files and 19 unique control declarations (0.835875ms)
+✔ independently enumerates every intrinsic control and binds exact original JSX nodes (19.82075ms)
+✔ stripping only inserted attributes restores every complete baseline source file (0.179625ms)
+✔ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (42.527125ms)
+✔ rejects newly added unbound controls, metadata on display nodes and cross-file ID moves (10.783916ms)
+✔ finite internal inventory identifies all 46 direct declarations and explicit child exclusions (0.663458ms)
+✔ all actual direct interactive controls bind literal metadata to their original exact nodes (43.197625ms)
+✔ removing only inserted static attributes restores the complete baseline bytes (0.433958ms)
+✔ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (75.134875ms)
+✔ rejects a newly added unbound control and metadata outside the finite scope (15.831875ms)
+✔ finite unpublished inventory specifies all two whole files and 11 unique control declarations (0.809959ms)
+✔ independently enumerates every intrinsic control and binds exact original JSX nodes (11.17ms)
+✔ stripping only inserted attributes restores every complete baseline source file (0.129583ms)
+✔ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (15.72025ms)
+✔ rejects new unbound controls, display metadata, cross-file and outside-function bindings (5.735834ms)
+✔ finite internal inventory identifies all 24 direct declarations and explicit child exclusions (0.771334ms)
+✔ all actual direct interactive controls bind literal metadata to their original exact nodes (16.878875ms)
+✔ removing only inserted static attributes restores the complete baseline bytes (0.106042ms)
+✔ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (31.387792ms)
+✔ rejects a newly added unbound control and metadata outside the finite scope (9.3565ms)
+✔ finite unpublished inventory specifies one complete source file and 29 unique control declarations (0.828708ms)
+✔ independently enumerates every intrinsic control and binds exact original JSX nodes (31.839708ms)
+✔ stripping only inserted attributes restores every complete baseline source file (0.288ms)
+✔ rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (53.347333ms)
+✔ rejects new unbound controls, display metadata, cross-function and outside-function bindings (18.508875ms)
+✔ finite draft inventory records local nodes and explicit shared-control gaps (0.608375ms)
+✔ all declarations bind literal metadata to their exact existing JSX controls (25.869084ms)
+✔ stripping only added attributes restores byte-identical baseline runtime source (0.335167ms)
+✔ validator rejects absent, dynamic, duplicate, misplaced and wrong-tag metadata (45.708542ms)
+✔ finite unpublished inventory separates 68 new and one preserved binding across all 69 declarations (0.691375ms)
+✔ independently enumerates all whole-file intrinsic controls and validates exact original JSX nodes (37.0135ms)
+✔ stripping ONLY new settings metadata restores the full baseline including the existing Governance attribute (0.572416ms)
+✔ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (82.469333ms)
+✔ rejects a new unbound intrinsic control and preserves existing Governance identity, node and DEV gate (19.942334ms)
+ℹ tests 34
+ℹ suites 0
+ℹ pass 34
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 264.682583

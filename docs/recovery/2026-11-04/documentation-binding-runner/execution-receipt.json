@@ -1,0 +1,35 @@
+{
+  "sourceBase": "f182d990",
+  "runnerSources": [
+    {
+      "path": "scripts/check-documentation-bindings.py",
+      "sha256": "169f59778cc2fbd9aab1b4704c2345f7bd2b9a7e3b5f04f3a3391e38bd9b2926"
+    },
+    {
+      "path": "scripts/tests/test_check_documentation_bindings.py",
+      "sha256": "626128a6ada28c9c856dd7b6aba9b4ecefde68fedb2a7430f0cd119b53cfcea3"
+    },
+    {
+      "path": "docs/product/knowledge/control-binding-checks.json",
+      "sha256": "6ec83e89f3ebcc37c9eb2d4190dbfb9e542e4404bf418c708c61a5a76b42450a"
+    },
+    {
+      "path": "docs/product/knowledge/control-binding-checks.md",
+      "sha256": "4f92af5cb6516d685bd29cebe78383a2acb8873f0a8e129fd111b88a4d0fde4a"
+    }
+  ],
+  "combinedExit": 0,
+  "registeredTestFiles": 7,
+  "checksPassed": 34,
+  "failed": 0,
+  "skipped": 0,
+  "invocations": 1,
+  "profile": "Node child network/write-denial; fresh private HOME/TMP/cache; no outer nested restriction",
+  "independentReview": "read-only no important issues",
+  "rootReview": "Four prepared source hashes, seven test SHA pins and exact discovered matching-file set independently verified before execution",
+  "limits": [
+    "existing source contracts only",
+    "no customer/media/editorial/native/browser/Governance qualification",
+    "no CI/deploy/install/provider/DB action"
+  ]
+}

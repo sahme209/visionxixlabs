@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-binding-runner-pure-tests-1i42lf7p/tests.sb",
+    "/usr/bin/python3",
+    "scripts/tests/test_check_documentation_bindings.py",
+    "-v"
+  ],
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "HOME": "/private/tmp/axiom-binding-runner-pure-tests-1i42lf7p/home",
+    "TMPDIR": "/private/tmp/axiom-binding-runner-pure-tests-1i42lf7p/tmp",
+    "XDG_CACHE_HOME": "/private/tmp/axiom-binding-runner-pure-tests-1i42lf7p/cache",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "profile": "(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-binding-runner-pure-tests-1i42lf7p\"))",
+  "actualCombinedChecksStarted": false
+}

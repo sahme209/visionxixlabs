@@ -1,0 +1,7 @@
+docs/product/knowledge/agent-child-bindings.test.cjs
+docs/product/knowledge/agent-workspace-bindings.test.cjs
+docs/product/knowledge/bot-composer-action-bindings.test.cjs
+docs/product/knowledge/bot-workspace-bindings.test.cjs
+docs/product/knowledge/releases-workspace-bindings.test.cjs
+docs/product/knowledge/repository-editor-bindings.test.cjs
+docs/product/knowledge/settings-workspace-bindings.test.cjs

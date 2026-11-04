@@ -1,0 +1,39 @@
+{
+  "status": "prepared runner; combined suites not executed",
+  "sources": [
+    {
+      "path": "scripts/check-documentation-bindings.py",
+      "sha256": "169f59778cc2fbd9aab1b4704c2345f7bd2b9a7e3b5f04f3a3391e38bd9b2926"
+    },
+    {
+      "path": "scripts/tests/test_check_documentation_bindings.py",
+      "sha256": "626128a6ada28c9c856dd7b6aba9b4ecefde68fedb2a7430f0cd119b53cfcea3"
+    },
+    {
+      "path": "docs/product/knowledge/control-binding-checks.json",
+      "sha256": "6ec83e89f3ebcc37c9eb2d4190dbfb9e542e4404bf418c708c61a5a76b42450a"
+    },
+    {
+      "path": "docs/product/knowledge/control-binding-checks.md",
+      "sha256": "4f92af5cb6516d685bd29cebe78383a2acb8873f0a8e129fd111b88a4d0fde4a"
+    }
+  ],
+  "pureTests": {
+    "passed": 10,
+    "exit": 0,
+    "processBoundary": "mocked only, no Node/child sandbox/fake-PID signal executed"
+  },
+  "registryList": {
+    "exit": 0,
+    "registeredTests": 7,
+    "testModulesImported": false
+  },
+  "actualCombinedChecksStarted": false,
+  "reviewCorrection": "Root identified unsafe group signalling after normal parent reap in initial runner. Final code tracks reaping, never signals after reap; timeout/output tests assert kill-before-wait, normal-exit negative asserts no group signal. This is a local runner correction, not platform security qualification.",
+  "limits": [
+    "No actual combined seven-suite success claimed; root review required before that separate invocation.",
+    "No arbitrary orphan/descendant containment claim on normal exit.",
+    "Preflight hashes are test provenance, not execution authority or immutable custody.",
+    "No native/browser/media/editorial/customer coverage, global percentage or B4 completion."
+  ]
+}

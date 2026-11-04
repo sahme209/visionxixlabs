@@ -48,3 +48,7 @@ Structured article drafts, proposed evaluations and validation rules are indexed
 4. Update the coverage queue and exact bindings. Keep missing controls and unaccepted states open; do not infer whole-app coverage from this index.
 
 Complete provider/browser/account setup and platform-specific authentication/session subflows remain unfinished even where finite pairing/native source guides now exist; their full inventory and operational walkthroughs are still required. Native Documentation, Jira, Home, Settings, Releases, Batches, Agent and every guide still require their media, native, editorial and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.
+
+## Verify registered source bindings offline
+
+[Offline checker and explicit registry](control-binding-checks.md) runs the seven existing mapping contracts together. It is source tooling only; it grants no customer/editorial/media/retrieval approval and does not enumerate every application control/state.

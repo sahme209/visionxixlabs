@@ -1,0 +1,37 @@
+{
+  "method": "Literal sRGB pair calculation, not rendered contrast",
+  "foreground": "#69645b",
+  "pairs": [
+    {
+      "background": "#fffef9",
+      "ratio": 5.817914
+    },
+    {
+      "background": "#faf9f5",
+      "ratio": 5.576474
+    },
+    {
+      "background": "#f0eee6",
+      "ratio": 5.057229
+    }
+  ],
+  "sources": [
+    {
+      "path": "desktop/tailwind.config.js",
+      "sha256": "4d75eafbbb565ef51d3bff478850eda761ffe182ff8f5954f3c1866f2ea8e458"
+    },
+    {
+      "path": "desktop/src/styles.css",
+      "sha256": "aa061910dce6f950781e838b95c176167049db1d33a3cd2ee45050d818c3be46"
+    },
+    {
+      "path": "desktop/src/components/BotTaskComposer.tsx",
+      "sha256": "766f475f7d6a6f724d0495bba3abc9ed89cfabfb26d29b5c9191259003daf164"
+    },
+    {
+      "path": "desktop/src/components/AssociatedTicketActionsPanel.tsx",
+      "sha256": "ec6c18b86f1b920e0bac097451dff6cb888f3e678e314a57bee4ae7b45ee6a0d"
+    }
+  ],
+  "limits": "Bot composer opaque surface identified; ticket final inherited backdrop unverified; no browser/native/AT/global compliance or stylesheet change"
+}

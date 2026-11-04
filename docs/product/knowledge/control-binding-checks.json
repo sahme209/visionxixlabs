@@ -1,0 +1,35 @@
+{
+  "format": "axiom.control-binding-checks/1",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "tests": [
+    {
+      "path": "docs/product/knowledge/agent-child-bindings.test.cjs",
+      "sha256": "ef0804209e7e8e125ce21c4964e1f73e6f2e6200e67d77b1a9620afb716dca19"
+    },
+    {
+      "path": "docs/product/knowledge/agent-workspace-bindings.test.cjs",
+      "sha256": "052e0e9274b521e4d2e69f1200b708735ca122331f6ff251fec762459dd9b53d"
+    },
+    {
+      "path": "docs/product/knowledge/bot-composer-action-bindings.test.cjs",
+      "sha256": "36379b97cf4788bab28bdc2a858ad22e6154e6a169f75fb5e7493e61812f5d02"
+    },
+    {
+      "path": "docs/product/knowledge/bot-workspace-bindings.test.cjs",
+      "sha256": "4b5b48467970c98bdd8ccc684ff29e0a2fead8a777d020e4465d3df8dd359f73"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.test.cjs",
+      "sha256": "b3d9c0ac72a19b03ae7ee032d0aaf4a7d7fc4f7d63d43ca4d0dee6fb233e3e8e"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-bindings.test.cjs",
+      "sha256": "e0fe50da9a08fda6c6f6b9ac6bbcdf372c4e5072cd85cbcde8fe6738f990b3f5"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.test.cjs",
+      "sha256": "0013e5d12fef242d0c025cb58e4f6703933189617446cda6653007f03197b4b3"
+    }
+  ]
+}
