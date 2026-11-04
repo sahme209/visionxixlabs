@@ -5,6 +5,10 @@ Updated November 3, 2026. Two coordinated workstreams. The user explicitly resum
 [Compact current execution board](current-execution-board.md) summarizes all15parents and their gates; every detailed requirement below remains binding.
 
 <!-- PRIORITIZED_CHECKLIST_START -->
+## November 4 local document-source workflow milestone
+
+A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-target native replacement implemented, independently reviewed and locally verified~~ ([bounded integration](../recovery/2026-11-04/governance-document-replacement-root-review.md)): 30 backend checks, one actual isolated PostgreSQL journey with simulated authority/provider responses, 15 mocked frontend checks plus22 compatibility checks, types/frontend build. Default-OFF503 and existing mounting remain; no evidence timestamp renewal, live discovery, activation or full enforcement qualification. A7 run-budget ledger is separately user-approved and currently under implementation/testing; not complete.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains
