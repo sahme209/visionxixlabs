@@ -1,0 +1,8 @@
+{
+  "wholeFileBindings": 10,
+  "rangeBindings": 29,
+  "guideAnchorReferences": 52,
+  "status": "PASS",
+  "verificationCorrection": "Initial ad hoc reference parser mistook Markdown source-bindings link for anchor key; excluded actual link syntax, no source or guide change.",
+  "browserRuntimeMediaCustomerAcceptance": false
+}

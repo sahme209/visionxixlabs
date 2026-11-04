@@ -1,0 +1,274 @@
+{
+  "status": "internal-source-draft",
+  "customerEligible": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "sourceInspectedDate": "2026-11-03",
+  "sourceHead": "bd802078c58e59058209c3296470c1c827383ee7",
+  "scope": "Mounted /demo page controls and scripted tour only; destination behavior excluded. Evidence keys are not runtime/help IDs.",
+  "hashAlgorithm": "SHA-256",
+  "rangeConvention": "inclusive 1-based physical lines; raw bytes including retained newline bytes",
+  "sources": [
+    {
+      "path": "app/demo/page.tsx",
+      "sha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a",
+      "bytes": 6245,
+      "lineCount": 98,
+      "anchors": [
+        {
+          "key": "route",
+          "startLine": 1,
+          "endLine": 98,
+          "sha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a"
+        },
+        {
+          "key": "route-links",
+          "startLine": 9,
+          "endLine": 28,
+          "sha256": "a1bc2feb9608dd821ea9ecbfd363f208d80cb749845458786816a48066757f42"
+        }
+      ]
+    },
+    {
+      "path": "components/marketing/CinematicAxiomDemo.tsx",
+      "sha256": "fe5b090d5df718c2c1cf1ad22e46d9292ac3902671d703f62047b880e3b46284",
+      "bytes": 8930,
+      "lineCount": 62,
+      "anchors": [
+        {
+          "key": "tour-shell",
+          "startLine": 29,
+          "endLine": 58,
+          "sha256": "3a06ed629ac1fe53941665c791bc14759a244b1c900e36577d6a44d1fb6541bd"
+        },
+        {
+          "key": "tour-state",
+          "startLine": 11,
+          "endLine": 28,
+          "sha256": "0d18010434da92643ca6ccf1ee72b5eb11a08db7bc5809db9a4199e22c005577"
+        },
+        {
+          "key": "story-controls",
+          "startLine": 30,
+          "endLine": 32,
+          "sha256": "19568a302b784ca49991a320ef250d0a57b36a0887058c15cc71689c0c0adb42"
+        },
+        {
+          "key": "step-controls",
+          "startLine": 35,
+          "endLine": 39,
+          "sha256": "03001523b45238cfbfbc56265b891cd6dbc05f488e0497a2699197d8d0ce2a5e"
+        },
+        {
+          "key": "playback-controls",
+          "startLine": 40,
+          "endLine": 47,
+          "sha256": "b41f030150369e5050fe300fc94b62e656041c25d4cf7fcf40e0176c95f03b70"
+        },
+        {
+          "key": "tour-frame",
+          "startLine": 49,
+          "endLine": 54,
+          "sha256": "0753ebabbc8854acf0ee2cc15ea46049c7ad8c216160ba85e869668db47de61b"
+        },
+        {
+          "key": "context-controls",
+          "startLine": 51,
+          "endLine": 61,
+          "sha256": "4acfe4735274eb808d9e93179dc784c24c8537d4aae1555f54326a805bb39334"
+        },
+        {
+          "key": "tour-links",
+          "startLine": 56,
+          "endLine": 57,
+          "sha256": "7d76ffcdb45c44a3eedba59585a9312d8930b37b488cd048d4eb1230920a3299"
+        }
+      ]
+    },
+    {
+      "path": "components/marketing/useStoryPlayback.ts",
+      "sha256": "9c01f59e03ce0ad783f2a14f709c8107a75fdecab616f5a544262f9a06e3984a",
+      "bytes": 2807,
+      "lineCount": 44,
+      "anchors": [
+        {
+          "key": "playback-initial",
+          "startLine": 6,
+          "endLine": 15,
+          "sha256": "37b336819aae30926cef3328c2c80750ddbc1503d74f743394e6b4ee3e6d4262"
+        },
+        {
+          "key": "playback-visibility",
+          "startLine": 16,
+          "endLine": 27,
+          "sha256": "7998b2ad2c07453c42a53abd85cd55ef9dd673e6152fa7765ce717016942c668"
+        },
+        {
+          "key": "playback-clock",
+          "startLine": 28,
+          "endLine": 37,
+          "sha256": "b93da38ab6ebc036f8bebf585a059e970311867c80b622b014eee8b5fbdac6d6"
+        },
+        {
+          "key": "playback-actions",
+          "startLine": 38,
+          "endLine": 43,
+          "sha256": "7bb8669171fc6fa095739a2c36c6dae4843fa1c118b96fdcd2b52210dff86436"
+        }
+      ]
+    },
+    {
+      "path": "components/marketing/WorkflowStoryScene.tsx",
+      "sha256": "102983b8f064a571d9db1e7813eb4492d8b81a53ec62b01afbf308427636f8ca",
+      "bytes": 9213,
+      "lineCount": 58,
+      "anchors": [
+        {
+          "key": "scene-display",
+          "startLine": 13,
+          "endLine": 34,
+          "sha256": "242da976bba0068c30a2c8b46387b1d7577255261cd13fd7a2854fda9a67192c"
+        },
+        {
+          "key": "review-scenes",
+          "startLine": 35,
+          "endLine": 46,
+          "sha256": "d6211ff559e199cba41a3fcfc4bb9e3e04b9f4260c69c26b906231cbffd89fa4"
+        },
+        {
+          "key": "scene-controls",
+          "startLine": 35,
+          "endLine": 42,
+          "sha256": "5ac04b616b1a14b2efade20fceb88f2436f8ffa4d0fb37085484d08af9a66df1"
+        },
+        {
+          "key": "scene-boundaries",
+          "startLine": 48,
+          "endLine": 55,
+          "sha256": "aefd807a59f34f55a7ac416de3f403f86bcf6dc4c710173d6c8f014ec12a5a0b"
+        }
+      ]
+    },
+    {
+      "path": "components/marketing/workflowStories.ts",
+      "sha256": "5e4c06b85a8f8bdd90448dca294bb7d8c0f280a874877d9b5b29006886e472d0",
+      "bytes": 4392,
+      "lineCount": 54,
+      "anchors": [
+        {
+          "key": "story-data",
+          "startLine": 14,
+          "endLine": 50,
+          "sha256": "f7c8938565f0a7554b2a188a21f29d86b800dbd3d7be5dbbd744d5e4b16d5d02"
+        }
+      ]
+    },
+    {
+      "path": "components/marketing/DesktopPreviewFrame.tsx",
+      "sha256": "2f788228db0fc0bf66e902ab7432e991f1ac4212f0bace677bdfcbe0279b9214",
+      "bytes": 2293,
+      "lineCount": 32,
+      "anchors": [
+        {
+          "key": "frame",
+          "startLine": 1,
+          "endLine": 32,
+          "sha256": "2f788228db0fc0bf66e902ab7432e991f1ac4212f0bace677bdfcbe0279b9214"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "bytes": 1034,
+      "lineCount": 29,
+      "anchors": [
+        {
+          "key": "illustrated-labels",
+          "startLine": 1,
+          "endLine": 29,
+          "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+        }
+      ]
+    },
+    {
+      "path": "components/Navigation.tsx",
+      "sha256": "774a41199cb4cf06119f6a547ecff1fa34748a84dabfffc79d3dff3dc00c97fc",
+      "bytes": 11725,
+      "lineCount": 261,
+      "anchors": [
+        {
+          "key": "navigation-links",
+          "startLine": 9,
+          "endLine": 26,
+          "sha256": "5fd572df8cc61e387ee246d1483e1c40c26e0a789c2de6549442db656df641b1"
+        },
+        {
+          "key": "navigation-more",
+          "startLine": 39,
+          "endLine": 69,
+          "sha256": "c53faa1062cbd1ea9c34f13de96da8006129139ddeeb6eb75d7e649e520ed3c1"
+        },
+        {
+          "key": "navigation-mobile",
+          "startLine": 82,
+          "endLine": 143,
+          "sha256": "3f1932140804c0e7f8bb03a3b9ee801532a5030921928a1978bb73c8eb05eb59"
+        },
+        {
+          "key": "navigation-skip",
+          "startLine": 142,
+          "endLine": 149,
+          "sha256": "2963a3cc3c4d1a60c4b35e0700f9ed49899056238099086e3baf69a5cc0f2c07"
+        },
+        {
+          "key": "navigation-render",
+          "startLine": 158,
+          "endLine": 261,
+          "sha256": "652be423d98fe2196bae110aef79c4daab6c59f7c7aa5cc9972793869c513ee6"
+        }
+      ]
+    },
+    {
+      "path": "components/Footer.tsx",
+      "sha256": "8c9528ff2e5f2bc74ba836b7f077aac5ef993d3aa3c8b0a7efc1338c1441aa29",
+      "bytes": 3473,
+      "lineCount": 81,
+      "anchors": [
+        {
+          "key": "footer-links",
+          "startLine": 1,
+          "endLine": 81,
+          "sha256": "8c9528ff2e5f2bc74ba836b7f077aac5ef993d3aa3c8b0a7efc1338c1441aa29"
+        }
+      ]
+    },
+    {
+      "path": "docs/product/axiom-master-action-plan.md",
+      "sha256": "f5d794d02235bb64e4a70d1f4b2f4beb623a8016ce2d0731f0e2aa1119b38cb3",
+      "bytes": 144329,
+      "lineCount": 664,
+      "anchors": [
+        {
+          "key": "master-b2",
+          "startLine": 160,
+          "endLine": 197,
+          "sha256": "f4049d3d1e79bf44729fa4e493b7e855a5749bfe662666de28b7ddeae7027ea6"
+        },
+        {
+          "key": "master-b3-b4",
+          "startLine": 199,
+          "endLine": 211,
+          "sha256": "4c7e476a5d49dc9b0c48e68aae495c871e88b6361790d9dede98ef988fc6b486"
+        }
+      ]
+    }
+  ],
+  "guide": {
+    "path": "docs/product/knowledge/website-scripted-tour-controls.md",
+    "sha256": "077bd52f39d51198ecc075fffebb1e2cf6bd8a8e1376eff0e4e7e9a5653bf760"
+  },
+  "integrationNote": "Master checklist amended after initial review to index this guide; bound B2/B3/B4 requirement ranges unchanged. Whole master hash rebound; sourceHead is base HEAD, not a claim every working-tree document equals that commit."
+}
