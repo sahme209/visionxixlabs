@@ -1,0 +1,8 @@
+{
+  "scope": "Index table paths and stored metadata only, not control/customer/retrieval coverage",
+  "indexedGuides": 27,
+  "storedArticleRevisionsIncludingHistory": 25,
+  "allIndexedTargetsExist": true,
+  "newGuideDirectArticleReference": true,
+  "initialDiagnostic": "A local-filename-only query counted26 and excluded the existing relative recovery guide. Corrected query uses all existing index table links including that external-to-knowledge guide; no source index or article metadata was altered to satisfy the count."
+}

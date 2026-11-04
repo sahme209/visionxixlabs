@@ -8,6 +8,7 @@
 | --- | --- | --- |
 | Review a desktop pairing request in the browser | [Browser pairing controls](browser-desktop-pairing-controls.md) | Browser approval, account switching and navigation do not prove native identity storage or execution access. |
 | Sign in, recover saved access or understand an access restriction | [Native sign-in and access](native-signin-and-access-controls.md) | Browser handoff, verification, entitlement and secure storage are distinct; not clean-host/session acceptance. |
+| Create an account and recover email verification | [Browser signup and email verification](browser-signup-email-verification-controls.md) | Account creation, email delivery feedback, token verification, query banners and signed-in/entitled access are separate. Source-only; provider-hosted MFA and full sign-in are excluded. |
 | Send an Agent request and review its saved action | [Agent workspace controls](agent-workspace-controls.md) | Request, exact review, separate requester execution and uncertain recovery are different steps. |
 | Choose a workspace destination | [Home and navigation](home-navigation-controls.md) | Home choices, commands, status and split panes navigate; they do not execute work or establish durable saves. |
 | Configure device and workspace settings | [Settings controls](settings-workspace-controls.md) | Local preferences, server policy writes, credentials/native actions and browser handoffs have different effects and recovery. |

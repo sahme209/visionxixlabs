@@ -2,10 +2,11 @@
 
 Reconciled November4,2026. This table reads the existing source-guide index and stored article source references. It is an internal authoring queue, not customer documentation, content eligibility, control coverage or execution authority. Historical revisions remain distinct. A source reference is not proof every guide control is represented. Older Agent/deployment records may document controls without referencing these newer guides; absence here is a linkage gap, not proof that no content exists.
 
-Indexed guide paths: 26. Stored article revisions: 24, including history. Customer acceptance is not established by these counts.
+Indexed guide paths: 27. Stored article revisions: 25, including history. Customer acceptance is not established by these counts.
 
 | Indexed source guide | Stored article source references | Remaining acceptance |
 | --- | --- | --- |
+| [Browser signup and email verification](../knowledge/browser-signup-email-verification-controls.md) | [browser-signup-email-verification.r1.json](articles/browser-signup-email-verification.r1.json) | Supported-release/actual browser states, stable reviewed IDs, authentic accessible media and genuine editorial/customer eligibility remain open. MFA/provider callbacks and full sign-in remain separately scoped. |
 | [Browser pairing controls](../knowledge/browser-desktop-pairing-controls.md) | [native-signin-browser-pairing.r1.json](articles/native-signin-browser-pairing.r1.json) | Full control/state mapping, stable reviewed IDs, current supported version, authentic accessible media and genuine editorial/customer eligibility remain open. |
 | [Native sign-in and access](../knowledge/native-signin-and-access-controls.md) | [native-signin-browser-pairing.r1.json](articles/native-signin-browser-pairing.r1.json) | Full control/state mapping, stable reviewed IDs, current supported version, authentic accessible media and genuine editorial/customer eligibility remain open. |
 | [Agent workspace controls](../knowledge/agent-workspace-controls.md) | [agent-workspace-controls.r1.json](articles/agent-workspace-controls.r1.json) | Full control/state mapping, stable reviewed IDs, current supported version, authentic accessible media and genuine editorial/customer eligibility remain open. |
