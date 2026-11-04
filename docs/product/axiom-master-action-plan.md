@@ -872,3 +872,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — materialized dependency recovery and updated website preview
 
 ~~Exactd9source scoped types and ordinary full offline production build/output checks pass; guarded preview5240serves current website~~ ([evidence](../recovery/2026-11-04/website-accessibility-pair/current-build-preview/README.md)). Working dependency cloud placeholders obstructed earlier type resolution; a fresh source archive with matching-lock materialized local dependencies passed without network/hydration/root mutation. Original90s/10s timeouts preserved. Five guard checks and25HTTP/assets/refusal checks pass; browser/AT/responsive/contrast/performance/Governance/live/publication gates remain open. All15parents remain open.
+
+## November4 — Bot composition key preservation
+
+~~Bot panels and inspector tabs preserve IME composition instead of intercepting Escape/arrows/Home/End~~ ([local evidence](../recovery/2026-11-04/bot-workspace-ime/README.md)). Actual14RED/29compatibilitypasses became43focused passes; desktoptypes and independent review pass. Two guards only; removing them restores exact baseline bytes. Mocked DOM/portals, not genuine native IME/provider/session acceptance; no restart/publication. All15parents remain open.

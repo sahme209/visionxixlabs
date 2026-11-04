@@ -49,3 +49,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 current website preview refresh
 ~~Exactd9scoped types/full offline build/output checks~~ now pass after matching-lock materialized dependency recovery; earlier type timeouts retained. [Product](http://127.0.0.1:5240/product), [Integrations](http://127.0.0.1:5240/integrations), source/guard5+HTTP25checks. Browser/AT/contrast/performance/native/live/Governance/publication remain unaccepted. Old previews preserved. [Receipt](../recovery/2026-11-04/website-accessibility-pair/current-build-preview/README.md).
+
+### November4 Bot composition preservation
+~~Escape and inspector navigation preserve active composition~~:43focused rendered checks, desktoptypes and independent review pass; exact2guard baseline proof. [Evidence](../recovery/2026-11-04/bot-workspace-ime/README.md). Local source only, not native/session acceptance.

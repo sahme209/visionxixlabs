@@ -1,0 +1,29 @@
+{
+  "status": "local rendered keyboard checks only",
+  "baselineCommit": "ac5d410991236b6fa7848c24e709f489d6b86c91",
+  "sources": [
+    {
+      "path": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "sha256": "e21dd69b7e957ef14b3256953dc1f6d12097c3d7582073f5a78f81e9b73c089f"
+    },
+    {
+      "path": "lib/desktop/__tests__/savedBotTaskWorkspace.test.ts",
+      "sha256": "c772fa9d39386399593a9bb8e0bbf3685a4676b6786792f0ec22de644ffe0fda"
+    }
+  ],
+  "change": "Two early composition guards only: outer Escape panel closure and inspector tab keyboard navigation; existing modified-key behavior unchanged.",
+  "red": {
+    "failed": 14,
+    "passed": 29,
+    "exit": 1
+  },
+  "green": {
+    "passed": 43,
+    "failed": 0,
+    "exit": 0
+  },
+  "stripTwoGuardsEqualsGitBaseline": true,
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache; filesystem writes permitted only inside private temp directory",
+  "limits": "Rendered DOM/React portal cases with mocked task/client/native adapters only. No genuine native IME, provider/DB or saved-session acceptance."
+}

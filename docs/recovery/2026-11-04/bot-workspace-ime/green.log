@@ -1,0 +1,53 @@
+[33mBoth esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored.[39m The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mnever uploads typing and only saves after an explicit valid click[32m 94[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mreopens a saved draft after the workspace is recreated[32m 33[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mrequires confirmation before replacing unsent text[32m 24[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mnever saves an oversized visible candidate in place of the previous valid text[32m 28[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mpreserves local edits on version conflict[32m 33[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mretries an unknown save with the same immutable payload and identifier[32m 33[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mignores late saved-task reads after a context change[32m 12[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mshows immutable history without replacing current unsent edits[32m 29[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mwires real saved-task controls into the paired Bot route[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mlocks edits while opening a saved draft[32m 16[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mdismisses replacement confirmation while retaining unknown-save retry[32m 36[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mretains selected task, history and unsaved edits across identical identity revalidation[32m 31[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mopens a genuine saved instruction in the activity surface and keeps unsaved text through inspector tabs[32m 26[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mfilters only loaded tasks without replacing the open editor[32m 17[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22msaves a new instruction with an automatic title through the existing explicit route[32m 15[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the full invalid candidate when preserving conflict edits as a new draft[32m 26[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22msupports keyboard navigation between inspector tabs without changing the draft[32m 12[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mfocuses responsive panels when opened and returns focus when closed[32m 18[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mcloses the inspector with Escape from portaled context fields and restores focus[32m 11[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mopens the bounded report workflow from Library without replacing the saved instruction[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mruns native support only when the Computer inspector is actually visible (wide=true)[32m 15[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mruns native support only when the Computer inspector is actually visible (wide=false)[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mloads shared-app evidence and reports only while their inspector is visible, retaining the draft[32m 27[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mlaunches the actual shared-app workflows and saved outcomes without changing the task draft[32m 45[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mexplains the saved-task prerequisite through the launcher without creating or running work[32m 23[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mexplores Jira from Bot only after explicit load, without saving, publishing or replacing the instruction[32m 32[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mclosing Bot Jira exploration aborts its pending read and ignores a late result[32m 26[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mrequires fresh Jira exploration after task change or inactive workspace return[32m 47[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps 'Bot task title' and its panel open on composing Escape ({"label":"Bot task title","isComposing":true})[32m 15[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps 'Bot task title' and its panel open on composing Escape ({"label":"Bot task title","keyCode":229})[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps 'Context to include' and its panel open on composing Escape ({"label":"Context to include","isComposing":true})[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps 'Context to include' and its panel open on composing Escape ({"label":"Context to include","keyCode":229})[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps 'Filter loaded tasks' and its panel open on composing Escape ({"label":"Filter loaded tasks","isComposing":true})[32m 15[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps 'Filter loaded tasks' and its panel open on composing Escape ({"label":"Filter loaded tasks","keyCode":229})[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the selected inspector tab and focus during composition ({"key":"ArrowRight","isComposing":true})[32m 18[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the selected inspector tab and focus during composition ({"key":"ArrowRight","keyCode":229})[32m 19[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the selected inspector tab and focus during composition ({"key":"ArrowLeft","isComposing":true})[32m 18[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the selected inspector tab and focus during composition ({"key":"ArrowLeft","keyCode":229})[32m 14[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the selected inspector tab and focus during composition ({"key":"Home","isComposing":true})[32m 11[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the selected inspector tab and focus during composition ({"key":"Home","keyCode":229})[32m 12[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the selected inspector tab and focus during composition ({"key":"End","isComposing":true})[32m 12[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mkeeps the selected inspector tab and focus during composition ({"key":"End","keyCode":229})[32m 13[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/savedBotTaskWorkspace.test.ts[2m > [22mretains ordinary inspector arrow/Home/End navigation and task-list Escape focus return[32m 18[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m43 passed[39m[22m[90m (43)[39m
+[2m   Start at [22m 15:58:14
+[2m   Duration [22m 1.43s[2m (transform 129ms, setup 0ms, import 235ms, tests 973ms, environment 177ms)[22m
+

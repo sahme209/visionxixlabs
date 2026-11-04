@@ -1,11 +1,11 @@
 {
   "format": "axiom.master-plan-reconciliation/1",
-  "recorded_at": "2026-11-04T20:55:31.938220+00:00",
+  "recorded_at": "2026-11-04T20:59:39.903013+00:00",
   "master_path": "docs/product/axiom-master-action-plan.md",
-  "master_sha256": "aa9350edd8996154c2ce4ccec9e1e785bac35dc60382f8bb012d5e47ff432ffa",
+  "master_sha256": "21385f56dfeef2c2175efd6b4ca98bd74c8ebd39d45cf6ddbd4f702341ac1779",
   "master_git_blob": "507452730bb3af137649c5613fa007cb15d5db71",
   "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
-  "current_method": "No unexpected requirement changes; verified type recovery and exact-source local build/preview milestone appended, all15parents preserved.",
+  "current_method": "No unexpected requirements; verified Bot IME milestone appended; all15parents/B2requirements retained.",
   "open_parents": [
     "A1",
     "A2",

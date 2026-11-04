@@ -128,3 +128,27 @@ it('requires fresh Jira exploration after task change or inactive workspace retu
  view.rerender(createElement(SavedBotTaskWorkspace,{ownerKey:'owned',draft,onDraftChange:()=>{},active:false}));view.rerender(createElement(SavedBotTaskWorkspace,{ownerKey:'owned',draft,onDraftChange:()=>{},active:true}));expect(screen.queryByRole('button',{name:'Load Jira connections'})).toBeNull();expect(m.jiraOwners).toHaveLength(opened);
  fireEvent.click(screen.getByRole('button',{name:'Explore Jira form'}));expect(screen.getByRole('button',{name:'Load Jira connections'})).toBeTruthy();fireEvent.click(screen.getByRole('button',{name:'Open saved task Saved example'}));await screen.findByText('Saved instruction · version 0');expect(screen.queryByRole('button',{name:'Load Jira connections'})).toBeNull();
 });
+
+it.each(['Bot task title','Context to include','Filter loaded tasks'].flatMap(label=>[{label,isComposing:true},{label,keyCode:229}]))('keeps $label and its panel open on composing Escape (%j)',async({label,...signal})=>{
+ render(createElement(Host));await screen.findByRole('button',{name:'Open saved task Saved example'});
+ const trigger=screen.getByRole('button',{name:label==='Filter loaded tasks'?'Tasks':'Task details'});fireEvent.click(trigger);
+ const field=screen.getByLabelText(label);fireEvent.change(field,{target:{value:'未確定 draft'}});field.focus();
+ const calls=[m.list,m.get,m.create,m.update,m.history].map(mock=>mock.mock.calls.length);
+ const event=new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true,...signal});fireEvent(field,event);
+ expect(event.defaultPrevented).toBe(false);expect(trigger.getAttribute('aria-expanded')).toBe('true');expect(document.activeElement).toBe(field);expect(screen.getByLabelText(label)).toBe(field);expect(field).toHaveProperty('value','未確定 draft');
+ expect([m.list,m.get,m.create,m.update,m.history].map(mock=>mock.mock.calls.length)).toEqual(calls);
+});
+it.each(['ArrowRight','ArrowLeft','Home','End'].flatMap(key=>[{key,isComposing:true},{key,keyCode:229}]))('keeps the selected inspector tab and focus during composition (%j)',async({key,...signal})=>{
+ render(createElement(Host));await screen.findByRole('button',{name:'Open saved task Saved example'});fill();
+ fireEvent.click(screen.getByRole('button',{name:'Task details'}));fireEvent.click(screen.getByRole('tab',{name:'Workspace report'}));const tab=screen.getByRole('tab',{name:'Workspace report'});tab.focus();
+ const calls=[m.list,m.get,m.create,m.update,m.history].map(mock=>mock.mock.calls.length);
+ const event=new KeyboardEvent('keydown',{key,bubbles:true,cancelable:true,...signal});fireEvent(tab,event);
+ expect(event.defaultPrevented).toBe(false);expect(tab.getAttribute('aria-selected')).toBe('true');expect(document.activeElement).toBe(tab);expect(screen.getByLabelText('What should Axiom Bot help with?')).toHaveProperty('value','Public test instruction');
+ expect([m.list,m.get,m.create,m.update,m.history].map(mock=>mock.mock.calls.length)).toEqual(calls);
+});
+it('retains ordinary inspector arrow/Home/End navigation and task-list Escape focus return',async()=>{
+ render(createElement(Host));await screen.findByRole('button',{name:'Open saved task Saved example'});fill();fireEvent.click(screen.getByRole('button',{name:'Task details'}));
+ const first=screen.getByRole('tab',{name:'Details'});first.focus();
+ for(const [key,name] of [['ArrowRight','Workspace report'],['End','Computer'],['Home','Details'],['ArrowLeft','Computer']] as const){fireEvent.keyDown(document.activeElement!,{key});const tab=screen.getByRole('tab',{name});expect(tab.getAttribute('aria-selected')).toBe('true');expect(document.activeElement).toBe(tab)}
+ const tasks=screen.getByRole('button',{name:'Tasks'});fireEvent.click(tasks);const filter=screen.getByLabelText('Filter loaded tasks');expect(document.activeElement).toBe(filter);fireEvent.keyDown(filter,{key:'Escape'});expect(tasks.getAttribute('aria-expanded')).toBe('false');expect(document.activeElement).toBe(tasks);expect(screen.getByLabelText('What should Axiom Bot help with?')).toHaveProperty('value','Public test instruction');expect(m.create).not.toHaveBeenCalled();expect(m.update).not.toHaveBeenCalled();
+});
