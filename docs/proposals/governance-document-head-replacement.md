@@ -22,7 +22,7 @@ Existing original-actor/request-UUID lookup remains unchanged; do not add origin
 
 Store/HTTP/client/native focused tests should cover initial version0 -> deliberate head read -> exact replacement1, validated historical selection and derived target, missing/corrupt/foreign refusal, authority recheck, read no-writes/no-body, strict fields/unchanged OFF permitlist/auth/limits, client echo and digest-flag rejection, version999, stale CAS one-winner race, current revocation and rollback. Native tests cover locked parent/target, sync duplicates, unknown held original request, context disown, lookup false held and true original historical recovery without resend/invented version.
 
-Existing request-service seam already covers initial artifact -> proposal -> genuine independent review -> different-content replacement -> old source freshness refusal/drift changed while historical approval record remains. Extend/reuse it rather than creating a new approval path. Same-byte content matching does not grant freshness. Provider enrollment, canonical issuer/custody, business-channel mounting and full Governance completion remain outside scope.
+Existing request-service seam already covers initial artifact -> proposal -> distinct synthetic requester/reviewer enforcement (not an actual human decision) -> different-content replacement -> old source freshness refusal/drift changed while historical approval record remains. Extend/reuse it rather than creating a new approval path. Same-byte content matching does not grant freshness. Provider enrollment, canonical issuer/custody, business-channel mounting and full Governance completion remain outside scope.
 
 ## Source-fidelity correction before implementation
 
