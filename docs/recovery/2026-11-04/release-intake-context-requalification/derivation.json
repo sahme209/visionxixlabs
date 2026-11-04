@@ -1,0 +1,8 @@
+{
+  "commit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+  "rawSourceSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+  "derivedStrippedSha256": "bb37a17a87037fdfe7e66c4a941b867e705b030837a3e612898d554954331f70",
+  "runtimeEqualsRawGit": true,
+  "registeredAttributes": 29,
+  "fieldCallsites": 52
+}

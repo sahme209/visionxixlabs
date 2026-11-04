@@ -1,0 +1,17 @@
+{
+  "status": "internal draft integrity only; customer refused",
+  "runtimeCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+  "runtimeSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+  "articleSha256": "74ee2a23f1c3e786779a1a3ff7e2c70598cb7b3339883b619d93117297642646",
+  "evaluationSha256": "a76a7044ff96f9bdfe31ec200628d4f8d7ca8510d9293b3886d74083c7134b8b",
+  "controlIds": 52,
+  "steps": 56,
+  "sourcePins": 10,
+  "proposedNotExecutedCases": 19,
+  "draftValidationExit": 0,
+  "expectedCustomerRefusalExit": 1,
+  "r1BytesPreserved": true,
+  "frozen24Touched": false,
+  "retrievalEvaluationExecuted": false,
+  "limits": "Runtime version identifies4f31; exact SHA pins define later documentation snapshot. No editorial/customer/media/native/shipped acceptance, new authority, automatic retry or durable unknown-outcome guarantee."
+}

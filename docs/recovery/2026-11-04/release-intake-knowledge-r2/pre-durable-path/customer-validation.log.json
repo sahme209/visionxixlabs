@@ -1,0 +1,5 @@
+{
+  "format": "verbatim-process-log",
+  "sha256": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03",
+  "text": "Support knowledge validation failed: customer retrieval ineligible: article_not_approved, article_not_public, local_preview_not_shipped\n"
+}

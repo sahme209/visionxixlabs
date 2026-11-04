@@ -1,0 +1,8 @@
+{
+  "rawSourceEqualsActualGit": true,
+  "sourceAndBothManifestHashesMatch": true,
+  "all29IdsAndNodesPreserved": true,
+  "all52IdsPurposesAndNodesPreserved": true,
+  "metadataStrippingCount": 29,
+  "derivedStrippedSha256": "bb37a17a87037fdfe7e66c4a941b867e705b030837a3e612898d554954331f70"
+}

@@ -1,0 +1,10 @@
+{
+  "newArticleSha256": "74ee2a23f1c3e786779a1a3ff7e2c70598cb7b3339883b619d93117297642646",
+  "newEvaluationSha256": "a76a7044ff96f9bdfe31ec200628d4f8d7ca8510d9293b3886d74083c7134b8b",
+  "articleCompanionBound": true,
+  "all52IdsMatchCurrentInventory": true,
+  "sourcePinsVerified": 10,
+  "priorR1ArticleAndCompanionByteIdenticalToGit": true,
+  "all31FrozenRecordsUnchanged": true,
+  "retrievalOrEvaluationExecuted": false
+}

@@ -1,11 +1,11 @@
 {
   "format": "axiom.master-plan-reconciliation/1",
-  "recorded_at": "2026-11-04T22:23:22.944727+00:00",
+  "recorded_at": "2026-11-04T22:40:37.439155+00:00",
   "master_path": "docs/product/axiom-master-action-plan.md",
-  "master_sha256": "7841c165ac8c44c395b02ce0827e6923b572fc12062dd382555f03eda7116a51",
-  "master_git_blob": "e2f07f12f6f19bea27c32c3eef9623826c63fcd3",
+  "master_sha256": "1ca2334a91d9b21ed166beb19cd44f373f406ca13ea444f4e648936496f52c6c",
+  "master_git_blob": "b3d5ab5fed7855c6f3e69ec442670d6ae9a8f9df",
   "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
-  "current_method": "Exact single GetLayers user insertion reconciled; prior A/B and future C scope preserved.",
+  "current_method": "Known context-isolation/source-requalification milestone inserted after exact checkpoint comparison; prior GetLayers/Prompt Motion/C additions preserved.",
   "open_parents": [
     "A1",
     "A2",

@@ -1,0 +1,7 @@
+# Intake knowledge revision2
+
+The new internal/source-only article revision2 follows runtime4f31 plus separately pinned later documentation, with52 source IDs,56steps,10 portable source pins and19 proposed response cases. It supersedes the historical r1 draft without altering r1 bytes or implying customer approval. The captured-save/context-owner explanation matches the repaired source: old-context results cannot update replacement work; already-submitted persistence is not cancelled and no automatic retry is authorized.
+
+Standalone schema/hash/version validation passes and customer mode refuses draft/internal/local-preview content. Root verified IDs, source/companion digests and portable paths. Independent semantic review found no important findings. Root then found one untracked work receipt path; it was replaced by an identical durable receipt, companion hash updated and only the changed bundle revalidated. First-pass evidence is preserved separately, not confused with final bytes.
+
+All old r1 article/companion bytes remain identical to Git. The31 frozen evaluation records were checked unchanged before the final path-only correction; no frozen write, retrieval reader, pipeline or proposed-case execution occurred. Neither old evaluation permission nor a metadata integrity pass authorizes actual evaluation or customer ingestion. Editorial review dates remain null and media empty; authentic supported-release/native/browser/customer evidence stays open.

@@ -1,0 +1,514 @@
+{
+  "schema": 1,
+  "id": "axiom.help.releases.intake-controls",
+  "revision": 2,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Releases intake: named fields, captured saves and pending-outcome boundaries",
+  "productVersion": "local-source-preview:4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+  "screenIds": [
+    "proposed.axiom.screen.releases.intake"
+  ],
+  "controlIds": [
+    "releases.intake.title",
+    "releases.intake.request-class",
+    "releases.intake.ad-hoc-reason",
+    "releases.intake.ad-hoc-priority",
+    "releases.intake.business-impact",
+    "releases.intake.schedule-exception-reason",
+    "releases.intake.window-start",
+    "releases.intake.window-end",
+    "releases.intake.display-time-zone",
+    "releases.intake.change-type",
+    "releases.intake.applications",
+    "releases.intake.clients",
+    "releases.intake.deployment-contact",
+    "releases.intake.application-contact",
+    "releases.intake.escalation-contact",
+    "releases.intake.repository-urls",
+    "releases.intake.no-pr-required",
+    "releases.intake.production-pr-urls",
+    "releases.intake.pr-approval-status",
+    "releases.intake.source-branch",
+    "releases.intake.target-branch",
+    "releases.intake.deployment-method",
+    "releases.intake.workflow-name",
+    "releases.intake.target-environment",
+    "releases.intake.workflow-ref",
+    "releases.intake.manual-instruction",
+    "releases.intake.manual-owner",
+    "releases.intake.manual-validation-instruction",
+    "releases.intake.lower-environments",
+    "releases.intake.development-ready",
+    "releases.intake.production-ready",
+    "releases.intake.validation-instruction",
+    "releases.intake.validation-owner",
+    "releases.intake.functional-validation-required",
+    "releases.intake.functional-validation-instruction",
+    "releases.intake.functional-validation-owner",
+    "releases.intake.expected-production-result",
+    "releases.intake.deferred-validation",
+    "releases.intake.deferred-reason",
+    "releases.intake.deferred-trigger",
+    "releases.intake.deferred-date",
+    "releases.intake.deferred-owner",
+    "releases.intake.monitoring-plan",
+    "releases.intake.rollback-availability",
+    "releases.intake.rollback-instruction",
+    "releases.intake.rollback-owner",
+    "releases.intake.backup-required",
+    "releases.intake.backup-evidence-ids",
+    "releases.intake.change-creation-method",
+    "releases.intake.confirmed-fact",
+    "releases.intake.source-evidence-id",
+    "releases.intake.fact-confirmed-by"
+  ],
+  "goal": "Understand the 52 named intake source callsites, their actual local conditions and captured-save behavior without mistaking entered assertions or saved versions for approval or provider success.",
+  "prerequisites": [
+    "Internal source-only draft at the exact bound source, not a supported-release or customer-approved guide. Verify the installed version and actual reachable entry separately.",
+    "The proposed screen ID and all52 releases.intake.* IDs are documentation source-callsite identifiers only: not DOM attributes, query selectors, unique field-instance identities or mounted help navigation.",
+    "Use the intended current workspace/request and actual permitted New release, Complete release details or Revise path. No session, credential, role, endpoint or provider operation is granted by this article.",
+    "The version names runtime commit 4f31f855406c7f450ab2c8533cc5119a7f0491cd. Source hashes pin the combined post-runtime documentation snapshot; this does not claim those later-authored guides or receipts existed in that Git commit."
+  ],
+  "permissions": [
+    "Owner/contact fields, PR approval, No production PR required, readiness checkboxes and confirmed-fact attribution are entered assertions, not verified people, role changes, independent review records or policy waivers.",
+    "Create/revise saves Axiom intake/version history only. Current server acceptance and downstream exact independent approval/execution checks remain authoritative; this mapping does not enumerate every server validation.",
+    "A workflow/ref/environment choice, source metadata, cited evidence ID or local validation result grants no provider permission, execution coverage, Governance enrollment or activation.",
+    "Planned manual/validation/rollback instructions and responsibility categories do not run commands, schedule follow-up, notify owners, perform backup or verify recovery."
+  ],
+  "steps": [
+    {
+      "instruction": "Open the currently available New release, Complete release details or Revise entry for the intended request. Follow Window, Scope, Execution, Validation and Recovery; use Back or an already reached step to inspect earlier entries.",
+      "effect": "read",
+      "expectedState": "Local entry and reached-step navigation do not submit, approve or execute anything. Entry availability depends on the actual request state and installed surface; this source draft establishes no shipped availability."
+    },
+    {
+      "instruction": "At Window. Review or edit Request title for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Names the release request. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required text; local completeness does not establish release approval. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Review or edit Request class for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the request classification. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Recorded choices: planned biweekly release, planned release, ad hoc, emergency, maintenance, other. Ad hoc/emergency exposes additional required context; options are the literal declared list. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Shown for ad hoc or emergency requests. Review or edit Reason for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Explains the ad hoc/emergency request. Native required prop is present. A nonempty trimmed value is checked for an ad hoc or emergency request. Required while isAdHoc; this explanation is not an exception approval. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Shown for ad hoc or emergency requests. Review or edit Priority for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the ad hoc/emergency priority. Native required prop is present. A nonempty trimmed value is checked for an ad hoc or emergency request. Required while isAdHoc; no independent priority validation is implied. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Shown for ad hoc or emergency requests. Review or edit Business impact for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Describes the ad hoc/emergency business impact. Native required prop is present. A nonempty trimmed value is checked for an ad hoc or emergency request. Required while isAdHoc; entered impact is reported context. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Shown for ad hoc or emergency requests. Review or edit Schedule exception for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the requested scheduling exception reason. Native required prop is present. A nonempty trimmed value is checked for an ad hoc or emergency request. Required while isAdHoc; supplying a reason grants no exception authority. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Review or edit Window start for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the proposed deployment-window start. Native required prop is present. A nonempty trimmed value is checked in its applicable step. datetime-local is parsed by localToIso using machine date parsing; displayTimeZone does not convert this input. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Review or edit Window end for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the proposed deployment-window end. Native required prop is present. A nonempty trimmed value is checked in its applicable step. datetime-local is parsed by localToIso; submit refuses an invalid start/end instant. This does not certify an approved window. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Review or edit Display time zone for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the display-zone label. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Recorded choices: ET, CT, MT, PT, UTC, Other. Separate from machine-local datetime parsing; choosing a zone is not an input conversion. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Window. Review or edit Change type for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records one change classification. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Recorded choices: enhancement, new feature, new client implementation, configuration change, infrastructure change, database change, security image refresh, credential rotation, workflow change, manual configuration, bug fix, other. Saved as a one-element changeTypes array, not an enabled execution capability. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit Applications (comma or line separated) for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records applications in scope. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required; splitLines separates comma/newline values, trims them and removes empty entries. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit Clients (comma or line separated) for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records affected clients. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required; splitLines separates comma/newline values; recorded scope is not independently verified. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit Deployment owner for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the deployment owner/contact. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required entered ownership; no membership, permission or execution authority is assigned. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit Application owner for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the application owner/contact. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required entered ownership, not independent approval or identity verification. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit Escalation owner for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the escalation owner/contact. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required entered contact, not a notification or escalation dispatch. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit Repository URLs for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records repository URLs for the request. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required comma/newline list; supported discovery separately requires a single recognized GitHub repository. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit No production PR required for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the assertion that no production PR is required. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Hides PR URL/approval fields and saves not_applicable for prApprovalStatus; it does not waive independent downstream policy. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Shown when No production PR required is unchecked. Review or edit Production PR URLs for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records production PR URLs. Native required prop is present. A nonempty trimmed value is checked when No production PR required is unchecked. Required when noPrRequired is false; comma/newline values are stored, not approved or merged. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Shown when No production PR required is unchecked. Review or edit PR approval for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the reported PR approval status. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Recorded choices: pending, approved. pending/approved are self-reported intake values, not a genuine independent provider decision. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit Source branch for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the source branch. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required; also supplies workflow source ref when the separate workflowRef is blank. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Scope. Review or edit Target branch for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the target branch. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required input; selecting a name does not verify protection, mergeability or target authority. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Execution; this subtree remains mounted but hidden at other steps. Review or edit Deployment method for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Describes the intended deployment method. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required description; does not run a method or enable dispatch. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Execution; this subtree remains mounted but hidden at other steps. Review or edit Workflow name / trigger for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the workflow name/path/trigger. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required; imported discovery checks workflow fields separately and may block advancement. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Execution; this subtree remains mounted but hidden at other steps. Review or edit Target environment for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the intended environment. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required name, not proof of current environment access or deployment readiness. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Execution; this subtree remains mounted but hidden at other steps. Review or edit Workflow source ref (branch or tag) for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Selects the separate workflow source branch/tag used for discovery. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Local workflowRef state, not draft.sourceBranch; blank uses sourceBranch. Only matching observed workflowSource is included in payload. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Execution; this subtree remains mounted but hidden at other steps. Review or edit Optional manual instruction for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records an optional manual step. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Trimmed nonempty text creates a planned manual step with completed:false and evidenceRequired:true; no instruction executes. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Execution; this subtree remains mounted but hidden at other steps. Shown while Optional manual instruction has any characters, including whitespace. Review or edit Manual-step owner for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the manual-step owner. Native required prop is present. A nonempty trimmed value is checked only when Optional manual instruction has non-whitespace text. Required while raw manualInstruction is truthy; validateStep requires owner when instruction.trim() is nonempty. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Execution; this subtree remains mounted but hidden at other steps. Shown while Optional manual instruction has any characters, including whitespace. Review or edit How to validate the manual step for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records how the planned manual step should be validated. Native required prop is present. A nonempty trimmed value is checked only when Optional manual instruction has non-whitespace text. Required in the visible manual-step branch; planned validation does not establish completion or evidence. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Review or edit Tested lower environments for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records tested lower environments. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required comma/newline list; reported testing is not a current test receipt. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Review or edit Development ready for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the development-readiness assertion. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Self-reported checkbox; does not grant approval or establish independent checks. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Review or edit Production ready for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the production-readiness assertion. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Self-reported checkbox; does not authorize deployment. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Review or edit Exact technical production validation for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records exact planned technical production validation. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required planned instruction; saved validation step has completed:false and evidenceRequired:true. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Review or edit Technical validation owner for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the technical validation owner category. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Recorded choices: devops, application team, shared, l1, dba, other. Literal role-category choices are planned responsibility, not an actual reviewer assignment or permission. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Review or edit Application-specific functional validation required for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records whether functional validation is planned. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Shows functional instruction/owner and adds a planned validation step when checked. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Shown when Application-specific functional validation required is checked. Review or edit Exact functional validation instruction for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records planned functional validation. Native required prop is present. A nonempty trimmed value is checked when Application-specific functional validation required is checked. Required when functionalValidationRequired; does not execute or prove validation. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Shown when Application-specific functional validation required is checked. Review or edit Functional validation owner for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the functional validation owner category. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Recorded choices: application team, devops, shared, l1, dba, other. Literal planned responsibility; no current role or independent approval follows. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Review or edit Expected production result for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the expected production result. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required expectation, not an observed health or success result. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Review or edit Validation must be deferred for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records a proposed validation deferral. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Shows and requires follow-up details; does not grant approval to defer. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Shown when Validation must be deferred is checked. Review or edit Deferral reason for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records why validation is deferred. Native required prop is present. A nonempty trimmed value is checked when Validation must be deferred is checked. Required when deferredValidation; reported rationale is not an accepted exception. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Shown when Validation must be deferred is checked. Review or edit Follow-up trigger for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the planned follow-up trigger. Native required prop is present. A nonempty trimmed value is checked when Validation must be deferred is checked. Required when deferredValidation; no automation is scheduled by this field. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Shown when Validation must be deferred is checked. Review or edit Expected follow-up date for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the expected follow-up date. Native required prop is present. A nonempty trimmed value is checked when Validation must be deferred is checked. Required datetime-local when deferredValidation; localToIso uses machine date parsing, not the display-zone label. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Shown when Validation must be deferred is checked. Review or edit Follow-up owner for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the follow-up owner. Native required prop is present. A nonempty trimmed value is checked when Validation must be deferred is checked. Required when deferredValidation; entered ownership grants no access or assignment. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Validation. Shown when Validation must be deferred is checked. Review or edit Monitoring plan for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Describes the monitoring plan during deferral. Native required prop is present. A nonempty trimmed value is checked when Validation must be deferred is checked. Required when deferredValidation; no monitoring connection or observation is established. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Review or edit Rollback availability for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records reported rollback availability. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Recorded choices: yes, no, not applicable. yes exposes required rollback instruction/owner; no/not_applicable does not establish verified recovery. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Shown when Rollback availability is yes. Review or edit Exact rollback instruction for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records planned rollback instructions. Native required prop is present. A nonempty trimmed value is checked when Rollback availability is yes. Required when rollbackAvailability is yes; saved step has completed:false and evidenceRequired:true, not executed recovery. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Shown when Rollback availability is yes. Review or edit Rollback owner for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the planned rollback owner. Native required prop is present. A nonempty trimmed value is checked when Rollback availability is yes. Required with rollbackAvailability yes; entered owner is not execution authority. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Review or edit Backup required for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records whether backup evidence is required. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Shows evidence identifiers; does not perform a backup. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Shown when Backup required is checked. Review or edit Backup evidence identifiers for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records cited backup evidence identifiers. Native required prop is present. A nonempty trimmed value is checked when Backup required is checked. Required when backupRequired; splitLines parses references without proving evidence exists or is accepted. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Review or edit Change creation for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the intended change-creation method. No native required prop is supplied at this callsite. No named-field presence check is established in validateStep; this does not guarantee validity or service acceptance. Recorded choices: rca workflow, dbployer automatic, manual servicenow, existing change, not applicable, other. Selecting rca_workflow/dbployer_automatic/manual_servicenow/etc. does not create a native change or enable those tools. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Review or edit Confirmed operational fact for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the claimed confirmed operational fact. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required statement saved with classification confirmed; the entered classification is not independent fact verification. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Review or edit Source evidence identifier for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records the fact source evidence identifier. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required citation; this field does not fetch, validate or accept the cited evidence. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "At Recovery. Review or edit Confirmed by for the intended request.",
+      "effect": "propose",
+      "expectedState": "Local draft only. Records who reportedly confirmed the fact. Native required prop is present. A nonempty trimmed value is checked in its applicable step. Required attribution, not identity verification or an independent approval record. Local validation or service refusal retains the mounted form for correction; final service acceptance remains separate."
+    },
+    {
+      "instruction": "Use Continue to check the current step. Correct the reported field or workflow/batch issue before continuing; review all reached steps before saving.",
+      "effect": "read",
+      "expectedState": "Continue checks local presence plus reported workflow/batch issues at Execution. Final submission checks all local steps, string-valued workflow-input JSON and valid window instants; these checks do not establish owner identity, URL validity, chronological ordering, provider access or genuine independent review."
+    },
+    {
+      "instruction": "Deliberately choose Submit release request, Submit completed request or Save revision only for the intended current form and version.",
+      "effect": "propose",
+      "expectedState": "The form captures its existing payload and creates or revises the Axiom request. Revision uses the displayed request ID/version; create uses the form submission identifier. Pending Release intake fields are disabled; synchronous update/submit guards reject pending edits or duplicate submissions. This records no provider change, ticket creation, deployment or independent approval. Update and submit also require the original mounted configuration identity and context revision. Changing context/configuration hides the old form before passive reset, resets revision/read state and keys fresh form ownership; it neither migrates the draft nor changes the captured payload or existing service calls."
+    },
+    {
+      "instruction": "While Saving release details, leave only if intended. If the outcome is unavailable, check the intended saved requests and current version before deciding the next step; preserve unresolved outcome context and ask for help when it cannot be reconciled.",
+      "effect": "recover",
+      "expectedState": "Leaving or changing configuration/context does not cancel a save already sent or prove failure. Only the original still-mounted owner with the same configuration identity and context revision may apply success, refusal, error or pending-state updates. An old result cannot close or refresh replacement-context work. A returned refusal or thrown-save error retains/unlocks the captured form only while its owner remains current. A new explicit intake starts fresh; unsaved old draft recovery is not promised. Inspect saved requests in the original authorized workspace before deciding the next step. No automatic replay, durable pending-save journal, guaranteed idempotent retry or cross-session outcome adoption is established."
+    }
+  ],
+  "expectedOutcome": "Inspect or correct the named local intake fields and save only the intended captured request/version, preserving unresolved outcomes without treating local completeness, a saved revision or reported approval/readiness as provider authority.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial/media/native/runtime/shipped acceptance unproven. Review identity/date remain null, media empty, source-only verification dates null. No genuine human decision or customer retrieval is claimed.",
+    "Scope is all52 Field/TextArea/SelectField/Check source callsites in DeploymentIntakeForm, not52 simultaneously visible/runtime-accepted controls. Runtime helper-family attributes and intrinsic navigation/submit controls are separate mappings.",
+    "Imported WorkflowCatalogue, WorkflowDefinitionInputs including dynamic workflowInputs fields, and ReleaseBatchSelection controls are excluded from the52 IDs. Their issues may still block submission; this article neither requalifies their internals nor invents extra source IDs.",
+    "Window start/end and Expected follow-up date are machine-local datetime inputs converted using localToIso; Display time zone is a separate recorded label, not a conversion setting. Window instants are explicitly checked at submit; no date-ordering or identical explicit check for every other date is asserted.",
+    "Manual-step fields use raw text truthiness for visibility, but validation/serialization require trimmed nonempty text. Planned serialized steps remain completed:false and evidenceRequired:true; entered instructions are not execution evidence.",
+    "Required HTML props, local nonempty-string presence checks and server acceptance are separate layers. No required prop/presence test proves URL format, chronology, owner identity, eligibility or current connection health.",
+    "The pending fieldset and captured configuration/context-revision owner checks protect local UI ownership only. A context/configuration change hides and resets the old form and revision/read state; a new explicit intake starts fresh. Unsaved edits are not promised recovery. An already captured save is not cancelled, rolled back, replayed or declared failed; no cross-session authority or durable unknown-outcome ledger is established.",
+    "Confirmed operational fact, Source evidence identifier and Confirmed by are user-supplied inputs. The serialized fact classification confirmed is not external verification, accepted evidence, identity proof or a genuine independent review.",
+    "This new canonical article changes the moving article-directory dataset. The pending exact24-record evaluation and its frozen snapshots/manifests remain untouched; no earlier evaluation approval, result or count extends to this article. Proposed cases remain unexecuted."
+  ],
+  "recovery": [
+    "Correct local errors only in the current owned form. A service refusal retains entered state only while that owner remains current; context replacement discards local UI ownership and requires a new explicit intake. Absence of an error never establishes provider success.",
+    "During a pending save do not assume Cancel intake, navigation, unmount or a configuration/context change cancels the request. The old owner cannot close, refresh or update replacement work through late success/refusal/error; this is not a rollback of persistence. Return to the original authorized workspace and inspect saved requests before deciding whether another submission is needed.",
+    "For an unconfirmed save read the intended saved requests/version before another submission. Missing or unavailable records do not prove failure or authorize automatic resend; retain context and escalate if unresolved.",
+    "This article supplies no durable unknown-outcome retry, cross-session adoption or provider recovery procedure. Preserve consumed/unknown provider histories and use their separately verified lifecycle guidance.",
+    "On source/version/hash mismatch quarantine this draft and request a new reviewed revision. Do not rebind old evidence, resurrect a superseded article or present local fixtures as current shipped acceptance."
+  ],
+  "searchTerms": [
+    "Releases intake",
+    "New release",
+    "Complete release details",
+    "Save revision",
+    "Window",
+    "Scope",
+    "Execution",
+    "Validation",
+    "Recovery",
+    "Release intake fields",
+    "Saving release details",
+    "pending save",
+    "Cancel intake",
+    "datetime-local",
+    "display time zone",
+    "workflow source ref",
+    "No production PR required",
+    "Confirmed operational fact",
+    "Request title",
+    "Request class",
+    "Reason",
+    "Priority",
+    "Business impact",
+    "Schedule exception",
+    "Window start",
+    "Window end",
+    "Display time zone",
+    "Change type",
+    "Applications (comma or line separated)",
+    "Clients (comma or line separated)",
+    "Deployment owner",
+    "Application owner",
+    "Escalation owner",
+    "Repository URLs",
+    "Production PR URLs",
+    "PR approval",
+    "Source branch",
+    "Target branch",
+    "Deployment method",
+    "Workflow name / trigger",
+    "Target environment",
+    "Workflow source ref (branch or tag)",
+    "Optional manual instruction",
+    "Manual-step owner",
+    "How to validate the manual step",
+    "Tested lower environments",
+    "Development ready",
+    "Production ready",
+    "Exact technical production validation",
+    "Technical validation owner",
+    "Application-specific functional validation required",
+    "Exact functional validation instruction",
+    "Functional validation owner",
+    "Expected production result",
+    "Validation must be deferred",
+    "Deferral reason",
+    "Follow-up trigger",
+    "Expected follow-up date",
+    "Follow-up owner",
+    "Monitoring plan",
+    "Rollback availability",
+    "Exact rollback instruction",
+    "Rollback owner",
+    "Backup required",
+    "Backup evidence identifiers",
+    "Change creation",
+    "Source evidence identifier",
+    "Confirmed by"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.json",
+      "sha256": "00efc592835bee93fdddb42537e9a30800387273708231fa4bd2258b1500bf45"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.md",
+      "sha256": "03bc291e7f20fb99b4b1904a9c1a9d3f09ea47a4afedbbf8216bda83fd0edcf6"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
+      "sha256": "4fcb816be59debcca1e039a5009cfa397c4bb641150137c3f7b9c6638bc1a368"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.sources.json",
+      "sha256": "346949b05dbca046122c503d82beb187813de4c331aa334ba79d8e10bfc5b104"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/release-intake-context-requalification/receipt.json",
+      "sha256": "0eb8e40588ea7350cfaccfcf6f136430a28e16f79e3ede4cd5df5f9ff210c551"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/release-intake-context/receipt.json",
+      "sha256": "a1def253bccb40386f8572143dcb471e9f657c47f7cc6d81e388e8e0f0695d68"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/release-intake-context/types-receipt.json",
+      "sha256": "163e5ef9b804aefa1809645b864138f4e0f582b65ed06d0d49261ce3d78f69c5"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/release-intake-context/preserved-contracts.json",
+      "sha256": "cceb19c3242d9e31f69d45537b65c316cd629fb60622dc3dc46f6a2413138e1a"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/release-intake-context/independent-review.md",
+      "sha256": "16beccbfe5e7a429debc130fa90cd800fa517b9736a4dc456789b2fad2b7ab91"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/releases-intake-fields.json",
+      "docs/product/knowledge/releases-intake-fields.md",
+      "docs/product/knowledge/releases-intake-bindings.test.cjs",
+      "docs/product/knowledge/releases-intake-fields.sources.json",
+      "docs/recovery/2026-11-04/release-intake-context-requalification/receipt.json",
+      "docs/recovery/2026-11-04/release-intake-context/receipt.json",
+      "docs/recovery/2026-11-04/release-intake-context/types-receipt.json",
+      "docs/recovery/2026-11-04/release-intake-context/preserved-contracts.json",
+      "docs/recovery/2026-11-04/release-intake-context/independent-review.md"
+    ],
+    "verifiedVersion": "local-source-preview:4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": "axiom.help.releases.intake-controls@1"
+}

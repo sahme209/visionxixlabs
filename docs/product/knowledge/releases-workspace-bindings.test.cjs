@@ -46,7 +46,7 @@ test('registered metadata stripping preserves the exact requalified functional b
  assert.equal(inventory.baselineDerivation.method,'strip registered metadata from functional source commit');assert.equal(inventory.baselineDerivation.metadataAlreadyPresent,true);assert.equal(inventory.baselineDerivation.registeredAttributeCount,29);assert.equal(inventory.baselineDerivation.sourceCommit,inventory.baselineCommit);
  assert.equal(inventory.metadataOrigin.unboundSourceCommit,'88e937510aeaf7d547a75227a1187d2bd60edc15');assert.equal(inventory.metadataOrigin.mappingCommit,'f182d990e0e78555e8597705189507724a617221');
  for(const f of inventory.files){assert.equal(sha(sources[f.source]),f.functionalSourceSha256);assert.equal(f.functionalSourceSha256,inventory.baselineDerivation.rawSourceSha256);assert.equal(sha(strip(sources[f.source])),f.baselineSha256,f.source);assert.equal(f.baselineSha256,inventory.baselineDerivation.strippedSourceSha256);
- const guard='if (submissionFlight.current || !intakeMounted.current) return;';assert(sources[f.source].includes(guard));assert.notEqual(sha(strip(sources[f.source].replace(guard,'if (false) return;'))),f.baselineSha256);
+ const guard='if (submissionFlight.current || !ownsIntake()) return;';assert(sources[f.source].includes(guard));assert.notEqual(sha(strip(sources[f.source].replace(guard,'if (false) return;'))),f.baselineSha256);
  }
 });
 test('rejects absent, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata',()=>{

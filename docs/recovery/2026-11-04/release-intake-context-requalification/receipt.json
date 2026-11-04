@@ -1,0 +1,88 @@
+{
+  "status": "source mapping requalification only",
+  "functionalSourceCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+  "rawSourceSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+  "derivedStrippedSha256": "bb37a17a87037fdfe7e66c4a941b867e705b030837a3e612898d554954331f70",
+  "runtimeEqualsRawGit": true,
+  "family29": {
+    "count": 29,
+    "idsAndNodeHashesUnchanged": true,
+    "stale": {
+      "failed": 1,
+      "passed": 4,
+      "exit": 1,
+      "log": "families-stale.log"
+    },
+    "green": {
+      "passed": 5,
+      "failed": 0,
+      "exit": 0,
+      "log": "families-green.log"
+    }
+  },
+  "named52": {
+    "count": 52,
+    "idsPurposesAndNodeHashesUnchanged": true,
+    "stale": {
+      "failed": 2,
+      "passed": 3,
+      "exit": 1,
+      "log": "fields-stale.log"
+    },
+    "green": {
+      "passed": 5,
+      "failed": 0,
+      "exit": 0,
+      "log": "fields-green.log"
+    }
+  },
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.json",
+      "sha256": "22093bfb22d603a43aeee84ce47f574e0d734d46203333275d736841dc3509a9"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.md",
+      "sha256": "be1578f6b93cbba53f56beb73b620b462f2559a28632cec7ae79164db7023bd7"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.test.cjs",
+      "sha256": "e417df20c70f31e5c6d066e30a9f99f613793a6d5c36f9eda06f1b60a91a5ca1"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.json",
+      "sha256": "00efc592835bee93fdddb42537e9a30800387273708231fa4bd2258b1500bf45"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.md",
+      "sha256": "03bc291e7f20fb99b4b1904a9c1a9d3f09ea47a4afedbbf8216bda83fd0edcf6"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
+      "sha256": "4fcb816be59debcca1e039a5009cfa397c4bb641150137c3f7b9c6638bc1a368"
+    },
+    {
+      "path": "docs/product/knowledge/releases-workspace-bindings.sources.json",
+      "sha256": "fe3ea9dcbdf80152f4f146be740c68be643d5f39dc1771bc2a7060b4670b9f1c"
+    },
+    {
+      "path": "docs/product/knowledge/releases-intake-fields.sources.json",
+      "sha256": "346949b05dbca046122c503d82beb187813de4c331aa334ba79d8e10bfc5b104"
+    }
+  ],
+  "metadataOriginPreserved": {
+    "unboundSourceCommit": "88e937510aeaf7d547a75227a1187d2bd60edc15",
+    "unboundSourceSha256": "a8b0f8f100ca14729a1e6c60a4967c43b3c972e9bf3ae605604a5d14dd94ad42",
+    "mappingCommit": "f182d990e0e78555e8597705189507724a617221",
+    "mappedSourceSha256": "4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31",
+    "originalNodeHashesPreserved": true
+  },
+  "priorFunctionalRecords": "prior-19821435/",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache; writes denied outside owned private temp",
+  "limits": "No runtime/registry/index/master/commit/build/behavioral/provider/native/browser/DB action. Source-only documentation; not customer/editorial/media acceptance."
+}

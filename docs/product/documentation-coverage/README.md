@@ -197,3 +197,7 @@ The [guide-to-article source linkage queue](guide-article-linkage.md) maps index
 ## Website download source guide
 
 [Download controls](../knowledge/website-download-controls.md) and [source manifest](../knowledge/website-download-controls.sources.json) document public download entry,11 grouped link/control rows, metadata/loading failures, resolver fallback, signing/size reports and shared navigation. Root verified12source files/22ranges. Direct artifact links after a ready snapshot are not per-click readiness rechecks; neither metadata nor source inspection proves installer bytes, trust, clean-host or current customer availability. No new article/evaluation/runtime/browser acceptance is implied.
+
+## Intake context repair: requalified source and revision2
+
+The [29/52 source mappings](../../recovery/2026-11-04/release-intake-context-requalification/README.md) now bind runtime4f31 after account/workspace ownership repair, with all existing IDs/purposes/node hashes preserved and39 registered checks passing. [Intake article r2](articles/release-intake-controls.r2.json) separately pins that runtime and later documentation; [19 cases](release-intake-controls-evaluation.r2.json) are proposed only. New-bundle integrity passes/customer mode refuses. [Evidence](../../recovery/2026-11-04/release-intake-knowledge-r2/README.md). R1 remains a historical unchanged draft and its earlier198 validation is not current-source acceptance. No frozen dataset/evaluation/customer/native/media/editorial approval is extended.

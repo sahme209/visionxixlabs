@@ -21,11 +21,11 @@
     },
     {
       "path": "docs/product/knowledge/releases-intake-bindings.test.cjs",
-      "sha256": "6ce2df63323e73865b4a0592c3f994447cb99cb421de9e4d1736e15b132488eb"
+      "sha256": "4fcb816be59debcca1e039a5009cfa397c4bb641150137c3f7b9c6638bc1a368"
     },
     {
       "path": "docs/product/knowledge/releases-workspace-bindings.test.cjs",
-      "sha256": "2594a07ce1ebbb8ec2d1eeca6fc625ce7c29432ce5a89a5049f9d075bbb3cca0"
+      "sha256": "e417df20c70f31e5c6d066e30a9f99f613793a6d5c36f9eda06f1b60a91a5ca1"
     },
     {
       "path": "docs/product/knowledge/repository-editor-bindings.test.cjs",

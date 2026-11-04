@@ -1,0 +1,6 @@
+{
+  "format": "verbatim-process-log",
+  "originalFilename": "fields-green.log",
+  "sha256": "65228e57c27df43268bd5b5272a4e700bc6f83afb5e6a198ebff90fd639ab55f",
+  "text": "\u2714 source-only inventory describes all 52 named callsites with finite helper counts and real guide headings (0.705125ms)\n\u2714 independently discovers every actual named helper callsite and verifies exact props and enclosing conditions (18.913958ms)\n\u2714 source custody and constraint/recovery function references bind actual unchanged source bytes (8.077917ms)\n\u2714 rejects changed label, value, update, required flag, condition and declared options (37.197375ms)\n\u2714 rejects incomplete/duplicate/unknown/swapped records and an extra actual field callsite (18.877375ms)\n\u2139 tests 5\n\u2139 suites 0\n\u2139 pass 5\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 175.29975\n"
+}

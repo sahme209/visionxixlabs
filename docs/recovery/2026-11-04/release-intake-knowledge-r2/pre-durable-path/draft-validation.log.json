@@ -1,0 +1,5 @@
+{
+  "format": "verbatim-process-log",
+  "sha256": "baa68d91c58cbbfc039c5d2e0c8b3082b53a72f405efd5986a1564810e991f23",
+  "text": "{\n  \"valid\": true,\n  \"articleId\": \"axiom.help.releases.intake-controls\",\n  \"revision\": 2,\n  \"productVersion\": \"local-source-preview:4f31f855406c7f450ab2c8533cc5119a7f0491cd\",\n  \"sourceFiles\": 10,\n  \"evaluationCases\": 19,\n  \"customerEligible\": false,\n  \"customerBlockers\": [\n    \"article_not_approved\",\n    \"article_not_public\",\n    \"local_preview_not_shipped\"\n  ],\n  \"evaluationStatus\": \"proposed-not-executed\"\n}\n"
+}

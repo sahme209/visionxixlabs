@@ -1,0 +1,19 @@
+{
+  "status": "internal draft integrity only; customer refused",
+  "runtimeCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
+  "runtimeSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+  "articleSha256": "f48fbc250c71777d82dd5b73f068c83bc2775c7c405ea7bb77529af4c466ce0e",
+  "evaluationSha256": "623df31dd002c208f0fddd5495588fcd8cbfb1c37939937069ed39e34c664434",
+  "controlIds": 52,
+  "steps": 56,
+  "sourcePins": 10,
+  "proposedNotExecutedCases": 19,
+  "draftValidationExit": 0,
+  "expectedCustomerRefusalExit": 1,
+  "r1BytesPreserved": true,
+  "frozen24Touched": false,
+  "retrievalEvaluationExecuted": false,
+  "limits": "Runtime version identifies4f31; exact SHA pins define later documentation snapshot. No editorial/customer/media/native/shipped acceptance, new authority, automatic retry or durable unknown-outcome guarantee.",
+  "durableReceiptPath": "docs/recovery/2026-11-04/release-intake-context-requalification/receipt.json",
+  "earlierValidation": "pre-durable-path/"
+}

@@ -1,0 +1,6 @@
+{
+  "format": "verbatim-process-log",
+  "originalFilename": "old-registry-refusal.log",
+  "sha256": "549638003fb571af79f12de08f1e15169e08494c792d07d093f48fedfa383b1f",
+  "text": "Documentation binding checks refused: binding test hash mismatch\n"
+}

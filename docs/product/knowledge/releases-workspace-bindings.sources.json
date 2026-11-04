@@ -2,14 +2,14 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+  "baselineCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
   "baselineDerivation": {
     "method": "strip registered metadata from functional source commit",
-    "sourceCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+    "sourceCommit": "4f31f855406c7f450ab2c8533cc5119a7f0491cd",
     "metadataAlreadyPresent": true,
     "registeredAttributeCount": 29,
-    "rawSourceSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
-    "strippedSourceSha256": "514fd74af81c6bf7d1edac75fb971444c8047474c65acac152a82aa947d9cb61"
+    "rawSourceSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+    "strippedSourceSha256": "bb37a17a87037fdfe7e66c4a941b867e705b030837a3e612898d554954331f70"
   },
   "metadataOrigin": {
     "unboundSourceCommit": "88e937510aeaf7d547a75227a1187d2bd60edc15",
@@ -18,24 +18,38 @@
     "mappedSourceSha256": "4f6e6773e214879a44463d9072d83e7108582bf12a5d74d562d5417aa0355f31",
     "originalNodeHashesPreserved": true
   },
-  "bindingScope": "Existing29 intrinsic declarations; no runtime metadata added in this requalification. Imported internals excluded.",
+  "functionalBaselineHistory": [
+    {
+      "sourceCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+      "baselineDerivation": {
+        "method": "strip registered metadata from functional source commit",
+        "sourceCommit": "198214356d2633a6b32a7b64bfc9109d9d01e65e",
+        "metadataAlreadyPresent": true,
+        "registeredAttributeCount": 29,
+        "rawSourceSha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870",
+        "strippedSourceSha256": "514fd74af81c6bf7d1edac75fb971444c8047474c65acac152a82aa947d9cb61"
+      },
+      "status": "historical pending-save functional baseline; preserved under work/release-intake-context-requalification/prior-19821435/"
+    }
+  ],
+  "bindingScope": "Existing29 intrinsic declarations; no new runtime attributes. Imported internals excluded.",
   "sources": [
     {
       "path": "desktop/src/views/DeploymentRequestsView.tsx",
-      "sha256": "67210f1bcdc960e0baa660dfab1745619e8f1664a3b7976bebb178a3411f0870"
+      "sha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1"
     },
     {
       "path": "docs/product/knowledge/releases-workspace-bindings.json",
-      "sha256": "2049b2ce61f97466d13253488aa060f2216df59903ba9dd5ff77f25c3b3232ec"
+      "sha256": "22093bfb22d603a43aeee84ce47f574e0d734d46203333275d736841dc3509a9"
     },
     {
       "path": "docs/product/knowledge/releases-workspace-bindings.md",
-      "sha256": "4b61f332abc07586a40e6c0c8af0309380646094eb556d6edf9aeebd84f7f4e8"
+      "sha256": "be1578f6b93cbba53f56beb73b620b462f2559a28632cec7ae79164db7023bd7"
     },
     {
       "path": "docs/product/knowledge/releases-workspace-bindings.test.cjs",
-      "sha256": "2594a07ce1ebbb8ec2d1eeca6fc625ce7c29432ce5a89a5049f9d075bbb3cca0"
+      "sha256": "e417df20c70f31e5c6d066e30a9f99f613793a6d5c36f9eda06f1b60a91a5ca1"
     }
   ],
-  "validation": "Old baseline contract meaningfully failed1/5 after functional repair. Current five-check AST suite passes; rawGit functional custody and derived registered-metadata-stripped hash are checked. No runtime edits, behavioral test reruns or native/customer acceptance."
+  "validation": "Old source-custody contract meaningfully failed1/5 against context repair. Current five-check AST suite passes. Raw actualGit4f31 source and its registered-metadata-stripped baseline are both pinned; all29 original IDs/node hashes preserved. No runtime edits, behavioral reruns or native/customer acceptance."
 }
