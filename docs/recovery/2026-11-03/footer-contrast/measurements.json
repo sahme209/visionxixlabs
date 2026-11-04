@@ -1,0 +1,69 @@
+{
+  "baseSource": "b3a63c7f9e8f500db453b08823043748f6625ce8",
+  "method": "WCAG sRGB relative luminance, opaque declared foreground/background; no browser computed-style measurement",
+  "footerBeforeSha256": "8c9528ff2e5f2bc74ba836b7f077aac5ef993d3aa3c8b0a7efc1338c1441aa29",
+  "footerAfterSha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091",
+  "textClassReplacements": 4,
+  "cssTokenSource": "Existing exact ce4 built CSS; current Tailwind configuration does not override zinc palette",
+  "cssFiles": [
+    {
+      "name": "70c8b114652df060.css",
+      "sha256": "d685f6a4cbdae58e773940dcaa2db71fc00c7e1f9524df15a08f6d91e4beb6ed"
+    },
+    {
+      "name": "fd496917896bbbdc.css",
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e"
+    },
+    {
+      "name": "532cba65621fdb11.css",
+      "sha256": "0b1fba9092923810f92d0bac777389ba34903307040bef94c700d40c23bc79e7"
+    }
+  ],
+  "ratios": [
+    {
+      "token": "zinc-400",
+      "foreground": "#a1a1aa",
+      "background": "#090a08",
+      "ratio": 7.740690775367921,
+      "normalText45": true
+    },
+    {
+      "token": "zinc-400",
+      "foreground": "#a1a1aa",
+      "background": "#101010",
+      "ratio": 7.424421689103911,
+      "normalText45": true
+    },
+    {
+      "token": "zinc-500",
+      "foreground": "#71717a",
+      "background": "#090a08",
+      "ratio": 4.1049261053287855,
+      "normalText45": false
+    },
+    {
+      "token": "zinc-500",
+      "foreground": "#71717a",
+      "background": "#101010",
+      "ratio": 3.937207064975839,
+      "normalText45": false
+    },
+    {
+      "token": "zinc-600",
+      "foreground": "#52525b",
+      "background": "#090a08",
+      "ratio": 2.5665121470235053,
+      "normalText45": false
+    },
+    {
+      "token": "zinc-600",
+      "foreground": "#52525b",
+      "background": "#101010",
+      "ratio": 2.4616496127639547,
+      "normalText45": false
+    }
+  ],
+  "browserAccepted": false,
+  "wholeSiteAccessibilityAccepted": false,
+  "productionChanged": false
+}

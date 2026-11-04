@@ -55,13 +55,13 @@ export function Footer() {
               <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" />
               Vision XIX Labs
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-500">Axiom Agent brings AI assistance, human authorization, execution, and evidence into one governed engineering workflow.</p>
-            <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-500">We also build iOS applications.</p>
+            <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-400">Axiom Agent brings AI assistance, human authorization, execution, and evidence into one governed engineering workflow.</p>
+            <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-400">We also build iOS applications.</p>
           </div>
 
           {columns.map((column) => (
             <div key={column.title}>
-              <h3 className="text-xs text-zinc-600">{column.title}</h3>
+              <h3 className="text-xs text-zinc-400">{column.title}</h3>
               <ul className="mt-5 space-y-3">
                 {column.links.map(([label, href]) => (
                   <li key={href}><Link href={href} className="text-sm text-zinc-400 transition-colors hover:text-white">{label}</Link></li>
@@ -71,7 +71,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="flex flex-col items-center justify-center gap-4 border-t border-white/[0.07] pt-7 text-xs text-zinc-600 sm:flex-row sm:justify-between">
+        <div className="flex flex-col items-center justify-center gap-4 border-t border-white/[0.07] pt-7 text-xs text-zinc-400 sm:flex-row sm:justify-between">
           <p>© {new Date().getFullYear()} Vision XIX Labs. All rights reserved.</p>
           <p>Production access is service-verified. Demonstrations are clearly labeled.</p>
         </div>

@@ -1,0 +1,7 @@
+# Shared footer normal-text contrast repair
+
+The actual shared Footer used zinc500 for its two descriptive paragraphs and zinc600 for its small column headings and bottom copyright/production-access text. The declared fallback background is#090a08; the public-shell override is#101010. Existing exact ce4 built CSS confirms the opaque zinc RGB values. Relative-luminance calculation gives2.462–4.105:1 for the old tokens and7.424–7.741:1 for existing zinc400. All these are normal small text; the target is4.5:1.
+
+Only four foreground class tokens in components/Footer.tsx change to existing zinc400. Layout, text, links, handlers, backgrounds, focus and navigation are unchanged. The token is already generated in the existing built CSS. No new dependency, asset or runtime boundary. The old source-level normal-text target fails; corrected declared pairs exceed it. This is a numerical source/CSS check, not actual browser computed styles, opacity/compositing, screen-reader, zoom or full WCAG qualification. It does not claim the whole site is accessible.
+
+No tests or full build rerun for this reversible four-token change. Independent source review and exact diff are the proportionate check. Current local preview remains the prior exact ce4 built source; this repair is not yet rebuilt/shown/published. Preserve browser Work setting refusal; no alternate browser path. Latest full build and operational gates remain separate.
