@@ -781,3 +781,7 @@ One selected invocation on unchanged source/article bytes returned zero passes a
 ## November4 — bounded installer-availability claims corrected
 
 ~~Preview/download fallback wording no longer claims that table-access checks verify installation, sign-in or entitlement~~ ([evidence](../recovery/2026-11-04/installer-storage-availability-copy/README.md)). Three public strings only; actual rendered/helper RED→five focused GREEN checks, scoped types, exact canonical source parity and independent review passed. Queries/gates/auth/redirects unchanged; providers/storage mocked. No full build, browser, live installation or deployment acceptance inferred. All15parent requirements remain open.
+
+## November4 — real coding run-budget gap confirmed; local correction design reviewed
+
+Two source audits confirm run allowance is not bound to real coding-call workspace reservations; pending null cost becomes zero in the run stage ledger. No actual charge/overspend or new execution was tested. [Reviewed design](../proposals/coding-run-budget-reservations.md) requires dedicated local schema/atomic run+workspace reservation/claim/settlement and unknown-cost retention; local implementation approval is pending. The default1000-cent hold/500-cent run cap incompatibility is explicit, with useful coding quotes still separately required. [Evidence](../recovery/2026-11-04/coding-run-budget-audit/README.md). No runtime fix or A7 completion is claimed; all15parent requirements remain open.
