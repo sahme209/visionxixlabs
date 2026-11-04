@@ -1,6 +1,6 @@
 # Local private-instance API refactor: review-ready plan
 
-**Proposed local code/tests only; approval pending.** This is necessary real-resource API work for C’s actual compiled Node owner, not an inert DTO milestone or completed custody. No code, tests, services, keys, grants, environment/schema change, provider action or qualification is performed by this document. Original same-compiled-consumer, native resource provisioning, process-wide cutover, fleet/legacy/drain and full-profile coverage gates remain unchanged. All issuer readers remain unconditionally refusing and the C profile remains OFF.
+**Approved local code/tests only.** Approval recorded from `call_tjz4QDq9ZpUsNvJTtxUAE4Iw[0]`: “Approve local private-instance refactor.” Implementation is underway in three isolated worktrees; passing implementation evidence will be recorded separately. This is necessary real-resource API work for C’s actual compiled Node owner, not an inert DTO milestone or completed custody. This design document itself performs no code, tests, services, keys, grants, environment/schema change, provider action or qualification. Original same-compiled-consumer, native resource provisioning, process-wide cutover, fleet/legacy/drain and full-profile coverage gates remain unchanged. All issuer readers remain unconditionally refusing and the C profile remains OFF.
 
 ## Scope and API boundary
 
