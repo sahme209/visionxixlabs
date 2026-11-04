@@ -104,7 +104,7 @@ export async function POST(req: NextRequest) {
       );
     }
     return NextResponse.json(
-      { ok: false, error: "persist_failed", hint: err instanceof Error ? err.message : "unknown" },
+      { ok: false, error: "persist_failed", hint: err instanceof Error ? "The enrichment result could not be confirmed. Reload the current record before requesting another enrichment." : "unknown" },
       { status: 500 },
     );
   }

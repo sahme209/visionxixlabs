@@ -111,7 +111,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     return NextResponse.json({
       ok: false,
       reason: "persistence_failed",
-      detail: err instanceof Error ? err.message : "unknown",
+      detail: err instanceof Error ? "The policy update could not be confirmed. Refresh current policy before making another change." : "unknown",
     }, { status: 500 });
   }
 
