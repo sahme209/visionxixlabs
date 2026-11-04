@@ -1,0 +1,25 @@
+{
+  "read": "Complete inserted C1\u2013C6 section, all phases/acceptance/coordination",
+  "userMasterSha256": "ab56e81818fa20bb848897930c0ef34d55e9b080f1519002b650298d3b1799f6",
+  "sectionSha256": "99a1be0275f583e680de34d4dfb00ed8c7c3d0a1934d4a986fac771907d9d07d",
+  "existingABContentPreservedByteForByte": true,
+  "newParents": [
+    "C1",
+    "C2",
+    "C3",
+    "C4",
+    "C5",
+    "C6"
+  ],
+  "state": "future phased scope; Phase0 design foundations may accompany B4/B5; no substantial implementation now",
+  "notAuthorized": [
+    "spending",
+    "credentials",
+    "provider connections",
+    "privileged actions",
+    "production writes",
+    "deployments",
+    "external communications"
+  ],
+  "existing15PrioritiesPreserved": true
+}

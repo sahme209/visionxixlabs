@@ -1,6 +1,6 @@
 # Axiom current execution board
 
-Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15parents are open; none is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
+Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
 | Priority | Requirement | Verified bounded work | Next completion dependency |
 | --- | --- | --- | --- |
@@ -19,6 +19,22 @@ Reconciled November4,2026. Each linked receipt identifies its exact source versi
 |13|[ ] A6 Outlook/GitLab — In Progress|Historical Outlook read-only acceptance; local discoverability and source docs.|Ship reviewed Outlook changes under authorization; approve/implement/test safe GitLab connector and separate account-linking/sign-in design. No provider is connected by a catalog label.|
 |14|[ ] A8 Ecosystem — In Progress, largely unimplemented|Full provider/Batches/observability backlog retained in master/remaining-work.|Customer-prioritized provider designs, least privilege, isolated tests and separately authorized live acceptance per integration. No new grants/purchases assumed.|
 |15|[ ] A5 Windows/Store — In Progress, deferred|Company/identity and unsigned preparation preserved.|Real Store certification/signing and clean Windows install/sign-in/session/update receipts. No clean host; website MSI/SmartScreen warning unresolved.|
+
+
+## Future Workstream C — preserved, not implemented
+
+The user added C1–C6 to the master plan. Existing A1–A9/B1–B6 priorities and evidence remain intact. Phase0 specifications may be developed alongside B4/B5; substantial implementation follows core Governance, verified documentation and release commitments. No new access, integrations, financial actions, messages, spending or deployment authority is granted.
+
+| Priority | Requirement | State and acceptance dependency |
+| --- | --- | --- |
+|16|[ ] C1 Private founder command center|Future. Separate founder-only control plane; deny-default phishing-resistant access, least privilege, reauthentication, tenant isolation, auditing and tested break-glass recovery; no hard-coded single-person identity.|
+|17|[ ] C2 Support intake and AI resolution|Future. Version-bound B4/B5 knowledge, authorized intake/triage/SLA/history and cited local assistance; low-risk automation only by explicit allowlist/authorization/outcome/undo, with genuine human escalation and reopen paths.|
+|18|[ ] C3 Incident and governed production assistance|Future. Evidence/timeline/ownership/communications/postmortems first; later exact-scope/current-authority/policy/independent-approval/rollback/attempt/audit/verified-observation gates. Unknown remains unknown; no unrestricted self-healing.|
+|19|[ ] C4 Finance and company operations|Future. Founder-only source-reconciled actuals/estimates/pending/freshness/currency, budgets/unit economics/renewals/reports; no banking credentials, money movement, refunds, price/purchase/billing changes without separate approval.|
+|20|[ ] C5 AI operations and improvement|Future. Defined sourced cohort/tenant metrics and safety/quality/cost evaluations; evidence-backed accept/defer/reject recommendations, traceable work, red-team/rollback/kill switches; no vanity automation-success claims.|
+|21|[ ] C6 Architecture, phases and acceptance|Future. Separate customer support, founder finance and production planes; retention/privacy/export/deletion/backup/restore/custody/on-prem specification. Phase0→human foundation→supervisedAI→boundedautomation; genuine E2E/isolation/financial/incident/accessibility/audit/recovery/security acceptance required.|
+
+[Full inserted requirements and reconciliation](../recovery/2026-11-04/master-workstream-c-reconciliation/user-added-section.md). These summaries do not replace the complete master requirements.
 
 ## Current local review surface
 
