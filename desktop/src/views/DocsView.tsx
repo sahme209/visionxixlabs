@@ -2,7 +2,7 @@
  * DocsView — Phase 406-desktop.
  *
  * Curated index of the web documentation. Every link opens the
- * authoritative web doc in a new browser tab — the desktop intentionally
+ * web doc in a new browser tab — the desktop intentionally
  * doesn't embed an in-app markdown reader, because docs benefit from
  * search, browser back/forward, and link sharing.
  */
@@ -48,9 +48,10 @@ export function DocsView({ onNavigate }: { onNavigate: (view: GovernedJourneyDes
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">workspace · documentation</p>
         <h1 className="text-2xl font-bold tracking-tight">Documentation</h1>
         <p className="text-sm text-zinc-500 mt-1 max-w-2xl leading-relaxed">
-          The complete documentation lives on the web at{" "}
-          <span className="font-mono text-zinc-400">visionxixlabs.com/docs</span>. Each link below
-          opens the authoritative version in your browser.
+          Read task guides on the web at{" "}
+          <span className="font-mono text-zinc-400">visionxixlabs.com/docs</span>. These links open
+          web documentation in your browser. Check the installed version and stated availability
+          before following a guide.
         </p>
       </div>
 
