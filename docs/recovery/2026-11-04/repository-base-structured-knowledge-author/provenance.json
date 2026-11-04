@@ -1,0 +1,59 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+  "branch": "codex/b4-repository-base-knowledge",
+  "worktree": "/private/tmp/axiom-b4-repository-base-20261104",
+  "validation": {
+    "integrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 21,
+    "uniqueCodeFiles": 15,
+    "currentInclusiveRawRanges": 18,
+    "historicalEntries": 20,
+    "unchangedHistoricalEntries": 18,
+    "sameViewMetadataOnlyHistoricalEntries": 2,
+    "literalStaticAttributeDeclarations": 23,
+    "annotatedGuideFamilies": 22,
+    "guideFamiliesTotal": 27,
+    "historicalRangesValidated": false,
+    "proposedEvaluationCases": 10,
+    "retrievalExecuted": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/repository-acquisition-controls.md": "580ab1776bead433d7e8850b9259b5dce9b76ac978d1616b8fe30ab86d6ebdd9",
+    "docs/product/knowledge/repository-acquisition-controls.sources.json": "c24cbaf67e2724212fdcc2801dc49f9856aa12d24766192a18f0467d65640cf1",
+    "docs/product/knowledge/repository-editor-controls.md": "1debe786597e45b4e2be2009f255027f87a04435037fc6fc201cef9697bd8a5f",
+    "docs/product/knowledge/repository-editor-controls.sources.json": "96110701dcf55aa7e7d95c7bfe3cfd5ff972ca8d1d22de7d4d8e89d242bffb0d",
+    "docs/product/knowledge/repository-editor-bindings.md": "0b26d3a12068ea81130bbc237bf53e8cb0c536bb687536af09c7c4b259be26d1"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-repository-base-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-repository-base-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-repository-base-evidence/bindings.sh"
+  ],
+  "bundleSha256": {
+    "docs/product/documentation-coverage/articles/repository-acquisition-base-editor-controls.r1.json": "7c615c0357e36039f273cc0c5591155f1b09f83366e948bf1a997a137b5a2358",
+    "docs/product/documentation-coverage/repository-acquisition-base-editor-controls-evaluation.r1.json": "0b651506592710224f5d2bdc5da5a0564057ea653c571f37229491268c3972f0"
+  },
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/validate.sh": "38899b3b50c12a9963ef6a2e01d8eb80f3441645312ea597010598001e54935d",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/bindings.sh": "e36f997b7e106464c962e3d786df517de564253a201f58e64d91e35f3d47f410",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/binding-integrity.json": "75c229fc030060a3534e2297c211186f536112a9903f80d522c27f2e9bc57caa",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/validate.log": "c88a30eb28f7253a7a80bd518c80dbc7711fcf6fe14da9e25d15d5446daef45c",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/editor-view-metadata-drift.diff": "9755bee86e04720f7a91de0e79c73d816bd7bb14625543fd425427e6b3f53ec7",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/README.md": "63029a7b51f2f388dd1b6a0a3e9d6f5c9ab2cbe6c8fdf83f2bd9f5799122db35",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/source-bindings.json": "22821dc112f9e375b4dc9443528407fe3f9e3ec7ab1206812565ed271aca20f1",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/binding-integrity.cjs": "61b29888a2ad69929929acf4da2d2d126ee5cd6339fa21936c0c0b53040e3b1b",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03",
+    "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/acquisition-view-metadata-drift.diff": "9755bee86e04720f7a91de0e79c73d816bd7bb14625543fd425427e6b3f53ec7"
+  },
+  "limits": "Finite internal source-only preview; proposed IDs/null review/empty media; metadata is not unique instance or accepted help; all customer/editorial/media/native/runtime/release false; no mutable master hash"
+}

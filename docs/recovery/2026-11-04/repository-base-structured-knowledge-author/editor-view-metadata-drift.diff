@@ -1,0 +1,89 @@
+diff --git a/desktop/src/views/RepositoryWorkspaceView.tsx b/desktop/src/views/RepositoryWorkspaceView.tsx
+index 40acef4a..d882bfdb 100644
+--- a/desktop/src/views/RepositoryWorkspaceView.tsx
++++ b/desktop/src/views/RepositoryWorkspaceView.tsx
+@@ -811,24 +811,24 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
+         {selectedRepository && <RepositoryWorktrees key={selectedRepository} repositoryPath={selectedRepository} disabled={Boolean(busy) || !active} onOpen={chooseRepository} />}
+         <div className="border-b border-white/[0.06] p-2">
+           <div className="mb-2 flex gap-1" aria-label="Repository file navigation">
+-            <button type="button" aria-pressed={fileNavigation === "files"} onClick={() => setFileNavigation("files")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "files" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Files</button>
+-            <button type="button" aria-pressed={fileNavigation === "changes"} onClick={() => setFileNavigation("changes")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "changes" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Changes</button>
++            <button data-help-id="repositories.editor.files" type="button" aria-pressed={fileNavigation === "files"} onClick={() => setFileNavigation("files")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "files" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Files</button>
++            <button data-help-id="repositories.editor.changes" type="button" aria-pressed={fileNavigation === "changes"} onClick={() => setFileNavigation("changes")} className={`flex-1 rounded px-2 py-1.5 text-xs ${fileNavigation === "changes" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Changes</button>
+           </div>
+-          <input value={filter} onChange={(event) => setFilter(event.target.value)} placeholder="Filter files" className="w-full rounded-md border border-white/10 bg-black/20 px-2.5 py-2 text-xs outline-none focus:border-violet-400/50" />
++          <input data-help-id="repositories.editor.filter-files" value={filter} onChange={(event) => setFilter(event.target.value)} placeholder="Filter files" className="w-full rounded-md border border-white/10 bg-black/20 px-2.5 py-2 text-xs outline-none focus:border-violet-400/50" />
+           <div className="mt-2 flex items-center justify-between px-1 text-[10px] text-zinc-600">
+             <span>{fileNavigation === "changes" ? `${visibleChanges.length} recorded changes` : `${visibleFiles.length} files`}</span>
+-            <button type="button" disabled={fileNavigation === "changes"} onClick={() => setShowAllFiles((current) => !current)} className="rounded px-1.5 py-1 text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200">{showAllFiles ? "Source files" : "All files"}</button>
++            <button data-help-id="repositories.editor.file-filter-mode" type="button" disabled={fileNavigation === "changes"} onClick={() => setShowAllFiles((current) => !current)} className="rounded px-1.5 py-1 text-zinc-400 hover:bg-white/[0.05] hover:text-zinc-200">{showAllFiles ? "Source files" : "All files"}</button>
+           </div>
+         </div>
+         <div className="min-h-0 flex-1 overflow-y-auto px-2 pb-2">
+           {fileNavigation === "changes" && <>
+-            <button type="button" disabled={Boolean(busy) || !selectedRepository} onClick={() => {if (selectedRepository) void run("refresh-changes", () => refreshRepository(selectedRepository));}} className="mx-2 my-1 rounded border border-white/10 px-2 py-1 text-[10px] text-zinc-400 disabled:opacity-40">Refresh changes</button>
++            <button data-help-id="repositories.editor.refresh-changes" type="button" disabled={Boolean(busy) || !selectedRepository} onClick={() => {if (selectedRepository) void run("refresh-changes", () => refreshRepository(selectedRepository));}} className="mx-2 my-1 rounded border border-white/10 px-2 py-1 text-[10px] text-zinc-400 disabled:opacity-40">Refresh changes</button>
+             <p className="px-2 py-2 text-[10px] leading-4 text-zinc-500">Recorded Git status. Open an available file to inspect its current contents. Deleted or unavailable files cannot be opened.</p>
+             {!status && <p role="status" className="px-2 py-2 text-xs text-zinc-500">Repository status is not verified.</p>}
+             {status && visibleChanges.length === 0 && <p role="status" className="px-2 py-2 text-xs text-zinc-500">{filter.trim() ? "No matching changed files." : "No recorded Git changes."}</p>}
+-            {visibleChanges.map(change => <button key={change.path} type="button" aria-label={`${change.status} ${change.path}`} disabled={Boolean(busy) || !files.includes(change.path)} onClick={() => selectFile(change.path)} title={`${change.status} ${change.path}${!files.includes(change.path) ? " · unavailable in the current file list" : ""}`} className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left font-mono text-[11px] disabled:opacity-40 ${selectedFile === change.path ? "bg-violet-500/15 text-violet-100" : "text-zinc-400 hover:bg-white/[0.04]"}`}><span className="w-5 shrink-0 text-amber-300">{change.status}</span><span className="truncate">{change.path}</span></button>)}
++            {visibleChanges.map(change => <button data-help-id="repositories.editor.changed-file-row" key={change.path} type="button" aria-label={`${change.status} ${change.path}`} disabled={Boolean(busy) || !files.includes(change.path)} onClick={() => selectFile(change.path)} title={`${change.status} ${change.path}${!files.includes(change.path) ? " · unavailable in the current file list" : ""}`} className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left font-mono text-[11px] disabled:opacity-40 ${selectedFile === change.path ? "bg-violet-500/15 text-violet-100" : "text-zinc-400 hover:bg-white/[0.04]"}`}><span className="w-5 shrink-0 text-amber-300">{change.status}</span><span className="truncate">{change.path}</span></button>)}
+           </>}
+-          {fileNavigation === "files" && visibleFiles.map((file) => <button key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"}`} title={file}>{file}</button>)}
++          {fileNavigation === "files" && visibleFiles.map((file) => <button data-help-id="repositories.editor.file-row" key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/[0.04] hover:text-zinc-300"}`} title={file}>{file}</button>)}
+         </div>
+       </aside>
+       <section className="flex min-w-0 flex-1 flex-col">
+@@ -844,37 +844,37 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
+         {selectedFile ? <>
+           <div className="flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-3 py-2">
+             <span className="mr-auto truncate font-mono text-[11px] text-zinc-400">{selectedFile}{content !== savedContent ? " · unsaved" : ""}</span>
+-            {onAskAgent && <button type="button" aria-label="Ask Agent about selection" disabled={Boolean(busy) || selectionLength === 0 || selectionLength > 8000 || !localCodeContextPrompt({path: selectedFile, excerpt: "selection"})} onClick={askAboutSelection} className="btn-secondary disabled:opacity-40">Ask Agent</button>}
+-            <button type="button" aria-label="Review local changes" aria-expanded={reviewOpen} onClick={() => setReviewOpen(value => !value)} className="btn-secondary">Review changes</button>
+-            <details className="editor-tools" open={!compact}><summary className={compact ? "cursor-pointer rounded-md px-2 py-1.5 text-xs text-zinc-300" : "hidden"}>Editing tools</summary><div className={compact ? "editor-tools-menu" : "flex flex-wrap items-center gap-2"}>            <input aria-label="Line number" inputMode="numeric" maxLength={7} placeholder="Line" value={lineTarget} onChange={event => setLineTarget(event.target.value)} onKeyDown={event => {
++            {onAskAgent && <button data-help-id="repositories.editor.ask-selection" type="button" aria-label="Ask Agent about selection" disabled={Boolean(busy) || selectionLength === 0 || selectionLength > 8000 || !localCodeContextPrompt({path: selectedFile, excerpt: "selection"})} onClick={askAboutSelection} className="btn-secondary disabled:opacity-40">Ask Agent</button>}
++            <button data-help-id="repositories.editor.review" type="button" aria-label="Review local changes" aria-expanded={reviewOpen} onClick={() => setReviewOpen(value => !value)} className="btn-secondary">Review changes</button>
++            <details className="editor-tools" open={!compact}><summary data-help-id="repositories.editor.editing-tools" className={compact ? "cursor-pointer rounded-md px-2 py-1.5 text-xs text-zinc-300" : "hidden"}>Editing tools</summary><div className={compact ? "editor-tools-menu" : "flex flex-wrap items-center gap-2"}>            <input data-help-id="repositories.editor.line-number" aria-label="Line number" inputMode="numeric" maxLength={7} placeholder="Line" value={lineTarget} onChange={event => setLineTarget(event.target.value)} onKeyDown={event => {
+               if (event.key === "Enter" && !event.nativeEvent.isComposing && event.nativeEvent.keyCode !== 229) { event.preventDefault(); goToLine(); }
+             }} className="w-16 rounded border border-white/10 bg-black/20 px-2 py-1 text-xs" />
+-            <button type="button" disabled={Boolean(busy) || !lineTarget} onClick={goToLine} className="btn-secondary disabled:opacity-40">Go to line</button>
+-            <button type="button" aria-label="Find in file" onClick={openSearch} className="btn-secondary">Find</button>
+-            <button type="button" aria-label="Undo edit" disabled={Boolean(busy) || !history.current.past.length} onClick={() => travelHistory("undo")} className="btn-secondary disabled:opacity-40">Undo</button>
+-            <button type="button" aria-label="Redo edit" disabled={Boolean(busy) || !history.current.future.length} onClick={() => travelHistory("redo")} className="btn-secondary disabled:opacity-40">Redo</button>
++            <button data-help-id="repositories.editor.go-to-line" type="button" disabled={Boolean(busy) || !lineTarget} onClick={goToLine} className="btn-secondary disabled:opacity-40">Go to line</button>
++            <button data-help-id="repositories.editor.find" type="button" aria-label="Find in file" onClick={openSearch} className="btn-secondary">Find</button>
++            <button data-help-id="repositories.editor.undo" type="button" aria-label="Undo edit" disabled={Boolean(busy) || !history.current.past.length} onClick={() => travelHistory("undo")} className="btn-secondary disabled:opacity-40">Undo</button>
++            <button data-help-id="repositories.editor.redo" type="button" aria-label="Redo edit" disabled={Boolean(busy) || !history.current.future.length} onClick={() => travelHistory("redo")} className="btn-secondary disabled:opacity-40">Redo</button>
+ </div></details>
+-            <button type="button" disabled={Boolean(busy) || content === savedContent} onClick={() => void saveFile()} className="btn-secondary disabled:opacity-40">Save ⌘S</button>
++            <button data-help-id="repositories.editor.save" type="button" disabled={Boolean(busy) || content === savedContent} onClick={() => void saveFile()} className="btn-secondary disabled:opacity-40">Save ⌘S</button>
+           </div>
+           {reviewOpen && <section aria-label="Review unsaved file changes" className="max-h-96 shrink-0 overflow-auto border-b border-white/10 p-3">
+             <p className="mb-2 text-xs text-zinc-400">Draft compared with the last loaded or saved content. This does not save, stage, commit or approve changes.</p>
+             <FileDiff before={savedContent} after={content} label="Local unsaved file diff" unchangedMessage="No unsaved content changes." />
+           </section>}
+           {searchOpen && <div role="search" aria-label="Search current file" className="flex flex-wrap items-center gap-2 border-b border-white/10 p-2 text-xs">
+-            <input ref={searchRef} type="search" aria-label="Find literal text" placeholder="Case-sensitive literal text" maxLength={256} value={searchQuery} onChange={event => setSearchQuery(event.target.value)} onKeyDown={event => {
++            <input data-help-id="repositories.editor.find-text" ref={searchRef} type="search" aria-label="Find literal text" placeholder="Case-sensitive literal text" maxLength={256} value={searchQuery} onChange={event => setSearchQuery(event.target.value)} onKeyDown={event => {
+               if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+               if (event.key === "Enter") { event.preventDefault(); navigateMatch(event.shiftKey ? -1 : 1); }
+               if (event.key === "Escape") { setSearchOpen(false); editorRef.current?.focus(); }
+             }} className="rounded border border-white/10 bg-black/20 px-2 py-1" />
+-            <input aria-label="Replacement literal text" placeholder="Replace with (literal)" maxLength={8000} value={replacement} onChange={event => setReplacement(event.target.value)} className="rounded border border-white/10 bg-black/20 px-2 py-1" />
+-            <button type="button" disabled={Boolean(busy) || matchIndex < 0 || !matches.offsets.length} onClick={replaceMatch} className="btn-secondary disabled:opacity-40">Replace selected match</button>
++            <input data-help-id="repositories.editor.replacement-text" aria-label="Replacement literal text" placeholder="Replace with (literal)" maxLength={8000} value={replacement} onChange={event => setReplacement(event.target.value)} className="rounded border border-white/10 bg-black/20 px-2 py-1" />
++            <button data-help-id="repositories.editor.replace-match" type="button" disabled={Boolean(busy) || matchIndex < 0 || !matches.offsets.length} onClick={replaceMatch} className="btn-secondary disabled:opacity-40">Replace selected match</button>
+             <span role="status">{!searchQuery ? "Enter text to find" : !matches.offsets.length ? "No matches" : `${matchIndex < 0 ? 0 : matchIndex + 1} of ${matches.offsets.length}${matches.limited ? "+ (display limit)" : ""}`}</span>
+-            <button type="button" aria-label="Previous match" disabled={!matches.offsets.length} onClick={() => navigateMatch(-1)} className="btn-secondary disabled:opacity-40">Previous</button>
+-            <button type="button" aria-label="Next match" disabled={!matches.offsets.length} onClick={() => navigateMatch(1)} className="btn-secondary disabled:opacity-40">Next</button>
+-            <button type="button" aria-label="Close file search" onClick={() => { setSearchOpen(false); editorRef.current?.focus(); }} className="btn-secondary">Close</button>
++            <button data-help-id="repositories.editor.previous-match" type="button" aria-label="Previous match" disabled={!matches.offsets.length} onClick={() => navigateMatch(-1)} className="btn-secondary disabled:opacity-40">Previous</button>
++            <button data-help-id="repositories.editor.next-match" type="button" aria-label="Next match" disabled={!matches.offsets.length} onClick={() => navigateMatch(1)} className="btn-secondary disabled:opacity-40">Next</button>
++            <button data-help-id="repositories.editor.close-search" type="button" aria-label="Close file search" onClick={() => { setSearchOpen(false); editorRef.current?.focus(); }} className="btn-secondary">Close</button>
+           </div>}
+           {isProjectMetadata(selectedFile) && <div role="status" className="border-b border-white/[0.08] bg-white/[0.025] px-4 py-2 text-xs text-zinc-400">This is generated project metadata. Edit it only when you understand the project format; source files are safer for normal changes.</div>}
+-          <textarea ref={editorRef} value={content} onSelect={event => setSelectionLength(event.currentTarget.selectionEnd - event.currentTarget.selectionStart)} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
++          <textarea data-help-id="repositories.editor.buffer" ref={editorRef} value={content} onSelect={event => setSelectionLength(event.currentTarget.selectionEnd - event.currentTarget.selectionStart)} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-none selection:bg-violet-500/30" />
+           <details open={!compact || publishExpanded} onToggle={event => { if (compact) setPublishExpanded(event.currentTarget.open); }} className="shrink-0 border-t border-white/[0.07] bg-[#111315]">
+             <summary className={compact ? "cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300" : "hidden"}>Commit & publish{prUrl ? " · PR available" : ""}</summary>
+           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-3">

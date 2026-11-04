@@ -1,0 +1,11 @@
+# Repository acquisition and base-editor structured knowledge
+
+Internal combined r1 article and ten proposed-not-executed cases at2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6. Both historical guides/manifests remain unchanged (acquisition06afd3ea, editor5d99d326); existing nested repository article is not superseded.
+
+Historical20whole-file entries comprise9acquisition and11editor bindings.18match; the same RepositoryWorkspaceView is different in both manifests solely through static data-help-id attributes. Removing23literal JSX declarations restores BOTH historical views byte-for-byte. Supplement maps these to22of27guide families; dynamic rows can repeat family values. Metadata is not unique DOM/file identity, accepted help, customer authority or runtime behavior acceptance. No handler/state/label/permission change found beyond attributes. Exact diffs retained separately. Historical manifests did not bind current inclusive ranges; no silent rebind or old-range validation claim.
+
+NEW source receipt validates18current inclusive raw ranges over15unique code files. Article has21unique sources:15code,2guides,2manifests, metadata supplement and current receipt. Unchanged validator integrity exit0; expected customer refusal exit1 (not approved/not public/local preview); binding integrity exit0. Null review/empty media/proposed article IDs, all customer/editorial/media/native/runtime/release acceptance false.
+
+Finite acquisition and existing-file base edit/save/discard/uncertainty scope only. Clone contents_read token is not push authority; current backend clone issuance still requires github:write. Local native Save uses filesystem permissions, not provider token; no atomic CAS/transactional rollback or pending-operation cancellation guarantee. Family metadata and source hashes grant no permission. Nested worktree/check/push/publish/browser/diff-child guides remain separate; Governance remains unqualified.
+
+Only new-bundle schema/source/hash integrity and expected customer refusal ran under cleared environment/kernel-denied network and canonical/pinned-cache writes. No tests/retrieval/model/UI/browser/native/provider/database/auth/credentials/Keychain/Security/helper/build/install/push/integration operations. Shared README/master/schemas/validator and historical docs untouched. Raw logs/exits/runners/sandbox/provenance retained.

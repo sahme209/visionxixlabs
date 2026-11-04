@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.repositories.acquisition-base-editor",
+  "revision": 1,
+  "productVersion": "local-source-preview:2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+  "articleSha256": "7c615c0357e36039f273cc0c5591155f1b09f83366e948bf1a997a137b5a2358",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "repository-base-clone-authority",
+      "question": "Can any read-only user clone because token is contents_read?",
+      "requiredResponse": "No. Current endpoint requires paired accepted session/github:write; provider clone token is exact contents_read scope, not push permission.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-local-save",
+      "question": "Does local Save require clone token or authorize push?",
+      "requiredResponse": "No. Native filesystem permissions govern local write; Save does not stage/commit/push/check/approve.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-refresh",
+      "question": "Is Refresh a Git pull or full disk search?",
+      "requiredResponse": "No. Immediate local repository inventory or status/file refresh, not fetch/pull/recursive scan.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-discard",
+      "question": "Does Discard and open undo saved disk changes?",
+      "requiredResponse": "No. Drops unsaved buffer deliberately; Cancel retains. Saved Git/disk history is separate.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-pending-save",
+      "question": "Will later typing be silently saved by pending Save?",
+      "requiredResponse": "No. Captured snapshot becomes baseline on current-owner success; later typing remains unsaved. Refresh error may follow successful disk write.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-uncertain",
+      "question": "Does failed Save prove disk unchanged?",
+      "requiredResponse": "No. Nontransactional write/result uncertainty; inspect current disk deliberately before retry, no rollback/CAS guarantee.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-clone-cancel",
+      "question": "Does Stop check or navigation cancel cloning?",
+      "requiredResponse": "No. No clone Cancel/deadline here; UI ownership retirement does not prove native child stopped or destination absent.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-metadata",
+      "question": "Does data-help-id identify unique file and approved help?",
+      "requiredResponse": "No.23literal declarations annotate22of27families; rows may repeat metadata. Article IDs are proposed-only and metadata grants no content/runtime acceptance.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-agent",
+      "question": "Does Prepare Agent draft send selected code to AI?",
+      "requiredResponse": "No. Confirms current file/selection and prepares unsent prompt; later Send separate. Path screening is not content/secret detector.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "repository-base-scope",
+      "question": "Is this complete repository/worktree/push/diff accepted help?",
+      "requiredResponse": "No. Finite base acquisition/editor internal source preview; nested article unchanged, null review/empty media/proposed evaluation, all acceptance false.",
+      "requiredCitation": "axiom.help.repositories.acquisition-base-editor revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

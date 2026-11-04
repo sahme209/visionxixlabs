@@ -1,0 +1,10 @@
+{
+  "valid": true,
+  "uniqueCodeFiles": 15,
+  "inclusiveRawRanges": 18,
+  "historicalEntries": 20,
+  "unchangedHistoricalEntries": 18,
+  "metadataOnlyHistoricalEntries": 2,
+  "literalStaticAttributeDeclarations": 23,
+  "historicalGuidesAndManifestsPreserved": true
+}

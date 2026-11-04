@@ -1,0 +1,376 @@
+{
+  "status": "internal-current-source-authoring",
+  "baselineCommit": "2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+  "historicalAcquisitionSource": "06afd3eac50f2e021dd084b19e67fb7d6fd51518",
+  "historicalEditorSource": "5d99d32679efc72ffe359ccb2f0e8263882ab2a6",
+  "historicalGuidesAndManifestsPreserved": true,
+  "historicalBindingEntries": 20,
+  "comparison": [
+    {
+      "path": "desktop/src/App.tsx",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "currentSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "30706b3e71ef47c3ad333b710f15b802203f5c90102cfd6b4caa0cba646dc8fd",
+      "currentSha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "unchanged": false,
+      "metadataOnlyDrift": true
+    },
+    {
+      "path": "desktop/src/views/RepositoriesView.tsx",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "40572ab65746dec6ddec278b162dd2cac83ce8d9c3958cc26e9b9a06bae1920b",
+      "currentSha256": "40572ab65746dec6ddec278b162dd2cac83ce8d9c3958cc26e9b9a06bae1920b",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "currentSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/lib/localWorkspaceSelection.ts",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "d7d8e9c196bf64525d930f283d93c2b9cc6ec388638cfded6a3267b1b543c06e",
+      "currentSha256": "d7d8e9c196bf64525d930f283d93c2b9cc6ec388638cfded6a3267b1b543c06e",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src-tauri/src/git.rs",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66",
+      "currentSha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src-tauri/src/main.rs",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf",
+      "currentSha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "app/api/desktop/github/repositories/route.ts",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525",
+      "currentSha256": "6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "app/api/desktop/github/clone-token/route.ts",
+      "historicalManifest": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "historicalSha256": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927",
+      "currentSha256": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "currentSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "30706b3e71ef47c3ad333b710f15b802203f5c90102cfd6b4caa0cba646dc8fd",
+      "currentSha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "unchanged": false,
+      "metadataOnlyDrift": true
+    },
+    {
+      "path": "desktop/src/lib/editorSearch.ts",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "b009029de74f22616d77377fc8459b7873b5d9f0c225e81204cb9959f9eee67d",
+      "currentSha256": "b009029de74f22616d77377fc8459b7873b5d9f0c225e81204cb9959f9eee67d",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/lib/editorHistory.ts",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "5c8a92e3b831bda220c21f33ebbbb3fff40c5e8a88c77cd295eac18975cb5d0a",
+      "currentSha256": "5c8a92e3b831bda220c21f33ebbbb3fff40c5e8a88c77cd295eac18975cb5d0a",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/components/FileDiff.tsx",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3",
+      "currentSha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/lib/lineDiff.ts",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "d6c9c4ae3738d38815499adae285d45a9125efb5c04d7d84e8b9807af3e1ad3f",
+      "currentSha256": "d6c9c4ae3738d38815499adae285d45a9125efb5c04d7d84e8b9807af3e1ad3f",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src/lib/localCodeContext.ts",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "a5cc9fd6d95c2c5e58eda24c53603744f7da5d9c001706a3331276359cb0132e",
+      "currentSha256": "a5cc9fd6d95c2c5e58eda24c53603744f7da5d9c001706a3331276359cb0132e",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "lib/axiom/agentRuntime/repositoryEvidencePolicy.ts",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "f39337cc9bba62c1120847e58cc77aae00a42406e8879ee3936e71bb1b2ad6b4",
+      "currentSha256": "f39337cc9bba62c1120847e58cc77aae00a42406e8879ee3936e71bb1b2ad6b4",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src-tauri/src/git.rs",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66",
+      "currentSha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "desktop/src-tauri/src/main.rs",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf",
+      "currentSha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    },
+    {
+      "path": "docs/product/knowledge/repository-acquisition-controls.md",
+      "historicalManifest": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "historicalSha256": "580ab1776bead433d7e8850b9259b5dce9b76ac978d1616b8fe30ab86d6ebdd9",
+      "currentSha256": "580ab1776bead433d7e8850b9259b5dce9b76ac978d1616b8fe30ab86d6ebdd9",
+      "unchanged": true,
+      "metadataOnlyDrift": false
+    }
+  ],
+  "driftQualification": {
+    "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+    "literalStaticAttributeDeclarations": 23,
+    "guideFamiliesAnnotated": 22,
+    "guideFamiliesTotal": 27,
+    "strippedCurrentSha256": "30706b3e71ef47c3ad333b710f15b802203f5c90102cfd6b4caa0cba646dc8fd",
+    "bothHistoricalViewsEqualStrippedCurrent": true,
+    "scope": "Only static data-help-id attributes added. Source handlers/state/labels/permissions unchanged in exact byte comparison after removal. Family metadata can repeat across rows; not unique DOM/file identity, runtime help acceptance or customer-content authority.",
+    "noHistoricalRangeValidationClaim": true
+  },
+  "rangeConvention": "inclusive 1-based raw lines retaining original terminators",
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "range": {
+        "startLine": 134,
+        "endLine": 187,
+        "sha256": "43aa5f9253129148f98f3bff5a7f3008f624f01c3bc78c109ed45c2e0a4e0df0"
+      }
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "wholeFileSha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "range": {
+        "startLine": 64,
+        "endLine": 383,
+        "sha256": "8a5f47a4e222cbbabb27f2ead46fbd94871958e4006cb15ecd25ee8630b89738"
+      }
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "wholeFileSha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "range": {
+        "startLine": 745,
+        "endLine": 903,
+        "sha256": "210aa3718e86ce849532ef5dc9c348e19cd1ea3dd41d1f23f46b10e2c8eafec8"
+      }
+    },
+    {
+      "path": "desktop/src/views/RepositoriesView.tsx",
+      "wholeFileSha256": "40572ab65746dec6ddec278b162dd2cac83ce8d9c3958cc26e9b9a06bae1920b",
+      "range": {
+        "startLine": 1,
+        "endLine": 362,
+        "sha256": "40572ab65746dec6ddec278b162dd2cac83ce8d9c3958cc26e9b9a06bae1920b"
+      }
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "range": {
+        "startLine": 1243,
+        "endLine": 1253,
+        "sha256": "bf4cdc30de40c0f407cebbc8379b7b9155748e754fede0763ec700afe993d608"
+      }
+    },
+    {
+      "path": "desktop/src/lib/localWorkspaceSelection.ts",
+      "wholeFileSha256": "d7d8e9c196bf64525d930f283d93c2b9cc6ec388638cfded6a3267b1b543c06e",
+      "range": {
+        "startLine": 1,
+        "endLine": 45,
+        "sha256": "d7d8e9c196bf64525d930f283d93c2b9cc6ec388638cfded6a3267b1b543c06e"
+      }
+    },
+    {
+      "path": "desktop/src-tauri/src/git.rs",
+      "wholeFileSha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66",
+      "range": {
+        "startLine": 1,
+        "endLine": 254,
+        "sha256": "19bb609993bfd30ae19376d4226f45f458dc0afd47408ea68c7dfe38a37a7548"
+      }
+    },
+    {
+      "path": "desktop/src-tauri/src/git.rs",
+      "wholeFileSha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66",
+      "range": {
+        "startLine": 316,
+        "endLine": 373,
+        "sha256": "bb54ac82285d8b8e50b1ea29b578daec1559171d6a8a85e7a594451810bca93d"
+      }
+    },
+    {
+      "path": "desktop/src-tauri/src/main.rs",
+      "wholeFileSha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf",
+      "range": {
+        "startLine": 1,
+        "endLine": 176,
+        "sha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf"
+      }
+    },
+    {
+      "path": "app/api/desktop/github/repositories/route.ts",
+      "wholeFileSha256": "6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525",
+      "range": {
+        "startLine": 1,
+        "endLine": 171,
+        "sha256": "6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525"
+      }
+    },
+    {
+      "path": "app/api/desktop/github/clone-token/route.ts",
+      "wholeFileSha256": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927",
+      "range": {
+        "startLine": 1,
+        "endLine": 80,
+        "sha256": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927"
+      }
+    },
+    {
+      "path": "desktop/src/lib/editorSearch.ts",
+      "wholeFileSha256": "b009029de74f22616d77377fc8459b7873b5d9f0c225e81204cb9959f9eee67d",
+      "range": {
+        "startLine": 1,
+        "endLine": 34,
+        "sha256": "b009029de74f22616d77377fc8459b7873b5d9f0c225e81204cb9959f9eee67d"
+      }
+    },
+    {
+      "path": "desktop/src/lib/editorHistory.ts",
+      "wholeFileSha256": "5c8a92e3b831bda220c21f33ebbbb3fff40c5e8a88c77cd295eac18975cb5d0a",
+      "range": {
+        "startLine": 1,
+        "endLine": 22,
+        "sha256": "5c8a92e3b831bda220c21f33ebbbb3fff40c5e8a88c77cd295eac18975cb5d0a"
+      }
+    },
+    {
+      "path": "desktop/src/components/FileDiff.tsx",
+      "wholeFileSha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3",
+      "range": {
+        "startLine": 1,
+        "endLine": 50,
+        "sha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3"
+      }
+    },
+    {
+      "path": "desktop/src/lib/lineDiff.ts",
+      "wholeFileSha256": "d6c9c4ae3738d38815499adae285d45a9125efb5c04d7d84e8b9807af3e1ad3f",
+      "range": {
+        "startLine": 1,
+        "endLine": 81,
+        "sha256": "d6c9c4ae3738d38815499adae285d45a9125efb5c04d7d84e8b9807af3e1ad3f"
+      }
+    },
+    {
+      "path": "desktop/src/lib/localCodeContext.ts",
+      "wholeFileSha256": "a5cc9fd6d95c2c5e58eda24c53603744f7da5d9c001706a3331276359cb0132e",
+      "range": {
+        "startLine": 1,
+        "endLine": 37,
+        "sha256": "a5cc9fd6d95c2c5e58eda24c53603744f7da5d9c001706a3331276359cb0132e"
+      }
+    },
+    {
+      "path": "lib/axiom/agentRuntime/repositoryEvidencePolicy.ts",
+      "wholeFileSha256": "f39337cc9bba62c1120847e58cc77aae00a42406e8879ee3936e71bb1b2ad6b4",
+      "range": {
+        "startLine": 1,
+        "endLine": 12,
+        "sha256": "f39337cc9bba62c1120847e58cc77aae00a42406e8879ee3936e71bb1b2ad6b4"
+      }
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "wholeFileSha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "range": {
+        "startLine": 600,
+        "endLine": 685,
+        "sha256": "1992f42cd1dc276c3074727dfc78db653ebb46757c9855c9123e47d5d1abb2a3"
+      }
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "path": "docs/product/knowledge/repository-acquisition-controls.md",
+      "sha256": "580ab1776bead433d7e8850b9259b5dce9b76ac978d1616b8fe30ab86d6ebdd9"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-controls.md",
+      "sha256": "1debe786597e45b4e2be2009f255027f87a04435037fc6fc201cef9697bd8a5f"
+    },
+    {
+      "path": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "sha256": "c24cbaf67e2724212fdcc2801dc49f9856aa12d24766192a18f0467d65640cf1"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "sha256": "96110701dcf55aa7e7d95c7bfe3cfd5ff972ca8d1d22de7d4d8e89d242bffb0d"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-bindings.md",
+      "sha256": "0b26d3a12068ea81130bbc237bf53e8cb0c536bb687536af09c7c4b259be26d1"
+    }
+  ],
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}

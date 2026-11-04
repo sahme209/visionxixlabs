@@ -1,0 +1,234 @@
+{
+  "schema": 1,
+  "id": "axiom.help.repositories.acquisition-base-editor",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Repositories: acquire local source, edit an existing file and preserve uncertain writes",
+  "productVersion": "local-source-preview:2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+  "screenIds": [
+    "proposed.axiom.screen.repositories.acquisition",
+    "proposed.axiom.screen.repositories.base-editor"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.repositories.source-disclosure",
+    "proposed.axiom.control.repositories.catalog-refresh",
+    "proposed.axiom.control.repositories.clone-source",
+    "proposed.axiom.control.repositories.manual-repository",
+    "proposed.axiom.control.repositories.local-folder",
+    "proposed.axiom.control.repositories.clone",
+    "proposed.axiom.control.repositories.local-refresh",
+    "proposed.axiom.control.repositories.checkout-select",
+    "proposed.axiom.control.repositories.file-navigation",
+    "proposed.axiom.control.repositories.file-filter",
+    "proposed.axiom.control.repositories.open-file",
+    "proposed.axiom.control.repositories.discard-confirmation",
+    "proposed.axiom.control.repositories.edit-buffer",
+    "proposed.axiom.control.repositories.find-replace",
+    "proposed.axiom.control.repositories.undo-redo",
+    "proposed.axiom.control.repositories.save-file",
+    "proposed.axiom.control.repositories.review-unsaved",
+    "proposed.axiom.control.repositories.prepare-agent-draft"
+  ],
+  "goal": "Choose the correct local checkout and deliberately save an existing text file without confusing local filesystem writes, GitHub credential authority, UI metadata or uncertain outcomes with remote permission or accepted execution.",
+  "prerequisites": [
+    "Internal source-only local preview. Current native filesystem/Git/connection/session/capability/credential status and installed release support were not observed.",
+    "Mounted Repositories is RepositoryWorkspaceView, not legacy RepositoriesView inventory/register/sync. Start with correct checkout scope and existing supported local text file.",
+    "Historical acquisition/editor guides and manifests are preserved; current receipt explicitly qualifies static metadata drift. Nested worktree/check/sync/push/publish/diff child controls remain separate existing guides/articles, not superseded."
+  ],
+  "permissions": [
+    "Local list/read/write native handlers use desktop process filesystem permissions and installed Git; they have no additional GitHub capability/token check. Local Save is not remote write permission or new filesystem grant from this article.",
+    "Catalog requires paired session/github:read and active organization GitHub App installation; API keys excluded. Clone-token issuance currently requires github:write even for purpose clone, while returned provider token has contents_read and exact organization/repository installation binding. Clone token does not authorize push.",
+    "Credential-bearing backend/native handoff must not be copied/logged. Native helper strips token from arguments/origin, disables credential helpers/prompts/traces and redacts output; this is not zero-memory-exposure or instant-revocation proof. No credential was read for this article.",
+    "Current static data-help-id annotations are family metadata, not unique rendered instance/file identities or accepted help content. Article proposed IDs are separate authoring-only labels. Existing provider/Governance authority remains unchanged and full qualification unavailable."
+  ],
+  "steps": [
+    {
+      "instruction": "Check selected checkout scope. Expand Clone or refresh repositories; select Connected GitHub repository or Enter another authorized repository\u2026 with owner/repository.",
+      "effect": "read",
+      "expectedState": "Catalog choice grants no access. Manual owner/repository is not arbitrary remote URL or GitLab/Azure support. Legacy inventory view is not this App mount; catalog failure leaves existing local files available."
+    },
+    {
+      "instruction": "Edit Local repositories folder; Refresh connected repositories reloads catalog, while Refresh lists immediate local repositories and resolves current/remembered selection.",
+      "effect": "read",
+      "expectedState": "Local default is AxiomAgent/repos. Inventory immediate .git directories, not recursive full-disk/bare-worktree guarantee. Refresh is not Git fetch/pull and may select another available checkout: review scope. Navigation metadata stores paths/preference, not file contents/credentials or filesystem authority."
+    },
+    {
+      "instruction": "Only with separately authorized scope choose Clone; it requests purpose-clone credential then invokes native clone into parent/repository-name.",
+      "effect": "execute",
+      "expectedState": "Reads GitHub and writes local directories/files; not purely read-only, merge/push/deploy. Busy/invalid or absent nonmanual catalog selection disables; handler refuses empty parent. Destination already exists refuses. No clone Cancel/deadline is supplied; Stop check is unrelated."
+    },
+    {
+      "instruction": "Select local checkout or file. For unsaved buffer use Discard and switch/Discard and open only deliberately, or Cancel/Escape/backdrop to retain buffer.",
+      "effect": "local-preference",
+      "expectedState": "Discard drops in-memory buffer, not saved Git history. Open clears old editor before native read; read failure can leave no selected editor. Context change/remount can lose unsaved state; hiding panes is not durable draft recovery."
+    },
+    {
+      "instruction": "Use Files/Changes, Filter files and All files/Source files. Refresh changes updates status/inventory, not buffer reload or remote fetch.",
+      "effect": "read",
+      "expectedState": "Native git ls-files tracks/nonignored untracked paths up to5000then sorts; All files is not entire disk. Source filtering hides known noise directories, not secrets/type/security classification. Changed/deleted/unavailable paths and ordinary file-row busy behavior differ; do not assume selecting during a write cancels it."
+    },
+    {
+      "instruction": "Edit existing UTF-8 text in Editing <file>. Use Go to line, literal current-file Find/Previous/Next and Replace selected match, Undo/Redo as appropriate.",
+      "effect": "local-preference",
+      "expectedState": "No autosave. Read limit1000000bytes; Save rejects oversized text and destination symlink. Literal search is case-sensitive/nonoverlapping capped1000matches; replacement edits buffer only. Undo after Save creates another unsaved draft, not disk rollback; no standalone Discard or persistent recovery guarantee."
+    },
+    {
+      "instruction": "Review changes compares unsaved buffer to last loaded/saved baseline; choose Save \u2318S only for the intended exact existing file.",
+      "effect": "execute",
+      "expectedState": "Captures snapshot and expected disk baseline then native write; no stage/commit/push/check/approval. Native path/current-content/size checks are not atomic compare-and-swap or transactional/backed-up storage. External change error requires reopen/reconcile, not repeated overwrite."
+    },
+    {
+      "instruction": "If typing continues while Save is pending, inspect unsaved marker after current-owner completion and any refresh error.",
+      "effect": "recover",
+      "expectedState": "Successful baseline advances to captured snapshot; later typing remains unsaved. Refresh can fail after disk write succeeded. Lost/failed result does not prove unchanged disk or rollback; deliberate current-file review before retry, never assume switch/close aborted write."
+    },
+    {
+      "instruction": "For authorized selected code, Ask Agent about selection opens Prepare selected code for Agent?; Cancel dismisses or Prepare Agent draft confirms exact current file/selection.",
+      "effect": "propose",
+      "expectedState": "1\u20138000selected units, path screening/current identity/no-busy gates; prepares unsent Inspect/Code Review prompt only, no Save/model Send. Path screening is not content scanning/universal secret filter; independently inspect selected text."
+    },
+    {
+      "instruction": "After clone/save uncertainty inspect original destination/current local inventory or deliberately reopen disk before another authorized action.",
+      "effect": "recover",
+      "expectedState": "Clone failure attempts cleanup only on destination checked absent; cleanup is not guaranteed by UI. Navigation/context retirement suppresses stale UI, not cancellation of native process/files/credentials. No automatic retry or remote push authority; nested controls have separate scope."
+    }
+  ],
+  "expectedOutcome": "Identify exact local scope and buffer/disk baseline, distinguish clone/local-save effects from remote permissions, and retain uncertainty rather than blindly retrying filesystem/provider operations.",
+  "limitations": [
+    "Customer eligible:false; publication approved:false; editorial/media/native/runtime/release/shipped acceptance:false. Null review and empty media; proposed article IDs are not runtime bindings.",
+    "Current2f0bd307 source receipt preserves06afd3ea/5d99d326 historical guides/manifests. Only RepositoryWorkspaceView differs:23literal static declarations cover22of27historical editor families. Removing attrs restores both historical view byte-for-byte; no handler/authority change inferred. Old manifests freeze whole files, not current range validation.",
+    "Existing family data-help-id metadata may repeat on dynamic rows. It does not identify unique DOM/file instances, accepted help, current source/version applicability, customer content or permission. Remaining shared confirmations/diff pagination/Ask Agent confirmation are not all bound.",
+    "Finite acquisition and existing-file base editor only. No exhaustive whole-screen coverage or superseding separate nested/worktree/check/cancellation/branch/sync/commit/push/PR/browser/diff child guides/articles. No new provider capability is granted.",
+    "Native path checks are not universal secret detection or atomic filesystem isolation. Read can follow in-tree symlink; Save refuses destination symlink. Actual native implementation/platform/permissions and disk state were not exercised.",
+    "Clone/Save are real local writes if deliberately run; source description is not execution authorization, safe rollback, token exposure/revocation or successful cleanup proof. No clone/save Cancel or persistent buffer recovery promised.",
+    "Review unsaved diff is local baseline comparison, not HEAD/remote/release approval. Exact child diff behavior remains its own guide. No accepted native visuals/keyboard/AT/media or current provider/credential health.",
+    "Proposed-not-executed evaluation only; schema/source integrity is not retrieval/model/runtime acceptance, customer publication, editorial approval, Governance enrollment/activation or complete execution coverage."
+  ],
+  "recovery": [
+    "Before confirming discard/switch/reopen, preserve any wanted unsaved text through authorized means; confirmation intentionally replaces buffer and cannot undo disk/provider work.",
+    "On File changed outside Axiom reopen/review disk and deliberately reconcile, not repeated Save. Expected-content check does not prevent every unrelated filesystem race.",
+    "After uncertain Save/clone inspect original file/destination and inventory before deliberate retry. Failed response/cleanup/refresh does not prove absent side effects; do not delete an existing checkout or invent a new destination solely to bypass uncertainty.",
+    "Stale context/file/repository generations suppress UI updates only. Closing disclosure/navigation/Stop check is not cancellation of clone or pending Save.",
+    "Catalog/manual selection never expands GitHub App scope. Review separately authorized integration and current access; do not infer push permission from clone contents_read token or local edit."
+  ],
+  "searchTerms": [
+    "Repositories",
+    "Clone source GitHub",
+    "Local repositories folder",
+    "Discard and switch",
+    "Discard and open",
+    "Save \u2318S",
+    "File changed outside Axiom",
+    "unsaved",
+    "literal find",
+    "Ask Agent",
+    "data-help-id",
+    "unknown local save"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88"
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a"
+    },
+    {
+      "path": "desktop/src/views/RepositoriesView.tsx",
+      "sha256": "40572ab65746dec6ddec278b162dd2cac83ce8d9c3958cc26e9b9a06bae1920b"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/lib/localWorkspaceSelection.ts",
+      "sha256": "d7d8e9c196bf64525d930f283d93c2b9cc6ec388638cfded6a3267b1b543c06e"
+    },
+    {
+      "path": "desktop/src-tauri/src/git.rs",
+      "sha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66"
+    },
+    {
+      "path": "desktop/src-tauri/src/main.rs",
+      "sha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf"
+    },
+    {
+      "path": "app/api/desktop/github/repositories/route.ts",
+      "sha256": "6b3981b571ec31250b803a71d95594ce96608ec6ba561158151d4f616c073525"
+    },
+    {
+      "path": "app/api/desktop/github/clone-token/route.ts",
+      "sha256": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927"
+    },
+    {
+      "path": "desktop/src/lib/editorSearch.ts",
+      "sha256": "b009029de74f22616d77377fc8459b7873b5d9f0c225e81204cb9959f9eee67d"
+    },
+    {
+      "path": "desktop/src/lib/editorHistory.ts",
+      "sha256": "5c8a92e3b831bda220c21f33ebbbb3fff40c5e8a88c77cd295eac18975cb5d0a"
+    },
+    {
+      "path": "desktop/src/components/FileDiff.tsx",
+      "sha256": "54b1906aa9536a93e0468890a309439842831865675e9d68848457ea4b902be3"
+    },
+    {
+      "path": "desktop/src/lib/lineDiff.ts",
+      "sha256": "d6c9c4ae3738d38815499adae285d45a9125efb5c04d7d84e8b9807af3e1ad3f"
+    },
+    {
+      "path": "desktop/src/lib/localCodeContext.ts",
+      "sha256": "a5cc9fd6d95c2c5e58eda24c53603744f7da5d9c001706a3331276359cb0132e"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/repositoryEvidencePolicy.ts",
+      "sha256": "f39337cc9bba62c1120847e58cc77aae00a42406e8879ee3936e71bb1b2ad6b4"
+    },
+    {
+      "path": "docs/product/knowledge/repository-acquisition-controls.md",
+      "sha256": "580ab1776bead433d7e8850b9259b5dce9b76ac978d1616b8fe30ab86d6ebdd9"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-controls.md",
+      "sha256": "1debe786597e45b4e2be2009f255027f87a04435037fc6fc201cef9697bd8a5f"
+    },
+    {
+      "path": "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "sha256": "c24cbaf67e2724212fdcc2801dc49f9856aa12d24766192a18f0467d65640cf1"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-controls.sources.json",
+      "sha256": "96110701dcf55aa7e7d95c7bfe3cfd5ff972ca8d1d22de7d4d8e89d242bffb0d"
+    },
+    {
+      "path": "docs/product/knowledge/repository-editor-bindings.md",
+      "sha256": "0b26d3a12068ea81130bbc237bf53e8cb0c536bb687536af09c7c4b259be26d1"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/source-bindings.json",
+      "sha256": "22821dc112f9e375b4dc9443528407fe3f9e3ec7ab1206812565ed271aca20f1"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/repository-acquisition-controls.md",
+      "docs/product/knowledge/repository-editor-controls.md",
+      "docs/product/knowledge/repository-acquisition-controls.sources.json",
+      "docs/product/knowledge/repository-editor-controls.sources.json",
+      "docs/product/knowledge/repository-editor-bindings.md",
+      "docs/recovery/2026-11-04/repository-base-structured-knowledge-author/source-bindings.json"
+    ],
+    "verifiedVersion": "local-source-preview:2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
