@@ -1,0 +1,15 @@
+Prisma schema loaded from ../axiom-a7-run-budget-evidence/schema.prisma
+Error: Prisma schema validation - (get-dmmf wasm)
+Error code: P1012
+[1;91merror[0m: [1mError parsing attribute "@relation": A one-to-one relation must use unique fields on the defining side. Either add an `@@unique([organizationId, workspaceReservationId])` attribute to the model, or change the relation to one-to-many.[0m
+  [1;94m-->[0m  [4m/private/tmp/axiom-a7-run-budget-evidence/schema.prisma:5082[0m
+[1;94m   | [0m
+[1;94m5081 | [0m stage PipelineStageRun @relation(fields: [runId, stageRunId], references: [runId, id], onDelete: Restrict)
+[1;94m5082 | [0m [1;91mworkspaceReservation AIUsageReservation @relation(fields: [organizationId, workspaceReservationId], references: [organizationId, id], onDelete: Restrict)[0m
+[1;94m5083 | [0m @@unique([organizationId, stageRunId, phase])
+[1;94m   | [0m
+
+Validation Error Count: 1
+[Context: getDmmf]
+
+Prisma CLI Version : 5.22.0

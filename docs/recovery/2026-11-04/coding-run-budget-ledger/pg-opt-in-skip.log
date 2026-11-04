@@ -1,0 +1,39 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mactual code_propose refuses default1000 reservation against authoritative500 run cap before manager dispatch
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mcaller strings alone cannot admit a paid coding call even with sufficient saved budget
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mactual CAS issues once; duplicate queued claim cannot manufacture another handle
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22madmits exact hold boundary and keeps pending first estimate when refusing refinement
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mindependent concurrent phase admissions cannot consume the same run allowance
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mseparate initial and refinement each admit once and use distinct holds
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrechecks cancel before dispatch and retains both reserved ledgers
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrechecks tighten before dispatch and retains both reserved ledgers
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrechecks member before dispatch and retains both reserved ledgers
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrechecks model before dispatch and retains both reserved ledgers
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22munknown dispatch cannot release, expire, or replay and retains full allowance
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22msettles exact provider cost separately from billed margin once without stage display double-counting
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mmismatched generation leaves both linked ledgers pending
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mrecords full provider over-estimate, clips customer debit, and blocks later paid calls
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlegacy safe predispatch void releases both ledgers and phase remains terminal
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mpublic safe predispatch void releases both ledgers and phase remains terminal
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mv2 safe predispatch void releases both ledgers and phase remains terminal
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlegacy workspace refusal and outer transaction abort leave no partial run or workspace allocation
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mpublic workspace refusal and outer transaction abort leave no partial run or workspace allocation
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mv2 workspace refusal and outer transaction abort leave no partial run or workspace allocation
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlegacy reserved coding capacity survives expiry sweep by another workspace admission
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mcorrupt released ownership/dispatch/usage never vanishes from authoritative exposure
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mdefault refusal is the authoritative run cap, while the same manager seam is reachable with larger saved budget
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mdispatch transaction abort cannot claim only one ledger
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mlegacy settlement commits companion/workspace/usage together and provider cost remains separate
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mpublic settlement commits companion/workspace/usage together and provider cost remains separate
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mv2 settlement commits companion/workspace/usage together and provider cost remains separate
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mcompeting distinct stage refinements serialize against the same run cap
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22msafe void transaction abort cannot release only workspace capacity
+ [2m[90m↓[39m[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mowned socket-only coding run ledger[2m > [22mactual runner completion cannot overwrite a cost settled before the executor returns with pending display zero
+
+[2m Test Files [22m [33m1 skipped[39m[90m (1)[39m
+[2m      Tests [22m [33m30 skipped[39m[90m (30)[39m
+[2m   Start at [22m 06:45:29
+[2m   Duration [22m 277ms[2m (transform 130ms, setup 0ms, import 201ms, tests 0ms, environment 0ms)[22m
+

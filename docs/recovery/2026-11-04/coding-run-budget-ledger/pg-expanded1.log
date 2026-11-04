@@ -1,0 +1,361 @@
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/initdb", "-D", "/private/tmp/axiom-budget-pg-jn181e5k/data", "-U", "budget_fixture", "--locale=C", "--encoding=UTF8", "--auth-local=trust", "--auth-host=reject"]
+The files belonging to this database system will be owned by user "samirahmed".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory /private/tmp/axiom-budget-pg-jn181e5k/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    '/opt/homebrew/opt/postgresql@17/bin/pg_ctl' -D /private/tmp/axiom-budget-pg-jn181e5k/data -l logfile start
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-jn181e5k/data", "-l", "/private/tmp/axiom-budget-pg-jn181e5k/server.log", "-o", "-p 55439 -k /private/tmp/axiom-budget-pg-jn181e5k/socket -c listen_addresses='' -c unix_socket_permissions=0700", "-w", "start"]
+waiting for server to start.... done
+server started
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-d", "postgres", "-At", "-c", "SELECT current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+budget_fixture||/private/tmp/axiom-budget-pg-jn181e5k/data
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/createdb", "-w", "axiom_budget_fixture"]
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-At", "-c", "SELECT current_database()||'|'||current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+axiom_budget_fixture|budget_fixture||/private/tmp/axiom-budget-pg-jn181e5k/data
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/prisma/build/index.js", "db", "push", "--schema", "/private/tmp/axiom-a7-run-budget-evidence/schema.prisma", "--skip-generate"]
+Prisma schema loaded from ../axiom-a7-run-budget-evidence/schema.prisma
+Datasource "db": PostgreSQL database "axiom_budget_fixture", schema "public" at "localhost:55439"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 212ms
+
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", "/private/tmp/axiom-a7-run-budget-evidence/pg-vitest.config.mjs", "--configLoader", "native", "--reporter", "verbose"]
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual code_propose refuses default1000 reservation against authoritative500 run cap before manager dispatch[32m 15[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcaller strings alone cannot admit a paid coding call even with sufficient saved budget[32m 3[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual CAS issues once; duplicate queued claim cannot manufacture another handle[32m 3[2mms[22m[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22madmits exact hold boundary and keeps pending first estimate when refusing refinement[32m 5[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mindependent concurrent phase admissions cannot consume the same run allowance[32m 9[2mms[22m[39m
+[31m   → expected [] to have a length of 1 but got +0[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mseparate initial and refinement each admit once and use distinct holds[32m 3[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks cancel before dispatch and retains both reserved ledgers[32m 3[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks tighten before dispatch and retains both reserved ledgers[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks member before dispatch and retains both reserved ledgers[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks model before dispatch and retains both reserved ledgers[32m 5[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22munknown dispatch cannot release, expire, or replay and retains full allowance[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22msettles exact provider cost separately from billed margin once without stage display double-counting[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mmismatched generation leaves both linked ledgers pending[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrecords full provider over-estimate, clips customer debit, and blocks later paid calls[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy safe predispatch void releases both ledgers and phase remains terminal[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic safe predispatch void releases both ledgers and phase remains terminal[32m 2[2mms[22m[39m
+[31m   → expected false to be true // Object.is equality[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 safe predispatch void releases both ledgers and phase remains terminal[32m 4[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 4[2mms[22m[39m
+[31m   → expected [Function] to throw error including 'synthetic_atomic_abort' but got 'coding_run_budget_unavailable'[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 2[2mms[22m[39m
+[31m   → expected false to be true // Object.is equality[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 4[2mms[22m[39m
+[31m   → expected [Function] to throw error including 'synthetic_atomic_abort' but got 'coding_run_budget_unavailable'[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy reserved coding capacity survives expiry sweep by another workspace admission[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcorrupt released ownership/dispatch/usage never vanishes from authoritative exposure[32m 2[2mms[22m[39m
+[31m   → coding_run_budget_unavailable[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m19 failed[39m[22m[2m | [22m[1m[32m3 passed[39m[22m[90m (22)[39m
+[2m   Start at [22m 11:37:10
+[2m   Duration [22m 455ms[2m (transform 129ms, setup 0ms, import 215ms, tests 146ms, environment 0ms)[22m
+
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 19 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22madmits exact hold boundary and keeps pending first estimate when refusing refinement
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m reserveAndClaim lib/billing/governedExtractAdmission.ts:[2m60:7[22m[39m
+[90m [2m❯[22m admitted lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m67:15[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m81:32[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mindependent concurrent phase admissions cannot consume the same run allowance
+[31m[1mAssertionError[22m: expected [] to have a length of 1 but got +0[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- 1[39m
+[31m+ 0[39m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m88:53[22m[39m
+    [90m 86|[39m it('independent concurrent phase admissions cannot consume the same ru…
+    [90m 87|[39m  const ctx=await fixture(1000);const attempts=await Promise.allSettled…
+    [90m 88|[39m  [34mexpect[39m(attempts[33m.[39m[34mfilter[39m(a[33m=>[39ma[33m.[39mstatus[33m===[39m[32m'fulfilled'[39m))[33m.[39m[34mtoHaveLength[39m([34m1[39m)[33m;[39m
+    [90m   |[39m                                                     [31m^[39m
+    [90m 89|[39m  expect(await f.db.aIUsageReservation.count({where:{organizationId:ctx…
+    [90m 90|[39m  expect(await readCodingRunExposure(f.db,ctx.organizationId,ctx.runId,…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mseparate initial and refinement each admit once and use distinct holds
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m reserveAndClaim lib/billing/governedExtractAdmission.ts:[2m60:7[22m[39m
+[90m [2m❯[22m admitted lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m67:15[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m93:32[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks cancel before dispatch and retains both reserved ledgers
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks tighten before dispatch and retains both reserved ledgers
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks member before dispatch and retains both reserved ledgers
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks model before dispatch and retains both reserved ledgers
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m99:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22munknown dispatch cannot release, expire, or replay and retains full allowance
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m109:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22msettles exact provider cost separately from billed margin once without stage display double-counting
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m reserveAndClaim lib/billing/governedExtractAdmission.ts:[2m60:7[22m[39m
+[90m [2m❯[22m admitted lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m67:15[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m116:38[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mmismatched generation leaves both linked ledgers pending
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m reserveAndClaim lib/billing/governedExtractAdmission.ts:[2m60:7[22m[39m
+[90m [2m❯[22m admitted lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m67:15[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m125:38[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrecords full provider over-estimate, clips customer debit, and blocks later paid calls
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m reserveAndClaim lib/billing/governedExtractAdmission.ts:[2m60:7[22m[39m
+[90m [2m❯[22m admitted lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m67:15[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m130:38[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy safe predispatch void releases both ledgers and phase remains terminal
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 safe predispatch void releases both ledgers and phase remains terminal
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m151:52[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic safe predispatch void releases both ledgers and phase remains terminal
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m modeFixture lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m140:137[22m[39m
+    [90m138|[39m  [35mif[39m(mode[33m===[39m[32m'public'[39m){
+    [90m139|[39m   vi.stubEnv('AXIOM_PUBLIC_BILLING_POLICY','axiom_public_anniversary_v…
+    [90m140|[39m   expect(await f.db.$transaction(tx=>enrollNewPublicWorkspace(tx,ctx.o…
+    [90m   |[39m                                                                                                                                         [31m^[39m
+    [90m141|[39m  }
+    [90m142|[39m  [35mif[39m(mode[33m===[39m[32m'v2'[39m){
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m151:23[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy workspace refusal and outer transaction abort leave no partial run or workspace allocation
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 workspace refusal and outer transaction abort leave no partial run or workspace allocation
+[31m[1mAssertionError[22m: expected [Function] to throw error including 'synthetic_atomic_abort' but got 'coding_run_budget_unavailable'[39m
+
+Expected: [32m"synthetic_atomic_abort"[39m
+Received: [31m"coding_run_budget_unavailable"[39m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m165:142[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic workspace refusal and outer transaction abort leave no partial run or workspace allocation
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m modeFixture lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m140:137[22m[39m
+    [90m138|[39m  [35mif[39m(mode[33m===[39m[32m'public'[39m){
+    [90m139|[39m   vi.stubEnv('AXIOM_PUBLIC_BILLING_POLICY','axiom_public_anniversary_v…
+    [90m140|[39m   expect(await f.db.$transaction(tx=>enrollNewPublicWorkspace(tx,ctx.o…
+    [90m   |[39m                                                                                                                                         [31m^[39m
+    [90m141|[39m  }
+    [90m142|[39m  [35mif[39m(mode[33m===[39m[32m'v2'[39m){
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m161:23[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy reserved coding capacity survives expiry sweep by another workspace admission
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m173:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/19]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcorrupt released ownership/dispatch/usage never vanishes from authoritative exposure
+[31m[1mError[22m: coding_run_budget_unavailable[39m
+[36m [2m❯[22m codingBudgetUnavailable lib/workforce/pipelines/codingRunReservation.ts:[2m9:55[22m[39m
+    [90m  7|[39m type Binding=Readonly<{organizationId:string;runId:string;stageRunId:s…
+    [90m  8|[39m [35mconst[39m claims[33m=[39m[35mnew[39m [33mWeakMap[39m[33m<[39mobject[33m,[39m[33mBinding[39m[33m>[39m()[33m;[39m
+    [90m  9|[39m export function codingBudgetUnavailable():never{throw Error('coding_ru…
+    [90m   |[39m                                                       [31m^[39m
+    [90m 10|[39m /** The issuer owns the actual CAS. No caller context can manufacture …
+    [90m 11|[39m export async function claimCodingRunStage(repo:Pick<PrismaClient,'$tra…
+[90m [2m❯[22m policyAndExposure lib/workforce/pipelines/codingRunReservation.ts:[2m51:136[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m68:13[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m179:37[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/19]⎯[22m[39m
+
+
+EXIT 1
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-jn181e5k/data", "status"]
+pg_ctl: server is running (PID: 64544)
+/opt/homebrew/Cellar/postgresql@17/17.11_1/bin/postgres "-D" "/private/tmp/axiom-budget-pg-jn181e5k/data" "-p" "55439" "-k" "/private/tmp/axiom-budget-pg-jn181e5k/socket" "-c" "listen_addresses=" "-c" "unix_socket_permissions=0700"
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-jn181e5k/data", "-m", "fast", "-w", "stop"]
+waiting for server to shut down.... done
+server stopped
+
+EXIT 0

@@ -1,0 +1,229 @@
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/initdb", "-D", "/private/tmp/axiom-budget-pg-q_760sw7/data", "-U", "budget_fixture", "--locale=C", "--encoding=UTF8", "--auth-local=trust", "--auth-host=reject"]
+The files belonging to this database system will be owned by user "samirahmed".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory /private/tmp/axiom-budget-pg-q_760sw7/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    '/opt/homebrew/opt/postgresql@17/bin/pg_ctl' -D /private/tmp/axiom-budget-pg-q_760sw7/data -l logfile start
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-q_760sw7/data", "-l", "/private/tmp/axiom-budget-pg-q_760sw7/server.log", "-o", "-p 55439 -k /private/tmp/axiom-budget-pg-q_760sw7/socket -c listen_addresses='' -c unix_socket_permissions=0700", "-w", "start"]
+waiting for server to start.... done
+server started
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-d", "postgres", "-At", "-c", "SELECT current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+budget_fixture||/private/tmp/axiom-budget-pg-q_760sw7/data
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/createdb", "-w", "axiom_budget_fixture"]
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-At", "-c", "SELECT current_database()||'|'||current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+axiom_budget_fixture|budget_fixture||/private/tmp/axiom-budget-pg-q_760sw7/data
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/prisma/build/index.js", "db", "push", "--schema", "/private/tmp/axiom-a7-run-budget-evidence/schema.prisma", "--skip-generate"]
+Prisma schema loaded from ../axiom-a7-run-budget-evidence/schema.prisma
+Datasource "db": PostgreSQL database "axiom_budget_fixture", schema "public" at "localhost:55439"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 209ms
+
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", "/private/tmp/axiom-a7-run-budget-evidence/pg-vitest.config.mjs", "--configLoader", "native", "--reporter", "verbose"]
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual code_propose refuses default1000 reservation against authoritative500 run cap before manager dispatch[32m 12[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcaller strings alone cannot admit a paid coding call even with sufficient saved budget[32m 4[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual CAS issues once; duplicate queued claim cannot manufacture another handle[32m 2[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22madmits exact hold boundary and keeps pending first estimate when refusing refinement[32m 17[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mindependent concurrent phase admissions cannot consume the same run allowance[32m 16[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mseparate initial and refinement each admit once and use distinct holds[32m 24[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks cancel before dispatch and retains both reserved ledgers[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks tighten before dispatch and retains both reserved ledgers[32m 7[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks member before dispatch and retains both reserved ledgers[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks model before dispatch and retains both reserved ledgers[32m 5[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22munknown dispatch cannot release, expire, or replay and retains full allowance[32m 9[2mms[22m[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22msettles exact provider cost separately from billed margin once without stage display double-counting[32m 14[2mms[22m[39m
+[31m   → expected { …(24) } to match object { status: 'settled', providerCents: 7 }
+(22 matching properties omitted from actual)[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mmismatched generation leaves both linked ledgers pending[32m 8[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrecords full provider over-estimate, clips customer debit, and blocks later paid calls[32m 11[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy safe predispatch void releases both ledgers and phase remains terminal[32m 8[2mms[22m[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic safe predispatch void releases both ledgers and phase remains terminal[32m 18[2mms[22m[39m
+[31m   → expected { available: true, …(7) } to match object { remainingCents: 200 }
+(8 matching properties omitted from actual)[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 safe predispatch void releases both ledgers and phase remains terminal[32m 6[2mms[22m[39m
+[31m   → allowance_provenance_unavailable[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 11[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 8[2mms[22m[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 7[2mms[22m[39m
+[31m   → expected [Function] to throw error including 'synthetic_atomic_abort' but got 'allowance_provenance_unavailable'[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy reserved coding capacity survives expiry sweep by another workspace admission[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcorrupt released ownership/dispatch/usage never vanishes from authoritative exposure[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mdefault refusal is the authoritative run cap, while the same manager seam is reachable with larger saved budget[32m 12[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mdispatch transaction abort cannot claim only one ledger[32m 6[2mms[22m[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy settlement commits companion/workspace/usage together and provider cost remains separate[32m 14[2mms[22m[39m
+[31m   → expected { …(24) } to match object { status: 'settled', providerCents: 7 }
+(22 matching properties omitted from actual)[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic settlement commits companion/workspace/usage together and provider cost remains separate[32m 16[2mms[22m[39m
+[31m   → expected { …(24) } to match object { status: 'settled', providerCents: 7 }
+(22 matching properties omitted from actual)[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 settlement commits companion/workspace/usage together and provider cost remains separate[32m 4[2mms[22m[39m
+[31m   → allowance_provenance_unavailable[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m7 failed[39m[22m[2m | [22m[1m[32m20 passed[39m[22m[90m (27)[39m
+[2m   Start at [22m 11:38:32
+[2m   Duration [22m 592ms[2m (transform 130ms, setup 0ms, import 200ms, tests 314ms, environment 0ms)[22m
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 7 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22msettles exact provider cost separately from billed margin once without stage display double-counting
+[31m[1mAssertionError[22m: expected { …(24) } to match object { status: 'settled', providerCents: 7 }
+(22 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "providerCents": 7,[39m
+[31m+   "providerCents": 8,[39m
+[2m    "status": "settled",[22m
+[2m  }[22m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m118:15[22m[39m
+    [90m116|[39m  const ctx=await fixture(2000),event=await admitted(ctx);await settle(…
+    [90m117|[39m  const call=await f.db.pipelineAICallReservation.findFirstOrThrow({whe…
+    [90m118|[39m  [34mexpect[39m(call)[33m.[39m[34mtoMatchObject[39m({status[33m:[39m[32m'settled'[39m[33m,[39mproviderCents[33m:[39m[34m7[39m})[33m;[39m
+    [90m   |[39m               [31m^[39m
+    [90m119|[39m  expect(await f.db.aIUsageReservation.findUnique({where:{id:call.works…
+    [90m120|[39m  expect(await f.db.pipelineStageRun.findUnique({where:{id:ctx.stageRun…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic safe predispatch void releases both ledgers and phase remains terminal
+[31m[1mAssertionError[22m: expected { available: true, …(7) } to match object { remainingCents: 200 }
+(8 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "remainingCents": 200,[39m
+[31m+   "addOnCents": 0,[39m
+[31m+   "available": true,[39m
+[31m+   "baseCents": 200,[39m
+[31m+   "heldCents": 0,[39m
+[31m+   "includedRemainingCents": 200,[39m
+[31m+   "overagePolicy": "hard_stop",[39m
+[31m+   "poolCents": 200,[39m
+[31m+   "usedCents": 0,[39m
+[2m  }[22m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m159:167[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 safe predispatch void releases both ledgers and phase remains terminal
+[31m[1mError[22m: allowance_provenance_unavailable[39m
+[36m [2m❯[22m deny lib/billing/newTestSubscription/allocationPlan.ts:[2m14:32[22m[39m
+    [90m 12|[39m [35mconst[39m guards [33m=[39m [35mnew[39m [33mWeakMap[39m[33m<[39m[33mPricingPlan[39m[33m,[39m [33mAllocationGuardV2[39m[33m>[39m()[33m;[39m
+    [90m 13|[39m export const newTestAllocationGuard = (plan: PricingPlan | undefined) …
+    [90m 14|[39m function deny(): never { throw new Error("allowance_provenance_unavail…
+    [90m   |[39m                                [31m^[39m
+    [90m 15|[39m export async function allocationClock(tx: Prisma.TransactionClient): P…
+    [90m 16|[39m   const rows = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT …
+[90m [2m❯[22m Module.newTestAllocationPricingPlan lib/billing/newTestSubscription/allocationPlan.ts:[2m40:163[22m[39m
+[90m [2m❯[22m reserveAICreditsInTransaction lib/billing/aiCreditReservation.ts:[2m99:158[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m73:14[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m152:52[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 workspace refusal and outer transaction abort leave no partial run or workspace allocation
+[31m[1mAssertionError[22m: expected [Function] to throw error including 'synthetic_atomic_abort' but got 'allowance_provenance_unavailable'[39m
+
+Expected: [32m"synthetic_atomic_abort"[39m
+Received: [31m"allowance_provenance_unavailable"[39m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m166:142[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy settlement commits companion/workspace/usage together and provider cost remains separate
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic settlement commits companion/workspace/usage together and provider cost remains separate
+[31m[1mAssertionError[22m: expected { …(24) } to match object { status: 'settled', providerCents: 7 }
+(22 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "providerCents": 7,[39m
+[31m+   "providerCents": 8,[39m
+[2m    "status": "settled",[22m
+[2m  }[22m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m219:84[22m[39m
+    [90m217|[39m  expect(await f.db.usageEvent.findUnique({where:{id:usageId}})).toMatc…
+    [90m218|[39m  [35mawait[39m [34msettle[39m(event[33m,[39m[34m7[39m)[33m;[39m[35mawait[39m [34msettle[39m(event[33m,[39m[34m7[39m)[33m;[39m
+    [90m219|[39m  expect(await f.db.pipelineAICallReservation.findUnique({where:{id:hel…
+    [90m   |[39m                                                                                    [31m^[39m
+    [90m220|[39m  expect(await f.db.aIUsageReservation.findUnique({where:{id:held.reser…
+    [90m221|[39m  expect(await readCodingRunExposure(f.db,ctx.organizationId,ctx.runId,…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 settlement commits companion/workspace/usage together and provider cost remains separate
+[31m[1mError[22m: allowance_provenance_unavailable[39m
+[36m [2m❯[22m deny lib/billing/newTestSubscription/allocationPlan.ts:[2m14:32[22m[39m
+    [90m 12|[39m [35mconst[39m guards [33m=[39m [35mnew[39m [33mWeakMap[39m[33m<[39m[33mPricingPlan[39m[33m,[39m [33mAllocationGuardV2[39m[33m>[39m()[33m;[39m
+    [90m 13|[39m export const newTestAllocationGuard = (plan: PricingPlan | undefined) …
+    [90m 14|[39m function deny(): never { throw new Error("allowance_provenance_unavail…
+    [90m   |[39m                                [31m^[39m
+    [90m 15|[39m export async function allocationClock(tx: Prisma.TransactionClient): P…
+    [90m 16|[39m   const rows = await tx.$queryRawUnsafe<Array<{ now: Date }>>('SELECT …
+[90m [2m❯[22m Module.newTestAllocationPricingPlan lib/billing/newTestSubscription/allocationPlan.ts:[2m40:163[22m[39m
+[90m [2m❯[22m reserveAICreditsInTransaction lib/billing/aiCreditReservation.ts:[2m99:158[22m[39m
+[90m [2m❯[22m repo.$transaction.isolationLevel lib/workforce/pipelines/codingRunReservation.ts:[2m73:14[22m[39m
+[90m [2m❯[22m Proxy._transactionWithCallback node_modules/.prisma/client/runtime/library.js:[2m130:8000[22m[39m
+[90m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m200:52[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯[22m[39m
+
+
+EXIT 1
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-q_760sw7/data", "status"]
+pg_ctl: server is running (PID: 64757)
+/opt/homebrew/Cellar/postgresql@17/17.11_1/bin/postgres "-D" "/private/tmp/axiom-budget-pg-q_760sw7/data" "-p" "55439" "-k" "/private/tmp/axiom-budget-pg-q_760sw7/socket" "-c" "listen_addresses=" "-c" "unix_socket_permissions=0700"
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-q_760sw7/data", "-m", "fast", "-w", "stop"]
+waiting for server to shut down.... done
+server stopped
+
+EXIT 0

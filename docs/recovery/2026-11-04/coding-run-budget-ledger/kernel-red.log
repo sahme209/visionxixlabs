@@ -1,0 +1,56 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mcounts full unresolved estimates, exact provider settlement, and excludes linked stage display totals[32m 4[2mms[22m[39m
+[31m   → expected undefined to be type of 'function'[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mrefuses default1000 hold against500 cap and permits an exact inclusive boundary[32m 1[2mms[22m[39m
+[31m   → expected undefined to be type of 'function'[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mnever converts unknown or malformed authoritative cost to zero[32m 1[2mms[22m[39m
+[31m   → expected undefined to be type of 'function'[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mcounts full unresolved estimates, exact provider settlement, and excludes linked stage display totals
+[31m[1mAssertionError[22m: expected undefined to be type of 'function'[39m
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts:[2m5:53[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mrefuses default1000 hold against500 cap and permits an exact inclusive boundary
+[31m[1mAssertionError[22m: expected undefined to be type of 'function'[39m
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts:[2m9:54[22m[39m
+    [90m  7|[39m })[33m;[39m
+    [90m  8|[39m it('refuses default1000 hold against500 cap and permits an exact inclu…
+    [90m  9|[39m  const m=await kernel();expect(m.assertRunAdmission).toBeTypeOf('funct…
+    [90m   |[39m                                                      [31m^[39m
+    [90m 10|[39m  expect(()=>m.assertRunAdmission(0,1000,500)).toThrow('coding_run_budg…
+    [90m 11|[39m  [34mexpect[39m(()[33m=>[39mm[33m.[39m[34massertRunAdmission[39m([34m250[39m[33m,[39m[34m250[39m[33m,[39m[34m500[39m))[33m.[39mnot[33m.[39m[34mtoThrow[39m()[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mnever converts unknown or malformed authoritative cost to zero
+[31m[1mAssertionError[22m: expected undefined to be type of 'function'[39m
+
+Expected: [32m"[7mf[27mun[7mction[27m"[39m
+Received: [31m"un[7mdefined[27m"[39m
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts:[2m14:53[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[90m (3)[39m
+[2m   Start at [22m 06:21:07
+[2m   Duration [22m 92ms[2m (transform 7ms, setup 0ms, import 11ms, tests 6ms, environment 0ms)[22m
+

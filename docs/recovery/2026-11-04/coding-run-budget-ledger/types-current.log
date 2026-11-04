@@ -1,0 +1,10 @@
+lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts(26,145): error TS2769: No overload matches this call.
+  Overload 1 of 8, '(file: string, args: readonly string[], options: ExecFileSyncOptionsWithStringEncoding): string', gave the following error.
+    Property 'NODE_ENV' is missing in type '{ PGHOST: string; PGPORT: string; PGUSER: string; PGDATABASE: string; }' but required in type 'ProcessEnv'.
+  Overload 2 of 8, '(file: string, args: readonly string[], options: ExecFileSyncOptionsWithBufferEncoding): NonSharedBuffer', gave the following error.
+    Property 'NODE_ENV' is missing in type '{ PGHOST: string; PGPORT: string; PGUSER: string; PGDATABASE: string; }' but required in type 'ProcessEnv'.
+  Overload 3 of 8, '(file: string, args?: readonly string[] | undefined, options?: ExecFileSyncOptions | undefined): string | NonSharedBuffer', gave the following error.
+    Property 'NODE_ENV' is missing in type '{ PGHOST: string; PGPORT: string; PGUSER: string; PGDATABASE: string; }' but required in type 'ProcessEnv'.
+lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts(102,61): error TS2561: Object literal may only specify known properties, but 'organizationId_userId' does not exist in type 'OrgMembershipWhereUniqueInput'. Did you mean to write 'organizationId'?
+lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts(168,187): error TS2737: BigInt literals are not available when targeting lower than ES2020.
+lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts(169,176): error TS2737: BigInt literals are not available when targeting lower than ES2020.

@@ -1,0 +1,302 @@
+{
+  "status": "local-source-and-owned-synthetic-tests-only",
+  "approvalReference": "call_HT09aDmRcFZBT2QJfmzmLbyv: Approve local ledger and isolated tests",
+  "baseCommit": "8c6443a699fc8cc9db4be2b66871abc58279042d",
+  "runtimeCommit": "c2a45772e8837e7d0bf500a6ff20a22c243a224a",
+  "foundationCommit": "3473b6a9",
+  "historicalDesignBindingsUnchangedAtBase": true,
+  "historicalDesignBindingCount": 23,
+  "productionMigrationExecuted": false,
+  "providerRequestsExecuted": false,
+  "browserOrNativeAcceptance": false,
+  "defaultUsefulQuoteComplete": false,
+  "oldSdkSuiteRun": false,
+  "sources": [
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "94a1f91be7b4863e9f1baa8d4821921bf63a97192897cca0a0a27c4d7e50d978"
+    },
+    {
+      "path": "lib/billing/currentAIAllowance.ts",
+      "sha256": "9fec7cbbb610cc578fd66741f4bcb34f3e627a869487d54b8f8a2bf55d1fc381"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "87a9bf255730e5301abad5c72043b0bd6e8272c5e9981cd691dd2e78cf7ef019"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationV2.ts",
+      "sha256": "d17e84dec4656b22d94bb4b8db5814cd4abcc680a53ed178352bbccd3fd8d1ce"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+      "sha256": "64ba249ce5a3b16478cdc8b4257082e453f9d3ace11e400a6c7323fc0499d73e"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "sha256": "4d8c44429b5704705fcf1693417ece5beac2354ee0aa924512c079d40a5fb7c5"
+    },
+    {
+      "path": "lib/billing/publicCreditAllocation.ts",
+      "sha256": "4c7322d163b4b6a56ad64a3eed9ca88d3492c3a201b6619866c5e95fe61214b8"
+    },
+    {
+      "path": "lib/billing/publicCreditAuthority.ts",
+      "sha256": "59e66fd8f6ca6f6952b7f5501c9e214af85cb63fa5b34b3bc4b88bb762a9f6f9"
+    },
+    {
+      "path": "lib/billing/reconcileGatewayUsage.ts",
+      "sha256": "7e08c7a9cb46f537818af3f9b64a884cd7cac7eb3260bf32af448fc2145992f2"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts",
+      "sha256": "122f70bfa0f7d87b38603dd8e86cc97031be873fdc3ea65e1f2247e93b4be8c9"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingRunBudget.test.ts",
+      "sha256": "fafe203a7b8a1252cf9fa8ffaac1c184da9b035291acd2a0a8288de9482a4725"
+    },
+    {
+      "path": "lib/workforce/pipelines/budgetConfigStore.ts",
+      "sha256": "1ff976054626099f503a2b037d87abd45e98ff67a1394f00affe60a49fc322fa"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeProposeRealExecutor.ts",
+      "sha256": "ec189bca8789f744720b7c57d68b565bbed22551e5ae7b2e06616f779ffe565a"
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunBudget.ts",
+      "sha256": "7f06f98aefd8fa0af2f9619ac4a5fc5f7cdb1d9ffa2a5ca95141f229b08fdb01"
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunReservation.ts",
+      "sha256": "255563bfdc0431bdab5933c509cadd10a0394df35802cdd7a7c27ef97141a8fc"
+    },
+    {
+      "path": "lib/workforce/pipelines/extractStageTelemetry.ts",
+      "sha256": "917c338f01efcf83aee9e0fa0d4a5ab0dbac059e3cd8ec851204841bb750ea8e"
+    },
+    {
+      "path": "lib/workforce/pipelines/pipelineRunner.ts",
+      "sha256": "fcda7302e01f8e4077551415a7340c4b69ec5c2783622e432017fce895270a4c"
+    },
+    {
+      "path": "lib/workforce/pipelines/stageExecutorRegistry.ts",
+      "sha256": "21902285dfce2b1817c89f6608590b32b124b3fe0ee937e0326dd8c617110504"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "c5c85e99016be6752308be8c60c550a44221abe572030a9ed783a3f6764c0377"
+    }
+  ],
+  "ownedGeneratedSchema": {
+    "source": "prisma/schema.prisma at runtimeCommit",
+    "transformation": "generator client output set to /private/tmp/axiom-a7-run-budget-20261104/node_modules/.prisma/client; all other schema bytes unchanged",
+    "sha256": "8238a92dd607abcb73796a20c718f4e0e1ccd7caed43b465b7ded3a302800e0c"
+  },
+  "engines": {
+    "libquery_engine-darwin-arm64.dylib.node": "e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d",
+    "schema-engine": "57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a"
+  },
+  "pinnedPrismaVersion": "5.22.0",
+  "pinnedEngineCommit": "605197351a3c8bdd595af2d2a9bc3025bca48ea2",
+  "results": {
+    "actualExecutorRed": {
+      "passed": 0,
+      "failed": 2
+    },
+    "runnerProjectionRed": {
+      "passed": 29,
+      "failed": 1
+    },
+    "finalOwnedPostgres": {
+      "passed": 30,
+      "failed": 0,
+      "exit": 0
+    },
+    "focusedCompatibility": {
+      "passed": 100,
+      "failed": 0,
+      "exit": 0
+    },
+    "scopedTypes": {
+      "roots": 18,
+      "transitive": true,
+      "exit": 0
+    },
+    "ordinaryOptInAbsence": {
+      "skipped": 30,
+      "exit": 0
+    }
+  },
+  "artifacts": [
+    {
+      "path": "claim-green.log",
+      "sha256": "944e13082eb5f610cd3baa10bbfa95b3907b37dc55f08d23271b1f24b84bae39"
+    },
+    {
+      "path": "claim-red.log",
+      "sha256": "592f857491af2d48729bdba31f01f35aaac0d53f4c4689f244a41544a7a11788"
+    },
+    {
+      "path": "compat-vitest.config.mjs",
+      "sha256": "8a201b7bcb7333a94a5f28e5152753feaba7498609a47418bc9e1b5c896f6c4f"
+    },
+    {
+      "path": "compat.log",
+      "sha256": "ec23327dd7151c164829ac83cd3c99356db7afc781190d0a0e64b772ab7f6d41"
+    },
+    {
+      "path": "corrupt-release-red.log",
+      "sha256": "4a83be62e4bd71edc65af62ac433bef1ba7df1c62a82707873e5e4a2d700c510"
+    },
+    {
+      "path": "deny.sb",
+      "sha256": "0e39f5fe8ae23441a2f6da1f0dfc216fe48ca226ecff96fffb25541b12fea815"
+    },
+    {
+      "path": "generate-green.log",
+      "sha256": "ff3c3b228f3d5aeb58d5e85d61d4e2b43efee1cecf814f477ca9e80772625249"
+    },
+    {
+      "path": "generate.log",
+      "sha256": "56f7bb310d42a7e084f4224d83931bebf89e5dad8a6178a0718dfd1112226e44"
+    },
+    {
+      "path": "hold-green.log",
+      "sha256": "963d82aff28247ede8b8e4b53ddc7cb26078625f18ca3a398b0b34344bd75430"
+    },
+    {
+      "path": "hold-red.log",
+      "sha256": "c33ac095cc86bb59fc2cc294163b08605aab99707866ed35a11495627c951a42"
+    },
+    {
+      "path": "kernel-green.log",
+      "sha256": "c98625cffef80521c6ee340f8465f3b5f54c0ec5e9a5c207f0ffb3d3d8c986ed"
+    },
+    {
+      "path": "kernel-red.log",
+      "sha256": "13c0699235d30f2072024d02cba7f9ed9a23de8d415fb38b4e49228e1b540a29"
+    },
+    {
+      "path": "owned-pg-location.json",
+      "sha256": "9aea98e4ce3fd2c0e1af8838413c8bac69275451dc9bfdad7840986e53574c6e"
+    },
+    {
+      "path": "owned-pg.log",
+      "sha256": "0a9d1497a69e3045ae1dcce9a478abaad0e166afedb300cb260512c9381c51c7"
+    },
+    {
+      "path": "pg-expanded1-runner.log",
+      "sha256": "b02606182159f4a2a9617eff0e102a406055f422ef47b7aedf40f60bb0f6b8cb"
+    },
+    {
+      "path": "pg-expanded1.log",
+      "sha256": "7e5f6d41f887089efbd5555a098a15957ba3ba60a95bd94aee58bb7b9f4aacee"
+    },
+    {
+      "path": "pg-expanded2-runner.log",
+      "sha256": "b02606182159f4a2a9617eff0e102a406055f422ef47b7aedf40f60bb0f6b8cb"
+    },
+    {
+      "path": "pg-expanded2.log",
+      "sha256": "592b9e6a944ad47f9ce536d8c83f296c66164a303feaa3a72f75c784a64050c7"
+    },
+    {
+      "path": "pg-expanded3-runner.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "pg-expanded3.log",
+      "sha256": "bc48aa06f6a9c154ec3b073267dea26973f875307c2f65fdb0ab190aefae416a"
+    },
+    {
+      "path": "pg-final-runner.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "pg-final.log",
+      "sha256": "9034111fa79d1e1140d647183ace92fc3dd553185aa43c06fe2febfbbeba0a25"
+    },
+    {
+      "path": "pg-frozen-runner.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "pg-frozen.log",
+      "sha256": "0a9d1497a69e3045ae1dcce9a478abaad0e166afedb300cb260512c9381c51c7"
+    },
+    {
+      "path": "pg-green1-runner.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "pg-green1.log",
+      "sha256": "1c98532a289f390ebef432454a106bec95e068f55fd45b614d5a385f95653bcb"
+    },
+    {
+      "path": "pg-opt-in-skip.log",
+      "sha256": "bafb8fd3b652968824b8755e8485fe7bdaa5bb9c6b831ebbb104263bae15a9e6"
+    },
+    {
+      "path": "pg-projection-red-runner.log",
+      "sha256": "b02606182159f4a2a9617eff0e102a406055f422ef47b7aedf40f60bb0f6b8cb"
+    },
+    {
+      "path": "pg-projection-red.log",
+      "sha256": "c1d2e756408c9282f1bdba166bbeebaffa131c3999c895e9c54d2891f6bf910c"
+    },
+    {
+      "path": "pg-red-runner.log",
+      "sha256": "b02606182159f4a2a9617eff0e102a406055f422ef47b7aedf40f60bb0f6b8cb"
+    },
+    {
+      "path": "pg-red.log",
+      "sha256": "e458267248f18ac5bd980fb41095bbbdbe1f9038800792a793719d6f3b8ff5a6"
+    },
+    {
+      "path": "pg-vitest.config.mjs",
+      "sha256": "e2cc1f1c1ed1a92fabe527a6991f8747da1e62cc2b087515a9de8c02aa220ddf"
+    },
+    {
+      "path": "run-owned-pg.py",
+      "sha256": "1e431962b977fdf2eb8391dedfac31532e70853ef200363ef89455964a6b1d06"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "4c901322595692efe5ebd3370147e118d740b9b605b320f0939224c00188d116"
+    },
+    {
+      "path": "types-current.log",
+      "sha256": "cd2e838e5d626201b95aa02ae215fcc2bbbb9ab719dc40277a3aec613e16fb97"
+    },
+    {
+      "path": "types-current2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "types-final-candidate.log",
+      "sha256": "28cae7969f479e90022093a3c0f97a7da949d649688eef3eb0ef93b22d644da7"
+    },
+    {
+      "path": "types-final.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "types-final2.log",
+      "sha256": "9e066560c8bd1ae6050d0c76ebf36752376ac20b26c15ae4ce3e65e62c482a1e"
+    },
+    {
+      "path": "types-frozen.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "types-initial.log",
+      "sha256": "8ab125615e393e220bb6daafec98c347d358f711d8ee877cc9fde0f27c1f7a6f"
+    },
+    {
+      "path": "vitest.config.mjs",
+      "sha256": "92ed90971cf09fe880c62d2fd45888c6e5aeab535c72e499a02a53b2c7e84e6f"
+    }
+  ]
+}

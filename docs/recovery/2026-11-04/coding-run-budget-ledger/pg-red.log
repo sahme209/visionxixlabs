@@ -1,0 +1,303 @@
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/initdb", "-D", "/private/tmp/axiom-budget-pg-yuzmtiye/data", "-U", "budget_fixture", "--locale=C", "--encoding=UTF8", "--auth-local=trust", "--auth-host=reject"]
+The files belonging to this database system will be owned by user "samirahmed".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory /private/tmp/axiom-budget-pg-yuzmtiye/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    '/opt/homebrew/opt/postgresql@17/bin/pg_ctl' -D /private/tmp/axiom-budget-pg-yuzmtiye/data -l logfile start
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-yuzmtiye/data", "-l", "/private/tmp/axiom-budget-pg-yuzmtiye/server.log", "-o", "-p 55439 -k /private/tmp/axiom-budget-pg-yuzmtiye/socket -c listen_addresses='' -c unix_socket_permissions=0700", "-w", "start"]
+waiting for server to start.... done
+server started
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-d", "postgres", "-At", "-c", "SELECT current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+budget_fixture||/private/tmp/axiom-budget-pg-yuzmtiye/data
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/createdb", "-w", "axiom_budget_fixture"]
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-At", "-c", "SELECT current_database()||'|'||current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+axiom_budget_fixture|budget_fixture||/private/tmp/axiom-budget-pg-yuzmtiye/data
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/prisma/build/index.js", "db", "push", "--schema", "/private/tmp/axiom-a7-run-budget-evidence/schema.prisma", "--skip-generate"]
+Prisma schema loaded from ../axiom-a7-run-budget-evidence/schema.prisma
+Datasource "db": PostgreSQL database "axiom_budget_fixture", schema "public" at "localhost:55439"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 231ms
+
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", "/private/tmp/axiom-a7-run-budget-evidence/pg-vitest.config.mjs", "--configLoader", "native", "--reporter", "verbose"]
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual code_propose refuses default1000 reservation against authoritative500 run cap before manager dispatch[32m 24[2mms[22m[39m
+[31m   → expected "vi.fn()" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st vi.fn() call:
+
+[22m    Array [
+      "Repository: synthetic/repo
+    
+    Operator instruction:
+    Prepare a patch",
+      Object {
+        "allowedProviders": Array [
+          "vercel_gateway",
+        ],
+        "correlationId": "daa76931-647d-4cc3-a1b9-e979075c8d8f",
+        "fallbackOrder": Array [
+          "vercel_gateway",
+        ],
+        "maxTokens": 4096,
+        "model": "anthropic/claude-sonnet-5",
+        "modelSelections": Object {
+          "vercel_gateway": "anthropic/claude-sonnet-5",
+        },
+        "only": "vercel_gateway",
+        "organizationId": "d1f43afd-cf61-462c-ae44-dd0eebfc7bde",
+        "system": "You are the AI software engineer in the VisionXIXLabs workforce platform.
+    Your job is to propose a MINIMAL diff that satisfies the operator's instruction.
+    
+    Output contract:
+      1. First, a one-paragraph plan describing exactly what the patch will change and why.
+      2. Then, the full proposed diff in unified diff format (one --- / +++ pair per file).
+      3. Then, a one-line summary suitable for a PR title.
+    
+    Rules:
+      - Touch the smallest number of files that solves the problem.
+      - Do not add features, refactor unrelated code, or introduce abstractions beyond what's needed.
+      - Do not add new dependencies unless absolutely necessary; if you do, justify it explicitly.
+      - Match the existing code style and conventions visible from the repo context.
+      - If the instruction is ambiguous, state your assumption clearly before patching.
+      - If the instruction asks for something destructive or out of scope, refuse and explain why.
+    
+    The configured approval gate must authorize repository writes. Approval principals may include authenticated API keys; do not claim two distinct human reviewers. Focus on correctness, not on persuading reviewers.",
+        "temperature": 0.2,
+      },
+      Object {},
+    ]
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcaller strings alone cannot admit a paid coding call even with sufficient saved budget[32m 8[2mms[22m[39m
+[31m   → expected "vi.fn()" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st vi.fn() call:
+
+[22m    Array [
+      "Repository: synthetic/repo
+    
+    Operator instruction:
+    Prepare a patch",
+      Object {
+        "allowedProviders": Array [
+          "vercel_gateway",
+        ],
+        "correlationId": "76be08d8-6a4c-4603-b010-7a475be57d11",
+        "fallbackOrder": Array [
+          "vercel_gateway",
+        ],
+        "maxTokens": 4096,
+        "model": "anthropic/claude-sonnet-5",
+        "modelSelections": Object {
+          "vercel_gateway": "anthropic/claude-sonnet-5",
+        },
+        "only": "vercel_gateway",
+        "organizationId": "7efd5d9b-4953-45ad-ba1a-9199cbf9fbe8",
+        "system": "You are the AI software engineer in the VisionXIXLabs workforce platform.
+    Your job is to propose a MINIMAL diff that satisfies the operator's instruction.
+    
+    Output contract:
+      1. First, a one-paragraph plan describing exactly what the patch will change and why.
+      2. Then, the full proposed diff in unified diff format (one --- / +++ pair per file).
+      3. Then, a one-line summary suitable for a PR title.
+    
+    Rules:
+      - Touch the smallest number of files that solves the problem.
+      - Do not add features, refactor unrelated code, or introduce abstractions beyond what's needed.
+      - Do not add new dependencies unless absolutely necessary; if you do, justify it explicitly.
+      - Match the existing code style and conventions visible from the repo context.
+      - If the instruction is ambiguous, state your assumption clearly before patching.
+      - If the instruction asks for something destructive or out of scope, refuse and explain why.
+    
+    The configured approval gate must authorize repository writes. Approval principals may include authenticated API keys; do not claim two distinct human reviewers. Focus on correctness, not on persuading reviewers.",
+        "temperature": 0.2,
+      },
+      Object {},
+    ]
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[90m (2)[39m
+[2m   Start at [22m 11:28:41
+[2m   Duration [22m 493ms[2m (transform 106ms, setup 0ms, import 143ms, tests 269ms, environment 0ms)[22m
+
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual code_propose refuses default1000 reservation against authoritative500 run cap before manager dispatch
+[31m[1mAssertionError[22m: expected "vi.fn()" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st vi.fn() call:
+
+[22m    Array [
+      "Repository: synthetic/repo
+    
+    Operator instruction:
+    Prepare a patch",
+      Object {
+        "allowedProviders": Array [
+          "vercel_gateway",
+        ],
+        "correlationId": "daa76931-647d-4cc3-a1b9-e979075c8d8f",
+        "fallbackOrder": Array [
+          "vercel_gateway",
+        ],
+        "maxTokens": 4096,
+        "model": "anthropic/claude-sonnet-5",
+        "modelSelections": Object {
+          "vercel_gateway": "anthropic/claude-sonnet-5",
+        },
+        "only": "vercel_gateway",
+        "organizationId": "d1f43afd-cf61-462c-ae44-dd0eebfc7bde",
+        "system": "You are the AI software engineer in the VisionXIXLabs workforce platform.
+    Your job is to propose a MINIMAL diff that satisfies the operator's instruction.
+    
+    Output contract:
+      1. First, a one-paragraph plan describing exactly what the patch will change and why.
+      2. Then, the full proposed diff in unified diff format (one --- / +++ pair per file).
+      3. Then, a one-line summary suitable for a PR title.
+    
+    Rules:
+      - Touch the smallest number of files that solves the problem.
+      - Do not add features, refactor unrelated code, or introduce abstractions beyond what's needed.
+      - Do not add new dependencies unless absolutely necessary; if you do, justify it explicitly.
+      - Match the existing code style and conventions visible from the repo context.
+      - If the instruction is ambiguous, state your assumption clearly before patching.
+      - If the instruction asks for something destructive or out of scope, refuse and explain why.
+    
+    The configured approval gate must authorize repository writes. Approval principals may include authenticated API keys; do not claim two distinct human reviewers. Focus on correctness, not on persuading reviewers.",
+        "temperature": 0.2,
+      },
+      Object {},
+    ]
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m35:25[22m[39m
+    [90m 33|[39m  const ctx=await fixture();f.generate.mockRejectedValue(Error('synthet…
+    [90m 34|[39m  [35mawait[39m [34mcodeProposeRealExecutor[39m(ctx)[33m;[39m
+    [90m 35|[39m  [34mexpect[39m(f[33m.[39mgenerate)[33m.[39mnot[33m.[39m[34mtoHaveBeenCalled[39m()[33m;[39m
+    [90m   |[39m                         [31m^[39m
+    [90m 36|[39m  expect(await f.db.aIUsageReservation.count({where:{organizationId:ctx…
+    [90m 37|[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcaller strings alone cannot admit a paid coding call even with sufficient saved budget
+[31m[1mAssertionError[22m: expected "vi.fn()" to not be called at all, but actually been called 1 times[90m
+
+Received:
+
+[1m  1st vi.fn() call:
+
+[22m    Array [
+      "Repository: synthetic/repo
+    
+    Operator instruction:
+    Prepare a patch",
+      Object {
+        "allowedProviders": Array [
+          "vercel_gateway",
+        ],
+        "correlationId": "76be08d8-6a4c-4603-b010-7a475be57d11",
+        "fallbackOrder": Array [
+          "vercel_gateway",
+        ],
+        "maxTokens": 4096,
+        "model": "anthropic/claude-sonnet-5",
+        "modelSelections": Object {
+          "vercel_gateway": "anthropic/claude-sonnet-5",
+        },
+        "only": "vercel_gateway",
+        "organizationId": "7efd5d9b-4953-45ad-ba1a-9199cbf9fbe8",
+        "system": "You are the AI software engineer in the VisionXIXLabs workforce platform.
+    Your job is to propose a MINIMAL diff that satisfies the operator's instruction.
+    
+    Output contract:
+      1. First, a one-paragraph plan describing exactly what the patch will change and why.
+      2. Then, the full proposed diff in unified diff format (one --- / +++ pair per file).
+      3. Then, a one-line summary suitable for a PR title.
+    
+    Rules:
+      - Touch the smallest number of files that solves the problem.
+      - Do not add features, refactor unrelated code, or introduce abstractions beyond what's needed.
+      - Do not add new dependencies unless absolutely necessary; if you do, justify it explicitly.
+      - Match the existing code style and conventions visible from the repo context.
+      - If the instruction is ambiguous, state your assumption clearly before patching.
+      - If the instruction asks for something destructive or out of scope, refuse and explain why.
+    
+    The configured approval gate must authorize repository writes. Approval principals may include authenticated API keys; do not claim two distinct human reviewers. Focus on correctness, not on persuading reviewers.",
+        "temperature": 0.2,
+      },
+      Object {},
+    ]
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts:[2m40:60[22m[39m
+    [90m 38|[39m it('caller strings alone cannot admit a paid coding call even with suf…
+    [90m 39|[39m  const ctx=await fixture(5000);delete ctx.codingRunClaim;f.generate.mo…
+    [90m 40|[39m  await codeProposeRealExecutor(ctx);expect(f.generate).not.toHaveBeenC…
+    [90m   |[39m                                                            [31m^[39m
+    [90m 41|[39m })[33m;[39m
+    [90m 42|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯[22m[39m
+
+
+EXIT 1
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-yuzmtiye/data", "status"]
+pg_ctl: server is running (PID: 62754)
+/opt/homebrew/Cellar/postgresql@17/17.11_1/bin/postgres "-D" "/private/tmp/axiom-budget-pg-yuzmtiye/data" "-p" "55439" "-k" "/private/tmp/axiom-budget-pg-yuzmtiye/socket" "-c" "listen_addresses=" "-c" "unix_socket_permissions=0700"
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-yuzmtiye/data", "-m", "fast", "-w", "stop"]
+waiting for server to shut down.... done
+server stopped
+
+EXIT 0

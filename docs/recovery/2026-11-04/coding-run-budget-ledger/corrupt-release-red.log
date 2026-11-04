@@ -1,0 +1,38 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mcounts full unresolved estimates, exact provider settlement, and excludes linked stage display totals[32m 3[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mrefuses default1000 hold against500 cap and permits an exact inclusive boundary[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mnever converts unknown or malformed authoritative cost to zero[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mretains public coding reserved capacity past TTL while ordinary reservations expire[32m 22[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22monly a successful queued-to-running compare-and-swap mints an opaque stage handle[33m 325[2mms[22m[39m
+ [31m×[39m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mrefuses released rows carrying provider cost instead of erasing exposure[32m 2[2mms[22m[39m
+[31m   → expected [Function] to throw an error[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts[2m > [22mrefuses released rows carrying provider cost instead of erasing exposure
+[31m[1mAssertionError[22m: expected [Function] to throw an error[39m
+
+[32m- Expected:[39m
+null
+
+[31m+ Received:[39m
+undefined
+
+[36m [2m❯[22m lib/workforce/pipelines/__tests__/codingRunBudget.test.ts:[2m42:118[22m[39m
+    [90m 40|[39m })[33m;[39m
+    [90m 41|[39m it('refuses released rows carrying provider cost instead of erasing ex…
+    [90m 42|[39m  const m=await kernel();expect(()=>m.runBudgetExposure([{status:'relea…
+    [90m   |[39m                                                                                                                      [31m^[39m
+    [90m 43|[39m })[33m;[39m
+    [90m 44|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m5 passed[39m[22m[90m (6)[39m
+[2m   Start at [22m 06:34:14
+[2m   Duration [22m 434ms[2m (transform 111ms, setup 0ms, import 24ms, tests 354ms, environment 0ms)[22m
+

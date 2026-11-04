@@ -1,0 +1,102 @@
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/initdb", "-D", "/private/tmp/axiom-budget-pg-jzsl_led/data", "-U", "budget_fixture", "--locale=C", "--encoding=UTF8", "--auth-local=trust", "--auth-host=reject"]
+The files belonging to this database system will be owned by user "samirahmed".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+creating directory /private/tmp/axiom-budget-pg-jzsl_led/data ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default "max_connections" ... 100
+selecting default "shared_buffers" ... 128MB
+selecting default time zone ... UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+
+Success. You can now start the database server using:
+
+    '/opt/homebrew/opt/postgresql@17/bin/pg_ctl' -D /private/tmp/axiom-budget-pg-jzsl_led/data -l logfile start
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-jzsl_led/data", "-l", "/private/tmp/axiom-budget-pg-jzsl_led/server.log", "-o", "-p 55439 -k /private/tmp/axiom-budget-pg-jzsl_led/socket -c listen_addresses='' -c unix_socket_permissions=0700", "-w", "start"]
+waiting for server to start.... done
+server started
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-d", "postgres", "-At", "-c", "SELECT current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+budget_fixture||/private/tmp/axiom-budget-pg-jzsl_led/data
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/createdb", "-w", "axiom_budget_fixture"]
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/psql", "-X", "-w", "-At", "-c", "SELECT current_database()||'|'||current_user||'|'||current_setting('listen_addresses')||'|'||current_setting('data_directory')"]
+axiom_budget_fixture|budget_fixture||/private/tmp/axiom-budget-pg-jzsl_led/data
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/prisma/build/index.js", "db", "push", "--schema", "/private/tmp/axiom-a7-run-budget-evidence/schema.prisma", "--skip-generate"]
+Prisma schema loaded from ../axiom-a7-run-budget-evidence/schema.prisma
+Datasource "db": PostgreSQL database "axiom_budget_fixture", schema "public" at "localhost:55439"
+
+🚀  Your database is now in sync with your Prisma schema. Done in 203ms
+
+
+EXIT 0
+ARGV ["/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node", "node_modules/vitest/vitest.mjs", "run", "--config", "/private/tmp/axiom-a7-run-budget-evidence/pg-vitest.config.mjs", "--configLoader", "native", "--reporter", "verbose"]
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-run-budget-20261104[39m
+
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual code_propose refuses default1000 reservation against authoritative500 run cap before manager dispatch[32m 12[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcaller strings alone cannot admit a paid coding call even with sufficient saved budget[32m 3[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual CAS issues once; duplicate queued claim cannot manufacture another handle[32m 3[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22madmits exact hold boundary and keeps pending first estimate when refusing refinement[32m 17[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mindependent concurrent phase admissions cannot consume the same run allowance[32m 15[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mseparate initial and refinement each admit once and use distinct holds[32m 23[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks cancel before dispatch and retains both reserved ledgers[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks tighten before dispatch and retains both reserved ledgers[32m 7[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks member before dispatch and retains both reserved ledgers[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrechecks model before dispatch and retains both reserved ledgers[32m 5[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22munknown dispatch cannot release, expire, or replay and retains full allowance[32m 9[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22msettles exact provider cost separately from billed margin once without stage display double-counting[32m 14[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mmismatched generation leaves both linked ledgers pending[32m 8[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mrecords full provider over-estimate, clips customer debit, and blocks later paid calls[32m 12[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy safe predispatch void releases both ledgers and phase remains terminal[32m 7[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic safe predispatch void releases both ledgers and phase remains terminal[32m 17[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 safe predispatch void releases both ledgers and phase remains terminal[32m 13[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 7[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 workspace refusal and outer transaction abort leave no partial run or workspace allocation[32m 10[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy reserved coding capacity survives expiry sweep by another workspace admission[32m 5[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcorrupt released ownership/dispatch/usage never vanishes from authoritative exposure[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mdefault refusal is the authoritative run cap, while the same manager seam is reachable with larger saved budget[32m 11[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mdispatch transaction abort cannot claim only one ledger[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mlegacy settlement commits companion/workspace/usage together and provider cost remains separate[32m 13[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mpublic settlement commits companion/workspace/usage together and provider cost remains separate[32m 16[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mv2 settlement commits companion/workspace/usage together and provider cost remains separate[32m 23[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mcompeting distinct stage refinements serialize against the same run cap[32m 23[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22msafe void transaction abort cannot release only workspace capacity[32m 6[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts[2m > [22mactual runner completion cannot overwrite a cost settled before the executor returns with pending display zero[32m 102[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m30 passed[39m[22m[90m (30)[39m
+[2m   Start at [22m 11:44:12
+[2m   Duration [22m 733ms[2m (transform 198ms, setup 0ms, import 200ms, tests 457ms, environment 0ms)[22m
+
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-jzsl_led/data", "status"]
+pg_ctl: server is running (PID: 66179)
+/opt/homebrew/Cellar/postgresql@17/17.11_1/bin/postgres "-D" "/private/tmp/axiom-budget-pg-jzsl_led/data" "-p" "55439" "-k" "/private/tmp/axiom-budget-pg-jzsl_led/socket" "-c" "listen_addresses=" "-c" "unix_socket_permissions=0700"
+
+EXIT 0
+ARGV ["/opt/homebrew/opt/postgresql@17/bin/pg_ctl", "-D", "/private/tmp/axiom-budget-pg-jzsl_led/data", "-m", "fast", "-w", "stop"]
+waiting for server to shut down.... done
+server stopped
+
+EXIT 0
