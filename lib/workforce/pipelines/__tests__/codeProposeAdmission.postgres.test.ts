@@ -11,6 +11,7 @@ vi.mock("ai", async importOriginal => {
   return { ...actual, generateText: (options: Parameters<typeof actual.generateText>[0]) => actual.generateText({ ...options, model: f.model as Parameters<typeof actual.generateText>[0]["model"] }) };
 });
 import { codeProposeRealExecutor } from "../codeProposeRealExecutor";
+import { claimCodingRunStage } from "../codingRunReservation";
 import { enrollNewPublicWorkspace } from "@/lib/billing/publicFreeEnrollment";
 const socket = process.env.AXIOM_OWNED_AGENT_PG_SOCKET;
 const model = "anthropic/claude-sonnet-5";
@@ -40,7 +41,16 @@ describe.skipIf(!socket)("coding proposal → admitted manager → installed SDK
     // Synthetic legacy Starter fixture has its existing 2500-cent pool.
     await f.client.tenantBillingPlan.create({ data: { organizationId, tier: "starter", status: "active" } });
     await f.client.organizationAIProviderPolicy.create({ data: { organizationId, enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: model }, fallbackOrder: ["vercel_gateway"], updatedBy: userId } });
-    return { organizationId, triggeredBy: userId, runId: randomUUID(), stageRunId: randomUUID(), pipelineId: randomUUID(), stageId: "propose", stageKind: "code_propose" as const, correlationId: randomUUID(), runMetadata: { instruction: "Prepare a patch", repoRef: "synthetic/repo" } };
+    // A positive transport fixture has explicit saved room for two unchanged
+    // 1000-cent holds. Default500 refusal is covered by the owned ledger suite.
+    await f.client.organizationBudgetConfig.create({ data: { organizationId, defaultMaxCostCents: 5000, pipelineOverrides: [], updatedBy: userId } });
+    const correlationId = randomUUID(), runMetadata = { instruction: "Prepare a patch", repoRef: "synthetic/repo" };
+    const run = await f.client.pipelineRun.create({ data: { organizationId, pipelineId: "ai_coding", status: "running", triggeredBy: userId, correlationId, metadata: runMetadata,
+      stages: { create: { stageId: "propose", stageKind: "code_propose", ordering: 1 } } }, include: { stages: true } });
+    const stageRunId = run.stages[0].id;
+    const codingRunClaim = await claimCodingRunStage(f.client, organizationId, run.id, stageRunId);
+    if (!codingRunClaim) throw Error("owned_fixture_stage_claim_required");
+    return { organizationId, triggeredBy: userId, runId: run.id, stageRunId, pipelineId: run.pipelineId, stageId: "propose", stageKind: "code_propose" as const, correlationId, runMetadata, codingRunClaim };
   }
   it("records one hold and usage before returning a valid patch; same-stage replay cannot dispatch again", async () => {
     const ctx = await fixture();
