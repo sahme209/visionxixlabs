@@ -1,12 +1,12 @@
 /** @vitest-environment jsdom */
-import {createElement} from 'react';
+import {createElement,Profiler} from 'react';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,act} from '@testing-library/react';
-const m=vi.hoisted(()=>({create:vi.fn(),revise:vi.fn(),observe:vi.fn(),requests:vi.fn(),executions:vi.fn(),revision:vi.fn(),config:{}}));
-vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{deploymentRequests:m.requests,listDeploymentExecutions:m.executions,observeDeploymentExecution:m.observe,deploymentRequestForRevision:m.revision,createDeploymentRequest:m.create,reviseDeploymentRequest:m.revise,config:m.config,subscribeContext:()=>()=>{},getContextRevision:()=>0}}));
+const m=vi.hoisted(()=>({create:vi.fn(),revise:vi.fn(),observe:vi.fn(),requests:vi.fn(),executions:vi.fn(),revision:vi.fn(),config:{},contextRevision:0,listeners:new Set<()=>void>()}));
+vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{deploymentRequests:m.requests,listDeploymentExecutions:m.executions,observeDeploymentExecution:m.observe,deploymentRequestForRevision:m.revision,createDeploymentRequest:m.create,reviseDeploymentRequest:m.revise,get config(){return m.config},subscribeContext:(listener:()=>void)=>{m.listeners.add(listener);return()=>{m.listeners.delete(listener)}},getContextRevision:()=>m.contextRevision}}));
 const releaseContext={window:null,scope:{applicationCount:1,repositoryCount:0,targetEnvironment:null},approval:{prStatus:'pending',noPrRequired:false},readiness:{developmentReady:false,productionReady:false,validationStepCount:0,deferredValidation:false,approvalDecision:'needs_attention',blockers:['Resolve release details']},recovery:{rollbackAvailability:'unknown',backupRequired:false,evidenceCount:0},observation:{status:'not_connected',recordedMonitoringPlan:false}};
 import {DeploymentRequestsView} from '../../../desktop/src/views/DeploymentRequestsView';
-beforeEach(()=>{vi.clearAllMocks();m.observe.mockResolvedValue({ok:false,error:"Unavailable"});m.requests.mockResolvedValue({ok:true,data:[]});m.executions.mockResolvedValue({ok:true,data:{executions:[]}})});afterEach(()=>{cleanup();vi.useRealTimers()});
+beforeEach(()=>{vi.clearAllMocks();m.config={};m.contextRevision=0;m.listeners.clear();m.observe.mockResolvedValue({ok:false,error:"Unavailable"});m.requests.mockResolvedValue({ok:true,data:[]});m.executions.mockResolvedValue({ok:true,data:{executions:[]}})});afterEach(()=>{cleanup();vi.useRealTimers()});
 it('offers a ticket-first path without opening full execution intake',async()=>{
  render(createElement(DeploymentRequestsView));await screen.findByText(/No deployment requests exist/);
  fireEvent.click(screen.getByText('Start from ticket'));
@@ -99,12 +99,12 @@ it('never polls completed or tracking-unavailable workflow records',async()=>{
  await mountExecutions([{...workflow,status:'completed'},{...workflow,id:'execution-b',status:'tracking_unavailable'}]);await act(async()=>vi.advanceTimersByTime(30000));expect(m.observe).not.toHaveBeenCalled();expect(screen.getByText('GitHub workflow: completed')).toBeTruthy();expect(screen.getByText('GitHub workflow: tracking unavailable')).toBeTruthy();
 });
 
-async function openFilledIntake(mode:'create'|'revise'){
+async function openFilledIntake(mode:'create'|'revise',observeCommit?:()=>void){
  if(mode==='revise'){
   m.requests.mockResolvedValue({ok:true,data:[{id:'request-existing',title:'Existing pending fixture',status:'submitted',version:3,correlationId:'fixture',updatedAt:'2030-01-01T00:00:00Z',latestPlaybook:null,releaseContext}]});
   m.revision.mockResolvedValue({ok:true,data:{id:'request-existing',version:3,intake:{}}});
  }
- const view=render(createElement(DeploymentRequestsView));
+ const content=createElement(DeploymentRequestsView);const view=render(observeCommit?createElement(Profiler,{id:'intake-context-commit',onRender:observeCommit},content):content);
  if(mode==='revise'){await screen.findByRole('button',{name:/^Existing pending fixture/});fireEvent.click(screen.getByRole('button',{name:'Revise'}));await screen.findByText('Revise release request · v3 → v4')}
  else{await screen.findByText(/No deployment requests exist/);fireEvent.click(screen.getByRole('button',{name:'New release'}))}
  const fill=(label:string,value:string)=>fireEvent.change(screen.getByLabelText(label),{target:{value}}),next=()=>fireEvent.click(screen.getByRole('button',{name:'Continue'}));
@@ -139,4 +139,24 @@ it('closes the form only after its own ordinary successful save',async()=>{
 });
 it('does not refresh or apply a late successful save after the intake view unmounts',async()=>{
  const pending=observationDeferred();m.create.mockReturnValue(pending.promise);const{view,form}=await openFilledIntake('create');fireEvent.submit(form);const reads=m.requests.mock.calls.length;view.unmount();await act(async()=>pending.resolve({ok:true,data:{id:'old-saved'}}));expect(m.requests).toHaveBeenCalledTimes(reads);expect(m.create).toHaveBeenCalledTimes(1);
+});
+
+function replaceIntakeContext(kind:'config'|'revision'){
+ if(kind==='config')m.config={};else m.contextRevision++;
+ for(const listener of [...m.listeners])listener();
+}
+it.each((['create','revise'] as const).flatMap(mode=>(['config','revision'] as const).map(boundary=>({mode,boundary}))))('invalidates the old $mode draft synchronously on $boundary replacement without submitting it',async({mode,boundary})=>{
+ let capture=false;const visibleAtReplacement:boolean[]=[];
+ const{form}=await openFilledIntake(mode,()=>{if(capture)visibleAtReplacement.push(Boolean(screen.queryByLabelText('Request title')||screen.queryByLabelText('Confirmed operational fact')))});
+ const fact=screen.getByLabelText('Confirmed operational fact'),save=mode==='create'?m.create:m.revise;
+ capture=true;act(()=>{replaceIntakeContext(boundary);fireEvent.change(fact,{target:{value:'Stale edit must not survive'}});fireEvent.submit(form)});capture=false;
+ expect(save).not.toHaveBeenCalled();expect(visibleAtReplacement.length).toBeGreaterThan(0);expect(visibleAtReplacement).not.toContain(true);
+ expect(screen.queryByLabelText('Confirmed operational fact')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'New release'}));
+ expect(screen.getByLabelText('Request title')).toHaveProperty('value','');expect(screen.queryByText(/Revise release request/)).toBeNull();
+});
+it.each((['create','revise'] as const).flatMap(mode=>(['config','revision'] as const).map(boundary=>({mode,boundary}))))('discards the old $mode save completion after $boundary replacement without closing or refreshing current work',async({mode,boundary})=>{
+ const pending=observationDeferred(),save=mode==='create'?m.create:m.revise;save.mockReturnValue(pending.promise);const{form}=await openFilledIntake(mode);fireEvent.submit(form);expect(save).toHaveBeenCalledTimes(1);
+ act(()=>replaceIntakeContext(boundary));expect(screen.queryByLabelText('Confirmed operational fact')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'New release'}));
+ fireEvent.change(screen.getByLabelText('Request title'),{target:{value:'Current context draft'}});const title=screen.getByLabelText('Request title'),reads=m.requests.mock.calls.length;
+ await act(async()=>pending.resolve({ok:true,data:{id:'old-context-saved'}}));expect(screen.getByLabelText('Request title')).toBe(title);expect(title).toHaveProperty('value','Current context draft');expect(m.requests).toHaveBeenCalledTimes(reads);expect(save).toHaveBeenCalledTimes(1);
 });

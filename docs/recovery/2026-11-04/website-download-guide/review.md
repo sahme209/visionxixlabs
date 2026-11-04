@@ -1,0 +1,1 @@
+Independent read-only source review corrected one absolute timestamp claim: all-invalid timestamps retain the first filtered release. The guide now states that edge explicitly. Other download behavior, snapshot/readiness, signing and recovery claims reviewed clear. No tests, browser or provider actions ran.

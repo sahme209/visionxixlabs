@@ -193,3 +193,7 @@ The [guide-to-article source linkage queue](guide-article-linkage.md) maps index
 ## Named release intake draft
 
 [Internal intake article](articles/release-intake-controls.r1.json) and [proposed cases](release-intake-controls-evaluation.r1.json) bind52 named source controls to exact local runtime19821435. New-bundle integrity passed and customer mode refused as intended;56steps/16cases do not constitute customer or retrieval acceptance. Readiness/owner/evidence fields remain user statements, not approval authority. The frozen24 dataset and implementation hashes are unchanged, with no evaluation rerun. [Evidence](../../recovery/2026-11-04/release-intake-knowledge/README.md).
+
+## Website download source guide
+
+[Download controls](../knowledge/website-download-controls.md) and [source manifest](../knowledge/website-download-controls.sources.json) document public download entry,11 grouped link/control rows, metadata/loading failures, resolver fallback, signing/size reports and shared navigation. Root verified12source files/22ranges. Direct artifact links after a ready snapshot are not per-click readiness rechecks; neither metadata nor source inspection proves installer bytes, trust, clean-host or current customer availability. No new article/evaluation/runtime/browser acceptance is implied.

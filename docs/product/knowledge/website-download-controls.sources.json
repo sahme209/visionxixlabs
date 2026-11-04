@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "inspectedAt": "2026-11-04",
+  "sourceRevision": "23ceb1e0fb93897a8a9f0d0476e7b0a483be29af",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "runtimeVerified": false,
+  "browserAssistiveTechnologyVerified": false,
+  "installerVerified": false,
+  "evidenceKeysAreRuntimeIds": false,
+  "rangeConvention": "One-based inclusive; SHA256 over exact original bytes including line endings.",
+  "sources": [
+    {
+      "key": "route",
+      "path": "app/download/page.tsx",
+      "sha256": "b313b2b557231890a48974f69d6d5cc4f82581549e3a5778410003979846489f",
+      "lineCount": 2,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 2,
+          "sha256": "b313b2b557231890a48974f69d6d5cc4f82581549e3a5778410003979846489f"
+        }
+      ]
+    },
+    {
+      "key": "download-ui",
+      "path": "components/cockpit/DownloadContent.tsx",
+      "sha256": "f59b3c99f49d7ef2e5457c355ccc577329e2b765f7d786ac711e2d558f113cbc",
+      "lineCount": 296,
+      "ranges": [
+        {
+          "start": 17,
+          "end": 65,
+          "sha256": "796efdf01c9eda8624419cd9c4b0b7ae90705940cdeca7df0c776a8338ab2e92"
+        },
+        {
+          "start": 67,
+          "end": 115,
+          "sha256": "9125266b1201cb6e942c782beb10e127d2380feae453907e8b8c684a7a164d6b"
+        },
+        {
+          "start": 117,
+          "end": 146,
+          "sha256": "0a46c16896f80fb47c35dc9ae6fd508216ba5d52173b3f4714f80b051af8a48e"
+        },
+        {
+          "start": 147,
+          "end": 188,
+          "sha256": "d17ed58feec457a4d16d11f17bdb24d04522b6f9a38ba30134af9d60d86eccde"
+        },
+        {
+          "start": 190,
+          "end": 239,
+          "sha256": "07fc84dff87e2f49200b26362a57d9d4e1c4af6f5ebaff1f3444c990eacca02c"
+        },
+        {
+          "start": 243,
+          "end": 296,
+          "sha256": "805dd0b83d9d5a3ab609b53be4de1ada9982dfb753bf84f622a504217b424890"
+        }
+      ]
+    },
+    {
+      "key": "manifest-route",
+      "path": "app/api/desktop/release-manifest/route.ts",
+      "sha256": "4370bc8598817df612feab29c86425ee347e21037d1429cf914f057ca6ee5e06",
+      "lineCount": 33,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 33,
+          "sha256": "4370bc8598817df612feab29c86425ee347e21037d1429cf914f057ca6ee5e06"
+        }
+      ]
+    },
+    {
+      "key": "download-resolver",
+      "path": "app/api/desktop/download/route.ts",
+      "sha256": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf",
+      "lineCount": 97,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 97,
+          "sha256": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf"
+        }
+      ]
+    },
+    {
+      "key": "manifest-builder",
+      "path": "lib/desktop/releaseManifest.ts",
+      "sha256": "5a84a42e1514f7f45bfa1e25c4769ff7a44e8886332e4cdc65fcc42b68ab1b25",
+      "lineCount": 315,
+      "ranges": [
+        {
+          "start": 74,
+          "end": 129,
+          "sha256": "825331f131e3e32fcc78e31050a6905032577f2a958d04b50644495052524b3f"
+        },
+        {
+          "start": 152,
+          "end": 194,
+          "sha256": "1d71d21ba66804b8bfbbeb09d709d33a6ab348f01c077f48b0405fcfb5fb681e"
+        },
+        {
+          "start": 195,
+          "end": 292,
+          "sha256": "658d145b2b8e1c2854fcafe3bf514ab949ccbc104c8726aaa85b8a2c9c0372b9"
+        },
+        {
+          "start": 295,
+          "end": 315,
+          "sha256": "9103993efba431de9b9052abe018df85c81d3170c51e5b47ce5b756b3763fc1c"
+        }
+      ]
+    },
+    {
+      "key": "storage-gate",
+      "path": "lib/desktop/desktopRuntimeReadiness.ts",
+      "sha256": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2",
+      "lineCount": 33,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 33,
+          "sha256": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2"
+        }
+      ]
+    },
+    {
+      "key": "size",
+      "path": "lib/desktop/downloadSize.ts",
+      "sha256": "32ab58e7ddbf03d7c9161c1b1c543805530d2191fe25978d9f49afc8dbf41a47",
+      "lineCount": 6,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 6,
+          "sha256": "32ab58e7ddbf03d7c9161c1b1c543805530d2191fe25978d9f49afc8dbf41a47"
+        }
+      ]
+    },
+    {
+      "key": "fallback",
+      "path": "app/download/preview/page.tsx",
+      "sha256": "b7bdc9e1d4d03e938f4fa6c8e95514742ef313eab107d3f4d30f9ce4d3612a5e",
+      "lineCount": 61,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 61,
+          "sha256": "b7bdc9e1d4d03e938f4fa6c8e95514742ef313eab107d3f4d30f9ce4d3612a5e"
+        }
+      ]
+    },
+    {
+      "key": "navigation",
+      "path": "components/Navigation.tsx",
+      "sha256": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5",
+      "lineCount": 278,
+      "ranges": [
+        {
+          "start": 9,
+          "end": 26,
+          "sha256": "5fd572df8cc61e387ee246d1483e1c40c26e0a789c2de6549442db656df641b1"
+        },
+        {
+          "start": 28,
+          "end": 165,
+          "sha256": "0825263eba710419089f686b08b84daf046f1675fdd3a18395b8f018966f0036"
+        },
+        {
+          "start": 167,
+          "end": 278,
+          "sha256": "701df3fd70e706e7e94d967bf7443057d3915722da9b80087493659913324d3a"
+        }
+      ]
+    },
+    {
+      "key": "footer",
+      "path": "components/Footer.tsx",
+      "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091",
+      "lineCount": 81,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 81,
+          "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091"
+        }
+      ]
+    },
+    {
+      "key": "historical-release-boundary",
+      "path": "docs/recovery/2026-11-04/combined-production-batch/COMPLETION.md",
+      "sha256": "ef57fd907194a4064539709f56a1c0d374a8df89674f2878660b4652cf487180",
+      "lineCount": 15,
+      "ranges": [
+        {
+          "start": 9,
+          "end": 9,
+          "sha256": "011ce96252f5109990e38269b2fe010e4d309624eb36548f8dfaeafeecd17e56"
+        }
+      ]
+    },
+    {
+      "key": "historical-release-plan",
+      "path": "docs/recovery/2026-11-04/master-plan-full-read/README.md",
+      "sha256": "5e010b8100977060a82f4a15f5a63fee99b5792d199bf8b486c168a93ffca4ab",
+      "lineCount": 36,
+      "ranges": [
+        {
+          "start": 9,
+          "end": 9,
+          "sha256": "2313f9183fb24e1df2e9bf88f368a331ee2da40ec87baccef8f39747fbe02f7f"
+        }
+      ]
+    }
+  ]
+}

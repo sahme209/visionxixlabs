@@ -260,16 +260,24 @@ export function DeploymentRequestsView() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string>();
   const [lastSuccessfulLoadAt, setLastSuccessfulLoadAt] = useState<Date>();
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowFormState] = useState(false);
+  const intakeFormOwner = useRef({ config: desktopClient.config, revision: desktopClient.getContextRevision() });
+  function setShowForm(next: boolean | ((current: boolean) => boolean)) {
+    intakeFormOwner.current = { config: desktopClient.config, revision: desktopClient.getContextRevision() };
+    setShowFormState(next);
+  }
   const [showResolutionDraft, setShowResolutionDraft] = useState(false);
   const [resolutionDraftStarted, setResolutionDraftStarted] = useState(false);
   const draftContext = useSyncExternalStore(desktopClient.subscribeContext, desktopClient.getContextRevision, desktopClient.getContextRevision);
-  const draftConfig = desktopClient.config;
+  const draftConfig = useSyncExternalStore(desktopClient.subscribeContext, () => desktopClient.config, () => desktopClient.config);
   const draftIdentity = useRef({ config: draftConfig, context: draftContext, key: 0 });
   if (draftIdentity.current.config !== draftConfig || draftIdentity.current.context !== draftContext) {
     draftIdentity.current = { config: draftConfig, context: draftContext, key: draftIdentity.current.key + 1 };
   }
-  useEffect(() => { setShowResolutionDraft(false); setResolutionDraftStarted(false); }, [draftContext, draftConfig]);
+  useEffect(() => {
+    setShowResolutionDraft(false); setResolutionDraftStarted(false);
+    setShowForm(false); setRevision(undefined); invalidateRevisionRead();
+  }, [draftContext, draftConfig]);
   const intakeEpoch = useRef(0);
   const mounted = useRef(false);
   useEffect(() => { mounted.current = true; return () => { mounted.current = false; intakeEpoch.current++; }; }, []);
@@ -498,9 +506,9 @@ export function DeploymentRequestsView() {
 
       {resolutionDraftStarted && <div hidden={!showResolutionDraft}><ResolutionDraftForm key={draftIdentity.current.key} active={showResolutionDraft} onBack={() => setShowResolutionDraft(false)} onSaved={() => { setShowResolutionDraft(false); setResolutionDraftStarted(false); void load(); }} /></div>}
 
-      {showForm && (
+      {showForm && intakeFormOwner.current.config === draftConfig && intakeFormOwner.current.revision === draftContext && (
         <DeploymentIntakeForm
-          key={revision?.id ?? "new"}
+          key={`${draftIdentity.current.key}:${revision?.id ?? "new"}`}
           revision={revision}
           onCreated={() => {
             setShowForm(false);
@@ -941,6 +949,8 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
   const [step, setStep] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const submissionFlight = useRef(false), intakeMounted = useRef(true);
+  const intakeOwner = useRef({ config: desktopClient.config, revision: desktopClient.getContextRevision() }).current;
+  const ownsIntake = () => intakeMounted.current && intakeOwner.config === desktopClient.config && intakeOwner.revision === desktopClient.getContextRevision();
   useEffect(() => { intakeMounted.current = true; return () => { intakeMounted.current = false; }; }, []);
   const [error, setError] = useState<string>();
   const [submissionId] = useState(() => crypto.randomUUID());
@@ -954,13 +964,13 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
   const isAdHoc = draft.requestClass === "ad_hoc" || draft.requestClass === "emergency";
 
   function update<K extends keyof typeof draft>(key: K, value: (typeof draft)[K]) {
-    if (submissionFlight.current || !intakeMounted.current) return;
+    if (submissionFlight.current || !ownsIntake()) return;
     setDraft((current) => ({ ...current, [key]: value }));
   }
 
   async function submit(event: FormEvent) {
     event.preventDefault();
-    if (submissionFlight.current || !intakeMounted.current) return;
+    if (submissionFlight.current || !ownsIntake()) return;
     setError(undefined);
 
     if (workflowInputIssue || batchIssue) { setStep(2); setError(workflowInputIssue ?? batchIssue); return; }
@@ -1095,17 +1105,17 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
       const result = revision
         ? await desktopClient.reviseDeploymentRequest(revision.id, revision.version, payload)
         : await desktopClient.createDeploymentRequest(payload, submissionId);
-      if (!intakeMounted.current) return;
+      if (!ownsIntake()) return;
       if (!result.ok) {
         setError(result.error);
         return;
       }
       onCreated();
     } catch {
-      if (intakeMounted.current) setError("The save could not be confirmed. Your captured form is retained. Check saved requests before submitting again.");
+      if (ownsIntake()) setError("The save could not be confirmed. Your captured form is retained. Check saved requests before submitting again.");
     } finally {
       submissionFlight.current = false;
-      if (intakeMounted.current) setSubmitting(false);
+      if (ownsIntake()) setSubmitting(false);
     }
   }
 

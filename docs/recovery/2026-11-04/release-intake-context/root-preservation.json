@@ -1,0 +1,10 @@
+{
+  "baseline": "23ceb1e0fb93897a8a9f0d0476e7b0a483be29af",
+  "sourceSha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1",
+  "checks": {
+    "payloadConstructionUnchanged": true,
+    "validateStepUnchanged": true,
+    "submissionIdDeclarationUnchanged": true,
+    "serviceCallsUnchanged": true
+  }
+}

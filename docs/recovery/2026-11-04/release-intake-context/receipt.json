@@ -1,0 +1,35 @@
+{
+  "status": "local rendered full-intake context isolation repair",
+  "baselineCommit": "23ceb1e0fb93897a8a9f0d0476e7b0a483be29af",
+  "sources": [
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "3db7ef88958a7b67a69c670816d5208ca6728ba461981f4357dc3be0f984fbd1"
+    },
+    {
+      "path": "lib/desktop/__tests__/releaseResolutionView.test.ts",
+      "sha256": "4cc42a4f180a435f542289ba986ff2548da37fd7621c14f6019b0c90f41e93a8"
+    }
+  ],
+  "red": {
+    "failed": 8,
+    "passed": 20,
+    "exit": 1
+  },
+  "green": {
+    "passed": 28,
+    "failed": 0,
+    "files": 1,
+    "exit": 0
+  },
+  "diagnostic": "First patch had22pass6fail: config-only notification needed its own stable config snapshot subscription; a detached-DOM input-value assertion was removed because synthetic change can occur after synchronous unmount. Preserved diagnostic-first-patch.log; final assertions check service refusal, committed visibility, fresh form state and current draft identity.",
+  "types": {
+    "exit": 0,
+    "scope": "full desktop TypeScript noEmit"
+  },
+  "scope": "Full intake opening owner binds configobject and revision; synchronous render visibility gate prevents old revision/draft reseeding, generation key/reset invalidates prior form/read, captured owner checks update/submit/completion/error handling. Existing save flight/payload/nonce/service/validation semantics retained.",
+  "testBoundaries": "Actual mutable config getter, context revision and subscriber set. Eight create/revise x config/revision cases exercise stale submit/edit attempts, per-commit absence of old fields, fresh reopening, deferred old completion and no current-work refresh. Service responses are local fixtures.",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache and writes denied outside owned temp",
+  "limits": "No provider/native/browser/DB action, role/auth changes, durable unknown-recovery design, automatic retry, build/deploy or source mapping/registry/master/index changes. Root must explicitly requalify source custody after behavior review."
+}

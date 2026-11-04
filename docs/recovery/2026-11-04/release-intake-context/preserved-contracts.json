@@ -1,0 +1,15 @@
+{
+  "allPreserved": true,
+  "contracts": [
+    "initialDraft",
+    "draftFromIntake",
+    "validateStep",
+    "localToIso",
+    "submissionId",
+    "manualSteps",
+    "payload",
+    "desktopClient.reviseDeploymentRequest",
+    "desktopClient.createDeploymentRequest"
+  ],
+  "sha256": "2df17a87b3ef35d6594a00cc569d96cfa183d7a5087185583d6c5a6f5f611b1f"
+}

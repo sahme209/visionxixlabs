@@ -1,0 +1,3 @@
+# Independent source review
+
+No important findings. Separate configuration-object subscription handles same-revision replacement. Opening-owner render gate and context generation key prevent stale revision reseeding; captured owner refuses stale update/submit/result/error before effects. Existing startRevision epoch/context checks remain. Eight rendered cases cover create/revise crossed with config/revision replacement; old completion preserves current draft without refresh. Root separately checked exact payload/validation/nonce/service-call preservation. No tests rerun by reviewer. This is local engineering review, not native/live or independent provider-action approval.

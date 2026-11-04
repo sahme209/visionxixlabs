@@ -1,0 +1,12 @@
+{
+  "kind": "source-only internal documentation",
+  "guideSha256": "cc4ed81bd26e68766a8b308fdc5d3ac96b7219e91d89bcb4f7d782f2c8c1a762",
+  "manifestSha256": "d03398b6eb63b3a8f45dda7ba68027ec4d5305a9af4af60260229e5356f1307d",
+  "sourceFiles": 12,
+  "inclusiveRanges": 22,
+  "allWholeAndRangeHashesRootVerified": true,
+  "groupedControlRows": 11,
+  "testsExecuted": false,
+  "browserInstallerProviderAcceptance": false,
+  "review": "Independent source review: timestamp fallback wording corrected; no remaining important source findings."
+}
