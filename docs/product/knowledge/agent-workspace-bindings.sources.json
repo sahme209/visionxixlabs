@@ -1,0 +1,26 @@
+{
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "a9e6359dd68e499360ade5b26684d0fdfbbb46e2",
+  "bindingScope": "46 intrinsic interactive JSX declarations authored in AgentChatSession only; explicit child-component exclusions retained",
+  "sources": [
+    {
+      "path": "desktop/src/views/AgentChatView.tsx",
+      "sha256": "53bdefa6f6ee43e4d6244c86fb146a14cd1fb839cd6f4e919a0df6bbc2434e47"
+    },
+    {
+      "path": "docs/product/knowledge/agent-workspace-bindings.json",
+      "sha256": "d84adb60208eea31c7fccd185ae3cd4f71f30954be4d40ff653f69ff8934a61e"
+    },
+    {
+      "path": "docs/product/knowledge/agent-workspace-bindings.test.cjs",
+      "sha256": "052e0e9274b521e4d2e69f1200b708735ca122331f6ff251fec762459dd9b53d"
+    },
+    {
+      "path": "docs/product/knowledge/agent-workspace-bindings.md",
+      "sha256": "8047a9a7277a40005797df6e5a526a266c3e786e5dbb53bfa898a7ed38ff13f7"
+    }
+  ],
+  "validation": "5 focused AST tests pass under sandbox-exec network denial and bounded writes; stripping all 46 inserted attributes independently equals Git baseline bytes. No native or customer acceptance."
+}

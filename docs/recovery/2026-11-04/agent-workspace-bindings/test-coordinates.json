@@ -1,0 +1,5 @@
+{
+  "owned": "/private/tmp/axiom-agent-bindings-test-st858da9",
+  "node": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+  "profile": "(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-agent-bindings-test-st858da9\"))"
+}

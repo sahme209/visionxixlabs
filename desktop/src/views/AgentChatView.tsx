@@ -1077,7 +1077,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
       <div className="agent-conversation-bar flex flex-wrap items-center gap-2 border-b border-white/[0.06] px-3 py-3">
         <label className="flex min-w-[160px] flex-1 items-center gap-2 text-[11px] text-zinc-500">
           <span className="sr-only">Conversation</span>
-          <select
+          <select data-help-id="agent.workspace.conversation"
             aria-label="Agent conversation"
             value={conversationId ?? ""}
             onChange={(event) => void openConversation(event.target.value)}
@@ -1092,26 +1092,26 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             ))}
           </select>
         </label>
-        <details ref={chatOptions.ref} className="agent-chat-options" onKeyDown={chatOptions.onKeyDown} onBlur={chatOptions.onBlur}><summary>Chat options</summary><div className="agent-chat-options-content">
+        <details ref={chatOptions.ref} className="agent-chat-options" onKeyDown={chatOptions.onKeyDown} onBlur={chatOptions.onBlur}><summary data-help-id="agent.workspace.chat-options">Chat options</summary><div className="agent-chat-options-content">
         {conversationId && <ConversationRename onBusyChange={setRenamingBusy} key={conversationId} id={conversationId} title={conversations.find(conversation => conversation.id === conversationId)?.title ?? null} disabled={sending || loadingConversation} onRenamed={(id, title) => setConversations(current => current.map(conversation => conversation.id === id ? {...conversation, title} : conversation))} />}
-        <button type="button" aria-expanded={historyOpen} aria-controls="agent-conversation-history" onClick={() => setHistoryOpen(open => !open)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06]">{historyOpen ? "Close history" : "Search chats"}</button>
+        <button data-help-id="agent.workspace.history-toggle" type="button" aria-expanded={historyOpen} aria-controls="agent-conversation-history" onClick={() => setHistoryOpen(open => !open)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06]">{historyOpen ? "Close history" : "Search chats"}</button>
         </div></details>
-        <button type="button" onClick={() => void newConversation()} disabled={renamingBusy || loadingConversation || sending} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">
+        <button data-help-id="agent.workspace.new-chat" type="button" onClick={() => void newConversation()} disabled={renamingBusy || loadingConversation || sending} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">
           {loadingConversation ? "Loading…" : "New chat"}
         </button>
       </div>
       {historyOpen && <section id="agent-conversation-history" aria-label="Conversation history" className="shrink-0 border-b border-white/[0.06] px-8 py-3">
         <div className="flex items-center gap-2">
-          <input autoFocus type="search" maxLength={200} aria-label="Search conversations" value={historySearch} onChange={event => editHistorySearch(event.target.value)} onKeyDown={event => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Escape") setHistoryOpen(false); if (event.key === "Enter" && !historyBusy && historySearch.trim()) void loadHistory(true); }} placeholder="Search chat titles" className="min-w-0 flex-1 rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25" />
-          <button type="button" disabled={historyBusy || !historySearch.trim()} onClick={() => void loadHistory(true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-40">Search all saved titles</button>
+          <input data-help-id="agent.workspace.history-search" autoFocus type="search" maxLength={200} aria-label="Search conversations" value={historySearch} onChange={event => editHistorySearch(event.target.value)} onKeyDown={event => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Escape") setHistoryOpen(false); if (event.key === "Enter" && !historyBusy && historySearch.trim()) void loadHistory(true); }} placeholder="Search chat titles" className="min-w-0 flex-1 rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25" />
+          <button data-help-id="agent.workspace.history-search-submit" type="button" disabled={historyBusy || !historySearch.trim()} onClick={() => void loadHistory(true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-40">Search all saved titles</button>
         </div>
         <p className="mt-2 text-[10px] text-zinc-500">{searchResults === null ? "Filters loaded titles. Search all saved titles to find older chats in your workspace." : `Saved title matches for “${searchedQuery}”.`}</p>
         {historyError && <p role="status" className="mt-2 text-xs text-amber-200">{historyError}</p>}
         <div className="mt-2 max-h-48 overflow-y-auto" aria-busy={historyBusy}>
-          {visibleHistory.map(conversation => <button key={conversation.id} type="button" aria-current={conversation.id === conversationId ? "true" : undefined} disabled={renamingBusy || sending || loadingConversation} onClick={() => { setConversations(current => current.some(row => row.id === conversation.id) ? current : [...current, conversation]); void openConversation(conversation.id); setHistoryOpen(false); editHistorySearch(""); }} className="block w-full truncate rounded-md px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.06] aria-[current=true]:bg-white/[0.06] disabled:opacity-50">{conversation.title || "New conversation"}</button>)}
+          {visibleHistory.map(conversation => <button data-help-id="agent.workspace.history-row" key={conversation.id} type="button" aria-current={conversation.id === conversationId ? "true" : undefined} disabled={renamingBusy || sending || loadingConversation} onClick={() => { setConversations(current => current.some(row => row.id === conversation.id) ? current : [...current, conversation]); void openConversation(conversation.id); setHistoryOpen(false); editHistorySearch(""); }} className="block w-full truncate rounded-md px-3 py-2 text-left text-xs text-zinc-300 hover:bg-white/[0.06] aria-[current=true]:bg-white/[0.06] disabled:opacity-50">{conversation.title || "New conversation"}</button>)}
           {visibleHistory.length === 0 && !historyBusy && <p role="status" className="px-3 py-3 text-xs text-zinc-500">No matching conversations.</p>}
         </div>
-        {nextHistoryCursor && <button type="button" disabled={historyBusy || (searchResults ?? conversations).length >= 1000} onClick={() => void loadHistory(false)} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-40">{historyBusy ? "Loading chats…" : "Load older chats"}</button>}
+        {nextHistoryCursor && <button data-help-id="agent.workspace.history-older" type="button" disabled={historyBusy || (searchResults ?? conversations).length >= 1000} onClick={() => void loadHistory(false)} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-40">{historyBusy ? "Loading chats…" : "Load older chats"}</button>}
         {(searchResults ?? conversations).length >= 1000 && <p className="mt-2 text-[10px] text-zinc-500">Narrow the title search to find more chats.</p>}
       </section>}
       <Disclosure className="max-h-[30vh] shrink-0 overflow-y-auto border-b border-white/[0.06] bg-white/[0.015] px-5 py-3" buttonClassName="mx-auto max-w-5xl text-xs text-zinc-300" label={<>
@@ -1122,8 +1122,8 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
         <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
           <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
             Repository
-            <input type="search" aria-label="Search connected repositories" value={repositorySearch} onChange={event => setRepositorySearch(event.target.value)} placeholder="Find a connected repository" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25" />
-            <select
+            <input data-help-id="agent.workspace.repository-search" type="search" aria-label="Search connected repositories" value={repositorySearch} onChange={event => setRepositorySearch(event.target.value)} placeholder="Find a connected repository" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25" />
+            <select data-help-id="agent.workspace.repository"
               aria-label="Active GitHub repository"
               value={manualRepository ? "__manual__" : repositoryFullName}
               onChange={(event) => {
@@ -1153,11 +1153,11 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             {repositoriesTruncated && <span className="mt-1 block normal-case tracking-normal">Repository catalog is truncated. Search filters the loaded connected repositories only.</span>}
             {repositorySearch && !repositoriesLoading && !repositoryOptions.some(repository => repository.fullName.toLowerCase().includes(repositorySearch.trim().toLowerCase())) && <span className="mt-1 block normal-case tracking-normal">No matching connected repositories. Your selection is retained.</span>}
             {manualRepository && <span className="mt-1 block normal-case tracking-normal">Entered manually; catalog membership unverified. The service still authorizes access.</span>}
-            {manualRepository && <input autoFocus aria-label="Repository owner and name" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
+            {manualRepository && <input data-help-id="agent.workspace.repository-manual" autoFocus aria-label="Repository owner and name" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
           </div>
           <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
             Branch
-            <select
+            <select data-help-id="agent.workspace.branch"
               aria-label="Active GitHub branch"
               value={manualBranch ? "__manual__" : branch}
               onChange={(event) => {
@@ -1177,12 +1177,12 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
               {branchOptions.map((option) => <option key={option.name} value={option.name}>{option.name}{option.protected ? " · protected" : ""}</option>)}
               <option value="__manual__">Enter another branch…</option>
             </select>
-            {manualBranch && <input autoFocus aria-label="Git branch name" value={branch} onChange={(event) => { setBranch(event.target.value); setFilePath(""); setFileOptions([]); setManualFilePath(false); }} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
+            {manualBranch && <input data-help-id="agent.workspace.branch-manual" autoFocus aria-label="Git branch name" value={branch} onChange={(event) => { setBranch(event.target.value); setFilePath(""); setFileOptions([]); setManualFilePath(false); }} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
           </label>
           <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
             Deployment environment
-            <input type="search" aria-label="Search deployment environments" value={environmentSearch} onChange={event => setEnvironmentSearch(event.target.value)} placeholder="Find an environment" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25" />
-            <select
+            <input data-help-id="agent.workspace.environment-search" type="search" aria-label="Search deployment environments" value={environmentSearch} onChange={event => setEnvironmentSearch(event.target.value)} placeholder="Find an environment" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-none focus:border-white/25" />
+            <select data-help-id="agent.workspace.environment"
               aria-label="Active deployment environment"
               value={environmentId}
               onChange={(event) => {
@@ -1201,7 +1201,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           </div>
         </div>
         <p aria-label="Selected Agent context" className="mx-auto mt-2 max-w-5xl text-[11px] text-zinc-400">Repository: {repositoryFullName || "None selected"}{manualRepository ? " (manual, catalog unverified)" : ""} · Branch: {repositoryFullName ? branch || "None selected" : "None selected"} · Environment: {environmentOptions.find(environment => environment.id === environmentId)?.name ?? "None selected"}</p>
-        {(repositoryError || environmentError) && <button type="button" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 disabled:opacity-50">Retry repository and environment catalogs</button>}
+        {(repositoryError || environmentError) && <button data-help-id="agent.workspace.catalog-retry" type="button" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 disabled:opacity-50">Retry repository and environment catalogs</button>}
         {environmentId && (() => {
           const selected = environmentOptions.find((environment) => environment.id === environmentId);
           if (!selected) return null;
@@ -1216,8 +1216,8 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
         <div><p className="font-medium text-zinc-200">GitHub repository access is unavailable</p>
         <p>Chat, research, planning and authorized local work remain available. Review the connection before requesting GitHub operations.</p></div>
         <div className="flex flex-wrap items-center gap-3">
-          {onOpenSettings && <button type="button" onClick={() => onOpenSettings("integrations")} className="recovery-primary">Review GitHub connection</button>}
-          <button type="button" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className="text-xs text-zinc-300 underline underline-offset-4 disabled:opacity-40">Retry connections</button>
+          {onOpenSettings && <button data-help-id="agent.workspace.github-connection-settings" type="button" onClick={() => onOpenSettings("integrations")} className="recovery-primary">Review GitHub connection</button>}
+          <button data-help-id="agent.workspace.connection-retry" type="button" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className="text-xs text-zinc-300 underline underline-offset-4 disabled:opacity-40">Retry connections</button>
         </div>
       </section>}
       <div className="relative min-h-0 flex-1">
@@ -1230,9 +1230,9 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
                 Start a conversation, or open an authorized local workspace from Repositories. GitHub is only needed for GitHub operations.
               </p>
               <div className="mt-5 flex flex-wrap justify-center gap-2" aria-label="Suggested Agent requests">
-                <button type="button" disabled={!repositoryFullName || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
-                <button type="button" disabled={!repositoryFullName || !environmentId || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
-                <button type="button" disabled={sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
+                <button data-help-id="agent.workspace.suggest-review-repository" type="button" disabled={!repositoryFullName || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Review this repository and tell me the highest-impact improvements."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Review repository</button>
+                <button data-help-id="agent.workspace.suggest-deploy-readiness" type="button" disabled={!repositoryFullName || !environmentId || sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Check whether the selected repository is ready to deploy to the selected environment."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check deploy readiness</button>
+                <button data-help-id="agent.workspace.suggest-connections" type="button" disabled={sending || loadingConversation} onClick={() => { setComposerMode("chat"); setInput("Show me which systems are connected and what needs attention."); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:cursor-not-allowed disabled:opacity-35">Check connections</button>
               </div>
             </div>
           )}
@@ -1245,7 +1245,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             <p className="mt-2 text-[10px] text-zinc-500">Progress only. Changes still require a reviewed proposal and approval.</p>
           </section>}
           {sending && <div className="rounded-xl border border-white/15 bg-white/[0.03] px-4 py-3" aria-label="Agent response in progress">
-            <div className="flex items-center justify-between gap-4"><p className="text-xs text-zinc-200" role="status">Draft · decision and usage verification pending</p><button type="button" onClick={() => messageAbort.current?.abort()} className="rounded border border-white/15 px-2 py-1 text-xs text-zinc-300">Stop response</button></div>
+            <div className="flex items-center justify-between gap-4"><p className="text-xs text-zinc-200" role="status">Draft · decision and usage verification pending</p><button data-help-id="agent.workspace.stop-response" type="button" onClick={() => messageAbort.current?.abort()} className="rounded border border-white/15 px-2 py-1 text-xs text-zinc-300">Stop response</button></div>
             {streamingDraft && <p className="mt-3 whitespace-pre-wrap break-words text-sm text-zinc-300">{streamingDraft}</p>}
             <p className="mt-2 text-[11px] text-zinc-500">Draft text does not approve or execute changes. Completed work remains recorded if you stop.</p>
           </div>}
@@ -1257,8 +1257,8 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             <p className="text-xs font-medium text-amber-200">Request needs attention</p>
             <p className="mt-2 text-xs leading-5 text-zinc-400">The service reported a request failure. Queued work is paused; no automatic retry is scheduled. Review recorded activity before trying again.</p>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" disabled={sending || loadingConversation || Boolean(input.trim())} onClick={() => setInput(latestIssue.instruction)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300 disabled:opacity-40">Restore request draft</button>
-              {onOpenSettings && <button type="button" onClick={() => onOpenSettings(latestIssue.code.includes("credit") ? "plan" : latestIssue.code.startsWith("workspace_ai_") || latestIssue.code === "decision_malformed" ? "models" : "agents")} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300">{latestIssue.code.includes("credit") ? "Review plan & usage" : latestIssue.code.startsWith("workspace_ai_") || latestIssue.code === "decision_malformed" ? "Review model settings" : "Review Agent settings"}</button>}
+              <button data-help-id="agent.workspace.restore-failed-request" type="button" disabled={sending || loadingConversation || Boolean(input.trim())} onClick={() => setInput(latestIssue.instruction)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300 disabled:opacity-40">Restore request draft</button>
+              {onOpenSettings && <button data-help-id="agent.workspace.issue-settings" type="button" onClick={() => onOpenSettings(latestIssue.code.includes("credit") ? "plan" : latestIssue.code.startsWith("workspace_ai_") || latestIssue.code === "decision_malformed" ? "models" : "agents")} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-300">{latestIssue.code.includes("credit") ? "Review plan & usage" : latestIssue.code.startsWith("workspace_ai_") || latestIssue.code === "decision_malformed" ? "Review model settings" : "Review Agent settings"}</button>}
             </div>
           </section>}
           {latestUsage && <UsageReceipt usage={latestUsage} />}
@@ -1267,47 +1267,47 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
               <ProposalCard onReviewLocally={onReviewLocalEdit} proposal={pendingProposal} deciding={loadingConversation || decidingId === pendingProposal.id} onApprove={() => void decide(true)} onReject={() => void decide(false)} />
               <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-zinc-400">
                 <span role="status">{decisionRefreshNote ?? "Reviewed in the cockpit? Refresh to check the recorded decision."}</span>
-                <button type="button" disabled={decisionRefreshing || loadingConversation || sending || Boolean(decidingId)} onClick={() => refreshDecision.current?.()} className="shrink-0 rounded-md border border-white/10 px-3 py-1.5 text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">{decisionRefreshing ? "Checking decision…" : "Refresh decision"}</button>
+                <button data-help-id="agent.workspace.refresh-decision" type="button" disabled={decisionRefreshing || loadingConversation || sending || Boolean(decidingId)} onClick={() => refreshDecision.current?.()} className="shrink-0 rounded-md border border-white/10 px-3 py-1.5 text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">{decisionRefreshing ? "Checking decision…" : "Refresh decision"}</button>
               </div>
             </div>
           )}
           {error && (
             <div role="alert" className="flex items-center justify-between gap-4 rounded-xl border border-rose-400/20 bg-rose-400/[0.05] px-4 py-3">
               <p className="text-xs text-rose-300">{error}</p>
-              {!conversationId && <button type="button" onClick={() => setStartupAttempt((attempt) => attempt + 1)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06]">Retry</button>}
-              {conversationId && !needsRecovery && <button type="button" disabled={sending || loadingConversation} onClick={() => void openConversation(conversationId, true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">Reload saved conversation</button>}
+              {!conversationId && <button data-help-id="agent.workspace.startup-retry" type="button" onClick={() => setStartupAttempt((attempt) => attempt + 1)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06]">Retry</button>}
+              {conversationId && !needsRecovery && <button data-help-id="agent.workspace.error-reload-conversation" type="button" disabled={sending || loadingConversation} onClick={() => void openConversation(conversationId, true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40">Reload saved conversation</button>}
             </div>
           )}
         </div>
       </div>
-      {newActivity && <button type="button" onClick={jumpToLatest} className="absolute bottom-3 right-5 rounded-full border border-white/15 bg-[#242529] px-3 py-2 text-xs text-zinc-200 shadow-lg">Jump to latest</button>}
+      {newActivity && <button data-help-id="agent.workspace.jump-latest" type="button" onClick={jumpToLatest} className="absolute bottom-3 right-5 rounded-full border border-white/15 bg-[#242529] px-3 py-2 text-xs text-zinc-200 shadow-lg">Jump to latest</button>}
       </div>
       <div aria-label="Agent composer" className="agent-composer min-h-0 max-h-[45vh] shrink overflow-y-auto px-5 py-4">
         <div className="max-w-3xl mx-auto">
           {needsRecovery && !sending && <div role="status" className="mb-3 rounded-lg border border-white/20 bg-white/5 p-3 text-xs text-zinc-200">
             <p>Review the saved conversation before sending another request. Reloading does not retry AI work or confirm that an interrupted operation has finished.</p>
-            <button type="button" disabled={loadingConversation} onClick={() => conversationId && void openConversation(conversationId, true)} className="mt-2 rounded-lg border border-white/10 px-3 py-1.5 text-zinc-200 disabled:opacity-40">Reload saved conversation</button>
+            <button data-help-id="agent.workspace.recovery-reload-conversation" type="button" disabled={loadingConversation} onClick={() => conversationId && void openConversation(conversationId, true)} className="mt-2 rounded-lg border border-white/10 px-3 py-1.5 text-zinc-200 disabled:opacity-40">Reload saved conversation</button>
           </div>}
           {retainedRequest && !sending && <section aria-label="Retained unconfirmed request" className="mb-3 rounded-lg border border-white/10 px-3 py-2.5 text-xs text-zinc-400">
             <p className="text-zinc-300">Request text retained · outcome unconfirmed</p>
             <p className="mt-1 break-words">{retainedRequest.slice(0, 160)}{retainedRequest.length > 160 ? "…" : ""}</p>
             <p className="mt-1 text-[11px] text-zinc-500">Review saved history before deciding to send again. Restoring text does not retry work. This copy lasts only for this app session.</p>
             <div className="mt-2 flex flex-wrap gap-3">
-              <button type="button" disabled={needsRecovery || loadingConversation || Boolean(input.trim())} onClick={() => {
+              <button data-help-id="agent.workspace.restore-retained-request" type="button" disabled={needsRecovery || loadingConversation || Boolean(input.trim())} onClick={() => {
                 if (needsRecovery || loadingConversation || input.trim() || !conversationId || activeConversation.current !== conversationId || transportContext !== desktopClient.config) return;
                 const text = retainedRequestCache.current.get(conversationId); if (text) setInput(text);
               }} className="text-zinc-200 underline disabled:opacity-40">Restore retained request</button>
-              <button type="button" disabled={loadingConversation} onClick={() => conversationId && retainRequest(conversationId, "")} className="text-zinc-400 underline disabled:opacity-40">Dismiss retained copy</button>
+              <button data-help-id="agent.workspace.dismiss-retained-request" type="button" disabled={loadingConversation} onClick={() => conversationId && retainRequest(conversationId, "")} className="text-zinc-400 underline disabled:opacity-40">Dismiss retained copy</button>
             </div>
           </section>}
           {currentQueue.length > 0 && <section aria-label="Queued Agent messages" className="mb-3 max-h-48 overflow-y-auto rounded-xl border border-white/10 bg-white/[0.025] px-3 py-2.5 text-xs">
             <div className="mb-2 flex items-center justify-between gap-3"><p className="text-zinc-300">{currentQueue.length} queued{queuePaused ? " · paused" : ""}</p>
-              {queuePaused && <button type="button" disabled={sending || needsRecovery || loadingConversation || Boolean(pendingProposal) || !queuedConfigurationMatches} onClick={() => setQueuePaused(false)} className="text-zinc-200 underline disabled:opacity-40">Resume queue</button>}
+              {queuePaused && <button data-help-id="agent.workspace.resume-queue" type="button" disabled={sending || needsRecovery || loadingConversation || Boolean(pendingProposal) || !queuedConfigurationMatches} onClick={() => setQueuePaused(false)} className="text-zinc-200 underline disabled:opacity-40">Resume queue</button>}
             </div>
             {(queuePaused || !queuedConfigurationMatches) && <p role="status" className="mb-2 text-[11px] text-zinc-500">{!queuedConfigurationMatches ? "Request configuration changed. Restore it or edit the queued message into a new draft." : "Review the saved result and resolve any pending approval or recovery before resuming."}</p>}
             <ol className="space-y-2">{currentQueue.map(message => <li key={message.id} className="flex items-start justify-between gap-3"><p className="min-w-0 break-words whitespace-pre-wrap text-zinc-400">{message.instruction}</p><div className="flex shrink-0 gap-3">
-              <button type="button" aria-label="Edit queued message" onClick={() => { if (input.trim()) { setError("Keep or clear the current draft before editing queued work."); return; } setQueuePaused(true); setInput(message.instruction); setQueuedMessages(current => current.filter(item => item.id !== message.id)); }} className="text-zinc-400 hover:text-white">Edit</button>
-              <button type="button" aria-label="Remove queued message" onClick={() => { setQueuePaused(true); setQueuedMessages(current => current.filter(item => item.id !== message.id)); }} className="text-zinc-400 hover:text-white">Remove</button>
+              <button data-help-id="agent.workspace.edit-queued-message" type="button" aria-label="Edit queued message" onClick={() => { if (input.trim()) { setError("Keep or clear the current draft before editing queued work."); return; } setQueuePaused(true); setInput(message.instruction); setQueuedMessages(current => current.filter(item => item.id !== message.id)); }} className="text-zinc-400 hover:text-white">Edit</button>
+              <button data-help-id="agent.workspace.remove-queued-message" type="button" aria-label="Remove queued message" onClick={() => { setQueuePaused(true); setQueuedMessages(current => current.filter(item => item.id !== message.id)); }} className="text-zinc-400 hover:text-white">Remove</button>
             </div></li>)}</ol>
             <p className="mt-2 text-[10px] text-zinc-600">Session-only queue. Each message retains its conversation and request configuration; service policy still authorizes every action.</p>
           </section>}
@@ -1315,7 +1315,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             {OPERATION_MODES.find(mode => mode.id === operationMode)?.label} · {resolveAgentProfile(agentProfile)?.label} · {modelOptions.find(model => model.key === selectedModel)?.label ?? "No approved model"}{composerMode === "code" ? ` · File: ${filePath || "Choose a file below"}` : " · Chat"}
           </p>
           <div className="agent-prompt-row mb-2 flex items-end gap-3">
-          <textarea
+          <textarea data-help-id="agent.workspace.request"
             ref={composerRef}
             aria-label="Agent request"
             autoCorrect="off"
@@ -1329,7 +1329,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             rows={2}
             className="agent-prompt-input min-h-[64px] flex-1 resize-none rounded-xl border-0 bg-transparent px-4 py-4 text-sm text-zinc-100 placeholder:text-zinc-500 outline-none disabled:opacity-50"
           />
-          <button
+          <button data-help-id="agent.workspace.send"
             type="button"
             onClick={submitDraft}
             disabled={submissionDisabled}
@@ -1342,7 +1342,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           <Disclosure className="mb-3 rounded-lg border border-white/[0.06] px-3 py-2" buttonClassName="text-xs text-zinc-400" label={<>Agent configuration · {resolveAgentProfile(agentProfile)?.label}</>}>
           <div className="mt-3 flex flex-wrap items-center gap-3">
             <label className="text-xs text-zinc-400">Agent
-              <select aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {
+              <select data-help-id="agent.workspace.profile" aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {
                 const profile = resolveAgentProfile(event.target.value);
                 if (profile) setAgentProfile(profile.id);
               }} className="ml-2 rounded-md border border-white/10 bg-[#151519] px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
@@ -1350,25 +1350,25 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
               </select>
             </label>
             <label className="text-xs text-zinc-400">Model-call limit
-              <select aria-label="Model-call limit" value={maxDecisionSteps ?? ""} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => setModelCallLimit(event.target.value)} className="ml-2 rounded-md border border-white/10 bg-[#151519] px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
+              <select data-help-id="agent.workspace.call-limit" aria-label="Model-call limit" value={maxDecisionSteps ?? ""} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => setModelCallLimit(event.target.value)} className="ml-2 rounded-md border border-white/10 bg-[#151519] px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
                 <option value="">Mode default ({modeCallLimit})</option>
                 {Array.from({ length: modeCallLimit }, (_, index) => index + 1).map(limit => <option key={limit} value={limit}>{limit}</option>)}
               </select>
             </label>
             <p className="text-[11px] text-zinc-500">Includes response repairs. Credit checks still apply to every call.</p>
             <p role="status" className="text-[11px] text-zinc-500">{resolveAgentProfile(agentProfile)?.description} Workspace tool policy and approvals still apply.</p>
-            {onOpenSettings && <button type="button" onClick={() => onOpenSettings("agents")} className="text-xs text-zinc-400 underline underline-offset-2">Agent permissions</button>}
+            {onOpenSettings && <button data-help-id="agent.workspace.permissions-settings" type="button" onClick={() => onOpenSettings("agents")} className="text-xs text-zinc-400 underline underline-offset-2">Agent permissions</button>}
           </div>
           <div role="group" aria-label="Request type" className="my-3 flex flex-wrap gap-2">            <span aria-hidden="true" className="mx-1 h-4 w-px bg-white/10" />
-            <button type="button" aria-pressed={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
-            <button type="button" aria-pressed={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>
+            <button data-help-id="agent.workspace.request-chat" type="button" aria-pressed={composerMode === "chat"} onClick={() => setComposerMode("chat")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "chat" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Chat</button>
+            <button data-help-id="agent.workspace.request-code" type="button" aria-pressed={composerMode === "code"} onClick={() => setComposerMode("code")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === "code" ? "bg-white/[0.09] text-white" : "text-zinc-500 hover:text-zinc-300"}`}>Edit repository file</button>
 </div>
           <p className="mb-3 text-[11px] text-zinc-500">{OPERATION_MODES.find((mode) => mode.id === operationMode)?.description}. Provider selection and customer credit checks remain governed by your workspace policy.</p>
           <p className="mb-2 text-[10px] text-zinc-500">Unsent prompts stay with each conversation in this session only. Sign-out or credential verification may clear them; targets and permissions remain workspace-controlled.</p>
           </Disclosure>
           <div className="mb-3 flex flex-wrap items-center gap-1" role="group" aria-label="Agent controls">
             {OPERATION_MODES.map((mode) => (
-              <button key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-white/10 text-zinc-100 ring-1 ring-white/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>
+              <button data-help-id="agent.workspace.operation-mode" key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-white/10 text-zinc-100 ring-1 ring-white/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>
             ))}
             <AgentModelSelector loading={modelState === "loading"} options={modelOptions} value={selectedModel} disabled={sending || modelState !== "ready"} onChange={key => {
               if (!modelOptions.some(option => option.key === key && !option.unavailableReason)) return;
@@ -1384,14 +1384,14 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           {modelState !== "ready" && modelState !== "loading" && <div role="status" className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-[11px] text-zinc-400">
             <p>{modelState === "disabled" ? "AI is disabled for this workspace. A workspace administrator can enable an approved model in Model settings." : modelState === "empty" ? "No service-configured AI model is available. Ask a workspace administrator to review service setup." : modelError} New requests wait for a verified enabled model; saved approvals and receipts remain available.</p>
             <div className="flex shrink-0 gap-3">
-              <button type="button" onClick={() => setModelAttempt((attempt) => attempt + 1)} className="underline underline-offset-2 disabled:opacity-40">Retry models</button>
-              {onOpenSettings && <button type="button" onClick={() => onOpenSettings("models")} className="underline underline-offset-2">Model settings</button>}
+              <button data-help-id="agent.workspace.retry-models" type="button" onClick={() => setModelAttempt((attempt) => attempt + 1)} className="underline underline-offset-2 disabled:opacity-40">Retry models</button>
+              {onOpenSettings && <button data-help-id="agent.workspace.model-settings" type="button" onClick={() => onOpenSettings("models")} className="underline underline-offset-2">Model settings</button>}
             </div>
           </div>}
           {composerMode === "code" && <div className="mb-3 space-y-2">
             <label className="block text-[10px] uppercase tracking-[0.12em] text-zinc-600">
               File
-              <select
+              <select data-help-id="agent.workspace.file"
                 aria-label="Repository file"
                 value={manualFilePath ? "__manual__" : filePath}
                 onChange={(event) => {
@@ -1412,7 +1412,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
                 <option value="__manual__">Enter another file path…</option>
               </select>
             </label>
-            {manualFilePath && <input autoFocus aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
+            {manualFilePath && <input data-help-id="agent.workspace.file-manual" autoFocus aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="w-full rounded-lg border border-white/10 bg-white/[0.03] px-3 py-2 text-xs text-zinc-200 outline-none placeholder:text-zinc-600 focus:border-white/25" />}
             {fileCatalogError && <p role="status" className="text-[11px] text-zinc-400">{fileCatalogError}</p>}
             {!fileCatalogError && fileCatalogTruncated && <p role="status" className="text-[11px] text-zinc-500">Showing editable files returned by GitHub. Use “Enter another file path” for a file outside this list.</p>}
           </div>}

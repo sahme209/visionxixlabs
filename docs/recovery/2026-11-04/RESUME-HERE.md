@@ -1,4 +1,10 @@
-# Resume Axiom after credits renew
+# Current Axiom continuation entry
+
+**Current state: user explicitly resumed; the full goal is ACTIVE.** The older pause and f152 source snapshot below are historical, not current stopping instructions. Read the latest external current-status entry and [execution board](../../product/current-execution-board.md) first; all15parents remain open.
+
+Latest implementation at this update: `a9e6359dd68e499360ade5b26684d0fdfbbb46e2` (observational endpoint parser), after `aa1aee35` (Agent history IME fix) and `4bf9082a` (Product hierarchy/exact full ordinary local build). [Parser evidence](coding-endpoint-candidate/README.md), [IME evidence](agent-history-ime/README.md), [current Product preview](http://127.0.0.1:5234/product). The verified incremental bundle includes these newer commits; remote backup and production remain unchanged. No browser/native/current-provider acceptance or quote eligibility follows from the local work. The sole metadata read is consumed; do not repeat it. The ordinary recurring heartbeat remains paused; a resumed thread goal does not authorize creating a duplicate scheduler.
+
+## Historical credit-pause handoff
 
 User requested stopping until new credits on November4. Preserve the full scope in [the master plan](../../product/axiom-master-action-plan.md) and [current execution board](../../product/current-execution-board.md); all15major requirements remain open. Do not restart completed work or convert passing fixtures into production acceptance.
 

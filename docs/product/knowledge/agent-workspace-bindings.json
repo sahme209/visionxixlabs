@@ -1,0 +1,446 @@
+{
+  "format": "axiom.product-control-bindings/1",
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "a9e6359dd68e499360ade5b26684d0fdfbbb46e2",
+  "source": "desktop/src/views/AgentChatView.tsx",
+  "baselineSha256": "0b7543ba31d29e31cdb05cd82e27b41d5add7cb20e2379909b5247026ae396e7",
+  "scopeFunction": "AgentChatSession",
+  "declarations": 46,
+  "tagCounts": {
+    "button": 31,
+    "input": 6,
+    "select": 7,
+    "textarea": 1,
+    "summary": 1
+  },
+  "countMethod": "All intrinsic button/input/select/textarea/summary declarations authored in AgentChatSession, including children passed to Disclosure; mapped instances repeat family metadata.",
+  "unbound": [
+    "ConversationRename",
+    "Disclosure internally generated triggers (2)",
+    "AgentModelSelector",
+    "ChatBubble / AgentMessageContent",
+    "EvidencePanel / RepositoryEvidenceDetails",
+    "ProposalCard / FileDiff",
+    "AgentApprovedActions",
+    "AgentGithubReceipts",
+    "AgentRestartReceipts"
+  ],
+  "controls": [
+    {
+      "helpId": "agent.workspace.conversation",
+      "family": 1,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "select",
+      "anchor": "<select aria-label=\"Agent conversation\" value={conversationId ?? \"\"} onChange={(event) => void openConversation(event.target.value)} disabled={renamingBusy || sending || conversati",
+      "nodeSha256": "0b38b9e30e37f9cff49603598e984fc3bb7f7ceb37a8b9b958e63d368d96a4ae"
+    },
+    {
+      "helpId": "agent.workspace.chat-options",
+      "family": 2,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "summary",
+      "anchor": "<summary>Chat options</summary>",
+      "nodeSha256": "543f30bac1e9ce5670cf568a31815639c61c50819eb30a3d370d69daa1787139"
+    },
+    {
+      "helpId": "agent.workspace.history-toggle",
+      "family": 3,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" aria-expanded={historyOpen} aria-controls=\"agent-conversation-history\" onClick={() => setHistoryOpen(open => !open)} className=\"shrink-0 rounded-lg border bor",
+      "nodeSha256": "de0a3698e38eda0880fb402ad7432a39e1cd543416f4aea43aa509b4b6591088"
+    },
+    {
+      "helpId": "agent.workspace.new-chat",
+      "family": 4,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={() => void newConversation()} disabled={renamingBusy || loadingConversation || sending} className=\"shrink-0 rounded-lg border border-white/10 px-3 py",
+      "nodeSha256": "a279d3746b747a92d9a75de55eda2eb94bb89a046cc1decb8092eade37498edb"
+    },
+    {
+      "helpId": "agent.workspace.history-search",
+      "family": 5,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "input",
+      "anchor": "<input autoFocus type=\"search\" maxLength={200} aria-label=\"Search conversations\" value={historySearch} onChange={event => editHistorySearch(event.target.value)} onKeyDown={event =>",
+      "nodeSha256": "c2358c69a91867df69e67bb748bbd9b8e9a1396958f2d0eea023d36e94130b2d"
+    },
+    {
+      "helpId": "agent.workspace.history-search-submit",
+      "family": 6,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={historyBusy || !historySearch.trim()} onClick={() => void loadHistory(true)} className=\"shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs",
+      "nodeSha256": "dedb8564aacded7a851a3fc87e383e7ff962b92f4157eac8b2d86d4674df579b"
+    },
+    {
+      "helpId": "agent.workspace.history-row",
+      "family": 7,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button key={conversation.id} type=\"button\" aria-current={conversation.id === conversationId ? \"true\" : undefined} disabled={renamingBusy || sending || loadingConversation} onClick",
+      "nodeSha256": "15b57bda26c11718b9e189b2bfc289a8a7da86b68f9450eb633366f9a7e7ccf6"
+    },
+    {
+      "helpId": "agent.workspace.history-older",
+      "family": 8,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={historyBusy || (searchResults ?? conversations).length >= 1000} onClick={() => void loadHistory(false)} className=\"mt-2 rounded-lg border border-whi",
+      "nodeSha256": "468d9da4fd2dfa321f0542aa10d88df6be53890b06bc3f807ba1d01ae510b129"
+    },
+    {
+      "helpId": "agent.workspace.repository-search",
+      "family": 9,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "input",
+      "anchor": "<input type=\"search\" aria-label=\"Search connected repositories\" value={repositorySearch} onChange={event => setRepositorySearch(event.target.value)} placeholder=\"Find a connected r",
+      "nodeSha256": "bd12dab63fe6bc267c1da8413acf601fa5e495b2e3f83ef8c7128880e8f27369"
+    },
+    {
+      "helpId": "agent.workspace.repository",
+      "family": 10,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "select",
+      "anchor": "<select aria-label=\"Active GitHub repository\" value={manualRepository ? \"__manual__\" : repositoryFullName} onChange={(event) => { if (event.target.value === \"__manual__\") { manualR",
+      "nodeSha256": "440d6df2559377952b09a2bb650e63c76724f05c9c536224effeb493f71f9038"
+    },
+    {
+      "helpId": "agent.workspace.repository-manual",
+      "family": 11,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "input",
+      "anchor": "<input autoFocus aria-label=\"Repository owner and name\" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder=\"owner/repository\" cl",
+      "nodeSha256": "e8d076e905745184049c7c9084b582beaf46f69bea4969750d3f104f6c9e73e0"
+    },
+    {
+      "helpId": "agent.workspace.branch",
+      "family": 12,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "select",
+      "anchor": "<select aria-label=\"Active GitHub branch\" value={manualBranch ? \"__manual__\" : branch} onChange={(event) => { setFilePath(\"\"); setFileOptions([]); setManualFilePath(false); if (eve",
+      "nodeSha256": "8fe7790e82ace050cc4d92e2eb3fc1f6ba2ca604e41a6e607124dcd3c632295f"
+    },
+    {
+      "helpId": "agent.workspace.branch-manual",
+      "family": 13,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "input",
+      "anchor": "<input autoFocus aria-label=\"Git branch name\" value={branch} onChange={(event) => { setBranch(event.target.value); setFilePath(\"\"); setFileOptions([]); setManualFilePath(false); }}",
+      "nodeSha256": "01618ccfd61956a251a8373eacab5484f5b98bc86812d2b85f446ed63da24db4"
+    },
+    {
+      "helpId": "agent.workspace.environment-search",
+      "family": 14,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "input",
+      "anchor": "<input type=\"search\" aria-label=\"Search deployment environments\" value={environmentSearch} onChange={event => setEnvironmentSearch(event.target.value)} placeholder=\"Find an environ",
+      "nodeSha256": "5fd9a347deaab3d6b51d94be0ee76b0d3eb74fa325183905e1d8e5cfcae86a9a"
+    },
+    {
+      "helpId": "agent.workspace.environment",
+      "family": 15,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "select",
+      "anchor": "<select aria-label=\"Active deployment environment\" value={environmentId} onChange={(event) => { // An explicit empty choice must replace, not fall back to, the // unverified saved ",
+      "nodeSha256": "93185c64a86eb72057cbdd939f98876eede89c62880f7a8407203f3aa685bba0"
+    },
+    {
+      "helpId": "agent.workspace.catalog-retry",
+      "family": 16,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className=\"mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-",
+      "nodeSha256": "4e8f19dd12f6c6775d2881e2c08f22983490831cddec5bb6387761f5a4a13a54"
+    },
+    {
+      "helpId": "agent.workspace.github-connection-settings",
+      "family": 17,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={() => onOpenSettings(\"integrations\")} className=\"recovery-primary\">Review GitHub connection</button>",
+      "nodeSha256": "5de670636f74d0e5242673826b2e861c23cf57f45290a86eac18d07cdb91c5ca"
+    },
+    {
+      "helpId": "agent.workspace.connection-retry",
+      "family": 18,
+      "guideSection": "Choose the conversation and scope",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={repositoriesLoading || environmentsLoading} onClick={retryContextCatalogs} className=\"text-xs text-zinc-300 underline underline-offset-4 disabled:op",
+      "nodeSha256": "c1bd30339bba9bb594be1f55a8cb260dea48aad3e6c165a0016978f09811ef48"
+    },
+    {
+      "helpId": "agent.workspace.suggest-review-repository",
+      "family": 19,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={!repositoryFullName || sending || loadingConversation} onClick={() => { setComposerMode(\"chat\"); setInput(\"Review this repository and tell me the hi",
+      "nodeSha256": "ba548caffadef19dec396b147ccf610148e264e85b5500d2aec3be321a80bf72"
+    },
+    {
+      "helpId": "agent.workspace.suggest-deploy-readiness",
+      "family": 20,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={!repositoryFullName || !environmentId || sending || loadingConversation} onClick={() => { setComposerMode(\"chat\"); setInput(\"Check whether the selec",
+      "nodeSha256": "75edc3f9bdbe70a6ea2b738ecf6a6839177532d6e4c393bdec380409ac098816"
+    },
+    {
+      "helpId": "agent.workspace.suggest-connections",
+      "family": 21,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={sending || loadingConversation} onClick={() => { setComposerMode(\"chat\"); setInput(\"Show me which systems are connected and what needs attention.\");",
+      "nodeSha256": "971842c5d5a0d0b567197cc94ccf53264a194b9e1b823cbac4ecfd5c57ad256b"
+    },
+    {
+      "helpId": "agent.workspace.stop-response",
+      "family": 22,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={() => messageAbort.current?.abort()} className=\"rounded border border-white/15 px-2 py-1 text-xs text-zinc-300\">Stop response</button>",
+      "nodeSha256": "275f98890eaee976b543dbc26da5b105cd2578ead76486273c9908363bb837d3"
+    },
+    {
+      "helpId": "agent.workspace.restore-failed-request",
+      "family": 23,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={sending || loadingConversation || Boolean(input.trim())} onClick={() => setInput(latestIssue.instruction)} className=\"rounded-lg border border-white",
+      "nodeSha256": "ccd2e9c67cdc73c611d63839c39581408fda76e7e42413452a2f8f727726137a"
+    },
+    {
+      "helpId": "agent.workspace.issue-settings",
+      "family": 24,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={() => onOpenSettings(latestIssue.code.includes(\"credit\") ? \"plan\" : latestIssue.code.startsWith(\"workspace_ai_\") || latestIssue.code === \"decision_ma",
+      "nodeSha256": "ad940a15a25a4f0b11d2b3d09135e7d7aba5058c903a6219afb2cffe7dfb9c1d"
+    },
+    {
+      "helpId": "agent.workspace.refresh-decision",
+      "family": 25,
+      "guideSection": "Review proposals without collapsing the two decisions",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={decisionRefreshing || loadingConversation || sending || Boolean(decidingId)} onClick={() => refreshDecision.current?.()} className=\"shrink-0 rounded",
+      "nodeSha256": "e66d2ce418af98c2d5b87a4360f9a92422d110e7ed26754c3737eaddb6121f42"
+    },
+    {
+      "helpId": "agent.workspace.startup-retry",
+      "family": 26,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={() => setStartupAttempt((attempt) => attempt + 1)} className=\"shrink-0 rounded-lg border border-white/10 px-3 py-1.5 text-xs text-zinc-200 hover:bg-w",
+      "nodeSha256": "bc292711c69aeb6e576e843016ee59347e272a99f54fec490b00ffda1c299177"
+    },
+    {
+      "helpId": "agent.workspace.error-reload-conversation",
+      "family": 27,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={sending || loadingConversation} onClick={() => void openConversation(conversationId, true)} className=\"shrink-0 rounded-lg border border-white/10 px",
+      "nodeSha256": "0926f78c21a252926594aa7e9c251d6acbc42a8beae8d8c1fd894f480ef66783"
+    },
+    {
+      "helpId": "agent.workspace.jump-latest",
+      "family": 28,
+      "guideSection": "Read evidence and receipts accurately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={jumpToLatest} className=\"absolute bottom-3 right-5 rounded-full border border-white/15 bg-[#242529] px-3 py-2 text-xs text-zinc-200 shadow-lg\">Jump t",
+      "nodeSha256": "86112283d828227a29eb773d7a001b16d0125b30b1c4e27d67aa04b304af02f7"
+    },
+    {
+      "helpId": "agent.workspace.recovery-reload-conversation",
+      "family": 29,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={loadingConversation} onClick={() => conversationId && void openConversation(conversationId, true)} className=\"mt-2 rounded-lg border border-white/10",
+      "nodeSha256": "bb61e0e6ebe99e3b4ed47049614ee737516f6ceaf03964b1203ba03dad35711a"
+    },
+    {
+      "helpId": "agent.workspace.restore-retained-request",
+      "family": 30,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={needsRecovery || loadingConversation || Boolean(input.trim())} onClick={() => { if (needsRecovery || loadingConversation || input.trim() || !convers",
+      "nodeSha256": "0c5c09561616bc31728c61aa1b06875e465aac15d2697179f4ff5f654b68bc01"
+    },
+    {
+      "helpId": "agent.workspace.dismiss-retained-request",
+      "family": 31,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={loadingConversation} onClick={() => conversationId && retainRequest(conversationId, \"\")} className=\"text-zinc-400 underline disabled:opacity-40\">Dis",
+      "nodeSha256": "0341f547bbbe12539dc08bc1bf3205f79dd2ef8cc4c4f12ddd8042d5be733002"
+    },
+    {
+      "helpId": "agent.workspace.resume-queue",
+      "family": 32,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" disabled={sending || needsRecovery || loadingConversation || Boolean(pendingProposal) || !queuedConfigurationMatches} onClick={() => setQueuePaused(false)} cl",
+      "nodeSha256": "721d0c9ed0e49dab1a1c60092d62a009e0b024658c9e85dbabf847a8373a3ffb"
+    },
+    {
+      "helpId": "agent.workspace.edit-queued-message",
+      "family": 33,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" aria-label=\"Edit queued message\" onClick={() => { if (input.trim()) { setError(\"Keep or clear the current draft before editing queued work.\"); return; } setQu",
+      "nodeSha256": "dd60d6bfd6ddc5f22bc2e2b8e24d5db3cf723bc59bb474bce5195a840d4d46c3"
+    },
+    {
+      "helpId": "agent.workspace.remove-queued-message",
+      "family": 34,
+      "guideSection": "Queue, stop and recover the same record",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" aria-label=\"Remove queued message\" onClick={() => { setQueuePaused(true); setQueuedMessages(current => current.filter(item => item.id !== message.id)); }} cla",
+      "nodeSha256": "7a4cdedbbdba735c331ec20b1e338166bc2f9e311e9c0bdb2f1d085bcb05452d"
+    },
+    {
+      "helpId": "agent.workspace.request",
+      "family": 35,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "textarea",
+      "anchor": "<textarea ref={composerRef} aria-label=\"Agent request\" autoCorrect=\"off\" autoCapitalize=\"off\" spellCheck={false} value={input} onChange={(event) => setInput(event.target.value)} on",
+      "nodeSha256": "2ab97192537a8552b0156e34482d49de3d98dfc494b3b82ba4bc6eeedc9616b3"
+    },
+    {
+      "helpId": "agent.workspace.send",
+      "family": 36,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={submitDraft} disabled={submissionDisabled} className=\"agent-send-button bg-zinc-100 text-sm font-semibold text-zinc-950 disabled:opacity-40\" > {sendi",
+      "nodeSha256": "dd54f319bee14d5ecbeb63070a2a766517d03ca4a700e64cab5034acd1746ce8"
+    },
+    {
+      "helpId": "agent.workspace.profile",
+      "family": 37,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "select",
+      "anchor": "<select aria-label=\"Specialized Agent\" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => { const profile = resolveAgentP",
+      "nodeSha256": "f2564d54350c98561eb645166b0f6f282342e8cbea5b6aa47992851fbc01dd5c"
+    },
+    {
+      "helpId": "agent.workspace.call-limit",
+      "family": 38,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "select",
+      "anchor": "<select aria-label=\"Model-call limit\" value={maxDecisionSteps ?? \"\"} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => setModelCallLimit(even",
+      "nodeSha256": "02f11b8dcac5a502aacfd0ce0d968f4bccee192eb86d158d3bbe98bbe4fb904e"
+    },
+    {
+      "helpId": "agent.workspace.permissions-settings",
+      "family": 39,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={() => onOpenSettings(\"agents\")} className=\"text-xs text-zinc-400 underline underline-offset-2\">Agent permissions</button>",
+      "nodeSha256": "9dd5cdf3eb9fbd7f3ccde7b4c0a7753c23253ac2b12d2bc1b1e04b381d306f10"
+    },
+    {
+      "helpId": "agent.workspace.request-chat",
+      "family": 40,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" aria-pressed={composerMode === \"chat\"} onClick={() => setComposerMode(\"chat\")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === \"chat\" ? \"bg-whit",
+      "nodeSha256": "c75bd7f03d4aaa6d67ef4d96379a6e4e68ca75d8c04a840e14477f194855b217"
+    },
+    {
+      "helpId": "agent.workspace.request-code",
+      "family": 41,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" aria-pressed={composerMode === \"code\"} onClick={() => setComposerMode(\"code\")} className={`rounded-md px-3 py-1.5 text-xs ${composerMode === \"code\" ? \"bg-whit",
+      "nodeSha256": "08c7f341681f08abecff0c61fa75099ef61b963e0a83f338d4d653a8033905b4"
+    },
+    {
+      "helpId": "agent.workspace.operation-mode",
+      "family": 42,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button key={mode.id} type=\"button\" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 t",
+      "nodeSha256": "2d80125affccaf4dd58081ebc5852518601bab2d51a7777f935fe112032ee1f9"
+    },
+    {
+      "helpId": "agent.workspace.retry-models",
+      "family": 43,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={() => setModelAttempt((attempt) => attempt + 1)} className=\"underline underline-offset-2 disabled:opacity-40\">Retry models</button>",
+      "nodeSha256": "adc4befb95772cd07bfd586d68245417c3ed30362ac35ac66a99fd5519a94992"
+    },
+    {
+      "helpId": "agent.workspace.model-settings",
+      "family": 44,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "button",
+      "anchor": "<button type=\"button\" onClick={() => onOpenSettings(\"models\")} className=\"underline underline-offset-2\">Model settings</button>",
+      "nodeSha256": "0f93bbd94e7e0fac49a6998fb22ee566c31922e7ecbb84bf204c2a7e31f746e7"
+    },
+    {
+      "helpId": "agent.workspace.file",
+      "family": 45,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "select",
+      "anchor": "<select aria-label=\"Repository file\" value={manualFilePath ? \"__manual__\" : filePath} onChange={(event) => { if (event.target.value === \"__manual__\") { setManualFilePath(true); set",
+      "nodeSha256": "12a5461ba7889521657385ec89186265e6b264c183fd8ae23b7a23df89ffa7fd"
+    },
+    {
+      "helpId": "agent.workspace.file-manual",
+      "family": 46,
+      "guideSection": "Compose and send deliberately",
+      "source": "desktop/src/views/AgentChatView.tsx",
+      "tag": "input",
+      "anchor": "<input autoFocus aria-label=\"Repository file path\" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder=\"src/path/to/file.ts\" className=\"w-full rounde",
+      "nodeSha256": "39cdb9d16ecf8d4d3e3427dab078385fd44838e25d2c4748fbb2d587442a6d41"
+    }
+  ]
+}

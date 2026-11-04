@@ -1,0 +1,220 @@
+✔ finite internal inventory identifies all 46 direct declarations and explicit child exclusions (0.595834ms)
+✖ all actual direct interactive controls bind literal metadata to their original exact nodes (21.287042ms)
+✔ removing only inserted static attributes restores the complete baseline bytes (0.444583ms)
+✖ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (29.453584ms)
+✖ rejects a newly added unbound control and metadata outside the finite scope (11.679583ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 158.8325
+
+✖ failing tests:
+
+test at docs/product/knowledge/agent-workspace-bindings.test.cjs:40:1
+✖ all actual direct interactive controls bind literal metadata to their original exact nodes (21.287042ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'missing or duplicate agent.workspace.conversation',
+  +   'missing or duplicate agent.workspace.chat-options',
+  +   'missing or duplicate agent.workspace.history-toggle',
+  +   'missing or duplicate agent.workspace.new-chat',
+  +   'missing or duplicate agent.workspace.history-search',
+  +   'missing or duplicate agent.workspace.history-search-submit',
+  +   'missing or duplicate agent.workspace.history-row',
+  +   'missing or duplicate agent.workspace.history-older',
+  +   'missing or duplicate agent.workspace.repository-search',
+  +   'missing or duplicate agent.workspace.repository',
+  +   'missing or duplicate agent.workspace.repository-manual',
+  +   'missing or duplicate agent.workspace.branch',
+  +   'missing or duplicate agent.workspace.branch-manual',
+  +   'missing or duplicate agent.workspace.environment-search',
+  +   'missing or duplicate agent.workspace.environment',
+  +   'missing or duplicate agent.workspace.catalog-retry',
+  +   'missing or duplicate agent.workspace.github-connection-settings',
+  +   'missing or duplicate agent.workspace.connection-retry',
+  +   'missing or duplicate agent.workspace.suggest-review-repository',
+  +   'missing or duplicate agent.workspace.suggest-deploy-readiness',
+  +   'missing or duplicate agent.workspace.suggest-connections',
+  +   'missing or duplicate agent.workspace.stop-response',
+  +   'missing or duplicate agent.workspace.restore-failed-request',
+  +   'missing or duplicate agent.workspace.issue-settings',
+  +   'missing or duplicate agent.workspace.refresh-decision',
+  +   'missing or duplicate agent.workspace.startup-retry',
+  +   'missing or duplicate agent.workspace.error-reload-conversation',
+  +   'missing or duplicate agent.workspace.jump-latest',
+  +   'missing or duplicate agent.workspace.recovery-reload-conversation',
+  +   'missing or duplicate agent.workspace.restore-retained-request',
+  +   'missing or duplicate agent.workspace.dismiss-retained-request',
+  +   'missing or duplicate agent.workspace.resume-queue',
+  +   'missing or duplicate agent.workspace.edit-queued-message',
+  +   'missing or duplicate agent.workspace.remove-queued-message',
+  +   'missing or duplicate agent.workspace.request',
+  +   'missing or duplicate agent.workspace.send',
+  +   'missing or duplicate agent.workspace.profile',
+  +   'missing or duplicate agent.workspace.call-limit',
+  +   'missing or duplicate agent.workspace.permissions-settings',
+  +   'missing or duplicate agent.workspace.request-chat',
+  +   'missing or duplicate agent.workspace.request-code',
+  +   'missing or duplicate agent.workspace.operation-mode',
+  +   'missing or duplicate agent.workspace.retry-models',
+  +   'missing or duplicate agent.workspace.model-settings',
+  +   'missing or duplicate agent.workspace.file',
+  +   'missing or duplicate agent.workspace.file-manual'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/agent-workspace-bindings.test.cjs:40:110)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                             'unbound or duplicate control metadata',
+      'missing or duplicate agent.workspace.conversation',                 'missing or duplicate agent.workspace.chat-options',
+      'missing or duplicate agent.workspace.history-toggle',               'missing or duplicate agent.workspace.new-chat',
+      'missing or duplicate agent.workspace.history-search',               'missing or duplicate agent.workspace.history-search-submit',
+      'missing or duplicate agent.workspace.history-row',                  'missing or duplicate agent.workspace.history-older',
+      'missing or duplicate agent.workspace.repository-search',            'missing or duplicate agent.workspace.repository',
+      'missing or duplicate agent.workspace.repository-manual',            'missing or duplicate agent.workspace.branch',
+      'missing or duplicate agent.workspace.branch-manual',                'missing or duplicate agent.workspace.environment-search',
+      'missing or duplicate agent.workspace.environment',                  'missing or duplicate agent.workspace.catalog-retry',
+      'missing or duplicate agent.workspace.github-connection-settings',   'missing or duplicate agent.workspace.connection-retry',
+      'missing or duplicate agent.workspace.suggest-review-repository',    'missing or duplicate agent.workspace.suggest-deploy-readiness',
+      'missing or duplicate agent.workspace.suggest-connections',          'missing or duplicate agent.workspace.stop-response',
+      'missing or duplicate agent.workspace.restore-failed-request',       'missing or duplicate agent.workspace.issue-settings',
+      'missing or duplicate agent.workspace.refresh-decision',             'missing or duplicate agent.workspace.startup-retry',
+      'missing or duplicate agent.workspace.error-reload-conversation',    'missing or duplicate agent.workspace.jump-latest',
+      'missing or duplicate agent.workspace.recovery-reload-conversation', 'missing or duplicate agent.workspace.restore-retained-request',
+      'missing or duplicate agent.workspace.dismiss-retained-request',     'missing or duplicate agent.workspace.resume-queue',
+      'missing or duplicate agent.workspace.edit-queued-message',          'missing or duplicate agent.workspace.remove-queued-message',
+      'missing or duplicate agent.workspace.request',                      'missing or duplicate agent.workspace.send',
+      'missing or duplicate agent.workspace.profile',                      'missing or duplicate agent.workspace.call-limit',
+      'missing or duplicate agent.workspace.permissions-settings',         'missing or duplicate agent.workspace.request-chat',
+      'missing or duplicate agent.workspace.request-code',                 'missing or duplicate agent.workspace.operation-mode',
+      'missing or duplicate agent.workspace.retry-models',                 'missing or duplicate agent.workspace.model-settings',
+      'missing or duplicate agent.workspace.file',                         'missing or duplicate agent.workspace.file-manual'
+    ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/agent-workspace-bindings.test.cjs:42:1
+✖ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (29.453584ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(source.replace(attr,'data-help-id={"'+a+'"}')).includes('nonliteral ID'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/agent-workspace-bindings.test.cjs:46:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/agent-workspace-bindings.test.cjs:52:1
+✖ rejects a newly added unbound control and metadata outside the finite scope (11.679583ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(extra).includes('declaration count drift'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/agent-workspace-bindings.test.cjs:54:74)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
