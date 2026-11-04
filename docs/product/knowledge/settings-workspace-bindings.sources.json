@@ -1,0 +1,26 @@
+{
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "5ef92577c68727b05639f3c85867c8fe0ab4ed4a",
+  "bindingScope": "Whole SettingsView.tsx: 69 intrinsic declarations, 68 new literal settings attributes and one preserved existing Governance binding; imported internals excluded",
+  "sources": [
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "7c1d382a9d448fc8dbb2959ba6c1fd0fc188170e41459fe1b769d08ac05932b0"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.json",
+      "sha256": "7d1e33a48d339450b547dcbfbc495d91b567745ae17c884ee222dcc8e1ab315b"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.test.cjs",
+      "sha256": "0013e5d12fef242d0c025cb58e4f6703933189617446cda6653007f03197b4b3"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-bindings.md",
+      "sha256": "342113567f8a5b2610c46fe71bc82c0da389903da0e2a8527ff73716bd6101ad"
+    }
+  ],
+  "validation": "5 focused AST tests pass under kernel network denial and private-only writes. Stripping only new settings attributes independently equals Git baseline including existing Governance metadata and gates. No native/customer acceptance."
+}

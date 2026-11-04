@@ -1,0 +1,7 @@
+# Settings direct-control binding integration
+
+Whole-file source mapping covers69intrinsic declarations:68new literal Settings IDs and one preserved existing Governance ID. Counts derive from the actual AST (48buttons,6inputs,12selects,1anchor,2textareas), not the scanner's107source candidates. Local generic helper families and mapped instances are not individually identified fields. Imported component internals and runtime/state/customer acceptance remain excluded explicitly.
+
+Actual metadata-missing RED3failed2passed→GREEN5/5 under kernel network denial/private writable test root/scrubbed environment. Complete discovery, exact original nodes, whole-file baseline and adversarial cases pass. Root independently stripped only new settings.workspace attributes and compared against actual Git5ef92577 bytes, confirmed the Governance entry remains once and rehashed every source-manifest entry. Fresh-context read-only final review found no important issues. Existing Governance entry test contracts were inspected but not rewritten/rerun; exact original node and all enclosing DEV/disabled expressions are preserved by the whole-file proof.
+
+No handlers, labels, state, layout structure, permissions, imports, flags or execution/approval authority changed. No full build, native/browser/customer walkthrough, screenshot, provider/network/database action, editorial approval or publication. Original Settings source guide remains historical. See ../../../product/knowledge/settings-workspace-bindings.md. B4 and all15master parents remain open.

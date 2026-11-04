@@ -1,0 +1,9 @@
+{
+  "baselineCommit": "5ef92577c68727b05639f3c85867c8fe0ab4ed4a",
+  "baselineSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+  "newAttributes": 68,
+  "preservedExistingAttributes": 1,
+  "strippedEqualsGitBaseline": true,
+  "stripPrefix": "settings.workspace. only",
+  "governanceEntryPreserved": true
+}

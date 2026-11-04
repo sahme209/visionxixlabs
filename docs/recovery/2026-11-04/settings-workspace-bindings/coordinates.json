@@ -1,0 +1,4 @@
+{
+  "owned": "/private/tmp/axiom-settings-bindings-d1dyf8r2",
+  "profile": "(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath \"/private/tmp/axiom-settings-bindings-d1dyf8r2\"))"
+}

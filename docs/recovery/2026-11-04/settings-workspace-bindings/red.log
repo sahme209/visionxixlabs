@@ -1,0 +1,269 @@
+✔ finite unpublished inventory separates 68 new and one preserved binding across all 69 declarations (0.644875ms)
+✖ independently enumerates all whole-file intrinsic controls and validates exact original JSX nodes (24.0005ms)
+✔ stripping ONLY new settings metadata restores the full baseline including the existing Governance attribute (0.382583ms)
+✖ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (33.156125ms)
+✖ rejects a new unbound intrinsic control and preserves existing Governance identity, node and DEV gate (12.970792ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 164.610208
+
+✖ failing tests:
+
+test at docs/product/knowledge/settings-workspace-bindings.test.cjs:41:1
+✖ independently enumerates all whole-file intrinsic controls and validates exact original JSX nodes (24.0005ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'missing or duplicate settings.workspace.back-to-workspace',
+  +   'missing or duplicate settings.workspace.section-search',
+  +   'missing or duplicate settings.workspace.section-select',
+  +   'missing or duplicate settings.workspace.sign-out-cancel',
+  +   'missing or duplicate settings.workspace.sign-out-confirm',
+  +   'missing or duplicate settings.workspace.governance-evidence-preview',
+  +   'missing or duplicate settings.workspace.notification-test',
+  +   'missing or duplicate settings.workspace.sign-out-open',
+  +   'missing or duplicate settings.workspace.usage-refresh',
+  +   'missing or duplicate settings.workspace.billing-cockpit-current',
+  +   'missing or duplicate settings.workspace.billing-portal-current',
+  +   'missing or duplicate settings.workspace.billing-cockpit-legacy',
+  +   'missing or duplicate settings.workspace.billing-portal-legacy',
+  +   'missing or duplicate settings.workspace.members-refresh',
+  +   'missing or duplicate settings.workspace.members-cockpit',
+  +   'missing or duplicate settings.workspace.member-role',
+  +   'missing or duplicate settings.workspace.model-search',
+  +   'missing or duplicate settings.workspace.model-filter',
+  +   'missing or duplicate settings.workspace.model-remove-unavailable',
+  +   'missing or duplicate settings.workspace.model-retry',
+  +   'missing or duplicate settings.workspace.model-make-default',
+  +   'missing or duplicate settings.workspace.model-approval-toggle',
+  +   'missing or duplicate settings.workspace.model-previous',
+  +   'missing or duplicate settings.workspace.model-next',
+  +   'missing or duplicate settings.workspace.repository-clone',
+  +   'missing or duplicate settings.workspace.pull-request-create',
+  +   'missing or duplicate settings.workspace.pull-request-link',
+  +   'missing or duplicate settings.workspace.environments-create-standard-empty',
+  +   'missing or duplicate settings.workspace.environments-create-standard-missing',
+  +   'missing or duplicate settings.workspace.environment-target-toggle',
+  +   'missing or duplicate settings.workspace.environment-tier',
+  +   'missing or duplicate settings.workspace.environment-create',
+  +   'missing or duplicate settings.workspace.deploy-target-save',
+  +   'missing or duplicate settings.workspace.deploy-repository',
+  +   'missing or duplicate settings.workspace.deploy-source-kind',
+  +   'missing or duplicate settings.workspace.deploy-readiness',
+  +   'missing or duplicate settings.workspace.deploy-dispatch',
+  +   'missing or duplicate settings.workspace.deploy-prior-receipt',
+  +   'missing or duplicate settings.workspace.deploy-emergency-bypass',
+  +   'missing or duplicate settings.workspace.deploy-bypass-reason',
+  +   'missing or duplicate settings.workspace.deploy-verified-pr-link',
+  +   'missing or duplicate settings.workspace.deploy-status-refresh',
+  +   'missing or duplicate settings.workspace.deploy-evidence-link',
+  +   'missing or duplicate settings.workspace.identity-provider-revoke',
+  +   'missing or duplicate settings.workspace.identity-protocol',
+  +   'missing or duplicate settings.workspace.identity-mapped-role',
+  +   'missing or duplicate settings.workspace.identity-require-mfa-pending',
+  +   'missing or duplicate settings.workspace.identity-provider-save-pending',
+  +   'missing or duplicate settings.workspace.scim-compute-preview',
+  +   'missing or duplicate settings.workspace.repository-provider',
+  +   'missing or duplicate settings.workspace.repository-register',
+  +   'missing or duplicate settings.workspace.branch-policy-repository',
+  +   'missing or duplicate settings.workspace.branch-policy-environment',
+  +   'missing or duplicate settings.workspace.branch-policy-requirement',
+  +   'missing or duplicate settings.workspace.branch-policy-prior-environment',
+  +   'missing or duplicate settings.workspace.branch-policy-create',
+  +   'missing or duplicate settings.workspace.labeled-text-field',
+  +   'missing or duplicate settings.workspace.labeled-multiline-field',
+  +   'missing or duplicate settings.workspace.repository-workspaces-open',
+  +   'missing or duplicate settings.workspace.connection-status-unavailable',
+  +   'missing or duplicate settings.workspace.connection-configuration-unavailable',
+  +   'missing or duplicate settings.workspace.connection-status-reload',
+  +   'missing or duplicate settings.workspace.connection-validate',
+  +   'missing or duplicate settings.workspace.connection-consent-open',
+  +   'missing or duplicate settings.workspace.connections-refresh',
+  +   'missing or duplicate settings.workspace.preference-toggle',
+  +   'missing or duplicate settings.workspace.preference-select',
+  +   'missing or duplicate settings.workspace.browser-handoff'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/settings-workspace-bindings.test.cjs:41:117)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'unbound or duplicate control metadata',                                        'unbound or duplicate control metadata',
+      'missing or duplicate settings.workspace.back-to-workspace',                    'missing or duplicate settings.workspace.section-search',
+      'missing or duplicate settings.workspace.section-select',                       'missing or duplicate settings.workspace.sign-out-cancel',
+      'missing or duplicate settings.workspace.sign-out-confirm',                     'missing or duplicate settings.workspace.governance-evidence-preview',
+      'missing or duplicate settings.workspace.notification-test',                    'missing or duplicate settings.workspace.sign-out-open',
+      'missing or duplicate settings.workspace.usage-refresh',                        'missing or duplicate settings.workspace.billing-cockpit-current',
+      'missing or duplicate settings.workspace.billing-portal-current',               'missing or duplicate settings.workspace.billing-cockpit-legacy',
+      'missing or duplicate settings.workspace.billing-portal-legacy',                'missing or duplicate settings.workspace.members-refresh',
+      'missing or duplicate settings.workspace.members-cockpit',                      'missing or duplicate settings.workspace.member-role',
+      'missing or duplicate settings.workspace.model-search',                         'missing or duplicate settings.workspace.model-filter',
+      'missing or duplicate settings.workspace.model-remove-unavailable',             'missing or duplicate settings.workspace.model-retry',
+      'missing or duplicate settings.workspace.model-make-default',                   'missing or duplicate settings.workspace.model-approval-toggle',
+      'missing or duplicate settings.workspace.model-previous',                       'missing or duplicate settings.workspace.model-next',
+      'missing or duplicate settings.workspace.repository-clone',                     'missing or duplicate settings.workspace.pull-request-create',
+      'missing or duplicate settings.workspace.pull-request-link',                    'missing or duplicate settings.workspace.environments-create-standard-empty',
+      'missing or duplicate settings.workspace.environments-create-standard-missing', 'missing or duplicate settings.workspace.environment-target-toggle',
+      'missing or duplicate settings.workspace.environment-tier',                     'missing or duplicate settings.workspace.environment-create',
+      ... 36 more items
+    ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/settings-workspace-bindings.test.cjs:45:1
+✖ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (33.156125ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(mutate(source.replace(attr,'data-help-id={"settings.workspace.section-search"}'))).includes('nonliteral ID'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/settings-workspace-bindings.test.cjs:49:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/settings-workspace-bindings.test.cjs:55:1
+✖ rejects a new unbound intrinsic control and preserves existing Governance identity, node and DEV gate (12.970792ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(mutate(extra)).includes('total count drift'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/settings-workspace-bindings.test.cjs:58:82)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

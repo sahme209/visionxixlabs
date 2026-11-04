@@ -1,0 +1,13 @@
+✔ finite unpublished inventory separates 68 new and one preserved binding across all 69 declarations (0.610292ms)
+✔ independently enumerates all whole-file intrinsic controls and validates exact original JSX nodes (23.360791ms)
+✔ stripping ONLY new settings metadata restores the full baseline including the existing Governance attribute (0.428292ms)
+✔ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (58.011833ms)
+✔ rejects a new unbound intrinsic control and preserves existing Governance identity, node and DEV gate (17.9815ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 194.042416
