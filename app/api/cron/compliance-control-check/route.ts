@@ -49,7 +49,7 @@ async function handle(req: NextRequest) {
       data: results.map((r) => ({ controlId: r.controlId, status: r.status, detail: r.detail })),
     });
   } catch (err) {
-    return NextResponse.json({ ok: false, reason: "persist_failed", detail: err instanceof Error ? err.message : "unknown" }, { status: 500 });
+    return NextResponse.json({ ok: false, reason: "persist_failed", detail: err instanceof Error ? "The control-check results could not be confirmed. Inspect current results before requesting another check." : "unknown" }, { status: 500 });
   }
 
   return NextResponse.json({ ok: true, data: { checked: results.length, results } });
