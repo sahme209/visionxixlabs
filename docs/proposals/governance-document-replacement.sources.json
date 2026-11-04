@@ -1,0 +1,78 @@
+{
+  "baseCommit": "e97e04b50ec8134caa8c4a19411062ed63074f47",
+  "purpose": "finite design source binding; no authority",
+  "sources": [
+    {
+      "path": "lib/governance/intelligence/contracts.ts",
+      "sha256": "80bc90b95dcc36565a0429684574f7298915ae12d32e697103528c41feaa886b"
+    },
+    {
+      "path": "lib/governance/intelligence/documentStore.ts",
+      "sha256": "98c02550088453efa8ecddfddb28b3d3e17fe17520de7d69c7781384a555c385"
+    },
+    {
+      "path": "lib/governance/intelligence/documentHttp.ts",
+      "sha256": "daf724565d6137e81d06a50ba9d1e6f34a33604b3d560a6cf4510234c8a0b850"
+    },
+    {
+      "path": "lib/governance/intelligence/readHttp.ts",
+      "sha256": "d21f0fd859233de27a28a472c97aabc177162da41c104c275d5abb47e1355fad"
+    },
+    {
+      "path": "lib/governance/intelligence/evidenceStore.ts",
+      "sha256": "0ed4e8b6686fbd1b2bc53aa9279ac07ba1c842ef52650fb4c7beab10d7565a0c"
+    },
+    {
+      "path": "lib/governance/intelligence/requestService.ts",
+      "sha256": "329b6076e5b4b60d62230496ff62e22b5546a9d69e807a75d5f6481c0c01f498"
+    },
+    {
+      "path": "lib/governance/intelligence/requestServiceCore.ts",
+      "sha256": "d19cbf432aa5d636cdad21d848dd34499deb849340a689522145785303003291"
+    },
+    {
+      "path": "lib/governance/intelligence/requestAuthority.ts",
+      "sha256": "dca84b74ee7e0d2f0935ae7564149ace6e1088650981fca827d785f315197c86"
+    },
+    {
+      "path": "lib/governance/intelligence/requestAuthorityCore.ts",
+      "sha256": "59db20c73cab7b32fd9268c1ddf28f7992fe46f5d1f85391d39e5cdd268ff217"
+    },
+    {
+      "path": "lib/governance/intelligence/sourceAuthority.ts",
+      "sha256": "b0ac17889ff08e7d24baa4fccde1672e7b163e6a4f49b5b99210263981ebb767"
+    },
+    {
+      "path": "lib/governance/intelligence/drift.ts",
+      "sha256": "7348f3d2b2a2abe2dd420ffa9e87b888d588ec4154b5c52d7905bd2eec81d7a0"
+    },
+    {
+      "path": "lib/governance/intelligence/freshness.ts",
+      "sha256": "02a33d908087081d291e63fa1d0039038cd052d9ee0d868b18872bdbaff8e5d3"
+    },
+    {
+      "path": "desktop/src/components/GovernanceDocumentUpload.tsx",
+      "sha256": "b4b69c5e431bfb43e0e279a515692fd63115158a8e5c497606c7f5d461286ad5"
+    },
+    {
+      "path": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "sha256": "d154a29c5cb47dfa7786a14bd420d8f20205f27d2e3f8af14b42d7cb3c8ffb9c"
+    },
+    {
+      "path": "desktop/src/views/GovernanceWorkspacePreview.tsx",
+      "sha256": "d48e805e27cddddb7907a6be14167c1bab69c4d72f0471f58bfcf51d5bbf139f"
+    },
+    {
+      "path": "desktop/src/lib/governanceIntelligence.ts",
+      "sha256": "fa771f175ef86e23d884e1b1b2e01937a24d1e6ac09896d4515359d53d87fdfb"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/lib/releaseOperationPlanTransport.ts",
+      "sha256": "d949404192c390001899836f1e8593381f1b99d0ce756607b5f608a1fabc5bc5"
+    }
+  ]
+}

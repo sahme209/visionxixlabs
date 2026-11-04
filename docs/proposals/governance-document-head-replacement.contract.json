@@ -1,0 +1,68 @@
+{
+  "status": "design-only; implementation awaits root review",
+  "baseCommit": "e97e04b50ec8134caa8c4a19411062ed63074f47",
+  "endpoint": "POST /api/desktop/governance-intelligence/read",
+  "request": {
+    "strict": true,
+    "fields": {
+      "operation": {
+        "literal": "read_document_head"
+      },
+      "artifactDigest": {
+        "pattern": "^[a-f0-9]{64}$"
+      }
+    }
+  },
+  "success": {
+    "httpStatus": 200,
+    "envelope": {
+      "ok": true,
+      "data": "DocumentHeadMetadata"
+    },
+    "data": {
+      "strict": true,
+      "fields": {
+        "artifactId": "existing governance_evidence_<hex64> stored artifact ID",
+        "artifactDigest": "hex64; equals requested stored snapshot digest",
+        "organizationId": "existing identifier; equals authenticated organization",
+        "name": "existing document name schema; derived from stored upload:<name>",
+        "selection": "existing strict scopeSchema {repositoryId,resourceId,environment}",
+        "headVersion": "integer 0..999 from validated current head row",
+        "sourceDigest": "hex64; validated current head blob content digest",
+        "updatedAt": "ISO datetime; stored head row last update, never observation/expiry refresh",
+        "completeness": "complete|partial; parsed current blob metadata",
+        "factCount": "integer 0..1000; parsed current blob facts length",
+        "selectedSourceDigest": "hex64; selected immutable historical snapshot content digest",
+        "selectedContentMatchesHead": "boolean; selectedSourceDigest === sourceDigest, client must verify"
+      }
+    }
+  },
+  "errors": {
+    "400": "invalid_governance_read_request",
+    "401": "desktop_session_required",
+    "409": "governance_read_unavailable; missing/corrupt/foreign/non-document unavailable, never absence",
+    "429": "rate_limited",
+    "503": "governance_intelligence_disabled",
+    "502": "governance_read_response_limit"
+  },
+  "headers": {
+    "Cache-Control": "private, no-store"
+  },
+  "unchangedLimits": {
+    "requestBytes": 2048,
+    "responseBytes": 262144,
+    "deadlineMs": 30000
+  },
+  "authority": "existing paired desktop pipeline:read/workspace:read reader and current membership; API keys denied; upload retains policy:manage collector checks",
+  "excludedFields": [
+    "body",
+    "base64",
+    "facts",
+    "observedAt",
+    "expiresAt",
+    "caller name/scope/org/version/head ID"
+  ],
+  "matchingMeaning": "Byte equality only; not historical freshness, head version identity, approval, or execution authority",
+  "lookupRecovery": "Existing actor/request UUID lookup unchanged: found:false remains held; found:true is original immutable historical artifact, not current head/version; no resend",
+  "featureGate": "New operation requires existing Governance feature enabled like upload; preserve OFF/unset historical-read permitlist exactly; no flag/env changes"
+}
