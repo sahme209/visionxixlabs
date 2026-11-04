@@ -1,0 +1,55 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-worker-20261104[39m
+
+ [31m×[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts per-job thrown diagnostics and continues once per job (Error: SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)[32m 5[2mms[22m[39m
+[31m   → expected '{"processed":2,"results":[{"id":"synt…' not to contain 'SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC'[39m
+ [31m×[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts per-job thrown diagnostics and continues once per job (SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)[32m 1[2mms[22m[39m
+[31m   → expected '{"processed":2,"results":[{"id":"synt…' not to contain 'SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC'[39m
+ [31m×[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts outer failure and retains internal console diagnostics (Error: SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)[32m 1[2mms[22m[39m
+[31m   → expected '{"error":"SYNTHETIC_PRIVATE_WORKER_DI…' not to contain 'SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC'[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts outer failure and retains internal console diagnostics (SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)[32m 1[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mretains authorization denial before database work[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mretains synthetic cron authentication and empty success[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mretains known job validation failures without worker dispatch[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 3 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts per-job thrown diagnostics and continues once per job (Error: SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)
+[41m[1m FAIL [22m[49m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts per-job thrown diagnostics and continues once per job (SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)
+[31m[1mAssertionError[22m: expected '{"processed":2,"results":[{"id":"synt…' not to contain 'SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC'[39m
+
+Expected: [32m"SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC"[39m
+Received: [31m"{"processed":2,"results":[{"id":"synthetic-job","status":"failed","error":"SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC"},{"id":"synthetic-job-2","status":"completed"}]}"[39m
+
+[36m [2m❯[22m app/api/agents/run/__tests__/errorPrivacy.test.ts:[2m18:71[22m[39m
+    [90m 16|[39m   m.jobs.mockResolvedValue([job, { ...job, id: "synthetic-job-2" }]); …
+    [90m 17|[39m   const response = await POST(request()); const body = await response.…
+    [90m 18|[39m   expect(response.status).toBe(200); expect(JSON.stringify(body)).not.…
+    [90m   |[39m                                                                       [31m^[39m
+    [90m 19|[39m   expect(body).toEqual({ processed: 2, results: [{ id: job.id, status:…
+    [90m 20|[39m   [34mexpect[39m(m[33m.[39mworker)[33m.[39m[34mtoHaveBeenCalledTimes[39m([34m2[39m)[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts outer failure and retains internal console diagnostics (Error: SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)
+[31m[1mAssertionError[22m: expected '{"error":"SYNTHETIC_PRIVATE_WORKER_DI…' not to contain 'SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC'[39m
+
+Expected: [32m"SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC"[39m
+Received: [31m"[7m{"error":"[27mSYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC[7m"}[27m"[39m
+
+[36m [2m❯[22m app/api/agents/run/__tests__/errorPrivacy.test.ts:[2m28:71[22m[39m
+    [90m 26|[39m   m.jobs.mockRejectedValue(failure); const log = vi.spyOn(console, "er…
+    [90m 27|[39m   const response = await POST(request()); const body = await response.…
+    [90m 28|[39m   expect(response.status).toBe(500); expect(JSON.stringify(body)).not.…
+    [90m   |[39m                                                                       [31m^[39m
+    [90m 29|[39m   expect(log).toHaveBeenCalledWith("[agents run]", failure); expect(m.…
+    [90m 30|[39m })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m4 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 00:01:18
+[2m   Duration [22m 138ms[2m (transform 25ms, setup 0ms, import 68ms, tests 9ms, environment 0ms)[22m
+

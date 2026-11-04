@@ -1,0 +1,16 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-worker-20261104[39m
+
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts per-job thrown diagnostics and continues once per job (Error: SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)[32m 4[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts per-job thrown diagnostics and continues once per job (SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)[32m 1[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts outer failure and retains internal console diagnostics (Error: SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mredacts outer failure and retains internal console diagnostics (SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC)[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mretains authorization denial before database work[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mretains synthetic cron authentication and empty success[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/agents/run/__tests__/errorPrivacy.test.ts[2m > [22mretains known job validation failures without worker dispatch[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m7 passed[39m[22m[90m (7)[39m
+[2m   Start at [22m 00:01:30
+[2m   Duration [22m 124ms[2m (transform 17ms, setup 0ms, import 40ms, tests 7ms, environment 0ms)[22m
+

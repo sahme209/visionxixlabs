@@ -1,0 +1,10 @@
+Frozen commit 5ce69af866bd3812e1fde26bd1459141ec72d45c, base b86b8a53, branch codex/a7-agent-worker-privacy, worktree /private/tmp/axiom-a7-worker-20261104.
+RED command: sh /private/tmp/axiom-a7-worker-evidence/run.sh > /private/tmp/axiom-a7-worker-evidence/red.log 2>&1
+Then result=$? was written to red-exit.txt: 1. Tool chunk a580e7 completed synchronously with shell exit 0, output 1. Three expected marker assertion failures, four passes, before production edits.
+GREEN command: sh /private/tmp/axiom-a7-worker-evidence/run.sh > /private/tmp/axiom-a7-worker-evidence/green.log 2>&1
+Then result=$? was written to green-exit.txt: 0. Tool chunk 8cd29d completed synchronously with shell exit 0, output 0. Seven passes.
+Types command: sh /private/tmp/axiom-a7-worker-evidence/types.sh > /private/tmp/axiom-a7-worker-evidence/types.log 2>&1
+Then result=$? was written to types-exit.txt: 0. Tool chunk 24f493 completed synchronously with shell exit 0, output 0, empty types.log.
+Full underlying commands and sandbox are preserved in run.sh, types.sh, deny.sb. Owned Vitest native configLoader and scoped TS config are preserved beside them. TypeScript root is actual-handler errorPrivacy.test.ts and its transitive route/source graph, not a full repo check.
+Mocked unavoidable auth, Prisma, worker, audit and side-effect AWS registration. No live provider/DB/network/credentials used. Kernel deny network and cached dependency writes; env -i with synthetic dead-loopback DB URL. Existing cached node_modules is a symlink to pinned 4087 dependencies. No installs/build/full-suite runs.
+Only two production public response messages changed; original lastError/audit/console diagnostics unchanged. No authority changes. No push/integration. git diff --check passed before commit. Worktree clean after commit.
