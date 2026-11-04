@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.outlook.controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:7193de939c8e64c0684976d1600d68f79d5b30c4",
+  "sourceFiles": 28,
+  "evaluationCases": 8,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

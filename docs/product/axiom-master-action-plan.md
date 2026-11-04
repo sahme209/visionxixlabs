@@ -692,3 +692,13 @@ All15parents remain open.
 - [x] B4 bounded glossary correction: two definitions now use capability-based independent review, distinct requester execution and local/non-production/version limitations. Rendered RED2thenGREEN3, scoped types and independent review pass. [Evidence](../recovery/2026-11-04/glossary-review-permissions/README.md). Not published or browser-accepted; existing5222preview predates this copy repair.
 
 Current core files remain byte-unchanged since prior0e057cab audit; supplier refuses and business channel remains unmounted. No newly approved core implementation before the pending exact909qualification decision is inferred. All15parents remain open.
+
+
+## November4 — Outlook support-knowledge source draft
+
+- [x] B4/B5 bounded structured Outlook draft:28unique sources/27historic ranges retained; newbundle schema/hash integrity passes and customer mode refuses. Independent source review passes. Eight evaluation cases remain proposed, not retrieval acceptance. [Evidence](../recovery/2026-11-04/outlook-structured-knowledge/README.md).
+
+No customer, editorial, media, runtime, ingestion or publication acceptance; all15parents remain open.
+
+
+- [x] B4 bounded browser pairing source guide closes the native guide’s explicit browser-control inventory gap, with9exact source/range bindings and independent review. [Guide](knowledge/browser-desktop-pairing-controls.md). Full authentication/browser/live pairing/clean-host/customer acceptance remain open.

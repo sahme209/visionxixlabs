@@ -1,0 +1,104 @@
+{
+  "status": "frozen-READY-internal-source-draft",
+  "baselineCommit": "7193de939c8e64c0684976d1600d68f79d5b30c4",
+  "customerEligible": false,
+  "customerAccepted": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "liveBrowserPairingAccepted": false,
+  "cleanHostAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false,
+  "guide": {
+    "path": "docs/product/knowledge/browser-desktop-pairing-controls.md",
+    "sha256": "2306bbc90732e563cb0ab25cf931f87192c1c9001bdbbc4e1f86d3c0c95b0228"
+  },
+  "rangeConvention": "inclusive 1-based raw lines retaining original newlines",
+  "sources": [
+    {
+      "path": "app/desktop/connect/page.tsx",
+      "wholeFileSha256": "dc2f45b292875d74d6b4cf4f0e0cc44b0137a895e89d9769c0176a9094572521",
+      "range": {
+        "startLine": 1,
+        "endLine": 86,
+        "sha256": "dc2f45b292875d74d6b4cf4f0e0cc44b0137a895e89d9769c0176a9094572521"
+      }
+    },
+    {
+      "path": "app/desktop/connect/PairDesktopClient.tsx",
+      "wholeFileSha256": "34806d3d7220a587e9c51ff61373531eb462c2460d094ed27be314365c614224",
+      "range": {
+        "startLine": 1,
+        "endLine": 94,
+        "sha256": "34806d3d7220a587e9c51ff61373531eb462c2460d094ed27be314365c614224"
+      }
+    },
+    {
+      "path": "app/api/desktop/pair/start/route.ts",
+      "wholeFileSha256": "ae66fd115976160c4da416146fcc46aebcbeb852d8940834d7977b2d4084a213",
+      "range": {
+        "startLine": 1,
+        "endLine": 59,
+        "sha256": "ae66fd115976160c4da416146fcc46aebcbeb852d8940834d7977b2d4084a213"
+      }
+    },
+    {
+      "path": "app/api/desktop/pair/approve/route.ts",
+      "wholeFileSha256": "e905953d33c955e08cc5f3eb2239796e3ff0ed994b520f227f013db488d963bd",
+      "range": {
+        "startLine": 1,
+        "endLine": 148,
+        "sha256": "e905953d33c955e08cc5f3eb2239796e3ff0ed994b520f227f013db488d963bd"
+      }
+    },
+    {
+      "path": "app/api/desktop/pair/status/route.ts",
+      "wholeFileSha256": "37e506d11f2075b5ac2d085cf4de5427bc5c85921e006ce7afe62135edecbae4",
+      "range": {
+        "startLine": 1,
+        "endLine": 88,
+        "sha256": "37e506d11f2075b5ac2d085cf4de5427bc5c85921e006ce7afe62135edecbae4"
+      }
+    },
+    {
+      "path": "lib/auth/verificationCallback.ts",
+      "wholeFileSha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230",
+      "range": {
+        "startLine": 1,
+        "endLine": 18,
+        "sha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230"
+      }
+    },
+    {
+      "path": "lib/desktop/desktopAuthPolicy.ts",
+      "wholeFileSha256": "169861f10a34642d37788ae0632d67196347ae9140444468fd203d64ce843f45",
+      "range": {
+        "startLine": 35,
+        "endLine": 61,
+        "sha256": "b9935be9dddb8309c18f3408f89cd2205e2e58f78e0f20f94f2fb9dd5d0a67da"
+      }
+    },
+    {
+      "path": "desktop/src/lib/desktopPairing.ts",
+      "wholeFileSha256": "9ad3be89fbd502548c8ba3c0f89819f761bebb236b49f93c305a9cbacd429776",
+      "range": {
+        "startLine": 94,
+        "endLine": 143,
+        "sha256": "edf708b14aa0cf5c1a1f525bbde32baeb6388c0ada73b7460163c054b9684919"
+      }
+    },
+    {
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "wholeFileSha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229",
+      "range": {
+        "startLine": 30,
+        "endLine": 73,
+        "sha256": "6888b7384ed544858e0d31eac3b6807498f6efcc5770c6318265e02256cfb277"
+      }
+    }
+  ],
+  "scope": "Mounted desktop browser pairing page and immediate start/approve/status/account-switch/native-consumption source boundaries; excludes full auth/provider/backend coverage"
+}

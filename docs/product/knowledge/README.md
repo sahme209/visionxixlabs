@@ -6,6 +6,7 @@
 
 | Task | Source draft or supplement | Scope reminder |
 | --- | --- | --- |
+| Review a desktop pairing request in the browser | [Browser pairing controls](browser-desktop-pairing-controls.md) | Browser approval, account switching and navigation do not prove native identity storage or execution access. |
 | Sign in, recover saved access or understand an access restriction | [Native sign-in and access](native-signin-and-access-controls.md) | Browser handoff, verification, entitlement and secure storage are distinct; not clean-host/session acceptance. |
 | Send an Agent request and review its saved action | [Agent workspace controls](agent-workspace-controls.md) | Request, exact review, separate requester execution and uncertain recovery are different steps. |
 | Choose a workspace destination | [Home and navigation](home-navigation-controls.md) | Home choices, commands, status and split panes navigate; they do not execute work or establish durable saves. |
