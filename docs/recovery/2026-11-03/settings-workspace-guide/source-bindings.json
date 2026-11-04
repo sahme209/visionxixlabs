@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "status": "frozen READY for internal source-document review only",
+  "baseline_commit": "58f2ddd4cb93f5f54a9642dbe08615b65371a2ee",
+  "scope": "finite Settings main view and direct source call boundaries; no all-backend or transitive completeness claim",
+  "range_hash_convention": "SHA256 of exact raw bytes of inclusive 1-based lines, preserving existing line terminators",
+  "proposed_content_ids_are_runtime_bindings": false,
+  "customer_eligible": false,
+  "publication_approved": false,
+  "runtime_accepted": false,
+  "native_accepted": false,
+  "media_accepted": false,
+  "editorial_accepted": false,
+  "release_accepted": false,
+  "b4_complete": false,
+  "current_runtime_readiness": "unverified",
+  "guide": {
+    "path": "docs/product/knowledge/settings-workspace-controls.md",
+    "sha256": "a857e4865b107ba2c478a2c5108da33cdaa23f5cc98b90c7ae126bd429d5f151"
+  },
+  "source_files": [
+    {
+      "path": "desktop/src/App.tsx",
+      "whole_file_sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "line_count": 209,
+      "ranges": [
+        {
+          "proposed_content_id": "settings.mount-navigation",
+          "start_line": 134,
+          "end_line": 187,
+          "range_sha256": "43aa5f9253129148f98f3bff5a7f3008f624f01c3bc78c109ed45c2e0a4e0df0",
+          "first_line": "  const settingsReturnView = useRef<CustomerView>(\"agent\");",
+          "last_line": "          {activeView === \"settings\" && <SettingsView onOpenRepository={() => navigate(\"repository-workspace\")} identity={identity} initialSection={settingsDestination} onClose={() => setActiveView(settingsReturnView.current)} />}"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "whole_file_sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "line_count": 2002,
+      "ranges": [
+        {
+          "proposed_content_id": "settings.navigation-preference-lifecycle",
+          "start_line": 1,
+          "end_line": 234,
+          "range_sha256": "dee9f57b624c69c955d7f7831c93d90b8c5afe40e258069169a632353a65a2c7",
+          "first_line": "import {GovernanceWorkspacePreview} from './GovernanceWorkspacePreview';",
+          "last_line": ""
+        },
+        {
+          "proposed_content_id": "settings.local-account-appearance",
+          "start_line": 235,
+          "end_line": 296,
+          "range_sha256": "614a0a7068afdfce3cf3109cce9d3e9222ac1986196db093b4b8981348618211",
+          "first_line": "function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits }: PreferenceSectionProps & {onOpenGovernance:()=>void;onOpenExecutionLimits:()=>void}) {",
+          "last_line": "    setRead({context,organizationId,data:null,error:null});"
+        },
+        {
+          "proposed_content_id": "settings.plan-usage",
+          "start_line": 297,
+          "end_line": 410,
+          "range_sha256": "32250eb4464f3966ff1055c1138324b812ac3294ed225a763d24c7c012c98a42",
+          "first_line": "    void desktopClient.usageSummary().then(result=>{",
+          "last_line": "      <LockedRow title=\"External-file protection\" detail=\"The customer workspace cannot write outside its approved application scope.\" />"
+        },
+        {
+          "proposed_content_id": "settings.agents-permissions",
+          "start_line": 411,
+          "end_line": 569,
+          "range_sha256": "c1c993d949a2371877f1d7ddd7ae8ccb850f3e8ba7501bcafee80fe33eccdbce",
+          "first_line": "    </Group>",
+          "last_line": ""
+        },
+        {
+          "proposed_content_id": "settings.models",
+          "start_line": 570,
+          "end_line": 720,
+          "range_sha256": "7289d5ae1c181c7b725d5064bb08991da0b050e491e9444c08b72c7aa19393e2",
+          "first_line": "function ModelsSection() {",
+          "last_line": ""
+        },
+        {
+          "proposed_content_id": "settings.git-pr",
+          "start_line": 721,
+          "end_line": 899,
+          "range_sha256": "6f98abf113749320478f66685341f1437f4ef782f500d3bcf187fa3cce5268c1",
+          "first_line": "function GitSection() {",
+          "last_line": " * product\" rule). Lists/creates Environment rows, configures the AWS"
+        },
+        {
+          "proposed_content_id": "settings.environments",
+          "start_line": 900,
+          "end_line": 1346,
+          "range_sha256": "9cea78aae7d2fff90cf2aadf91242c00305e689905267e5ed440d559b1ffc6bd",
+          "first_line": " * ECS deploy target per environment (role ARN never leaves this device",
+          "last_line": ""
+        },
+        {
+          "proposed_content_id": "settings.identity",
+          "start_line": 1347,
+          "end_line": 1535,
+          "range_sha256": "39f7e711c09d1cbb210e57bcd29f07d7c51047e55ba06ca81ad74a487f5a519e",
+          "first_line": "function IdentitySection() {",
+          "last_line": "  );"
+        },
+        {
+          "proposed_content_id": "settings.repositories-policies",
+          "start_line": 1536,
+          "end_line": 1733,
+          "range_sha256": "81dc656080a5e20cbc18836eae76b0162caf4aac084de2310fe62d38f57009de",
+          "first_line": "}",
+          "last_line": ""
+        },
+        {
+          "proposed_content_id": "settings.worktrees",
+          "start_line": 1764,
+          "end_line": 1772,
+          "range_sha256": "1a3c8cf27333fbeaca8e417ab4672c0ba669ef6efdf92b8c52635b92fe28beb6",
+          "first_line": "function WorktreesSection({ onOpenRepository }: {onOpenRepository?: () => void}) {",
+          "last_line": ""
+        },
+        {
+          "proposed_content_id": "settings.integrations",
+          "start_line": 1773,
+          "end_line": 1978,
+          "range_sha256": "987ab7d9f13691cad488b5fbffcf38c9bd027c074996dc01bc4604fc5479e9f9",
+          "first_line": "function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }) {",
+          "last_line": "}"
+        },
+        {
+          "proposed_content_id": "settings.ui-primitives",
+          "start_line": 1980,
+          "end_line": 2002,
+          "range_sha256": "95d3506c3ecf5dc0d34d2421220a8ec7185238f9318ffbb14aa75bdea44022b7",
+          "first_line": "type PreferenceSectionProps = { prefs: DesktopPreferences | null; onSave: (prefs: DesktopPreferences) => Promise<void> };",
+          "last_line": "function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button type=\"button\" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? \"mt-1\" : \"\"} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className=\"h-3.5 w-3.5\" /></button>; }"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/preferences.ts",
+      "whole_file_sha256": "fbcee4bbb8eb377c3f2f50c46d4908b57d46ea29d831f9936a02122666142a0f",
+      "line_count": 66,
+      "ranges": [
+        {
+          "proposed_content_id": "settings.preference-direct-handler",
+          "start_line": 1,
+          "end_line": 66,
+          "range_sha256": "fbcee4bbb8eb377c3f2f50c46d4908b57d46ea29d831f9936a02122666142a0f",
+          "first_line": "import { invoke } from \"@tauri-apps/api/core\";",
+          "last_line": "}"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "whole_file_sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229",
+      "line_count": 150,
+      "ranges": [
+        {
+          "proposed_content_id": "settings.signout-direct-handler",
+          "start_line": 118,
+          "end_line": 126,
+          "range_sha256": "753edf781077a9ae3ecc9205209f17f68e3bbbc4e08141ee4e158d5dcf217374",
+          "first_line": "export async function signOutDesktopCredentials(): Promise<void> {",
+          "last_line": "}"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "whole_file_sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "line_count": 2192,
+      "ranges": [
+        {
+          "proposed_content_id": "settings.billing-client",
+          "start_line": 680,
+          "end_line": 686,
+          "range_sha256": "4cfd0b01ccf6e8e6689013f8ffa5d4bcb12e0ecb9fe5e7cc824663e2164bc717",
+          "first_line": "  desktopBillingPortal(): Promise<ApiResult<{ url: string }>> {",
+          "last_line": "  }"
+        },
+        {
+          "proposed_content_id": "settings.integration-client",
+          "start_line": 1149,
+          "end_line": 1208,
+          "range_sha256": "dc4ddf72eaeb18c0c77c6a68d63dce2d2dc9fd4cb2557d88cf750bb6970c2d30",
+          "first_line": "  async integrationStatus(): Promise<ApiResult<{",
+          "last_line": "  }"
+        },
+        {
+          "proposed_content_id": "settings.github-client",
+          "start_line": 1233,
+          "end_line": 1248,
+          "range_sha256": "2666bf3a796c1640812650830f94d47fa1c96fb8632c39cfdd5884a77d72a0d3",
+          "first_line": "  createGithubBranch(input: { repositoryFullName: string; baseBranch: string; newBranchName: string }): Promise<ApiResult<{ ref: string; sha: string }>> {",
+          "last_line": ""
+        },
+        {
+          "proposed_content_id": "settings.environment-client",
+          "start_line": 1292,
+          "end_line": 1331,
+          "range_sha256": "fb92d7888edc3ed17c5690f49ce44b921dda737bababe83967ef5aca447ecb9d",
+          "first_line": "  listEnvironments(): Promise<ApiResult<{",
+          "last_line": "    return this.post(\"/api/desktop/agent/conversations\", {});"
+        },
+        {
+          "proposed_content_id": "settings.workspace-client",
+          "start_line": 1439,
+          "end_line": 1507,
+          "range_sha256": "cc8032685b391d36f17f5886bdf18b9e3aea8e9fa89363db5c8abc62832c0070",
+          "first_line": "  listRepositories(): Promise<ApiResult<{ generatedAt: string; repositories: Array<{ id: string; provider: \"github\" | \"gitlab\" | \"azuredevops\" | \"other\"; displayName: string; remoteUrl: string; defaultBranch: string; protectionStrength: \"strong\" | \"weak\" | \"none\"; flavorBadge: string | null; openPrCount: number; recentTagCount: number; lastWorkflow: { name: string; state: \"queued\" | \"in_progress\" | \"completed\"; conclusion: string | null; startedAtIso: string | null } | null }>; summary: { total: number; byProvider: Record<string, number>; weakProtection: number } }>> {",
+          "last_line": ""
+        }
+      ]
+    }
+  ],
+  "linked_guides": [
+    {
+      "path": "docs/product/knowledge/outlook-controls.md",
+      "whole_file_sha256": "317a2ff292792d3e492085a6f8ef2f5090f09cc906517e097a3c46d14e67c3f5",
+      "role": "linked existing guide; not revalidated or superseded"
+    },
+    {
+      "path": "docs/product/knowledge/slack-reviewed-action-controls.md",
+      "whole_file_sha256": "9b472f29440eff96e3b8462761509454cde672189500fffd892c4003c3289e2e",
+      "role": "linked existing guide; not revalidated or superseded"
+    },
+    {
+      "path": "docs/product/knowledge/teams-linear-controls.md",
+      "whole_file_sha256": "87e297c872754473935ad9fc44c9bdeb6b73ad89741a3aadf08515fbe0329925",
+      "role": "linked existing guide; not revalidated or superseded"
+    },
+    {
+      "path": "docs/product/knowledge/servicenow-evidence-and-closure-controls.md",
+      "whole_file_sha256": "0f20e052c9d9936fd02c056c25d2d53f08d0e1ae31109d9a3e8f1d4923161336",
+      "role": "linked existing guide; not revalidated or superseded"
+    }
+  ],
+  "mutable_master_hash": false,
+  "performed": "source reads and two documentation artifact writes only; no tests/build/browser/network/provider/DB/native/security/helper execution or credential values read"
+}

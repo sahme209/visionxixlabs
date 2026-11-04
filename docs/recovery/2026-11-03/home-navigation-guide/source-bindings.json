@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "status": "READY_FOR_INDEPENDENT_REVIEW",
+  "internal": true,
+  "customerVisible": false,
+  "snapshotCommit": "58f2ddd4cb93f5f54a9642dbe08615b65371a2ee",
+  "proposedContentIds": [
+    "home.entry",
+    "home.choices",
+    "home.sidebar",
+    "home.commands",
+    "home.header",
+    "home.retention",
+    "home.recovery"
+  ],
+  "runtimeBinding": false,
+  "acceptance": {
+    "runtime": false,
+    "media": false,
+    "editorial": false,
+    "release": false
+  },
+  "document": {
+    "path": "docs/product/knowledge/home-navigation-controls.md",
+    "sha256": "3829aa306427ef5a08b621f9b33b3cde4a487cbd04958703d915096e5d4421be"
+  },
+  "sources": [
+    {
+      "path": "desktop/src/views/WelcomeView.tsx",
+      "wholeFileSha256": "290c126d9e07a4b2ca95953eaf55ac73c7dcb03d37c04250e24370ae01ef96c9",
+      "range": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "290c126d9e07a4b2ca95953eaf55ac73c7dcb03d37c04250e24370ae01ef96c9",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      }
+    },
+    {
+      "path": "desktop/src/components/Sidebar.tsx",
+      "wholeFileSha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf",
+      "range": {
+        "startLine": 1,
+        "endLine": 119,
+        "sha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      }
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "wholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "range": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      }
+    },
+    {
+      "path": "desktop/src/components/TopBar.tsx",
+      "wholeFileSha256": "f2974a9f1f996e72434cb7e0ab809bd278a3b53a11c9580d23c4ff2d705fd667",
+      "range": {
+        "startLine": 1,
+        "endLine": 44,
+        "sha256": "f2974a9f1f996e72434cb7e0ab809bd278a3b53a11c9580d23c4ff2d705fd667",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      }
+    },
+    {
+      "path": "desktop/src/components/WorkspaceCommands.tsx",
+      "wholeFileSha256": "610a22e9b7917e913db7c70ee7d39cd4ba564741f1a46562971b0bfca72909b1",
+      "range": {
+        "startLine": 1,
+        "endLine": 55,
+        "sha256": "610a22e9b7917e913db7c70ee7d39cd4ba564741f1a46562971b0bfca72909b1",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      }
+    },
+    {
+      "path": "desktop/src/lib/useDismissibleDetails.ts",
+      "wholeFileSha256": "f5fea6b786c03e32c063a99b0384be3965f86a9b2aa812cfbe5812464d133979",
+      "range": {
+        "startLine": 1,
+        "endLine": 25,
+        "sha256": "f5fea6b786c03e32c063a99b0384be3965f86a9b2aa812cfbe5812464d133979",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      }
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "range": {
+        "startLine": 1,
+        "endLine": 209,
+        "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      }
+    },
+    {
+      "path": "desktop/src/components/WorkspaceViewBoundary.tsx",
+      "wholeFileSha256": "b9a13593bfe620bd51b4fc25ce7d38b5d1ab970f59ef5333f922321da0cfa587",
+      "range": {
+        "startLine": 1,
+        "endLine": 49,
+        "sha256": "b9a13593bfe620bd51b4fc25ce7d38b5d1ab970f59ef5333f922321da0cfa587",
+        "encoding": "original bytes; inclusive lines; retain line endings"
+      }
+    }
+  ],
+  "limits": [
+    "Static source inventory only; no runtime, accessibility or external-state validation.",
+    "Whole-file ranges deliberately freeze all inspected shell and shared-helper bytes.",
+    "No mutable master manifest is bound.",
+    "Destination setup, execution, account and child persistence behavior are outside scope."
+  ]
+}

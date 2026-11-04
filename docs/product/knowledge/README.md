@@ -7,6 +7,8 @@
 | Task | Source draft or supplement | Scope reminder |
 | --- | --- | --- |
 | Send an Agent request and review its saved action | [Agent workspace controls](agent-workspace-controls.md) | Request, exact review, separate requester execution and uncertain recovery are different steps. |
+| Choose a workspace destination | [Home and navigation](home-navigation-controls.md) | Home choices, commands, status and split panes navigate; they do not execute work or establish durable saves. |
+| Configure device and workspace settings | [Settings controls](settings-workspace-controls.md) | Local preferences, server policy writes, credentials/native actions and browser handoffs have different effects and recovery. |
 | Work with a saved Bot task | [Bot controls](axiom-bot-controls.md) | Drafts, AI requests, recorded reads and reviewed changes are distinct. |
 | Open or acquire repository source | [Repository acquisition](repository-acquisition-controls.md) | Local checkout and authorized clone; not a release approval. |
 | Inspect and edit repository text | [Editor controls](repository-editor-controls.md), [nested confirmations and diff pages](repository-editor-nested-controls.md) | Discard, cancellation, saving and uncertain outcomes differ. |
@@ -32,4 +34,4 @@ Structured Agent, deployment, Bot and repository article drafts, evaluation requ
 3. Obtain genuine editorial/release decisions and separately verify customer/public eligibility. Metadata alone cannot make those decisions.
 4. Update the coverage queue and exact bindings. Keep missing controls and unaccepted states open; do not infer whole-app coverage from this index.
 
-Home, full Settings and the explicitly omitted nested workflows still need their source-to-control inventory; Releases, Batches, Agent and every guide still require their media, native and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.
+The native documentation browser and explicitly omitted nested workflows (including detailed Jira lifecycle and cloud/enrollment subforms) still need their source-to-control inventory. Home, Settings, Releases, Batches, Agent and every guide still require their media, native, editorial and release acceptance under B4. Every linked draft also retains its own limitations. No native walkthrough, current connection health, provider action or publication occurred while creating this index.

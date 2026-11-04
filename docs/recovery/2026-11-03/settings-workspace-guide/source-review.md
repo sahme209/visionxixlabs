@@ -1,0 +1,5 @@
+# Settings bounded source review
+
+Independent reviewer website_claims_current_audit found no important findings in the finite Settings main-view guide. It verified5 source whole-file hashes,20 inclusive ranges including first/last anchors,4 linked-guide hashes and the guide hash. Root separately verified those byte bindings and read main section/mount/preferences lifecycle plus relevant directcontrol source. Proposed IDs remain authoring metadata only; linked older guides retain their own source baselines, not renewed runtime acceptance.
+
+Local preferences, server policy/membership writes, billing/browser handoffs, Git credential/native actions, environment dispatch and pending Identity metadata are distinguished. Explicitly omitted deep cloud/native/backend/prototype scopes remain open. UI security/enforcement copy is not certification. No new test/build/runtime/browser/native/provider/DB/Security/helper action or customer/editorial/release acceptance. Existing passing website build/preview and paired sessions unchanged.
