@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
           actor: "system",
           metadata: { jobId: job.id, error: errMsg },
         });
-        results.push({ id: job.id, status: "failed", error: errMsg });
+        results.push({ id: job.id, status: "failed", error: "Agent job failed" });
       }
     }
 
@@ -138,7 +138,7 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     console.error("[agents run]", e);
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Worker failed" },
+      { error: "Worker failed" },
       { status: 500 }
     );
   }

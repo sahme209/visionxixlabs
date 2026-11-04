@@ -1,0 +1,33 @@
+import { beforeEach, afterEach, expect, it, vi } from "vitest";
+import { NextRequest } from "next/server";
+const m = vi.hoisted(() => ({ auth: vi.fn(), jobs: vi.fn(), updateJob: vi.fn(), lead: vi.fn(), updateLead: vi.fn(), worker: vi.fn(), audit: vi.fn() }));
+vi.mock("@/lib/admin/auth", () => ({ requireAdmin: m.auth }));
+vi.mock("@/lib/db", () => ({ prisma: { agentJob: { findMany: m.jobs, update: m.updateJob }, lead: { findUnique: m.lead, update: m.updateLead } } }));
+vi.mock("@/lib/agents/contactResolutionAgent", () => ({ runContactResolutionAgent: m.worker }));
+vi.mock("@/lib/security/auditLog", () => ({ logAudit: m.audit }));
+vi.mock("@/lib/plugins/aws", () => ({}));
+import { POST } from "../route";
+const marker = "SYNTHETIC_PRIVATE_WORKER_DIAGNOSTIC";
+const job = { id: "synthetic-job", leadId: "synthetic-lead", attempts: 0, type: "CONTACT_RESOLUTION" };
+const request = (authorization?: string) => new NextRequest("http://localhost/synthetic", { method: "POST", headers: authorization ? { authorization } : {} });
+beforeEach(() => { vi.resetAllMocks(); m.auth.mockResolvedValue({ user: { id: "synthetic-admin" } }); m.jobs.mockResolvedValue([job]); m.lead.mockResolvedValue({ id: "synthetic-lead", name: "Synthetic", email: "synthetic@example.invalid", fullPayload: {} }); m.worker.mockResolvedValue({ status: "resolved", actionsTaken: [] }); });
+afterEach(() => { vi.unstubAllEnvs(); vi.restoreAllMocks(); });
+it.each([new Error(marker), marker])("redacts per-job thrown diagnostics and continues once per job (%s)", async failure => {
+  m.jobs.mockResolvedValue([job, { ...job, id: "synthetic-job-2" }]); m.worker.mockRejectedValueOnce(failure);
+  const response = await POST(request()); const body = await response.json();
+  expect(response.status).toBe(200); expect(JSON.stringify(body)).not.toContain(marker);
+  expect(body).toEqual({ processed: 2, results: [{ id: job.id, status: "failed", error: "Agent job failed" }, { id: "synthetic-job-2", status: "completed" }] });
+  expect(m.worker).toHaveBeenCalledTimes(2);
+  expect(m.updateJob).toHaveBeenCalledWith({ where: { id: job.id }, data: { status: "failed", lastError: marker } });
+  expect(m.audit).toHaveBeenCalledWith({ leadId: job.leadId, action: "agent_failed", actor: "system", metadata: { jobId: job.id, error: marker } });
+  expect(m.updateJob).toHaveBeenCalledWith({ where: { id: job.id }, data: { status: "running", attempts: 1, lastError: null } });
+});
+it.each([new Error(marker), marker])("redacts outer failure and retains internal console diagnostics (%s)", async failure => {
+  m.jobs.mockRejectedValue(failure); const log = vi.spyOn(console, "error").mockImplementation(() => {});
+  const response = await POST(request()); const body = await response.json();
+  expect(response.status).toBe(500); expect(JSON.stringify(body)).not.toContain(marker); expect(body).toEqual({ error: "Worker failed" });
+  expect(log).toHaveBeenCalledWith("[agents run]", failure); expect(m.worker).not.toHaveBeenCalled();
+});
+it("retains authorization denial before database work", async () => { m.auth.mockResolvedValue({ error: "denied" }); const response = await POST(request()); expect(response.status).toBe(401); expect(await response.json()).toEqual({ error: "Unauthorized" }); expect(m.jobs).not.toHaveBeenCalled(); });
+it("retains synthetic cron authentication and empty success", async () => { vi.stubEnv("CRON_SECRET", "synthetic-cron"); m.jobs.mockResolvedValue([]); const response = await POST(request("Bearer synthetic-cron")); expect(response.status).toBe(200); expect(await response.json()).toEqual({ processed: 0, results: [] }); expect(m.auth).not.toHaveBeenCalled(); expect(m.jobs).toHaveBeenCalledWith({ where: { status: "pending", attempts: { lt: 3 }, runAt: { lte: expect.any(Date) } }, orderBy: { runAt: "asc" }, take: 10 }); });
+it("retains known job validation failures without worker dispatch", async () => { m.jobs.mockResolvedValue([{ ...job, type: "UNKNOWN" }, { ...job, id: "missing-lead" }]); m.lead.mockResolvedValue(null); const response = await POST(request()); expect(await response.json()).toEqual({ processed: 2, results: [{ id: job.id, status: "failed", error: "Unknown job type" }, { id: "missing-lead", status: "failed", error: "Lead not found" }] }); expect(m.worker).not.toHaveBeenCalled(); });
