@@ -1,0 +1,116 @@
+{
+  "format": "axiom.current-bootstrap-threat-model-source/1",
+  "sourceRevision": "4b6632206e7151e46598be5d93cdf63c78ecce20",
+  "scope": "Exact reviewed source bytes; no runtime, custody or authorization attestation",
+  "algorithm": "sha256",
+  "files": {
+    "packages/verified-issuer-runtime/index.cjs": {
+      "sha256": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4",
+      "bytes": 7258
+    },
+    "packages/verified-issuer-runtime/internal/verify-package.cjs": {
+      "sha256": "1d2fe048e4fd873691ab04f86668056963d62276d0fdc5df85b8c6334ce84a17",
+      "bytes": 11873
+    },
+    "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m": {
+      "sha256": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca",
+      "bytes": 3355
+    },
+    "packages/verified-issuer-runtime/native/origin_private_resource_supplier.h": {
+      "sha256": "f53a323c24113587746d5d7db795d1ae888e51fdc23658f67b31d1727df0b68c",
+      "bytes": 774
+    },
+    "packages/verified-issuer-runtime/native/origin_private_bootstrap.h": {
+      "sha256": "c68e2954c7e6d1013f490fa28a92f60350b04e7087ca5001e57722452a419360",
+      "bytes": 612
+    },
+    "packages/verified-issuer-runtime/native/origin_private_bootstrap.c": {
+      "sha256": "0a7c214f2e3be10eaab98a8964dd889e2fa8aa410d23bcac3746e0a492f6bdc0",
+      "bytes": 3791
+    },
+    "packages/verified-issuer-runtime/native/origin_private_bootstrap_writer.c": {
+      "sha256": "e3faf48fd6721cdc33db957625d7e75d24035d1c84dd31714fe778860c5ce4c9",
+      "bytes": 1928
+    },
+    "packages/verified-issuer-runtime/native/origin_broker.c": {
+      "sha256": "a5c3d95977343243a435913cf67abbb8fd1600d5c829eb8cd08a562427f6d9e3",
+      "bytes": 23897
+    },
+    "packages/verified-issuer-runtime/native/origin_bootstrap.c": {
+      "sha256": "396fce1f900129d6f81683935c61b4cd97c4e49d6e597265dca56785c583cb99",
+      "bytes": 3039
+    },
+    "packages/verified-issuer-runtime/native/origin_guard.c": {
+      "sha256": "7652869e0283985b78f25e75bb5201a764bb19023820c8e5234bee6ad4c9c963",
+      "bytes": 12230
+    },
+    "packages/verified-issuer-runtime/native/origin_session.c": {
+      "sha256": "96e13398ccf85283ab9f07d0ff17e8cc3ff9677efc7729f5015d341f59163d4b",
+      "bytes": 7201
+    },
+    "packages/verified-issuer-runtime/native/origin_session.h": {
+      "sha256": "b2542b1a2e59675e522adf37190437634c2f16e6333b6e6c909e01bdff896701",
+      "bytes": 735
+    },
+    "packages/verified-issuer-runtime/native/origin_process_identity.c": {
+      "sha256": "004193879c5af000873199fef26336457e7251da2b21611d91d7af8dec4ea78a",
+      "bytes": 3887
+    },
+    "packages/verified-issuer-runtime/native/origin_root_binding.m": {
+      "sha256": "a74167becb5225348ff6c14bba01e17b93d857c81a5d00a50fccae88cb44b252",
+      "bytes": 8874
+    },
+    "packages/verified-issuer-runtime/native/origin_runtime_protocol.c": {
+      "sha256": "9c422d5b474c287b1c0bfdf2a3b28e132f226e421932d4ca3e431c056f9be648",
+      "bytes": 2216
+    },
+    "packages/verified-issuer-runtime/native/protected_resource_inventory.c": {
+      "sha256": "b257135d421cf1ba69fb33ee347970dbdd978d1e43c56c3197018e969614ee4d",
+      "bytes": 11083
+    },
+    "lib/desktop/privateReleaseMergeBootstrap.ts": {
+      "sha256": "ba74b3a38c57124b6b391f5adf11cfd542082ac77620cabfe80b07d1399aeff9",
+      "bytes": 3408
+    },
+    "lib/desktop/privateReleaseMergeComposition.ts": {
+      "sha256": "52d0297aff96d8857ae9f19331204606659afe66ba56de8ae4ee252ed53fbe5c",
+      "bytes": 3666
+    },
+    "lib/security/privateAuthorityDatabase.ts": {
+      "sha256": "0baf90d2d6624d56c5ec6be220e33f53be7dbd48480bf5758ba7aa70752f07cd",
+      "bytes": 984
+    },
+    "lib/security/privateCredentialVault.ts": {
+      "sha256": "4e0e93c0eefc21503a7c7f9aa008f656a8e2db5b61ace260cdee602ca71a2541",
+      "bytes": 1793
+    },
+    "lib/desktop/privateDesktopToken.ts": {
+      "sha256": "09e32fe5ff30d96da301d991de59f0eb9c2235d4b9c8a840fc6d8ecc5a8104ba",
+      "bytes": 2567
+    },
+    "lib/db.ts": {
+      "sha256": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4",
+      "bytes": 1334
+    },
+    "lib/security/credentialVault.ts": {
+      "sha256": "27fb296b8f79c24a4328ab940b0879e77b0789df3083243b55be4aa7ed0245a2",
+      "bytes": 2665
+    },
+    "lib/desktop/desktopToken.ts": {
+      "sha256": "c9b585984a37960b768e53685b15539f8158e560a9a27351220b09d689174092",
+      "bytes": 2023
+    },
+    "packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs": {
+      "sha256": "b9de09fa93fea83906181d85040e1a9b401535391f233bac3e19c4ca741a65fb",
+      "bytes": 3760
+    },
+    "packages/verified-issuer-runtime/native/origin_private_bootstrap_buffer_test.c": {
+      "sha256": "3aee137502c9b00ad5b253b90be7002426e483b37e2367f50039673b6f64455f",
+      "bytes": 1447
+    },
+    "packages/verified-issuer-runtime/native/tests/private_bootstrap_writer_test.c": {
+      "sha256": "bb4cbff9b700599a64a8d4369804c780fa0d34717950262afbc4aa2c15d32c3c",
+      "bytes": 1917
+    }
+  }
+}
