@@ -1,0 +1,216 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-pending-cost-telemetry-20261104[39m
+
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — shape 1 (codeProposeRealExecutor)[2m > [22mextracts cost.totalCents + usage.{input,output}_tokens[32m 1[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — shape 1 (codeProposeRealExecutor)[2m > [22mapplies latencyMsOverride[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — shape 1 (codeProposeRealExecutor)[2m > [22mhandles cost.totalCents === null gracefully[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — shape 2 (explicit telemetry block)[2m > [22mprefers the telemetry block when present[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — shape 3 (legacy top-level)[2m > [22mfalls back to top-level fields when no shape-1/2 keys present[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — defensive[2m > [22mnull detail returns zeros (+ optional latency)[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — defensive[2m > [22mnon-object detail returns zeros[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — defensive[2m > [22mnegative numbers clamp to 0[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — defensive[2m > [22mNaN / Infinity floors to 0[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mextractStageTelemetry — defensive[2m > [22mfloors fractional cents (telemetry should be integer)[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mrollupStageTelemetry — totals[2m > [22msums every numeric field[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mrollupStageTelemetry — totals[2m > [22mcounts succeeded vs failed stages[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mrollupStageTelemetry — totals[2m > [22mhasCost flag flips on any non-zero cost[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mrollupStageTelemetry — top spenders[2m > [22mreturns top-N stages ordered by costCents desc[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mrollupStageTelemetry — top spenders[2m > [22mrespects custom topN[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22massertRunCostBudget — under cap[2m > [22mallowed when far below[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22massertRunCostBudget — under cap[2m > [22mflips to warn at 80% threshold[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22massertRunCostBudget — under cap[2m > [22mwarn threshold is configurable[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22massertRunCostBudget — at or over cap[2m > [22mhalts exactly at the cap[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22massertRunCostBudget — at or over cap[2m > [22mhalts over the cap[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22massertRunCostBudget — at or over cap[2m > [22mzero/negative cap halts[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22massertRunCostBudget — unlimited[2m > [22mnull cap → always allowed, no warn flag[32m 0[2mms[22m[39m
+ [32m✓[39m lib/workforce/pipelines/__tests__/stageTelemetry.test.ts[2m > [22mDEFAULT_RUN_MAX_CENTS[2m > [22mis set to a sensible default ($5)[32m 0[2mms[22m[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mreachable GET distinguishes pending recorded zero from final free cost[32m 5[2mms[22m[39m
+[31m   → expected { id: 's', stageId: 's', …(9) } to match object { costCents: +0, …(2) }
+(10 matching properties omitted from actual)[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mexplicit settled zero is final and distinguishable from pending[32m 1[2mms[22m[39m
+[31m   → expected { id: 's', stageId: 's', …(9) } to match object { costState: 'final', …(1) }
+(11 matching properties omitted from actual)[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmixed settled and pending costs retain recorded projection but no final total[32m 0[2mms[22m[39m
+[31m   → expected { totalCostCents: 7, …(8) } to match object { totalCostCents: 7, …(2) }
+(8 matching properties omitted from actual)[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmalformed or unbound coding cost {"costShape":null,"totalCents":null,"pendingSettlement":null} is unknown[32m 0[2mms[22m[39m
+[31m   → expected { id: 's', stageId: 's', …(9) } to match object { costState: 'unknown', …(1) }
+(11 matching properties omitted from actual)[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmalformed or unbound coding cost {"totalCents":0,"pendingSettlement":"false"} is unknown[32m 0[2mms[22m[39m
+[31m   → expected { id: 's', stageId: 's', …(9) } to match object { costState: 'unknown', …(1) }
+(11 matching properties omitted from actual)[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmalformed or unbound coding cost {"totalCents":-1,"pendingSettlement":false} is unknown[32m 0[2mms[22m[39m
+[31m   → expected { id: 's', stageId: 's', …(9) } to match object { costState: 'unknown', …(1) }
+(11 matching properties omitted from actual)[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmalformed or unbound coding cost {"totalCents":1,"pendingSettlement":false} is unknown[32m 0[2mms[22m[39m
+[31m   → expected { id: 's', stageId: 's', …(9) } to match object { costState: 'unknown', …(1) }
+(11 matching properties omitted from actual)[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22ma running coding stage with missing metadata cannot be verified zero[32m 0[2mms[22m[39m
+[31m   → expected { id: 's', stageId: 's', …(9) } to match object { costState: 'unknown', …(1) }
+(11 matching properties omitted from actual)[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mfinancial projections share one repeatable snapshot without selecting raw output detail[32m 0[2mms[22m[39m
+[31m   → expected "vi.fn()" to be called with arguments: [ Any<Function>, …(1) ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+ [31m×[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mfinancial marker strings never become public DTO fields[32m 0[2mms[22m[39m
+[31m   → expected undefined to be 'unknown' // Object.is equality[39m
+ [32m✓[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mretains admin allowlist refusal without reading financial data[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mretains admin allowlist refusal without reading financial data[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mretains missing-run404 without a financial marker query[32m 0[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 10 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mreachable GET distinguishes pending recorded zero from final free cost
+[31m[1mAssertionError[22m: expected { id: 's', stageId: 's', …(9) } to match object { costCents: +0, …(2) }
+(10 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[2m    "costCents": 0,[22m
+[32m-   "costState": "pending",[39m
+[32m-   "finalCostCents": null,[39m
+[2m  }[22m
+
+[36m [2m❯[22m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts:[2m14:62[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mexplicit settled zero is final and distinguishable from pending
+[31m[1mAssertionError[22m: expected { id: 's', stageId: 's', …(9) } to match object { costState: 'final', …(1) }
+(11 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "costState": "final",[39m
+[32m-   "finalCostCents": 0,[39m
+[31m+   "completedAt": null,[39m
+[31m+   "costCents": 0,[39m
+[31m+   "errorMessage": null,[39m
+[31m+   "id": "s",[39m
+[31m+   "latencyMs": 10,[39m
+[31m+   "ordering": 0,[39m
+[31m+   "stageId": "s",[39m
+[31m+   "stageKind": "code_propose",[39m
+[31m+   "status": "succeeded",[39m
+[31m+   "tokensInput": 2,[39m
+[31m+   "tokensOutput": 1,[39m
+[2m  }[22m
+
+[36m [2m❯[22m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts:[2m17:144[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmixed settled and pending costs retain recorded projection but no final total
+[31m[1mAssertionError[22m: expected { totalCostCents: 7, …(8) } to match object { totalCostCents: 7, …(2) }
+(8 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "costState": "pending",[39m
+[32m-   "finalTotalCostCents": null,[39m
+[2m    "totalCostCents": 7,[22m
+[2m  }[22m
+
+[36m [2m❯[22m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts:[2m20:198[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmalformed or unbound coding cost {"costShape":null,"totalCents":null,"pendingSettlement":null} is unknown
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmalformed or unbound coding cost {"totalCents":0,"pendingSettlement":"false"} is unknown
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmalformed or unbound coding cost {"totalCents":-1,"pendingSettlement":false} is unknown
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mmalformed or unbound coding cost {"totalCents":1,"pendingSettlement":false} is unknown
+[31m[1mAssertionError[22m: expected { id: 's', stageId: 's', …(9) } to match object { costState: 'unknown', …(1) }
+(11 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "costState": "unknown",[39m
+[32m-   "finalCostCents": null,[39m
+[31m+   "completedAt": null,[39m
+[31m+   "costCents": 0,[39m
+[31m+   "errorMessage": null,[39m
+[31m+   "id": "s",[39m
+[31m+   "latencyMs": 10,[39m
+[31m+   "ordering": 0,[39m
+[31m+   "stageId": "s",[39m
+[31m+   "stageKind": "code_propose",[39m
+[31m+   "status": "succeeded",[39m
+[31m+   "tokensInput": 2,[39m
+[31m+   "tokensOutput": 1,[39m
+[2m  }[22m
+
+[36m [2m❯[22m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts:[2m23:111[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22ma running coding stage with missing metadata cannot be verified zero
+[31m[1mAssertionError[22m: expected { id: 's', stageId: 's', …(9) } to match object { costState: 'unknown', …(1) }
+(11 matching properties omitted from actual)[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  {[22m
+[32m-   "costState": "unknown",[39m
+[32m-   "finalCostCents": null,[39m
+[31m+   "completedAt": null,[39m
+[31m+   "costCents": 0,[39m
+[31m+   "errorMessage": null,[39m
+[31m+   "id": "s",[39m
+[31m+   "latencyMs": 10,[39m
+[31m+   "ordering": 0,[39m
+[31m+   "stageId": "s",[39m
+[31m+   "stageKind": "code_propose",[39m
+[31m+   "status": "running",[39m
+[31m+   "tokensInput": 2,[39m
+[31m+   "tokensOutput": 1,[39m
+[2m  }[22m
+
+[36m [2m❯[22m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts:[2m26:186[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mfinancial projections share one repeatable snapshot without selecting raw output detail
+[31m[1mAssertionError[22m: expected "vi.fn()" to be called with arguments: [ Any<Function>, …(1) ][90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[36m [2m❯[22m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts:[2m29:36[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts[2m > [22mfinancial marker strings never become public DTO fields
+[31m[1mAssertionError[22m: expected undefined to be 'unknown' // Object.is equality[39m
+
+[32m- Expected:[39m
+"unknown"
+
+[31m+ Received:[39m
+undefined
+
+[36m [2m❯[22m app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts:[2m32:179[22m[39m
+
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m1 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[31m10 failed[39m[22m[2m | [22m[1m[32m26 passed[39m[22m[90m (36)[39m
+[2m   Start at [22m 07:41:09
+[2m   Duration [22m 180ms[2m (transform 24ms, setup 0ms, import 64ms, tests 12ms, environment 0ms)[22m
+

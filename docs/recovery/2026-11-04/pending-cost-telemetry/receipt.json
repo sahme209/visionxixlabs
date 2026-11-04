@@ -1,0 +1,110 @@
+{
+  "status": "local-source-and-mocked-handler-validation-only",
+  "sourceCommit": "49252ded910f5e442cc665bf5a9cfbe0bbd427a8",
+  "baseCommit": "b80a85a9b74a7deff9c4a691643644316c41f8ed",
+  "scope": "existing admin pipeline telemetry cost completeness; not ledger/admission authority",
+  "tests": {
+    "actualGetRed": {
+      "failed": 10,
+      "passed": 26,
+      "exit": 1
+    },
+    "activeRunRed": {
+      "failed": 1,
+      "passed": 39,
+      "exit": 1
+    },
+    "finalGreen": {
+      "passed": 40,
+      "failed": 0,
+      "exit": 0
+    },
+    "scopedTypes": {
+      "roots": 4,
+      "transitive": true,
+      "exit": 0
+    }
+  },
+  "isolation": {
+    "networkDenied": true,
+    "databaseInvoked": false,
+    "postgresStarted": false,
+    "providerInvoked": false,
+    "browserOrNativeInvoked": false,
+    "buildOrBroadSuiteRun": false,
+    "canonicalEdited": false,
+    "sharedDependenciesWritten": false
+  },
+  "sources": [
+    {
+      "path": "app/api/admin/pipeline-runs/[id]/telemetry/__tests__/pendingCost.test.ts",
+      "sha256": "b8a6eca2e08b4ffc67aa97bd81ffb50d1ca8d5a4e108f236c554c39da2b2f76a"
+    },
+    {
+      "path": "app/api/admin/pipeline-runs/[id]/telemetry/route.ts",
+      "sha256": "75cd3010ce5e648272b6460d28b4184c6a9355602071484c736a20527362117e"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/stageTelemetry.test.ts",
+      "sha256": "c07ecb8488dcce654107e411c74f7ae1d811f1a19752f842fa77e6572271d383"
+    },
+    {
+      "path": "lib/workforce/pipelines/rollupStageTelemetry.ts",
+      "sha256": "1b578df48a28bb4a7f61ea39c5b4a3cd68d13131e42caca7f61dcf23aa8f5e97"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "active-run-red.log",
+      "sha256": "fb0d0687a01ddb23451594ba7fa27f12db959a60eed6f4d17ce4af9c4d54968a"
+    },
+    {
+      "path": "deny.sb",
+      "sha256": "44b89929297f5fea9082630ef0645fded4b7fe6d312625881addd03297b6d0ed"
+    },
+    {
+      "path": "final-green.log",
+      "sha256": "c933dd603be9fce9843361e5b1daf44be69555f396f19118d73c31ae278e6227"
+    },
+    {
+      "path": "final-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "frozen-green.log",
+      "sha256": "d9917b415c0640c4c4eabed18edc168e1428cf08a805486b4218e13a06f57c69"
+    },
+    {
+      "path": "frozen-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "green-final.log",
+      "sha256": "75bc37c0418700cc824ec99e46cdb46df76ca33a8e946b898ea2846c76127d58"
+    },
+    {
+      "path": "green.log",
+      "sha256": "ff94509e238f014e95dfd2d02d53b271e434fec1b4551e4316d66666ecc1e118"
+    },
+    {
+      "path": "red.log",
+      "sha256": "787e252c185839da163f0da88ba705597b7bfed6a2ac920aaf3ccbe20985ad2d"
+    },
+    {
+      "path": "run.sh",
+      "sha256": "84647e4313e98cd1d85e419726ddda85b0948214dda36152d29dd35f610f50df"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "558627155d29911e5224fd3b914474790a5a5f4749864b091c9160b814460c13"
+    },
+    {
+      "path": "types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "vitest.config.mjs",
+      "sha256": "9e79a71ab24d40ec04d7467cfa291cbfc59489cced6c30824fa4448b4bfe5d87"
+    }
+  ]
+}
