@@ -1,0 +1,21 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'evidence' essential text fully opaque at 'initial' progress[32m 45[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'evidence' essential text fully opaque at 'partial' progress[32m 5[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'evidence' essential text fully opaque at 'paused partial' progress[32m 4[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'evidence' essential text fully opaque at 'reduced motion' progress[32m 3[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'hold' essential text fully opaque at 'initial' progress[32m 4[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'hold' essential text fully opaque at 'partial' progress[32m 3[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'hold' essential text fully opaque at 'paused partial' progress[32m 3[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'hold' essential text fully opaque at 'reduced motion' progress[32m 2[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'receipt' essential text fully opaque at 'initial' progress[32m 3[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'receipt' essential text fully opaque at 'partial' progress[32m 3[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'receipt' essential text fully opaque at 'paused partial' progress[32m 5[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStoryScene.readability.test.ts[2m > [22mkeeps all 'receipt' essential text fully opaque at 'reduced motion' progress[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m   Start at [22m 15:45:58
+[2m   Duration [22m 424ms[2m (transform 16ms, setup 0ms, import 111ms, tests 81ms, environment 180ms)[22m
+

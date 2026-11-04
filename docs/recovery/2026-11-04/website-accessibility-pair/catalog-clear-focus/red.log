@@ -1,0 +1,1158 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [31m❯[39m components/marketing/__tests__/IntegrationCatalogBrowser.test.ts [2m([22m[2m9 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 157[2mms[22m[39m
+   [32m✓[39m starts with planned entries visible and never offers a public connection action[32m 62[2mms[22m[39m
+   [32m✓[39m combines job, availability and operation filters without changing access[32m 14[2mms[22m[39m
+   [32m✓[39m searches names, explains empty intersections and resets all filters[32m 20[2mms[22m[39m
+   [32m✓[39m keeps setup links as ordinary documentation navigation[32m 8[2mms[22m[39m
+   [32m✓[39m shows each card's typed operation models separately from availability[32m 10[2mms[22m[39m
+   [32m✓[39m keeps planned operation models descriptive without setup authority[32m 9[2mms[22m[39m
+[31m   [31m×[31m returns deliberate clear focus to search after filtering GitLab[39m[32m 15[2mms[22m[39m
+[31m   [31m×[31m returns deliberate clear focus to search after filtering no connector has this name[39m[32m 12[2mms[22m[39m
+   [32m✓[39m does not autofocus at mount or steal focus during ordinary filter changes[32m 6[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 2 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m components/marketing/__tests__/IntegrationCatalogBrowser.test.ts[2m > [22mreturns deliberate clear focus to search after filtering GitLab
+[41m[1m FAIL [22m[49m components/marketing/__tests__/IntegrationCatalogBrowser.test.ts[2m > [22mreturns deliberate clear focus to search after filtering no connector has this name
+[31m[1mAssertionError[22m: expected <body><div>…(1)</div></body> to be <input …(4)></input> // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[31m+ <body>[39m
+[31m+   <div>[39m
+[31m+     <section[39m
+[31m+       aria-label="Browse integrations"[39m
+[31m+       class="space-y-6"[39m
+[31m+     >[39m
+[31m+       <div[39m
+[31m+         class="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.025] p-5 sm:grid-cols-2 xl:grid-cols-4"[39m
+[31m+       >[39m
+[31m+         <label[39m
+[31m+           class="text-xs font-medium text-zinc-300"[39m
+[31m+         >[39m
+[31m+           Search connectors[39m
+[2m            <input[22m
+[2m              class="mt-2 min-h-11 w-full rounded-xl border border-white/15 bg-[#171717] px-3 text-sm text-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-orange-300"[22m
+[2m              placeholder="Find a tool…"[22m
+[2m              type="search"[22m
+[2m              value=""[22m
+[2m            />[22m
+[31m+         </label>[39m
+[31m+         <label[39m
+[31m+           class="text-xs font-medium text-zinc-300"[39m
+[31m+         >[39m
+[31m+           Job[39m
+[31m+           <select[39m
+[31m+             class="mt-2 min-h-11 w-full rounded-xl border border-white/15 bg-[#171717] px-3 text-sm text-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-orange-300"[39m
+[31m+           >[39m
+[31m+             <option[39m
+[31m+               value="all"[39m
+[31m+             >[39m
+[31m+               All jobs[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="cloud"[39m
+[31m+             >[39m
+[31m+               Cloud delivery[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="source"[39m
+[31m+             >[39m
+[31m+               Source & CI[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="work"[39m
+[31m+             >[39m
+[31m+               Work tracking[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="communication"[39m
+[31m+             >[39m
+[31m+               Communication[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="operations"[39m
+[31m+             >[39m
+[31m+               Orchestration & observability[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="data"[39m
+[31m+             >[39m
+[31m+               Data[39m
+[31m+             </option>[39m
+[31m+           </select>[39m
+[31m+         </label>[39m
+[31m+         <label[39m
+[31m+           class="text-xs font-medium text-zinc-300"[39m
+[31m+         >[39m
+[31m+           Availability[39m
+[31m+           <select[39m
+[31m+             class="mt-2 min-h-11 w-full rounded-xl border border-white/15 bg-[#171717] px-3 text-sm text-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-orange-300"[39m
+[31m+           >[39m
+[31m+             <option[39m
+[31m+               value="all"[39m
+[31m+             >[39m
+[31m+               All availability[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="available"[39m
+[31m+             >[39m
+[31m+               Available workflows[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="configuration"[39m
+[31m+             >[39m
+[31m+               Configuration required[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="preview"[39m
+[31m+             >[39m
+[31m+               Preview or review[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="planned"[39m
+[31m+             >[39m
+[31m+               Planned[39m
+[31m+             </option>[39m
+[31m+           </select>[39m
+[31m+         </label>[39m
+[31m+         <label[39m
+[31m+           class="text-xs font-medium text-zinc-300"[39m
+[31m+         >[39m
+[31m+           Operation model[39m
+[31m+           <select[39m
+[31m+             class="mt-2 min-h-11 w-full rounded-xl border border-white/15 bg-[#171717] px-3 text-sm text-zinc-100 outline-none focus-visible:ring-2 focus-visible:ring-orange-300"[39m
+[31m+           >[39m
+[31m+             <option[39m
+[31m+               value="all"[39m
+[31m+             >[39m
+[31m+               All operation models[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="read"[39m
+[31m+             >[39m
+[31m+               Read context[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="change"[39m
+[31m+             >[39m
+[31m+               Change workflows[39m
+[31m+             </option>[39m
+[31m+             <option[39m
+[31m+               value="events"[39m
+[31m+             >[39m
+[31m+               Receive events[39m
+[31m+             </option>[39m
+[31m+           </select>[39m
+[31m+         </label>[39m
+[31m+       </div>[39m
+[31m+       <div[39m
+[31m+         class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+       >[39m
+[31m+         <p[39m
+[31m+           aria-atomic="true"[39m
+[31m+           aria-live="polite"[39m
+[31m+           class="text-sm text-zinc-400"[39m
+[31m+           role="status"[39m
+[31m+         >[39m
+[31m+           15[39m
+[31m+            connectors shown · [39m
+[31m+           15[39m
+[31m+            in the catalog[39m
+[31m+         </p>[39m
+[31m+       </div>[39m
+[31m+       <p[39m
+[31m+         class="max-w-3xl text-sm leading-6 text-zinc-400"[39m
+[31m+       >[39m
+[31m+         Filters describe the catalog, not your account’s connection or permission status. Operation models include preview and planned designs; they do not enable actions.[39m
+[31m+       </p>[39m
+[31m+       <section[39m
+[31m+         aria-labelledby="catalog-cloud"[39m
+[31m+         class="space-y-3"[39m
+[31m+       >[39m
+[31m+         <h2[39m
+[31m+           class="text-sm font-medium text-zinc-300"[39m
+[31m+           id="catalog-cloud"[39m
+[31m+         >[39m
+[31m+           Cloud delivery[39m
+[31m+         </h2>[39m
+[31m+         <div[39m
+[31m+           class="grid gap-3 md:grid-cols-2"[39m
+[31m+         >[39m
+[31m+           <article[39m
+[31m+             aria-label="AWS integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 AWS[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Configuration required[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Assume-role connection code is implemented. Live validation requires broker credentials and customer IAM setup; inventory/security analysis remains preview-grade and write execution is not released.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs/aws-setup"[39m
+[31m+               >[39m
+[31m+                 Read setup guide[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="Azure integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 Azure[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Preview[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Credential-format validation and preview inventory are implemented. Live Azure SDK validation and provider-specific execution are not released.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/cloud-solutions/azure"[39m
+[31m+               >[39m
+[31m+                 Read preview scope[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="GCP integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 GCP[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Preview[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Credential-format validation and preview inventory are implemented. Live Asset Inventory validation and provider-specific execution are not released.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/cloud-solutions/gcp"[39m
+[31m+               >[39m
+[31m+                 Read preview scope[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+         </div>[39m
+[31m+       </section>[39m
+[31m+       <section[39m
+[31m+         aria-labelledby="catalog-source"[39m
+[31m+         class="space-y-3"[39m
+[31m+       >[39m
+[31m+         <h2[39m
+[31m+           class="text-sm font-medium text-zinc-300"[39m
+[31m+           id="catalog-source"[39m
+[31m+         >[39m
+[31m+           Source & CI[39m
+[31m+         </h2>[39m
+[31m+         <div[39m
+[31m+           class="grid gap-3 md:grid-cols-2"[39m
+[31m+         >[39m
+[31m+           <article[39m
+[31m+             aria-label="GitHub integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 GitHub[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Available[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Read repository context and inspect source/workflow evidence through a repository-scoped GitHub connection. Branch, pull-request and workflow actions have their own permissions and review requirements; this catalog does not establish execution readiness.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs/oauth-setup"[39m
+[31m+               >[39m
+[31m+                 Read setup guide[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="GitLab integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/[0.07] bg-white/[0.015]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 GitLab[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Planned[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               No customer-ready activation path is published.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 class="text-xs text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 No setup available yet[39m
+[31m+               </p>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="VS Code integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 VS Code[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Preview[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Extension code is tracked separately; marketplace installation and the shared authentication path require release verification.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs"[39m
+[31m+               >[39m
+[31m+                 Browse documentation[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+         </div>[39m
+[31m+       </section>[39m
+[31m+       <section[39m
+[31m+         aria-labelledby="catalog-work"[39m
+[31m+         class="space-y-3"[39m
+[31m+       >[39m
+[31m+         <h2[39m
+[31m+           class="text-sm font-medium text-zinc-300"[39m
+[31m+           id="catalog-work"[39m
+[31m+         >[39m
+[31m+           Work tracking[39m
+[31m+         </h2>[39m
+[31m+         <div[39m
+[31m+           class="grid gap-3 md:grid-cols-2"[39m
+[31m+         >[39m
+[31m+           <article[39m
+[31m+             aria-label="Linear integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/[0.07] bg-white/[0.015]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 Linear[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Planned[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Issue creation/update is not advertised as available until OAuth and write behavior are release-verified.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 class="text-xs text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 No setup available yet[39m
+[31m+               </p>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="PagerDuty integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/[0.07] bg-white/[0.015]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 PagerDuty[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Planned[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               No released paging connection is available.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 class="text-xs text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 No setup available yet[39m
+[31m+               </p>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+         </div>[39m
+[31m+       </section>[39m
+[31m+       <section[39m
+[31m+         aria-labelledby="catalog-communication"[39m
+[31m+         class="space-y-3"[39m
+[31m+       >[39m
+[31m+         <h2[39m
+[31m+           class="text-sm font-medium text-zinc-300"[39m
+[31m+           id="catalog-communication"[39m
+[31m+         >[39m
+[31m+           Communication[39m
+[31m+         </h2>[39m
+[31m+         <div[39m
+[31m+           class="grid gap-3 md:grid-cols-2"[39m
+[31m+         >[39m
+[31m+           <article[39m
+[31m+             aria-label="Slack integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 Slack[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Implementation review[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Notification code must not be confused with workflow synchronization. Customer OAuth and message delivery are not release-verified.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs"[39m
+[31m+               >[39m
+[31m+                 Browse documentation[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+         </div>[39m
+[31m+       </section>[39m
+[31m+       <section[39m
+[31m+         aria-labelledby="catalog-operations"[39m
+[31m+         class="space-y-3"[39m
+[31m+       >[39m
+[31m+         <h2[39m
+[31m+           class="text-sm font-medium text-zinc-300"[39m
+[31m+           id="catalog-operations"[39m
+[31m+         >[39m
+[31m+           Orchestration & observability[39m
+[31m+         </h2>[39m
+[31m+         <div[39m
+[31m+           class="grid gap-3 md:grid-cols-2"[39m
+[31m+         >[39m
+[31m+           <article[39m
+[31m+             aria-label="AWS CloudWatch integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 AWS CloudWatch[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Implementation review[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Inbound event code exists; a released customer setup and end-to-end delivery path have not been verified.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Receive events[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs"[39m
+[31m+               >[39m
+[31m+                 Browse documentation[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="Grafana integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 Grafana[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Implementation review[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Inbound event code exists; a released customer setup and end-to-end delivery path have not been verified.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Receive events[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs"[39m
+[31m+               >[39m
+[31m+                 Browse documentation[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="Dynatrace integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/[0.07] bg-white/[0.015]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 Dynatrace[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Planned[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               No verified customer activation path is published.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Receive events[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 class="text-xs text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 No setup available yet[39m
+[31m+               </p>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="Apache Airflow integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 Apache Airflow[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Available[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               Validate the configured Airflow instance before browsing DAGs and monitoring runs. Triggers, retries and scheduling depend on the enabled workflow and exact operation checks; no run is started from this page.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+                 <li>[39m
+[31m+                   Change workflows[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs"[39m
+[31m+               >[39m
+[31m+                 Browse documentation[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+         </div>[39m
+[31m+       </section>[39m
+[31m+       <section[39m
+[31m+         aria-labelledby="catalog-data"[39m
+[31m+         class="space-y-3"[39m
+[31m+       >[39m
+[31m+         <h2[39m
+[31m+           class="text-sm font-medium text-zinc-300"[39m
+[31m+           id="catalog-data"[39m
+[31m+         >[39m
+[31m+           Data[39m
+[31m+         </h2>[39m
+[31m+         <div[39m
+[31m+           class="grid gap-3 md:grid-cols-2"[39m
+[31m+         >[39m
+[31m+           <article[39m
+[31m+             aria-label="Postgres integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 Postgres[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Implementation review[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               DDL generation exists. A released connection, permissions test, and revocation journey are not end-to-end verified.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs"[39m
+[31m+               >[39m
+[31m+                 Browse documentation[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+           <article[39m
+[31m+             aria-label="MySQL integration"[39m
+[31m+             class="flex flex-col rounded-2xl border p-5 sm:p-6 border-white/10 bg-[#151515]"[39m
+[31m+           >[39m
+[31m+             <div[39m
+[31m+               class="flex flex-wrap items-center justify-between gap-3"[39m
+[31m+             >[39m
+[31m+               <h3[39m
+[31m+                 class="text-base font-medium tracking-tight text-zinc-100"[39m
+[31m+               >[39m
+[31m+                 MySQL[39m
+[31m+               </h3>[39m
+[31m+               <span[39m
+[31m+                 class="rounded-full border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400"[39m
+[31m+               >[39m
+[31m+                 Implementation review[39m
+[31m+               </span>[39m
+[31m+             </div>[39m
+[31m+             <p[39m
+[31m+               class="mb-5 mt-3 max-w-xl text-sm leading-6 text-zinc-400"[39m
+[31m+             >[39m
+[31m+               DDL generation exists. A released connection, permissions test, and revocation journey are not end-to-end verified.[39m
+[31m+             </p>[39m
+[31m+             <div[39m
+[31m+               aria-label="Operation models"[39m
+[31m+               class="mb-5 space-y-2"[39m
+[31m+               role="group"[39m
+[31m+             >[39m
+[31m+               <p[39m
+[31m+                 aria-hidden="true"[39m
+[31m+                 class="text-[11px] font-medium text-zinc-500"[39m
+[31m+               >[39m
+[31m+                 Operation models[39m
+[31m+               </p>[39m
+[31m+               <ul[39m
+[31m+                 class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-zinc-300"[39m
+[31m+               >[39m
+[31m+                 <li>[39m
+[31m+                   Read context[39m
+[31m+                 </li>[39m
+[31m+               </ul>[39m
+[31m+             </div>[39m
+[31m+             <div[39m
+[31m+               class="mt-auto"[39m
+[31m+             >[39m
+[31m+               <a[39m
+[31m+                 class="inline-flex min-h-11 items-center gap-2 rounded-lg px-1 text-sm font-medium text-zinc-200 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300"[39m
+[31m+                 href="/docs"[39m
+[31m+               >[39m
+[31m+                 Browse documentation[39m
+[31m+                 <span[39m
+[31m+                   aria-hidden="true"[39m
+[31m+                 >[39m
+[31m+                   ↗[39m
+[31m+                 </span>[39m
+[31m+               </a>[39m
+[31m+             </div>[39m
+[31m+           </article>[39m
+[31m+         </div>[39m
+[31m+       </section>[39m
+[31m+     </section>[39m
+[31m+   </div>[39m
+[31m+ </body>[39m
+
+[36m [2m❯[22m components/marketing/__tests__/IntegrationCatalogBrowser.test.ts:[2m75:33[22m[39m
+    [90m 73|[39m  fireEvent[33m.[39m[34mclick[39m(clear)[33m;[39m
+    [90m 74|[39m  expect(screen.queryByRole('button',{name:'Clear filters'})).toBeNull(…
+    [90m 75|[39m  [34mexpect[39m(document[33m.[39mactiveElement)[33m.[39m[34mtoBe[39m(search)[33m;[39m
+    [90m   |[39m                                 [31m^[39m
+    [90m 76|[39m  [34mexpect[39m((search [35mas[39m [33mHTMLInputElement[39m)[33m.[39mvalue)[33m.[39m[34mtoBe[39m([32m''[39m)[33m;[39m
+    [90m 77|[39m  expect(screen.getAllByRole('article')).toHaveLength(publicCatalogEntr…
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m7 passed[39m[22m[90m (9)[39m
+[2m   Start at [22m 15:45:43
+[2m   Duration [22m 455ms[2m (transform 24ms, setup 0ms, import 58ms, tests 157ms, environment 181ms)[22m
+

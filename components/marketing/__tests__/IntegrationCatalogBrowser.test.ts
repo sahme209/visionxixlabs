@@ -64,3 +64,21 @@ it("keeps planned operation models descriptive without setup authority",()=>{
  expect(within(gitlab).queryByRole("link")).toBeNull();
  expect(within(gitlab).queryByRole("button")).toBeNull();
 });
+it.each(['GitLab','no connector has this name'])('returns deliberate clear focus to search after filtering %s',query=>{
+ render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
+ const search=screen.getByLabelText('Search connectors');
+ fireEvent.change(search,{target:{value:query}});
+ const clear=screen.getByRole('button',{name:'Clear filters'});
+ clear.focus();expect(document.activeElement).toBe(clear);
+ fireEvent.click(clear);
+ expect(screen.queryByRole('button',{name:'Clear filters'})).toBeNull();
+ expect(document.activeElement).toBe(search);
+ expect((search as HTMLInputElement).value).toBe('');
+ expect(screen.getAllByRole('article')).toHaveLength(publicCatalogEntries().length);
+});
+it('does not autofocus at mount or steal focus during ordinary filter changes',()=>{
+ render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
+ const search=screen.getByLabelText('Search connectors');expect(document.activeElement).not.toBe(search);
+ search.focus();fireEvent.change(search,{target:{value:'Git'}});expect(document.activeElement).toBe(search);
+ const job=screen.getByLabelText('Job');job.focus();fireEvent.change(job,{target:{value:'cloud'}});expect(document.activeElement).toBe(job);
+});

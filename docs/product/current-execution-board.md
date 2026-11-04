@@ -43,3 +43,6 @@ Exact provider/ticket/action card context:19focused checks, desktop types and in
 Existing local limit proposal authoring, DEV-only Settings entry and original-request restart hold are confirmed in current source; do not rebuild them from stale README checkpoints. [Exact source inspection](../recovery/2026-11-04/governance-current-workflow-reconciliation/README.md). No tests rerun or full enforcement qualification. Runtime/custody/coverage/native/live gates remain unchanged.
 
 B4 ticket card supplement now documents exact current local context/selection/deadline behavior with source custody; internal/customer-ineligible, not visual/native/editorial acceptance. No duplicate lifecycle guide or tests.
+
+### November4 website accessibility increment
+~~Catalog clear-focus recovery and fully readable paused evidence cards~~:9+12focused DOM cases with real REDs/source reviews. [Evidence](../recovery/2026-11-04/website-accessibility-pair/README.md). No browser/AT or measured-contrast acceptance; no publication.

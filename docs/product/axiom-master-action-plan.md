@@ -864,3 +864,7 @@ Current source confirms existing local execution-limit proposal authoring, DEV e
 ## November4 — ticket card source guidance supplement
 
 New internal [ticket-card source supplement](knowledge/ticket-action-card-context-source-supplement.md) records actual heading/fallback, accessible heading/record relationships, exact selection and deadline disablement, linked to existing lifecycle guides rather than duplicating them. Current source hash/lines and guide targets reviewed; no tests rerun. Customer eligibility/editorial/media/native acceptance remain absent. All15parents remain open.
+
+## November4 — website keyboard recovery and readable paused evidence
+
+~~Integration Clear filters restores Search focus; essential scripted-demo evidence/warnings remain fully opaque when paused~~ ([source-bound focused evidence](../recovery/2026-11-04/website-accessibility-pair/README.md)). Actual RED2/9 became9/12focused passes; separate source reviews clear. No new animations/dependencies, catalog availability changes or authority. Browser/AT/contrast/performance/reduced-motion end-to-end and publication gates remain open. All15parents remain open.

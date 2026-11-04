@@ -1,0 +1,29 @@
+{
+  "status": "local rendered readability checks only",
+  "baselineCommit": "1d29e28ab108f53f875197399ca6c8d675979a1c",
+  "sources": [
+    {
+      "path": "components/marketing/WorkflowStoryScene.tsx",
+      "sha256": "71ca9de87aa3624bc998d74d5a92883ee511c19d4b46e5d35ce8f6b5b39d14fa"
+    },
+    {
+      "path": "components/marketing/__tests__/WorkflowStoryScene.readability.test.ts",
+      "sha256": "e8dea9f28137d78058bb6975e0373f6b67b20be4676f1fe906dcfd4f4f53a594"
+    }
+  ],
+  "change": "Existing progress opacity moved from evidence/hold/receipt card to empty aria-hidden decorative dot; essential text and card ancestors stay fully opaque. No new animation or text change.",
+  "red": {
+    "failed": 9,
+    "passed": 3,
+    "exit": 1
+  },
+  "green": {
+    "passed": 12,
+    "failed": 0,
+    "exit": 0
+  },
+  "typedComponentUnchanged": true,
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache with writes denied elsewhere",
+  "limits": "Rendered DOM/computed-opacity checks at explicit component progress states. No browser visual/contrast measurement, assistive technology, full build, deployment or live/provider acceptance."
+}

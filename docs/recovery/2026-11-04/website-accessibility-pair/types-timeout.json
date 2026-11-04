@@ -1,0 +1,7 @@
+{
+  "result": "unconfirmed",
+  "reason": "90second timeout, no diagnostics captured",
+  "owned": "/private/tmp/axiom-web-a11y-types-gk4g7wvv",
+  "processConfirmedAbsentAfterTimeout": true,
+  "notAPass": true
+}

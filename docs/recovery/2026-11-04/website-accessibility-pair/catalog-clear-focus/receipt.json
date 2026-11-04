@@ -1,0 +1,11 @@
+{
+  "sourceHashes": {
+    "components/marketing/IntegrationCatalogBrowser.tsx": "d977dd0fcbb44de33b2fd29209f7fef1517172ef81fead2b6673be2c0c282528",
+    "components/marketing/__tests__/IntegrationCatalogBrowser.test.ts": "aa2cd3be8d84e4a8681a28400a1b65cc29ad8778e76bf883134ccb2046349c7d"
+  },
+  "red": "2 focused actual rendered focus failures /7 passes",
+  "green": "9 passed one focused existing file",
+  "network": "kernel denied; no network or provider action",
+  "scope": "ref+deliberate clear focus only; no autofocus on mount/typing/select changes; status/filter/link/authority semantics unchanged",
+  "acceptance": "jsdom rendered keyboard focus, NOT actual browser/AT/visual acceptance"
+}
