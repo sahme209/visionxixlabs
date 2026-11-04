@@ -1,0 +1,28 @@
+{
+  "runtimeRevision": "e74052c8a49886ee4ca47c1f6ca7dd2a7d3bd0b7",
+  "approvalUnit1": "call_XxKLU4Spnphsc3GjVwOTr9Yb[0]",
+  "approvalUnit2": "call_AGbYNSsJKoA8rRneL8yYnzMg[0]",
+  "finalSourceReview": "pass bounded5d99..cf4; e740 changes only fixture createdAt",
+  "rootPrivateFactoryTests": 2,
+  "rootCommercialTests": 3,
+  "rootLegacyPolicyDisplayGates": 16,
+  "integratedScopedTypes": "pass private factory + actual legacy HTTP/service/billing wrappers",
+  "buildRoot": "/private/tmp/axiom-private-merge-build-e74052c8-fw0jti1f",
+  "buildExit": 0,
+  "terminal": {
+    "sourceRevision": "e74052c8a49886ee4ca47c1f6ca7dd2a7d3bd0b7",
+    "phase": "build",
+    "status": "build_outputs_observed_unqualified",
+    "buildOutputsVerified": true,
+    "executionAuthorized": false
+  },
+  "buildResultSha256": "2c215255072203839afe119657add8b7f3f34222c50c91da6858381e88b4ae00",
+  "buildLogSha256": "3e8b661e393df120ec550b553d3b7507a7ef2e2224fdeaf41c6e55eb18217375",
+  "databaseQueriesExecuted": 0,
+  "providerRequestsExecuted": 0,
+  "deployed": false,
+  "authorityEnabled": false,
+  "privateEntryMounted": false,
+  "compiledPrivateEntryQualified": false,
+  "fullGovernanceComplete": false
+}
