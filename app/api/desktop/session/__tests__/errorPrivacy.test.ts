@@ -1,0 +1,38 @@
+import { beforeEach, expect, it, vi } from "vitest";
+
+const mocks = vi.hoisted(() => ({
+  currentContext: vi.fn(), evaluatePairingPolicy: vi.fn(),
+  createDesktopSession: vi.fn(), listActiveSessions: vi.fn(), revokeDesktopSession: vi.fn(),
+}));
+vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
+vi.mock("@/lib/desktop/desktopAuthPolicy", () => ({ evaluatePairingPolicy: mocks.evaluatePairingPolicy }));
+vi.mock("@/lib/desktop/desktopSession", () => ({ ...mocks, statusFor: vi.fn() }));
+vi.mock("@/lib/desktop/desktopToken", () => ({ mintDesktopToken: vi.fn() }));
+import { GET } from "../route";
+
+beforeEach(() => vi.resetAllMocks());
+function expectNoStoreActivity() {
+  expect(mocks.createDesktopSession).not.toHaveBeenCalled();
+  expect(mocks.listActiveSessions).not.toHaveBeenCalled();
+  expect(mocks.revokeDesktopSession).not.toHaveBeenCalled();
+  expect(mocks.evaluatePairingPolicy).not.toHaveBeenCalled();
+}
+it("preserves the fixed safe sign-in validation error without store activity", async () => {
+  mocks.currentContext.mockResolvedValue({ isAuthenticated: false });
+  const response = await GET();
+  expect(response.status).toBe(400);
+  expect(await response.json()).toEqual({ ok: false, error: {
+    code: "auth.required", category: "validation", userMessage: "Sign in required.",
+  } });
+  expectNoStoreActivity();
+});
+it("excludes synthetic private diagnostics from the actual GET response", async () => {
+  const marker = "SYNTHETIC_PRIVATE_DIAGNOSTIC";
+  mocks.currentContext.mockRejectedValue(new Error(marker));
+  const response = await GET();
+  const body = await response.text();
+  expect(response.status).toBe(500);
+  expect(JSON.parse(body).error.code).toBe("internal.unknown");
+  expectNoStoreActivity();
+  expect(body).not.toContain(marker);
+});

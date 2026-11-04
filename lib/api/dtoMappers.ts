@@ -25,6 +25,10 @@ export interface ErrorDTO {
 }
 
 export function toErrorDTO(err: AxiomError): ErrorDTO {
+  // Internal diagnostics belong on the server-side error, not in HTTP responses.
+  if (err.category === "internal") {
+    return { code: err.code, category: err.category, userMessage: err.userMessage };
+  }
   return {
     code: err.code,
     category: err.category,
