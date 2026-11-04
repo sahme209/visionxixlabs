@@ -4,7 +4,7 @@ Exact base and source hashes are in `governance-document-replacement.sources.jso
 
 ## Boundary
 
-Keep broad-identity workspace unmounted, Settings read-only identity boundary unchanged, and default-OFF behavior. The NEW head read requires the existing Governance feature enabled like upload. Preserve the current OFF/unset historical evidence/revisions/drift read permitlist exactly; do not widen it for this operation. No actual flags/environment changes. Preserve current paired reader scope/capability/membership checks, API-key denial, writer collector/policy:manage checks, independent approval and separate execution. No activation/enrollment/provider authority is added.
+Keep broad-identity workspace unmounted, Settings read-only identity boundary unchanged, and default-OFF behavior. The actual current read dispatcher returns503 for every old and new operation while the existing Governance feature is disabled/unset, before auth or service composition. Preserve that unconditional gate like upload; introduce no OFF permitlist. No actual flags/environment changes. Preserve current paired reader scope/capability/membership checks, API-key denial, writer collector/policy:manage checks, independent approval and separate execution. No activation/enrollment/provider authority is added.
 
 ## Exact read semantics
 
@@ -23,3 +23,7 @@ Existing original-actor/request-UUID lookup remains unchanged; do not add origin
 Store/HTTP/client/native focused tests should cover initial version0 -> deliberate head read -> exact replacement1, validated historical selection and derived target, missing/corrupt/foreign refusal, authority recheck, read no-writes/no-body, strict fields/unchanged OFF permitlist/auth/limits, client echo and digest-flag rejection, version999, stale CAS one-winner race, current revocation and rollback. Native tests cover locked parent/target, sync duplicates, unknown held original request, context disown, lookup false held and true original historical recovery without resend/invented version.
 
 Existing request-service seam already covers initial artifact -> proposal -> genuine independent review -> different-content replacement -> old source freshness refusal/drift changed while historical approval record remains. Extend/reuse it rather than creating a new approval path. Same-byte content matching does not grant freshness. Provider enrollment, canonical issuer/custody, business-channel mounting and full Governance completion remain outside scope.
+
+## Source-fidelity correction before implementation
+
+The first frozen prose referred to a historical-read OFF permitlist from older context. Direct inspection of readHttp.ts and requestServiceCore.ts establishes an unconditional disabled503 gate for all reads in this dispatcher. The implementation preserves that actual behavior. The DTO wire fields are unchanged. This correction grants no extra capability, changes no flag and does not alter unrelated execution-policy dispatchers. The original design snapshot remains in Git history.

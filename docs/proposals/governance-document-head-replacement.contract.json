@@ -1,5 +1,5 @@
 {
-  "status": "design-only; implementation awaits root review",
+  "status": "reviewed local implementation contract; implementation evidence tracked separately",
   "baseCommit": "e97e04b50ec8134caa8c4a19411062ed63074f47",
   "endpoint": "POST /api/desktop/governance-intelligence/read",
   "request": {
@@ -64,5 +64,5 @@
   ],
   "matchingMeaning": "Byte equality only; not historical freshness, head version identity, approval, or execution authority",
   "lookupRecovery": "Existing actor/request UUID lookup unchanged: found:false remains held; found:true is original immutable historical artifact, not current head/version; no resend",
-  "featureGate": "New operation requires existing Governance feature enabled like upload; preserve OFF/unset historical-read permitlist exactly; no flag/env changes"
+  "featureGate": "Preserve actual current read dispatcher behavior: every old and new operation returns503 while Governance is disabled/unset, before auth/composition. No OFF permitlist is introduced; no flag/env changes."
 }
