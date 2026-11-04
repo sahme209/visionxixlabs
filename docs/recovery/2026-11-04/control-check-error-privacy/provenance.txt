@@ -1,0 +1,9 @@
+Frozen commit d7c089a9dd03f00d889327cda5cfce5d8b2fd795, base c47d13bd, branch codex/a7-control-check-privacy; worktree /private/tmp/axiom-a7-control-20261104.
+RED command: sh /private/tmp/axiom-a7-control-evidence/run.sh > /private/tmp/axiom-a7-control-evidence/red.log 2>&1
+Captured result=$? to red-exit.txt: 1; synchronous tool chunk e8c37e, shell exit 0 output 1. Two expected marker assertion failures (actual GET/POST), ten passes before source change.
+GREEN command: sh /private/tmp/axiom-a7-control-evidence/run.sh > /private/tmp/axiom-a7-control-evidence/green.log 2>&1
+Captured result=$? to green-exit.txt: 0; synchronous tool chunk bf212d, shell exit 0 output 0. Twelve passes across new and existing route tests.
+Types command: sh /private/tmp/axiom-a7-control-evidence/types.sh > /private/tmp/axiom-a7-control-evidence/types.log 2>&1
+Captured result=$? to types-exit.txt: 0; synchronous tool chunk cbbf7d, shell exit 0 output 0. Empty types.log. Roots are new and existing route test files and transitive actual route/source graph, not a full repository check.
+Full underlying env-i commands preserved in run.sh/types.sh; owned configs and deny.sb preserved. Node24 native configLoader, pinned existing 4087 node_modules symlink. Kernel denied network and dependency cache writes. Real scheduled checks read only cleared synthetic process env; auth config and Prisma mocked. No live DB/provider/network/native Security/credentials/install/build/full-suite calls.
+Only Error-arm public persistence detail changed; nonError unknown/status/reason/auth/scheduled checks/persistence/GETPOST preserved, no retry. git diff --check passed. Commit includes only source and new test; clean worktree, no push/integration.

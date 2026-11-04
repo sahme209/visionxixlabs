@@ -1,0 +1,21 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-control-20261104[39m
+
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/errorPrivacy.test.ts[2m > [22mGET redacts persistence Error and attempts persistence only once[32m 4[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/errorPrivacy.test.ts[2m > [22mGET retains non-Error fallback[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/errorPrivacy.test.ts[2m > [22mGET retains success shape and persisted results[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/errorPrivacy.test.ts[2m > [22mGET retains fail-closed cron guards before persistence[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/errorPrivacy.test.ts[2m > [22mPOST redacts persistence Error and attempts persistence only once[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/errorPrivacy.test.ts[2m > [22mPOST retains non-Error fallback[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/errorPrivacy.test.ts[2m > [22mPOST retains success shape and persisted results[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/errorPrivacy.test.ts[2m > [22mPOST retains fail-closed cron guards before persistence[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/route.test.ts[2m > [22mGET /api/cron/compliance-control-check[2m > [22m503s when CRON_SECRET isn't configured — refuses to run as a public endpoint[32m 3[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/route.test.ts[2m > [22mGET /api/cron/compliance-control-check[2m > [22m401s on a missing or wrong bearer token[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/route.test.ts[2m > [22mGET /api/cron/compliance-control-check[2m > [22mruns the checks and persists a row per result on a valid request[32m 1[2mms[22m[39m
+ [32m✓[39m app/api/cron/compliance-control-check/__tests__/route.test.ts[2m > [22mGET /api/cron/compliance-control-check[2m > [22m500s honestly when persisting the results fails, rather than reporting success[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m   Start at [22m 00:05:04
+[2m   Duration [22m 192ms[2m (transform 20ms, setup 0ms, import 60ms, tests 12ms, environment 0ms)[22m
+

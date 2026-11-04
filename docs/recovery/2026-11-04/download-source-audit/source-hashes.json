@@ -1,0 +1,12 @@
+{
+  "baseline": "c47d13bda095b4ad91fb438dd8414854ded2f474",
+  "wholeFiles": {
+    "lib/desktop/releaseManifest.ts": "5a84a42e1514f7f45bfa1e25c4769ff7a44e8886332e4cdc65fcc42b68ab1b25",
+    "lib/desktop/autoUpdaterManifest.ts": "d8c3e0e7a403d6de57247dc323171cc03c1d2d2b90ab13e2cb3f021dd6d82f2b",
+    "app/api/desktop/download/route.ts": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf",
+    "app/api/desktop/release-manifest/route.ts": "4370bc8598817df612feab29c86425ee347e21037d1429cf914f057ca6ee5e06",
+    "app/download/page.tsx": "b313b2b557231890a48974f69d6d5cc4f82581549e3a5778410003979846489f",
+    "lib/desktop/desktopRuntimeReadiness.ts": "47857dc6aff4b4b1f4ecefdb425ce504674732c6e8484e2d655255c4e7e4529a",
+    "desktop/src-tauri/tauri.conf.json": "2efd354e646a792c4dbe271f767251721decf0feac8a254cb94371f2e3ecd95b"
+  }
+}
