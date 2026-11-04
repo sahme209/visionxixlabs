@@ -670,3 +670,11 @@ Actual helper compiled and independent source/metadata review passed; exact14 so
 - [x] B6 bounded offline build: source08400007 preparation/generation/production outputs verified; no execution authorization, deployment or browser/native acceptance. See ../recovery/2026-11-03/privacy-batch-production-build/README.md. Updated084preview available at http://127.0.0.1:5220/__axiom_preview with four public pages, two exact CSS assets and three auth/action refusal HTTP checks; no browser acceptance.
 
 All A1–A9/B1–B6 parents remain open. Pending exact Governance experiment approval and browser availability remain separate; no permission inferred.
+
+
+## November4 — website shortcut and compatibility repair
+
+- [x] B2/B6 bounded keyboard behavior: conceptual workflow and scripted demo preserve modified/IME navigation instead of consuming browser shortcuts; genuine12-case RED, final32checks/scoped types/independent review pass. Two stale test-only fixtures aligned with existing source. [Evidence](../recovery/2026-11-04/website-shortcut-recovery/README.md). Actual browser/AT acceptance remains open.
+- A4 bounded Bot draft source audit found no further concrete issue; exact inspected ranges retained [here](../recovery/2026-11-04/bot-draft-source-audit/README.md), not full usability acceptance.
+
+All15A1–A9/B1–B6 parents remain open; no production or Governance activation inferred.

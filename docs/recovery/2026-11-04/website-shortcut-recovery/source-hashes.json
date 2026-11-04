@@ -1,0 +1,7 @@
+{
+  "components/marketing/WorkflowEvidenceMap.tsx": "5cd40555b99a49708328db5511428b5e4bf87f3b380c512f9598f1f257898d4a",
+  "components/marketing/CinematicAxiomDemo.tsx": "37b1b387856bb84435479fa26dadd894d312a659e1e7f998f1c9c7ed9a1c8536",
+  "components/marketing/__tests__/ModifiedNavigation.focused.test.ts": "49c92725d4a1ba6941d8f38fbbd26149eef457acf41d70cc3f6067819a4f4d83",
+  "components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts": "2f0c1de77ef63f1481e03a89ec42d2c7abc55b5deca7849a9d5b0953c705019a",
+  "components/marketing/__tests__/WorkflowStories.test.ts": "e90107a73a98687d636c1f90d561a54c898f52cb85227e3d08d6df187c8e4a0a"
+}

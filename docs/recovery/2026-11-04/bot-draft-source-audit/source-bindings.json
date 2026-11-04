@@ -1,0 +1,49 @@
+{
+  "baseline": "85f9206f436504c34eeb63cceaf2cda6fe2cbaa1",
+  "sources": [
+    {
+      "path": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "wholeFileSha256": "674db35fb998470416d0f853978d7ddaad3e9c3e97508b5e84b7c10938890a14",
+      "reviewedRanges": [
+        {
+          "start": 1,
+          "end": 161,
+          "sha256": "674db35fb998470416d0f853978d7ddaad3e9c3e97508b5e84b7c10938890a14"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/useBotAiTask.ts",
+      "wholeFileSha256": "9966d47fcfc4b983adb1bbf07f381270f588423ce0b9a123213251fb9fb4e1f5",
+      "reviewedRanges": [
+        {
+          "start": 1,
+          "end": 124,
+          "sha256": "9966d47fcfc4b983adb1bbf07f381270f588423ce0b9a123213251fb9fb4e1f5"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/BotTaskComposer.tsx",
+      "wholeFileSha256": "b87aa9c4086801d34367dafee5baeabf934d90fa883612151e2d1ee4f3e95d5f",
+      "reviewedRanges": [
+        {
+          "start": 6,
+          "end": 31,
+          "sha256": "16a3b0027f288e7aef5b469df9e66fdb9590f60e8afd2a0e1f0f20a19daaac24"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "reviewedRanges": [
+        {
+          "start": 567,
+          "end": 590,
+          "sha256": "8b60578dfdaaacb13418e04f53b304585638630bff1c16285194cc3154a70bda"
+        }
+      ]
+    }
+  ]
+}

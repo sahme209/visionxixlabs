@@ -1,0 +1,346 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-b2b6-keys-20261104[39m
+
+ [31m×[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mkeeps the linked approval documentation distinct from verified ECS execution and recovery[32m 25[2mms[22m[39m
+[31m   → Unable to find an element with the text: /A workspace administrator must approve the persisted proposal/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<header[31m
+      [33mclass[31m=[32m"relative mb-12"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33maria-hidden[31m=[32m"true"[31m
+        [33mclass[31m=[32m"pointer-events-none absolute -inset-x-8 -top-12 h-[260px] -z-10 overflow-hidden"[31m
+      [36m>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"absolute top-0 left-[10%] w-[420px] h-[260px] rounded-full bg-brand-coral/[0.05] blur-[120px] ambient-drift"[31m
+        [36m/>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"absolute top-4 right-[10%] w-[360px] h-[220px] rounded-full bg-brand-orange/[0.06] blur-[110px] ambient-drift"[31m
+          [33mstyle[31m=[32m"animation-delay: -8s;"[31m
+        [36m/>[31m
+      [36m</div>[31m
+      [36m<p[31m
+        [33mclass[31m=[32m"mono-label mb-4 inline-flex items-center gap-3"[31m
+      [36m>[31m
+        [36m<span[31m
+          [33mclass[31m=[32m"text-brand-coral/90 tabular-nums"[31m
+        [36m>[31m
+          [0m—[0m
+        [36m</span>[31m
+        [36m<span[31m
+          [33mclass[31m=[32m"h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent"[31m
+        [36m/>[31m
+        [0mGovernance · Approvals[0m
+      [36m</p>[31m
+      [36m<h1[31m
+        [33mclass[31m=[32m"font-display text-4xl md:text-5xl font-bold text-white leading-[1.04] mb-5"[31m
+      [36m>[31m
+        [0mA write starts as a[0m
+        [0m [0m
+        [36m<span[31m
+          [33mclass[31m=[32m"relative inline-block"[31m
+        [36m>[31m
+          [0mproposal.[0m
+          [36m<span[31m
+            [33maria-hidden[31m=[32m"true"[31m
+            [33mclass[31m=[32m"absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent"[31m
+          [36m/>[31m
+        [36m</span>[31m
+      [36m</h1>[31m
+      [36m<p[31m
+        [33mclass[31m=[32m"text-[16px] text-zinc-400 leading-relaxed max-w-3xl"[31m
+      [36m>[31m
+        [0mFor registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.[0m
+      [36m</p>[31m
+    [36m</header>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"rounded-xl border border-blue-500/15 bg-blue-500/[0.04] p-4 my-5"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"flex items-start gap-3"[31m
+      [36m>[31m
+        [36m<svg[31m
+          [33maria-hidden[31m=[32m"true"[31m
+          [33mclass[31m=[32m"h-4 w-4 text-blue-400 mt-0.5 shrink-0"[31m
+          [33mdata-slot[31m=[32m"icon"[31m
+          [33mfill[31m=[32m"none"[31m
+          [33mstroke[31m=[32m"currentColor"[31m
+          [33mstroke-width[31m=[32m"1.5"[31m
+          [33mviewBox[31m=[32m"0 0 24 24"[31m
+          [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+        [36m>[31m
+          [36m<path[31m
+            [33md[31m=[32m"m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+          [36m/>[31m
+        [36m</svg>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-w-0"[31m
+        [36m>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-[10px] font-semibold text-blue-400 uppercase tracking-wider mb-1"[31m
+          [36m>[31m
+            [0mPreview workflow reference[0m
+          [36m</p>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-orange-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/[0.06] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5"[31m
+          [36m>[31m
+            [0mSeparate requester execution is a local preview and is not production-activated. Your installed version may not include an Execute control. Check the controls and release guidance for your installed version; approval status alone does not prove that an action ran.[0m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+    [36m<div[31m
+      [33mclass[31m=[32m"rounded-xl border border-emerald-500/15 bg-emerald-500/[0.04] p-4 my-5"[31m
+    [36m>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"flex items-start gap-3"[31m
+      [36m>[31m
+        [36m<svg[31m
+          [33maria-hidden[31m=[32m"true"[31m
+          [33mclass[31m=[32m"h-4 w-4 text-emerald-400 mt-0.5 shrink-0"[31m
+          [33mdata-slot[31m=[32m"icon"[31m
+          [33mfill[31m=[32m"none"[31m
+          [33mstroke[31m=[32m"currentColor"[31m
+          [33mstroke-width[31m=[32m"1.5"[31m
+          [33mviewBox[31m=[32m"0 0 24 24"[31m
+          [33mxmlns[31m=[32m"http://www.w3.org/2000/svg"[31m
+        [36m>[31m
+          [36m<path[31m
+            [33md[31m=[32m"M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"[31m
+            [33mstroke-linecap[31m=[32m"round"[31m
+            [33mstroke-linejoin[31m=[32m"round"[31m
+          [36m/>[31m
+        [36m</svg>[31m
+        [36m<div[31m
+          [33mclass[31m=[32m"flex-1 min-w-0"[31m
+        [36m>[31m
+          [36m<p[31m
+            [33mclass[31m=[32m"text-[10px] font-semibold text-emerald-400 uppercase tracking-wider mb-1"[31m
+          [36m>[31m
+            [0mProposal approval boundary[0m
+          [36m</p>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-orange-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/[0.06] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5"[31m
+          [36m>[31m
+            [0mMedium- and high-risk tool calls do not execute inside the decision loop. An authorized independent human reviewer must approve the exact persisted proposal. Approval permission is distinct from execution permission.[0m
+          [36m</div>[31m
+        [36m</div>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+    [36m<section[31m
+      [33mclass[31m=[32m"mb-12 scroll-mt-24"[31m
+      [33mid[31m=[32m"risk"[31m
+    [36m>[31m
+      [36m<p[31m
+        [33mclass[31m=[32m"text-[10px] font-semibold text-orange-400 uppercase tracking-widest mb-2"[31m
+      [36m>[31m
+        [0m01[0m
+      [36m</p>[31m
+      [36m<h2[31m
+        [33mclass[31m=[32m"text-2xl md:text-3xl font-bold text-white tracking-[-0.04em] mb-5"[31m
+      [36m>[31m
+        [0mRisk...[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mlinks every story to working approval documentation without promising a retired full walkthrough[32m 57[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mdescribes check environment and output limits without promising credential isolation[32m 13[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mpauses at human review without recording approval or contacting a service[32m 26[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22minvalidates sample approval when selected context changes[32m 19[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mfreezes playback offscreen and in a hidden document, then resumes without skipping[32m 19[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mhonors reduced motion initially and when preferences change[32m 20[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22msupports keyboard navigation and replay without overriding dropdown keys[32m 14[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mkeeps Terraform authority unavailable and never offers apply or fabricated cloud success[32m 14[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mpreserves partial typing when paused and cleans up all timers on unmount[32m 18[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mrejects a sample, resets when switching stories, and stops on the final scene[32m 27[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mgrounds the scripted frame in customer navigation without exposing operational controls[32m 12[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mannounces the current story step after deliberate navigation and story changes[32m 9[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mannounces manual reduced-motion steps without per-frame animation chatter[32m 10[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mworkflow preserves modified or composing navigation {"altKey":true}[32m 53[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mworkflow preserves modified or composing navigation {"ctrlKey":true}[32m 10[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mworkflow preserves modified or composing navigation {"metaKey":true}[32m 9[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mworkflow preserves modified or composing navigation {"shiftKey":true}[32m 8[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mworkflow preserves modified or composing navigation {"isComposing":true}[32m 8[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mworkflow preserves modified or composing navigation {"keyCode":229}[32m 10[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mworkflow retains plain navigation and unrelated keys[32m 9[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mplayback preserves modified or composing navigation {"altKey":true}[32m 20[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mplayback preserves modified or composing navigation {"ctrlKey":true}[32m 12[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mplayback preserves modified or composing navigation {"metaKey":true}[32m 12[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mplayback preserves modified or composing navigation {"shiftKey":true}[32m 12[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mplayback preserves modified or composing navigation {"isComposing":true}[32m 11[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mplayback preserves modified or composing navigation {"keyCode":229}[32m 12[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mplayback retains plain navigation and unrelated keys[32m 13[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/ModifiedNavigation.focused.test.ts[2m > [22mplayback leaves outside inputs alone[32m 7[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts[2m > [22mkeeps five ordered concepts and deliberate selection connected to the explanation[32m 68[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts[2m > [22msupports deliberate keyboard navigation and leaves focus on the chosen control[32m 10[2mms[22m[39m
+ [32m✓[39m components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts[2m > [22mhas unique DOM relationships across instances and no network or scheduled effects[32m 15[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m components/marketing/__tests__/WorkflowStories.test.ts[2m > [22mkeeps the linked approval documentation distinct from verified ECS execution and recovery
+[31m[1mTestingLibraryElementError[22m[39m: Unable to find an element with the text: /A workspace administrator must approve the persisted proposal/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<header[39m
+      [33mclass[39m=[32m"relative mb-12"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"pointer-events-none absolute -inset-x-8 -top-12 h-[260px] -z-10 overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"absolute top-0 left-[10%] w-[420px] h-[260px] rounded-full bg-brand-coral/[0.05] blur-[120px] ambient-drift"[39m
+        [36m/>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"absolute top-4 right-[10%] w-[360px] h-[220px] rounded-full bg-brand-orange/[0.06] blur-[110px] ambient-drift"[39m
+          [33mstyle[39m=[32m"animation-delay: -8s;"[39m
+        [36m/>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"mono-label mb-4 inline-flex items-center gap-3"[39m
+      [36m>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-brand-coral/90 tabular-nums"[39m
+        [36m>[39m
+          [0m—[0m
+        [36m</span>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent"[39m
+        [36m/>[39m
+        [0mGovernance · Approvals[0m
+      [36m</p>[39m
+      [36m<h1[39m
+        [33mclass[39m=[32m"font-display text-4xl md:text-5xl font-bold text-white leading-[1.04] mb-5"[39m
+      [36m>[39m
+        [0mA write starts as a[0m
+        [0m [0m
+        [36m<span[39m
+          [33mclass[39m=[32m"relative inline-block"[39m
+        [36m>[39m
+          [0mproposal.[0m
+          [36m<span[39m
+            [33maria-hidden[39m=[32m"true"[39m
+            [33mclass[39m=[32m"absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent"[39m
+          [36m/>[39m
+        [36m</span>[39m
+      [36m</h1>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-[16px] text-zinc-400 leading-relaxed max-w-3xl"[39m
+      [36m>[39m
+        [0mFor registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.[0m
+      [36m</p>[39m
+    [36m</header>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"rounded-xl border border-blue-500/15 bg-blue-500/[0.04] p-4 my-5"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-start gap-3"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"h-4 w-4 text-blue-400 mt-0.5 shrink-0"[39m
+          [33mdata-slot[39m=[32m"icon"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-width[39m=[32m"1.5"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-w-0"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-semibold text-blue-400 uppercase tracking-wider mb-1"[39m
+          [36m>[39m
+            [0mPreview workflow reference[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-orange-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/[0.06] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5"[39m
+          [36m>[39m
+            [0mSeparate requester execution is a local preview and is not production-activated. Your installed version may not include an Execute control. Check the controls and release guidance for your installed version; approval status alone does not prove that an action ran.[0m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"rounded-xl border border-emerald-500/15 bg-emerald-500/[0.04] p-4 my-5"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex items-start gap-3"[39m
+      [36m>[39m
+        [36m<svg[39m
+          [33maria-hidden[39m=[32m"true"[39m
+          [33mclass[39m=[32m"h-4 w-4 text-emerald-400 mt-0.5 shrink-0"[39m
+          [33mdata-slot[39m=[32m"icon"[39m
+          [33mfill[39m=[32m"none"[39m
+          [33mstroke[39m=[32m"currentColor"[39m
+          [33mstroke-width[39m=[32m"1.5"[39m
+          [33mviewBox[39m=[32m"0 0 24 24"[39m
+          [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+        [36m>[39m
+          [36m<path[39m
+            [33md[39m=[32m"M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"[39m
+            [33mstroke-linecap[39m=[32m"round"[39m
+            [33mstroke-linejoin[39m=[32m"round"[39m
+          [36m/>[39m
+        [36m</svg>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex-1 min-w-0"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-semibold text-emerald-400 uppercase tracking-wider mb-1"[39m
+          [36m>[39m
+            [0mProposal approval boundary[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-orange-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/[0.06] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5"[39m
+          [36m>[39m
+            [0mMedium- and high-risk tool calls do not execute inside the decision loop. An authorized independent human reviewer must approve the exact persisted proposal. Approval permission is distinct from execution permission.[0m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"mb-12 scroll-mt-24"[39m
+      [33mid[39m=[32m"risk"[39m
+    [36m>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-[10px] font-semibold text-orange-400 uppercase tracking-widest mb-2"[39m
+      [36m>[39m
+        [0m01[0m
+      [36m</p>[39m
+      [36m<h2[39m
+        [33mclass[39m=[32m"text-2xl md:text-3xl font-bold text-white tracking-[-0.04em] mb-5"[39m
+      [36m>[39m
+        [0mRisk...
+[90m [2m❯[22m Object.getElementError ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/config.js:[2m37:19[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m76:38[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m52:17[22m[39m
+[90m [2m❯[22m ../axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/@testing-library/dom/dist/query-helpers.js:[2m95:19[22m[39m
+[36m [2m❯[22m components/marketing/__tests__/WorkflowStories.test.ts:[2m31:17[22m[39m
+    [90m 29|[39m   expect(container.textContent).not.toContain("automatic rollback appl…
+    [90m 30|[39m   expect(screen.getByText(/The Agent cannot approve its own request/))…
+    [90m 31|[39m   expect(screen.getByText(/A workspace administrator must approve the …
+    [90m   |[39m                 [31m^[39m
+    [90m 32|[39m })[33m;[39m
+    [90m 33|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (3)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m31 passed[39m[22m[90m (32)[39m
+[2m   Start at [22m 00:11:54
+[2m   Duration [22m 1.58s[2m (transform 53ms, setup 0ms, import 294ms, tests 585ms, environment 545ms)[22m
+

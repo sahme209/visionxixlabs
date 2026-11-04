@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "incremental": false,
+    "baseUrl": "/private/tmp/axiom-b2b6-keys-20261104",
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
+    "jsx": "react-jsx"
+  },
+  "files": [
+    "/private/tmp/axiom-b2b6-keys-20261104/components/marketing/__tests__/ModifiedNavigation.focused.test.ts",
+    "/private/tmp/axiom-b2b6-keys-20261104/components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts",
+    "/private/tmp/axiom-b2b6-keys-20261104/components/marketing/__tests__/WorkflowStories.test.ts"
+  ]
+}
