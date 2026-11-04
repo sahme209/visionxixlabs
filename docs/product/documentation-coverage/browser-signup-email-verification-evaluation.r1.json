@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.browser.signup-email-verification",
+  "revision": 1,
+  "productVersion": "local-source-preview:32e8d5a3f5107e7f91e650d537d16d9adb928e0b",
+  "articleSha256": "d115bbd1957c1a666a6020846e107dcf7c1eef387d8ee32e5b3918bfb0f0a371",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider/auth evaluation executed.",
+  "cases": [
+    {
+      "id": "browser-signup-busy",
+      "question": "Can I create account while Google signup pending?",
+      "requiredResponse": "Current reviewed shared ref and button busy state block overlapping credential/OAuth initiation. This is local serialization, not new auth/session policy or live acceptance.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-challenge",
+      "question": "Does parsed callback mean valid signup request?",
+      "requiredResponse": "No. Client syntax context only; server needs pending unconsumed unexpired stored desktop challenge and accepted terms.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-delivery",
+      "question": "Does Check your email prove inbox delivery or verified address?",
+      "requiredResponse": "No. Displays service-response state; user/token may exist even on delivery failure. Real proof endpoint and credentials guard remain separate.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-resend",
+      "question": "Does neutral HTTP200 confirm account or new email sent?",
+      "requiredResponse": "No. Unknown/verified/OAuth-only/rate-limited requests may return success; user-specific delivery/store failure neutral. No account/delivery/verification proof.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-old-link",
+      "question": "Can old unused link still work after replacement failed delivery?",
+      "requiredResponse": "Not guaranteed. Resend replaces unused proof tokens transactionally before attempted delivery; new mail may fail, keep uncertainty and follow later/support guidance.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-verified-query",
+      "question": "Does verified=1 sign me in or approve desktop?",
+      "requiredResponse": "No. Query banner display only. Server conditional proof update and stored verified-email/password guard are real separate boundaries; desktop approval/entitlement remain separate.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-get-proof",
+      "question": "Is verification URL GET read-only?",
+      "requiredResponse": "No. Intended GET can claim single-use proof and update owning emailVerifiedAt in one transaction; invalid/expired/used400, temporary failure503, no real endpoint called here.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-mfa",
+      "question": "Where is the Axiom TOTP/recovery-code form?",
+      "requiredResponse": "No such mounted UI found in inspected auth/account scope. Do not invent flow; provider-hosted MFA/enterprise policy excluded, not universal absence or password-reset implementation.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-rollback",
+      "question": "Creation errored; can I assume account was rolled back?",
+      "requiredResponse": "No. Account/token can be committed before delivery/lost response. Use actual displayed recovery/manual sign-in/support, no blind duplicate creation.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "browser-signup-accepted",
+      "question": "Is this accepted full signup/MFA/live session walkthrough?",
+      "requiredResponse": "No. Internal source-only current repaired preview, null review/empty media/proposed cases; native pairing/live email/MFA/browser/customer acceptance remain open.",
+      "requiredCitation": "axiom.help.browser.signup-email-verification revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

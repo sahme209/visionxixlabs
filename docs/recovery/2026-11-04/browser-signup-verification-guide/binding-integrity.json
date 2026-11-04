@@ -1,0 +1,8 @@
+{
+  "valid": true,
+  "uniqueCodeFiles": 12,
+  "inclusiveRawRanges": 13,
+  "guideSha256": "6f556ad447100b72051a4c7f3c971df6c38fd63e46b66d502f8a79955cfea613",
+  "repairedSignupSha256": "38a9c4ac0d1d199e6539553855b654a8b3f8d2a48d5d69469b7fd8bceeda6b78",
+  "frozenInputsUnchanged": true
+}

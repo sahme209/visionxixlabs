@@ -1,0 +1,13 @@
+{
+  "status": "READY source inputs frozen before newbundle-only validator",
+  "sourceCodeBaseline": "32e8d5a3f5107e7f91e650d537d16d9adb928e0b",
+  "sha256": {
+    "docs/product/knowledge/browser-signup-email-verification-controls.md": "6f556ad447100b72051a4c7f3c971df6c38fd63e46b66d502f8a79955cfea613",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/source-bindings.json": "6361047aa40e2a2148006a6bd91cf5793872ef2f82037bfa1af386b2c0bf368c",
+    "docs/product/documentation-coverage/articles/browser-signup-email-verification.r1.json": "d115bbd1957c1a666a6020846e107dcf7c1eef387d8ee32e5b3918bfb0f0a371",
+    "docs/product/documentation-coverage/browser-signup-email-verification-evaluation.r1.json": "dc01f622b0340ca5d6429ef16c855f07f0329e4fd64a9ea6532681fab48736d3",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/reviewed-signup-busy-drift.diff": "5bc73f1f95f849167e4ad6783f86c071b3bfdc6df0ddef7842c3e192ee3ef44b"
+  },
+  "validationAlreadyRun": false,
+  "noAuthInvoked": true
+}

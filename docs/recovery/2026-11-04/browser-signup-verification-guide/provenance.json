@@ -1,0 +1,53 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "32e8d5a3f5107e7f91e650d537d16d9adb928e0b",
+  "initialInspectedBaseline": "1fb9f9a8",
+  "branch": "codex/b4-browser-signup-verification",
+  "worktree": "/private/tmp/axiom-b4-browser-signup-20261104",
+  "validation": {
+    "sourceInputsFrozenBeforeValidator": true,
+    "integrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 14,
+    "uniqueCodeFiles": 12,
+    "currentInclusiveRawRanges": 13,
+    "proposedEvaluationCases": 10,
+    "retrievalExecuted": false,
+    "authInvoked": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/native-signin-and-access-controls.md": "a86b59423aabef856207f2609cca6ed430b268e551a1a88dfb688df159dedbad",
+    "docs/product/knowledge/browser-desktop-pairing-controls.md": "2306bbc90732e563cb0ab25cf931f87192c1c9001bdbbc4e1f86d3c0c95b0228"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-browser-signup-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-browser-signup-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-browser-signup-evidence/bindings.sh"
+  ],
+  "bundleSha256": {
+    "docs/product/knowledge/browser-signup-email-verification-controls.md": "6f556ad447100b72051a4c7f3c971df6c38fd63e46b66d502f8a79955cfea613",
+    "docs/product/documentation-coverage/articles/browser-signup-email-verification.r1.json": "d115bbd1957c1a666a6020846e107dcf7c1eef387d8ee32e5b3918bfb0f0a371",
+    "docs/product/documentation-coverage/browser-signup-email-verification-evaluation.r1.json": "dc01f622b0340ca5d6429ef16c855f07f0329e4fd64a9ea6532681fab48736d3"
+  },
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/validate.sh": "ef7a012a0ee2b765ca3298cb43f71d5903cbe119959f216d7dd67501c0f56e79",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/bindings.sh": "3f7f7afac6c0d85ddcaa4e731c0bf1ca59ec27b030400a6dd1c7fd69776a9bca",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/frozen-inputs.json": "a1482b0d15a04c6e2f0319b86b4c924bf0a6f67d3cc9fd56df693ebaff073b80",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/binding-integrity.json": "d9dcf580a886f7cf1077fe7ce57dbf0a8fe10e8a97214a3d9b85713c3fa8bcd0",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/validate.log": "2ed326f77625433b324844bdd09eb9857e3901749d91eb5cfbf0b6d245d9d8a9",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/README.md": "ebe7f1f776e7e064145e8d7f4c6309784827f718914a6354361081953450e9a0",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/source-bindings.json": "6361047aa40e2a2148006a6bd91cf5793872ef2f82037bfa1af386b2c0bf368c",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/reviewed-signup-busy-drift.diff": "5bc73f1f95f849167e4ad6783f86c071b3bfdc6df0ddef7842c3e192ee3ef44b",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/binding-integrity.cjs": "c3dbf2f5b8b428060b800f120bd2aa7624c8a7b1edd3e5f2a770031e8fecb8b4",
+    "docs/recovery/2026-11-04/browser-signup-verification-guide/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03"
+  },
+  "limits": "Finite internal signup/email-verification unit, no invented MFA or all-auth coverage; source-only/null human review/empty media/proposed IDs; no real identity/email/token/session/provider acceptance; all customer/editorial/media/native/runtime/release false; no mutable master hash"
+}

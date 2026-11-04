@@ -1,0 +1,156 @@
+{
+  "status": "frozen-READY-internal-source-inputs",
+  "baselineCommit": "32e8d5a3f5107e7f91e650d537d16d9adb928e0b",
+  "initialInspectedBaseline": "1fb9f9a873768c5b8280fc761238bae209e5cbe1",
+  "signupSourceDrift": {
+    "path": "app/auth/signup/AuthFormClient.tsx",
+    "historicalInspectedSha256": "b076827097517d3c0ea36db053e1692a0a0b7030d484ecb9e781e50a7257b066",
+    "currentRepairedSha256": "38a9c4ac0d1d199e6539553855b654a8b3f8d2a48d5d69469b7fd8bceeda6b78",
+    "reviewedRepairCommit": "8766817b (root-reported actor commit); merged source32e8d5a3",
+    "diff": {
+      "path": "docs/recovery/2026-11-04/browser-signup-verification-guide/reviewed-signup-busy-drift.diff",
+      "sha256": "5bc73f1f95f849167e4ad6783f86c071b3bfdc6df0ddef7842c3e192ee3ef44b"
+    },
+    "scope": "12-line form diff only adds shared synchronous busy ref/guards/finally release and oauthLoading button disable; direct terms/challenge guards mirror prior UI. No auth/backend policy change. No passed tests rerun or live auth acceptance inferred."
+  },
+  "gapAssessment": {
+    "existingIndex": "docs/product/knowledge/README.md:9\u201310,44",
+    "existingLinkage": "docs/product/documentation-coverage/guide-article-linkage.md",
+    "existingArticles": "native-signin-browser-pairing.r1.json explicitly excludes full browser signup/MFA; existing guides remain unchanged",
+    "actualNewUnit": "Mounted signup form, Check your email, shared resend verification, token endpoint outcomes and narrow signin confirmation/credentials guard",
+    "mfaScope": "Finite discovery under app/auth, app/api/auth, components/auth, app/account, lib/auth and lib/auth.ts found no mounted MFA enrollment/TOTP/backup-code/password-reset form. Enterprise MFA-claim comment is not UI; provider/enterprise flows excluded, not a universal absence claim."
+  },
+  "guide": {
+    "path": "docs/product/knowledge/browser-signup-email-verification-controls.md",
+    "sha256": "6f556ad447100b72051a4c7f3c971df6c38fd63e46b66d502f8a79955cfea613"
+  },
+  "rangeConvention": "inclusive 1-based original raw lines retaining terminators",
+  "sources": [
+    {
+      "path": "app/auth/signup/page.tsx",
+      "wholeFileSha256": "7f4d08bb06dc59c01f55e7ec6f915acb9edd73681205de10908213fd3be016c1",
+      "range": {
+        "startLine": 1,
+        "endLine": 7,
+        "sha256": "7f4d08bb06dc59c01f55e7ec6f915acb9edd73681205de10908213fd3be016c1"
+      }
+    },
+    {
+      "path": "app/auth/signup/AuthFormClient.tsx",
+      "wholeFileSha256": "38a9c4ac0d1d199e6539553855b654a8b3f8d2a48d5d69469b7fd8bceeda6b78",
+      "range": {
+        "startLine": 1,
+        "endLine": 308,
+        "sha256": "38a9c4ac0d1d199e6539553855b654a8b3f8d2a48d5d69469b7fd8bceeda6b78"
+      }
+    },
+    {
+      "path": "components/auth/VerificationRecovery.tsx",
+      "wholeFileSha256": "0bd44c54be28b08589e653ea4377d59c28edb8a91d5687e0bae6e47d52b72a80",
+      "range": {
+        "startLine": 1,
+        "endLine": 54,
+        "sha256": "0bd44c54be28b08589e653ea4377d59c28edb8a91d5687e0bae6e47d52b72a80"
+      }
+    },
+    {
+      "path": "app/api/auth/signup/route.ts",
+      "wholeFileSha256": "a689a3f9ac092e5f4f6b37cf7510b8a2eb145e1c66dfd6d45c881eb4814a6d0b",
+      "range": {
+        "startLine": 1,
+        "endLine": 95,
+        "sha256": "a689a3f9ac092e5f4f6b37cf7510b8a2eb145e1c66dfd6d45c881eb4814a6d0b"
+      }
+    },
+    {
+      "path": "app/api/auth/verify-email/route.ts",
+      "wholeFileSha256": "b9cefbf383a69dc705f0986952714553fe6c98f81e8b64ad310febf682966bd7",
+      "range": {
+        "startLine": 1,
+        "endLine": 35,
+        "sha256": "b9cefbf383a69dc705f0986952714553fe6c98f81e8b64ad310febf682966bd7"
+      }
+    },
+    {
+      "path": "app/api/auth/resend-verification/route.ts",
+      "wholeFileSha256": "b3f0c7a890472e6275cb98e2ce5f64dc17caff8c8eb8d2343912b28018f4eec0",
+      "range": {
+        "startLine": 1,
+        "endLine": 38,
+        "sha256": "b3f0c7a890472e6275cb98e2ce5f64dc17caff8c8eb8d2343912b28018f4eec0"
+      }
+    },
+    {
+      "path": "lib/auth/canonicalAuthPage.ts",
+      "wholeFileSha256": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f",
+      "range": {
+        "startLine": 1,
+        "endLine": 15,
+        "sha256": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f"
+      }
+    },
+    {
+      "path": "lib/auth/canonicalAuthOrigin.ts",
+      "wholeFileSha256": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b",
+      "range": {
+        "startLine": 1,
+        "endLine": 37,
+        "sha256": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b"
+      }
+    },
+    {
+      "path": "lib/auth/verificationCallback.ts",
+      "wholeFileSha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230",
+      "range": {
+        "startLine": 1,
+        "endLine": 18,
+        "sha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230"
+      }
+    },
+    {
+      "path": "lib/auth/emailVerification.ts",
+      "wholeFileSha256": "4750c03ac9a2a2baab37dd57a94ca9980103267eb36a37dc05a8c9a155a31522",
+      "range": {
+        "startLine": 1,
+        "endLine": 37,
+        "sha256": "4750c03ac9a2a2baab37dd57a94ca9980103267eb36a37dc05a8c9a155a31522"
+      }
+    },
+    {
+      "path": "app/auth/signin/AuthFormClient.tsx",
+      "wholeFileSha256": "540b70ff7d2148942fd1ae942c636c3c23869b9a44f9ec7ce6812be9ca74563a",
+      "range": {
+        "startLine": 114,
+        "endLine": 178,
+        "sha256": "4560e6615f10426ec7568f2a539f74876a3f0364508d2c5843a4b0c40cf304d4"
+      }
+    },
+    {
+      "path": "lib/auth.ts",
+      "wholeFileSha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91",
+      "range": {
+        "startLine": 26,
+        "endLine": 71,
+        "sha256": "0ea30390df18125c84eb17719ac6b4dfb3d01fdbb760c2d80a629d9838908b97"
+      }
+    },
+    {
+      "path": "lib/auth.ts",
+      "wholeFileSha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91",
+      "range": {
+        "startLine": 195,
+        "endLine": 204,
+        "sha256": "120fce935ccfc9156972f2cd7ab5af74180b95e24882b6a7589d4aef412ae2bd"
+      }
+    }
+  ],
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}

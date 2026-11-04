@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.browser.signup-email-verification",
+  "revision": 1,
+  "productVersion": "local-source-preview:32e8d5a3f5107e7f91e650d537d16d9adb928e0b",
+  "sourceFiles": 14,
+  "evaluationCases": 10,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

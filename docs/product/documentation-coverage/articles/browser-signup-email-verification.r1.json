@@ -1,0 +1,202 @@
+{
+  "schema": 1,
+  "id": "axiom.help.browser.signup-email-verification",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Browser account creation and email-verification recovery controls",
+  "productVersion": "local-source-preview:32e8d5a3f5107e7f91e650d537d16d9adb928e0b",
+  "screenIds": [
+    "proposed.axiom.screen.browser.signup",
+    "proposed.axiom.screen.browser.check-email",
+    "proposed.axiom.screen.browser.email-recovery"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.browser.signup.home",
+    "proposed.axiom.control.browser.signup.name",
+    "proposed.axiom.control.browser.signup.work-email",
+    "proposed.axiom.control.browser.signup.new-password",
+    "proposed.axiom.control.browser.signup.password-visibility",
+    "proposed.axiom.control.browser.signup.terms",
+    "proposed.axiom.control.browser.signup.privacy-link",
+    "proposed.axiom.control.browser.signup.create",
+    "proposed.axiom.control.browser.signup.google",
+    "proposed.axiom.control.browser.signup.github",
+    "proposed.axiom.control.browser.signup.signin-link",
+    "proposed.axiom.control.browser.signup.continue-signin",
+    "proposed.axiom.control.browser.signup.recovery-open",
+    "proposed.axiom.control.browser.signup.verification-email",
+    "proposed.axiom.control.browser.signup.request-link",
+    "proposed.axiom.control.browser.signup.contact-support"
+  ],
+  "goal": "Use actual browser signup/email-verification recovery without confusing syntactic pairing context, account creation, mail-service response, verified-query banner or OAuth handoff with verified email, session, desktop approval, MFA or operational entitlement.",
+  "prerequisites": [
+    "Internal source-only local preview, not customer help or accepted live auth. No real account, email/password/token/session/credentials/provider/database/runtime configuration was read.",
+    "Start account creation from installed Agent pairing context. Client parses a valid-shaped desktop callback, while server separately requires a pending unconsumed unexpired challenge. Account creation is not approved production access.",
+    "Scope newly fills signup/Check your email/shared verification recovery and narrow proof/credential guards; native sign-in/browser pairing guides stay separate. Full sign-in/OAuth/provider MFA/password reset/enterprise claims are excluded."
+  ],
+  "permissions": [
+    "Signup terms checkbox and callback/challenge are not execution grants. Server checks accepted terms, challenge/expiry, rate limits and password bounds; current verified-email+password authorization remains separate from UI/API200/navigation.",
+    "Reviewed current shared synchronous authInFlight gate serializes credential/OAuth initiation and mirrors preexisting terms/challenge UI gates; it changes no backend auth/entitlement policy or genuine approval boundary.",
+    "Verification/resend can mutate account-token state or attempt mail; verification GET can update identity. Source documentation never invokes those operations or supplies permission to replay uncertain auth.",
+    "No MFA enrollment/TOTP/recovery-code/password-reset form found in inspected mounted auth/account scope. Enterprise MFA-claim comment is not a UI; do not invent a flow or infer no upstream/provider MFA."
+  ],
+  "steps": [
+    {
+      "instruction": "Open signup through intended desktop callback. Read invalid-pairing alert if absent and return to Agent instead of inventing a challenge.",
+      "effect": "read",
+      "expectedState": "Canonical host guard uses configured server origin, not caller Host destination. Suspense spinner is loading presentation only. No editable challenge or local repair/cancel control."
+    },
+    {
+      "instruction": "Enter optional Name, required Work email and required Password; Show/Hide password changes presentation.",
+      "effect": "local-preference",
+      "expectedState": "HTML password12\u2013128characters; server also bounds name100/email254 and normalizes. Inputs/toggle remain editable during pending request; no credentials should enter support artifacts. Input validation is not mailbox proof."
+    },
+    {
+      "instruction": "Personally accept Terms/Privacy checkbox; separate Terms and Privacy Policy links open new tabs. Create account only when context/terms and idle flow permit.",
+      "effect": "propose",
+      "expectedState": "Current button disables during either signup/OAuth; shared synchronous ref blocks both handlers, including Enter/direct submit while OAuth promise pending. No auth Cancel/deadline/automatic retry. Checkbox/link navigation creates no entitlement."
+    },
+    {
+      "instruction": "If offered, Continue with Google/GitHub initiates only registered provider after terms/challenge and shared idle checks.",
+      "effect": "propose",
+      "expectedState": "Provider load/failure may leave options absent. Opening\u2026 is handoff, not successful provider login/MFA/email proof or backend account authority. Full provider/callback flow excluded."
+    },
+    {
+      "instruction": "Read signup alert or Check your email state. VerificationRequired clears password and avoids credentials login; Continue to sign in preserves callback.",
+      "effect": "read",
+      "expectedState": "Server creates hashed-password user/token before attempted email; delivery503/lost response may leave account/token. Displayed We sent is not inbox/delivery proof. Success compatibility branch without proof flag still faces real verified-email credentials guard. No rollback/replay inference."
+    },
+    {
+      "instruction": "Expand Need a verification email? on signup/Check your email/signin. Enter Verification email address; Request verification link.",
+      "effect": "propose",
+      "expectedState": "Required email max254; pending disables submit and ref blocks concurrent requests. Input remains editable. Expanded recovery has no close/cancel/deadline, is not password reset/new account. Contact support only navigates /contact."
+    },
+    {
+      "instruction": "Interpret neutral recovery status and newest-link guidance honestly; do not infer account or delivery from HTTP success.",
+      "effect": "recover",
+      "expectedState": "Empty/overlong/rate-limited/unknown/verified/OAuth-only account can return same success; current unverified password account replaces unused links transactionally then attempts delivery. Delivery/store failure may still be neutral; missing global mail configuration503. New link may invalidate old even when delivery fails."
+    },
+    {
+      "instruction": "Follow a genuine verification link only in the intended auth workflow, not by pasting/replaying it into support.",
+      "effect": "execute",
+      "expectedState": "GET proof endpoint conditionally claims unused unexpired hashed token and emailVerifiedAt in same transaction.24hour token TTL. Missing/long/invalid/expired/used returns400; temporary storage failure503 with explicit retry-link guidance. No real token was read or endpoint invoked here."
+    },
+    {
+      "instruction": "At signin, Email verification completed banner prompts separate sign-in and preserves validated callback.",
+      "effect": "read",
+      "expectedState": "verified=1 query alone is display, not proof visitor verified or got session/pairing. Actual credentials callback requires stored passwordHash/emailVerifiedAt, normalized-email rate limit and password comparison; identity-store errors deny. Membership bootstrap/entitlement/pairing remain separate."
+    },
+    {
+      "instruction": "After uncertainty use displayed later/support/verification recovery guidance; expired desktop challenge needs new Agent sign-in.",
+      "effect": "recover",
+      "expectedState": "No automatic resend/signup replay or inferred account rollback. Resend recovery is not MFA or password reset. Existing browser pairing/native identity storage/entitlement/operation approval must independently succeed; no live acceptance here."
+    }
+  ],
+  "expectedOutcome": "Identify exact signup, verification-mail recovery and proof-state boundary while preserving account/delivery uncertainty and not fabricating MFA/session/desktop/production authority.",
+  "limitations": [
+    "Customer eligible:false; publication approved:false; editorial/media/native/runtime/release/shipped acceptance:false. Null human review/empty media; proposed IDs are authoring-only, not runtime help bindings.",
+    "Initial1fb9f9a8 signup was inspected historically. Final source binds reviewed merged32e8d5a3 shared busy repair, exact current formSHA38a9c4ac\u20266b78 and narrow diff; old hash retained separately. No passed repair suite rerun or new live auth qualification.",
+    "Finite source guide newly covers actual signup/Check your email/shared resend/token outcomes, not all auth/signin/provider/account controls or backend-wide security. No duplication/completion claim for existing native/pairing guides.",
+    "No mounted MFA/TOTP/backup-code/password-reset form found in scoped auth/account search. Provider-hosted MFA/enterprise Cognito claims/design enforcement excluded and unqualified; no universal absence assertion.",
+    "Create-account/API200/We sent/neutral resend/verified=1 banner/OAuth redirect cannot establish mailbox control, session or desktop approval. Actual server proof/password/current membership/entitlement/approval remain decisive.",
+    "Resend response neutrality is not constant-time or backend-wide privacy certification. Signup errors may surface configuration guidance; not customer instructions to supply DB connection strings or run migrations.",
+    "No current mail delivery/inbox/provider presence/account existence/session/cookie/host/credential/security/native clean-host/browser/AT/media acceptance. No auth/code/schema edits or tests/build/network/provider/DB/email/native/API operations for this authoring.",
+    "Global B4/B5 help/media/editorial/customer support/AI ingestion remain incomplete. Evaluation is proposed-not-executed; bundle schema/hash integrity is not retrieval/model execution, approval or publication."
+  ],
+  "recovery": [
+    "For invalid/expired desktop signup context return to Agent and start intended sign-in again; no guessed challenge or extension of old request.",
+    "After delivery failure or lost create response, account may exist. Use displayed verification recovery/manual sign-in/support guidance rather than blind repeated creation or another identity.",
+    "Neutral resend does not confirm delivery/account. New unused link can replace old even if delivery fails; try later/contact support per display rather than treating old link as still valid.",
+    "Invalid/expired/used proof has no success; temporary503 provides specific retry-link guidance. Do not share/replay token links in support or claim a session from verified query.",
+    "Preserve actual authority gates and excluded provider/native/MFA flows; form/source labels and current busy guard are not execution permission."
+  ],
+  "searchTerms": [
+    "Create account",
+    "Work email",
+    "Show password",
+    "Check your email",
+    "Need a verification email",
+    "Request verification link",
+    "verificationRequired",
+    "verified=1",
+    "expired link",
+    "MFA not inventoried",
+    "signup busy",
+    "not password reset"
+  ],
+  "sources": [
+    {
+      "path": "app/auth/signup/page.tsx",
+      "sha256": "7f4d08bb06dc59c01f55e7ec6f915acb9edd73681205de10908213fd3be016c1"
+    },
+    {
+      "path": "app/auth/signup/AuthFormClient.tsx",
+      "sha256": "38a9c4ac0d1d199e6539553855b654a8b3f8d2a48d5d69469b7fd8bceeda6b78"
+    },
+    {
+      "path": "components/auth/VerificationRecovery.tsx",
+      "sha256": "0bd44c54be28b08589e653ea4377d59c28edb8a91d5687e0bae6e47d52b72a80"
+    },
+    {
+      "path": "app/api/auth/signup/route.ts",
+      "sha256": "a689a3f9ac092e5f4f6b37cf7510b8a2eb145e1c66dfd6d45c881eb4814a6d0b"
+    },
+    {
+      "path": "app/api/auth/verify-email/route.ts",
+      "sha256": "b9cefbf383a69dc705f0986952714553fe6c98f81e8b64ad310febf682966bd7"
+    },
+    {
+      "path": "app/api/auth/resend-verification/route.ts",
+      "sha256": "b3f0c7a890472e6275cb98e2ce5f64dc17caff8c8eb8d2343912b28018f4eec0"
+    },
+    {
+      "path": "lib/auth/canonicalAuthPage.ts",
+      "sha256": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f"
+    },
+    {
+      "path": "lib/auth/canonicalAuthOrigin.ts",
+      "sha256": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b"
+    },
+    {
+      "path": "lib/auth/verificationCallback.ts",
+      "sha256": "b73fe56f40af921b65ba568af8aa180c8ab8da9164bbb487198e0e24e6c4c230"
+    },
+    {
+      "path": "lib/auth/emailVerification.ts",
+      "sha256": "4750c03ac9a2a2baab37dd57a94ca9980103267eb36a37dc05a8c9a155a31522"
+    },
+    {
+      "path": "app/auth/signin/AuthFormClient.tsx",
+      "sha256": "540b70ff7d2148942fd1ae942c636c3c23869b9a44f9ec7ce6812be9ca74563a"
+    },
+    {
+      "path": "lib/auth.ts",
+      "sha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91"
+    },
+    {
+      "path": "docs/product/knowledge/browser-signup-email-verification-controls.md",
+      "sha256": "6f556ad447100b72051a4c7f3c971df6c38fd63e46b66d502f8a79955cfea613"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/browser-signup-verification-guide/source-bindings.json",
+      "sha256": "6361047aa40e2a2148006a6bd91cf5793872ef2f82037bfa1af386b2c0bf368c"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/browser-signup-email-verification-controls.md",
+      "docs/recovery/2026-11-04/browser-signup-verification-guide/source-bindings.json",
+      "docs/recovery/2026-11-04/browser-signup-verification-guide/reviewed-signup-busy-drift.diff"
+    ],
+    "verifiedVersion": "local-source-preview:32e8d5a3f5107e7f91e650d537d16d9adb928e0b",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
