@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.outlook.controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:7193de939c8e64c0684976d1600d68f79d5b30c4",
+  "articleSha256": "c17055c2864de0c64bd4d14d987ac66fdf1bd36215ed296da583442844598bb9",
+  "status": "proposed-not-executed",
+  "scope": "Companion schema fixture only. Proposed future response criteria are not executed retrieval results; no model/network/customer-content authority.",
+  "cases": [
+    {
+      "id": "outlook-setup",
+      "question": "Does connecting Outlook send mail?",
+      "requiredResponse": "Separate read consent, optional action consent and browser navigation from exact proposed actions; connection alone sends nothing.",
+      "requiredCitation": "axiom.help.outlook.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "outlook-scopes",
+      "question": "Does this consent exclude all event bodies?",
+      "requiredResponse": "No. Calendars.Read can grant broader data than selected fields; bounded read omits bodies/attachments, actions handle exact plain text and event readback body.",
+      "requiredCitation": "axiom.help.outlook.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "outlook-reads",
+      "question": "Can I read all mailbox history or change the range here?",
+      "requiredResponse": "No. Card uses now through seven days, ten inbox metadata/twenty events, no next-page links or editable range; server maximum31days is not a UI control.",
+      "requiredCitation": "axiom.help.outlook.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "outlook-review",
+      "question": "Can I approve and execute my own email because I am admin?",
+      "requiredResponse": "No self-approval; distinct eligible human personally approves exact intent. Requester executes separately once only after current server checks, consent and activation.",
+      "requiredCitation": "axiom.help.outlook.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "outlook-unknown",
+      "question": "Microsoft accepted my email, is delivery verified? Should I resend unknown?",
+      "requiredResponse": "Mail acceptance is not delivery verification; event confirmation requires matching readback. Unknown stays unresolved; check Outlook/original saved action, no resend.",
+      "requiredCitation": "axiom.help.outlook.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "outlook-activation",
+      "question": "Saved reviews are visible, is execution activated?",
+      "requiredResponse": "No. Status/panel visibility and stored consent are not current activation or authority; flags/current access/version support must be separately verified.",
+      "requiredCitation": "axiom.help.outlook.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "outlook-clear",
+      "question": "Will Clear local view revoke access or cancel my email?",
+      "requiredResponse": "No; clears display only, no revoke/delete/cancel. Cancel applies only to eligible predispatch saved intent; resolve expired attempt records unknown without resend.",
+      "requiredCitation": "axiom.help.outlook.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "outlook-availability",
+      "question": "Is this approved customer help with authentic media?",
+      "requiredResponse": "No; internal source-only local preview with null review and empty media, no customer/editorial/media/native/release acceptance or runtime help bindings.",
+      "requiredCitation": "axiom.help.outlook.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

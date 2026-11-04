@@ -1,0 +1,262 @@
+{
+  "schema": 1,
+  "id": "axiom.help.outlook.controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Outlook: connection, bounded reads and exact independently reviewed actions",
+  "productVersion": "local-source-preview:7193de939c8e64c0684976d1600d68f79d5b30c4",
+  "screenIds": [
+    "proposed.axiom.screen.outlook.connection",
+    "proposed.axiom.screen.outlook.actions"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.outlook.connect",
+    "proposed.axiom.control.outlook.manage",
+    "proposed.axiom.control.outlook.refresh-status",
+    "proposed.axiom.control.outlook.read-mailbox-context",
+    "proposed.axiom.control.outlook.clear-local-view",
+    "proposed.axiom.control.outlook.reload-actions",
+    "proposed.axiom.control.outlook.save-exact-action",
+    "proposed.axiom.control.outlook.review-exact-digest",
+    "proposed.axiom.control.outlook.approve-exact-action",
+    "proposed.axiom.control.outlook.execute-once",
+    "proposed.axiom.control.outlook.cancel",
+    "proposed.axiom.control.outlook.resolve-expired-attempt"
+  ],
+  "goal": "Distinguish Outlook setup and bounded reads from exact independent review and separate one-attempt requester execution, preserving unknown outcomes without resending.",
+  "prerequisites": [
+    "Internal source-only draft, not customer-approved content. Current installed-version support, service activation and actual connection health must be verified separately.",
+    "Current verified desktop workspace identity, membership, accepted Outlook provider access and consenting mailbox ownership; browser setup authority does not become desktop action authority.",
+    "Read consent requests openid, offline_access, User.Read, Mail.ReadBasic, Calendars.Read. Action consent additionally requests Mail.Send and Calendars.ReadWrite."
+  ],
+  "permissions": [
+    "connections:manage maps to owner/admin; agent:approve maps to owner/admin/security_reviewer in inspected source. Current server checks, mailbox ownership and separate action consent are decisive; role labels alone grant no execution.",
+    "Calendars.Read can authorize broader calendar data than the bounded selected fields. Fetching no bodies/attachments is not a Microsoft permission guarantee; exact action content and event readback can include bodies.",
+    "Read route requires desktop session/workspace:read/membership/provider access and excludes API-key authority. Runtime reads bind workspace, connection revision, account and consenting user.",
+    "Required review is a genuine personal decision by a different eligible human; this article, checkbox and fixture do not make that decision."
+  ],
+  "steps": [
+    {
+      "instruction": "Open Apps & skills, select All or Apps, and search Outlook. Open Outlook expands the embedded card; Close Outlook collapses it. Settings \u2192 Integrations mounts the same card.",
+      "effect": "read",
+      "expectedState": "Opening checks status; closing neither disconnects nor revokes consent."
+    },
+    {
+      "instruction": "Use Connect or Manage only with the current verified workspace credential and connections:manage. Browser account setup must match the current Axiom user/workspace.",
+      "effect": "read",
+      "expectedState": "Setup navigation is not Microsoft consent or desktop action authority. Awaiting service activation disables Connect."
+    },
+    {
+      "instruction": "On browser setup, Connect Outlook begins read consent. Optional action access \u2192 Review action permissions is separate and requires an active verified connection owned by the same user/mailbox. After setup return and Refresh status.",
+      "effect": "propose",
+      "expectedState": "Scopes/profile/fixed mailbox-calendar reads and checked-connection persistence must succeed; Microsoft sign-in or a callback notice alone does not verify current desktop reads."
+    },
+    {
+      "instruction": "Inspect the account line and status: Status not loaded, Awaiting service activation, Not connected, Available to the mailbox owner, Reconnect required, Needs attention or Connected.",
+      "effect": "read",
+      "expectedState": "Read access only differs from Action consent recorded; exact approval still required. Connected is stored status, not evidence of a just-completed provider read."
+    },
+    {
+      "instruction": "When Connected and authorized, Read mailbox context reads the current instant through seven days later. Inspect observed time, inbox subject/sender, event subject/start and Cancelled indicators.",
+      "effect": "read",
+      "expectedState": "Up to ten recent inbox metadata records and twenty calendar records, no pagination. No editable range in this card; server maximum is31days. Empty/truncated lists describe only this bounded view."
+    },
+    {
+      "instruction": "Use Clear local view to clear displayed mailbox context; use Refresh status after connection/read errors and confirm current user/workspace/consenting owner.",
+      "effect": "local-preference",
+      "expectedState": "No provider deletion, consent revocation, stored-credential erasure or action cancellation. This bounded read selects no bodies/attachments and does not upload context to AI."
+    },
+    {
+      "instruction": "Open saved actions and Reload saved actions to inspect up to twenty recent reviews. An Execution is not activated notice preserves saved reviews; it is not permission to execute.",
+      "effect": "read",
+      "expectedState": "Panel availability after status differs from service activation. Both existing connection/action flags and current server authority remain decisive; their current values are unverified."
+    },
+    {
+      "instruction": "When canRequest permits, Prepare an email or event draft: choose Send one email or Create one calendar event, enter recipients/required attendees, subject and exact plain-text content. Events also require valid local Start/End. Save exact action for review.",
+      "effect": "propose",
+      "expectedState": "A fresh intent ID stores an exact mailbox/connection-bound proposal with15minute expiry; no Microsoft folder draft or provider submission. Saved review shows UTC event times. No form Cancel, edit-saved-plan or delete-review control."
+    },
+    {
+      "instruction": "Read kind/state, attempt count out of one, mailbox, recipients/attendees, subject, exact content, event UTC times, digest and expiry. Personally check I reviewed this exact mailbox, recipients, content and time only after inspecting them.",
+      "effect": "local-preference",
+      "expectedState": "Checkbox is local digest review, not approval; request/reload clears it. Approval and receipt appear only when recorded."
+    },
+    {
+      "instruction": "A different eligible authorized human uses Approve exact action when server canApprove permits: agent:approve, requested state and unexpired intent.",
+      "effect": "human-review",
+      "expectedState": "Records exact independent approval; requester cannot self-approve. No provider submission. Current server capability and exact intent are rechecked."
+    },
+    {
+      "instruction": "Only the original requester/executor uses Execute once when canExecute permits and current authority, exact review, connection, membership/provider access, sessions, freshness and outbound guards pass.",
+      "effect": "execute",
+      "expectedState": "A single attempt is allowed; visibility is not proof of execution permission. Microsoft mail acceptance does not verify delivery; event confirmation requires matching provider readback."
+    },
+    {
+      "instruction": "Cancel is available to the requester for requested/approved state. Resolve expired attempt is available to the executor for dispatching state; Reload saved actions reconciles uncertain mutations first.",
+      "effect": "recover",
+      "expectedState": "Cancel is pre-dispatch only, not mail recall/event removal. Before lease expiry resolve returns the existing record; after expiry records unknown, without resend, delivery verification or rollback."
+    }
+  ],
+  "expectedOutcome": "Identify the current stored status and exact review/attempt record without confusing setup, consent, local clearing, approval, mail acceptance or uncertainty with verified provider completion.",
+  "limitations": [
+    "Customer eligible: false. Publication approved: false. Editorial accepted: false. Media accepted: false. Native accepted: false. Release accepted: false. Shipped accepted: false. Review fields remain null and media is empty; no authentic screenshot, video, walkthrough or current live acceptance is claimed.",
+    "All proposed. screen/control IDs are authoring-only candidates, not installed help bindings or runtime identifiers. No ingestion, retrieval engine, customer publication, new feature, permission or activation is created.",
+    "This finite article condenses the preserved Outlook guide. Historical guide/manifest/source report retain ad8efae1 provenance; this article binds current7193de93 hashes without rewriting that history.27 exact ranged bindings cover25 unique code files; the unchanged manifest preserves every range.",
+    "No attachments, CC/BCC, arbitrary send-as, bulk actions or retry button in this panel. Read view is bounded and not an entire mailbox/calendar.",
+    "Current flags/access, native/UI usability/accessibility, editorial/media/release/customer acceptance remain unverified. Source identity validation proves hashes, not semantic accuracy, runtime behavior, provider success or shipped availability.",
+    "Evaluation fixture is proposed-not-executed prose only; no retrieval/model evaluation has run. Internal schema/hash validation does not confer editorial or customer approval."
+  ],
+  "recovery": [
+    "For unknown mail/event outcome, inspect Outlook and Reload saved actions on the original review. This attempt is not resent; do not invent a new action solely to bypass uncertainty.",
+    "Unconfirmed mutating requests lock further mutations. Reconcile the original record first; pending draft save must be found by its original intent ID. If missing, preserve warning/uncertainty rather than creating replacement.",
+    "Do not replay an uncertain OAuth callback/exchange/save. Inspect current status before another setup.",
+    "Refresh status after read failure; confirm current user/workspace, consenting owner and setup/access. Blank lists/stale Connected are not verified current access.",
+    "Workspace changes clear local form/review data and abort client requests; abort/close is not provider cancellation or an outcome receipt. Cancel cannot recall submitted mail or remove an event."
+  ],
+  "searchTerms": [
+    "Outlook",
+    "Connect",
+    "Manage",
+    "Refresh status",
+    "Read mailbox context",
+    "Clear local view",
+    "Optional action access",
+    "Save exact action for review",
+    "Approve exact action",
+    "Execute once",
+    "Reload saved actions",
+    "Resolve expired attempt",
+    "unknown delivery"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+    },
+    {
+      "path": "desktop/src/components/Sidebar.tsx",
+      "sha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88"
+    },
+    {
+      "path": "desktop/src/views/PluginsSkillsView.tsx",
+      "sha256": "bbf5ac0521d7564e38973bcf022c4f001d3911607e17ad5369ef4431ec84bab8"
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029"
+    },
+    {
+      "path": "desktop/src/components/OutlookIntegrationCard.tsx",
+      "sha256": "25e7eeb28a7dbe1390e155d9b46e81a6ce662e12637c622f74ac4190229f0fa3"
+    },
+    {
+      "path": "desktop/src/components/OutlookActionsPanel.tsx",
+      "sha256": "60e72e4ff6c3131f7177ac337dcffb3a7a61bc70c4a6d01d14366638d3ad874e"
+    },
+    {
+      "path": "desktop/src/lib/outlookTransport.ts",
+      "sha256": "90354bac0bb4a97783b69e29aaa68c4ebf6ed730bfe68360c87043105e488be3"
+    },
+    {
+      "path": "lib/desktop/outlookHttp.ts",
+      "sha256": "1d7ce42fc11e71e30c131fc87710c482668cbf2e3ff247adae0a06c649da0f4b"
+    },
+    {
+      "path": "lib/desktop/outlookActionsHttp.ts",
+      "sha256": "17638a4b6b860f57e466256d6d67a2d6e023173d03916290abe72f3858bbf8e7"
+    },
+    {
+      "path": "lib/desktop/desktopAuthorization.ts",
+      "sha256": "525a513aa3c06b67eeb3b176a70802e8e6a2e1158b5b8f90c3d02ffdb6b0a7c3"
+    },
+    {
+      "path": "lib/desktop/outlookActionsContract.ts",
+      "sha256": "66db092c9e6715564e4d55e0e2df61f16cebf983dd66226fd00cb0816f82c7b7"
+    },
+    {
+      "path": "app/account/integrations/outlook/page.tsx",
+      "sha256": "23082367f6ce150ed3ba600ba64769cc5f3e246d78343f2979f97f7679dd17be"
+    },
+    {
+      "path": "app/account/integrations/outlook/OutlookConnect.tsx",
+      "sha256": "6e55750982818218c19598db8b12c31220695f37f54ae512110e27075d45434e"
+    },
+    {
+      "path": "lib/integrations/outlook/outlookBrowserHttp.ts",
+      "sha256": "a882d47f12f388e053d0b40c19ec664c64c5660c4c4b21531393f14f6e4543ce"
+    },
+    {
+      "path": "lib/integrations/outlook/outlookOAuth.ts",
+      "sha256": "572cc5f688a13de08765ac13a083d30fa757f158f63893790526bdce3826bcbf"
+    },
+    {
+      "path": "lib/integrations/outlook/outlookConnectionContract.ts",
+      "sha256": "b0d7dc986ec245e384231252059aebf17d5975045967336fcc88d9c5fa8f6ff5"
+    },
+    {
+      "path": "lib/integrations/outlook/outlookRuntime.ts",
+      "sha256": "ebcf82b47ad30039fe60dbfced7fb04475c03d8bab9bbad26bb889e8aa774c25"
+    },
+    {
+      "path": "lib/integrations/outlook/outlookReadiness.ts",
+      "sha256": "9e72289af166fbecc3c14fb50c03d08b2361e16859b677fefd47cfe9d586de3c"
+    },
+    {
+      "path": "lib/integrations/connectedActionStore.ts",
+      "sha256": "e7c978936416df525cc8ab045859892167587bb4f85263effd002c524d87f891"
+    },
+    {
+      "path": "lib/integrations/outlook/outlookActionTransport.ts",
+      "sha256": "1f99ec7ba8c476693222cee8748d5ffd9059b3540e3f5bda6df6ff808eaed10d"
+    },
+    {
+      "path": "app/api/account/integrations/outlook/start/route.ts",
+      "sha256": "eb9ca98ced97d42058c6839e9cd2c1690f97af70b2114c07949ecfda900d7cee"
+    },
+    {
+      "path": "app/api/account/integrations/outlook/action-access/route.ts",
+      "sha256": "e25522b8ab2f1dda5daeb39811fe35fd566f58bcfef8769acec7454a35cca16b"
+    },
+    {
+      "path": "app/api/desktop/integrations/outlook/route.ts",
+      "sha256": "99aea8524e605c54844fd2ab3b3d013d7fe00d4ba02a0826b88fef1a90ca0a15"
+    },
+    {
+      "path": "app/api/desktop/integrations/outlook/actions/route.ts",
+      "sha256": "a56e70e890b5f176ae8b0b69c9f0f65bfb4ff47e72a4a214020a63c0c6e1830f"
+    },
+    {
+      "path": "docs/product/knowledge/outlook-controls.md",
+      "sha256": "317a2ff292792d3e492085a6f8ef2f5090f09cc906517e097a3c46d14e67c3f5"
+    },
+    {
+      "path": "docs/product/knowledge/outlook-controls.sources.json",
+      "sha256": "7419eb32c1e628458e82ad9b99ba0f8387962e0a147aa37845655c068d54377e"
+    },
+    {
+      "path": "docs/product/documentation-coverage/outlook-controls-source-report.md",
+      "sha256": "f55c8f3d6a55dc583f2d3ab05701de5b8322120dcaf1e3397de3e90434043936"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/outlook-controls.md",
+      "docs/product/knowledge/outlook-controls.sources.json",
+      "docs/product/documentation-coverage/outlook-controls-source-report.md"
+    ],
+    "verifiedVersion": "local-source-preview:7193de939c8e64c0684976d1600d68f79d5b30c4",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
