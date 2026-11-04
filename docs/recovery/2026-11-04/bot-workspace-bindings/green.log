@@ -1,0 +1,13 @@
+✔ finite internal inventory identifies all 24 direct declarations and explicit child exclusions (0.721416ms)
+✔ all actual direct interactive controls bind literal metadata to their original exact nodes (11.533292ms)
+✔ removing only inserted static attributes restores the complete baseline bytes (0.0975ms)
+✔ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (18.921334ms)
+✔ rejects a newly added unbound control and metadata outside the finite scope (6.05925ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 135.002041

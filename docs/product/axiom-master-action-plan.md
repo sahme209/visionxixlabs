@@ -876,3 +876,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — Bot composition key preservation
 
 ~~Bot panels and inspector tabs preserve IME composition instead of intercepting Escape/arrows/Home/End~~ ([local evidence](../recovery/2026-11-04/bot-workspace-ime/README.md)). Actual14RED/29compatibilitypasses became43focused passes; desktoptypes and independent review pass. Two guards only; removing them restores exact baseline bytes. Mocked DOM/portals, not genuine native IME/provider/session acceptance; no restart/publication. All15parents remain open.
+
+## November4 — finite Bot workspace control map
+
+~~All24direct intrinsic Bot-workspace declarations have literal source help metadata and original-node/baseline validation~~ ([mapping](knowledge/bot-workspace-bindings.md), [evidence](../recovery/2026-11-04/bot-workspace-bindings/root-review.md)).22buttons1input1summary; repeated row/tab IDs are families. Actual3RED/2passes became5ASTpasses; root verifies4manifesthashes and complete strippedGitbaseline includingIMEguards. Imported/composer controls and native/media/editorial/customer/retrieval acceptance remain excluded. All15parents remain open.

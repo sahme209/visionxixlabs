@@ -1,0 +1,251 @@
+{
+  "format": "axiom.product-control-bindings/1",
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "f48c77d0ab4c7894e4f33bfdb086657fd9406473",
+  "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+  "baselineSha256": "e21dd69b7e957ef14b3256953dc1f6d12097c3d7582073f5a78f81e9b73c089f",
+  "scopeFunction": "SavedBotTaskWorkspace",
+  "declarations": 24,
+  "tagCounts": {
+    "button": 22,
+    "input": 1,
+    "select": 0,
+    "textarea": 0,
+    "summary": 1,
+    "a": 0
+  },
+  "countMethod": "Every intrinsic button/input/select/textarea/summary/a authored in SavedBotTaskWorkspace; mapped declarations count once, imported internals excluded.",
+  "unbound": [
+    "BotAppActionLauncher",
+    "BotConnectedActionsPanel",
+    "JiraTicketDiscovery",
+    "BotAiTaskActivity",
+    "AgentModelSelector",
+    "BotTaskComposer (including portaled details fields)",
+    "BotPullRequestEvidencePanel",
+    "BotReadinessReportPanel",
+    "BotComputerObservationPanel",
+    "BotComputerInputPanel"
+  ],
+  "controls": [
+    {
+      "helpId": "bot.workspace.tasks-refresh",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"text-xs text-zinc-400 underline\" disabled={Boolean(busy)} onClick={()=>void loadList()}>Refresh saved tasks</button>",
+      "nodeSha256": "b88b66529e256d03d27ba85db1684efdca30e4307666d56054fb750fa5bd2e0d"
+    },
+    {
+      "helpId": "bot.workspace.tasks-close",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"mt-3 text-left text-xs text-zinc-400\" onClick={closeTasks}>Close task list</button>",
+      "nodeSha256": "2dd2b24ce98b35a0cb79cea297effb674da4423ea446a137ab84c21e9893cbaf"
+    },
+    {
+      "helpId": "bot.workspace.tasks-filter",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "input",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<input ref={taskFilter} aria-label=\"Filter loaded tasks\" placeholder=\"Filter loaded tasks\" value={filter} onChange={e=>setFilter(e.target.value)} className=\"w-full rounded-lg border border-white/10 bg",
+      "nodeSha256": "061617653416d023025f5ecbb7680544a29d6c3710d6d67bc3d5afc7949e1f5f"
+    },
+    {
+      "helpId": "bot.workspace.task-row",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" aria-label={`Open saved task ${task.title}`} aria-current={selected?.id===task.id?\"true\":undefined} className={`w-full rounded-lg p-3 text-left text-sm text-zinc-200 disabled:opa",
+      "nodeSha256": "b2b17b65bae8c0df12e1018ad45b6b077509b4f262d6125916f97693d8895961"
+    },
+    {
+      "helpId": "bot.workspace.tasks-more",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary mt-3\" disabled={Boolean(busy)} onClick={()=>void loadList(nextCursor)}>More saved tasks</button>",
+      "nodeSha256": "17c38b727cfa3b4c791dcfc8606999098fc685c4a0cb0955ae41c8abf47b98b8"
+    },
+    {
+      "helpId": "bot.workspace.tasks-toggle",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Navigation and qualification limits",
+      "anchor": "<button type=\"button\" ref={tasksTrigger} className=\"btn-secondary\" aria-controls={`bot-task-list-${ownerKey}`} aria-expanded={tasksOpen} onClick={()=>{setTasksOpen(!tasksOpen);setInspectorOpen(false)}",
+      "nodeSha256": "3a06f2de70a896e7f4305f6a3e370328942e57d3bf4c97af040e05fe2e63abbd"
+    },
+    {
+      "helpId": "bot.workspace.actions-toggle",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "App actions: read context before preparing a change",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" aria-expanded={actionsOpen} onClick={()=>setActionsOpen(!actionsOpen)}>App actions</button>",
+      "nodeSha256": "948cb1d05a6900b3fce1e635eb84d41100b5a45add4e5c7d50e58eecf6c1aca9"
+    },
+    {
+      "helpId": "bot.workspace.new-draft",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={()=>requestOpen(\"new\")}>New draft</button>",
+      "nodeSha256": "a08aab05de86d71bed2785d792c3ddae6019adbc341593334d3294f50a1dca9b"
+    },
+    {
+      "helpId": "bot.workspace.details-toggle",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Navigation and qualification limits",
+      "anchor": "<button type=\"button\" ref={detailsTrigger} className=\"btn-secondary\" aria-controls={`bot-task-inspector-${ownerKey}`} aria-expanded={inspectorOpen} onClick={()=>{setInspectorOpen(!inspectorOpen);setTa",
+      "nodeSha256": "33457058dd4ce77862adb1a70a349999d507b3e016ccb19b0c19f525be01fdf2"
+    },
+    {
+      "helpId": "bot.workspace.jira-form-close",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "App actions: read context before preparing a change",
+      "anchor": "<button type=\"button\" className=\"text-xs text-zinc-400 underline\" onClick={()=>setJiraOpen(null)}>Close Jira form</button>",
+      "nodeSha256": "ff93184394b618c90a0f43933652c276b1ee9427643c5ad6b61dc4028d02fd2b"
+    },
+    {
+      "helpId": "bot.workspace.activity-recent",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "AI status and recovery",
+      "anchor": "<button type=\"button\" className=\"text-xs text-zinc-400 underline\" disabled={ai.checking||ai.sending||ai.uncertain||preparingSend} onClick={()=>void ai.loadRecent(selected.id)}>Recent AI task activity<",
+      "nodeSha256": "1b04871d49ccf90badc0079d6a01d8836812a20d6d15788a3223ccad55b53c5a"
+    },
+    {
+      "helpId": "bot.workspace.activity-row",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "AI status and recovery",
+      "anchor": "<button key={item.id} type=\"button\" className=\"block text-left text-xs text-zinc-400 underline\" disabled={ai.checking||ai.sending||ai.uncertain} onClick={()=>void ai.openRecordedRun(item)}>Version {it",
+      "nodeSha256": "36281318af86b52ef67e9e3180058934a3d078c63610334ffc539aed57d7d4cf"
+    },
+    {
+      "helpId": "bot.workspace.replace-keep-editing",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" onClick={()=>setConfirmOpen(undefined)}>Keep editing</button>",
+      "nodeSha256": "c3d63cafaf4a3c10920bca3b7c81b4fadcfa2ca087d947976b2d402c36a8cfb2"
+    },
+    {
+      "helpId": "bot.workspace.replace-confirm",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" onClick={()=>{const id=confirmOpen;setConfirmOpen(undefined);void openSaved(id)}}>{confirmOpen===\"new\"?\"Start new draft\":\"Open saved draft\"}</button>",
+      "nodeSha256": "9cb6edc1fe34469125a8212bb20d9c444c61c0d4670abb3a9a20c63bd5af26c9"
+    },
+    {
+      "helpId": "bot.workspace.save-retry",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={Boolean(busy)} onClick={()=>void save(undefined,pending)}>Retry same save</button>",
+      "nodeSha256": "bde4d4036535e767905fac8377e004c660a8a5fb5c42a1c8ea60e82530bb7cc7"
+    },
+    {
+      "helpId": "bot.workspace.conflict-review-saved",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={Boolean(busy)} onClick={()=>requestOpen(selected.id)}>Review saved version</button>",
+      "nodeSha256": "5c33e39454f91663f042b58b54c784c1145b4dab14244105d3a4bdf80478b6dc"
+    },
+    {
+      "helpId": "bot.workspace.conflict-keep-new",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={Boolean(busy)} onClick={()=>{setSelected(null);setConflict(false);setHistory(undefined);requestKey.current=crypto.randomUUID();setNote(\"Your e",
+      "nodeSha256": "9b864ac59a24133a094bcd0ea97fc7d963b45473145d5381bc1288ff8acd8c9d"
+    },
+    {
+      "helpId": "bot.workspace.ai-setup-refresh",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Ask for an AI response",
+      "anchor": "<button type=\"button\" className=\"text-xs text-zinc-400 underline\" disabled={ai.loading||preparingSend||ai.sending} onClick={()=>void ai.refresh()}>Refresh AI setup</button>",
+      "nodeSha256": "7e6e3dd4b69bbe9f5a8469fe1ee8aec836ed38ff31161eae2e042afcf306b923"
+    },
+    {
+      "helpId": "bot.workspace.evidence-clear",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Ask for an AI response",
+      "anchor": "<button type=\"button\" className=\"underline\" disabled={locked} onClick={()=>setSelectedEvidence(null)}>Clear selected evidence</button>",
+      "nodeSha256": "7d4d3cef477bd8561652b301c46e1561ba975f74fef9ac43dc471828b9de69d5"
+    },
+    {
+      "helpId": "bot.workspace.inspector-tab",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Navigation and qualification limits",
+      "anchor": "<button key={tab} type=\"button\" role=\"tab\" id={`bot-tab-${ownerKey}-${tab}`} aria-selected={inspectorTab===tab} tabIndex={inspectorTab===tab?0:-1} onKeyDown={event=>{if(event.nativeEvent.isComposing||",
+      "nodeSha256": "ceac1459b2eddd24018c85e3b7c7da96f2af6bb3706950a509f118bf298128fc"
+    },
+    {
+      "helpId": "bot.workspace.details-close",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Navigation and qualification limits",
+      "anchor": "<button type=\"button\" className=\"mt-3 text-xs text-zinc-400 underline\" onClick={closeInspector}>Close task details</button>",
+      "nodeSha256": "e4c3ddb03ead24ad7a00cef37ce68f2f7661056e565f5f3a40dcebe534389af6"
+    },
+    {
+      "helpId": "bot.workspace.history-open",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={Boolean(busy)||Boolean(pending)||aiLocked} onClick={()=>void loadHistory()}>History</button>",
+      "nodeSha256": "dc36a79095e9126ef5d07eec8425f3f2d66949e36c744568b4cf3f17e9ab2754"
+    },
+    {
+      "helpId": "bot.workspace.history-version",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "summary",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<summary>Version {event.version}</summary>",
+      "nodeSha256": "1586d5cc3c5feb62f330b1ecf7d2ee524c6aef14e84b16fac2ef5026d513e6f9"
+    },
+    {
+      "helpId": "bot.workspace.history-older",
+      "source": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "tag": "button",
+      "sourceFunction": "SavedBotTaskWorkspace",
+      "guideSection": "Write and save",
+      "anchor": "<button type=\"button\" className=\"btn-secondary\" disabled={Boolean(busy)} onClick={()=>void loadHistory(history.nextBeforeVersion!)}>Older history</button>",
+      "nodeSha256": "2ed9b5c36649c9046f159b3d444b7bc6692fa82e6857f2542218260a94f9ebfc"
+    }
+  ],
+  "guide": "docs/product/knowledge/axiom-bot-controls.md"
+}

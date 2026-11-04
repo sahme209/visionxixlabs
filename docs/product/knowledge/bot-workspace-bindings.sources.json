@@ -1,0 +1,26 @@
+{
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "f48c77d0ab4c7894e4f33bfdb086657fd9406473",
+  "bindingScope": "24 intrinsic interactive declarations authored in SavedBotTaskWorkspace only; imported internals excluded",
+  "sources": [
+    {
+      "path": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "sha256": "4247b044d86517bb3de0e2cff281e7884f3b0791dc22713dcdad8b51632de083"
+    },
+    {
+      "path": "docs/product/knowledge/bot-workspace-bindings.json",
+      "sha256": "2b2b848c91da688f505b0fe535c8d02054eb7e6503b90266147bf19f0abd7aa7"
+    },
+    {
+      "path": "docs/product/knowledge/bot-workspace-bindings.test.cjs",
+      "sha256": "4b5b48467970c98bdd8ccc684ff29e0a2fead8a777d020e4465d3df8dd359f73"
+    },
+    {
+      "path": "docs/product/knowledge/bot-workspace-bindings.md",
+      "sha256": "13aeb600f162154f8f7adcea9320664f12fa910b9f266127244169bfcc20fb01"
+    }
+  ],
+  "validation": "5 focused AST checks pass under kernel network denial and private-only writes. Stripping all 24 inserted attributes independently restores the complete Git baseline, including both IME guards. No native/customer acceptance."
+}

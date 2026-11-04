@@ -52,3 +52,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 Bot composition preservation
 ~~Escape and inspector navigation preserve active composition~~:43focused rendered checks, desktoptypes and independent review pass; exact2guard baseline proof. [Evidence](../recovery/2026-11-04/bot-workspace-ime/README.md). Local source only, not native/session acceptance.
+
+### November4 finite Bot workspace source map
+~~24direct intrinsic declarations bound~~ (22buttons1input1summary),5ASTcontracts with actualRED; root hashes/fullGitbaseline proof. [Map](knowledge/bot-workspace-bindings.md). Source families only; imported/composer/native/media/customer/editorial acceptance still open.

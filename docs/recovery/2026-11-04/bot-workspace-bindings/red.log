@@ -1,0 +1,129 @@
+✔ finite internal inventory identifies all 24 direct declarations and explicit child exclusions (0.566958ms)
+✖ all actual direct interactive controls bind literal metadata to their original exact nodes (11.872583ms)
+✔ removing only inserted static attributes restores the complete baseline bytes (0.277083ms)
+✖ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (10.733958ms)
+✖ rejects a newly added unbound control and metadata outside the finite scope (4.733ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 124.172833
+
+✖ failing tests:
+
+test at docs/product/knowledge/bot-workspace-bindings.test.cjs:40:1
+✖ all actual direct interactive controls bind literal metadata to their original exact nodes (11.872583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'unbound or duplicate control metadata',
+  +   'missing or duplicate bot.workspace.tasks-refresh',
+  +   'missing or duplicate bot.workspace.tasks-close',
+  +   'missing or duplicate bot.workspace.tasks-filter',
+  +   'missing or duplicate bot.workspace.task-row',
+  +   'missing or duplicate bot.workspace.tasks-more',
+  +   'missing or duplicate bot.workspace.tasks-toggle',
+  +   'missing or duplicate bot.workspace.actions-toggle',
+  +   'missing or duplicate bot.workspace.new-draft',
+  +   'missing or duplicate bot.workspace.details-toggle',
+  +   'missing or duplicate bot.workspace.jira-form-close',
+  +   'missing or duplicate bot.workspace.activity-recent',
+  +   'missing or duplicate bot.workspace.activity-row',
+  +   'missing or duplicate bot.workspace.replace-keep-editing',
+  +   'missing or duplicate bot.workspace.replace-confirm',
+  +   'missing or duplicate bot.workspace.save-retry',
+  +   'missing or duplicate bot.workspace.conflict-review-saved',
+  +   'missing or duplicate bot.workspace.conflict-keep-new',
+  +   'missing or duplicate bot.workspace.ai-setup-refresh',
+  +   'missing or duplicate bot.workspace.evidence-clear',
+  +   'missing or duplicate bot.workspace.inspector-tab',
+  +   'missing or duplicate bot.workspace.details-close',
+  +   'missing or duplicate bot.workspace.history-open',
+  +   'missing or duplicate bot.workspace.history-version',
+  +   'missing or duplicate bot.workspace.history-older'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/bot-workspace-bindings.test.cjs:40:110)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'unbound or duplicate control metadata', 'missing or duplicate bot.workspace.tasks-refresh', 'missing or duplicate bot.workspace.tasks-close', 'missing or duplicate bot.workspace.tasks-filter', 'missing or duplicate bot.workspace.task-row', 'missing or duplicate bot.workspace.tasks-more', 'missing or duplicate bot.workspace.tasks-toggle', 'missing or duplicate bot.workspace.actions-toggle', 'missing or duplicate bot.workspace.new-draft', 'missing or duplicate bot.workspace.details-toggle', 'missing or duplicate bot.workspace.jira-form-close', 'missing or duplicate bot.workspace.activity-recent', 'missing or duplicate bot.workspace.activity-row', 'missing or duplicate bot.workspace.replace-keep-editing', 'missing or duplicate bot.workspace.replace-confirm', 'missing or duplicate bot.workspace.save-retry', 'missing or duplicate bot.workspace.conflict-review-saved', 'missing or duplicate bot.workspace.conflict-keep-new', 'missing or duplicate bot.workspace.ai-setup-refresh', 'missing or duplicate bot.workspace.evidence-clear', 'missing or duplicate bot.workspace.inspector-tab', 'missing or duplicate bot.workspace.details-close', 'missing or duplicate bot.workspace.history-open', 'missing or duplicate bot.workspace.history-version', 'missing or duplicate bot.workspace.history-older' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/bot-workspace-bindings.test.cjs:42:1
+✖ rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (10.733958ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(source.replace(attr,'data-help-id={"'+a+'"}')).includes('nonliteral ID'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/bot-workspace-bindings.test.cjs:46:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at docs/product/knowledge/bot-workspace-bindings.test.cjs:52:1
+✖ rejects a newly added unbound control and metadata outside the finite scope (4.733ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert(issues(extra).includes('declaration count drift'))
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/bot-workspace-bindings.test.cjs:54:74)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
