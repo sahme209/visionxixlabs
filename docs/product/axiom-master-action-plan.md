@@ -29,6 +29,10 @@ A2 remains open. ~~Current saved policy-head metadata and deliberate fixed-targe
 
 ~~Focused-menu breakpoint focus loss repaired~~ ([local evidence](../recovery/2026-11-04/navigation-resize-focus/README.md)): two reproduced assertions, four focused DOM tests pass; external focus and scroll cleanup retained. Initial accidental broader test selection exposed five additional unresolved failures; no clean-suite/browser/AT claim. Full installed SDK→Gateway serialization also captured offline with zero network calls; manager/provider/billable qualification still open.
 
+## November 4 recorded regression failures reconciled
+
+~~Five recorded stale-fixture failures diagnosed and corrected without runtime changes~~ ([evidence](../recovery/2026-11-04/stale-regression-fixtures/README.md)):33focused desktop contract/entitlement/logging checks and3notification checks pass. Exact mounted core binding and financial-proof denial retained. No full-suite/customer/DB/provider/Governance completion claim; all15parents remain open.
+
 ## Prioritized numbered checklist — November 3
 
 This is the current execution checklist. Every A1–A9 and B1–B6 requirement remains

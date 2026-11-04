@@ -4,6 +4,21 @@ import { join } from "node:path";
 
 const root = process.cwd();
 
+// The mounted resolver now delegates authority checks to the shared core.
+// Bind that exact delegation before checking the implementation it executes.
+function readMountedResolverCore() {
+  const wrapper = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+  expect(wrapper).toContain('import { createDesktopSessionResolverCore } from "./desktopSessionResolverCore"');
+  expect(wrapper).toContain("export const resolveRequestDesktopSession = createDesktopSessionResolverCore({");
+  expect(wrapper).toContain("tokenCodec: { verifyDesktopToken }, sessions: { resolveActiveSession, touchDesktopSession }");
+  expect(wrapper).toContain("readActiveWorkspaceRole, selfHealPersonalWorkspaceMembership, readDesktopCommercialAccess,");
+  expect(wrapper).toContain("}, authenticateApiKey, log)");
+  return {
+    wrapper,
+    core: readFileSync(join(root, "lib/desktop/desktopSessionResolverCore.ts"), "utf8"),
+  };
+}
+
 describe("desktop first-run contract", () => {
   afterEach(() => vi.restoreAllMocks());
 
@@ -22,7 +37,7 @@ describe("desktop first-run contract", () => {
   it("separates verified identity from approved workspace access and enforces the gate server-side", () => {
     const accessPolicy = readFileSync(join(root, "lib/desktop/desktopCommercialAccessPolicy.ts"), "utf8");
     const accessRoute = readFileSync(join(root, "app/api/desktop/access/route.ts"), "utf8");
-    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    const { core: resolver } = readMountedResolverCore();
     const apiKeyAuth = readFileSync(join(root, "lib/security/authenticateApiKey.ts"), "utf8");
     const stateRoute = readFileSync(join(root, "app/api/desktop/state/route.ts"), "utf8");
     // Pricing/entitlement tiers (pilot/trial/past-due) are not enforced yet
@@ -215,7 +230,7 @@ describe("desktop first-run contract", () => {
 
   it("does not expose desktop sample mode and accepts both verified credential kinds for deployment requests", () => {
     const signIn = readFileSync(join(root, "desktop/src/views/DesktopSignInView.tsx"), "utf8");
-    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    const { core: resolver } = readMountedResolverCore();
     expect(signIn).not.toContain("onPreview");
     expect(signIn).toContain("never substitutes sample records");
     expect(resolver).toContain('token.startsWith("vxlk_")');
@@ -224,7 +239,7 @@ describe("desktop first-run contract", () => {
   });
 
   it("requires current workspace authority before validating shared integrations", () => {
-    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    const { core: resolver } = readMountedResolverCore();
     const github = readFileSync(join(root, "app/api/desktop/integrations/github/validate/route.ts"), "utf8");
     const slack = readFileSync(join(root, "app/api/desktop/integrations/slack/validate/route.ts"), "utf8");
     const teams = readFileSync(join(root, "app/api/desktop/integrations/teams/validate/route.ts"), "utf8");
@@ -240,9 +255,9 @@ describe("desktop first-run contract", () => {
   });
 
   it("rechecks accepted workspace membership for long-lived desktop sessions", () => {
-    const resolver = readFileSync(join(root, "lib/desktop/resolveRequestDesktopSession.ts"), "utf8");
+    const { core: resolver, wrapper } = readMountedResolverCore();
     expect(resolver).toContain("readActiveWorkspaceRole");
-    expect(resolver).toContain("membership?.acceptedAt !== null");
+    expect(wrapper).toContain("membership?.acceptedAt !== null");
     expect(resolver).toContain("options.requireWorkspaceMembership !== false");
     expect(resolver).toContain("A removed or unaccepted member loses access");
   });

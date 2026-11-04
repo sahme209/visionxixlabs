@@ -27,3 +27,7 @@ Reconciled November4,2026. Each linked receipt identifies its exact source versi
 ## Execution rules
 
 Continue already-authorized unblocked work in parallel. Preserve the pending exact Governance experiment, browser settings, genuine independent approvals, production/spend/provider/database restrictions and unknown histories. No new deployment, grant, credential, paid CI or provider write is authorized by this board. The source snapshot and evidence links are historical provenance, not execution authority or a substitute for current checks.
+
+## November4 focused regression follow-up
+
+Five failures exposed by the navigation test selection were traced to stale fixtures after resolver-core/financial-reader changes. Test-only mounted authority binding and coherent financial transaction fixtures now pass33+3focused checks, including explicit missing/unreadable proof denial. [Evidence](../recovery/2026-11-04/stale-regression-fixtures/README.md). No runtime or production change and no full-suite acceptance.
