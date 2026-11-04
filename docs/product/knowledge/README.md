@@ -15,6 +15,7 @@
 | Open or acquire repository source | [Repository acquisition](repository-acquisition-controls.md) | Local checkout and authorized clone; not a release approval. |
 | Inspect and edit repository text | [Editor controls](repository-editor-controls.md), [nested confirmations and diff pages](repository-editor-nested-controls.md) | Discard, cancellation, saving and uncertain outcomes differ. |
 | Map editor help metadata | [Static bindings](repository-editor-bindings.md) | Family attributes are not unique DOM identities or completed customer help. |
+| Manage desktop Apps & skills top-level controls | [Desktop Apps & skills](desktop-apps-skills-controls.md) | Saved status, provider validation/consent, skill metadata and Agent composer handoff are separate; nested connector controls remain separately scoped. |
 | Browse available integrations | [Catalog controls](integrations-catalog-controls.md) | A catalog entry is not a connected account or granted capability. |
 | Review a guided AWS, Azure or Google Cloud connection | [Guided cloud controls](guided-cloud-connection-controls.md) | Saved proposal, external consent, validated connection and deployment authority are different. |
 | Enroll an existing AWS role or Azure principal for bounded reads | [Advanced read-only enrollment](read-only-cloud-enrollment-controls.md) | Local dismissal or disconnect does not revoke provider grants or issued credentials; inventory is bounded. |

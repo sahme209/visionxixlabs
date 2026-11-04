@@ -148,3 +148,8 @@ The [guide-to-article source linkage queue](guide-article-linkage.md) maps index
 ## Repository acquisition and base editor internal draft (November4)
 
 [Combined article revision1](articles/repository-acquisition-base-editor-controls.r1.json) and [ten proposed cases](repository-acquisition-base-editor-controls-evaluation.r1.json) preserve local-write, clone-token, unknown-save and separate push boundaries. Metadata-only source drift is explicit; old/nested records remain. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/repository-base-structured-knowledge-author/independent-review.md). No executed retrieval, native filesystem or customer acceptance.
+
+
+## Cloud setup and public catalog internal drafts (November4)
+
+[Cloud article](articles/cloud-connection-controls.r1.json) and [twelve proposed cases](cloud-connection-controls-evaluation.r1.json) preserve guided/advanced/provider-grant/readiness boundaries. [Evidence](../../recovery/2026-11-04/cloud-connections-structured-knowledge/README.md). [Public website catalog article](articles/public-integrations-catalog-controls.r1.json) and [eight proposed cases](public-integrations-catalog-controls-evaluation.r1.json) describe browsing, not desktop/account access. [Review](../../recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/independent-review.md). Newbundle integrity passes/customer refusal remains; no retrieval/runtime/customer acceptance.

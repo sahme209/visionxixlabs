@@ -745,3 +745,12 @@ Sixteen stored article revisions include history; proposed cases are not execute
 - [x] Coverage README now identifies the preserved candidate extraction by actual stored4c2143fd source snapshot/counts; no fresh scan/current-byte qualification claimed and original inventory unchanged.
 
 Eighteen stored article revisions include history, not18customer-approved documents. All15parents remain open; source metadata/fixtures do not complete runtime, media, editorial, native, Governance or executed retrieval acceptance.
+
+
+## November4 — connection knowledge and desktop Apps source gap
+
+- [x] B4/B5 bounded guided/advanced cloud draft:22+17historical bindings match,46unique article sources/twelve proposed cases; newbundle integrity/customer refusal and independent source review pass. Templates/validation are not privilege attestations; readiness is not deployment admission. [Evidence](../recovery/2026-11-04/cloud-connections-structured-knowledge/README.md).
+- [x] B4/B5 public website catalog draft:four source/ranges/sixarticlehashes/eight proposed cases; newbundle integrity/customer refusal and independent source review pass. Website catalog is not desktop/account management. [Review](../recovery/2026-11-04/public-integrations-catalog-structured-knowledge-author/independent-review.md).
+- [x] B4 finite desktop Apps & skills source guide fills a separate top-level inventory gap with9file/range bindings and independent review, explicitly excluding nested connector/backends/native acceptance. [Guide](knowledge/desktop-apps-skills-controls.md).
+
+Twenty stored revisions include history; proposed cases are not executed retrieval and allcustomer/editorial/media/native/runtime acceptance remains open. All15parents remain open.

@@ -1,0 +1,118 @@
+{
+  "status": "frozen-internal-source-draft-pending-independent-review",
+  "sourceCodeBaseline": "be276403f07d888383af5ef442c7bf7239aed99d",
+  "customerEligible": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "runtimeAccepted": false,
+  "nativeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false,
+  "guide": {
+    "path": "docs/product/knowledge/desktop-apps-skills-controls.md",
+    "sha256": "616f9498b4bfbbb4f68a64489cd4640324a6afb680c99c08d312cb93184f121f"
+  },
+  "rangeConvention": "inclusive1-based raw lines retaining line endings",
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "ranges": [
+        {
+          "startLine": 134,
+          "endLine": 187,
+          "sha256": "43aa5f9253129148f98f3bff5a7f3008f624f01c3bc78c109ed45c2e0a4e0df0"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/PluginsSkillsView.tsx",
+      "wholeFileSha256": "bbf5ac0521d7564e38973bcf022c4f001d3911607e17ad5369ef4431ec84bab8",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 235,
+          "sha256": "bbf5ac0521d7564e38973bcf022c4f001d3911607e17ad5369ef4431ec84bab8"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "ranges": [
+        {
+          "startLine": 1136,
+          "endLine": 1215,
+          "sha256": "994068241f4092d01be7b6aeaf23707ea23dc8ee6ebc03fc13846d0f4631f5a0"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/AgentChatView.tsx",
+      "wholeFileSha256": "ad734ae3b5fc40b586d74a547f03ac90233991a41d90d7d9ad73514a77bd8313",
+      "ranges": [
+        {
+          "startLine": 546,
+          "endLine": 562,
+          "sha256": "2c1023e7b6d3b21a5c0a4dc874bbd12ee74dc022eb0fd7e64f4c7d29b99ed7c6"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/skillInvocation.ts",
+      "wholeFileSha256": "331d2f9e501462f006a5fa2941c02d0ae3cf609b6194c37bb6b257d4bb96a0f8",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 7,
+          "sha256": "814e31675a49e2597fcad38f2ff545aa376217407d9c70f835a4f601117a30d7"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/DesktopMcpTools.tsx",
+      "wholeFileSha256": "be13c796d1a54aae26094f3c4e35eca31239a679ebfc7a18758f53e5d13a725a",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 48,
+          "sha256": "be13c796d1a54aae26094f3c4e35eca31239a679ebfc7a18758f53e5d13a725a"
+        }
+      ]
+    },
+    {
+      "path": "app/api/desktop/agent/skills/route.ts",
+      "wholeFileSha256": "b94751c4a51532b350435940afbb8ddf9b7a0035221adb062d0717e24a0bc18a",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 65,
+          "sha256": "b94751c4a51532b350435940afbb8ddf9b7a0035221adb062d0717e24a0bc18a"
+        }
+      ]
+    },
+    {
+      "path": "lib/axiom/agentRuntime/skillManagement.ts",
+      "wholeFileSha256": "4b9481f99901d0b69f7777f203f53429c174172501c23e461c66472aa58b24bb",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 50,
+          "sha256": "4b9481f99901d0b69f7777f203f53429c174172501c23e461c66472aa58b24bb"
+        }
+      ]
+    },
+    {
+      "path": "app/api/desktop/mcp/microsoft-learn/route.ts",
+      "wholeFileSha256": "fdc492f42d29b9f8615e42aa11c652b023dcdce10fb875815a113d899b23b982",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 29,
+          "sha256": "fdc492f42d29b9f8615e42aa11c652b023dcdce10fb875815a113d899b23b982"
+        }
+      ]
+    }
+  ]
+}
