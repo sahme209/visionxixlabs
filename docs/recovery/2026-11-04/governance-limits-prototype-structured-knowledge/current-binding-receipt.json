@@ -1,0 +1,196 @@
+{
+  "status": "internal-source-only-prototype-current-receipt",
+  "productVersion": "local-source-preview:f57bd027a29971726096914f31049764a15717d2",
+  "customerEligible": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "historicalGuide": "docs/product/knowledge/governance-execution-limits.md",
+  "historicalGuideUnchanged": true,
+  "historicEmbeddedEntries": 10,
+  "unchangedWholeFiles": 9,
+  "knownDrift": {
+    "path": "lib/governance/intelligence/executionPolicyRequestService.ts",
+    "description": "Wrapper delegates to policy core with production createGovernanceRequestAuthority(request). Policy core matches historical body after explicit dependency injection plus default Date.now clock wiring; authority core matches historical body after resolver injection. No broader guide-fact semantics inferred changed. Source comparison only, no authority execution.",
+    "uiMount": "Settings import.meta.env.DEV only; policy endpoint is gated by service flag. No enablement/bypass instructions or runtime flag values inspected.",
+    "limitations": "Canonical issuer, custody, business-channel and enforcement coverage remain unqualified; not A2 completion."
+  },
+  "sources": [
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "historicSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 2002,
+          "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "historicSha256": "d154a29c5cb47dfa7786a14bd420d8f20205f27d2e3f8af14b42d7cb3c8ffb9c",
+      "sha256": "d154a29c5cb47dfa7786a14bd420d8f20205f27d2e3f8af14b42d7cb3c8ffb9c",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 59,
+          "sha256": "d154a29c5cb47dfa7786a14bd420d8f20205f27d2e3f8af14b42d7cb3c8ffb9c"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/GovernanceExecutionPolicyProposal.tsx",
+      "historicSha256": "568a74d4cefb98268745a7fa8b495abb00213954ce91ed81c0e9eb2c9483dde4",
+      "sha256": "568a74d4cefb98268745a7fa8b495abb00213954ce91ed81c0e9eb2c9483dde4",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 69,
+          "sha256": "568a74d4cefb98268745a7fa8b495abb00213954ce91ed81c0e9eb2c9483dde4"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/GovernanceExecutionPolicyPanel.tsx",
+      "historicSha256": "db586c750e00a46d2551f89f41558fa7e90b3e00e32c54257f9acf87d51e1a4e",
+      "sha256": "db586c750e00a46d2551f89f41558fa7e90b3e00e32c54257f9acf87d51e1a4e",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 92,
+          "sha256": "db586c750e00a46d2551f89f41558fa7e90b3e00e32c54257f9acf87d51e1a4e"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/governanceExecutionPolicy.ts",
+      "historicSha256": "3da2dbcf268977d84998d283435dad9413e0424c3a8ce127ae32cc8ca00cee91",
+      "sha256": "3da2dbcf268977d84998d283435dad9413e0424c3a8ce127ae32cc8ca00cee91",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 67,
+          "sha256": "3da2dbcf268977d84998d283435dad9413e0424c3a8ce127ae32cc8ca00cee91"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/useExecutionPolicyRecovery.ts",
+      "historicSha256": "6342c60c7ea21b89aa0f4714b63975ae02d7d1b2139986bff3277762018298aa",
+      "sha256": "6342c60c7ea21b89aa0f4714b63975ae02d7d1b2139986bff3277762018298aa",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 20,
+          "sha256": "6342c60c7ea21b89aa0f4714b63975ae02d7d1b2139986bff3277762018298aa"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/executionPolicyRecoveryStore.ts",
+      "historicSha256": "e51b4c81fa3599a765592d43ca6ce0c9e29ae22b28a90d744aa2a5591bfc310e",
+      "sha256": "e51b4c81fa3599a765592d43ca6ce0c9e29ae22b28a90d744aa2a5591bfc310e",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 39,
+          "sha256": "e51b4c81fa3599a765592d43ca6ce0c9e29ae22b28a90d744aa2a5591bfc310e"
+        }
+      ]
+    },
+    {
+      "path": "app/api/desktop/governance-intelligence/execution-policy/route.ts",
+      "historicSha256": "dbc25e40d175df6bc1782ef9d0834c1d9ef07ce80a0ad3f146bf51d41916216b",
+      "sha256": "dbc25e40d175df6bc1782ef9d0834c1d9ef07ce80a0ad3f146bf51d41916216b",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 8,
+          "sha256": "dbc25e40d175df6bc1782ef9d0834c1d9ef07ce80a0ad3f146bf51d41916216b"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyHttp.ts",
+      "historicSha256": "09ff9bbed6041a112f9481f50cb1f1b3fcd894cd04019ee72e61d16d6c430212",
+      "sha256": "09ff9bbed6041a112f9481f50cb1f1b3fcd894cd04019ee72e61d16d6c430212",
+      "historicMatches": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 58,
+          "sha256": "09ff9bbed6041a112f9481f50cb1f1b3fcd894cd04019ee72e61d16d6c430212"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyRequestService.ts",
+      "historicSha256": "2cb82e97a69336a1974ecb8ce841adf1bd4f3b786eeef8dbbbe20b0fb7114d46",
+      "sha256": "3b22921234cb0bec24efdcf253e8cb159f8d280d81c3b1f4e1dc70778238dd01",
+      "historicMatches": false,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 7,
+          "sha256": "3b22921234cb0bec24efdcf253e8cb159f8d280d81c3b1f4e1dc70778238dd01"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyRequestServiceCore.ts",
+      "sha256": "505a0b7b5f8cefbf791d829e63c24402bf21afd0d97e856fe42de0765bd4d9c5",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 77,
+          "sha256": "505a0b7b5f8cefbf791d829e63c24402bf21afd0d97e856fe42de0765bd4d9c5"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/requestAuthority.ts",
+      "sha256": "dca84b74ee7e0d2f0935ae7564149ace6e1088650981fca827d785f315197c86",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 6,
+          "sha256": "dca84b74ee7e0d2f0935ae7564149ace6e1088650981fca827d785f315197c86"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/requestAuthorityCore.ts",
+      "sha256": "59db20c73cab7b32fd9268c1ddf28f7992fe46f5d1f85391d39e5cdd268ff217",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 24,
+          "sha256": "59db20c73cab7b32fd9268c1ddf28f7992fe46f5d1f85391d39e5cdd268ff217"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/executionPolicyStore.ts",
+      "sha256": "78bab2e5335738bac8ffab7ee232de72483d32641cfcbc648abcbef2c09b5f97",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 605,
+          "sha256": "78bab2e5335738bac8ffab7ee232de72483d32641cfcbc648abcbef2c09b5f97"
+        }
+      ]
+    }
+  ]
+}

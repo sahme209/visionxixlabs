@@ -762,3 +762,14 @@ Twenty stored revisions include history; proposed cases are not executed retriev
 - [x] B4/B5 bounded native Documentation draft:6historical bindings unchanged plusSidebar/Commands for8code/ranges,13article hashes/seven proposed cases; newbundle integrity/customer refusal and independent source review pass. Five journey buttons/seven links are navigation, not current content/version/provider proof; child effects remain separately guarded. [Review](../recovery/2026-11-04/native-documentation-structured-knowledge-author/independent-review.md).
 
 Twenty-two stored revisions include history; fixtures remain proposed, not retrieval evaluations. No native/customer/media/editorial/Governance/runtime acceptance or publication; all15parents remain open.
+
+
+## November4 — prototype limits and website teaching knowledge batch
+
+- [x] B4/B5 bounded execution-limits PROTOTYPE draft:9oldhashes unchanged/onewrapper-Core refactor explicit,14currentfiles/ranges/17articlehashes/nine proposed cases. Newbundle integrity/customer refusal and source review pass. Numeric limits do not qualify issuer/custody/channel, provider approval, enrollment or coverage. [Evidence](../recovery/2026-11-04/governance-limits-prototype-structured-knowledge/README.md). No A2 completion.
+- [x] B4/B5 bounded website teaching/navigation draft:known keyboard/contrast changes explicit, mutable-master historical context excluded from runtime source bindings;11currentcode/ranges/16articlehashes/ten proposed cases. Newbundle integrity/customer refusal and source review pass. Scripted decisions are not genuine approvals/authenticB3media/liveproof. [Review](../recovery/2026-11-04/website-teaching-structured-knowledge-author/independent-review.md).
+
+Twenty-four stored revisions include history; all15parents remain open. Full source-to-control coverage, stable runtime help IDs, authentic media, genuine editorial/customer eligibility, executed retrieval and operational acceptance are not established by linkage metadata.
+
+
+- [x] Bounded indexed-guide linkage milestone:all26currentlyindexedguidepaths have a direct source reference among24draft/internal stored article revisions (history included). [Static receipt](../recovery/2026-11-04/indexed-guide-linkage/README.md). This closes only this authoring-reference gap, not every-control coverage/B4/B5 or runtime/customer acceptance.

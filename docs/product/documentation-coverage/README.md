@@ -163,3 +163,13 @@ The [guide-to-article source linkage queue](guide-article-linkage.md) maps index
 ## Native Documentation internal structured draft (November4)
 
 [Article revision1](articles/native-documentation-controls.r1.json) and [seven proposed cases](native-documentation-controls-evaluation.r1.json) distinguish journey/web navigation from installed-version/content/provider acceptance. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/native-documentation-structured-knowledge-author/independent-review.md). Historical copy review stays historical; no executed retrieval, complete help or AI ingestion/runtime acceptance.
+
+
+## Execution limits prototype internal draft (November4)
+
+[Prototype article](articles/governance-execution-limits-prototype.r1.json) and [nine proposed cases](governance-execution-limits-prototype-evaluation.r1.json) describe development limits and explicit unavailability/qualification boundaries. Wrapper/Core source drift is reviewed; no enablement or A2 completion. Newbundle integrity passed; customer mode refused. [Evidence](../../recovery/2026-11-04/governance-limits-prototype-structured-knowledge/README.md). No executed retrieval or runtime acceptance.
+
+
+## Website teaching/navigation internal draft (November4)
+
+[Combined article](articles/website-teaching-navigation-controls.r1.json) and [ten proposed cases](website-teaching-navigation-controls-evaluation.r1.json) describe scripted tour, conceptual records and Skip control without treating them as authentic media, approval or evidence. Known code drift is explicit; mutable master context excluded. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/website-teaching-structured-knowledge-author/independent-review.md). No executed retrieval/browser/runtime acceptance.
