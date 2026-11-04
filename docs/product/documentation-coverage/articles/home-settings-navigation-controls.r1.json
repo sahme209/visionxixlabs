@@ -1,0 +1,225 @@
+{
+  "schema": 1,
+  "id": "axiom.help.home-settings.navigation-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Home, navigation and Settings: destinations, preferences and consequential boundaries",
+  "productVersion": "local-source-preview:c828ff9ee4d3181e8073398fb82adc489225c25e",
+  "screenIds": [
+    "proposed.axiom.screen.home",
+    "proposed.axiom.screen.navigation",
+    "proposed.axiom.screen.settings"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.shell.home-choices",
+    "proposed.axiom.control.shell.sidebar",
+    "proposed.axiom.control.shell.commands",
+    "proposed.axiom.control.shell.access-summary",
+    "proposed.axiom.control.shell.split-panes",
+    "proposed.axiom.control.shell.render-retry",
+    "proposed.axiom.control.shell.settings-back",
+    "proposed.axiom.control.shell.settings-search",
+    "proposed.axiom.control.shell.local-preferences",
+    "proposed.axiom.control.shell.profile-signout",
+    "proposed.axiom.control.shell.plan-billing",
+    "proposed.axiom.control.shell.models-policy",
+    "proposed.axiom.control.shell.members-role",
+    "proposed.axiom.control.shell.environment-workflow",
+    "proposed.axiom.control.shell.integration-status"
+  ],
+  "goal": "Choose the correct mounted destination and distinguish local preferences, server writes, browser handoffs, previews and uncertain outcomes without inferring authority or successful operations.",
+  "prerequisites": [
+    "Internal source-only local preview; not shipped/customer help. Current identity/session, role/capability, provider connection and runtime flags were not read.",
+    "The shell requires verified identity with allowed access before mounted workspaces; this article does not qualify sign-in, entitlement or clean-host/session acceptance.",
+    "Finite condensation of preserved Home and Settings guides and their exact listed source ranges; not all app controls, nested providers, backends or native implementations."
+  ],
+  "permissions": [
+    "Navigation/layout/status labels grant no execution permission. Destinations can mount their own reads and effects; choosing Home/Sidebar/command is not an operation request, but does not promise zero network activity.",
+    "Local preferences affect this computer/interface. Model policy, member roles, repository/environment configuration and workflow controls are consequential server/native actions, not cosmetic switches. Their existing current authorization remains decisive.",
+    "A supplied identity, role label, capability presentation, configured connection, diagnostic count or service flag description is not a live authority/health receipt. Genuine consequential approvals and provider restrictions remain intact.",
+    "DEV Governance evidence/execution-limits preview is a prototype mount, not completed Governance authoring/enforcement/execution or activation; no preview permission enables provider actions."
+  ],
+  "steps": [
+    {
+      "instruction": "On Home choose Build with AI, Delegate a task, Deploy and Manage, or Automate Operations.",
+      "effect": "read",
+      "expectedState": "Opens Agent, Axiom Bot, Releases or Batches respectively; no AI submit, task creation, release execution or Airflow trigger from this callback. Airflow prerequisite copy does not disable its Home button."
+    },
+    {
+      "instruction": "Use Axiom home, grouped sidebar destinations or utilities. Expand/collapse Workspace and Resources headings to reveal entries.",
+      "effect": "read",
+      "expectedState": "Home has no prompt/account/task-create form. Sidebar Workspace connected is static copy, not a fresh health check. No mounted sidebar search or compact-sidebar toggle is established."
+    },
+    {
+      "instruction": "Choose Commands or Command/Ctrl+Shift+P; search labels/keywords, use Up/Down and Enter or click a destination. Escape/Esc/backdrop closes.",
+      "effect": "read",
+      "expectedState": "Eight local destination commands; no provider search or operation execution. No matching commands means change/clear query. Source focus wrapping/restoration is not assistive-technology acceptance."
+    },
+    {
+      "instruction": "Open Access active/Access needs attention summary; use Editor & Agent/Single pane only where displayed.",
+      "effect": "local-preference",
+      "expectedState": "Summary reflects supplied identity, has no account switch/signout/access-refresh control. Split layout is available only away from Home in Agent/Repositories; layout is not save/execution."
+    },
+    {
+      "instruction": "Navigate away and return; if a destination render fails, inspect This view could not be displayed before Retry or Return to Agent.",
+      "effect": "recover",
+      "expectedState": "Visited Agent/Repositories/Bot remain mounted in hidden containers during this shell lifetime, not a durable/synced-draft guarantee. Error-boundary Retry remounts children and may lose unsaved state; it does not retry an external operation or reverify session/provider outcome."
+    },
+    {
+      "instruction": "Open Settings, use Search settings to filter section labels/keywords, select a section, or Back to workspace.",
+      "effect": "read",
+      "expectedState": "Sidebar/TopBar are hidden in Settings; Back uses remembered destination. Twelve sections are grouped under Account & preferences, Agent & security, Development & connections. No matching settings is a filter result, not permission diagnosis."
+    },
+    {
+      "instruction": "For General/Profile/Appearance/Agents, edit only available local preference controls such as notifications, email masking, theme/density/motion/contrast and conversation submit/queue behavior.",
+      "effect": "local-preference",
+      "expectedState": "Preferences require load; save displays Saving on this computer then saved feedback. Failure restores previous UI, marks confirmation unknown and requires reopening before further affected changes. UI rollback does not prove durable storage rollback or absence of native side effect."
+    },
+    {
+      "instruction": "Review read-only Profile identity; choose Log out then confirm or Cancel. Browser account/governance links navigate to their own flows.",
+      "effect": "recover",
+      "expectedState": "Hide email masks display only. Confirmed signout locks transport, writes signed-out selection then attempts legacy cleanup; failure is surfaced. External workflows are not canceled. DEV-only Governance previews are not completed activation."
+    },
+    {
+      "instruction": "In Plan & usage distinguish verifying/unavailable/legacy values from verified current subscription; use Refresh plan and usage or View billing in cockpit. Open billing is separately gated.",
+      "effect": "read",
+      "expectedState": "Identity access labels can remain while billing is unverified. Portal validates HTTPS Stripe host and owner/admin/current plan/customer/canManageBilling conditions where applicable; browser handoff/return is not purchase, delivery or access acceptance. Allowance/balance never bypasses approvals."
+    },
+    {
+      "instruction": "Treat Models switches/defaults and Permissions member role selectors as server policy writes; review current data and errors before any authorized change.",
+      "effect": "propose",
+      "expectedState": "Model catalog search/filter/pagination is local browsing, but policy update is a server write. Role changes are PATCH and gated by current membership/capability; own/owner rows locked. Neither label nor successful save proves usable inference or all-path permission enforcement."
+    },
+    {
+      "instruction": "Treat Git & PRs, Environments and Identity controls by their actual operation boundary rather than as local preferences.",
+      "effect": "propose",
+      "expectedState": "Clone invokes native filesystem work; branch/commit/PR steps and environment/target writes can be partial. Readiness is distinct from dispatch; refresh observes, not re-dispatches. ECS service restart is not source-artifact promotion. Identity Save pending/SCIM preview do not establish live SSO/MFA or executed lifecycle."
+    },
+    {
+      "instruction": "In Integrations distinguish Connect/Manage browser consent, Finish connection/Revalidate validation, status refresh and diagnostics; use nested workflow guides for exact actions.",
+      "effect": "read",
+      "expectedState": "Missing/failed/stale status is not healthy/disconnected proof. Unknown validation holds require Reload status/Review consent, not automatic resend. Current service configuration can disable Connect. Worktrees main Settings exposes read-only limits and navigation, not create/remove/cleanup/limit editing."
+    }
+  ],
+  "expectedOutcome": "Reach the intended workspace, interpret local save/unknown/status states honestly, and identify when a Settings action crosses into server/native/provider work requiring its existing exact authority.",
+  "limitations": [
+    "Customer eligible:false; publication approved:false; editorial/media/native/runtime/release/shipped acceptance:false. Review remains null and media empty. Proposed IDs are documentation-only, not installed runtime bindings.",
+    "Current-source c828ff9e rebinding preserves historical58f2ddd4 guides/manifests. All8Home/5Settings listed whole files and original ranges match current bytes;12unique code files because App is shared. Hash identity is not semantic/runtime/security acceptance.",
+    "Finite article summarizes mounted shell and main Settings sections/direct call boundaries, not exact exhaustive control coverage. Linked nested guides retain their own baselines; no all-app/backend/provider/OAuth/native implementation coverage.",
+    "No current identity/role/capability/session/connection/credential/allowance/flag state was observed. Labels, locked copy and setup/configuration are not verified operational authority or provider health.",
+    "Settings DEV Governance inspection/execution-limit prototype is incomplete; Governance activation remains unavailable. Identity configuration is design-only pending; SCIM preview executes nothing.",
+    "No current screenshot/video/native keyboard/AT/visual acceptance or authentic media; layout/shortcut source description is not browser/native usability qualification.",
+    "No automatic rollback of partial server/provider/native actions is promised. UI preference rollback is not storage rollback proof; timeout/abort/close is not proof no side effect occurred.",
+    "Proposed-not-executed evaluation prose only; bundle validation is not retrieval/model execution, customer ingestion, publication, editorial approval or release acceptance."
+  ],
+  "recovery": [
+    "For empty command/settings results clear/change query; reopen collapsed groups or select another destination. Navigation does not resolve an uncertain provider action.",
+    "After preference load failure or unconfirmed save, reopen Settings to check current state. Preserve uncertainty rather than assuming previous UI values prove storage unchanged.",
+    "After render failure Retry remounts and can lose unsaved child state. Inspect original saved/external operation outcome before any consequential retry.",
+    "After partial repository/environment/workflow write or unknown deployment outcome, inspect existing saved/provider state; do not dispatch duplicates to bypass hold. Some forms have error feedback without a dedicated reconciliation button.",
+    "After stale/unavailable integration or billing read, use displayed refresh/reopen/authorized browser review path under correct workspace. Browser return, static connected labels and balances do not grant access."
+  ],
+  "searchTerms": [
+    "Home",
+    "Build with AI",
+    "Delegate a task",
+    "Commands",
+    "Search settings",
+    "Back to workspace",
+    "Saving on this computer",
+    "unconfirmed preference",
+    "Open billing",
+    "Governance preview",
+    "Integrations",
+    "render Retry"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/views/WelcomeView.tsx",
+      "sha256": "290c126d9e07a4b2ca95953eaf55ac73c7dcb03d37c04250e24370ae01ef96c9"
+    },
+    {
+      "path": "desktop/src/components/Sidebar.tsx",
+      "sha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf"
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+    },
+    {
+      "path": "desktop/src/components/TopBar.tsx",
+      "sha256": "f2974a9f1f996e72434cb7e0ab809bd278a3b53a11c9580d23c4ff2d705fd667"
+    },
+    {
+      "path": "desktop/src/components/WorkspaceCommands.tsx",
+      "sha256": "610a22e9b7917e913db7c70ee7d39cd4ba564741f1a46562971b0bfca72909b1"
+    },
+    {
+      "path": "desktop/src/lib/useDismissibleDetails.ts",
+      "sha256": "f5fea6b786c03e32c063a99b0384be3965f86a9b2aa812cfbe5812464d133979"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88"
+    },
+    {
+      "path": "desktop/src/components/WorkspaceViewBoundary.tsx",
+      "sha256": "b9a13593bfe620bd51b4fc25ce7d38b5d1ab970f59ef5333f922321da0cfa587"
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029"
+    },
+    {
+      "path": "desktop/src/lib/preferences.ts",
+      "sha256": "fbcee4bbb8eb377c3f2f50c46d4908b57d46ea29d831f9936a02122666142a0f"
+    },
+    {
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "docs/product/knowledge/home-navigation-controls.md",
+      "sha256": "3829aa306427ef5a08b621f9b33b3cde4a487cbd04958703d915096e5d4421be"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-controls.md",
+      "sha256": "a857e4865b107ba2c478a2c5108da33cdaa23f5cc98b90c7ae126bd429d5f151"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json",
+      "sha256": "df4618e6fc6ca70afbc3700eaf06510659bee2a8c3f50120c9c3b7bd0056c0bf"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json",
+      "sha256": "c10cd7cb136720dfe380acbfbac95600505455c9dbe68cd792c6326caa4622f8"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/source-bindings.json",
+      "sha256": "eda918629ffa4c06fdc9fbb244fdc0879f9915738e765002db68f54d6f77a3df"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/home-navigation-controls.md",
+      "docs/product/knowledge/settings-workspace-controls.md",
+      "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json",
+      "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json",
+      "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/source-bindings.json"
+    ],
+    "verifiedVersion": "local-source-preview:c828ff9ee4d3181e8073398fb82adc489225c25e",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

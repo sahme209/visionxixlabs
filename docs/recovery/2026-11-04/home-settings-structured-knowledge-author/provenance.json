@@ -1,0 +1,50 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "c828ff9ee4d3181e8073398fb82adc489225c25e",
+  "branch": "codex/b4-home-settings-knowledge",
+  "worktree": "/private/tmp/axiom-b4-home-settings-20261104",
+  "validation": {
+    "integrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 17,
+    "historicalWholeFileEntries": 13,
+    "uniqueCodeFiles": 12,
+    "inclusiveRawRanges": 28,
+    "proposedEvaluationCases": 9,
+    "retrievalExecuted": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/home-navigation-controls.md": "3829aa306427ef5a08b621f9b33b3cde4a487cbd04958703d915096e5d4421be",
+    "docs/product/knowledge/settings-workspace-controls.md": "a857e4865b107ba2c478a2c5108da33cdaa23f5cc98b90c7ae126bd429d5f151",
+    "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json": "df4618e6fc6ca70afbc3700eaf06510659bee2a8c3f50120c9c3b7bd0056c0bf",
+    "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json": "c10cd7cb136720dfe380acbfbac95600505455c9dbe68cd792c6326caa4622f8"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-home-settings-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-home-settings-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-home-settings-evidence/bindings.sh"
+  ],
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/validate.sh": "404a870a3934a9ffb9eb1e93b02a590c8a6d883c78cb07fc8004935bd095c4be",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/bindings.sh": "0d30df1ced87c8ebaf3c6d576f8d28a16d37e0aafec2256c64e7d10f79b8e2a6",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/binding-integrity.json": "509608fa9da1e0d0c753f145aa1f8bd2f7ca52c1ecfd8cede38891efc9a2fb2e",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/validate.log": "121283a3a38dfae457876e175e8e53659294b27c63a0e363393a0382a7e4598d",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/README.md": "779317603c1e24135faa780495bbd55fa8dd307a1b1954864d9bb98f823e2f47",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/source-bindings.json": "eda918629ffa4c06fdc9fbb244fdc0879f9915738e765002db68f54d6f77a3df",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/binding-integrity.cjs": "9e8bb4f347ceaa9cd3adcf47c2dd7d3675b846469adb6ffaa30c603d0fbbafa5",
+    "docs/recovery/2026-11-04/home-settings-structured-knowledge-author/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03"
+  },
+  "bundleSha256": {
+    "docs/product/documentation-coverage/articles/home-settings-navigation-controls.r1.json": "25e06e3b9c52d1a16b4681be03f4969434b8a89e8046d75935a89d96dfec7a6f",
+    "docs/product/documentation-coverage/home-settings-navigation-controls-evaluation.r1.json": "f56b61e2055ff5fd310179113ec3847bfb453c12723f5707c4feeac4151add22"
+  },
+  "limits": "Internal source-only local preview, null review/empty media/proposed IDs; all customer/editorial/media/native/runtime/release acceptance false; no mutable master hash"
+}

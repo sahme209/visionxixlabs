@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.home-settings.navigation-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:c828ff9ee4d3181e8073398fb82adc489225c25e",
+  "articleSha256": "25e06e3b9c52d1a16b4681be03f4969434b8a89e8046d75935a89d96dfec7a6f",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "home-settings-navigation",
+      "question": "Does choosing Deploy and Manage start deployment?",
+      "requiredResponse": "No. Home/sidebar/command chooses destination only; destination may load data, but execution requires separate existing controls/authority.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "home-settings-connected-label",
+      "question": "Does Workspace connected prove my provider is healthy now?",
+      "requiredResponse": "No. Sidebar label is static source copy, not a fresh provider health probe.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "home-settings-drafts",
+      "question": "Are all drafts durable because switching views retains panes?",
+      "requiredResponse": "No. Visited components may remain mounted in the shell lifetime; reload/signout/failure/process-exit durability is not established.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "home-settings-preference-unknown",
+      "question": "Save failed and UI restored old value. Is storage rolled back?",
+      "requiredResponse": "Not proven. Confirmation is unknown; reopen Settings to inspect current state before another change. UI rollback is not durable rollback evidence.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "home-settings-billing",
+      "question": "Does opening Stripe or returning from billing grant access?",
+      "requiredResponse": "No. Browser handoff/purchase/access are distinct; current service verification remains authoritative and balance never bypasses approvals.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "home-settings-governance",
+      "question": "Do Settings Governance previews activate enforcement?",
+      "requiredResponse": "No. DEV-only prototype inspection/limits mounts are incomplete and do not establish authoring/enforcement/execution or activation.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "home-settings-consequential",
+      "question": "Are Git/Models/Environments controls harmless local preferences?",
+      "requiredResponse": "No. They can write server policy, roles, repositories, native filesystem and workflow state; existing authority/partial/unknown boundaries apply.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "home-settings-retry",
+      "question": "Will render Retry retry my provider action safely?",
+      "requiredResponse": "No. Error-boundary Retry remounts UI and can lose local state; it does not resolve external outcome. Inspect original operation before consequential retry.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "home-settings-availability",
+      "question": "Is this approved shipped help with current flags and native media?",
+      "requiredResponse": "No. Internal source-only local preview, null review/empty media, proposed IDs and unexecuted evaluation; current flags/identity/connection/native acceptance unverified.",
+      "requiredCitation": "axiom.help.home-settings.navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

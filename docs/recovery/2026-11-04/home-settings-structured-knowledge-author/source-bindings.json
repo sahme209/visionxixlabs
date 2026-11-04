@@ -1,0 +1,277 @@
+{
+  "status": "internal-current-source-authoring",
+  "baselineCommit": "c828ff9ee4d3181e8073398fb82adc489225c25e",
+  "historicalBaseline": "58f2ddd4cb93f5f54a9642dbe08615b65371a2ee",
+  "historicalGuidesAndManifestsPreserved": true,
+  "rangeConvention": "inclusive 1-based original raw lines retaining line endings",
+  "comparison": "All8 Home and5 Settings historical whole-file bindings and every recorded range match current source; shared App yields12 unique code files. This does not qualify transitive backend/runtime behavior.",
+  "sources": [
+    {
+      "path": "desktop/src/views/WelcomeView.tsx",
+      "wholeFileSha256": "290c126d9e07a4b2ca95953eaf55ac73c7dcb03d37c04250e24370ae01ef96c9",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 29,
+          "sha256": "290c126d9e07a4b2ca95953eaf55ac73c7dcb03d37c04250e24370ae01ef96c9",
+          "historicalManifest": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/Sidebar.tsx",
+      "wholeFileSha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 119,
+          "sha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf",
+          "historicalManifest": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "wholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 29,
+          "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+          "historicalManifest": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/TopBar.tsx",
+      "wholeFileSha256": "f2974a9f1f996e72434cb7e0ab809bd278a3b53a11c9580d23c4ff2d705fd667",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 44,
+          "sha256": "f2974a9f1f996e72434cb7e0ab809bd278a3b53a11c9580d23c4ff2d705fd667",
+          "historicalManifest": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/WorkspaceCommands.tsx",
+      "wholeFileSha256": "610a22e9b7917e913db7c70ee7d39cd4ba564741f1a46562971b0bfca72909b1",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 55,
+          "sha256": "610a22e9b7917e913db7c70ee7d39cd4ba564741f1a46562971b0bfca72909b1",
+          "historicalManifest": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/useDismissibleDetails.ts",
+      "wholeFileSha256": "f5fea6b786c03e32c063a99b0384be3965f86a9b2aa812cfbe5812464d133979",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 25,
+          "sha256": "f5fea6b786c03e32c063a99b0384be3965f86a9b2aa812cfbe5812464d133979",
+          "historicalManifest": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 209,
+          "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+          "historicalManifest": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json"
+        },
+        {
+          "startLine": 134,
+          "endLine": 187,
+          "sha256": "43aa5f9253129148f98f3bff5a7f3008f624f01c3bc78c109ed45c2e0a4e0df0",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/WorkspaceViewBoundary.tsx",
+      "wholeFileSha256": "b9a13593bfe620bd51b4fc25ce7d38b5d1ab970f59ef5333f922321da0cfa587",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 49,
+          "sha256": "b9a13593bfe620bd51b4fc25ce7d38b5d1ab970f59ef5333f922321da0cfa587",
+          "historicalManifest": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "wholeFileSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 234,
+          "sha256": "dee9f57b624c69c955d7f7831c93d90b8c5afe40e258069169a632353a65a2c7",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 235,
+          "endLine": 296,
+          "sha256": "614a0a7068afdfce3cf3109cce9d3e9222ac1986196db093b4b8981348618211",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 297,
+          "endLine": 410,
+          "sha256": "32250eb4464f3966ff1055c1138324b812ac3294ed225a763d24c7c012c98a42",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 411,
+          "endLine": 569,
+          "sha256": "c1c993d949a2371877f1d7ddd7ae8ccb850f3e8ba7501bcafee80fe33eccdbce",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 570,
+          "endLine": 720,
+          "sha256": "7289d5ae1c181c7b725d5064bb08991da0b050e491e9444c08b72c7aa19393e2",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 721,
+          "endLine": 899,
+          "sha256": "6f98abf113749320478f66685341f1437f4ef782f500d3bcf187fa3cce5268c1",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 900,
+          "endLine": 1346,
+          "sha256": "9cea78aae7d2fff90cf2aadf91242c00305e689905267e5ed440d559b1ffc6bd",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1347,
+          "endLine": 1535,
+          "sha256": "39f7e711c09d1cbb210e57bcd29f07d7c51047e55ba06ca81ad74a487f5a519e",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1536,
+          "endLine": 1733,
+          "sha256": "81dc656080a5e20cbc18836eae76b0162caf4aac084de2310fe62d38f57009de",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1764,
+          "endLine": 1772,
+          "sha256": "1a3c8cf27333fbeaca8e417ab4672c0ba669ef6efdf92b8c52635b92fe28beb6",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1773,
+          "endLine": 1978,
+          "sha256": "987ab7d9f13691cad488b5fbffcf38c9bd027c074996dc01bc4604fc5479e9f9",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1980,
+          "endLine": 2002,
+          "sha256": "95d3506c3ecf5dc0d34d2421220a8ec7185238f9318ffbb14aa75bdea44022b7",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/preferences.ts",
+      "wholeFileSha256": "fbcee4bbb8eb377c3f2f50c46d4908b57d46ea29d831f9936a02122666142a0f",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 66,
+          "sha256": "fbcee4bbb8eb377c3f2f50c46d4908b57d46ea29d831f9936a02122666142a0f",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "wholeFileSha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229",
+      "ranges": [
+        {
+          "startLine": 118,
+          "endLine": 126,
+          "sha256": "753edf781077a9ae3ecc9205209f17f68e3bbbc4e08141ee4e158d5dcf217374",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4",
+      "ranges": [
+        {
+          "startLine": 680,
+          "endLine": 686,
+          "sha256": "4cfd0b01ccf6e8e6689013f8ffa5d4bcb12e0ecb9fe5e7cc824663e2164bc717",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1149,
+          "endLine": 1208,
+          "sha256": "dc4ddf72eaeb18c0c77c6a68d63dce2d2dc9fd4cb2557d88cf750bb6970c2d30",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1233,
+          "endLine": 1248,
+          "sha256": "2666bf3a796c1640812650830f94d47fa1c96fb8632c39cfdd5884a77d72a0d3",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1292,
+          "endLine": 1331,
+          "sha256": "fb92d7888edc3ed17c5690f49ce44b921dda737bababe83967ef5aca447ecb9d",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        },
+        {
+          "startLine": 1439,
+          "endLine": 1507,
+          "sha256": "cc8032685b391d36f17f5886bdf18b9e3aea8e9fa89363db5c8abc62832c0070",
+          "historicalManifest": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json"
+        }
+      ]
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "path": "docs/product/knowledge/home-navigation-controls.md",
+      "sha256": "3829aa306427ef5a08b621f9b33b3cde4a487cbd04958703d915096e5d4421be"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-controls.md",
+      "sha256": "a857e4865b107ba2c478a2c5108da33cdaa23f5cc98b90c7ae126bd429d5f151"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/home-navigation-guide/source-bindings.json",
+      "sha256": "df4618e6fc6ca70afbc3700eaf06510659bee2a8c3f50120c9c3b7bd0056c0bf"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/settings-workspace-guide/source-bindings.json",
+      "sha256": "c10cd7cb136720dfe380acbfbac95600505455c9dbe68cd792c6326caa4622f8"
+    }
+  ],
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}
