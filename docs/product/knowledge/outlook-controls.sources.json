@@ -1,0 +1,312 @@
+{
+  "status": "INTERNAL DRAFT \u2014 unpublished",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "releaseAccepted": false,
+  "shippedAccepted": false,
+  "sourceCommit": "ad8efae1c600ad8504d9c47544505370b09b1002",
+  "method": "Static source integrity only; whole-file and exact inclusive-line-range SHA-256 with newline bytes preserved; no runtime evidence.",
+  "sources": [
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "startLine": 1,
+      "endLine": 29,
+      "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "rangeSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "anchors": [
+        "Apps & skills"
+      ]
+    },
+    {
+      "path": "desktop/src/components/Sidebar.tsx",
+      "startLine": 49,
+      "endLine": 57,
+      "sha256": "64acc75e0e87fcaadc2d21c56ed0dfefc38011c0dbdf9d1a98152734db3e4caf",
+      "rangeSha256": "43159b469aa45dd3e9c35f4cd2023558b94b2e2a20ff82a9530e21364d65b138",
+      "anchors": [
+        "CUSTOMER_NAVIGATION.map"
+      ]
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "startLine": 185,
+      "endLine": 187,
+      "sha256": "aeda3da396c43ea438a3280b4affc74882ab5688da5a50d7e97671237600bc88",
+      "rangeSha256": "33f8fa6c35e36039350fa9ad7d47326fb30af0c4c6698a8b92b2a2f401ae9274",
+      "anchors": [
+        "<PluginsSkillsView",
+        "<SettingsView"
+      ]
+    },
+    {
+      "path": "desktop/src/views/PluginsSkillsView.tsx",
+      "startLine": 167,
+      "endLine": 227,
+      "sha256": "bbf5ac0521d7564e38973bcf022c4f001d3911607e17ad5369ef4431ec84bab8",
+      "rangeSha256": "16405bf9e11947aabe81ef58035f7045962cb47576cc6d514a79942cf97a3f71",
+      "anchors": [
+        "const showOutlook",
+        "Open Outlook",
+        "<OutlookIntegrationCard embedded"
+      ]
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "startLine": 73,
+      "endLine": 105,
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "rangeSha256": "7f7c8aefbb448f135367f0f6e07a8d40a59256c5956b8c0d7fb611607c134aa1",
+      "anchors": [
+        "label: \"Integrations\""
+      ]
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "startLine": 210,
+      "endLine": 215,
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "rangeSha256": "246d33f803941fcafd922f802513faeb4773bf862b2cf34c3b12513fc6a0a82c",
+      "anchors": [
+        "<IntegrationsSection"
+      ]
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "startLine": 1933,
+      "endLine": 1942,
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "rangeSha256": "2617b49a948cadd8a72019f7645722d124c052218aabd9bc3b6d61ea68a3d297",
+      "anchors": [
+        "Integration Center",
+        "<OutlookIntegrationCard />"
+      ]
+    },
+    {
+      "path": "desktop/src/components/OutlookIntegrationCard.tsx",
+      "startLine": 1,
+      "endLine": 12,
+      "sha256": "25e7eeb28a7dbe1390e155d9b46e81a6ce662e12637c622f74ac4190229f0fa3",
+      "rangeSha256": "25e7eeb28a7dbe1390e155d9b46e81a6ce662e12637c622f74ac4190229f0fa3",
+      "anchors": [
+        "async function connect()",
+        "Clear local view"
+      ]
+    },
+    {
+      "path": "desktop/src/components/OutlookActionsPanel.tsx",
+      "startLine": 1,
+      "endLine": 10,
+      "sha256": "60e72e4ff6c3131f7177ac337dcffb3a7a61bc70c4a6d01d14366638d3ad874e",
+      "rangeSha256": "60e72e4ff6c3131f7177ac337dcffb3a7a61bc70c4a6d01d14366638d3ad874e",
+      "anchors": [
+        "Reload saved actions",
+        "Resolve expired attempt",
+        "pending.current"
+      ]
+    },
+    {
+      "path": "desktop/src/lib/outlookTransport.ts",
+      "startLine": 1,
+      "endLine": 19,
+      "sha256": "90354bac0bb4a97783b69e29aaa68c4ebf6ed730bfe68360c87043105e488be3",
+      "rangeSha256": "90354bac0bb4a97783b69e29aaa68c4ebf6ed730bfe68360c87043105e488be3",
+      "anchors": [
+        "outlookActionsRequest",
+        "getRevision",
+        "credentials:'omit'"
+      ]
+    },
+    {
+      "path": "lib/desktop/outlookHttp.ts",
+      "startLine": 1,
+      "endLine": 11,
+      "sha256": "1d7ce42fc11e71e30c131fc87710c482668cbf2e3ff247adae0a06c649da0f4b",
+      "rangeSha256": "1d7ce42fc11e71e30c131fc87710c482668cbf2e3ff247adae0a06c649da0f4b",
+      "anchors": [
+        "requiredCapability:'workspace:read'",
+        "allowApiKey:false"
+      ]
+    },
+    {
+      "path": "lib/desktop/outlookActionsHttp.ts",
+      "startLine": 1,
+      "endLine": 51,
+      "sha256": "17638a4b6b860f57e466256d6d67a2d6e023173d03916290abe72f3858bbf8e7",
+      "rangeSha256": "17638a4b6b860f57e466256d6d67a2d6e023173d03916290abe72f3858bbf8e7",
+      "anchors": [
+        "canApprove:",
+        "canExecute:",
+        "canRecover:",
+        "createOutlookMailOutboundDrain"
+      ]
+    },
+    {
+      "path": "lib/desktop/desktopAuthorization.ts",
+      "startLine": 1,
+      "endLine": 42,
+      "sha256": "525a513aa3c06b67eeb3b176a70802e8e6a2e1158b5b8f90c3d02ffdb6b0a7c3",
+      "rangeSha256": "525a513aa3c06b67eeb3b176a70802e8e6a2e1158b5b8f90c3d02ffdb6b0a7c3",
+      "anchors": [
+        "connections:manage",
+        "security_reviewer:"
+      ]
+    },
+    {
+      "path": "lib/desktop/outlookActionsContract.ts",
+      "startLine": 1,
+      "endLine": 6,
+      "sha256": "66db092c9e6715564e4d55e0e2df61f16cebf983dd66226fd00cb0816f82c7b7",
+      "rangeSha256": "66db092c9e6715564e4d55e0e2df61f16cebf983dd66226fd00cb0816f82c7b7",
+      "anchors": [
+        "expectedVersion",
+        "max(10)"
+      ]
+    },
+    {
+      "path": "app/account/integrations/outlook/page.tsx",
+      "startLine": 1,
+      "endLine": 7,
+      "sha256": "23082367f6ce150ed3ba600ba64769cc5f3e246d78343f2979f97f7679dd17be",
+      "rangeSha256": "23082367f6ce150ed3ba600ba64769cc5f3e246d78343f2979f97f7679dd17be",
+      "anchors": [
+        "Check your Axiom account",
+        "outlook_record_outcome_unknown"
+      ]
+    },
+    {
+      "path": "app/account/integrations/outlook/OutlookConnect.tsx",
+      "startLine": 1,
+      "endLine": 3,
+      "sha256": "6e55750982818218c19598db8b12c31220695f37f54ae512110e27075d45434e",
+      "rangeSha256": "6e55750982818218c19598db8b12c31220695f37f54ae512110e27075d45434e",
+      "anchors": [
+        "Connect Outlook",
+        "Review action permissions"
+      ]
+    },
+    {
+      "path": "lib/integrations/outlook/outlookBrowserHttp.ts",
+      "startLine": 1,
+      "endLine": 23,
+      "sha256": "a882d47f12f388e053d0b40c19ec664c64c5660c4c4b21531393f14f6e4543ce",
+      "rangeSha256": "a882d47f12f388e053d0b40c19ec664c64c5660c4c4b21531393f14f6e4543ce",
+      "anchors": [
+        "isSameOriginRequest",
+        "outlookBrowserAuthority"
+      ]
+    },
+    {
+      "path": "lib/integrations/outlook/outlookOAuth.ts",
+      "startLine": 1,
+      "endLine": 64,
+      "sha256": "572cc5f688a13de08765ac13a083d30fa757f158f63893790526bdce3826bcbf",
+      "rangeSha256": "572cc5f688a13de08765ac13a083d30fa757f158f63893790526bdce3826bcbf",
+      "anchors": [
+        "outlook_verified_connection_required",
+        "ports.verifyMailbox"
+      ]
+    },
+    {
+      "path": "lib/integrations/outlook/outlookConnectionContract.ts",
+      "startLine": 1,
+      "endLine": 27,
+      "sha256": "b0d7dc986ec245e384231252059aebf17d5975045967336fcc88d9c5fa8f6ff5",
+      "rangeSha256": "b0d7dc986ec245e384231252059aebf17d5975045967336fcc88d9c5fa8f6ff5",
+      "anchors": [
+        "OUTLOOK_READ_SCOPES",
+        "Calendars.ReadWrite"
+      ]
+    },
+    {
+      "path": "lib/integrations/outlook/outlookRuntime.ts",
+      "startLine": 1,
+      "endLine": 25,
+      "sha256": "ebcf82b47ad30039fe60dbfced7fb04475c03d8bab9bbad26bb889e8aa774c25",
+      "rangeSha256": "ebcf82b47ad30039fe60dbfced7fb04475c03d8bab9bbad26bb889e8aa774c25",
+      "anchors": [
+        "async status",
+        "async read",
+        "consentedByUserId"
+      ]
+    },
+    {
+      "path": "lib/integrations/outlook/outlookReadiness.ts",
+      "startLine": 1,
+      "endLine": 50,
+      "sha256": "9e72289af166fbecc3c14fb50c03d08b2361e16859b677fefd47cfe9d586de3c",
+      "rangeSha256": "9e72289af166fbecc3c14fb50c03d08b2361e16859b677fefd47cfe9d586de3c",
+      "anchors": [
+        "$top",
+        "receivedDateTime desc",
+        "await readProfile();await current()"
+      ]
+    },
+    {
+      "path": "lib/integrations/connectedActionStore.ts",
+      "startLine": 1,
+      "endLine": 123,
+      "sha256": "e7c978936416df525cc8ab045859892167587bb4f85263effd002c524d87f891",
+      "rangeSha256": "e7c978936416df525cc8ab045859892167587bb4f85263effd002c524d87f891",
+      "anchors": [
+        "async recover",
+        "async cancel",
+        "maxAttempts:1"
+      ]
+    },
+    {
+      "path": "lib/integrations/outlook/outlookActionTransport.ts",
+      "startLine": 1,
+      "endLine": 25,
+      "sha256": "1f99ec7ba8c476693222cee8748d5ffd9059b3540e3f5bda6df6ff808eaed10d",
+      "rangeSha256": "1f99ec7ba8c476693222cee8748d5ffd9059b3540e3f5bda6df6ff808eaed10d",
+      "anchors": [
+        "deliveryVerified:false",
+        "submissionAttempted",
+        "event.body.contentType"
+      ]
+    },
+    {
+      "path": "app/api/account/integrations/outlook/start/route.ts",
+      "startLine": 1,
+      "endLine": 4,
+      "sha256": "eb9ca98ced97d42058c6839e9cd2c1690f97af70b2114c07949ecfda900d7cee",
+      "rangeSha256": "eb9ca98ced97d42058c6839e9cd2c1690f97af70b2114c07949ecfda900d7cee",
+      "anchors": [
+        "startOutlookBrowser(request,'read')"
+      ]
+    },
+    {
+      "path": "app/api/account/integrations/outlook/action-access/route.ts",
+      "startLine": 1,
+      "endLine": 4,
+      "sha256": "e25522b8ab2f1dda5daeb39811fe35fd566f58bcfef8769acec7454a35cca16b",
+      "rangeSha256": "e25522b8ab2f1dda5daeb39811fe35fd566f58bcfef8769acec7454a35cca16b",
+      "anchors": [
+        "startOutlookBrowser(request,'actions')"
+      ]
+    },
+    {
+      "path": "app/api/desktop/integrations/outlook/route.ts",
+      "startLine": 1,
+      "endLine": 3,
+      "sha256": "99aea8524e605c54844fd2ab3b3d013d7fe00d4ba02a0826b88fef1a90ca0a15",
+      "rangeSha256": "99aea8524e605c54844fd2ab3b3d013d7fe00d4ba02a0826b88fef1a90ca0a15",
+      "anchors": [
+        "GET=createOutlookDesktopHttp()"
+      ]
+    },
+    {
+      "path": "app/api/desktop/integrations/outlook/actions/route.ts",
+      "startLine": 1,
+      "endLine": 2,
+      "sha256": "a56e70e890b5f176ae8b0b69c9f0f65bfb4ff47e72a4a214020a63c0c6e1830f",
+      "rangeSha256": "a56e70e890b5f176ae8b0b69c9f0f65bfb4ff47e72a4a214020a63c0c6e1830f",
+      "anchors": [
+        "outlookActionsHttp as GET,outlookActionsHttp as POST"
+      ]
+    }
+  ]
+}
