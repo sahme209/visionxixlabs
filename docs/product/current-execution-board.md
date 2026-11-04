@@ -133,3 +133,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 named intake and source requalification
 ~~52named source field records and explicit post-pending-fix29baseline requalification~~: current affected suites5+5pass, combined8files39checks; originalIDs/nodehashes/provenance preserved. [Evidence](../recovery/2026-11-04/release-intake-fields/README.md). Source-only, no DOM/customer/native/help integration. New C1–C6 remain future scope.
+
+### November4 coding fee evidence reconciliation
+~~Four-read findings incorporated into the alternative proposal~~: [decision matrix](../proposals/coding-text-only-fee-qualification.md#evidence-disposition-after-the-approved-four-reads) now distinguishes direct-provider semantics from Gateway/installed transport and exposes that synthetic cache/region labels are not emitted enforcement. Existing SDK evidence is reused, not rerun. Strict contract unchanged; alternative unapproved, trusted pricing/input/output qualification and production quotes remain unavailable. No additional external reads, financial/runtime change or spending.

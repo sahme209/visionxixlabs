@@ -68,3 +68,29 @@ Use official documentation selected during that approved read; this document inv
 ## Subsequent approved documentation evidence
 
 The user approved the bounded research exception (call_6QNV8xixpi5HQH0ApCBRqJnt); its four destinations are now consumed. [Findings](../recovery/2026-11-04/coding-fee-documentation/FINDINGS.md) distinguish Messages versus Managed Agents search defaults, cache lifetimes/regions and direct-provider output semantics. This approves neither this fee contract nor implementation. Keep current parser and issuance behavior unchanged; do not repeat the reads automatically.
+
+## Evidence disposition after the approved four reads
+
+This section incorporates the saved [official findings](../recovery/2026-11-04/coding-fee-documentation/FINDINGS.md); it performs no new reads and does not approve a replacement contract.
+
+| Question | Established evidence | Contract consequence / unresolved proof |
+| --- | --- | --- |
+| Cache categories and multiplicity | Direct-provider documentation separates uncached input, cache creation and reads, with different write lifetimes. Gateway documents automatic caching controls. | Do not treat the snapshot's single write rate as an upper bound for every lifetime. The conservative sum remains a proposal until each charged count is bounded, all eligible lifetimes/regions/tiers are covered and Gateway semantics are bound. |
+| Search / other events | Messages search is an explicit tool; Managed Agents has different defaults and search can recur. | Qualify the exact Gateway Messages-style path and absence of downstream/account-added tools before excluding search. No arbitrary event allowance and no zero-fee inference from omitted fields. Unknown event charges still refuse. |
+| Output and input | Direct-provider context guidance includes thinking in output and separates cached input categories. Existing installed-SDK capture proves local shaping, not actual billing. | Retain4096 as the synthetic contract's selected output limit, not a qualified maximum bill. Exact adapter serialization, total billable semantics and conservative final-input/wrapper bounds remain prerequisites. |
+| Price completeness/freshness | Public unversioned pages describe prices; partner-platform pricing differs. | No guaranteed validity window or complete immutable Gateway schema established. Preserve refusal until a trusted bounded reader and reviewed completeness/clock/expiry policy exist. |
+
+### Current-source distinction that prevents a false qualification
+
+The existing `lib/ai/codingRequestQuote.ts` envelope requires `routing.cache:'none'` and `region:'default'`, but its `consumeProviderForRequest` emits only the Anthropic upstream allowlist and disabled-thinking provider options. `lib/ai/providers/VercelGatewayProvider.ts` forwards those options with the4096output limit and zero retries. Thus those synthetic envelope labels are **not proof of an emitted cache-disable control or a fixed upstream geographic region**. This is not a newly demonstrated production bypass: the constructor already refuses non-isolated qualification and the saved nonzero-fee snapshot is ineligible. Do not change the labels, options, constructor or first contract under documentation-read approval.
+
+The previous actual installed-SDK capture and composed isolated database journeys are retained evidence; do not repeat them just to prove the same local request shaping. Their simulated authority and throwing/synthetic transport do not establish provider applicability, pricing or account configuration.
+
+### Ordered next qualification work
+
+1. Reuse the preserved actual SDK capture and bind the installed adapter source/version to the exact allowed request. Identify which controls are actually emitted and what Gateway/account behavior remains outside that proof. No metadata refetch or inference is needed for this local source assessment.
+2. Present one separately versioned contract for review only after resolving which cache/region assumptions must be removed or explicitly enforced. Include an explicit unsupported-dimension refusal rather than weakening the strict parser or silently reinterpreting historical evidence.
+3. Qualify a conservative input estimator and total-output/fee-count semantics. Token bytes alone, a buffer, a synthetic fixture or a model name do not prove a financial maximum.
+4. Separately authorize and validate trusted pricing provenance, complete rates and clock/freshness policy before any production issuer integration. Metadata observation is not quote authority. No paid probe or deployment is authorized by this list.
+
+Current disposition: **strict contract retained; proposed alternative unapproved; useful production quote issuance unavailable**. This closes the documentation-incorporation task only, not A7, Governance or billing qualification.
