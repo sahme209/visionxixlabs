@@ -2,7 +2,7 @@
 
 This is the source inventory and review queue for the master plan's documentation requirement. It is not customer documentation or a claim of complete coverage.
 
-Run `node scripts/inventory-documentation-controls.mjs` from the repository. It uses the existing TypeScript parser, reads tracked TSX only, and never executes an application, provider call, credential operation or AI request. Each candidate includes its exact file hash and location. Current extraction: **749 files, 2,602 control candidates** (953 desktop /1,649 website);1,251 have dynamic or unresolved labels. These are source occurrences, not unique visible controls or supported customer features.
+Run `node scripts/inventory-documentation-controls.mjs` from the repository. It uses the existing TypeScript parser, reads tracked TSX only, and never executes an application, provider call, credential operation or AI request. Each candidate includes its exact file hash and location. Preserved extraction snapshot `4c2143fd32d9556877033587709b570c11dee5af`: **749 files, 2,602 control candidates** (953 desktop /1,649 website);1,251 have dynamic or unresolved labels. This is not a freshly rerun inventory or proof that later source bytes/line locations are unchanged. These are source occurrences, not unique visible controls or supported customer features.
 
 The initial extraction set includes buttons, fields, links and common Axiom wrapper components. Native Swift/Rust/OS controls, custom wrappers not in the set, generated actions, responsive variants and conditional states require manual/runtime inventory. Repeated component use can produce both duplicates and unexpanded instances. Candidate IDs are matching aids; assign a permanent help ID during review, rather than treating offsets or generated IDs as a stable public API.
 
@@ -138,3 +138,13 @@ The [guide-to-article source linkage queue](guide-article-linkage.md) maps index
 ## ServiceNow internal structured source draft (November4)
 
 [Article revision1](articles/servicenow-evidence-closure-controls.r1.json) and [ten proposed cases](servicenow-evidence-closure-controls-evaluation.r1.json) preserve consumed written-UNKNOWN history and separate observation/native lifecycle/policy/exact closure gates. Historic guide locators are qualified rather than silently rebound; current ranges are separately recorded. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/servicenow-structured-knowledge-author/independent-review.md). No live ticket/journal state, closure, retrieval or runtime acceptance.
+
+
+## Agent workspace internal structured draft (November4)
+
+[Workspace article revision1](articles/agent-workspace-controls.r1.json) and [nine proposed cases](agent-workspace-controls-evaluation.r1.json) supplement rather than supersede old reviewed-action records. Known keyboard-guard drift is explicitly recorded in the new current receipt. Newbundle integrity passed; customer mode refused. [Evidence](../../recovery/2026-11-04/agent-workspace-structured-knowledge/README.md). No executed retrieval, native/customer or complete Governance acceptance.
+
+
+## Repository acquisition and base editor internal draft (November4)
+
+[Combined article revision1](articles/repository-acquisition-base-editor-controls.r1.json) and [ten proposed cases](repository-acquisition-base-editor-controls-evaluation.r1.json) preserve local-write, clone-token, unknown-save and separate push boundaries. Metadata-only source drift is explicit; old/nested records remain. Newbundle integrity passed; customer mode refused. [Review/evidence](../../recovery/2026-11-04/repository-base-structured-knowledge-author/independent-review.md). No executed retrieval, native filesystem or customer acceptance.

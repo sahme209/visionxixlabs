@@ -736,3 +736,12 @@ Fourteen stored article revisions include history; none of this establishes cust
 - [x] B4/B5 bounded ServiceNow draft:24finite code files unchangedb6..f7/26unique article sources/24valid current ranges/ten proposed cases. Old imprecise locators are qualified and preserved, not claimed validated; newbundle integrity/customer refusal and independent source review pass. [Evidence](../recovery/2026-11-04/servicenow-structured-knowledge-author/independent-review.md). Written UNKNOWN history, genuine human observation/policy/closure, native lifecycle and live readback remain open.
 
 Sixteen stored article revisions include history; proposed cases are not executed retrieval. This is documentation authoring, not A3 live completion, provider action, runtime/Governance/media/editorial/customer acceptance. All15parents remain open.
+
+
+## November4 — Agent workspace and repository knowledge batch
+
+- [x] B4/B5 bounded Agent workspace draft:18unchangedhistoricalbindings/oneknownkeyboardrepair;19currentfiles/27ranges/24articlehashes/nine proposed cases. Newbundle integrity/customer refusal and independent source review pass. Old reviewed-action families remain. [Evidence](../recovery/2026-11-04/agent-workspace-structured-knowledge/README.md).
+- [x] B4/B5 bounded repository acquisition/base-editor draft:metadata-only view drift explicitly recorded,23literal help annotations/22families not unique instances;18currentranges/15codefiles/21articlehashes/ten proposed cases. Newbundle integrity/customer refusal and independent source review pass. Old guides/nested records remain. [Evidence](../recovery/2026-11-04/repository-base-structured-knowledge-author/independent-review.md).
+- [x] Coverage README now identifies the preserved candidate extraction by actual stored4c2143fd source snapshot/counts; no fresh scan/current-byte qualification claimed and original inventory unchanged.
+
+Eighteen stored article revisions include history, not18customer-approved documents. All15parents remain open; source metadata/fixtures do not complete runtime, media, editorial, native, Governance or executed retrieval acceptance.

@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.agent.workspace-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:2f0bd307ff1ebed0ce1a25e2cf104b02b8c703d6",
+  "sourceFiles": 24,
+  "evaluationCases": 9,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}
