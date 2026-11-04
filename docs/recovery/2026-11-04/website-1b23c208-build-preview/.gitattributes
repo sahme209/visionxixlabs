@@ -1,0 +1,2 @@
+# Preserve byte-exact raw evidence, including compiler CRLF progress output.
+** -text
