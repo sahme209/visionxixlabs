@@ -888,3 +888,7 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — Slack channel pagination draft preservation
 
 ~~Bot More channels preserves the real unsent message composer within the same verified workspace/connection~~ ([local evidence](../recovery/2026-11-04/bot-slack-pagination-draft/README.md)). Initial9-case RED2fail/7pass became12focused passes; desktoptypes and independent review pass. Bounded100-row page+1selection; fresh duplicate membership wins; changed scope/explicit refresh clears selection. No provider mutation/automatic retry or authority expansion; native/customer/session/publication acceptance remains unproven. All15parents remain open.
+
+## November4 — grouped desktop composition fixes
+
+~~Command palette, recovery sign-in, focused release and ticket-provider shortcuts preserve composition before acting~~ ([source-bound evidence](../recovery/2026-11-04/desktop-keyboard-batch/README.md)). Actual7/20RED failures became31+31focused passes; desktoptypes and independentreview pass. Root8hashes+4reverse-guard Gitbaseline comparisons pass. Local rendered/mock verification only; repository/global-dialog/dormant-source candidates and native/AT/customer acceptance remain separately open. No credential/provider/native action or publication. All15parents remain open.

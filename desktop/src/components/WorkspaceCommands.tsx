@@ -22,7 +22,7 @@ export function WorkspaceCommands({open, onOpenChange, onNavigate}: {open: boole
   const results = COMMANDS.filter(command => `${command.label} ${command.keywords}`.toLowerCase().includes(query.trim().toLowerCase()));
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.shiftKey && !event.altKey && !event.isComposing && event.key.toLowerCase() === "p") {event.preventDefault(); onOpenChange(!open);}
+      if ((event.metaKey || event.ctrlKey) && event.shiftKey && !event.altKey && !event.isComposing && event.keyCode !== 229 && event.key.toLowerCase() === "p") {event.preventDefault(); onOpenChange(!open);}
     };
     window.addEventListener("keydown", shortcut); return () => window.removeEventListener("keydown", shortcut);
   }, [open, onOpenChange]);
@@ -36,7 +36,7 @@ export function WorkspaceCommands({open, onOpenChange, onNavigate}: {open: boole
   if (!open) return null;
   return <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 px-6 pt-[12vh]" onMouseDown={event => {if (event.target === event.currentTarget) onOpenChange(false);}}>
     <div ref={dialog} role="dialog" aria-modal="true" aria-label="Desktop commands" className="w-full max-w-xl overflow-hidden rounded-xl border border-white/15 bg-[#1a1b1e] shadow-2xl" onKeyDown={event => {
-      if (event.nativeEvent.isComposing) return;
+      if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
       if (event.key === "Escape") {event.preventDefault(); event.stopPropagation(); onOpenChange(false);}
       else if (event.key === "ArrowDown" || event.key === "ArrowUp") {event.preventDefault(); setSelected(index => results.length ? (index + (event.key === "ArrowDown" ? 1 : -1) + results.length) % results.length : 0);}
       else if (event.key === "Enter" && event.target === field.current) {event.preventDefault(); choose(selected);}

@@ -1,0 +1,40 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22mdesktop recovery sign-in interaction[2m > [22mkeeps rejected recovery on the sign-in screen without clearing the existing session[32m 62[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22mdesktop recovery sign-in interaction[2m > [22mblocks browser sign-in while recovery verification is pending[32m 9[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22mbrowser sign-in attempt ownership[2m > [22mignores late success from a cancelled attempt while a replacement waits[32m 9[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22mbrowser sign-in attempt ownership[2m > [22mignores a canceled browser attempt that completes verification later[32m 7[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22mbrowser sign-in attempt ownership[2m > [22maborts an in-flight browser attempt when the sign-in view unmounts[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22mbrowser credential commit boundary[2m > [22mstops offering cancellation while a verified credential is being saved[32m 57[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22madministrator recovery ownership[2m > [22mignores verification completing after the sign-in view unmounts[32m 6[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22madministrator key composition input[2m > [22mretains composing Enter without verification or persistence ({"isComposing":true})[32m 5[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22madministrator key composition input[2m > [22mretains composing Enter without verification or persistence ({"keyCode":229})[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopRecoveryView.test.ts[2m > [22madministrator key composition input[2m > [22mstill verifies once on ordinary Enter and accepts only the mocked saved result[32m 5[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mopens from the keyboard and navigates only to a searchable known destination[32m 6[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mfilters destinations and executes the selected result with Enter[32m 42[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mdoes not execute a hidden command when nothing matches and closes with Escape[32m 9[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mmoves the selection with arrow keys and preserves normal typing outside the shortcut[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mlets the close button activate with Enter without running a destination[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mopens Axiom Bot from its searchable destination without running a task[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mfinds the existing Apps and skills workspace using connection names without connecting or executing[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"Enter","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"Enter","keyCode":229})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"Escape","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"Escape","keyCode":229})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"ArrowDown","isComposing":true})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"ArrowDown","keyCode":229})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"ArrowUp","isComposing":true})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"ArrowUp","keyCode":229})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"Home","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"Home","keyCode":229})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"End","isComposing":true})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mpreserves command search, selection and focus during composition ({"key":"End","keyCode":229})[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mdoes not open or cancel the global command shortcut during composition ({"isComposing":true})[32m 0[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/desktopCommandMenu.test.ts[2m > [22mdoes not open or cancel the global command shortcut during composition ({"keyCode":229})[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m31 passed[39m[22m[90m (31)[39m
+[2m   Start at [22m 16:11:26
+[2m   Duration [22m 835ms[2m (transform 32ms, setup 0ms, import 99ms, tests 270ms, environment 363ms)[22m
+

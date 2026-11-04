@@ -7,6 +7,7 @@ export function FocusedReleaseWorkspace({items,children}:{items:ReleaseWorkspace
  const prefix=useId(),[selected,setSelected]=useState<string>();
  const buttons=useRef(new Map<string,HTMLButtonElement>());
  function navigate(event:KeyboardEvent<HTMLButtonElement>,index:number){
+  if(event.nativeEvent.isComposing||event.nativeEvent.keyCode===229)return;
   if(event.altKey||event.ctrlKey||event.metaKey||event.shiftKey||!items.length)return;
   const next=event.key==='Home'?0:event.key==='End'?items.length-1:
    event.key==='ArrowDown'||event.key==='ArrowRight'?(index+1)%items.length:

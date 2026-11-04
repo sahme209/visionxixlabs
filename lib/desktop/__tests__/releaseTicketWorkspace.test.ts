@@ -14,3 +14,21 @@ it('keeps Jira form text and ServiceNow draft state mounted across provider tabs
 it('release version change resets form and provider state instead of carrying stale values forward',async()=>{const view=mount();await form();fireEvent.change(screen.getByLabelText('Ticket summary'),{target:{value:'OLD RELEASE DRAFT'}});fireEvent.click(screen.getByRole('tab',{name:'ServiceNow'}));fireEvent.change(screen.getByLabelText('ServiceNow action notes'),{target:{value:'OLD NOTES'}});view.rerender(createElement(ReleaseTicketWorkspace,{requestId:'release',version:2,releaseStatus:'draft'}));expect(screen.queryByLabelText('Ticket summary')).toBeNull();expect(screen.getByRole('tab',{name:'Jira'}).getAttribute('aria-selected')).toBe('true');fireEvent.click(screen.getByRole('tab',{name:'ServiceNow'}));expect(screen.getByLabelText('ServiceNow action notes')).toHaveProperty('value','')});
 it('context replacement aborts and discards an outstanding read-only discovery result',async()=>{let done!:(v:unknown)=>void;m.connections.mockReturnValue(new Promise(r=>done=r));mount();fireEvent.click(screen.getByText('Explore read-only Jira form'));fireEvent.click(screen.getByText('Load Jira connections'));await act(async()=>{m.config={apiBase:'https://owned.test',sessionToken:'axm.desk.changed'};m.revision++;for(const f of [...m.listeners])f();done({ok:true,data:{connections:[]}})});expect(m.connections.mock.calls[0][0].aborted).toBe(true);expect(screen.queryByText('Load Jira connections')).toBeNull();expect(screen.queryByText(/No connection with recorded read validation/)).toBeNull()});
 it('unpaired context cannot launch Jira form discovery',()=>{m.config={apiBase:'https://owned.test',sessionToken:''};mount();expect(screen.getByText('Explore read-only Jira form')).toHaveProperty('disabled',true);expect(screen.getByText(/paired desktop session is required/)).toBeTruthy();expect(m.connections).not.toHaveBeenCalled();expect(m.owners).toHaveLength(0)});
+
+it.each(['ArrowLeft','ArrowRight','Home','End'].flatMap(key=>[{key,isComposing:true},{key,keyCode:229}]))('preserves provider selection and real exact-review draft during composition (%j)',signal=>{
+ mount();const provider=signal.key==='Home'?'ServiceNow':'Jira',tab=screen.getByRole('tab',{name:provider});fireEvent.click(tab);
+ // This is the actual TicketGovernancePanel field, not a mocked draft child.
+ const input=screen.getByLabelText('Original published action ID');fireEvent.change(input,{target:{value:'未確定 saved action draft'}});tab.focus();
+ const event=new KeyboardEvent('keydown',{bubbles:true,cancelable:true,...signal});fireEvent(tab,event);
+ expect(event.defaultPrevented).toBe(false);expect(document.activeElement).toBe(tab);expect(tab.getAttribute('aria-selected')).toBe('true');
+ expect(screen.getByLabelText('Original published action ID')).toBe(input);expect(input).toHaveProperty('value','未確定 saved action draft');
+ expect(m.connections).not.toHaveBeenCalled();expect(m.choices).not.toHaveBeenCalled();expect(m.fields).not.toHaveBeenCalled();expect(m.capabilities).not.toHaveBeenCalled();expect(m.preview).not.toHaveBeenCalled();
+});
+it('retains ordinary provider arrow/Home/End selection and focus behavior',()=>{
+ mount();const jira=screen.getByRole('tab',{name:'Jira'}),service=screen.getByRole('tab',{name:'ServiceNow'});jira.focus();
+ for(const [key,from,to] of [['ArrowRight',jira,service],['Home',service,jira],['End',jira,service],['ArrowLeft',service,jira]] as const){
+  const event=new KeyboardEvent('keydown',{key,bubbles:true,cancelable:true});fireEvent(from,event);
+  expect(event.defaultPrevented).toBe(true);expect(document.activeElement).toBe(to);expect(to.getAttribute('aria-selected')).toBe('true');
+ }
+ expect(m.connections).not.toHaveBeenCalled();expect(m.preview).not.toHaveBeenCalled();
+});

@@ -1,0 +1,52 @@
+{
+  "status": "local rendered keyboard regression only",
+  "baselineCommit": "4128c67c0395d14d7a1101aaea2f226e9f865267",
+  "sources": [
+    {
+      "path": "desktop/src/components/FocusedReleaseWorkspace.tsx",
+      "sha256": "d203627868f47058c6bfa88a325e7bd5fb85801976626738ab5d3a85b79f8c44"
+    },
+    {
+      "path": "desktop/src/components/ReleaseTicketWorkspace.tsx",
+      "sha256": "10df94ca95a7771c4ea6e0881b92c2c4d362bb8c62020ed89b533a3f5b501fd5"
+    },
+    {
+      "path": "lib/desktop/__tests__/focusedReleaseWorkspace.test.ts",
+      "sha256": "d2da4e33e3c4cd29e06540e71721baea796c6b85c3619e8930b860ef4e3de6f5"
+    },
+    {
+      "path": "lib/desktop/__tests__/releaseTicketWorkspace.test.ts",
+      "sha256": "02d5dbae66ff84c767b0ffc7bd00063c0895d7f9c728dbf22937794f05673deb"
+    }
+  ],
+  "red": {
+    "failed": 20,
+    "passed": 11,
+    "exit": 1
+  },
+  "green": {
+    "failed": 0,
+    "passed": 31,
+    "files": 2,
+    "exit": 0
+  },
+  "guardOnlyComparisons": [
+    {
+      "path": "desktop/src/components/FocusedReleaseWorkspace.tsx",
+      "removingOnlyGuardRestoresBaseline": true,
+      "baselineSha256": "51823287d1507ea8236d4970f1df1800724d266b68a5ba350f3284a4d80719b7"
+    },
+    {
+      "path": "desktop/src/components/ReleaseTicketWorkspace.tsx",
+      "removingOnlyGuardRestoresBaseline": true,
+      "baselineSha256": "808e1546f43f8eb74b4222cd5374a00d934de8758cb5c2f71fc49a55c37d5902"
+    }
+  ],
+  "scope": "Both isComposing and keyCode229: six FocusedRelease navigation keys and four provider-navigation keys. Early return preserves event default, current selection, focus and draft. Ordinary navigation/modifier behavior unchanged.",
+  "realChildEvidence": "ReleaseTicketWorkspace matrix retains actual unmocked TicketGovernancePanel Original published action ID input and its draft; no discovery/preview calls. Existing lifecycle mocks remain in that test suite.",
+  "bindingQualification": "No current knowledge binding inventory/validator references either runtime file. Historical source receipts remain unchanged; no repository editor binding files modified.",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache and writes denied outside owned temp",
+  "authoringError": "Initial new-test syntax error (extra parenthesis) preserved separately as test-authoring-error.log/exit; no tests ran and it is not behavioral RED. Corrected tests then produced actual 20-failure RED.",
+  "limits": "Synthetic DOM keyboard signals and local fixtures only. No native IME/assistive-technology/browser/provider/DB acceptance, full build or unrelated tests."
+}

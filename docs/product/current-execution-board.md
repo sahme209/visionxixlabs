@@ -61,3 +61,6 @@ B4 ticket card supplement now documents exact current local context/selection/de
 
 ### November4 Slack draft-loss repair
 ~~Same-boundary More channels retains unsent real composer~~:12focused renderedcases, desktoptypes and independentreview pass. Scope/member invalidation and100+1bound verified with simulated service data; no provider mutation. [Evidence](../recovery/2026-11-04/bot-slack-pagination-draft/README.md). No native/customer/live qualification.
+
+### November4 grouped desktop keyboard milestone
+~~Four current surfaces preserve composition keys~~:31+31focused cases, desktoptypes/rootbaseline+hashproof and independentreview pass. [Evidence/remaining limits](../recovery/2026-11-04/desktop-keyboard-batch/README.md). No actual nativeIME/credential/provider/AT or whole-app acceptance.

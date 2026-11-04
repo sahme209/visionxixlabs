@@ -51,3 +51,14 @@ it('leaves modified browser shortcuts and ordinary typing alone',()=>{
  fireEvent.keyDown(first,{key:'ArrowRight',metaKey:true});fireEvent.keyDown(first,{key:'b'});
  expect(document.activeElement).toBe(first);expect(first.getAttribute('aria-current')).toBe('true');
 });
+
+it.each(['ArrowDown','ArrowRight','ArrowUp','ArrowLeft','Home','End'].flatMap(key=>[{key,isComposing:true},{key,keyCode:229}]))('keeps release selection, draft and focus for a composing navigation key (%j)',signal=>{
+ const view=render(h(FocusedReleaseWorkspace,{items,children:item=>h(Draft,{name:item.title})}));
+ const selected=screen.getByRole('button',{name:signal.key==='Home'?/Release Beta/:/Release Alpha/});
+ fireEvent.click(selected);const name=signal.key==='Home'?'Release Beta note':'Release Alpha note';
+ const input=screen.getByLabelText(name);fireEvent.change(input,{target:{value:'未確定 release draft'}});selected.focus();
+ const event=new KeyboardEvent('keydown',{bubbles:true,cancelable:true,...signal});fireEvent(selected,event);
+ expect(event.defaultPrevented).toBe(false);expect(document.activeElement).toBe(selected);expect(selected.getAttribute('aria-current')).toBe('true');
+ expect(screen.getByLabelText(name)).toBe(input);expect(input).toHaveProperty('value','未確定 release draft');
+ expect(view.container.querySelector('section:not([hidden])')?.getAttribute('aria-labelledby')).toBe(selected.id);
+});

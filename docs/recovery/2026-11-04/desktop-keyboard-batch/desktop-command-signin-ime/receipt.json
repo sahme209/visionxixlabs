@@ -1,0 +1,46 @@
+{
+  "status": "local rendered keyboard qualification only",
+  "baselineCommit": "4128c67c0395d14d7a1101aaea2f226e9f865267",
+  "sources": [
+    {
+      "path": "desktop/src/components/WorkspaceCommands.tsx",
+      "sha256": "0f1228b5f75bb157ae40f35208d4e0aea86a3847541a5b33485023aa8aca1cf6"
+    },
+    {
+      "path": "desktop/src/views/DesktopSignInView.tsx",
+      "sha256": "6d4b57d890407fbd768d45e718f8a7903b0d666e34e1918d626e12b669aeaba0"
+    },
+    {
+      "path": "lib/desktop/__tests__/desktopCommandMenu.test.ts",
+      "sha256": "a5b7fc719033e9618af12496ddcffde2c5f54cb25dbb8842931a02913e142606"
+    },
+    {
+      "path": "lib/desktop/__tests__/desktopRecoveryView.test.ts",
+      "sha256": "ba8105d6bce8817c45f87575532367fbb4ce598915a4e4c04b684d78f2a58ea9"
+    }
+  ],
+  "red": {
+    "failed": 7,
+    "passed": 24,
+    "exit": 1
+  },
+  "green": {
+    "passed": 31,
+    "failed": 0,
+    "exit": 0
+  },
+  "minimalGuardChanges": [
+    {
+      "path": "desktop/src/components/WorkspaceCommands.tsx",
+      "guardRemovalEqualsGitBaseline": true
+    },
+    {
+      "path": "desktop/src/views/DesktopSignInView.tsx",
+      "guardRemovalEqualsGitBaseline": true
+    }
+  ],
+  "bindingReview": "No existing WorkspaceCommands/DesktopSignInView entry found in inspected current knowledge binding inventories or validators; no baseline manifest changed.",
+  "network": "kernel denied",
+  "environment": "scrubbed; private HOME/TMPDIR/cache; writes permitted only inside private temp directory",
+  "limits": "DOM composition events and synthetic credential-service responses only. No actual key, credential persistence, native/provider/auth operation, full build or signed-app acceptance."
+}

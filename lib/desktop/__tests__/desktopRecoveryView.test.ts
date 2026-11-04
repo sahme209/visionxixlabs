@@ -100,3 +100,17 @@ describe("administrator recovery ownership", () => {
     await new Promise(resolve => setTimeout(resolve, 0)); expect(onSignedIn).not.toHaveBeenCalled();
   });
 });
+describe('administrator key composition input',()=>{
+ it.each([{isComposing:true},{keyCode:229}])('retains composing Enter without verification or persistence (%j)',signal=>{
+  mocks.recover.mockReturnValue(new Promise(()=>{}));const onSignedIn=vi.fn();render(createElement(DesktopSignInView,{onSignedIn}));fireEvent.click(screen.getByText('Enterprise recovery sign-in'));
+  const field=screen.getByLabelText('Workspace API key');fireEvent.change(field,{target:{value:'synthetic-recovery-candidate'}});field.focus();
+  const event=new KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true,...signal});fireEvent(field,event);
+  expect(event.defaultPrevented).toBe(false);expect(mocks.recover).not.toHaveBeenCalled();expect(mocks.verify).not.toHaveBeenCalled();expect(mocks.browser).not.toHaveBeenCalled();expect(mocks.clear).not.toHaveBeenCalled();expect(onSignedIn).not.toHaveBeenCalled();
+  expect(field).toHaveProperty('value','synthetic-recovery-candidate');expect(document.activeElement).toBe(field);expect(screen.getByRole('button',{name:'Use administrator key'})).toHaveProperty('disabled',false);expect(screen.getByRole('button',{name:'Log in'})).toHaveProperty('disabled',false);
+ });
+ it('still verifies once on ordinary Enter and accepts only the mocked saved result',async()=>{
+  const identity={organizationId:'synthetic-workspace'};mocks.recover.mockResolvedValue(identity);const onSignedIn=vi.fn();render(createElement(DesktopSignInView,{onSignedIn}));fireEvent.click(screen.getByText('Enterprise recovery sign-in'));
+  const field=screen.getByLabelText('Workspace API key');fireEvent.change(field,{target:{value:'synthetic-recovery-candidate'}});fireEvent.keyDown(field,{key:'Enter'});
+  await waitFor(()=>expect(onSignedIn).toHaveBeenCalledExactlyOnceWith(identity));expect(mocks.recover).toHaveBeenCalledExactlyOnceWith('synthetic-recovery-candidate',expect.any(AbortSignal),expect.any(Function));expect(mocks.browser).not.toHaveBeenCalled();expect(mocks.verify).not.toHaveBeenCalled();
+ });
+});

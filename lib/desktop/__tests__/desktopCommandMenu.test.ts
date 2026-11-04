@@ -18,3 +18,14 @@ it('finds the existing Apps and skills workspace using connection names without 
  expect(screen.getByRole('option',{name:'Open Apps & skills'})).toBeTruthy();expect(screen.getByText('Connections and reusable skills')).toBeTruthy();expect(navigate).not.toHaveBeenCalled();
  fireEvent.keyDown(screen.getByRole('combobox'),{key:'Enter'});expect(navigate).toHaveBeenCalledExactlyOnceWith('plugins-skills');
 });
+it.each(['Enter','Escape','ArrowDown','ArrowUp','Home','End'].flatMap(key=>[{key,isComposing:true},{key,keyCode:229}]))('preserves command search, selection and focus during composition (%j)',({key,...signal})=>{
+ const navigate=vi.fn(),close=vi.fn();render(createElement(WorkspaceCommands,{open:true,onOpenChange:close,onNavigate:navigate}));
+ const field=screen.getByRole('combobox',{name:'Search desktop commands'});fireEvent.change(field,{target:{value:'Open'}});field.focus();
+ const selected=field.getAttribute('aria-activedescendant'),event=new KeyboardEvent('keydown',{key,bubbles:true,cancelable:true,...signal});fireEvent(field,event);
+ expect(event.defaultPrevented).toBe(false);expect(navigate).not.toHaveBeenCalled();expect(close).not.toHaveBeenCalled();expect(field).toHaveProperty('value','Open');expect(field.getAttribute('aria-activedescendant')).toBe(selected);expect(document.activeElement).toBe(field);
+});
+it.each([{isComposing:true},{keyCode:229}])('does not open or cancel the global command shortcut during composition (%j)',signal=>{
+ const navigate=vi.fn(),change=vi.fn();render(createElement(WorkspaceCommands,{open:false,onOpenChange:change,onNavigate:navigate}));
+ const event=new KeyboardEvent('keydown',{key:'p',ctrlKey:true,shiftKey:true,bubbles:true,cancelable:true,...signal});fireEvent(window,event);
+ expect(event.defaultPrevented).toBe(false);expect(change).not.toHaveBeenCalled();expect(navigate).not.toHaveBeenCalled();
+});

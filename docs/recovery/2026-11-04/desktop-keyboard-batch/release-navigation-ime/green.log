@@ -1,0 +1,40 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion[39m
+
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mlaunches the existing read-only Jira form independently of unavailable saved-action API and never auto reads or publishes[32m 62[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mkeeps Jira form text and ServiceNow draft state mounted across provider tabs, including keyboard navigation[32m 38[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mrelease version change resets form and provider state instead of carrying stale values forward[32m 28[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mcontext replacement aborts and discards an outstanding read-only discovery result[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22munpaired context cannot launch Jira form discovery[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mpreserves provider selection and real exact-review draft during composition ({"key":"ArrowLeft","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mpreserves provider selection and real exact-review draft during composition ({"key":"ArrowLeft","keyCode":229})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mpreserves provider selection and real exact-review draft during composition ({"key":"ArrowRight","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mpreserves provider selection and real exact-review draft during composition ({"key":"ArrowRight","keyCode":229})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mpreserves provider selection and real exact-review draft during composition ({"key":"Home","isComposing":true})[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mpreserves provider selection and real exact-review draft during composition ({"key":"Home","keyCode":229})[32m 4[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mpreserves provider selection and real exact-review draft during composition ({"key":"End","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mpreserves provider selection and real exact-review draft during composition ({"key":"End","keyCode":229})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/releaseTicketWorkspace.test.ts[2m > [22mretains ordinary provider arrow/Home/End selection and focus behavior[32m 6[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mfocuses one release while preserving hidden drafts and exposing attention and ongoing work in navigation[32m 48[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps selection attached to the release ID when reordered and falls back safely when removed[32m 7[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mgives each visible workspace its navigation label without creating execution or approval controls[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mnavigates releases by keyboard without losing drafts or introducing action controls[32m 10[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mleaves modified browser shortcuts and ordinary typing alone[32m 2[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"ArrowDown","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"ArrowDown","keyCode":229})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"ArrowRight","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"ArrowRight","keyCode":229})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"ArrowUp","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"ArrowUp","keyCode":229})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"ArrowLeft","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"ArrowLeft","keyCode":229})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"Home","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"Home","keyCode":229})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"End","isComposing":true})[32m 3[2mms[22m[39m
+ [32m✓[39m lib/desktop/__tests__/focusedReleaseWorkspace.test.ts[2m > [22mkeeps release selection, draft and focus for a composing navigation key ({"key":"End","keyCode":229})[32m 2[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m31 passed[39m[22m[90m (31)[39m
+[2m   Start at [22m 16:11:16
+[2m   Duration [22m 929ms[2m (transform 80ms, setup 0ms, import 208ms, tests 271ms, environment 348ms)[22m
+
