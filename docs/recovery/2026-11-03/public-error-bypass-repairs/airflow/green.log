@@ -1,0 +1,430 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-airflow-public-error-20261103[39m
+
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'SYNTHETIC_PRIVATE_MARKER'[32m 2[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'airflow_SYNTHETIC_PRIVATE_MARKER'[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'airflow_api_failed_SYNTHETIC_PRIVATE:…'[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'SYNTHETIC_PRIVATE_MARKER'[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'airflow_SYNTHETIC_PRIVATE_MARKER'[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'airflow_api_failed_SYNTHETIC_PRIVATE:…'[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'SYNTHETIC_PRIVATE_MARKER'[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'airflow_SYNTHETIC_PRIVATE_MARKER'[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mredacts 'airflow_api_failed_SYNTHETIC_PRIVATE:…'[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves safe recovery codes in async function GET(request) {
+	const session = await (0,__vite_ssr_import_2__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:read",
+		requiredCapability: "workspace:read",
+		route: "GET /api/desktop/airflow/dags",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	try {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { dags: await (await (0,__vite_ssr_import_3__.loadAirflowClient)(String(session.organizationId))).client.listDags() }
+		});
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_unavailable")
+		}, { status: 502 });
+	}
+}[32m 1[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves safe recovery codes in async function GET(request, context) {
+	const session = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:read",
+		requiredCapability: "workspace:read",
+		route: "GET /api/desktop/airflow/dags/[dagId]/runs",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	try {
+		const { dagId } = await context.params;
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { runs: await (await (0,__vite_ssr_import_4__.loadAirflowClient)(String(session.organizationId))).client.listDagRuns(dagId) }
+		});
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_unavailable")
+		}, { status: 502 });
+	}
+}[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves safe recovery codes in async function POST(request, context) {
+	const session = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:trigger",
+		requiredCapability: "deploy:execute",
+		route: "POST /api/desktop/airflow/dags/[dagId]/runs",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	const identity = Object.freeze({
+		id: session.id,
+		userId: session.userId,
+		organizationId: session.organizationId
+	});
+	try {
+		const { dagId } = await context.params;
+		const body = await request.json().catch(() => ({}));
+		const conf = body.conf && typeof body.conf === "object" && !Array.isArray(body.conf) ? body.conf : {};
+		const organizationId = String(identity.organizationId);
+		const beforeWrite = async (signal) => {
+			signal.throwIfAborted();
+			const current = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+				requiredScope: "pipeline:trigger",
+				requiredCapability: "deploy:execute",
+				requireWorkspaceMembership: true,
+				allowApiKey: false,
+				recordHeartbeat: false,
+				route: "Airflow DAG trigger current authority"
+			});
+			if (!current || current.credentialKind !== "desktop_session" || current.id !== identity.id || current.userId !== identity.userId || current.organizationId !== identity.organizationId || !current.capabilities.includes("deploy:execute")) throw Error("airflow_mutation_authority_unavailable");
+			signal.throwIfAborted();
+			const persisted = await __vite_ssr_import_2__.prisma.desktopSessionRecord.findUnique({
+				where: { id: identity.id },
+				select: {
+					id: true,
+					userId: true,
+					organizationId: true,
+					expiresAt: true,
+					revokedAt: true
+				}
+			});
+			if (!persisted || persisted.id !== identity.id || persisted.userId !== identity.userId || persisted.organizationId !== identity.organizationId || persisted.revokedAt !== null || !(persisted.expiresAt instanceof Date) || !Number.isFinite(persisted.expiresAt.getTime())) throw Error("airflow_mutation_authority_unavailable");
+			const expiresAt = persisted.expiresAt.getTime();
+			const assertFresh = () => {
+				signal.throwIfAborted();
+				if (Date.now() >= expiresAt) throw Error("airflow_mutation_authority_unavailable");
+			};
+			assertFresh();
+			return assertFresh;
+		};
+		const run = await (await (0,__vite_ssr_import_4__.loadAirflowClient)(organizationId, {
+			beforeWrite,
+			signal: request.signal
+		})).client.triggerDag(dagId, conf);
+		await (0,__vite_ssr_import_5__.appendAuditEvent)((0,__vite_ssr_import_2__.prisma), {
+			organizationId,
+			kind: "airflow.dag.triggered",
+			subjectKind: "airflow_dag_run",
+			subjectId: run.dagRunId,
+			summary: `Triggered Airflow DAG ${dagId}`,
+			actorUserId: String(identity.userId)
+		});
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { run }
+		}, { status: 201 });
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_trigger_failed")
+		}, { status: error instanceof Error && [
+			"governance_execution_coverage_unavailable",
+			"airflow_mutation_authority_unavailable",
+			"airflow_connection_changed"
+		].includes(error.message) ? 409 : 502 });
+	}
+}[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves initial session denial in async function GET(request) {
+	const session = await (0,__vite_ssr_import_2__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:read",
+		requiredCapability: "workspace:read",
+		route: "GET /api/desktop/airflow/dags",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	try {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { dags: await (await (0,__vite_ssr_import_3__.loadAirflowClient)(String(session.organizationId))).client.listDags() }
+		});
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_unavailable")
+		}, { status: 502 });
+	}
+}[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves initial session denial in async function GET(request, context) {
+	const session = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:read",
+		requiredCapability: "workspace:read",
+		route: "GET /api/desktop/airflow/dags/[dagId]/runs",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	try {
+		const { dagId } = await context.params;
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { runs: await (await (0,__vite_ssr_import_4__.loadAirflowClient)(String(session.organizationId))).client.listDagRuns(dagId) }
+		});
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_unavailable")
+		}, { status: 502 });
+	}
+}[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves initial session denial in async function POST(request, context) {
+	const session = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:trigger",
+		requiredCapability: "deploy:execute",
+		route: "POST /api/desktop/airflow/dags/[dagId]/runs",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	const identity = Object.freeze({
+		id: session.id,
+		userId: session.userId,
+		organizationId: session.organizationId
+	});
+	try {
+		const { dagId } = await context.params;
+		const body = await request.json().catch(() => ({}));
+		const conf = body.conf && typeof body.conf === "object" && !Array.isArray(body.conf) ? body.conf : {};
+		const organizationId = String(identity.organizationId);
+		const beforeWrite = async (signal) => {
+			signal.throwIfAborted();
+			const current = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+				requiredScope: "pipeline:trigger",
+				requiredCapability: "deploy:execute",
+				requireWorkspaceMembership: true,
+				allowApiKey: false,
+				recordHeartbeat: false,
+				route: "Airflow DAG trigger current authority"
+			});
+			if (!current || current.credentialKind !== "desktop_session" || current.id !== identity.id || current.userId !== identity.userId || current.organizationId !== identity.organizationId || !current.capabilities.includes("deploy:execute")) throw Error("airflow_mutation_authority_unavailable");
+			signal.throwIfAborted();
+			const persisted = await __vite_ssr_import_2__.prisma.desktopSessionRecord.findUnique({
+				where: { id: identity.id },
+				select: {
+					id: true,
+					userId: true,
+					organizationId: true,
+					expiresAt: true,
+					revokedAt: true
+				}
+			});
+			if (!persisted || persisted.id !== identity.id || persisted.userId !== identity.userId || persisted.organizationId !== identity.organizationId || persisted.revokedAt !== null || !(persisted.expiresAt instanceof Date) || !Number.isFinite(persisted.expiresAt.getTime())) throw Error("airflow_mutation_authority_unavailable");
+			const expiresAt = persisted.expiresAt.getTime();
+			const assertFresh = () => {
+				signal.throwIfAborted();
+				if (Date.now() >= expiresAt) throw Error("airflow_mutation_authority_unavailable");
+			};
+			assertFresh();
+			return assertFresh;
+		};
+		const run = await (await (0,__vite_ssr_import_4__.loadAirflowClient)(organizationId, {
+			beforeWrite,
+			signal: request.signal
+		})).client.triggerDag(dagId, conf);
+		await (0,__vite_ssr_import_5__.appendAuditEvent)((0,__vite_ssr_import_2__.prisma), {
+			organizationId,
+			kind: "airflow.dag.triggered",
+			subjectKind: "airflow_dag_run",
+			subjectId: run.dagRunId,
+			summary: `Triggered Airflow DAG ${dagId}`,
+			actorUserId: String(identity.userId)
+		});
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { run }
+		}, { status: 201 });
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_trigger_failed")
+		}, { status: error instanceof Error && [
+			"governance_execution_coverage_unavailable",
+			"airflow_mutation_authority_unavailable",
+			"airflow_connection_changed"
+		].includes(error.message) ? 409 : 502 });
+	}
+}[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves exact 409 governance_execution_coverage_unavailable[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves exact 409 airflow_mutation_authority_unavailable[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves exact 409 airflow_connection_changed[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mdoes not retry or claim no effect after accepted trigger and private audit failure[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22muses fallback for non-Error rejection in async function GET(request) {
+	const session = await (0,__vite_ssr_import_2__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:read",
+		requiredCapability: "workspace:read",
+		route: "GET /api/desktop/airflow/dags",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	try {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { dags: await (await (0,__vite_ssr_import_3__.loadAirflowClient)(String(session.organizationId))).client.listDags() }
+		});
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_unavailable")
+		}, { status: 502 });
+	}
+}[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22muses fallback for non-Error rejection in async function GET(request, context) {
+	const session = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:read",
+		requiredCapability: "workspace:read",
+		route: "GET /api/desktop/airflow/dags/[dagId]/runs",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	try {
+		const { dagId } = await context.params;
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { runs: await (await (0,__vite_ssr_import_4__.loadAirflowClient)(String(session.organizationId))).client.listDagRuns(dagId) }
+		});
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_unavailable")
+		}, { status: 502 });
+	}
+}[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22muses fallback for non-Error rejection in async function POST(request, context) {
+	const session = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+		requiredScope: "pipeline:trigger",
+		requiredCapability: "deploy:execute",
+		route: "POST /api/desktop/airflow/dags/[dagId]/runs",
+		allowApiKey: false
+	});
+	if (!session) return __vite_ssr_import_1__.NextResponse.json({
+		ok: false,
+		error: "desktop_session_required"
+	}, { status: 401 });
+	const identity = Object.freeze({
+		id: session.id,
+		userId: session.userId,
+		organizationId: session.organizationId
+	});
+	try {
+		const { dagId } = await context.params;
+		const body = await request.json().catch(() => ({}));
+		const conf = body.conf && typeof body.conf === "object" && !Array.isArray(body.conf) ? body.conf : {};
+		const organizationId = String(identity.organizationId);
+		const beforeWrite = async (signal) => {
+			signal.throwIfAborted();
+			const current = await (0,__vite_ssr_import_3__.resolveRequestDesktopSession)(request, {
+				requiredScope: "pipeline:trigger",
+				requiredCapability: "deploy:execute",
+				requireWorkspaceMembership: true,
+				allowApiKey: false,
+				recordHeartbeat: false,
+				route: "Airflow DAG trigger current authority"
+			});
+			if (!current || current.credentialKind !== "desktop_session" || current.id !== identity.id || current.userId !== identity.userId || current.organizationId !== identity.organizationId || !current.capabilities.includes("deploy:execute")) throw Error("airflow_mutation_authority_unavailable");
+			signal.throwIfAborted();
+			const persisted = await __vite_ssr_import_2__.prisma.desktopSessionRecord.findUnique({
+				where: { id: identity.id },
+				select: {
+					id: true,
+					userId: true,
+					organizationId: true,
+					expiresAt: true,
+					revokedAt: true
+				}
+			});
+			if (!persisted || persisted.id !== identity.id || persisted.userId !== identity.userId || persisted.organizationId !== identity.organizationId || persisted.revokedAt !== null || !(persisted.expiresAt instanceof Date) || !Number.isFinite(persisted.expiresAt.getTime())) throw Error("airflow_mutation_authority_unavailable");
+			const expiresAt = persisted.expiresAt.getTime();
+			const assertFresh = () => {
+				signal.throwIfAborted();
+				if (Date.now() >= expiresAt) throw Error("airflow_mutation_authority_unavailable");
+			};
+			assertFresh();
+			return assertFresh;
+		};
+		const run = await (await (0,__vite_ssr_import_4__.loadAirflowClient)(organizationId, {
+			beforeWrite,
+			signal: request.signal
+		})).client.triggerDag(dagId, conf);
+		await (0,__vite_ssr_import_5__.appendAuditEvent)((0,__vite_ssr_import_2__.prisma), {
+			organizationId,
+			kind: "airflow.dag.triggered",
+			subjectKind: "airflow_dag_run",
+			subjectId: run.dagRunId,
+			summary: `Triggered Airflow DAG ${dagId}`,
+			actorUserId: String(identity.userId)
+		});
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: true,
+			data: { run }
+		}, { status: 201 });
+	} catch (error) {
+		return __vite_ssr_import_1__.NextResponse.json({
+			ok: false,
+			error: (0,__vite_ssr_import_0__.publicAirflowError)(error, "airflow_trigger_failed")
+		}, { status: error instanceof Error && [
+			"governance_execution_coverage_unavailable",
+			"airflow_mutation_authority_unavailable",
+			"airflow_connection_changed"
+		].includes(error.message) ? 409 : 502 });
+	}
+}[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mretains 502 for suffixed authority code governance_execution_coverage_unavailable[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mretains 502 for suffixed authority code airflow_mutation_authority_unavailable[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mretains 502 for suffixed authority code airflow_connection_changed[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts[2m > [22mpreserves accepted-trigger success and audit[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_not_connected without its private suffix[32m 1[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_connection_invalid without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_connection_changed without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_mutation_authority_unavailable without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code governance_execution_coverage_unavailable without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_url_invalid without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_https_url_required without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_deployment_url_invalid without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_private_host_blocked without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_host_not_allowed without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_auth_failed without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_auth_response_invalid without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_api_failed without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_run_response_invalid without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_task_selection_invalid without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_task_response_invalid without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code invalid_airflow_run_id without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_trigger_outcome_unknown without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22mpreserves established code airflow_run_conflict_unconfirmed without its private suffix[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22muses only the supplied fallback for unknown input undefined[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22muses only the supplied fallback for unknown input null[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22muses only the supplied fallback for unknown input airflow_not_connected[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22muses only the supplied fallback for unknown input {}[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22muses only the supplied fallback for unknown input Error[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22muses only the supplied fallback for unknown input Error: airflow_SYNTHETIC_PRIVATE[32m 0[2mms[22m[39m
+ [32m✓[39m lib/integrations/airflow/__tests__/publicError.test.ts[2m > [22muses only the supplied fallback for unknown input Error: invalid_airflow_run_id_PRIVATE[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m2 passed[39m[22m[90m (2)[39m
+[2m      Tests [22m [1m[32m52 passed[39m[22m[90m (52)[39m
+[2m   Start at [22m 23:48:01
+[2m   Duration [22m 220ms[2m (transform 21ms, setup 0ms, import 46ms, tests 9ms, environment 0ms)[22m
+

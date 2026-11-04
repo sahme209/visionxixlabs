@@ -1,0 +1,27 @@
+Metadata archive only; no verification rerun.
+Frozen code commit: de5a6222d87576ca0c79d5782563028d500a60e5
+
+Exact prior TypeScript invocation (after generating owned tsconfig.scoped.json):
+cd /private/tmp/axiom-a7-privacy-20261103
+/usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-a7-evidence TMPDIR=/private/tmp/axiom-a7-evidence NODE_ENV=test DATABASE_URL=postgresql://synthetic:synthetic@127.0.0.1:1/synthetic /usr/bin/sandbox-exec -f /private/tmp/axiom-a7-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node node_modules/typescript/bin/tsc -p /private/tmp/axiom-a7-evidence/tsconfig.scoped.json > /private/tmp/axiom-a7-evidence/types.log 2>&1
+echo $?
+
+Actual tools.exec_command result:
+chunk_id: a369c4
+exit_code: 0 (shell command result)
+output: "0\n" (echo of compiler exit)
+wall_time_seconds: 1.296334208
+No session_id; completed synchronously.
+TypeScript root: app/api/__tests__/persistenceErrorPrivacy.test.ts; this transitively imports the three actual route handlers and their source dependency graph. This is not helper-only checking and is not a full repository type check.
+
+RED prior invocation:
+sh /private/tmp/axiom-a7-evidence/run.sh > /private/tmp/axiom-a7-evidence/red.log 2>&1; echo $?
+Actual tools.exec_command result: chunk_id 129ae6, exit_code 0 (shell), output "1\n" (Vitest exit), wall_time_seconds 0.205111334; no session_id.
+RED occurred before three source expression changes: three marker privacy assertion failures and nine passing compatibility tests.
+
+GREEN prior invocation:
+sh /private/tmp/axiom-a7-evidence/run.sh > /private/tmp/axiom-a7-evidence/green.log 2>&1; echo $?
+Actual tools.exec_command result: chunk_id edfb9c, exit_code 0 (shell), output "0\n" (Vitest exit), wall_time_seconds 0.202586917; no session_id.
+GREEN occurred after exactly three source expression changes: all twelve tests passed.
+
+No compiler, test, or build was re-executed to produce this metadata file.

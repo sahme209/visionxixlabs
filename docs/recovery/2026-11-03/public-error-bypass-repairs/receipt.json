@@ -1,0 +1,55 @@
+{
+  "baseRevision": "18c5cd200076123817da4b2c9aa17f6bbd77ebee",
+  "units": [
+    {
+      "unit": "airflow",
+      "reviewedCommit": "655ba1104eba44df4ae1eb87c6f2bb937ce2e861",
+      "canonicalCommit": "bd8dbf76d8e101356dabf04e9a60b75340c00f20",
+      "sourceAndTestHashes": {
+        "app/api/desktop/airflow/dags/[dagId]/runs/route.ts": "db69b3d581a1aaa09ba8d986730b08df5ce4acda55a9170bbef243c7c80f74fd",
+        "app/api/desktop/airflow/dags/__tests__/errorPrivacy.test.ts": "ac061159109bba4c71cc71d10dc2b644de5c151a5a11acac96078fffd5e37f43",
+        "app/api/desktop/airflow/dags/route.ts": "932adac7afcafbd01cf1c4f731cea871ab54a61c516d64cb6f5b113c777af085",
+        "lib/integrations/airflow/__tests__/publicError.test.ts": "85d26b732eb587e3e736c3ce08e64ed0fda50fb323c094aa0f75d32a59c66dfe",
+        "lib/integrations/airflow/publicError.ts": "02780e89fd03df3d647979c6619235a23a912feae11a492a12367299db79f567"
+      },
+      "evidenceHashes": {
+        "types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "vitest.red.config.mjs": "8101b901947fe355ab9e3f433c7182d3688f782b663918a5817140a5cbf3ea67",
+        "red.log": "ea3751cb55d3403783c46133463f7398fc45f309a76cbb295d85aacc7caa8a3c",
+        "green.log": "6beadbe346c93e02c399be3a7ae554c79d75cb76c3d9f40d5584000446da118e",
+        "tsconfig.scoped.json": "dbedf25037df7568a321281700887be3d7dc7645b9028d1326b55141061c11af",
+        "red-errorPrivacy.test.ts.txt": "cfddf94accc7a6db8eddb5ceb40f10773d18a020bb1e95a9faad0b48175b66bc",
+        "run.sh": "8d5426e9494b1b660822e13996d3c26536b813a22590677bca5446f56ddb13b7",
+        "deny.sb": "8a409569d9734ec5e40666751f878911df9209a58c138c6309d3c94f198ff6ae",
+        "vitest.config.mjs": "30fbdcf9b97a34ab68964dac75ff26d730f25aa3657c8453341282d8cc1c0409",
+        "design.md": "1bf2c4189833055b5953cd0c68a5586aa68cb0cc36ac82c6f56cc7675c941d80",
+        "types.sh": "809f2857a1df029b956f84c4eb10a8772212458e3a587055898677502215be7e",
+        "receipt.json": "72345638524ea141a1c0a5e611ba9ee7f0bb98e02853c516f6fdf934463df60c"
+      }
+    },
+    {
+      "unit": "workspace",
+      "reviewedCommit": "de5a6222d87576ca0c79d5782563028d500a60e5",
+      "canonicalCommit": "42b5c093e2737b8e064c7ba18707f78915d9d1d3",
+      "sourceAndTestHashes": {
+        "app/api/__tests__/persistenceErrorPrivacy.test.ts": "dcf5b4e42ea7995616f5184d2ac95586547d90006e72bae0c90a83831d74f1b4",
+        "app/api/dashboard/remediation-rationale-enrich/route.ts": "fd864a572582d7b63a839c57d99713d9dcf265f8a5b13fff29edf1b28fb982b5",
+        "app/api/dashboard/triage-rationale-enrich/route.ts": "2f4a94ec42f956295835a0d3d1916da5d0cec502d2a8e454bf1c0dc739601974",
+        "app/api/workforce/[id]/policy/route.ts": "98f7295a743bab451059dce0d8fb920fa1be7bc51e78e92cc5203f6d69b63d5e"
+      },
+      "evidenceHashes": {
+        "types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "red.log": "cfd3d2ca56e085329aaf3a90a9d0b67b576b5102a994bf27a16e93f5f8e32522",
+        "green.log": "890fe68571d8d92fb783ab93a2c3a3ac138bdc8fb63d3a7175283162b6b1eb20",
+        "tsconfig.scoped.json": "19187b74f675b75bfc59e85f380cdc50c13304ca0b6b4f515c93615d66d107e0",
+        "run.sh": "43c1f6afcde6a52013a3213baf5e6dd411c3735c0a424f92aa8ef1706b84875e",
+        "deny.sb": "8a409569d9734ec5e40666751f878911df9209a58c138c6309d3c94f198ff6ae",
+        "vitest.config.mjs": "e39d2de67cc3cc338170b9b812730e3b5eeaad6c766286fe751df7269b53ac2a",
+        "types-provenance.txt": "02b154880d5718d08e0f6162418de9a55bb2482171b13be237db1e0d17f6aa92"
+      }
+    }
+  ],
+  "liveSecretIncidentObserved": false,
+  "fullBuildOrDeployment": false,
+  "fullA7Accepted": false
+}

@@ -1,0 +1,3 @@
+#!/bin/sh
+cd /private/tmp/axiom-a7-airflow-public-error-20261103 || exit 90
+exec /usr/bin/env -i PATH=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin:/usr/bin:/bin HOME=/private/tmp/axiom-a7-airflow-evidence TMPDIR=/private/tmp/axiom-a7-airflow-evidence NODE_ENV=test DATABASE_URL=postgresql://synthetic:synthetic@127.0.0.1:1/synthetic /usr/bin/sandbox-exec -f /private/tmp/axiom-a7-airflow-evidence/deny.sb /Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node /private/tmp/axiom-bootstrap-preparation-build-4087adb5-l0z31yy2/stage/node_modules/typescript/bin/tsc --project /private/tmp/axiom-a7-airflow-evidence/tsconfig.scoped.json

@@ -1,0 +1,21 @@
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.11 [39m[90m/private/tmp/axiom-a7-privacy-20261103[39m
+
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mpolicy persistence response privacy[2m > [22mredacts an Error from the actual upsert catch[32m 3[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mpolicy persistence response privacy[2m > [22mpreserves non-Error fallback[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mpolicy persistence response privacy[2m > [22mpreserves authentication and validation[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mpolicy persistence response privacy[2m > [22mpreserves successful policy shape[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mtriage persistence response privacy[2m > [22mredacts an Error from the actual persistence catch[32m 1[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mtriage persistence response privacy[2m > [22mpreserves non-Error fallback[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mtriage persistence response privacy[2m > [22mpreserves migration-pending response[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mtriage persistence response privacy[2m > [22mpreserves validation, tenant boundary, and authentication[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mremediation persistence response privacy[2m > [22mredacts an Error from the actual persistence catch[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mremediation persistence response privacy[2m > [22mpreserves non-Error fallback[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mremediation persistence response privacy[2m > [22mpreserves migration-pending response[32m 0[2mms[22m[39m
+ [32m✓[39m app/api/__tests__/persistenceErrorPrivacy.test.ts[2m > [22mremediation persistence response privacy[2m > [22mpreserves validation, tenant boundary, and authentication[32m 0[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[32m12 passed[39m[22m[90m (12)[39m
+[2m   Start at [22m 23:49:30
+[2m   Duration [22m 144ms[2m (transform 35ms, setup 0ms, import 60ms, tests 8ms, environment 0ms)[22m
+
