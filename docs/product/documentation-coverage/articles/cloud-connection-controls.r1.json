@@ -1,0 +1,362 @@
+{
+  "schema": 1,
+  "id": "axiom.help.cloud.connection-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Cloud connections: guided setup and advanced existing-role bounded reads",
+  "productVersion": "local-source-preview:be276403f07d888383af5ef442c7bf7239aed99d",
+  "screenIds": [
+    "proposed.axiom.screen.cloud.guided",
+    "proposed.axiom.screen.cloud.advanced-read-only"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.cloud.guided-aws-propose",
+    "proposed.axiom.control.cloud.guided-aws-review",
+    "proposed.axiom.control.cloud.guided-aws-status",
+    "proposed.axiom.control.cloud.guided-aws-recover-start",
+    "proposed.axiom.control.cloud.azure-subscription",
+    "proposed.axiom.control.cloud.gcp-project",
+    "proposed.axiom.control.cloud.guided-cancel",
+    "proposed.axiom.control.cloud.aws-existing-role",
+    "proposed.axiom.control.cloud.aws-verify",
+    "proposed.axiom.control.cloud.aws-dismiss",
+    "proposed.axiom.control.cloud.aws-inventory",
+    "proposed.axiom.control.cloud.aws-disconnect",
+    "proposed.axiom.control.cloud.azure-existing-principal",
+    "proposed.axiom.control.cloud.azure-inventory",
+    "proposed.axiom.control.cloud.azure-disconnect",
+    "proposed.axiom.control.cloud.local-readiness"
+  ],
+  "goal": "Distinguish guided setup proposals/consent and advanced existing-role/principal validation from actual granted privileges, current health, deployment admission and provider revocation.",
+  "prerequisites": [
+    "Internal source-only local preview, not current installed/native/service acceptance. Current paired desktop session, accepted workspace membership/capabilities and exact returned target/context/version required.",
+    "Guided management uses connections:manage; Azure/GCP reads separately require workspace:read, AWS guided UI management/read conditions differ. Immediate server authority is decisive; displayed role/capability alone not current grant.",
+    "Advanced AWS/Azure enrollment requires paired owner/admin/current management authority and current version; recovery/API keys cannot enroll. Existing authorized cloud operator/provider consent and legitimate configuration are separate, unperformed actions."
+  ],
+  "permissions": [
+    "Source read-only scope/policy/template/digest/constructed URL/role syntax/recorded identity are not effective privilege attestation or security certification. Delegated Azure rights follow signed-in account; no new Reader grant.",
+    "Setup/connection/readiness and bounded inventory are not deployment admission or provider execution approval. No actual grant/cloudstatus/access/enrollment/runtime flags/provider health verified here.",
+    "No A9 on-prem/Temporal/offline/full Governance completion or automatic broad-permission claim. Cloud grants/provisioning/provider portals, native storage and backend-wide qualification are outside this record.",
+    "Guided forms accept no pasted secrets/ARNs/IDs/policyJSON. Advanced AWS only nonsecret identifiers; Advanced Azure existing secret must be supplied only through authorized actual form, never this article/support/fixture."
+  ],
+  "steps": [
+    {
+      "instruction": "In Settings \u2192 Integrations choose the directly mounted AWS/Azure/Google Cloud guided card, or expand Advanced cloud account connections for existing-role AWS/Azure bounded reads.",
+      "effect": "read",
+      "expectedState": "Guided and advanced are distinct controls; current paired desktop identity/read/manage authority and returned availability are required. No API-key enrollment or provider access inferred from opening panels."
+    },
+    {
+      "instruction": "For guided AWS choose configured Connect name/account/region, inspect Review details/Reviewed source, then Review in AWS only after personally inspecting exact proposal. Open AWS reopens returned waiting-state URL.",
+      "effect": "propose",
+      "expectedState": "Start uses retained clientRequestId/choice; review binds flow/digest/expectedversion0 and validated regional CloudFormation URL. Proposal/template/policy digests are source identity, not hosted-byte/effective-IAM/grant proof. Scope EC2 instance metadata/no changes, deploymentAvailablefalse."
+    },
+    {
+      "instruction": "Use Check AWS connection status for current saved snapshot. Recover connection request only when held with original retained start request; Cancel connection only when returned allowed.",
+      "effect": "recover",
+      "expectedState": "Recovery resends same startUUID, not contract recover action/provider setup. Callback completion at most one helper attempt; unknown no replay. Cancel is not IAM role/trust deletion. No guided UI disconnect button."
+    },
+    {
+      "instruction": "Guided Azure Connect opens validated delegated Microsoft authorization; in selection-required choose local subscription, review exact UUID/directory and Connect subscription only while exact returned tuple matches.",
+      "effect": "propose",
+      "expectedState": "Delegated rights follow signed-in account, no new Reader role. At most100subscriptions/truncated notice. Manage toggles local detail; Sign in again starts new auth while existing connection remains until verified selected access. Not a privilege-limit or health guarantee."
+    },
+    {
+      "instruction": "Check Azure connection status before repeating uncertain start/completion; Cancel connection only for eligible pending attempt.",
+      "effect": "recover",
+      "expectedState": "Cancel does not remove service principal/portal consent. Polling reads while waiting/working until expiry, capped12minutes; browser-open timeout is not successful consent. Held/unknown blocks repeated mutations."
+    },
+    {
+      "instruction": "Guided Google Cloud Connect opens validated Google consent. Connect project label/ID immediately completes selected project; no second local acknowledgement screen.",
+      "effect": "propose",
+      "expectedState": "Exact cloud-platform.read-only scope, listed project membership, version/session/expiry/provider verification checks precede persistence. Max100projects; empty list not IAM diagnosis/grant instruction. No service-account key/policy editor/Manage control."
+    },
+    {
+      "instruction": "Check connection status after Google uncertainty; cancel eligible attempt when appropriate before deliberately starting again.",
+      "effect": "recover",
+      "expectedState": "Cancel is not project deletion/consent revocation. Connected errors retain last recorded project without healthy badge. No automatic start/completion retry; browser opening alone does not establish access."
+    },
+    {
+      "instruction": "In Advanced AWS enter nonsecret Expected AWS account ID, Existing IAM role ARN and AWS region. Prepare read-only enrollment, inspect Enrollment external ID and authorized-operator attestation before Verify existing AWS role.",
+      "effect": "propose",
+      "expectedState": "Preparation creates10minute organization/user/exactrole/account/region/version-bound challenge, not IAM trust/grant. Attestation local, not independent policy inspection. Verify matches assumed-role/account identity, not complete IAM privileges. ARN partition syntax not GovCloud acceptance."
+    },
+    {
+      "instruction": "AWS Dismiss enrollment clears local pending operation/challenge; Refresh AWS account state reconciles saved state after uncertain verification/dismiss.",
+      "effect": "recover",
+      "expectedState": "Dismiss is not server cancellation/expiry and verification already started can finish. Challenge successful consumption once does not prove only one external validation call: validation precedes transaction claim. Used/expired/conflicting attempts require fresh challenge/current state."
+    },
+    {
+      "instruction": "On connected unsuspended AWS record, Read bounded EC2 inventory explicitly requests one enrolled-region page; inspect observation time/truncation and at most5instances.",
+      "effect": "read",
+      "expectedState": "Source-live contract and completefalse describe bounded response, not current acceptance. Empty sample not empty account. No scan/pagination/deployment control; saved Role identity verified is not fresh health."
+    },
+    {
+      "instruction": "AWS Disconnect from Axiom opens exact-account confirmation. Keep connection/Close confirmation exits dialog; Disconnect Axiom access suspends use until matching versioned result/fresh post-settlement read.",
+      "effect": "recover",
+      "expectedState": "Local saved access removal stops new reads, not role/trust/session/deployment/history revocation; issued STS sessions may remain up to15minutes and allowance retained. Fresh reconnection fills account/region, clears ARN and requires new verified enrollment."
+    },
+    {
+      "instruction": "In Advanced Azure, authorized operator enters tenant/subscription/client UUIDs and existing client secret, then Validate & connect Azure against expected current subscription version. Never put credentials in support records.",
+      "effect": "propose",
+      "expectedState": "Secret clears immediately even on validation failure, no secret in this article. Form submits existing principal credentials, creates no principal/grant. Source vault statements not independent security certification; subscription-read validation not Reader-only role attestation. No challenge/browser grant/checkbox here."
+    },
+    {
+      "instruction": "Refresh Azure connections and on current connected row Read first resource-group page; inspect current record/version/subscription, observation and first-page limitation.",
+      "effect": "read",
+      "expectedState": "At most100groups/completefalse; empty not entire subscription empty. Saved contract enabled/agentScanAvailablefalse. No pagination/cloud-change control; backend matching/current authority still required."
+    },
+    {
+      "instruction": "Disconnect Azure sends direct versioned request, immediately suspending row/inventory; refresh after uncertainty before use. Reconnect requires fresh form credentials/validation.",
+      "effect": "recover",
+      "expectedState": "No Azure confirmation dialog/dedicated reconnect button. Local stored credential removal does not revoke principal/grants/issued tokens. Old list/command responses cannot establish current reenrolled authority."
+    },
+    {
+      "instruction": "Read CloudOnboardingStatus prerequisites separately from connection/account records; preserve current workspace/config/identity ownership through any pending operation.",
+      "effect": "read",
+      "expectedState": "Status fixes provider validation not_checked; local vault/broker/live-mode/config presence is not provider verification. Unmount/context change invalidates local ownership but not already dispatched service work. Handlers do not guarantee all unexpected throws clear busy state."
+    }
+  ],
+  "expectedOutcome": "Choose current exact setup/read/status/recovery control without replaying unknown setup or mistaking local records/readiness/disconnect for provider permission or revocation.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial accepted:false. Media accepted:false. Native accepted:false. Runtime accepted:false. Release accepted:false. Shipped accepted:false. Human review null/media empty; no authentic setup/provider/cloud access/security acceptance.",
+    "proposed. IDs authoring-only candidates, not runtime/help bindings. No ingestion/retrieval activation/publication/new authority/UI/backend feature.",
+    "Historical b7ec472b guides/manifests/support records unchanged.22guided+17advanced historical whole-file bindings overlaponepath, yielding38unique codepaths+8supportrecords=46sources atbe276403. Different manifest formats parsed explicitly, not misreported as drift.",
+    "Exact source bytes/ranges establish identity only; no hosted templates/provider SDK/deployed verifier/registry/grants/effective IAM/Entra/GCP policy/current health qualified.",
+    "Finite mounted cards/forms/direct contracts/narrow helpers only; excludes provider portal/setup/provisioning/credentials management/backendtransitive audit/nativeOS/shell/storage/clouddeployment and other integrations.",
+    "No universal one-provider-call guarantee: advanced AWS validates before transactional successful challenge consumption; failed preclaim validation may leave challenge unconsumed. Guided callback state one-attempt is separate.",
+    "Fixture proposed-not-executed prose only; no retrieval/model evaluation or customer/native/shipped acceptance."
+  ],
+  "recovery": [
+    "Unknown guided start/completion holds further mutations; check original saved status first. AWS recover preserves original startUUID only, never callback/provider grant replay.",
+    "Expired/cancelled attempts allow explicit fresh setup where offered; never reuse consumed/expired challenge or bypass exact currentcontext/version/target.",
+    "Browser failure/timeout or Cancel does not establish absent provider effect/consent revoked. Resolve current status before another setup; source cancellation differs from provider revocation.",
+    "Advanced AWS Dismiss only local state; refresh because server verify may finish. Disconnect uncertainty suspends use until fresh post-settlement reconciliation, not stale list.",
+    "Advanced Azure secret cleared even on failure; current state/version first, then authorized deliberate fresh form if appropriate, never include secret in knowledge/support.",
+    "Local disconnect leaves provider roles/principals/trust/grants/sessions/tokens as described; no revoke/delete instructions or deployment rollback authority.",
+    "Loading/unavailable local readiness is neither usable connection nor provider failure. Empty bounded sample not complete account inventory; missing service setup needs legitimate administrator process, not new grants by this article."
+  ],
+  "searchTerms": [
+    "Connect AWS",
+    "Review in AWS",
+    "Recover connection request",
+    "Connect Azure",
+    "Connect subscription",
+    "Connect Google Cloud",
+    "Prepare read-only enrollment",
+    "Verify existing AWS role",
+    "Dismiss enrollment",
+    "Read bounded EC2 inventory",
+    "Validate & connect Azure",
+    "Read first resource-group page",
+    "Disconnect from Axiom",
+    "CloudOnboardingStatus"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029"
+    },
+    {
+      "path": "desktop/src/components/AwsGuidedConnection.tsx",
+      "sha256": "ce8aaa39536927040ce033787d58522a209de4892d9b3ec65326115cb89c5e73"
+    },
+    {
+      "path": "desktop/src/components/AzureGuidedConnection.tsx",
+      "sha256": "eaa8c21b4ab7b71c9ab725ae8b44bc4c323d48470ba8ca7502cc587d2c223651"
+    },
+    {
+      "path": "desktop/src/components/GcpGuidedConnection.tsx",
+      "sha256": "de998ca95c797ca484fa1b37c199d1ef70066fb94ea0f0faafcbff2ab31993d4"
+    },
+    {
+      "path": "desktop/src/lib/awsGuidedConnectionClient.ts",
+      "sha256": "fa18f261181cd0fbe5ca314b03921fb671151b379cf1e4efd345182fbe923427"
+    },
+    {
+      "path": "desktop/src/lib/azureGuidedConnectionClient.ts",
+      "sha256": "9649bb1e605e1f862c21174df5793b753c7ba301e05e9ad4916bab8e80b34947"
+    },
+    {
+      "path": "desktop/src/lib/gcpGuidedConnectionClient.ts",
+      "sha256": "5b3c49bd54d183f5a5104c45f5819b9c379e4b543bac4838e3874d4da0ad15bf"
+    },
+    {
+      "path": "desktop/src/lib/gcpGuidedConnectionContract.ts",
+      "sha256": "55276aec6cc4c793adffd6b2619b6c56e43d4b43ae7b0256ff202a06f95b745c"
+    },
+    {
+      "path": "lib/cloud/aws/guided/contract.ts",
+      "sha256": "f99b2a8091356538763f2d93d04273dca51df60bd8f3a70dcc0e86411db3b1c6"
+    },
+    {
+      "path": "lib/cloud/aws/guided/launch.ts",
+      "sha256": "751bbd572e1790c6bf04270d32753409879b7c3b1c06a7c3ad10cacd054a1b31"
+    },
+    {
+      "path": "lib/cloud/aws/guided/registry.ts",
+      "sha256": "5ed30f3f045c69eaa5cd5ec7827b43676c8b2a128728c616cb7f6bd653368238"
+    },
+    {
+      "path": "lib/cloud/aws/guided/service.ts",
+      "sha256": "8b75535cc55f55094be8b91fb41eba1d1751fd0619cc8709f1888ca77c9e4f43"
+    },
+    {
+      "path": "lib/cloud/aws/guided/validateRole.ts",
+      "sha256": "9c737536a8583065f205269d64e6f32f4a1c7dd1cc42f1369f02f774d8aab5d9"
+    },
+    {
+      "path": "lib/cloud/aws/guided/http.ts",
+      "sha256": "19a7035f0a0a1ac822e848b0fd2b192c12bca0a3fcd3663342860d0045b3f62c"
+    },
+    {
+      "path": "lib/cloud/azure/guided/contract.ts",
+      "sha256": "84ca31b755b6a77d3407a58ddd7cab929c5b8acf913445399e5f2efbe913f205"
+    },
+    {
+      "path": "lib/cloud/azure/guided/authority.ts",
+      "sha256": "c32b4a86c40b0b463a08e0923b14ff640ee0470fda4baec4f95316af8b348264"
+    },
+    {
+      "path": "lib/cloud/azure/guided/service.ts",
+      "sha256": "84ebf53a8c42fb2468334754cfcab1530c701ae9fe0aba824d89809b810d0c5f"
+    },
+    {
+      "path": "lib/cloud/azure/guided/provider.ts",
+      "sha256": "25cdf90ca5416e8cad66165a8bbb4c99250401a65b28c0039a08370c34f96eca"
+    },
+    {
+      "path": "lib/cloud/azure/guided/http.ts",
+      "sha256": "3d378ff030ff036939629ab4d8c8ee26252502013b292cc196ca3bdea7da7a01"
+    },
+    {
+      "path": "lib/cloud/gcp/guided/authority.ts",
+      "sha256": "c2832583f6a4570cfb16991ba2aa23e02f5428dd409523aef3409cf7e21c2c37"
+    },
+    {
+      "path": "lib/cloud/gcp/guided/service.ts",
+      "sha256": "edc3121b91afccaeb05286ca3a0a57d4828aa03208415a146b52e4a4854c8ae4"
+    },
+    {
+      "path": "lib/cloud/gcp/guided/http.ts",
+      "sha256": "cb5a58b1ee5923d086a736559b7efd35320a46a156d6c6f147fa84e6978a59f9"
+    },
+    {
+      "path": "desktop/src/components/AwsReadOnlyEnrollment.tsx",
+      "sha256": "d8f00e116e5752bee795be85a11bf9fd9b7a310aea6792efd0b46393afa18567"
+    },
+    {
+      "path": "desktop/src/components/AzureReadOnlyEnrollment.tsx",
+      "sha256": "58ca174df410a2e9cf3b85cab0d73dacea0c1fe494da92d5541c1e74d50a2d3b"
+    },
+    {
+      "path": "desktop/src/components/CloudOnboardingStatus.tsx",
+      "sha256": "47db4315006860b4784e0dd3d33d52e434a4cd782a051f21fc10fb97481eb13d"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "aac1fe7952cf3b672af45f5784080dd86df52dc7efcfabb455318f3389ca49a4"
+    },
+    {
+      "path": "desktop/src/lib/awsEnrollmentContract.ts",
+      "sha256": "745aa411a755baa7e63fe90c1fa10769e586eb8b64a5857095663a67533652a5"
+    },
+    {
+      "path": "desktop/src/lib/azureEnrollmentContract.ts",
+      "sha256": "235f6650137b8697d50412ba5e69a9fdd920c67cc7e9035cb46799db882c3edc"
+    },
+    {
+      "path": "desktop/src/lib/azureEnrollmentClient.ts",
+      "sha256": "3bb82927f04f5bab5b29d76415bdaa57f80f58ca1a75898ef0e400ed068b89f2"
+    },
+    {
+      "path": "lib/cloud/onboardingReadinessContract.ts",
+      "sha256": "e56058345c49196eb1c0b50e1c4377c30fac853bf20d2b163319f4b168e4a7fc"
+    },
+    {
+      "path": "lib/cloud/aws/enrollment/service.ts",
+      "sha256": "ef1749fb7c370e6af2dc20b49cfad246677c089637a9565e198584ea8d051b23"
+    },
+    {
+      "path": "lib/cloud/aws/enrollment/runtime.ts",
+      "sha256": "dc760a572e9b08d54fd88b02731798238ab5a835fc7410f55c0944d76a3d493a"
+    },
+    {
+      "path": "lib/cloud/azure/enrollment/service.ts",
+      "sha256": "aa08ab3deee0bbfc72528dab04b2c4b8c00778569afb90b04a12d3c2a3bcd314"
+    },
+    {
+      "path": "lib/cloud/azure/enrollment/runtime.ts",
+      "sha256": "06c0927f10581d711711a14c316c8f821a238531a8df10ecead8242469d508eb"
+    },
+    {
+      "path": "app/api/desktop/cloud/aws/enrollment/route.ts",
+      "sha256": "068d39524a9686076a709c55b00992a343e152c8a55fb0ee2d762f9d7e1b84a8"
+    },
+    {
+      "path": "app/api/desktop/cloud/aws/enrollment/[id]/complete/route.ts",
+      "sha256": "1c02a6042895b811ce306c7cd41426f7522bd0a7910c86e7a685c116a11201f7"
+    },
+    {
+      "path": "app/api/desktop/cloud/azure/enrollment/route.ts",
+      "sha256": "a3c81f0385663277064986e9d6ef39f266348eb0418b604f8687bb28e4f5680c"
+    },
+    {
+      "path": "docs/product/knowledge/settings-workspace-controls.md",
+      "sha256": "a857e4865b107ba2c478a2c5108da33cdaa23f5cc98b90c7ae126bd429d5f151"
+    },
+    {
+      "path": "docs/product/knowledge/guided-cloud-connection-controls.md",
+      "sha256": "7ea8251d8d303cea4e4d61cdf51ccc904445e83779dfa837e6829e3cb5d9ca96"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/guided-cloud-guide/source-bindings.json",
+      "sha256": "21672667ef58e126d09f78d266d091759fac6c61b3dbea983ebf475386c97920"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/guided-cloud-guide/source-review.md",
+      "sha256": "549b3591916a9b5dc16c3496c4d4d2f4a346963c12e38fb7279341eab3ed0ab9"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/guided-cloud-guide/binding-verification.json",
+      "sha256": "58e51ee4fc3f33cc31a056184f5fc250d222f4dd53447909436d51e24783bbe2"
+    },
+    {
+      "path": "docs/product/knowledge/read-only-cloud-enrollment-controls.md",
+      "sha256": "3e6c1645c845d269b5ab3331fd8a603bab7851f08c5f81ca4335efea01743966"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/read-only-cloud-guide/source-bindings.json",
+      "sha256": "c087ab6d326cead902192a7c5802ed74910fcebce55f5eea9966104b29f9fd7f"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/read-only-cloud-guide/source-review.md",
+      "sha256": "e813e86b0858d2e357b1897da835ffbb671a0f5b9407f93bf9576d4cbeb32355"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/read-only-cloud-guide/binding-verification.json",
+      "sha256": "282097315c636bb4e626195b5921258a17d10ca5c5944afa42ad62a5cd387fa3"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/guided-cloud-connection-controls.md",
+      "docs/recovery/2026-11-03/guided-cloud-guide/source-bindings.json",
+      "docs/recovery/2026-11-03/guided-cloud-guide/source-review.md",
+      "docs/recovery/2026-11-03/guided-cloud-guide/binding-verification.json",
+      "docs/product/knowledge/read-only-cloud-enrollment-controls.md",
+      "docs/recovery/2026-11-03/read-only-cloud-guide/source-bindings.json",
+      "docs/recovery/2026-11-03/read-only-cloud-guide/source-review.md",
+      "docs/recovery/2026-11-03/read-only-cloud-guide/binding-verification.json"
+    ],
+    "verifiedVersion": "local-source-preview:be276403f07d888383af5ef442c7bf7239aed99d",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

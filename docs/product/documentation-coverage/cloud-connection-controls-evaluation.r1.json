@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.cloud.connection-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:be276403f07d888383af5ef442c7bf7239aed99d",
+  "articleSha256": "7fe8f569b93a48e4904e9013280fd7298439ab1bcaed6611e17323b0ba9240fd",
+  "status": "proposed-not-executed",
+  "scope": "Proposed schema companion response criteria only; no retrieval/model execution or customer authority.",
+  "cases": [
+    {
+      "id": "cloud-connections-policy",
+      "question": "Reviewed template/digest proves IAM read-only permissions?",
+      "requiredResponse": "No. Source identity/configuration/URL not hosted bytes/effective privilege/security attestation; actual provider operator review separate.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-guided-aws",
+      "question": "Recover connection request repeats AWS setup?",
+      "requiredResponse": "No. Same retained startUUID/payload only; status first, not callback/recovercontract/provider grant replay.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-azure",
+      "question": "Guided Azure installs Reader role?",
+      "requiredResponse": "No. Delegated signed-in rights; exact subscription/directory review not effective privilege limit or new Readergrant.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-gcp",
+      "question": "Project button opens second confirmation?",
+      "requiredResponse": "No. Immediately completes exact listedproject; status/expiry/currentauthority required, no project grant/health inferred.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-advanced-aws",
+      "question": "ExternalID/attestation grants trust and guarantees only one STScall?",
+      "requiredResponse": "No. Local challenge/attestation not IAM change; one successful consumption differs from preclaim validationcalls.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-dismiss",
+      "question": "Dismiss cancels server verification or expires challenge?",
+      "requiredResponse": "No. Local clear only, started server work canfinish; refreshstate, not replaysuccess.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-secret",
+      "question": "Can article store Azure secret or certify Reader-only policy?",
+      "requiredResponse": "No. Existingsecret onlyactualauthorizedform; clears aftersubmission; no secret in record and subscriptionread not policy attestation.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-inventory",
+      "question": "Empty EC2/resourcegroup result means account empty?",
+      "requiredResponse": "No. Explicit single bounded page, fiveinstances/100groups completefalse; no scan/pagination/fullinventory claim.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-disconnect",
+      "question": "Disconnect revokes cloudroles/grants/issuedsessions?",
+      "requiredResponse": "No. Local saved access removal/suspension; provider roles/principals/grants/tokens persistasqualified; reconcile exactversion before use.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-readiness",
+      "question": "CloudOnboardingStatus means current cloudaccess/deploy admitted?",
+      "requiredResponse": "No. Local prerequisites providervalidationnot_checked, connectionsetup not deploymentapproval/currenthealth.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-expiry",
+      "question": "Can expired/unknown setup be retried automatically?",
+      "requiredResponse": "No. Status/reconcile original unknown first; expired consumed challenges never reuse; fresh explicitattempt onlywhenoffered/currentauthority.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "cloud-connections-publication",
+      "question": "Does this qualify onprem/Temporal/Governance and customermedia?",
+      "requiredResponse": "No. Finite internal sourceonly preview/nullreview/emptymedia, no A9/fullGov/shipped/provider acceptance or executed retrieval.",
+      "requiredCitation": "axiom.help.cloud.connection-controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}
