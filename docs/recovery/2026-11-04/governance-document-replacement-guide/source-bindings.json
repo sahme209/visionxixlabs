@@ -1,0 +1,230 @@
+{
+  "status": "frozen-READY-internal-source-inputs",
+  "baselineCommit": "e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+  "purpose": "Current replacement control supplement; source provenance is not execution authority",
+  "rangeConvention": "inclusive 1-based original raw lines retaining terminators",
+  "guide": {
+    "path": "docs/product/knowledge/governance-document-replacement-controls.md",
+    "sha256": "cee7c2f20e1ce1206da843cdd36eba686e0afa109d1ec5678a6ab2348b005c0d"
+  },
+  "existingContext": {
+    "paths": [
+      "docs/product/knowledge/governance-execution-limits.md",
+      "docs/proposals/governance-document-head-replacement.md",
+      "docs/proposals/governance-document-replacement.sources.json"
+    ],
+    "qualification": "Existing separate execution-limits guide and historical design/source manifest preserved; no old range/hash revalidation or silent rebinding claimed. No previous product knowledge source-document control guide found in finite product knowledge discovery."
+  },
+  "sources": [
+    {
+      "path": "desktop/src/components/GovernanceDocumentReplacement.tsx",
+      "wholeFileSha256": "87ac07078d6d6c153263b119ea52ba7d15680b7c5c206f36a8957f68e425729b",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 53,
+          "sha256": "87ac07078d6d6c153263b119ea52ba7d15680b7c5c206f36a8957f68e425729b"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "wholeFileSha256": "aa58746be73a807e973d96ab78e32898715dd6e605f9030288ab6ff8e49897b4",
+      "ranges": [
+        {
+          "startLine": 13,
+          "endLine": 63,
+          "sha256": "c4211a0c91fcc123edeb3b23eb05e48dcbaec863d16c12bcf01d9a215f1098bb"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/GovernanceWorkspacePreview.tsx",
+      "wholeFileSha256": "d48e805e27cddddb7907a6be14167c1bab69c4d72f0471f58bfcf51d5bbf139f",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 18,
+          "sha256": "d48e805e27cddddb7907a6be14167c1bab69c4d72f0471f58bfcf51d5bbf139f"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "wholeFileSha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029",
+      "ranges": [
+        {
+          "startLine": 159,
+          "endLine": 164,
+          "sha256": "9b014e2275dd0c943be9a4c5dea68dff7d7dc29f017db27f8908e8f23a400573"
+        },
+        {
+          "startLine": 235,
+          "endLine": 243,
+          "sha256": "69c9ba4b4cbc1a5df7c72205544feff18dcbdb08bca24370a683f7cccb61d9fe"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "wholeFileSha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1",
+      "ranges": [
+        {
+          "startLine": 1627,
+          "endLine": 1655,
+          "sha256": "f3aaeb96643abc6a284d38c8ad194b384aa16d13e7bc09b05088655d875d98e4"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/governanceIntelligence.ts",
+      "wholeFileSha256": "364d8997ba88ef127406f1e1a56979ae1c750ed2baf526ae008e44b39ea4919e",
+      "ranges": [
+        {
+          "startLine": 17,
+          "endLine": 31,
+          "sha256": "f5fcd49015a3b01a319b46412579c25c850bb5b62b1fcfd098fc86636e9b4689"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/releaseOperationPlanTransport.ts",
+      "wholeFileSha256": "d949404192c390001899836f1e8593381f1b99d0ce756607b5f608a1fabc5bc5",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 42,
+          "sha256": "d949404192c390001899836f1e8593381f1b99d0ce756607b5f608a1fabc5bc5"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/documentText.ts",
+      "wholeFileSha256": "1fc55b1f16f0f541356b69bf464dd9208bace4277440eecdf9a81d0eec0f2a3a",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 8,
+          "sha256": "1fc55b1f16f0f541356b69bf464dd9208bace4277440eecdf9a81d0eec0f2a3a"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/documentRequirements.ts",
+      "wholeFileSha256": "9c17922ca9ca92066232d6671cfbd66a90585588c71ab5a16f1a3d05e1c3d021",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 10,
+          "sha256": "9c17922ca9ca92066232d6671cfbd66a90585588c71ab5a16f1a3d05e1c3d021"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/documentStore.ts",
+      "wholeFileSha256": "528cc58781e6fd133adc0981562449db2e2f21c098fde0e72f5bbb6edec324bd",
+      "ranges": [
+        {
+          "startLine": 9,
+          "endLine": 98,
+          "sha256": "6c9c5a405ded0f0e502abc5cf335b6d34b7e51a08398876578759f7f322e871a"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/requestServiceCore.ts",
+      "wholeFileSha256": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d",
+      "ranges": [
+        {
+          "startLine": 38,
+          "endLine": 55,
+          "sha256": "411653834be7f72c3978765f66cf0a39765780767836d594d7924d6f8376a48a"
+        },
+        {
+          "startLine": 74,
+          "endLine": 88,
+          "sha256": "cc053d66500928e465b17a352e2f936edfcd347728a97ffdc01a55a5f94e013e"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/readHttp.ts",
+      "wholeFileSha256": "5455ba4f0d020c438c9e1eab1f8e8cf202f6df684b29778d42807e60cdead081",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 33,
+          "sha256": "5455ba4f0d020c438c9e1eab1f8e8cf202f6df684b29778d42807e60cdead081"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/documentHttp.ts",
+      "wholeFileSha256": "daf724565d6137e81d06a50ba9d1e6f34a33604b3d560a6cf4510234c8a0b850",
+      "ranges": [
+        {
+          "startLine": 13,
+          "endLine": 37,
+          "sha256": "cc20906771ba401302f0eb250e5b3bea65e7c9d4b5d376e1e6b2e25fdc29f469"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/intelligence/evidenceStore.ts",
+      "wholeFileSha256": "0ed4e8b6686fbd1b2bc53aa9279ac07ba1c842ef52650fb4c7beab10d7565a0c",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 49,
+          "sha256": "0ed4e8b6686fbd1b2bc53aa9279ac07ba1c842ef52650fb4c7beab10d7565a0c"
+        }
+      ]
+    },
+    {
+      "path": "app/api/desktop/governance-intelligence/read/route.ts",
+      "wholeFileSha256": "e4d6dc1e3951cf840928f0c0e24ea406d045c68bf3f4c656ee69abd5700a03de",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 9,
+          "sha256": "e4d6dc1e3951cf840928f0c0e24ea406d045c68bf3f4c656ee69abd5700a03de"
+        }
+      ]
+    },
+    {
+      "path": "app/api/desktop/governance-intelligence/documents/route.ts",
+      "wholeFileSha256": "1d107c8f7548bfb9354a123ca11a1fce17d28d290d8e239b5082a1c1616d67ca",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 9,
+          "sha256": "1d107c8f7548bfb9354a123ca11a1fce17d28d290d8e239b5082a1c1616d67ca"
+        }
+      ]
+    }
+  ],
+  "counts": {
+    "uniqueCodeFiles": 16,
+    "inclusiveRanges": 18,
+    "directReplacementInteractiveControls": 7
+  },
+  "acceptance": {
+    "customer": false,
+    "editorial": false,
+    "media": false,
+    "native": false,
+    "runtime": false,
+    "release": false,
+    "fullGovernanceCoverage": false,
+    "retrievalEvaluationExecuted": false
+  },
+  "omissions": [
+    "initial upload full inventory",
+    "discovery/provider reads",
+    "baseline proposal/review",
+    "numeric execution limits",
+    "activation/enrollment/provider execution",
+    "native visual/accessibility/runtime qualification"
+  ],
+  "proposedIdsAreRuntimeBindings": false
+}

@@ -1,0 +1,24 @@
+{
+  "base": "e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+  "status": "frozen-READY-internal-source-guide",
+  "uniqueCodeFiles": 16,
+  "inclusiveRawRanges": 18,
+  "directReplacementInteractiveControls": 7,
+  "articleSourceReferences": 18,
+  "proposedCases": 10,
+  "results": {
+    "integrity": 0,
+    "customerRefusal": 1,
+    "sourceBindings": 0,
+    "wrongCustomerCliOptionNotAcceptance": 1
+  },
+  "newBundleOnly": true,
+  "humanEditorialReview": null,
+  "media": [],
+  "customerEligible": false,
+  "editorialAcceptance": false,
+  "nativeAcceptance": false,
+  "runtimeAcceptance": false,
+  "releaseAcceptance": false,
+  "proposedIdsAreRuntimeBindings": false
+}

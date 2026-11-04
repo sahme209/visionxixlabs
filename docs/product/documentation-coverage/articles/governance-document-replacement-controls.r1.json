@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "id": "axiom.help.governance.document-replacement",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Local Governance saved-document replacement: current-head review and held recovery",
+  "productVersion": "local-source-preview:e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+  "screenIds": [
+    "proposed.axiom.screen.governance.document-replacement"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.governance.document-replacement.target",
+    "proposed.axiom.control.governance.document-replacement.load-head",
+    "proposed.axiom.control.governance.document-replacement.new-file",
+    "proposed.axiom.control.governance.document-replacement.preview-new-text",
+    "proposed.axiom.control.governance.document-replacement.review",
+    "proposed.axiom.control.governance.document-replacement.save-once",
+    "proposed.axiom.control.governance.document-replacement.lookup-original"
+  ],
+  "goal": "Understand the implemented local replacement workflow without treating historical digests, metadata, a saved source or source-only documentation as current freshness, independent approval, activation, mounted authoring access or customer acceptance.",
+  "prerequisites": [
+    "Internal local-source preview only. Actual DEV wrapper remains records-read-only/narrow execution-limit identity; replacement is not registered through that wrapper. Do not remount or enable flags.",
+    "For the separately composed broad identity only: current desktop-session policy:manage and deliberately loaded historical document evidence. Historical rows identify target, not CAS authority.",
+    "Supplement to separate execution-limits guide and historical replacement design. No raw oldbody or all-Governance/control/backend/native coverage."
+  ],
+  "permissions": [
+    "Current server reader/session/workspace authority required for stored head metadata; upload separately requires policy management. Both routes default OFF unless enabled server-side; no current environment value was read.",
+    "POST read_document_head sends only artifactDigest; server derives tenant/name/scope from stored artifact and validates head/blob/history in one transaction. No caller-typed version/name or permission grant.",
+    "Private source storage is not baseline proposal, independent review, activation, enrollment or provider execution; checkbox is local file/target review only."
+  ],
+  "steps": [
+    {
+      "instruction": "Choose a historical saved policy document in the separate local broad-identity composition.",
+      "effect": "read",
+      "expectedState": "Target dropdown identifies fixed name/exact scope/historical digest, does not load automatically; actual Settings wrapper does not expose it."
+    },
+    {
+      "instruction": "Deliberately Load current saved version.",
+      "effect": "read",
+      "expectedState": "Saved artifact is validated first; fixed read operation sends artifactDigest only and echoes must match. Failure/OFF503 leaves save disabled, no initial-upload fallback."
+    },
+    {
+      "instruction": "Review current-head metadata and original last-update time.",
+      "effect": "read",
+      "expectedState": "Content-digest equality is not old snapshot freshness/current version; no original body/fact arrays returned, version999 is read-only."
+    },
+    {
+      "instruction": "Choose a bounded local replacement text/Markdown file.",
+      "effect": "local-preference",
+      "expectedState": "Nonempty at most64KiB/1000lines, strict UTF8/name and finite binary/credential-pattern filters; no URL/provider read. New filename does not change fixed target."
+    },
+    {
+      "instruction": "Expand inert new-text preview, then personally check exact target/version/newfile review.",
+      "effect": "read",
+      "expectedState": "Changed file, head reload or target clears review. Old metadata is not an old-text diff, complete means recognized clauses only."
+    },
+    {
+      "instruction": "Save replacement once.",
+      "effect": "execute",
+      "expectedState": "Synchronous guards capture immutable name/scope/bytes/server version+one UUID. CAS and server authority govern write; conflict/unavailable is held, no blind resend."
+    },
+    {
+      "instruction": "If held, Check original replacement record deliberately.",
+      "effect": "recover",
+      "expectedState": "Only original nonce lookup; error/foundfalse retains hold; foundtrue means historical original even after head advances, not current authority or another write."
+    },
+    {
+      "instruction": "After confirmed save/history, reload saved evidence deliberately.",
+      "effect": "read",
+      "expectedState": "Parent clears evidence/facts/initialscope; no automatic proposal, fresh observation or activation."
+    },
+    {
+      "instruction": "Respect busy/held parent locks and account-context ownership.",
+      "effect": "recover",
+      "expectedState": "Refresh/target/scope changes cannot discard pending tuple via UI; context abort discards responses/private memory, does not undo dispatched server write. No durable rawbytes/restart recovery."
+    }
+  ],
+  "expectedOutcome": "Identify every direct replacement control and its metadata/CAS/held-original boundary while preserving actual read-only registration and separate server authority.",
+  "limitations": [
+    "Internal draft/null human review/empty media/customer/editorial/native/runtime/release acceptance false; proposed IDs are authoring-only, not runtime bindings.",
+    "Seven direct replacement interactive controls inventoried; associated parent load/refresh/locks described, not all Governance screens/provider backends.",
+    "Actual DEV records wrapper passes no broad identity and limits lane only narrow identity; do not describe this component as mounted/customer available or enable configuration.",
+    "No original private source bytes are retrieved by head metadata; digest match/updatedAt/completeness/counts are not freshness/compliance/approval evidence.",
+    "Unknown save can have committed. Foundfalse/error does not permit replay, and foundtrue confirms history only. In-memory tuple is lost on context closure/restart; no durable recovery promise.",
+    "No provider/auth/API/DB/native/browser/credential/Keychain/Security/helper/AI/test/build/retrieval operations performed for this unit; only new-bundle integrity/customer refusal/source bindings are validated.",
+    "Historical design/guide hashes are unchanged; current receipt is new source provenance. Existing unit implementation test receipts are not rerun or relabeled native/human acceptance."
+  ],
+  "recovery": [
+    "For invalid/expired desktop signup context return to Agent and start intended sign-in again; no guessed challenge or extension of old request.",
+    "After delivery failure or lost create response, account may exist. Use displayed verification recovery/manual sign-in/support guidance rather than blind repeated creation or another identity.",
+    "Neutral resend does not confirm delivery/account. New unused link can replace old even if delivery fails; try later/contact support per display rather than treating old link as still valid.",
+    "Invalid/expired/used proof has no success; temporary503 provides specific retry-link guidance. Do not share/replay token links in support or claim a session from verified query.",
+    "Preserve actual authority gates and excluded provider/native/MFA flows; form/source labels and current busy guard are not execution permission."
+  ],
+  "searchTerms": [
+    "Create account",
+    "Work email",
+    "Show password",
+    "Check your email",
+    "Need a verification email",
+    "Request verification link",
+    "verificationRequired",
+    "verified=1",
+    "expired link",
+    "MFA not inventoried",
+    "signup busy",
+    "not password reset"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/components/GovernanceDocumentReplacement.tsx",
+      "sha256": "87ac07078d6d6c153263b119ea52ba7d15680b7c5c206f36a8957f68e425729b"
+    },
+    {
+      "path": "desktop/src/views/GovernanceEvidenceView.tsx",
+      "sha256": "aa58746be73a807e973d96ab78e32898715dd6e605f9030288ab6ff8e49897b4"
+    },
+    {
+      "path": "desktop/src/views/GovernanceWorkspacePreview.tsx",
+      "sha256": "d48e805e27cddddb7907a6be14167c1bab69c4d72f0471f58bfcf51d5bbf139f"
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "48479b6095a876be77e4c8e69794f16baf166cd127716d3373b5d9fabfd9a029"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1"
+    },
+    {
+      "path": "desktop/src/lib/governanceIntelligence.ts",
+      "sha256": "364d8997ba88ef127406f1e1a56979ae1c750ed2baf526ae008e44b39ea4919e"
+    },
+    {
+      "path": "desktop/src/lib/releaseOperationPlanTransport.ts",
+      "sha256": "d949404192c390001899836f1e8593381f1b99d0ce756607b5f608a1fabc5bc5"
+    },
+    {
+      "path": "lib/governance/intelligence/documentText.ts",
+      "sha256": "1fc55b1f16f0f541356b69bf464dd9208bace4277440eecdf9a81d0eec0f2a3a"
+    },
+    {
+      "path": "lib/governance/intelligence/documentRequirements.ts",
+      "sha256": "9c17922ca9ca92066232d6671cfbd66a90585588c71ab5a16f1a3d05e1c3d021"
+    },
+    {
+      "path": "lib/governance/intelligence/documentStore.ts",
+      "sha256": "528cc58781e6fd133adc0981562449db2e2f21c098fde0e72f5bbb6edec324bd"
+    },
+    {
+      "path": "lib/governance/intelligence/requestServiceCore.ts",
+      "sha256": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d"
+    },
+    {
+      "path": "lib/governance/intelligence/readHttp.ts",
+      "sha256": "5455ba4f0d020c438c9e1eab1f8e8cf202f6df684b29778d42807e60cdead081"
+    },
+    {
+      "path": "lib/governance/intelligence/documentHttp.ts",
+      "sha256": "daf724565d6137e81d06a50ba9d1e6f34a33604b3d560a6cf4510234c8a0b850"
+    },
+    {
+      "path": "lib/governance/intelligence/evidenceStore.ts",
+      "sha256": "0ed4e8b6686fbd1b2bc53aa9279ac07ba1c842ef52650fb4c7beab10d7565a0c"
+    },
+    {
+      "path": "app/api/desktop/governance-intelligence/read/route.ts",
+      "sha256": "e4d6dc1e3951cf840928f0c0e24ea406d045c68bf3f4c656ee69abd5700a03de"
+    },
+    {
+      "path": "app/api/desktop/governance-intelligence/documents/route.ts",
+      "sha256": "1d107c8f7548bfb9354a123ca11a1fce17d28d290d8e239b5082a1c1616d67ca"
+    },
+    {
+      "path": "docs/product/knowledge/governance-document-replacement-controls.md",
+      "sha256": "cee7c2f20e1ce1206da843cdd36eba686e0afa109d1ec5678a6ab2348b005c0d"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/governance-document-replacement-guide/source-bindings.json",
+      "sha256": "65709f778200c6bb1e062fc2c04a381cce8db4c9291b169f8620ec4d759bdbcd"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/governance-document-replacement-controls.md",
+      "docs/recovery/2026-11-04/governance-document-replacement-guide/source-bindings.json"
+    ],
+    "verifiedVersion": "local-source-preview:e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
