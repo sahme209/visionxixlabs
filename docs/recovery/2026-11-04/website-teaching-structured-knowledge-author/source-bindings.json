@@ -1,0 +1,218 @@
+{
+  "status": "internal-current-source-authoring",
+  "baselineCommit": "f57bd027a29971726096914f31049764a15717d2",
+  "historicalTourSource": "bd802078c58e59058209c3296470c1c827383ee7",
+  "historicalGuidesAndManifestPreserved": true,
+  "historicalTourEntries": 10,
+  "unchangedHistoricalCodeEntries": 7,
+  "knownChangedHistoricalCodeEntries": 2,
+  "excludedHistoricalMutableContext": {
+    "path": "docs/product/axiom-master-action-plan.md",
+    "reason": "Historical progress context only. Excluded from current source/range/article runtime bindings; no current master hash stored or bound. Historical manifest retained unchanged, not rebound."
+  },
+  "comparison": [
+    {
+      "path": "app/demo/page.tsx",
+      "historicalSha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a",
+      "currentSha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a",
+      "unchanged": true,
+      "knownDrift": null
+    },
+    {
+      "path": "components/marketing/CinematicAxiomDemo.tsx",
+      "historicalSha256": "fe5b090d5df718c2c1cf1ad22e46d9292ac3902671d703f62047b880e3b46284",
+      "currentSha256": "37b1b387856bb84435479fa26dadd894d312a659e1e7f998f1c9c7ed9a1c8536",
+      "unchanged": false,
+      "knownDrift": "modified-key/IME early return"
+    },
+    {
+      "path": "components/marketing/useStoryPlayback.ts",
+      "historicalSha256": "9c01f59e03ce0ad783f2a14f709c8107a75fdecab616f5a544262f9a06e3984a",
+      "currentSha256": "9c01f59e03ce0ad783f2a14f709c8107a75fdecab616f5a544262f9a06e3984a",
+      "unchanged": true,
+      "knownDrift": null
+    },
+    {
+      "path": "components/marketing/WorkflowStoryScene.tsx",
+      "historicalSha256": "102983b8f064a571d9db1e7813eb4492d8b81a53ec62b01afbf308427636f8ca",
+      "currentSha256": "102983b8f064a571d9db1e7813eb4492d8b81a53ec62b01afbf308427636f8ca",
+      "unchanged": true,
+      "knownDrift": null
+    },
+    {
+      "path": "components/marketing/workflowStories.ts",
+      "historicalSha256": "5e4c06b85a8f8bdd90448dca294bb7d8c0f280a874877d9b5b29006886e472d0",
+      "currentSha256": "5e4c06b85a8f8bdd90448dca294bb7d8c0f280a874877d9b5b29006886e472d0",
+      "unchanged": true,
+      "knownDrift": null
+    },
+    {
+      "path": "components/marketing/DesktopPreviewFrame.tsx",
+      "historicalSha256": "2f788228db0fc0bf66e902ab7432e991f1ac4212f0bace677bdfcbe0279b9214",
+      "currentSha256": "2f788228db0fc0bf66e902ab7432e991f1ac4212f0bace677bdfcbe0279b9214",
+      "unchanged": true,
+      "knownDrift": null
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "historicalSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "currentSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "unchanged": true,
+      "knownDrift": null
+    },
+    {
+      "path": "components/Navigation.tsx",
+      "historicalSha256": "774a41199cb4cf06119f6a547ecff1fa34748a84dabfffc79d3dff3dc00c97fc",
+      "currentSha256": "774a41199cb4cf06119f6a547ecff1fa34748a84dabfffc79d3dff3dc00c97fc",
+      "unchanged": true,
+      "knownDrift": null
+    },
+    {
+      "path": "components/Footer.tsx",
+      "historicalSha256": "8c9528ff2e5f2bc74ba836b7f077aac5ef993d3aa3c8b0a7efc1338c1441aa29",
+      "currentSha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091",
+      "unchanged": false,
+      "knownDrift": "Footer contrast classes only"
+    }
+  ],
+  "knownDriftReview": "CinematicAxiomDemo and WorkflowEvidenceMap add only early return for modifiers/isComposing/keyCode229. Footer changes only contrast utility classes, no link/handler/authority change. Original guides describe unmodified navigation; new article qualifies current ignored modified/composing keys. No unreviewed semantic drift.",
+  "rangeConvention": "inclusive 1-based original raw lines retaining terminators",
+  "sources": [
+    {
+      "path": "app/demo/page.tsx",
+      "wholeFileSha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a",
+      "range": {
+        "startLine": 1,
+        "endLine": 98,
+        "sha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a"
+      }
+    },
+    {
+      "path": "components/marketing/CinematicAxiomDemo.tsx",
+      "wholeFileSha256": "37b1b387856bb84435479fa26dadd894d312a659e1e7f998f1c9c7ed9a1c8536",
+      "range": {
+        "startLine": 1,
+        "endLine": 63,
+        "sha256": "37b1b387856bb84435479fa26dadd894d312a659e1e7f998f1c9c7ed9a1c8536"
+      }
+    },
+    {
+      "path": "components/marketing/useStoryPlayback.ts",
+      "wholeFileSha256": "9c01f59e03ce0ad783f2a14f709c8107a75fdecab616f5a544262f9a06e3984a",
+      "range": {
+        "startLine": 1,
+        "endLine": 44,
+        "sha256": "9c01f59e03ce0ad783f2a14f709c8107a75fdecab616f5a544262f9a06e3984a"
+      }
+    },
+    {
+      "path": "components/marketing/WorkflowStoryScene.tsx",
+      "wholeFileSha256": "102983b8f064a571d9db1e7813eb4492d8b81a53ec62b01afbf308427636f8ca",
+      "range": {
+        "startLine": 1,
+        "endLine": 58,
+        "sha256": "102983b8f064a571d9db1e7813eb4492d8b81a53ec62b01afbf308427636f8ca"
+      }
+    },
+    {
+      "path": "components/marketing/workflowStories.ts",
+      "wholeFileSha256": "5e4c06b85a8f8bdd90448dca294bb7d8c0f280a874877d9b5b29006886e472d0",
+      "range": {
+        "startLine": 1,
+        "endLine": 54,
+        "sha256": "5e4c06b85a8f8bdd90448dca294bb7d8c0f280a874877d9b5b29006886e472d0"
+      }
+    },
+    {
+      "path": "components/marketing/DesktopPreviewFrame.tsx",
+      "wholeFileSha256": "2f788228db0fc0bf66e902ab7432e991f1ac4212f0bace677bdfcbe0279b9214",
+      "range": {
+        "startLine": 1,
+        "endLine": 32,
+        "sha256": "2f788228db0fc0bf66e902ab7432e991f1ac4212f0bace677bdfcbe0279b9214"
+      }
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "wholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "range": {
+        "startLine": 1,
+        "endLine": 29,
+        "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+      }
+    },
+    {
+      "path": "components/Navigation.tsx",
+      "wholeFileSha256": "774a41199cb4cf06119f6a547ecff1fa34748a84dabfffc79d3dff3dc00c97fc",
+      "range": {
+        "startLine": 1,
+        "endLine": 261,
+        "sha256": "774a41199cb4cf06119f6a547ecff1fa34748a84dabfffc79d3dff3dc00c97fc"
+      }
+    },
+    {
+      "path": "components/Footer.tsx",
+      "wholeFileSha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091",
+      "range": {
+        "startLine": 1,
+        "endLine": 81,
+        "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091"
+      }
+    },
+    {
+      "path": "components/marketing/WorkflowEvidenceMap.tsx",
+      "wholeFileSha256": "5cd40555b99a49708328db5511428b5e4bf87f3b380c512f9598f1f257898d4a",
+      "range": {
+        "startLine": 1,
+        "endLine": 74,
+        "sha256": "5cd40555b99a49708328db5511428b5e4bf87f3b380c512f9598f1f257898d4a"
+      }
+    },
+    {
+      "path": "app/product/page.tsx",
+      "wholeFileSha256": "62f9294c64e2703754733f9829e4d0d8e2ef6057dc90ef4ded246017ead70e21",
+      "range": {
+        "startLine": 43,
+        "endLine": 55,
+        "sha256": "a646c5073d984560447c1d585f4b0ff8c734ce5171bf36f690a279d78b80d0a9"
+      }
+    }
+  ],
+  "historicalEvidence": [
+    {
+      "path": "docs/product/knowledge/website-scripted-tour-controls.md",
+      "sha256": "077bd52f39d51198ecc075fffebb1e2cf6bd8a8e1376eff0e4e7e9a5653bf760"
+    },
+    {
+      "path": "docs/product/knowledge/website-workflow-visual.md",
+      "sha256": "a25784ce13b1482a91beb979222d9c4c1b5e634361e835c9d08d68add2e206ae"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/marketing-keyboard-bypass/internal-source-guide.md",
+      "sha256": "88e2fc4aae6b93e0c10f22a0714cc5aad75fa936b65b6ace36074d431cf36608"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/website-scripted-tour-guide/source-bindings.json",
+      "sha256": "84ae2ffa256463aaa612e6ddba4aaf686717b1621ed9e7717ed7593ab012c5a4"
+    }
+  ],
+  "diffEvidence": [
+    {
+      "path": "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/tour-known-code-drift.diff",
+      "sha256": "ec0ff4567805f0d6025bd56d87fca53fea93014db33f269de9dfb53a14953979"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/product-keyboard-drift.diff",
+      "sha256": "fd16b24a7357b3ef2637f218e1c73187b9c2709fa64f8c15020788602438b34b"
+    }
+  ],
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "runtimeAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "mutableMasterHash": false
+}

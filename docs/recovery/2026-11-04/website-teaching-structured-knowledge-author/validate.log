@@ -1,0 +1,15 @@
+{
+  "valid": true,
+  "articleId": "axiom.help.website.teaching-navigation-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:f57bd027a29971726096914f31049764a15717d2",
+  "sourceFiles": 16,
+  "evaluationCases": 10,
+  "customerEligible": false,
+  "customerBlockers": [
+    "article_not_approved",
+    "article_not_public",
+    "local_preview_not_shipped"
+  ],
+  "evaluationStatus": "proposed-not-executed"
+}

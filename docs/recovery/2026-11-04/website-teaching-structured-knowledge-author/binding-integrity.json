@@ -1,0 +1,9 @@
+{
+  "valid": true,
+  "uniqueCodeFiles": 11,
+  "inclusiveRawRanges": 11,
+  "unchangedHistoricCodeEntries": 7,
+  "knownChangedHistoricCodeEntries": 2,
+  "mutableMasterExcluded": true,
+  "historicalGuidesAndManifestPreserved": true
+}

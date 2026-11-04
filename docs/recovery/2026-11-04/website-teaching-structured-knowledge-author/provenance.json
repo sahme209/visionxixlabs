@@ -1,0 +1,55 @@
+{
+  "status": "frozen-READY-pending-independent-review",
+  "baselineCommit": "f57bd027a29971726096914f31049764a15717d2",
+  "branch": "codex/b4-website-teaching-knowledge",
+  "worktree": "/private/tmp/axiom-b4-website-teaching-20261104",
+  "validation": {
+    "integrityExit": 0,
+    "expectedCustomerRefusalExit": 1,
+    "bindingIntegrityExit": 0,
+    "articleUniqueSources": 16,
+    "uniqueCodeFiles": 11,
+    "currentInclusiveRawRanges": 11,
+    "historicalTourEntries": 10,
+    "unchangedHistoricalCodeEntries": 7,
+    "knownChangedHistoricalCodeEntries": 2,
+    "excludedMutableMasterEntries": 1,
+    "proposedEvaluationCases": 10,
+    "retrievalExecuted": false
+  },
+  "unchangedInputs": {
+    "docs/product/documentation-coverage/article-record.schema.json": "bd7e68409a773ae5879e54df4d7ebead06d717fa24eec9cda991261f4f083a21",
+    "docs/product/documentation-coverage/retrieval-evaluation.schema.json": "c763cc9c5f6fda51ef57b4aedb639aeabe1b288d227192fbec068e6d9f8c5242",
+    "docs/product/documentation-coverage/validate-support-knowledge.cjs": "b711b6745abca6daad047683b7e2a227ceeb87d453241e918f635486ceb3346d",
+    "docs/product/knowledge/website-scripted-tour-controls.md": "077bd52f39d51198ecc075fffebb1e2cf6bd8a8e1376eff0e4e7e9a5653bf760",
+    "docs/product/knowledge/website-workflow-visual.md": "a25784ce13b1482a91beb979222d9c4c1b5e634361e835c9d08d68add2e206ae",
+    "docs/recovery/2026-11-03/marketing-keyboard-bypass/internal-source-guide.md": "88e2fc4aae6b93e0c10f22a0714cc5aad75fa936b65b6ace36074d431cf36608",
+    "docs/recovery/2026-11-03/website-scripted-tour-guide/source-bindings.json": "84ae2ffa256463aaa612e6ddba4aaf686717b1621ed9e7717ed7593ab012c5a4"
+  },
+  "commands": [
+    "sh /private/tmp/axiom-b4-website-teaching-evidence/validate.sh",
+    "sh /private/tmp/axiom-b4-website-teaching-evidence/validate.sh --customer",
+    "sh /private/tmp/axiom-b4-website-teaching-evidence/bindings.sh"
+  ],
+  "bundleSha256": {
+    "docs/product/documentation-coverage/articles/website-teaching-navigation-controls.r1.json": "9c36778c9474fc6729bf4299147d850794060d948b283685a0459288c60d67c7",
+    "docs/product/documentation-coverage/website-teaching-navigation-controls-evaluation.r1.json": "d973783b58fd53dd02c9bfd9d9027347fece7e847ed4ed2911dcfe7f4e88b7f9"
+  },
+  "evidenceSha256": {
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/validate.sh": "9431a617da6500f90bd54afa1ef42daa6765acafc659ebc1b3727753e44a5bea",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/bindings.sh": "43c3d5449b339a0cfaab224ee90816a175f72e54b8470a468a6b3315aad63902",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/validate-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/binding-integrity.json": "6eae9291ca7c7528055b9e840527992b0b106a24e7879d7b2e828ed48c9959f1",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/validate.log": "38a34d5cc178c79d11e91e9aa76f71483daf9484c8f23ef0efb0a548c7d44ce6",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/README.md": "670ea531972b3d21e52d270ab43c98310aeae2cfe060c195ac4d8d91d63e6e69",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/deny.sb": "e44c58f896b281394b917456cdff2a77934fbf4b4c951a75239d30438987f3ef",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/product-keyboard-drift.diff": "fd16b24a7357b3ef2637f218e1c73187b9c2709fa64f8c15020788602438b34b",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/customer-refusal-exit.txt": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/source-bindings.json": "f4f9bf682eb3ac88d4ad8e05f4fb9f02a3083f360c4b0fe0ef7ce9fe30f2c5d6",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/tour-known-code-drift.diff": "ec0ff4567805f0d6025bd56d87fca53fea93014db33f269de9dfb53a14953979",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/binding-integrity-exit.txt": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/binding-integrity.cjs": "bda10fbe09d8057e2655359db1c08f8af8484b0488c0883ed884962483c077e2",
+    "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/customer-refusal.log": "a6fd16fd961ac933af034188c6c581189703e5320f7676e838e64cc398260d03"
+  },
+  "limits": "Finite internal source-only local preview; no authentic media/genuine operational approval/live outcome; proposed IDs/null review/empty media; all customer/editorial/media/native/runtime/release false; no current mutable master hash/binding"
+}

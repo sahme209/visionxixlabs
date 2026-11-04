@@ -1,0 +1,210 @@
+{
+  "schema": 1,
+  "id": "axiom.help.website.teaching-navigation-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Website teaching and navigation aids: conceptual records, scripted samples and keyboard bypass",
+  "productVersion": "local-source-preview:f57bd027a29971726096914f31049764a15717d2",
+  "screenIds": [
+    "proposed.axiom.screen.website.product-concepts",
+    "proposed.axiom.screen.website.scripted-tour",
+    "proposed.axiom.screen.website.navigation-bypass"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.website.teaching.concept-stage",
+    "proposed.axiom.control.website.teaching.start-tour",
+    "proposed.axiom.control.website.teaching.choose-story",
+    "proposed.axiom.control.website.teaching.choose-step",
+    "proposed.axiom.control.website.teaching.play-pause",
+    "proposed.axiom.control.website.teaching.replay",
+    "proposed.axiom.control.website.teaching.previous-next",
+    "proposed.axiom.control.website.teaching.sample-context",
+    "proposed.axiom.control.website.teaching.sample-decision",
+    "proposed.axiom.control.website.teaching.skip-content",
+    "proposed.axiom.control.website.teaching.more-menu",
+    "proposed.axiom.control.website.teaching.mobile-navigation",
+    "proposed.axiom.control.website.teaching.guide-links"
+  ],
+  "goal": "Use finite public teaching/navigation aids without mistaking local illustrations, sample decisions, browser focus intent or historical progress context for genuine approval, authentic media or live operational evidence.",
+  "prerequisites": [
+    "Internal source-only local preview. This article covers three preserved source guides, not complete website/product controls or destination workflows.",
+    "Product conceptual workflow and scripted demo use local sample state, not signed-in app/account, authentic native screenshots/recordings, provider requests or genuine approvals. No current browser/native/provider/access/flag state was observed.",
+    "Historical tour manifest includes mutable master-plan context. That entry is preserved only inside historical evidence and excluded from current source/article runtime bindings; no current master hash or runtime-coverage inference."
+  ],
+  "permissions": [
+    "Selecting concept/story/step/context/decision changes local explanation/sample state only. It grants no account/connector/role/AI-credit/cloud authority and performs no underlying product approval/check/publish/deploy.",
+    "Genuine independent human approval and separate supported execution controls remain mandatory in actual workflows. Simulate approval is sample presentation, not a persisted server decision or permission.",
+    "Ordinary documentation/download/site links navigate destinations; destination may load its own status/data. Navigation does not establish current account/provider health or zero child effects; no actual link/Skip action was performed here.",
+    "No copied competitor assets, new media, operational capability or authority are introduced by this authoring. Existing source illustration is not authentic B3 evidence, source hash is not runtime/customer acceptance."
+  ],
+  "steps": [
+    {
+      "instruction": "On Product choose one of five Conceptual workflow records: Repository context, Exact proposal, Independent review, Separate requester execution, Recorded outcome and recovery.",
+      "effect": "local-preference",
+      "expectedState": "Updates only local explanatory record, with border/arrow/pressed state and generated per-instance DOM relationships. Not real app state/evidence. No timer/autoplay/persistence. Installed-version/enabled-workflow/incomplete Governance notices remain."
+    },
+    {
+      "instruction": "Use ordinary concept buttons or unmodified arrows/Home/End within them.",
+      "effect": "local-preference",
+      "expectedState": "Arrows wrap and focus chosen record; Home/End select endpoints. Current handler ignores Alt/Ctrl/Meta/Shift and isComposing/keyCode229 before preventDefault. This source repair does not prove actual browser/AT focus/shortcut behavior."
+    },
+    {
+      "instruction": "On /demo Start the scripted tour follows #product-tour; choose Code & review, Agent & approval or Terraform & cloud.",
+      "effect": "read",
+      "expectedState": "Fragment does not explicitly start playback or move focus. Stories contain5/4/3selectable steps (12total); selecting current/another story clears sample decision and stops at step1 while preserving context. Shared component also appears in Product scripted preview."
+    },
+    {
+      "instruction": "Choose a step title or use Play/Pause, Replay, Previous/Next.",
+      "effect": "local-preference",
+      "expectedState": "Step selection stops/full-content/clears decision. Previous/Next disabled at endpoints, no wrap. Playback-group unmodified Left/Right/Home/End clamps; input/select targets excluded and modifiers/IME ignored. Focus not explicitly moved for playback step changes."
+    },
+    {
+      "instruction": "Read playback status and reduced-motion/visibility notices.",
+      "effect": "read",
+      "expectedState": "No autoplay on load; initial motion initialization disables Play. One clock increments60ms toward nominal5400ms/step; review/final steps stop after timing completes. Hidden/out-of-view pauses elapsed while playing flag can remain; returning may resume. Reduced motion stops/disables Play, full text/no cursor, Replay static; turning motion off does not itself resume."
+    },
+    {
+      "instruction": "Change sample Repository, Branch or Environment selects only when you want a local reset.",
+      "effect": "local-preference",
+      "expectedState": "Options are fixed examples including Production \u00b7 held; no lookup/validation/persisted setting or unlocked execution. Change resets stopped step1/decision but retains other values. Fresh component mount resets all samples; not recovery of actual work."
+    },
+    {
+      "instruction": "At sample review scene choose Reject sample or Simulate approval after reading sample target/copy.",
+      "effect": "local-preference",
+      "expectedState": "Both remain enabled and replace local choice, stop current step and show Sample rejected/no action or Sample decision recorded. No actor/expiry/permission/ack checkbox or server approval. No step advance, command/GitHub/cloud action or accepted outcome; later steps reachable even after rejection."
+    },
+    {
+      "instruction": "Interpret preview frame, sample code/output/receipt/Terraform text as teaching only; use ordinary guide links for context.",
+      "effect": "read",
+      "expectedState": "Decorative desktop sidebar/window/progress/cursor are not real navigation/editor/terminal/scrubber. Fixed successful tsc string is not test result. Terraform apply disabled is text, not enabled Apply control. Receipt says decision\u2260execution/GitHub write not performed/health/recovery unverified. Guide/navigation destinations remain outside acceptance."
+    },
+    {
+      "instruction": "Use shared Skip to content when focused; More or mobile navigation follow their ordinary source-defined menu controls.",
+      "effect": "local-preference",
+      "expectedState": "Skip closes disclosures, finds first main, preserves existing IDs/tabindex, adds tabindex=-1 only if absent, focuses main or safely returns if missing. No route/hash/provider/permission change. Mobile modal focus trap/inert header remain; bypass is not an escape inside modal. Source focus/scroll intent is not browser/WCAG acceptance."
+    },
+    {
+      "instruction": "Follow shared site/header/footer, download and workflow-guide links only as ordinary navigation; recover local confusion with controls/reset/close.",
+      "effect": "read",
+      "expectedState": "More/mobile menu close/focus intentions are not verified browser behavior; Footer drift is contrast classes only. No image/video/media player/caption/fullscreen/speed/recording download, live error/retry or provider rollback controls. Local reset/Replay cannot reconcile real uncertain actions."
+    }
+  ],
+  "expectedOutcome": "Distinguish conceptual records, local scripted playback/sample approval and source-defined navigation focus from genuine operational approval, provider outcome, authentic media and accepted runtime behavior.",
+  "limitations": [
+    "Customer eligible:false; publication approved:false; editorial/media/native/runtime/release/shipped/browser/AT acceptance:false. Null human review/empty media; proposed IDs are authoring metadata, not runtime help/DOM bindings.",
+    "Three source guides preserved. Historical tour10entries include7unchangedcode,2knowncode drift and1excluded mutable master context. Current receipt binds11code/current raw ranges including Product mount/WorkflowEvidenceMap; old manifest not silently rebound and old ranges not claimed current after drift.",
+    "Known drift only: Cinematic/WorkflowEvidenceMap modifier+IME guards and Footer contrast classes. No new source handlers/layout/navigation destinations or operational authority added by this article.",
+    "Five Product records are concepts;12demo steps across3stories use fixed scripted samples. Sample approved is not genuine human approval, server event, authentic B3 media/native capture or live operation success. No competitor assets copied/new media generated here.",
+    "Finite teaching/control/navigation-bypass source boundary, not full website, sign-in/account/setup/provider destination, production release, app-wide native/keyboard/visual/accessibility qualification. Source focus intent cannot establish actual focus/scroll/contrast/AT behavior.",
+    "Historical master-plan/progress/copy/test/build receipts are context only, never current runtime coverage or execution permission. No current mutable master file is bound as source.",
+    "No zero destination-read guarantee: links may mount separate own data/status workflows. No actual navigation/browser/Skip/provider/auth operation occurred. Genuine unknown actions must retain their original supported recovery and approval boundaries.",
+    "No timer/service error/expired/unknown backend-recovery UI in these fixed samples. Local replay/reset/sample reject cannot undo or retry actual operations. Incomplete Governance/activation and authentic media/editorial acceptance remain open.",
+    "Evaluation is proposed-not-executed prose. Bundle schema/source checks do not execute retrieval/model, enable customer ingestion/help, grant consent/permissions, release content or establish completed B2/B3/B4/B5."
+  ],
+  "recovery": [
+    "For local sample confusion choose desired story/context/step; Replay preserves context, fresh mount resets sample defaults. None restores or reconciles real operational state.",
+    "If Play unavailable use static step buttons; reduced motion/visibility can stop clock without service failure. Do not treat fixed output as new verification.",
+    "Ignore modified/composing navigation in these handlers; ordinary browser shortcuts remain host behavior, not source-qualified success. Actual browser/AT acceptance remains pending.",
+    "Close/Escape/menu navigation or Skip main focus affects presentation only; it cannot undo provider actions/consent or create real approval.",
+    "For actual unknown provider outcome use supported installed original-record recovery and genuine human decisions, never a sample approval, local Replay or historical master status."
+  ],
+  "searchTerms": [
+    "Conceptual workflow",
+    "scripted tour",
+    "12sample steps",
+    "Play story",
+    "Replay story",
+    "reduced motion",
+    "Simulate approval",
+    "Reject sample",
+    "Skip to content",
+    "modified keys",
+    "IME",
+    "not authentic media"
+  ],
+  "sources": [
+    {
+      "path": "app/demo/page.tsx",
+      "sha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a"
+    },
+    {
+      "path": "components/marketing/CinematicAxiomDemo.tsx",
+      "sha256": "37b1b387856bb84435479fa26dadd894d312a659e1e7f998f1c9c7ed9a1c8536"
+    },
+    {
+      "path": "components/marketing/useStoryPlayback.ts",
+      "sha256": "9c01f59e03ce0ad783f2a14f709c8107a75fdecab616f5a544262f9a06e3984a"
+    },
+    {
+      "path": "components/marketing/WorkflowStoryScene.tsx",
+      "sha256": "102983b8f064a571d9db1e7813eb4492d8b81a53ec62b01afbf308427636f8ca"
+    },
+    {
+      "path": "components/marketing/workflowStories.ts",
+      "sha256": "5e4c06b85a8f8bdd90448dca294bb7d8c0f280a874877d9b5b29006886e472d0"
+    },
+    {
+      "path": "components/marketing/DesktopPreviewFrame.tsx",
+      "sha256": "2f788228db0fc0bf66e902ab7432e991f1ac4212f0bace677bdfcbe0279b9214"
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+    },
+    {
+      "path": "components/Navigation.tsx",
+      "sha256": "774a41199cb4cf06119f6a547ecff1fa34748a84dabfffc79d3dff3dc00c97fc"
+    },
+    {
+      "path": "components/Footer.tsx",
+      "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091"
+    },
+    {
+      "path": "components/marketing/WorkflowEvidenceMap.tsx",
+      "sha256": "5cd40555b99a49708328db5511428b5e4bf87f3b380c512f9598f1f257898d4a"
+    },
+    {
+      "path": "app/product/page.tsx",
+      "sha256": "62f9294c64e2703754733f9829e4d0d8e2ef6057dc90ef4ded246017ead70e21"
+    },
+    {
+      "path": "docs/product/knowledge/website-scripted-tour-controls.md",
+      "sha256": "077bd52f39d51198ecc075fffebb1e2cf6bd8a8e1376eff0e4e7e9a5653bf760"
+    },
+    {
+      "path": "docs/product/knowledge/website-workflow-visual.md",
+      "sha256": "a25784ce13b1482a91beb979222d9c4c1b5e634361e835c9d08d68add2e206ae"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/marketing-keyboard-bypass/internal-source-guide.md",
+      "sha256": "88e2fc4aae6b93e0c10f22a0714cc5aad75fa936b65b6ace36074d431cf36608"
+    },
+    {
+      "path": "docs/recovery/2026-11-03/website-scripted-tour-guide/source-bindings.json",
+      "sha256": "84ae2ffa256463aaa612e6ddba4aaf686717b1621ed9e7717ed7593ab012c5a4"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/source-bindings.json",
+      "sha256": "f4f9bf682eb3ac88d4ad8e05f4fb9f02a3083f360c4b0fe0ef7ce9fe30f2c5d6"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/website-scripted-tour-controls.md",
+      "docs/product/knowledge/website-workflow-visual.md",
+      "docs/recovery/2026-11-03/marketing-keyboard-bypass/internal-source-guide.md",
+      "docs/recovery/2026-11-03/website-scripted-tour-guide/source-bindings.json",
+      "docs/recovery/2026-11-04/website-teaching-structured-knowledge-author/source-bindings.json"
+    ],
+    "verifiedVersion": "local-source-preview:f57bd027a29971726096914f31049764a15717d2",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

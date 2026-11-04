@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.website.teaching-navigation-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:f57bd027a29971726096914f31049764a15717d2",
+  "articleSha256": "9c36778c9474fc6729bf4299147d850794060d948b283685a0459288c60d67c7",
+  "status": "proposed-not-executed",
+  "scope": "Proposed future response/citation criteria only; no retrieval/model/provider evaluation executed.",
+  "cases": [
+    {
+      "id": "website-teaching-concept",
+      "question": "Do five Product records show my real deployment?",
+      "requiredResponse": "No. Local conceptual explanation only, not app state/current evidence/approval or operation outcome.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-sample-approval",
+      "question": "Does Simulate approval authorize a provider action?",
+      "requiredResponse": "No. Local replaceable sample decision only, no real human/server approval or check/publish/deploy.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-steps",
+      "question": "Are12scripted steps native recording proof?",
+      "requiredResponse": "No.5+4+3fixed example steps, decorative preview and sample output are not authentic B3 media or live accepted result.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-motion",
+      "question": "Why is Play disabled or progress stopped while Pause visible?",
+      "requiredResponse": "Reduced motion disables Play; hidden/out-of-view pauses clock while playing flag may remain. Use static steps; no provider failure/retry inferred.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-keys",
+      "question": "Do Alt+Left or IME arrows select demo steps?",
+      "requiredResponse": "Current handlers ignore modifiers/composition/keyCode229; unmodified concept arrows wrap/focus and playback arrows clamp without explicit focus move.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-context",
+      "question": "Does Production held selection unlock deployment?",
+      "requiredResponse": "No. Fixed local context resets stopped step1/decision, no account lookup/permission/grant/execution.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-skip",
+      "question": "Does Skip to content navigate route or change permission?",
+      "requiredResponse": "No. Closes menus and focuses first main, preserves existing tabindex/ID, adds -1 only if absent; actual browser/AT behavior remains unaccepted.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-links",
+      "question": "Does a guide link prove current destination availability?",
+      "requiredResponse": "No. Ordinary navigation only; destination can have own reads/effects and separate auth/authority, no actual click performed.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-master",
+      "question": "Does current master-plan status prove runtime coverage here?",
+      "requiredResponse": "No. Historical manifest master context is preserved but excluded from current binding/article authority; no current master hash/runtime proof.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-teaching-publication",
+      "question": "Is this approved authentic walkthrough/customer help?",
+      "requiredResponse": "No. Internal source preview/null review/empty media/proposed IDs/unexecuted evaluation, not full website/native/media/editorial/release acceptance.",
+      "requiredCitation": "axiom.help.website.teaching-navigation-controls revision1 only after genuine approval and applicable exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}
