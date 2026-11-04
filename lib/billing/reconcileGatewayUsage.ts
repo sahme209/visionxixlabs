@@ -1,3 +1,4 @@
+import {lockCodingFinancial,settleCodingLedger,codingBudgetUnavailable} from "@/lib/workforce/pipelines/codingRunReservation";
 import type { Prisma } from "@prisma/client";
 import { settleAttributedUsageV2 } from "./newTestSubscription/usageAllocationIO";
 import { denyIsolatedUnsupportedOperation } from "./isolatedApplication/runtime";
@@ -97,8 +98,7 @@ export async function reconcilePendingGatewayUsage(
       // A mismatched receipt leaves both usage and its reservation pending.
       if (generation.id !== event.externalUsageId) throw new Error("gateway_generation_identity_mismatch");
       const settle = (transaction: GatewayUsageTransaction) => settleGatewayGenerationInTransaction(transaction, event, generation);
-      if (hasV2Allocation(event)) await repository.$transaction(settle, { isolationLevel: "Serializable" });
-      else await repository.$transaction(settle);
+      await repository.$transaction(settle, { isolationLevel: "Serializable" });
       settled++;
     } catch (error) {
       if (error === usageAlreadySettled) continue;
@@ -120,10 +120,21 @@ export async function settleGatewayGenerationInTransaction(transaction: GatewayU
   if (!event.externalUsageId || generation.id !== event.externalUsageId) throw new Error("gateway_generation_identity_mismatch");
   const providerCostCents = centsFromUsd(generation.totalCost);
   const computedBilledCents = Math.max(providerCostCents, applyMargin(providerCostCents));
+  // Real transaction clients coordinate run ownership before workspace/allocation locks.
+  const tx = "$queryRawUnsafe" in transaction ? transaction as unknown as Prisma.TransactionClient : null;
+  const workspace = tx ? await tx.aIUsageReservation.findUnique({where:{usageEventId:event.id}}) : null;
+  const coding = tx && workspace ? await lockCodingFinancial(tx,workspace.id) : null;
+  if(coding && coding.status === "settled") {
+    const saved = await tx!.usageEvent.findUnique({where:{id:event.id}});
+    const billed = Math.min(computedBilledCents,workspace!.reservedCents);
+    if(!saved || coding.externalUsageId!==generation.id || coding.providerCents!==providerCostCents || saved.billingStatus!=="settled" || saved.costCents!==providerCostCents || saved.billedCents!==billed || saved.model!==generation.model || saved.inputTokens!==Math.max(0,Math.floor(generation.promptTokens)) || saved.outputTokens!==Math.max(0,Math.floor(generation.completionTokens)) || saved.cachedReadTokens!==Math.max(0,Math.floor(generation.cachedTokens)))codingBudgetUnavailable();
+    return;
+  }
   if (hasV2Allocation(event)) {
     if (!("$queryRawUnsafe" in transaction) || typeof transaction.$queryRawUnsafe !== "function") throw new Error("attributed_usage_unavailable");
     const result = await settleAttributedUsageV2(transaction as unknown as Prisma.TransactionClient, { eventId: event.id, externalUsageId: event.externalUsageId, providerCostCents, billedCents: computedBilledCents, model: generation.model, inputTokens: Math.max(0, Math.floor(generation.promptTokens)), outputTokens: Math.max(0, Math.floor(generation.completionTokens)), cachedReadTokens: Math.max(0, Math.floor(generation.cachedTokens)) });
     if (result === "already_settled") throw usageAlreadySettled;
+    if(coding)await settleCodingLedger(tx!,workspace!.id,event.id,generation.id,providerCostCents);
     return;
   }
   const reservation = transaction.aIUsageReservation
@@ -158,4 +169,5 @@ export async function settleGatewayGenerationInTransaction(transaction: GatewayU
     },
   });
   if (usageUpdate.count !== 1) throw usageAlreadySettled;
+  if(coding)await settleCodingLedger(tx!,workspace!.id,event.id,generation.id,providerCostCents);
 }

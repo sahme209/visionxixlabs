@@ -39,6 +39,7 @@ export async function readCurrentAIAllowance(repo: Pick<PrismaClient, "$transact
           { status: "reserved", usageEventId: null, expiresAt: { gt: decisionNow } },
           { status: "reserved", usageEventId: { not: null } },
           { status: "pending_settlement" },
+          { status: "reserved", pipelineCall: { isNot: null } },
           { status: "dispatch_unknown" },
         ] }, _sum: { reservedCents: true } }),
       ]);

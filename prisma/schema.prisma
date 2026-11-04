@@ -1130,6 +1130,9 @@ model PipelineRun {
 
   stages         PipelineStageRun[]
   codingTask     CodingTask?
+  aiCalls        PipelineAICallReservation[]
+
+  @@unique([organizationId, id])
 
   @@index([organizationId, pipelineId, startedAt])
   @@index([organizationId, status, startedAt])
@@ -1146,6 +1149,8 @@ model PipelineStageRun {
   status           String   @default("queued")
   requiresApproval Boolean  @default(false)
   approvalRequestId String?
+  /// Written only by the actual queued-to-running CAS; never client authority.
+  aiClaimGeneration String?
   startedAt        DateTime?
   completedAt      DateTime?
   outputSummary    String?
@@ -1161,6 +1166,9 @@ model PipelineStageRun {
 
   run              PipelineRun @relation(fields: [runId], references: [id], onDelete: Cascade)
   approvals        EngineerApprovalSnapshot[]
+  aiCalls          PipelineAICallReservation[]
+
+  @@unique([runId, id])
 
   @@unique([runId, ordering])
   @@index([runId, status])
@@ -1285,6 +1293,8 @@ model AIUsageReservation {
   @@unique([organizationId, idempotencyKey])
   @@index([organizationId, status, expiresAt])
   @@index([correlationId])
+  pipelineCall     PipelineAICallReservation?
+  @@unique([organizationId, id])
 }
 
 // ---------------------------------------------------------------------------
@@ -5038,4 +5048,39 @@ model AzureGuidedAuthorization {
 
   @@index([organizationId, userId, sessionId, createdAt])
   @@index([connectionId, connectionVersion])
+}
+
+/// Durable coding-run capacity. No expiry release or cascade erasure.
+model PipelineAICallReservation {
+ id String @id @default(cuid())
+ organizationId String
+ runId String
+ stageRunId String
+ phase String
+ claimGeneration String
+ idempotencyKey String
+ workspaceReservationId String @unique
+ actorId String
+ correlationId String
+ estimatedCents Int
+ capCents Int?
+ capSource String
+ allocationPolicy String?
+ status String @default("reserved")
+ usageEventId String? @unique
+ externalUsageId String? @unique
+ providerCents Int?
+ integrityError String?
+ dispatchedAt DateTime?
+ settledAt DateTime?
+ releasedAt DateTime?
+ createdAt DateTime @default(now())
+ updatedAt DateTime @updatedAt
+ run PipelineRun @relation(fields: [organizationId, runId], references: [organizationId, id], onDelete: Restrict)
+ stage PipelineStageRun @relation(fields: [runId, stageRunId], references: [runId, id], onDelete: Restrict)
+ workspaceReservation AIUsageReservation @relation(fields: [organizationId, workspaceReservationId], references: [organizationId, id], onDelete: Restrict)
+ @@unique([organizationId, workspaceReservationId])
+ @@unique([organizationId, stageRunId, phase])
+ @@unique([organizationId, idempotencyKey])
+ @@index([runId, status])
 }

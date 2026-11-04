@@ -43,7 +43,7 @@ function normalizePipelineOverrides(raw: unknown): PipelineOverrideRow[] {
 }
 
 /** Execution must distinguish malformed policy from a verified absent override. */
-function assertStoredBudgetConfig(row: { defaultMaxCostCents: unknown; pipelineOverrides: unknown }): void {
+export function assertStoredBudgetConfig(row: { defaultMaxCostCents: unknown; pipelineOverrides: unknown }): void {
   const validCap = (value: unknown) => value === null || (typeof value === "number" && Number.isSafeInteger(value) && value > 0);
   if (!validCap(row.defaultMaxCostCents) || !Array.isArray(row.pipelineOverrides)) throw new Error("budget_config_invalid");
   const seen = new Set<string>();

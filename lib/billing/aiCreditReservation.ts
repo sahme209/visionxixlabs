@@ -53,6 +53,21 @@ export async function reserveAICredits(
   }
   try {
     return await repo.$transaction(async (tx: Prisma.TransactionClient) => {
+      return reserveAICreditsInTransaction(tx, request, now, isolatedVerifiedPlan);
+    }, { isolationLevel: "Serializable" });
+  } catch {
+    return { ok: false, error: "ai_credit_reservation_unavailable" };
+  }
+}
+
+/** Same transaction as its caller: no early policy branch can commit separately. */
+export async function reserveAICreditsInTransaction(
+ tx: Prisma.TransactionClient,
+ request: Parameters<typeof reserveAICredits>[1],
+ now = new Date(),
+ isolatedVerifiedPlan?: Parameters<typeof reserveAICredits>[3],
+): Promise<AICreditReservationResult> {
+ if (!request.organizationId || !/^[A-Za-z0-9_-]{16,200}$/.test(request.idempotencyKey) || !Number.isSafeInteger(request.reservedCents) || request.reservedCents < 1) throw Error("ai_credit_reservation_unavailable");
       const { smallAgentRequest, smallAgent55Request, ...ordinaryInput } = request;
       if (smallAgentRequest && smallAgent55Request) throw Error("small_agent_protocol_conflict");
       let input = ordinaryInput;
@@ -103,7 +118,7 @@ export async function reserveAICredits(
         return { ok: true as const, reservation, reused: false, allocationPolicy: "axiom_test_anniversary_v2" as const };
       }
       await tx.aIUsageReservation.updateMany({
-        where: { organizationId: input.organizationId, status: "reserved", usageEventId: null, expiresAt: { lte: decisionNow } },
+        where: { organizationId: input.organizationId, status: "reserved", usageEventId: null, expiresAt: { lte: decisionNow }, pipelineCall: { is: null } },
         data: { status: "expired", releasedAt: decisionNow },
       });
       const [billing, purchases, usage, active] = await Promise.all([
@@ -119,6 +134,7 @@ export async function reserveAICredits(
               // continue consuming capacity until their usage is reconciled.
               { status: "reserved", usageEventId: { not: null } },
               { status: "pending_settlement" },
+              { status: "reserved", pipelineCall: { isNot: null } },
               // A dispatch can be billable even if no SDK response was received.
               // TTL only expires work that was never durably claimed.
               { status: "dispatch_unknown" },
@@ -136,10 +152,6 @@ export async function reserveAICredits(
       }
       const reservation = guard ? (await fenceNewTestAdmission(tx, isolatedPlan!, input, true))! : await tx.aIUsageReservation.create({ data: { ...input, status: "reserved", expiresAt: new Date(now.getTime() + RESERVATION_TTL_MS) } });
       return { ok: true as const, reservation, reused: false };
-    }, { isolationLevel: "Serializable" });
-  } catch {
-    return { ok: false, error: "ai_credit_reservation_unavailable" };
-  }
 }
 
 /** Legacy dispatch admission. Retains the existing accepted-member policy (not
@@ -169,7 +181,7 @@ export async function claimLegacyAICreditDispatch(
 
 export async function releaseAICreditReservation(repo: ReservationWriter, organizationId: string, reservationId: string, now = new Date()): Promise<boolean> {
   try {
-    const result = await repo.aIUsageReservation.updateMany({ where: { id: reservationId, organizationId, status: "reserved" }, data: { status: "released", releasedAt: now } });
+    const result = await repo.aIUsageReservation.updateMany({ where: { id: reservationId, organizationId, status: "reserved", pipelineCall: { is: null } }, data: { status: "released", releasedAt: now } });
     return result.count === 1;
   } catch { return false; }
 }
@@ -188,7 +200,7 @@ export async function settleAICreditReservation(
   if (!Number.isSafeInteger(actualCents) || actualCents < 0) return false;
   try {
     const result = await repo.aIUsageReservation.updateMany({
-      where: { id: reservationId, organizationId, status: "reserved", reservedCents: { gte: actualCents } },
+      where: { id: reservationId, organizationId, status: "reserved", pipelineCall: { is: null }, reservedCents: { gte: actualCents } },
       data: { status: "settled", settledCents: actualCents, usageEventId: usageEventId ?? null, settledAt: now },
     });
     return result.count === 1;
@@ -198,7 +210,7 @@ export async function settleAICreditReservation(
 export async function attachAICreditReservationUsage(repo: ReservationWriter, organizationId: string, reservationId: string, usageEventId: string): Promise<boolean> {
   try {
     const result = await repo.aIUsageReservation.updateMany({
-      where: { id: reservationId, organizationId, status: "reserved", usageEventId: null },
+      where: { id: reservationId, organizationId, status: "reserved", usageEventId: null, pipelineCall: { is: null } },
       data: { status: "pending_settlement", usageEventId },
     });
     return result.count === 1;

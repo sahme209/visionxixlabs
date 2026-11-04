@@ -1,3 +1,5 @@
+import type {Prisma} from "@prisma/client";
+import {claimCodingRunStage,readCodingRunExposure,persistCodingStageResult,type CodingRunClaim} from "./codingRunReservation";
 /**
  * Pipeline runner — Phase 377.
  *
@@ -274,10 +276,13 @@ export async function advancePipelineRun(runId: string): Promise<void> {
 
     // Atomic CAS: claim the stage by moving queued → running.
     let codingClaim:CodingStageClaim|null=null;
+    let codingRunClaim:CodingRunClaim|null=null;
     let claim:{count:number};
     if(run.pipelineId==='ai_coding'&&stage.stageKind==='code_pr_open'){
       try{codingClaim=await claimCodingStage(prisma,run.organizationId,run.id,stage.id)}catch(error){if(error instanceof Error&&error.message==='coding_outbound_issuer_unavailable')return;throw error}
       claim={count:codingClaim?1:0};
+    }else if(run.pipelineId==='ai_coding'&&stage.stageKind==='code_propose'){
+      codingRunClaim=await claimCodingRunStage(prisma,run.organizationId,run.id,stage.id);claim={count:codingRunClaim?1:0};
     }else claim = await prisma.pipelineStageRun.updateMany({
       where: { id: stage.id, status: "queued" },
       data: { status: "running", startedAt: new Date() },
@@ -312,7 +317,7 @@ export async function advancePipelineRun(runId: string): Promise<void> {
         where: { runId: run.id },
         _sum: { costCents: true },
       });
-      spentCents = spentBefore._sum.costCents ?? 0;
+      spentCents = run.pipelineId === "ai_coding" ? await readCodingRunExposure(prisma,run.organizationId,run.id,stage.id) : spentBefore._sum.costCents ?? 0;
       if (!Number.isSafeInteger(spentCents) || spentCents < 0) throw new Error("invalid_run_cost");
       orgConfig = await loadBudgetConfig(run.organizationId, { failClosedOnReadError: true });
     } catch {
@@ -385,6 +390,7 @@ export async function advancePipelineRun(runId: string): Promise<void> {
     try {
       result = await executor({
         ...(codingClaim?{codingClaim}:{}),
+        ...(codingRunClaim?{codingRunClaim}:{}),
         organizationId: run.organizationId,
         runId: run.id,
         stageRunId: stage.id,
@@ -401,8 +407,14 @@ export async function advancePipelineRun(runId: string): Promise<void> {
     const latencyMs = Date.now() - stageStart;
     const telemetry = extractStageTelemetry(result.detail, latencyMs);
 
+    const persistStage = async (args:{where:{id:string};data:Prisma.PipelineStageRunUpdateInput}) => {
+      const saved = run.pipelineId === "ai_coding" && stage.stageKind === "code_propose"
+        ? await persistCodingStageResult(prisma,run.organizationId,run.id,stage.id,args.data)
+        : await prisma.pipelineStageRun.update(args);
+      telemetry.costCents=saved.costCents;return saved;
+    };
     if (result.ok) {
-      await prisma.pipelineStageRun.update({
+      await persistStage({
         where: { id: stage.id },
         data: {
           status: "succeeded",
@@ -420,7 +432,7 @@ export async function advancePipelineRun(runId: string): Promise<void> {
         telemetry,
       });
     } else {
-      await prisma.pipelineStageRun.update({
+      await persistStage({
         where: { id: stage.id },
         data: {
           status: "failed",

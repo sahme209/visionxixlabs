@@ -16,6 +16,9 @@
  * fields default to 0 — never throw, never let a malformed detail
  * blob break a run's terminal write.
  *
+ * Coding run admission uses its durable call ledger, never this display projection.
+ * In particular a null/pending coding cost displayed as 0 grants no allowance.
+ *
  * Pure — no I/O.
  */
 

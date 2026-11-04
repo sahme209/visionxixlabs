@@ -5,7 +5,7 @@ export type SpendV2 = { source: "included"; bucketId: string; cents: number } | 
 export type ReservationAttributionV2 = { version: 2; policy: "axiom_test_anniversary_v2"; runtimeId: string; accountId: string; organizationId: string; enrollmentDigest: string; basisDigest: string; bucketId: string; kind: "free" | "paid"; windowStart: string; windowEnd: string; admittedAt: string; allocation: CeilingV2[]; digest: string };
 export type UsageAttributionV2 = Omit<ReservationAttributionV2, "policy" | "runtimeId" | "accountId" | "organizationId" | "digest" | "allocation"> & { reservationId: string; attributionDigest: string } & ({ state: "pending"; allocation?: never } | { state: "settled"; allocation: SpendV2[] });
 export type PurchaseV2 = { id: string; organizationId: string; deliveredAICreditsCents: number; reversedAICreditsCents: number; status: string; validFor: string; periodMonth: string; refundedAt: Date | null; createdAt: Date };
-export type HoldV2 = { id: string; organizationId: string; reservedCents: number; settledCents: number | null; status: string; createdAt: Date; expiresAt: Date; usageEventId: string | null; attribution: ReservationAttributionV2 | null };
+export type HoldV2 = { codingHold?: boolean; id: string; organizationId: string; reservedCents: number; settledCents: number | null; status: string; createdAt: Date; expiresAt: Date; usageEventId: string | null; attribution: ReservationAttributionV2 | null };
 export type UsageV2 = { id: string; organizationId: string; billedCents: number; billingStatus: string; metadata: unknown };
 export type AllocationFactsV2 = { bases: AllowanceBasisV2[]; holds: HoldV2[]; usage: UsageV2[]; purchases: PurchaseV2[] };
 
@@ -81,7 +81,7 @@ export function resolveAllocationV2(basis: AllowanceBasisV2, window: AllowanceWi
       matched.add(u.id);
       if (receipt.state === "settled") for (const c of receipt.allocation) add(used, key(c), c.cents);
     } else if (h.settledCents !== null) deny();
-    const active = h.status === "dispatch_unknown" || h.status === "pending_settlement" || h.status === "reserved" && h.expiresAt > now;
+    const active = h.status === "dispatch_unknown" || h.status === "pending_settlement" || h.status === "reserved" && (h.codingHold === true || h.expiresAt > now);
     if (active) for (const c of a.allocation) add(held, key(c), c.maxCents);
   }
   if (matched.size !== facts.usage.length) deny();

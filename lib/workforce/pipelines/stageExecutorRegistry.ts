@@ -12,6 +12,7 @@ import type { PipelineStageKind } from "./pipelineRegistry";
 
 export interface StageExecutionContext {
   /** Opaque actual coding-stage CAS capability, never client context. */
+  codingRunClaim?:import("./codingRunReservation").CodingRunClaim;
   codingClaim?:import("./codingStageExecutionClaim").CodingStageClaim;
   organizationId: string;
   runId: string;

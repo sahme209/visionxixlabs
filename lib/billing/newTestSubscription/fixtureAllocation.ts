@@ -128,7 +128,7 @@ export async function readAllocationFactsV2(tx: Prisma.TransactionClient, state:
   const org = state.enrollment.organizationId;
   const [usage, holds, purchases] = await Promise.all([
     tx.usageEvent.findMany({ where: { organizationId: org, eventKind: "ai_invocation" }, take: 4097 }),
-    tx.$queryRawUnsafe<Array<Omit<HoldV2, "attribution"> & { attribution: ReservationAttributionV2 | null }>>('SELECT h.*,a.body AS attribution FROM "AIUsageReservation" h LEFT JOIN "NewTestReservationAttribution" a ON a."reservationId"=h.id AND a.org=h."organizationId" WHERE h."organizationId"=$1 ORDER BY h.id LIMIT 4097', org),
+    tx.$queryRawUnsafe<Array<Omit<HoldV2, "attribution"> & { attribution: ReservationAttributionV2 | null }>>('SELECT h.*,EXISTS(SELECT 1 FROM "PipelineAICallReservation" c WHERE c."workspaceReservationId"=h.id AND c."organizationId"=h."organizationId") AS "codingHold",a.body AS attribution FROM "AIUsageReservation" h LEFT JOIN "NewTestReservationAttribution" a ON a."reservationId"=h.id AND a.org=h."organizationId" WHERE h."organizationId"=$1 ORDER BY h.id LIMIT 4097', org),
     tx.addOnPurchase.findMany({ where: { organizationId: org }, take: 101 }),
   ]);
   if (usage.length > 4096 || holds.length > 4096 || purchases.length > 100) deny();

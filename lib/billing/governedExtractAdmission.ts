@@ -1,3 +1,5 @@
+import {reserveCodingCall,dispatchCodingCall,releaseCodingCall,lockCodingFinancial,linkCodingUsage,type CodingRunClaim} from "@/lib/workforce/pipelines/codingRunReservation";
+import {recordAttributedUsageV2} from "./newTestSubscription/usageAllocationIO";
 import { boundedAIInput, boundedStructuredAIInput } from "@/lib/ai/inputByteBound";
 import "server-only";
 import { createHash } from "node:crypto";
@@ -13,7 +15,7 @@ import { prepareSmallSonnetRequest, smallSonnetReservation, smallSonnetReservati
 import { prepareSmallSonnet55Request, smallSonnet55Reservation, smallSonnet55ReservationEvidence, authorizeSmallSonnet55Dispatch, SMALL_SONNET_55_MODEL, type SmallSonnet55Request } from "./smallSonnet55Request";
 import { requestReservationCents } from "./requestReservationCents";
 
-type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string; source?: "coding_proposal" }>;
+type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string; source?: "coding_proposal"; codingRunClaim?: CodingRunClaim; codingPhase?: "initial"|"refinement"; codingModel?: string }>;
 declare const admissionBrand: unique symbol;
 /** No serializable flag or constructor. Only a committed durable claim mints it. */
 export type GovernedExtractAdmission = { readonly [admissionBrand]: true };
@@ -54,7 +56,9 @@ export function admitAIText(input: Scope & { idempotencyKey: string }, payload?:
 async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task, small?: SmallSonnetRequest, abortSignal?: AbortSignal, small55?: SmallSonnet55Request): Promise<AdmissionResult> {
   const scope = Object.freeze({ organizationId: input.organizationId, userId: input.userId, correlationId: input.correlationId, ...(input.source === "coding_proposal" ? { source: input.source } : {}) });
   if (![scope.organizationId, scope.userId, scope.correlationId].every(v => typeof v === "string" && v.length > 0 && v.length <= 1024)) deny();
-  const reserved = await reserveAICredits(prisma, { organizationId: scope.organizationId, idempotencyKey, reservedCents: small55 ? smallSonnet55Reservation(small55, scope) : small ? smallSonnetReservation(small, scope) : requestReservationCents(), correlationId: scope.correlationId, ...(small ? { smallAgentRequest: small } : {}), ...(small55 ? { smallAgent55Request: small55 } : {}) });
+  const reserved = input.source === "coding_proposal"
+    ? await reserveCodingCall(prisma,input.codingRunClaim,scope,{idempotencyKey,phase:input.codingPhase!,model:input.codingModel!,estimatedCents:requestReservationCents()})
+    : await reserveAICredits(prisma, { organizationId: scope.organizationId, idempotencyKey, reservedCents: small55 ? smallSonnet55Reservation(small55, scope) : small ? smallSonnetReservation(small, scope) : requestReservationCents(), correlationId: scope.correlationId, ...(small ? { smallAgentRequest: small } : {}), ...(small55 ? { smallAgent55Request: small55 } : {}) });
   if (!reserved.ok) return reserved;
   if (reserved.reused) return { ok: false, error: "request_already_reserved" };
   if (small55 && !reserved.small55RequestApplied) deny();
@@ -64,11 +68,12 @@ async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task,
     abortSignal?.throwIfAborted();
     denyIsolatedExternalIO();
   } catch (error) {
-    await releaseAICreditReservation(prisma, scope.organizationId, reserved.reservation.id);
+    if ("callId" in reserved && typeof reserved.callId === "string") await releaseCodingCall(prisma,input.codingRunClaim,scope,reserved.callId);
+    else await releaseAICreditReservation(prisma, scope.organizationId, reserved.reservation.id);
     throw error;
   }
   const v2 = reserved.allocationPolicy === "axiom_test_anniversary_v2";
-  const claimed = await prisma.$transaction(tx => v2
+  const claimed = "callId" in reserved && typeof reserved.callId === "string" ? await dispatchCodingCall(prisma,input.codingRunClaim,scope,reserved.callId,input.codingModel!) : await prisma.$transaction(tx => v2
     ? claimNewTestBillableDispatch(tx, scope, reserved.reservation.id)
     : claimLegacyAICreditDispatch(tx, scope, reserved.reservation.id), { isolationLevel: "Serializable" });
   if (!claimed) deny();
@@ -118,10 +123,17 @@ function consumeAdmission(capability: GovernedAIAdmission, binding: { organizati
         inputTokens: usage.promptTokens!, outputTokens: usage.completionTokens!, metadata: { ...(task === "generate_text" ? { route: scope.source === "coding_proposal" ? "pipeline/code_propose" : "api/ai/generate" } : { task: "extract_structured_data" }), ...(reservationEvidence ? { reservationPolicy: reservationEvidence } : {}) },
       };
       if (v2) {
-        const saved = await recordReservedAIUsageEventV2(input, reservationId);
+        const saved = scope.source === "coding_proposal" ? await prisma.$transaction(async tx => {
+          await lockCodingFinancial(tx,reservationId);
+          const saved = await recordAttributedUsageV2(tx,reservationId,input,null);
+          if(!saved.recorded || !saved.usageEventId)deny();
+          await linkCodingUsage(tx,reservationId,saved.usageEventId,input.externalUsageId!);
+          return saved;
+        },{isolationLevel:"Serializable"}) : await recordReservedAIUsageEventV2(input, reservationId);
         if (!saved.recorded || !saved.usageEventId) deny();
       } else {
         await prisma.$transaction(async tx => {
+          if(scope.source === "coding_proposal")await lockCodingFinancial(tx,reservationId);
           const holds = await tx.$queryRawUnsafe<Array<{ id: string; organizationId: string; status: string; usageEventId: string | null }>>('SELECT id,"organizationId",status,"usageEventId" FROM "AIUsageReservation" WHERE id=$1 AND "organizationId"=$2 FOR UPDATE', reservationId, scope.organizationId);
           const hold = holds[0];
           if (holds.length !== 1 || !hold || hold.id !== reservationId || hold.organizationId !== scope.organizationId || hold.status !== "dispatch_unknown" || hold.usageEventId !== null) deny();
@@ -135,6 +147,7 @@ function consumeAdmission(capability: GovernedAIAdmission, binding: { organizati
           if (!saved.recorded || !saved.usageEventId) deny();
           const linked = await tx.aIUsageReservation.updateMany({ where: { id: reservationId, organizationId: scope.organizationId, status: "dispatch_unknown", usageEventId: null }, data: { status: "pending_settlement", usageEventId: saved.usageEventId } });
           if (linked.count !== 1) deny();
+          if(scope.source === "coding_proposal")await linkCodingUsage(tx,reservationId,saved.usageEventId,input.externalUsageId!);
         }, { isolationLevel: "Serializable" });
       }
     },

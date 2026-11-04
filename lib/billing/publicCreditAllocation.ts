@@ -3,7 +3,7 @@ import type { PublicAllowanceCandidate } from "./publicSubscriptionAllowance";
 import type { PublicEnrollment } from "./publicBillingStore";
 export type PublicCreditPart = { source: "included"; bucketId: string; maxCents: number } | { source: "purchase"; purchaseId: string; maxCents: number };
 export type PublicCreditAttribution = { policy: "axiom_public_anniversary_v1"; reservationId: string; organizationId: string; enrollmentId: string; bucketId: string; windowStart: string; windowEnd: string; admittedAt: string; parts: PublicCreditPart[]; digest: string };
-export type PublicCreditHold = { id: string; organizationId: string; reservedCents: number; settledCents: number | null; status: string; createdAt: Date; expiresAt: Date; usageEventId: string | null; attribution: PublicCreditAttribution | null; linkedUsageId: string | null; usageOrg: string | null; usageBilledCents: number | null; usageBillingStatus: string | null };
+export type PublicCreditHold = { codingHold?: boolean; id: string; organizationId: string; reservedCents: number; settledCents: number | null; status: string; createdAt: Date; expiresAt: Date; usageEventId: string | null; attribution: PublicCreditAttribution | null; linkedUsageId: string | null; usageOrg: string | null; usageBilledCents: number | null; usageBillingStatus: string | null };
 export type PublicCreditPurchase = { id: string; organizationId: string; status: string; deliveredAICreditsCents: number; reversedAICreditsCents: number; validFor: string; periodMonth: string; refundedAt: Date | null; createdAt: Date };
 export function canonicalPublicJson(value: unknown): string {
   const normalize = (v: unknown): unknown => Array.isArray(v) ? v.map(normalize) : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).sort(([a],[b]) => a.localeCompare(b)).map(([k,x])=>[k,normalize(x)])) : v;
@@ -53,7 +53,7 @@ export function allocatePublicCredits(enrollment: PublicEnrollment, w: PublicAll
     } else if(h.settledCents!==null)deny();
     if(h.status==='pending_settlement') {if(!h.usageEventId||h.usageBillingStatus!=='pending'||h.usageBilledCents!==0)deny();}
     else if(h.status!=='settled'&&h.usageEventId)deny();
-    if(h.status==='dispatch_unknown'||h.status==='pending_settlement'||h.status==='reserved'&&h.expiresAt>now)for(const p of a.parts)add(held,partKey(p),p.maxCents);
+    if(h.status==='dispatch_unknown'||h.status==='pending_settlement'||h.status==='reserved'&&(h.codingHold===true||h.expiresAt>now))for(const p of a.parts)add(held,partKey(p),p.maxCents);
   }
   const initialFreeUsed=w.planId==='free'&&w.start.slice(0,7)===enrollment.legacyFreeMonth?enrollment.legacyFreeUsedCents:0;
   if(!cents(initialFreeUsed))deny();

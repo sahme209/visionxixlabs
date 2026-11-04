@@ -70,7 +70,7 @@ export function postgresFixtureStore(target: string, runtimeId: string, accountI
         const start = new Date(`${month}-01T00:00:00Z`); const end = new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 1, 1));
         const [used, held, purchases] = await Promise.all([
           tx.usageEvent.aggregate({ where: { organizationId: org, eventKind: "ai_invocation", createdAt: { gte: start, lt: end } }, _sum: { billedCents: true } }),
-          tx.aIUsageReservation.aggregate({ where: { organizationId: org, OR: [{ status: "pending_settlement" }, { status: "reserved", usageEventId: { not: null } }, { status: "reserved", usageEventId: null, expiresAt: { gt: now } }] }, _sum: { reservedCents: true } }),
+          tx.aIUsageReservation.aggregate({ where: { organizationId: org, OR: [{ status: "reserved", pipelineCall: { isNot: null } }, { status: "pending_settlement" }, { status: "reserved", usageEventId: { not: null } }, { status: "reserved", usageEventId: null, expiresAt: { gt: now } }] }, _sum: { reservedCents: true } }),
           tx.addOnPurchase.findMany({ where: { organizationId: org, status: { in: ["paid", "partially_refunded"] }, OR: [{ validFor: "current_month", periodMonth: month }, { validFor: "permanent", refundedAt: null }] } }),
         ]);
         return { usedCents: used._sum.billedCents ?? 0, heldCents: held._sum.reservedCents ?? 0, paidTopUpsCents: purchases.reduce((sum, p) => sum + Math.max(0, p.deliveredAICreditsCents - Math.max(0, p.reversedAICreditsCents)), 0) };
