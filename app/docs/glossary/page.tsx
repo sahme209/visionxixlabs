@@ -7,8 +7,8 @@ export const metadata: Metadata = {
 };
 
 const GLOSSARY: { term: string; def: string }[] = [
-  { term: "Action proposal", def: "A persisted request for an agent tool call. Low-risk reads can complete inline; medium- and high-risk writes wait for an explicit administrator decision." },
-  { term: "Approval gate", def: "The server-side boundary that prevents a proposed write from executing until an authorized workspace administrator approves it." },
+  { term: "Action proposal", def: "A persisted request for an agent tool call. Low-risk reads can complete inline; medium- and high-risk writes require an explicit decision from an authorized independent human reviewer. Approval alone does not execute the proposed write." },
+  { term: "Approval gate", def: "The server-side boundary requiring approval from an authorized independent human reviewer for a proposed write. Separate execution by the original requester is a local preview, not production-activated, and requires current permissions and support in the installed version." },
   { term: "Audit record", def: "The stored record of a tool call, including the requested action, risk, status, actor, and outcome. Audit evidence is not an independent compliance certification." },
   { term: "Conversation", def: "A workspace-scoped Agent thread whose messages preserve the context for a sequence of governed requests." },
   { term: "Deployment target", def: "The configuration that maps an Axiom environment to an AWS region, ECS cluster, ECS service, and OIDC role." },
