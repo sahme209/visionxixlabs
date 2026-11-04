@@ -1,0 +1,17 @@
+{
+  "url": "https://ai-gateway.vercel.sh/v1/models/anthropic/claude-sonnet-5/endpoints",
+  "authorization": "call_zhhacvszkd4uUtLsb9XuQb4h approved",
+  "started_at": "2026-11-04T19:34:33.868830+00:00",
+  "request_limit": 1,
+  "redirects_allowed": false,
+  "body_limit_bytes": 131072,
+  "parent_timeout_seconds": 5,
+  "auth": false,
+  "retry": false,
+  "exit_code": 0,
+  "diagnostic": "",
+  "accepted": true,
+  "bytes": 5483,
+  "sha256": "5a97790330bcdb1fc8bd5aa1fda01b16f431edcf2514e9dd2bf057797fbd9075",
+  "finished_at": "2026-11-04T19:34:34.252648+00:00"
+}

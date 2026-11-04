@@ -4,6 +4,8 @@ Updated November 3, 2026. Two coordinated workstreams. The user explicitly resum
 
 [Compact current execution board](current-execution-board.md) summarizes all15parents and their gates; every detailed requirement below remains binding.
 
+[Complete November 4 scope reread and detailed acceptance map](../recovery/2026-11-04/master-plan-full-read/README.md) covers the full document, including historical decisions and all detailed requirements. The receipt binds the pre-link document; this audit changes no completion or authorization state.
+
 <!-- PRIORITIZED_CHECKLIST_START -->
 ## November 4 local document-source workflow milestone
 
