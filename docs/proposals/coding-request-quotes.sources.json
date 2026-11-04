@@ -1,0 +1,270 @@
+{
+  "status": "design-only-not-implementation-or-external-access-approved",
+  "sourceCommit": "e146877a65603d88ed51d35c80fd2caeeccbdf2d",
+  "proposal": {
+    "path": "docs/proposals/coding-request-quotes.md",
+    "sha256": "c09083f0e259973f1d09daa4a2ed8c5145926c25b7c994261c01ae31ad40b277"
+  },
+  "bindingMeaning": "Finite source locators supporting this proposal; whole-file hashes bind identity, ranges bind inclusive raw line bytes. Not a full repository/runtime/provider/pricing/security audit.",
+  "operations": {
+    "implementation": false,
+    "tests": false,
+    "providerPricingFetch": false,
+    "inference": false,
+    "database": false,
+    "credentials": false,
+    "activation": false
+  },
+  "sources": [
+    {
+      "path": "docs/proposals/coding-run-budget-reservations.md",
+      "wholeFileSha256": "37cb92c159314ac6cbd9efcadd0530e16242088c2159e25be07b829bb5a2b4e5",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 67,
+          "sha256": "37cb92c159314ac6cbd9efcadd0530e16242088c2159e25be07b829bb5a2b4e5"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/codeProposeRealExecutor.ts",
+      "wholeFileSha256": "ec189bca8789f744720b7c57d68b565bbed22551e5ae7b2e06616f779ffe565a",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 30,
+          "sha256": "c0beaebb2959f5aa01af95b3c6b9d2101e1bef9250c0300ffbd1e560e83487e1"
+        },
+        {
+          "startLine": 117,
+          "endLine": 224,
+          "sha256": "9e62964fc5960c2b0d0f9f9ce996de88d6a96e3dab9c128a65c114df6ffe2795"
+        },
+        {
+          "startLine": 247,
+          "endLine": 279,
+          "sha256": "8f781da6cd66b12f0b39599f76e02112361efdaece46e1bcc7a4839e249cc5d4"
+        },
+        {
+          "startLine": 330,
+          "endLine": 423,
+          "sha256": "6b74844e558fdc3332076da43b4680db61123bd3e1c66fd7ec26542752e88f2d"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/buildCodeProposeMessages.ts",
+      "wholeFileSha256": "a60348a1d8ef2eaab309c871e0b871239d643b5762ed545d483120e646467c4f",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 79,
+          "sha256": "a60348a1d8ef2eaab309c871e0b871239d643b5762ed545d483120e646467c4f"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/buildRefinementMessages.ts",
+      "wholeFileSha256": "9a6a4f2bea9347119c6e67f66c19c04fa59ee268d391e248f5a263071d91ea58",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 121,
+          "sha256": "9a6a4f2bea9347119c6e67f66c19c04fa59ee268d391e248f5a263071d91ea58"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunReservation.ts",
+      "wholeFileSha256": "d4eb3403f2d392195c998c6bc3413441cf4e16146a4b541ea8801600732ecfdd",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 104,
+          "sha256": "ad460f02d32267f574b703ac3a68871f6132578e018718ae03d1a4bd491ad288"
+        },
+        {
+          "startLine": 105,
+          "endLine": 191,
+          "sha256": "6be73f3b93ea8bf98a0f7b26a1cb45605a11efeb7445dc3efcf3eb2558345700"
+        }
+      ]
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunBudget.ts",
+      "wholeFileSha256": "7f06f98aefd8fa0af2f9619ac4a5fc5f7cdb1d9ffa2a5ca95141f229b08fdb01",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 20,
+          "sha256": "7f06f98aefd8fa0af2f9619ac4a5fc5f7cdb1d9ffa2a5ca95141f229b08fdb01"
+        }
+      ]
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "wholeFileSha256": "87a9bf255730e5301abad5c72043b0bd6e8272c5e9981cd691dd2e78cf7ef019",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 155,
+          "sha256": "87a9bf255730e5301abad5c72043b0bd6e8272c5e9981cd691dd2e78cf7ef019"
+        }
+      ]
+    },
+    {
+      "path": "lib/billing/smallSonnetRequest.ts",
+      "wholeFileSha256": "d22ac387fb96e5549bd8c49bc46de1e3d28cae91f63cdb2576ec08e5d1757de0",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 149,
+          "sha256": "d22ac387fb96e5549bd8c49bc46de1e3d28cae91f63cdb2576ec08e5d1757de0"
+        }
+      ]
+    },
+    {
+      "path": "lib/billing/smallSonnet55Request.ts",
+      "wholeFileSha256": "14050b1aeae6fbf68843a764883fadbb0c30297063456720489510464e34ac4d",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 160,
+          "sha256": "14050b1aeae6fbf68843a764883fadbb0c30297063456720489510464e34ac4d"
+        }
+      ]
+    },
+    {
+      "path": "lib/billing/requestReservationCents.ts",
+      "wholeFileSha256": "2da0a4dffd8a92d655044421e6ea90ac1439924a521cab7b56a1d9b57f318281",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 20,
+          "sha256": "2da0a4dffd8a92d655044421e6ea90ac1439924a521cab7b56a1d9b57f318281"
+        }
+      ]
+    },
+    {
+      "path": "lib/billing/aiBillingMargin.ts",
+      "wholeFileSha256": "69d36fa04c8336a47c11840e78df5a41086b622bdf9f4978e31adbf669966da1",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 34,
+          "sha256": "69d36fa04c8336a47c11840e78df5a41086b622bdf9f4978e31adbf669966da1"
+        }
+      ]
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "wholeFileSha256": "8f02474994771c223ef714bd7f005290d9476914332c358a4447c67be7aa779e",
+      "ranges": [
+        {
+          "startLine": 82,
+          "endLine": 95,
+          "sha256": "de15a3f448ed9d8bd619e758b33e0f39c8340a88e79c473e56ac58d634eabc3b"
+        },
+        {
+          "startLine": 202,
+          "endLine": 229,
+          "sha256": "5aabcd619d5245c5a6b33cdb20489fb6ee6f91fcfc8fc2646178b254c25669aa"
+        }
+      ]
+    },
+    {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "wholeFileSha256": "2aafa6fbd4ae1e2ea91da2994a71f0b586c95c297093bdd8ff01f6e43aad93cf",
+      "ranges": [
+        {
+          "startLine": 60,
+          "endLine": 133,
+          "sha256": "6272317bde8ca01ed6318f4e649466e58a3b69ec02f0cd13cfc36c73ce7cffde"
+        },
+        {
+          "startLine": 296,
+          "endLine": 309,
+          "sha256": "afc295d655a9dc715b0ca674f96d33ff88b4f341ea2a5c5708d3c20123ea9937"
+        }
+      ]
+    },
+    {
+      "path": "lib/ai/providers/sonnet55Messages.ts",
+      "wholeFileSha256": "daa1bd5536a6edcc3ea2123dc32c4dd9f2d5e0b064fa0c264c6090651ca488a7",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 30,
+          "sha256": "daa1bd5536a6edcc3ea2123dc32c4dd9f2d5e0b064fa0c264c6090651ca488a7"
+        }
+      ]
+    },
+    {
+      "path": "lib/ai/inputByteBound.ts",
+      "wholeFileSha256": "8f0c16847304a5b9a228923d3dcd69de8ec25219b3bd16dee02c52108cbdefab",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 18,
+          "sha256": "8f0c16847304a5b9a228923d3dcd69de8ec25219b3bd16dee02c52108cbdefab"
+        }
+      ]
+    },
+    {
+      "path": "lib/ai/effectiveGatewayModel.ts",
+      "wholeFileSha256": "0d5e98ffb64197ae34546bfe81f7835f2468f9da7a737b0ccd5470c63ff11f3e",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 15,
+          "sha256": "0d5e98ffb64197ae34546bfe81f7835f2468f9da7a737b0ccd5470c63ff11f3e"
+        }
+      ]
+    },
+    {
+      "path": "lib/ai/AIProvider.ts",
+      "wholeFileSha256": "c21d3d813e6f9d0369dfbee45c4b8a8abaa0135b76049aaaa2efe41fcbac9181",
+      "ranges": [
+        {
+          "startLine": 58,
+          "endLine": 85,
+          "sha256": "348166f59f0e72a57ceb9721b9cb60b2ec05a82715b010f2a8928023e6f793ba"
+        }
+      ]
+    },
+    {
+      "path": "lib/security/redaction.ts",
+      "wholeFileSha256": "92c9c1005590e631163bba9a523b58f589d50ca4c04f142ce498d8f52dbe0766",
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 90,
+          "sha256": "7e9aab956934605fd11cbfcfc225a92f9e4bfc34d5c2b2c132033b73f574836a"
+        }
+      ]
+    },
+    {
+      "path": "lib/ai/workspaceProviderPolicy.ts",
+      "wholeFileSha256": "82760fee3ab68a628e1c84e32b52820c3266908955a35662bec7bb92dc8c2cc3",
+      "ranges": [
+        {
+          "startLine": 185,
+          "endLine": 233,
+          "sha256": "9d49bfa1d4d53bbc7d8a1eb2e9c8a683db76e7987b6d9fba62078782571be630"
+        }
+      ]
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "wholeFileSha256": "c5c85e99016be6752308be8c60c550a44221abe572030a9ed783a3f6764c0377",
+      "ranges": [
+        {
+          "startLine": 5053,
+          "endLine": 5086,
+          "sha256": "f46a1658932476b99c1c484bf2ea3931e506e08d4f585b684647727ecb7156bd"
+        }
+      ]
+    }
+  ]
+}
