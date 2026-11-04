@@ -1,0 +1,124 @@
+{
+  "status": "INTERNAL DRAFT \u2014 unpublished",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "editorialAccepted": false,
+  "mediaAccepted": false,
+  "nativeAccepted": false,
+  "releaseAccepted": false,
+  "shippedAccepted": false,
+  "sourceCommit": "0915135da1ad4291079488a1082c00509fb00b24",
+  "method": "Static source identity only; inclusive ranges preserve newline bytes.",
+  "sources": [
+    {
+      "path": "desktop/src/views/PluginsSkillsView.tsx",
+      "startLine": 1,
+      "endLine": 235,
+      "sha256": "bbf5ac0521d7564e38973bcf022c4f001d3911607e17ad5369ef4431ec84bab8",
+      "rangeSha256": "bbf5ac0521d7564e38973bcf022c4f001d3911607e17ad5369ef4431ec84bab8",
+      "anchors": [
+        "import {OutlookIntegrationCard} from '../components/OutlookIntegrationCard';"
+      ]
+    },
+    {
+      "path": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "startLine": 1,
+      "endLine": 161,
+      "sha256": "674db35fb998470416d0f853978d7ddaad3e9c3e97508b5e84b7c10938890a14",
+      "rangeSha256": "674db35fb998470416d0f853978d7ddaad3e9c3e97508b5e84b7c10938890a14",
+      "anchors": [
+        "import {BotConnectedActionsPanel} from './BotConnectedActionsPanel';"
+      ]
+    },
+    {
+      "path": "desktop/src/components/BotConnectedActionsPanel.tsx",
+      "startLine": 1,
+      "endLine": 15,
+      "sha256": "6d49b0a7ee3c635ad984cf6f8248bfe49317a1c45a890edf476a43fb5678ded2",
+      "rangeSha256": "6d49b0a7ee3c635ad984cf6f8248bfe49317a1c45a890edf476a43fb5678ded2",
+      "anchors": [
+        "import {useEffect,useRef,useState} from 'react';"
+      ]
+    },
+    {
+      "path": "desktop/src/components/ConnectedActionsPanel.tsx",
+      "startLine": 1,
+      "endLine": 53,
+      "sha256": "fea17bbc7ff3df3e5d5084bc013722e69e23e3e4e6864e395a7ed80e45ae6e31",
+      "rangeSha256": "fea17bbc7ff3df3e5d5084bc013722e69e23e3e4e6864e395a7ed80e45ae6e31",
+      "anchors": [
+        "import {ActionJourney} from './ActionJourney';"
+      ]
+    },
+    {
+      "path": "desktop/src/lib/connectedActionsTransport.ts",
+      "startLine": 1,
+      "endLine": 33,
+      "sha256": "f8de4b7a18a9a23355aa031bd052d050909e634c9769641949cfdc7e0b490c75",
+      "rangeSha256": "f8de4b7a18a9a23355aa031bd052d050909e634c9769641949cfdc7e0b490c75",
+      "anchors": [
+        "import {connectedActionsRequestSchema,connectedActionsDataSchema,type ConnectedActionsData,type ConnectedActionsRequest} from '../../../lib/desktop/connectedActionsContract';"
+      ]
+    },
+    {
+      "path": "lib/desktop/connectedActionsHttp.ts",
+      "startLine": 1,
+      "endLine": 121,
+      "sha256": "09c8bfb61fd09aec8c675ed223f79c00d326fbda87369e8137072ce65a9f3cf5",
+      "rangeSha256": "09c8bfb61fd09aec8c675ed223f79c00d326fbda87369e8137072ce65a9f3cf5",
+      "anchors": [
+        "import {createLinearUpdateOutboundDrain,createLinearTransitionOutboundDrain} from '@/lib/governance/intelligence/linearChangeOutboundDrain';"
+      ]
+    },
+    {
+      "path": "lib/desktop/connectedActionsContract.ts",
+      "startLine": 1,
+      "endLine": 15,
+      "sha256": "ee91bd1e0b3a3cc93eb1f0f5039a4460443cfafcd76390efbf5885250257fb08",
+      "rangeSha256": "ee91bd1e0b3a3cc93eb1f0f5039a4460443cfafcd76390efbf5885250257fb08",
+      "anchors": [
+        "import {botActionTaskReferenceSchema} from '../axiom/bot/actionTaskBindingContract';"
+      ]
+    },
+    {
+      "path": "lib/integrations/connectedActionContract.ts",
+      "startLine": 1,
+      "endLine": 41,
+      "sha256": "b75dbf91919f4c5237bcdd1f6f2bf0f143cae7cb78c325e0cebe0ebc1cc0409e",
+      "rangeSha256": "b75dbf91919f4c5237bcdd1f6f2bf0f143cae7cb78c325e0cebe0ebc1cc0409e",
+      "anchors": [
+        "import {botActionTaskBindingSchema} from '../axiom/bot/actionTaskBindingContract';"
+      ]
+    },
+    {
+      "path": "lib/integrations/connectedActionScopes.ts",
+      "startLine": 1,
+      "endLine": 12,
+      "sha256": "3400c17b12344e40152b437a19407b8dc797d5bd70987ee432472299856a715b",
+      "rangeSha256": "3400c17b12344e40152b437a19407b8dc797d5bd70987ee432472299856a715b",
+      "anchors": [
+        "import {z} from 'zod';"
+      ]
+    },
+    {
+      "path": "lib/integrations/connectedActionStore.ts",
+      "startLine": 1,
+      "endLine": 123,
+      "sha256": "e7c978936416df525cc8ab045859892167587bb4f85263effd002c524d87f891",
+      "rangeSha256": "e7c978936416df525cc8ab045859892167587bb4f85263effd002c524d87f891",
+      "anchors": [
+        "import {assertNoGovernanceEnrollmentForMutation} from '@/lib/governance/intelligence/enrollmentMetadata';"
+      ]
+    },
+    {
+      "path": "lib/integrations/connectedActionTransport.ts",
+      "startLine": 1,
+      "endLine": 59,
+      "sha256": "6b25552ae0cff5ed0a2b229ed08910660313e05f3bd14e7e4ca77e3c4d253104",
+      "rangeSha256": "6b25552ae0cff5ed0a2b229ed08910660313e05f3bd14e7e4ca77e3c4d253104",
+      "anchors": [
+        "import 'server-only';"
+      ]
+    }
+  ]
+}
