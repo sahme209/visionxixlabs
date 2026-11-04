@@ -1,0 +1,16 @@
+{
+  "scope": "new internal index and appended repository queue links only; no customer eligibility or runtime acceptance",
+  "checks": [
+    {
+      "file": "docs/product/knowledge/README.md",
+      "sha256": "2a52dbbb88c191c02684544b0c3291a12d775c77fd5885d881646698cc51b303",
+      "localLinksVerified": 14
+    },
+    {
+      "file": "docs/product/documentation-coverage/README.md",
+      "sha256": "5b33a1eed3bd8a250821e4aba8b871480298f835d4fbd03d6c4fb26284cb54b1",
+      "localLinksVerified": 5
+    }
+  ],
+  "initialWrongTeamsFilenameCorrected": true
+}
