@@ -1,0 +1,17 @@
+{
+  "scope": "README count correction only; internal draft and customer ineligibility unchanged",
+  "baseCommit": "20a7abb6b8fc9e46f674e11a3b3c6e9ef1d8fb11",
+  "articleEvidenceFileCount": 9,
+  "sourceManifestEntryCount": 11,
+  "additionalManifestEntries": [
+    "docs/product/documentation-coverage/articles/repository-editor-nested-controls.r1.json",
+    "docs/product/documentation-coverage/repository-editor-nested-controls-evaluation.r1.json"
+  ],
+  "readme": {
+    "path": "docs/product/documentation-coverage/README.md",
+    "sha256": "51e70d50a9083d9d2abed7360411d93d9b75612c85cdb1d134b32cfd4e3b314c"
+  },
+  "localLinkDeclarationsUnchanged": true,
+  "historicalReportPreserved": "docs/product/documentation-coverage/source-guide-index-check.json",
+  "verification": "Read existing article/manifest JSON counts and compared README link declarations only. Historical link checks, tests, builds, provider, UI, DB and API checks were not rerun."
+}
