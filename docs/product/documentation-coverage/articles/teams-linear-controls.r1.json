@@ -1,0 +1,205 @@
+{
+  "schema": 1,
+  "id": "axiom.help.teams-linear.controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Teams and Linear: exact task-linked reviews and single-attempt actions",
+  "productVersion": "local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4",
+  "screenIds": [
+    "proposed.axiom.screen.teams-linear.actions"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.teams-linear.review-permissions",
+    "proposed.axiom.control.teams-linear.load-targets",
+    "proposed.axiom.control.teams-linear.save-exact-action",
+    "proposed.axiom.control.teams-linear.review-target-content",
+    "proposed.axiom.control.teams-linear.approve-exact-action",
+    "proposed.axiom.control.teams-linear.execute-once",
+    "proposed.axiom.control.teams-linear.cancel",
+    "proposed.axiom.control.teams-linear.reconcile-expired",
+    "proposed.axiom.control.teams-linear.recover-same-action",
+    "proposed.axiom.control.teams-linear.retry-saving-same-draft"
+  ],
+  "goal": "Distinguish target reads/local preparation, exact genuine independent approval, requester execution once and original-record recovery without treating saved receipts or mocks as current provider access.",
+  "prerequisites": [
+    "Internal source-only local-preview authoring record. Current installed support, activation, actual connection health and provider access are unverified and must be checked separately.",
+    "Current verified desktop workspace/session, consenting provider owner, accepted provider/target access and current saved task version where task-linked. Slack/Outlook reviews do not authorize Teams/Linear.",
+    "Teams channel APIs require an eligible work/school account and appropriate Microsoft licensing/access; personal Teams and passing mocks are not proof of those prerequisites. The fixed target reader classifies only its exact recognized403license denial and does not change subscriptions or retry."
+  ],
+  "permissions": [
+    "connections:manage is required for permission setup and requester execution, with current role/session/owner/workspace checks; server capability remains decisive.",
+    "agent:approve records a genuine independent human decision for the exact plan, not execution permission. Requester is executor, reviewer must be a different eligible person.",
+    "Consent, target access, provider activation, exact approval and execution authority are separate. Disabled-execution notice reflects returned state; runtime flags were not read or changed."
+  ],
+  "steps": [
+    {
+      "instruction": "In Apps & skills open Actions for connected Teams or Linear. For task-linked work, open the selected saved task while clean/unlocked; wait for history to load.",
+      "effect": "read",
+      "expectedState": "ConnectedActionsPanel is shared; BotConnectedActionsPanel delegates the same controls. Outside a task, Task-linked reviews selects linked history; ordinary history excludes it. History shows at most20records and may be truncated."
+    },
+    {
+      "instruction": "Inspect current saved task ID/version and workspace. A historical version warning requires a new action for the current saved version, not reuse of stale authority.",
+      "effect": "read",
+      "expectedState": "Task/version binding is checked by the server; opening history is not a provider mutation or fresh health check."
+    },
+    {
+      "instruction": "Use Review action permissions \u2197 only with current desktop session, owner/admin role and connections:manage. Browser action access must match expected user/workspace.",
+      "effect": "read",
+      "expectedState": "Opening a page is not consent. Teams scopes are openid, offline_access, User.Read, Team.ReadBasic.All, Channel.ReadBasic.All, ChannelMessage.Send; Linear requests read/write. Legacy issue-create does not grant update/close."
+    },
+    {
+      "instruction": "Load authorized targets, then select Team from its verified snapshot. For Teams choose a standard Channel and Message; archived teams and nonstandard channels are disabled.",
+      "effect": "read",
+      "expectedState": "Bounded targets are not a complete directory. Message intent maximum4000bytes; current messaging permission and provider target access remain required."
+    },
+    {
+      "instruction": "For Linear create choose Team, Issue title and optional Description; update also selects Issue; close selects Team, Issue and Completed state.",
+      "effect": "local-preference",
+      "expectedState": "Title maximum240bytes, description16000bytes. Update/close require update permission; only completed states are offered for close. Local fields are not provider writes."
+    },
+    {
+      "instruction": "Save exact action for review when available after inspecting exact target/content.",
+      "effect": "propose",
+      "expectedState": "Server re-reads authorized targets and requires consenting owner; stores provider, connection revision, workspace/team, exact fields, target evidence and optional task/version with15minute expiry. No provider write; connected alone does not enable execution."
+    },
+    {
+      "instruction": "Inspect saved state, attempt count /1, target IDs, title/content or completed-state ID, digest, expiry, task version and recorded approver. Personally check I reviewed this exact target and content only after inspecting them.",
+      "effect": "local-preference",
+      "expectedState": "Checkbox is local acknowledgement and clears after successful requests; it is not approval."
+    },
+    {
+      "instruction": "A distinct authorized human uses Approve exact action only when agent:approve, requested/unexpired state and current task binding permit.",
+      "effect": "human-review",
+      "expectedState": "Records approval of this exact plan only. Reviewer differs from requester/executor; AI and this article cannot supply genuine human approval."
+    },
+    {
+      "instruction": "The requester/executor uses Execute approved action once only when current connections:manage, enabled provider, approved/unexpired plan and current task allow.",
+      "effect": "execute",
+      "expectedState": "Server current authority, connection/target freshness and outbound guards decide acceptance. One dispatch attempt; recorded verified result may expose Open verified provider result, specific to that operation only."
+    },
+    {
+      "instruction": "Requester may Cancel action while requested/approved. Executor may Reconcile expired attempt while dispatching.",
+      "effect": "recover",
+      "expectedState": "Cancel is predispatch review cancellation, not provider undo. Before lease expiry reconciliation returns current record; after expiry records unknown without resend or rollback."
+    },
+    {
+      "instruction": "For pending mutation use Recover same saved action (Reload history). Retry saving same draft, when available for pending creation, preserves original intent.",
+      "effect": "recover",
+      "expectedState": "Pending work blocks mutations. Draft retry is not provider execution retry. Unknown requires checking the provider before any new action and says this action will not be resent."
+    }
+  ],
+  "expectedOutcome": "Identify exact current plan/task/version and its stored attempt/outcome, using original-record reconciliation and provider inspection rather than repeating an uncertain operation.",
+  "limitations": [
+    "Customer eligible:false. Publication approved:false. Editorial accepted:false. Media accepted:false. Native accepted:false. Release accepted:false. Shipped accepted:false. Human review fields null, media empty; no authentic media or current native/provider acceptance claimed.",
+    "proposed. identifiers are authoring candidates only, not installed runtime/help bindings. No ingestion, retrieval activation, customer-approved content, authority, UI or backend capability is created.",
+    "The preserved guide/manifest/report retain historical0915135d provenance. Current4f8c94e1 article hashes bind all11unchanged code files plus guide/manifest/report and two explicit work-account/license source references without rewriting history.",
+    "Source hashes prove identity only, not semantic accuracy, complete control inventory, current target availability, provider health, actual access or shipped support. Mock/synthetic acceptance is separate from real Teams work-account/licensing gates.",
+    "A verified receipt concerns that specific operation, not unrelated delivery or present provider health. Client abort, Close or workspace change does not prove submitted work was undone.",
+    "This finite Teams/Linear article excludes Slack/Outlook distinct controls; no automatic resend. Fixture is proposed-not-executed prose, not a completed retrieval/model evaluation."
+  ],
+  "recovery": [
+    "Reconcile the original saved state before considering another action. Unknown is neither success nor failure; check provider outcome before any deliberate new action and do not resend the original attempt.",
+    "Recover same saved action preserves original intent; Retry saving same draft is only pending creation and does not retry provider execution. Pending work blocks new mutations.",
+    "Stale task version, changed workspace/connection/target or lost authority requires current checks; never adopt old approval as authority for edited content/another target/task.",
+    "Teams license-required or unavailable target reads are not permission to bypass access, reinterpret mocks as live success, switch accounts silently, retry the denial or purchase/change licensing. Resolve legitimate access with the organization separately.",
+    "Cancel cannot undo submitted provider work. Reconcile expired attempt preserves current dispatch until lease expiry then unknown, without resend/undo."
+  ],
+  "searchTerms": [
+    "Teams",
+    "Linear",
+    "Actions",
+    "Task-linked reviews",
+    "Review action permissions",
+    "Load authorized targets",
+    "Save exact action for review",
+    "Approve exact action",
+    "Execute approved action once",
+    "Recover same saved action",
+    "Retry saving same draft",
+    "Reconcile expired attempt",
+    "Teams license required"
+  ],
+  "sources": [
+    {
+      "path": "desktop/src/views/PluginsSkillsView.tsx",
+      "sha256": "bbf5ac0521d7564e38973bcf022c4f001d3911607e17ad5369ef4431ec84bab8"
+    },
+    {
+      "path": "desktop/src/components/SavedBotTaskWorkspace.tsx",
+      "sha256": "674db35fb998470416d0f853978d7ddaad3e9c3e97508b5e84b7c10938890a14"
+    },
+    {
+      "path": "desktop/src/components/BotConnectedActionsPanel.tsx",
+      "sha256": "6d49b0a7ee3c635ad984cf6f8248bfe49317a1c45a890edf476a43fb5678ded2"
+    },
+    {
+      "path": "desktop/src/components/ConnectedActionsPanel.tsx",
+      "sha256": "fea17bbc7ff3df3e5d5084bc013722e69e23e3e4e6864e395a7ed80e45ae6e31"
+    },
+    {
+      "path": "desktop/src/lib/connectedActionsTransport.ts",
+      "sha256": "f8de4b7a18a9a23355aa031bd052d050909e634c9769641949cfdc7e0b490c75"
+    },
+    {
+      "path": "lib/desktop/connectedActionsHttp.ts",
+      "sha256": "09c8bfb61fd09aec8c675ed223f79c00d326fbda87369e8137072ce65a9f3cf5"
+    },
+    {
+      "path": "lib/desktop/connectedActionsContract.ts",
+      "sha256": "ee91bd1e0b3a3cc93eb1f0f5039a4460443cfafcd76390efbf5885250257fb08"
+    },
+    {
+      "path": "lib/integrations/connectedActionContract.ts",
+      "sha256": "b75dbf91919f4c5237bcdd1f6f2bf0f143cae7cb78c325e0cebe0ebc1cc0409e"
+    },
+    {
+      "path": "lib/integrations/connectedActionScopes.ts",
+      "sha256": "3400c17b12344e40152b437a19407b8dc797d5bd70987ee432472299856a715b"
+    },
+    {
+      "path": "lib/integrations/connectedActionStore.ts",
+      "sha256": "e7c978936416df525cc8ab045859892167587bb4f85263effd002c524d87f891"
+    },
+    {
+      "path": "lib/integrations/connectedActionTransport.ts",
+      "sha256": "6b25552ae0cff5ed0a2b229ed08910660313e05f3bd14e7e4ca77e3c4d253104"
+    },
+    {
+      "path": "docs/product/knowledge/teams-linear-controls.md",
+      "sha256": "87e297c872754473935ad9fc44c9bdeb6b73ad89741a3aadf08515fbe0329925"
+    },
+    {
+      "path": "docs/product/knowledge/teams-linear-controls.sources.json",
+      "sha256": "31cc4972625525a2df04e282b1876222627892b154fa3702e9f212c421dc817e"
+    },
+    {
+      "path": "docs/product/documentation-coverage/teams-linear-controls-source-report.md",
+      "sha256": "6782364b378bc96516e6bfdf723c1208cf70863b4df30e5b137fffa13bd4961a"
+    },
+    {
+      "path": "lib/integrations/connectedActionDiscovery.ts",
+      "sha256": "6bea6b4977ae49870127d57de041510cd2a5164134b0909472618457fc5bfedd"
+    },
+    {
+      "path": "docs/superpowers/plans/2026-10-29-microsoft-integrations.md",
+      "sha256": "620f13510c7c9fa5fa2c07d71ed8427b4ecd530f008b05eb9ef60a1e251d34ad"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/teams-linear-controls.md",
+      "docs/product/knowledge/teams-linear-controls.sources.json",
+      "docs/product/documentation-coverage/teams-linear-controls-source-report.md"
+    ],
+    "verifiedVersion": "local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4",
+    "verifiedAt": null
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

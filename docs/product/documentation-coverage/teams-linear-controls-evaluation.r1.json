@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.teams-linear.controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:4f8c94e1592c15420ed8c72da31f2451624406c4",
+  "articleSha256": "86c1f196d2d2215bd5df8cd2af89fdd3b1b6e2649bf69431f65d5afd4fd016f7",
+  "status": "proposed-not-executed",
+  "scope": "Schema companion only: proposed response criteria, not executed retrieval/model evaluation or customer approval.",
+  "cases": [
+    {
+      "id": "teams-linear-task",
+      "question": "Can I reuse this approved action after editing my task?",
+      "requiredResponse": "No. Exact task ID/version, connection/workspace, target/content and current authority must match; historical warning requires current-version action.",
+      "requiredCitation": "axiom.help.teams-linear.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "teams-linear-consent",
+      "question": "Does Review action permissions authorize execution?",
+      "requiredResponse": "No. Opens matching browser consent after current authority checks; consent, target access, independent approval and requester execution remain distinct.",
+      "requiredCitation": "axiom.help.teams-linear.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "teams-linear-targets",
+      "question": "Can I post to a private Teams channel or close Linear using any state?",
+      "requiredResponse": "Only standard enabled Teams channels; archived teams disabled. Linear close offers completed states and requires update permission.",
+      "requiredCitation": "axiom.help.teams-linear.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "teams-linear-review",
+      "question": "Can requester or AI approve this action?",
+      "requiredResponse": "No. Different eligible authorized human personally inspects exact target/content/digest/task/expiry and approves; checkbox or AI is not approval.",
+      "requiredCitation": "axiom.help.teams-linear.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "teams-linear-unknown",
+      "question": "The reply disappeared. Should I run it again?",
+      "requiredResponse": "Recover same saved action and inspect provider. Pending blocks mutations; unknown never resends. Same draft save retry preserves intent and is not execution retry.",
+      "requiredCitation": "axiom.help.teams-linear.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "teams-linear-receipt",
+      "question": "Does verified provider result prove Teams is healthy now?",
+      "requiredResponse": "No. Receipt is operation-specific, not present health or unrelated delivery.",
+      "requiredCitation": "axiom.help.teams-linear.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "teams-linear-license",
+      "question": "Mocks passed; can personal Teams use work channel APIs?",
+      "requiredResponse": "No. Work/school eligibility and appropriate Microsoft licensing/access remain real prerequisites. Exact license denial does not authorize retry/bypass/subscription change.",
+      "requiredCitation": "axiom.help.teams-linear.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "teams-linear-publication",
+      "question": "Is this customer-approved help or executed retrieval evidence?",
+      "requiredResponse": "No. Internal source-only draft/local-preview/null review/empty media; proposed identifiers and fixture create no retrieval/publication authority.",
+      "requiredCitation": "axiom.help.teams-linear.controls revision1 only after genuine approval and current exact version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}
