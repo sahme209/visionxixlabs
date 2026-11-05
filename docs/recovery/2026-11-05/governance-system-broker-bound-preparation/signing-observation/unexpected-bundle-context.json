@@ -1,0 +1,22 @@
+{
+  "unexpectedBundleContext": true,
+  "additionalFiles": [
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-broker-bound-6018e44c/stage/assembly/Axiom Synthetic Custodian.app/Contents/_CodeSignature/CodeResources",
+      "sha256": "6686de10a28a2fe11b36cbb86dcbacc827cfc4ea116b4dabf1845e5aee629e9b",
+      "size": 2200,
+      "mode": "0o644",
+      "uid": 501,
+      "ino": 16822454,
+      "dev": 16777232,
+      "mtime_ns": 1793904663847562913,
+      "ctime_ns": 1793904663847562913
+    }
+  ],
+  "rawDisplay": "3-stderr.log",
+  "commandsMatchedApprovedArgv": true,
+  "leafOnlyEffectConfirmed": false,
+  "finalAppSealAccepted": false,
+  "retryAuthorized": false,
+  "targetExecuted": false
+}
