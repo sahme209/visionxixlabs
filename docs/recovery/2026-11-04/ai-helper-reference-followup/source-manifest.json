@@ -1,0 +1,37 @@
+{
+  "files": [
+    {
+      "path": "app/api/automation/remediate/route.ts",
+      "sha256": "05dc5506485eb7aa197a9c39d1622db5d3040ef6f178a2c0aa84500c3077116b"
+    },
+    {
+      "path": "lib/automation/agentLoop.ts",
+      "sha256": "b046072a00486073f2d3784d77a9ea2f10ce8d94fbabdf6da6517a403615f6f1"
+    },
+    {
+      "path": "lib/automation/playbooks/costIdleResources.ts",
+      "sha256": "da5986d465c07a97740d981410e78258f7240d3248148f2abb32598ba60eeda4"
+    },
+    {
+      "path": "lib/connectors/githubWrite.ts",
+      "sha256": "d7c8a1700964a629adc51a1374c54ccd5e25101242afb1af77249eaa68017cbd"
+    },
+    {
+      "path": "lib/ai/orchestrator.ts",
+      "sha256": "289333872bfa934ef59edd089f8ccb3f2e15ef9e3fd7ff8461c98bfe69d74bc5"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "caa33541753d3629424e7bb5302f634ffa89eb2186c9e1d6581c29b8eeaf2ceb"
+    },
+    {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "sha256": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce"
+    },
+    {
+      "path": "app/api/automation/remediate/__tests__/callbackBoundary.test.ts",
+      "sha256": "478ad65629d58603c0217aa3cbb34758ab57dabbc4ad8fe96374179831510c7b"
+    }
+  ],
+  "scope": "direct source only; not complete transitive runtime identity"
+}

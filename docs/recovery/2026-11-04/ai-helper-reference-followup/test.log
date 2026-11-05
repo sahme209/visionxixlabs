@@ -1,0 +1,10 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ app/api/automation/remediate/__tests__/callbackBoundary.test.ts (2 tests) 6ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  04:25:26
+   Duration  275ms (transform 134ms, setup 0ms, import 192ms, tests 6ms, environment 0ms)
+

@@ -1,0 +1,1274 @@
+{
+  "command": [
+    "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path/rg",
+    "--no-config",
+    "--json",
+    "-w",
+    "-e",
+    "explainSubject|callProvider|generateCompletion|narrateApprovalPacket|planCostIdleResources|narrateRationale|prioritizeReviewFindings|writePrDescription|suggestResourceTags|analyzeFeatureFlags|answerComplianceQuestion|rerankHelpCandidates|draftPostmortem|suggestRootCauses|adviseNextActions|summarizeIncident|generateReleaseNotes|narrateRollbackDecision|recommendRunbook|generateSecurityPlaybook|classifyRisk",
+    "app",
+    "lib",
+    "components",
+    "packages",
+    "scripts",
+    "desktop",
+    "test",
+    "--glob",
+    "*.ts",
+    "--glob",
+    "*.tsx",
+    "--glob",
+    "*.js",
+    "--glob",
+    "*.cjs",
+    "--glob",
+    "*.mjs",
+    "--glob",
+    "!**/node_modules/**",
+    "--glob",
+    "!**/target/**",
+    "--glob",
+    "!**/dist/**"
+  ],
+  "exitCode": 0,
+  "stdoutBytes": 64769,
+  "matchLines": 153,
+  "groups": {
+    "test-or-smoke-text-reference": 121,
+    "non-test-text-reference": 32
+  },
+  "qualification": "text reference categories, manually source-reviewed callback; no complete dynamic/import graph or unreachability proof",
+  "rows": [
+    {
+      "path": "lib/insights/__tests__/aiNextBestActionAdvisor.test.ts",
+      "line": 6,
+      "text": "import { adviseNextActions, type NbaSeed } from \"../aiNextBestActionAdvisor\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "60e93701343255868f4167ccd0e3070dc1e44f9ffe70f6da8e6248388ba05759",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/insights/__tests__/aiNextBestActionAdvisor.test.ts",
+      "line": 33,
+      "text": "    const r = await adviseNextActions(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "60e93701343255868f4167ccd0e3070dc1e44f9ffe70f6da8e6248388ba05759",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/insights/__tests__/aiNextBestActionAdvisor.test.ts",
+      "line": 40,
+      "text": "    const r = await adviseNextActions(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "60e93701343255868f4167ccd0e3070dc1e44f9ffe70f6da8e6248388ba05759",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/insights/__tests__/aiNextBestActionAdvisor.test.ts",
+      "line": 46,
+      "text": "    const r = await adviseNextActions(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "60e93701343255868f4167ccd0e3070dc1e44f9ffe70f6da8e6248388ba05759",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/insights/__tests__/aiNextBestActionAdvisor.test.ts",
+      "line": 51,
+      "text": "    const r = await adviseNextActions({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "60e93701343255868f4167ccd0e3070dc1e44f9ffe70f6da8e6248388ba05759",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/insights/__tests__/aiNextBestActionAdvisor.test.ts",
+      "line": 61,
+      "text": "    const r = await adviseNextActions(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "60e93701343255868f4167ccd0e3070dc1e44f9ffe70f6da8e6248388ba05759",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/insights/aiNextBestActionAdvisor.ts",
+      "line": 90,
+      "text": "export async function adviseNextActions(seed: NbaSeed): Promise<NbaResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "5f1a8030f72c6bcc466ee2ae572024e4356aefc1c89ca3102de254ac48c178d3",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts",
+      "line": 6,
+      "text": "import { analyzeFeatureFlags, type FeatureFlagSnapshot } from \"../aiFeatureFlagAnalyst\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "c9c7714cde20e5aa7f0f84af67760a4aaf2341dede9821f398991074b9114e6d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts",
+      "line": 27,
+      "text": "    const r = await analyzeFeatureFlags([]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "c9c7714cde20e5aa7f0f84af67760a4aaf2341dede9821f398991074b9114e6d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts",
+      "line": 33,
+      "text": "    const r = await analyzeFeatureFlags([F(\"flag.fully_rolled\", 100, 45, 1000)]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "c9c7714cde20e5aa7f0f84af67760a4aaf2341dede9821f398991074b9114e6d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts",
+      "line": 38,
+      "text": "    const r = await analyzeFeatureFlags([F(\"flag.dead\", 0, 60, 0)]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "c9c7714cde20e5aa7f0f84af67760a4aaf2341dede9821f398991074b9114e6d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts",
+      "line": 43,
+      "text": "    const r = await analyzeFeatureFlags([F(\"flag.no_traffic\", 50, 10, 0)]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "c9c7714cde20e5aa7f0f84af67760a4aaf2341dede9821f398991074b9114e6d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts",
+      "line": 48,
+      "text": "    const r = await analyzeFeatureFlags([F(\"flag.midflight\", 50, 20, 100)]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "c9c7714cde20e5aa7f0f84af67760a4aaf2341dede9821f398991074b9114e6d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/flags/__tests__/aiFeatureFlagAnalyst.test.ts",
+      "line": 53,
+      "text": "    const r = await analyzeFeatureFlags([F(\"flag.new\", 25, 5, 100)]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "c9c7714cde20e5aa7f0f84af67760a4aaf2341dede9821f398991074b9114e6d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/flags/aiFeatureFlagAnalyst.ts",
+      "line": 68,
+      "text": "export async function analyzeFeatureFlags(flags: readonly FeatureFlagSnapshot[]): Promise<FlagAnalysisResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "0697661616310418233fdb53b6740cfa210f6e722f5c3bfc80adf1c8268b9f43",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/security/dataHandlingSummary.ts",
+      "line": 259,
+      "text": "export function explainSubject(subject: DataSubject): { classification: string; policy: ReturnType<typeof policyForSubject> } {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "d64ea2e23b02936a0ce479861c1e6a6f6946d8a374ee98bd95c86b39d1b08c03",
+      "reviewedCategory": "different-symbol-or-comment"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiRollbackNarrator.test.ts",
+      "line": 6,
+      "text": "import { narrateRollbackDecision } from \"../aiRollbackNarrator\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "81f7f02a994c0920673c1319c6e80020f6efda81a47b21b28fcedbcc2337b209",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiRollbackNarrator.test.ts",
+      "line": 24,
+      "text": "    const r = await narrateRollbackDecision({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "81f7f02a994c0920673c1319c6e80020f6efda81a47b21b28fcedbcc2337b209",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiRollbackNarrator.test.ts",
+      "line": 42,
+      "text": "    const r = await narrateRollbackDecision({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "81f7f02a994c0920673c1319c6e80020f6efda81a47b21b28fcedbcc2337b209",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiRollbackNarrator.test.ts",
+      "line": 51,
+      "text": "    const r = await narrateRollbackDecision({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "81f7f02a994c0920673c1319c6e80020f6efda81a47b21b28fcedbcc2337b209",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/runbooks/aiRunbookRecommender.ts",
+      "line": 40,
+      "text": "export async function recommendRunbook(input: {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "68031c5ab9017d644454d3bf620e501447e4ccbaaa6139ed3b815cb312133bee",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/ai/directProviderCall.ts",
+      "line": 35,
+      "text": "export async function callProvider(\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "dcc4a7ba22b0acacaa951250489a7d539e807da1ad986745d1ebd174cb486739",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/runbooks/__tests__/aiRunbookRecommender.test.ts",
+      "line": 6,
+      "text": "import { recommendRunbook, type RunbookCandidate } from \"../aiRunbookRecommender\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d71403946e4d8499ec68c57f2a107327bd6692cbc441b1c73ebd7dfd5a518f79",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/runbooks/__tests__/aiRunbookRecommender.test.ts",
+      "line": 29,
+      "text": "    const r = await recommendRunbook({ problem: \"p95 latency spike\", catalog: CATALOG });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d71403946e4d8499ec68c57f2a107327bd6692cbc441b1c73ebd7dfd5a518f79",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/runbooks/__tests__/aiRunbookRecommender.test.ts",
+      "line": 35,
+      "text": "    const r = await recommendRunbook({ problem: \"x\", catalog: [] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d71403946e4d8499ec68c57f2a107327bd6692cbc441b1c73ebd7dfd5a518f79",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/runbooks/__tests__/aiRunbookRecommender.test.ts",
+      "line": 41,
+      "text": "    const r = await recommendRunbook({ problem: \"x\", catalog: CATALOG });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d71403946e4d8499ec68c57f2a107327bd6692cbc441b1c73ebd7dfd5a518f79",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/ai/aiExplainer.ts",
+      "line": 43,
+      "text": "export async function explainSubject(input: ExplainInput): Promise<ExplainResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "aea1207c79c5f3ed908bc3a2ccf191a912552d2d9ed63b93c637c9ff570cbeed",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/ai/provider.ts",
+      "line": 30,
+      "text": "export async function generateCompletion(opts: GenerateOptions): Promise<GenerateResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "4c8619382ea482307374333d864ec1ae12de22f942acdb65580d772c47f2cef4",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/agents/postmortemDrafter.ts",
+      "line": 96,
+      "text": "export function draftPostmortem(input: PostmortemInput): PostmortemDraft {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "e0ad7c1946d429bf8534eade48308bd17e38dabf302dfc2e596bf4ec0c435a0c",
+      "reviewedCategory": "different-symbol-or-comment"
+    },
+    {
+      "path": "lib/ai/__tests__/aiExplainer.test.ts",
+      "line": 6,
+      "text": "import { explainSubject } from \"../aiExplainer\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601ad511f354496b21935af2a2a53d9448d202f68923c7c10010d14b1cb586d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/ai/__tests__/aiExplainer.test.ts",
+      "line": 24,
+      "text": "    const r = await explainSubject({ kind: \"security_finding\", label: \"S3 PAB drift\" });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601ad511f354496b21935af2a2a53d9448d202f68923c7c10010d14b1cb586d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/ai/__tests__/aiExplainer.test.ts",
+      "line": 31,
+      "text": "    const r = await explainSubject({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601ad511f354496b21935af2a2a53d9448d202f68923c7c10010d14b1cb586d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/ai/__tests__/aiExplainer.test.ts",
+      "line": 39,
+      "text": "    const r = await explainSubject({ kind: \"metric\", label: \"throughput\", audience: \"executive\" });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601ad511f354496b21935af2a2a53d9448d202f68923c7c10010d14b1cb586d",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 2,
+      "text": "import { draftPostmortem, PostmortemValidationError, type PostmortemInput, type ActionItem } from \"../postmortemDrafter\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 33,
+      "text": "describe(\"draftPostmortem\", () => {\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 35,
+      "text": "    const r = draftPostmortem(postmortem());\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 45,
+      "text": "    expect(() => draftPostmortem(postmortem({ incidentId: \"\" }))).toThrow(PostmortemValidationError);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 46,
+      "text": "    expect(() => draftPostmortem(postmortem({ title: \"\" }))).toThrow(PostmortemValidationError);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 47,
+      "text": "    expect(() => draftPostmortem(postmortem({ rootCause: \"\" }))).toThrow(PostmortemValidationError);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 48,
+      "text": "    expect(() => draftPostmortem(postmortem({ authorEmail: \"\" }))).toThrow(PostmortemValidationError);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 53,
+      "text": "    const r = draftPostmortem(postmortem({ timeline: ongoing }));\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 60,
+      "text": "    const r = draftPostmortem(postmortem({ timeline: empty }));\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 65,
+      "text": "    const r = draftPostmortem(postmortem({ actionItems: [] }));\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 71,
+      "text": "    const r = draftPostmortem(postmortem({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 79,
+      "text": "    const r = draftPostmortem(postmortem({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 87,
+      "text": "    const r = draftPostmortem(postmortem());\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 97,
+      "text": "    const r = draftPostmortem(postmortem());\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 106,
+      "text": "    const r = draftPostmortem(postmortem());\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/agents/__tests__/postmortemDrafter.test.ts",
+      "line": 112,
+      "text": "    const r = draftPostmortem(postmortem({ severity: \"sev1\" }));\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d4b3902e9e7a60033cc5d56863f01109ad7fda1d54671b68c6ca7f8618bea238",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/ai/__tests__/directProviderCallRedaction.test.ts",
+      "line": 18,
+      "text": "import { callProvider } from \"../directProviderCall\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0e2c68b0d07bb08d00cd9504510aa481faa22576cdd852bca146fa62d6f52a26",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/ai/__tests__/directProviderCallRedaction.test.ts",
+      "line": 20,
+      "text": "describe(\"callProvider \u2014 Gateway-only compatibility\", () => {\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0e2c68b0d07bb08d00cd9504510aa481faa22576cdd852bca146fa62d6f52a26",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/ai/__tests__/directProviderCallRedaction.test.ts",
+      "line": 24,
+      "text": "    const result = await callProvider(legacyProvider, \"analyze this repository\", { maxTokens: 100, temperature: 0.2 });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0e2c68b0d07bb08d00cd9504510aa481faa22576cdd852bca146fa62d6f52a26",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts",
+      "line": 6,
+      "text": "import { generateReleaseNotes, type CommitSummary } from \"../aiReleaseNoteGenerator\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "71f430b3367e03cf4fb4799442e7eecb2fb18ce378183985af8bbed4620c7f09",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts",
+      "line": 27,
+      "text": "    const r = await generateReleaseNotes([]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "71f430b3367e03cf4fb4799442e7eecb2fb18ce378183985af8bbed4620c7f09",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts",
+      "line": 34,
+      "text": "    const r = await generateReleaseNotes(commits);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "71f430b3367e03cf4fb4799442e7eecb2fb18ce378183985af8bbed4620c7f09",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts",
+      "line": 40,
+      "text": "    const r = await generateReleaseNotes([C(\"abc1234\", \"Add tenant insights\", \"insights\", 42)]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "71f430b3367e03cf4fb4799442e7eecb2fb18ce378183985af8bbed4620c7f09",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/__tests__/aiReleaseNoteGenerator.test.ts",
+      "line": 46,
+      "text": "    const r = await generateReleaseNotes([C(\"abc1234\", \"Fix typo\")]);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "71f430b3367e03cf4fb4799442e7eecb2fb18ce378183985af8bbed4620c7f09",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/releaseops/aiRollbackNarrator.ts",
+      "line": 44,
+      "text": "export async function narrateRollbackDecision(input: RollbackNarrativeInput): Promise<RollbackNarrative> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "9d253d27ee14f7b4fb88e6a853eaf1c3ec7ce508fb7ea90f7126cca8044075bc",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/automation/playbooks/costIdleResources.ts",
+      "line": 38,
+      "text": "export async function planCostIdleResources(\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "da5986d465c07a97740d981410e78258f7240d3248148f2abb32598ba60eeda4",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/cicd/aiPrDescriptionWriter.ts",
+      "line": 59,
+      "text": "export async function writePrDescription(input: PrDescriptionInput): Promise<PrDescriptionResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "0705ebfa613f56ca4c499dd873d7d088f6c2e31c0b957198395f4e700e15a4cf",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts",
+      "line": 6,
+      "text": "import { narrateApprovalPacket, type ApprovalPacketSeed } from \"../aiApprovalPacketNarrator\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d0541ddac83e8d8eeb625303f13941b749d19e8f6a02976d6c390c47c1b7515b",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts",
+      "line": 36,
+      "text": "    const r = await narrateApprovalPacket(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d0541ddac83e8d8eeb625303f13941b749d19e8f6a02976d6c390c47c1b7515b",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts",
+      "line": 46,
+      "text": "    const blocked = await narrateApprovalPacket({ ...SEED, policyVerdict: \"fail\", boundaryVerdict: \"fail\" });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d0541ddac83e8d8eeb625303f13941b749d19e8f6a02976d6c390c47c1b7515b",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts",
+      "line": 52,
+      "text": "    const r = await narrateApprovalPacket(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d0541ddac83e8d8eeb625303f13941b749d19e8f6a02976d6c390c47c1b7515b",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/approvals/__tests__/aiApprovalPacketNarrator.test.ts",
+      "line": 57,
+      "text": "    const r = await narrateApprovalPacket({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d0541ddac83e8d8eeb625303f13941b749d19e8f6a02976d6c390c47c1b7515b",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 6,
+      "text": "import { prioritizeReviewFindings, type ReviewFinding } from \"../aiCodeReviewPrioritizer\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 27,
+      "text": "    const r = await prioritizeReviewFindings({ findings: [] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 32,
+      "text": "    const r = await prioritizeReviewFindings({ findings: [F(\"f1\", \"security\")] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 38,
+      "text": "    const r = await prioritizeReviewFindings({ findings: [F(\"f1\", \"type_error\")] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 43,
+      "text": "    const r = await prioritizeReviewFindings({ findings: [F(\"f1\", \"test_gap\")] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 48,
+      "text": "    const r = await prioritizeReviewFindings({ findings: [F(\"f1\", \"doc_drift\")] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 53,
+      "text": "    const r = await prioritizeReviewFindings({ findings: [F(\"f1\", \"lint\", \"use of deprecated API\")] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 58,
+      "text": "    const r = await prioritizeReviewFindings({ findings: [F(\"f1\", \"style\", \"trailing whitespace\")] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiCodeReviewPrioritizer.test.ts",
+      "line": 63,
+      "text": "    const r = await prioritizeReviewFindings({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "36412c0654289885e296ba910d1eb0eb690452c9fbce38d1b35cb05a9353f8a7",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiPrDescriptionWriter.test.ts",
+      "line": 6,
+      "text": "import { writePrDescription } from \"../aiPrDescriptionWriter\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "76a0b08d4ac867a23be9511a6060d77ae8670a0e9660e44f650986bf6be6eea9",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiPrDescriptionWriter.test.ts",
+      "line": 24,
+      "text": "    const r = await writePrDescription({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "76a0b08d4ac867a23be9511a6060d77ae8670a0e9660e44f650986bf6be6eea9",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiPrDescriptionWriter.test.ts",
+      "line": 39,
+      "text": "    const r = await writePrDescription({ title: \"\", commits: [] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "76a0b08d4ac867a23be9511a6060d77ae8670a0e9660e44f650986bf6be6eea9",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cicd/__tests__/aiPrDescriptionWriter.test.ts",
+      "line": 45,
+      "text": "    const r = await writePrDescription({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "76a0b08d4ac867a23be9511a6060d77ae8670a0e9660e44f650986bf6be6eea9",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/approvals/aiApprovalPacketNarrator.ts",
+      "line": 56,
+      "text": "export async function narrateApprovalPacket(seed: ApprovalPacketSeed): Promise<ApprovalNarrative> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "0bae0ea15fe73a43825d59e0b83266cfb7b9a95452c731331119381a9e3c4fd4",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/cicd/aiCodeReviewPrioritizer.ts",
+      "line": 71,
+      "text": "export async function prioritizeReviewFindings(input: {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "1f2937f6ccae336418bc0f71416e66933b04754e2cc6584557c668bf652bedca",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/securityScanner/aiPlaybookGenerator.ts",
+      "line": 60,
+      "text": "export async function generateSecurityPlaybook(seed: PlaybookFindingSeed): Promise<PlaybookResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "6fa662a6386e8e10f8dd4ed92f0cb30d819667f14bbefc594e505ac070019f32",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/autonomy/__tests__/aiRationaleNarrator.test.ts",
+      "line": 6,
+      "text": "import { narrateRationale } from \"../aiRationaleNarrator\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "84628f38c5efa88daedfa2e71df1753493d02fe9e5b9fc6ee428e9f9d485f302",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/autonomy/__tests__/aiRationaleNarrator.test.ts",
+      "line": 34,
+      "text": "    const r = await narrateRationale(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "84628f38c5efa88daedfa2e71df1753493d02fe9e5b9fc6ee428e9f9d485f302",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/autonomy/__tests__/aiRationaleNarrator.test.ts",
+      "line": 43,
+      "text": "    const r = await narrateRationale(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "84628f38c5efa88daedfa2e71df1753493d02fe9e5b9fc6ee428e9f9d485f302",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/autonomy/__tests__/aiRationaleNarrator.test.ts",
+      "line": 48,
+      "text": "    const r = await narrateRationale({ ...SEED, dissenters: [] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "84628f38c5efa88daedfa2e71df1753493d02fe9e5b9fc6ee428e9f9d485f302",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/autonomy/__tests__/aiRationaleNarrator.test.ts",
+      "line": 53,
+      "text": "    const r = await narrateRationale({ ...SEED, policyVerdict: \"fail\", boundaryVerdict: \"fail\" });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "84628f38c5efa88daedfa2e71df1753493d02fe9e5b9fc6ee428e9f9d485f302",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/aiRiskClassifier.ts",
+      "line": 59,
+      "text": "export async function classifyRisk(input: ClassifyInput): Promise<RiskClassifyResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "1b4450596eabd0b49254e9d52f9ce92cc7e1047132f5faba8fe93b3d54184cbd",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiPlaybookGenerator.test.ts",
+      "line": 6,
+      "text": "import { generateSecurityPlaybook, type PlaybookFindingSeed } from \"../aiPlaybookGenerator\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0543058188fd6c3eb11da657b04534850e2c15b69b0086aeb6f5e9dffb6aa2e2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiPlaybookGenerator.test.ts",
+      "line": 31,
+      "text": "    const r = await generateSecurityPlaybook(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0543058188fd6c3eb11da657b04534850e2c15b69b0086aeb6f5e9dffb6aa2e2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiPlaybookGenerator.test.ts",
+      "line": 37,
+      "text": "    const r = await generateSecurityPlaybook(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0543058188fd6c3eb11da657b04534850e2c15b69b0086aeb6f5e9dffb6aa2e2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiPlaybookGenerator.test.ts",
+      "line": 46,
+      "text": "    const r = await generateSecurityPlaybook(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0543058188fd6c3eb11da657b04534850e2c15b69b0086aeb6f5e9dffb6aa2e2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiPlaybookGenerator.test.ts",
+      "line": 52,
+      "text": "    const r = await generateSecurityPlaybook(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0543058188fd6c3eb11da657b04534850e2c15b69b0086aeb6f5e9dffb6aa2e2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiPlaybookGenerator.test.ts",
+      "line": 58,
+      "text": "    const r = await generateSecurityPlaybook(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "0543058188fd6c3eb11da657b04534850e2c15b69b0086aeb6f5e9dffb6aa2e2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiRiskClassifier.test.ts",
+      "line": 6,
+      "text": "import { classifyRisk } from \"../aiRiskClassifier\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "9a1e3a321280d83b8b9ed4a3573f170767eb5449ff0e11f3527ebfd667afd4b2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiRiskClassifier.test.ts",
+      "line": 24,
+      "text": "    const r = await classifyRisk({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "9a1e3a321280d83b8b9ed4a3573f170767eb5449ff0e11f3527ebfd667afd4b2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiRiskClassifier.test.ts",
+      "line": 35,
+      "text": "    const r = await classifyRisk({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "9a1e3a321280d83b8b9ed4a3573f170767eb5449ff0e11f3527ebfd667afd4b2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiRiskClassifier.test.ts",
+      "line": 44,
+      "text": "    const r = await classifyRisk({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "9a1e3a321280d83b8b9ed4a3573f170767eb5449ff0e11f3527ebfd667afd4b2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiRiskClassifier.test.ts",
+      "line": 53,
+      "text": "    const r = await classifyRisk({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "9a1e3a321280d83b8b9ed4a3573f170767eb5449ff0e11f3527ebfd667afd4b2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/securityScanner/__tests__/aiRiskClassifier.test.ts",
+      "line": 62,
+      "text": "    const r = await classifyRisk({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "9a1e3a321280d83b8b9ed4a3573f170767eb5449ff0e11f3527ebfd667afd4b2",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/autonomy/aiRationaleNarrator.ts",
+      "line": 55,
+      "text": "export async function narrateRationale(seed: RationaleSeed): Promise<RationaleNarrative> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "481f9f071e751ac31606029c53a81d1d68e63112b9a06baf4ebca66914947b4a",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/cloud/aiResourceTagger.ts",
+      "line": 77,
+      "text": "export async function suggestResourceTags(input: {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "71efa62d091ee0cb5a06483a572e0fb52b3056ba5f58ba92dad59d8779f4e761",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/toolExecution.ts",
+      "line": 407,
+      "text": " * tools.ts's classifyRisk). This checks whether a tool's args target a\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "1611e32baafefbde6da827ee426149df1f726196d7b9d4fa915d7d3f58a01d1e",
+      "reviewedCategory": "different-symbol-or-comment"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/tools.ts",
+      "line": 189,
+      "text": "export function classifyRisk(tool: ToolDefinition, opts: { targetsProdEnvironment?: boolean } = {}): ToolRiskLevel {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "d6d6d19a1952e95ca4f150e8f30a610fa7c28fe9b3ec8e8c48739604283d0075",
+      "reviewedCategory": "different-symbol-or-comment"
+    },
+    {
+      "path": "lib/help/__tests__/aiComplianceQa.test.ts",
+      "line": 6,
+      "text": "import { answerComplianceQuestion, type QaCapabilityRow } from \"../aiComplianceQa\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "77fbd5e7c8aecd52a628f950e7054d582446081a37fc68adbbcfcef3d7ffb6fb",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/__tests__/aiComplianceQa.test.ts",
+      "line": 30,
+      "text": "    const r = await answerComplianceQuestion({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "77fbd5e7c8aecd52a628f950e7054d582446081a37fc68adbbcfcef3d7ffb6fb",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/__tests__/aiComplianceQa.test.ts",
+      "line": 39,
+      "text": "    const r = await answerComplianceQuestion({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "77fbd5e7c8aecd52a628f950e7054d582446081a37fc68adbbcfcef3d7ffb6fb",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/__tests__/aiComplianceQa.test.ts",
+      "line": 48,
+      "text": "    const r = await answerComplianceQuestion({ question: \"x\", rows: [] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "77fbd5e7c8aecd52a628f950e7054d582446081a37fc68adbbcfcef3d7ffb6fb",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/__tests__/aiComplianceQa.test.ts",
+      "line": 54,
+      "text": "    const r = await answerComplianceQuestion({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "77fbd5e7c8aecd52a628f950e7054d582446081a37fc68adbbcfcef3d7ffb6fb",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/tools.test.ts",
+      "line": 2,
+      "text": "import { TOOL_REGISTRY, findTool, classifyRisk, toolCatalogPrompt } from \"../tools\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "bae6dcc26015e45927f23962ae5bd36a4b710403c01c1b5753a2cab278ebfb45",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/tools.test.ts",
+      "line": 47,
+      "text": "describe(\"classifyRisk\", () => {\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "bae6dcc26015e45927f23962ae5bd36a4b710403c01c1b5753a2cab278ebfb45",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/tools.test.ts",
+      "line": 50,
+      "text": "    expect(classifyRisk(tool, { targetsProdEnvironment: false })).toBe(\"high\");\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "bae6dcc26015e45927f23962ae5bd36a4b710403c01c1b5753a2cab278ebfb45",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/tools.test.ts",
+      "line": 55,
+      "text": "    expect(classifyRisk(tool, { targetsProdEnvironment: true })).toBe(\"high\");\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "bae6dcc26015e45927f23962ae5bd36a4b710403c01c1b5753a2cab278ebfb45",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/tools.test.ts",
+      "line": 60,
+      "text": "    expect(classifyRisk(tool, { targetsProdEnvironment: false })).toBe(\"medium\");\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "bae6dcc26015e45927f23962ae5bd36a4b710403c01c1b5753a2cab278ebfb45",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/tools.test.ts",
+      "line": 65,
+      "text": "    expect(classifyRisk(tool, { targetsProdEnvironment: true })).toBe(\"low\");\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "bae6dcc26015e45927f23962ae5bd36a4b710403c01c1b5753a2cab278ebfb45",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/__tests__/aiHelpReranker.test.ts",
+      "line": 9,
+      "text": "import { rerankHelpCandidates, type RerankCandidate } from \"../aiHelpReranker\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "38f87b598c35d6a1aae16fc291a7c203c05bc20615f3c2214fc8d64fcae507b4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/__tests__/aiHelpReranker.test.ts",
+      "line": 32,
+      "text": "    const r = await rerankHelpCandidates({ query: \"How do I approve?\", candidates: CANDS });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "38f87b598c35d6a1aae16fc291a7c203c05bc20615f3c2214fc8d64fcae507b4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/__tests__/aiHelpReranker.test.ts",
+      "line": 39,
+      "text": "    const r = await rerankHelpCandidates({ query: \"anything\", candidates: [] });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "38f87b598c35d6a1aae16fc291a7c203c05bc20615f3c2214fc8d64fcae507b4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/__tests__/aiHelpReranker.test.ts",
+      "line": 46,
+      "text": "    const r = await rerankHelpCandidates({ query: \"anything\", candidates: CANDS });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "38f87b598c35d6a1aae16fc291a7c203c05bc20615f3c2214fc8d64fcae507b4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/help/aiHelpReranker.ts",
+      "line": 44,
+      "text": "export async function rerankHelpCandidates(input: {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "98db82494cf20dc60de047bfe098a19fe1ce55c0c8a3d208ddbfa49b7ea10553",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/help/aiComplianceQa.ts",
+      "line": 67,
+      "text": "export async function answerComplianceQuestion(input: {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "790f3eb05f08ad7d16e471531b098b99f0f02c36e865680d40b1d42f6e6b7672",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/releaseops/aiReleaseNoteGenerator.ts",
+      "line": 43,
+      "text": "export async function generateReleaseNotes(commits: readonly CommitSummary[]): Promise<ReleaseNoteResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "d45bf2fa6ddf005909d4a3964af5550543910fc5400e22859dace4f836b5b677",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/notifications/__tests__/aiIncidentSummarizer.test.ts",
+      "line": 11,
+      "text": "import { summarizeIncident } from \"../aiIncidentSummarizer\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "25a2b5b92b613d1fbcb628e4dfa8dceffafbb84a1968c1ff5e06865782581087",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/notifications/__tests__/aiIncidentSummarizer.test.ts",
+      "line": 29,
+      "text": "    const r = await summarizeIncident({ headline: \"Approval packet ready\", severity: \"high\" });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "25a2b5b92b613d1fbcb628e4dfa8dceffafbb84a1968c1ff5e06865782581087",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/notifications/__tests__/aiIncidentSummarizer.test.ts",
+      "line": 37,
+      "text": "    const r = await summarizeIncident({ headline: \"Drift detected\", severity: \"critical\" });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "25a2b5b92b613d1fbcb628e4dfa8dceffafbb84a1968c1ff5e06865782581087",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/notifications/__tests__/aiIncidentSummarizer.test.ts",
+      "line": 43,
+      "text": "    const r = await summarizeIncident({ headline: \"Long event\", detail });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "25a2b5b92b613d1fbcb628e4dfa8dceffafbb84a1968c1ff5e06865782581087",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/notifications/__tests__/aiIncidentSummarizer.test.ts",
+      "line": 49,
+      "text": "    const r = await summarizeIncident({ headline: \"\" });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "25a2b5b92b613d1fbcb628e4dfa8dceffafbb84a1968c1ff5e06865782581087",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/validation/platformValidationMatrix.ts",
+      "line": 1478,
+      "text": "  { id: \"ai.explainer\", area: \"operating_loop\", capability: \"lib/ai/aiExplainer \u2014 explainSubject({kind, label, context, audience}). Closed ExplainKind union (security_finding | cloud_resource | alert | runbook_step | control | metric). Three audience prompts (operator/executive/engineer). 500-char clip. Falls back to a labeled template when Mock answers or provider errors. NEVER throws.\", status: \"passing\", evidence: \"lib/ai/aiExplainer.ts\" },\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "0420dbe1b93be7b1e64383b06cc779abd72348f1e956419f4d7fb026e3ef7901",
+      "reviewedCategory": "capability-description-text"
+    },
+    {
+      "path": "lib/validation/platformValidationMatrix.ts",
+      "line": 1484,
+      "text": "  { id: \"incidents.ai_rca_suggester\", area: \"operating_loop\", capability: \"lib/incidents/aiRootCauseSuggester \u2014 suggestRootCauses(seed). Extracts up to 5 candidates, validates each (non-empty cause + mitigation, confidence clamped to [0,1]), drops invalid entries, sorts by confidence descending. Mitigation language must remain advisory \u2014 never imply auto-execution. Deterministic 3-candidate fallback when Mock answers / model returns invalid / provider errors.\", status: \"passing\", evidence: \"lib/incidents/aiRootCauseSuggester.ts\" },\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "0420dbe1b93be7b1e64383b06cc779abd72348f1e956419f4d7fb026e3ef7901",
+      "reviewedCategory": "capability-description-text"
+    },
+    {
+      "path": "lib/validation/platformValidationMatrix.ts",
+      "line": 1544,
+      "text": "  { id: \"runbooks.ai_recommender\", area: \"operating_loop\", capability: \"lib/runbooks/aiRunbookRecommender \u2014 recommendRunbook({problem, catalog}). Strict {bestId, rationale} schema. REJECTS hallucinated ids \u2014 bestId must appear in catalog. Falls back to first catalog entry when Mock answers / id unknown / provider errors. Rationale clipped at 240 chars; recommendation is ALWAYS advisory.\", status: \"passing\", evidence: \"lib/runbooks/aiRunbookRecommender.ts\" },\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "0420dbe1b93be7b1e64383b06cc779abd72348f1e956419f4d7fb026e3ef7901",
+      "reviewedCategory": "capability-description-text"
+    },
+    {
+      "path": "lib/notifications/aiIncidentSummarizer.ts",
+      "line": 57,
+      "text": "export async function summarizeIncident(input: IncidentSummarizeInput): Promise<IncidentSummarizeResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "157c9d9385c14370816305deb71514dba58154f81352469dca3df566f51c5b7b",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/incidents/aiRootCauseSuggester.ts",
+      "line": 74,
+      "text": "export async function suggestRootCauses(seed: IncidentSeed): Promise<RcaResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "c188e7b0e654dbe2ab50f119f92fa0a9cea31ba2f138ab4bb3f57c2d9174b950",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/incidents/aiPostmortemDrafter.ts",
+      "line": 66,
+      "text": "export async function draftPostmortem(seed: PostmortemSeed): Promise<PostmortemResult> {\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "2871c0695d7fe30cb05f924c65c77085a7238a50fee51881c1f8e3a5a27714ca",
+      "reviewedCategory": "target-declaration-text"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/decisionLoop.ts",
+      "line": 21,
+      "text": "import { findTool, toolCatalogPrompt, classifyRisk, type ToolRiskLevel } from \"./tools\";\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "d9fe658077c6769ba37fe307c245f74e514509c89cd7782fced0112f5700e366",
+      "reviewedCategory": "different-symbol-or-comment"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/decisionLoop.ts",
+      "line": 415,
+      "text": "    const riskLevel = classifyRisk(tool, { targetsProdEnvironment: targetsProd });\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "d9fe658077c6769ba37fe307c245f74e514509c89cd7782fced0112f5700e366",
+      "reviewedCategory": "different-symbol-or-comment"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiPostmortemDrafter.test.ts",
+      "line": 6,
+      "text": "import { draftPostmortem, type PostmortemSeed } from \"../aiPostmortemDrafter\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d39bf5e8fa518db4d67a60f277492aa1b437c75bd92831f9d39e5a00a1d2599e",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiPostmortemDrafter.test.ts",
+      "line": 38,
+      "text": "    const r = await draftPostmortem(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d39bf5e8fa518db4d67a60f277492aa1b437c75bd92831f9d39e5a00a1d2599e",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiPostmortemDrafter.test.ts",
+      "line": 49,
+      "text": "    const r = await draftPostmortem(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d39bf5e8fa518db4d67a60f277492aa1b437c75bd92831f9d39e5a00a1d2599e",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiPostmortemDrafter.test.ts",
+      "line": 55,
+      "text": "    const r = await draftPostmortem({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d39bf5e8fa518db4d67a60f277492aa1b437c75bd92831f9d39e5a00a1d2599e",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiPostmortemDrafter.test.ts",
+      "line": 65,
+      "text": "    const r = await draftPostmortem(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d39bf5e8fa518db4d67a60f277492aa1b437c75bd92831f9d39e5a00a1d2599e",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiPostmortemDrafter.test.ts",
+      "line": 70,
+      "text": "    const r = await draftPostmortem({ ...SEED, title: \"\" });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "d39bf5e8fa518db4d67a60f277492aa1b437c75bd92831f9d39e5a00a1d2599e",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiRootCauseSuggester.test.ts",
+      "line": 9,
+      "text": "import { suggestRootCauses, type IncidentSeed } from \"../aiRootCauseSuggester\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "005b409507f3e2d27c0fe8989f190b13e870396b93638037e5de81cd6c8217db",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiRootCauseSuggester.test.ts",
+      "line": 38,
+      "text": "    const r = await suggestRootCauses(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "005b409507f3e2d27c0fe8989f190b13e870396b93638037e5de81cd6c8217db",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiRootCauseSuggester.test.ts",
+      "line": 44,
+      "text": "    const r = await suggestRootCauses(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "005b409507f3e2d27c0fe8989f190b13e870396b93638037e5de81cd6c8217db",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiRootCauseSuggester.test.ts",
+      "line": 49,
+      "text": "    const r = await suggestRootCauses(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "005b409507f3e2d27c0fe8989f190b13e870396b93638037e5de81cd6c8217db",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/incidents/__tests__/aiRootCauseSuggester.test.ts",
+      "line": 59,
+      "text": "    const r = await suggestRootCauses(SEED);\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "005b409507f3e2d27c0fe8989f190b13e870396b93638037e5de81cd6c8217db",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cloud/__tests__/aiResourceTagger.test.ts",
+      "line": 6,
+      "text": "import { suggestResourceTags, type ResourceForTagging, type TaggingPolicy } from \"../aiResourceTagger\";\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601f243625ae458eb31e407e92366a8bc9f08dea78fd65b60f9dc4ab4e20bd4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cloud/__tests__/aiResourceTagger.test.ts",
+      "line": 36,
+      "text": "    const r = await suggestResourceTags({ resources: [], policy: POLICY });\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601f243625ae458eb31e407e92366a8bc9f08dea78fd65b60f9dc4ab4e20bd4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cloud/__tests__/aiResourceTagger.test.ts",
+      "line": 41,
+      "text": "    const r = await suggestResourceTags({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601f243625ae458eb31e407e92366a8bc9f08dea78fd65b60f9dc4ab4e20bd4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cloud/__tests__/aiResourceTagger.test.ts",
+      "line": 49,
+      "text": "    const r = await suggestResourceTags({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601f243625ae458eb31e407e92366a8bc9f08dea78fd65b60f9dc4ab4e20bd4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cloud/__tests__/aiResourceTagger.test.ts",
+      "line": 57,
+      "text": "    const r = await suggestResourceTags({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601f243625ae458eb31e407e92366a8bc9f08dea78fd65b60f9dc4ab4e20bd4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "lib/cloud/__tests__/aiResourceTagger.test.ts",
+      "line": 65,
+      "text": "    const r = await suggestResourceTags({\n",
+      "group": "test-or-smoke-text-reference",
+      "sourceSha256": "2601f243625ae458eb31e407e92366a8bc9f08dea78fd65b60f9dc4ab4e20bd4",
+      "reviewedCategory": "test-or-smoke-text"
+    },
+    {
+      "path": "app/api/automation/remediate/route.ts",
+      "line": 15,
+      "text": "import { observeCostIdleResources, planCostIdleResources } from \"@/lib/automation/playbooks/costIdleResources\";\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "05dc5506485eb7aa197a9c39d1622db5d3040ef6f178a2c0aa84500c3077116b",
+      "reviewedCategory": "actual-callback-import-or-registration"
+    },
+    {
+      "path": "app/api/automation/remediate/route.ts",
+      "line": 114,
+      "text": "    plan: planCostIdleResources,\n",
+      "group": "non-test-text-reference",
+      "sourceSha256": "05dc5506485eb7aa197a9c39d1622db5d3040ef6f178a2c0aa84500c3077116b",
+      "reviewedCategory": "actual-callback-import-or-registration"
+    }
+  ],
+  "reviewedCategories": {
+    "test-or-smoke-text": 121,
+    "target-declaration-text": 21,
+    "different-symbol-or-comment": 6,
+    "capability-description-text": 3,
+    "actual-callback-import-or-registration": 2
+  }
+}

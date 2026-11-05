@@ -1,0 +1,30 @@
+{
+  "extends": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true,
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@types"
+    ],
+    "paths": {
+      "@/*": [
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/*"
+      ],
+      "@prisma/client": [
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-web-quality-build-74b43567-bc69yvow/stage/node_modules/@prisma/client"
+      ],
+      "@prisma/client/*": [
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-web-quality-build-74b43567-bc69yvow/stage/node_modules/@prisma/client/*"
+      ]
+    }
+  },
+  "files": [
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/next-env.d.ts",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/api/automation/remediate/__tests__/callbackBoundary.test.ts"
+  ],
+  "include": [],
+  "exclude": []
+}
