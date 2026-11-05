@@ -1,0 +1,19 @@
+{
+  "source_base": "5d27696702c4b2ec29dd9d39cb2ba584c52bc8de",
+  "files": [
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Versions/A/Headers/CSCommon.h",
+      "sha256": "f67ea0a42d5bb3fb9812206c421e0942ee54a002bd48a0659fee36a794cf4a4f",
+      "line_ranges": [
+        [
+          248,
+          298
+        ]
+      ],
+      "scope": "SDK declarations only, not signature/process/OS enforcement evidence"
+    }
+  ],
+  "external_reads_performed": 0,
+  "security_api_calls_performed": 0,
+  "implementation_selected": false
+}
