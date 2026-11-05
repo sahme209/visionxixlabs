@@ -145,3 +145,6 @@ Current running process is the d374local preview; no new signed preview was laun
 
 ### November4 Governance awaited authority verification
 ~~Nine private authority await-boundary cases~~ pass: positive exact-current pair, cancellation during initial/final resolution or last locked read, final principal/credential-kind drift and revocation. [Evidence](../recovery/2026-11-04/governance-authority-await-boundaries/README.md). Actual core with simulated resolver/transaction; no runtime defect/change, real-store/issuer/merge/activation acceptance inferred. Source review found no reproducible private-merge composition defect. Pending909qualification and all real custody/coverage/native/live gates remain open.
+
+### November4 current signed preview handoff
+~~Current signed916preview opened~~ after the user confirmed saved drafts and the oldd374process exited. OneLaunchServicesopen0/actualcurrentpathPID80463 observed; no termination signal, forced exit or direct credential operation. [Evidence](../recovery/2026-11-04/desktop-current-preview-handoff/README.md). Process launch is not visual/currentaccount/session/AT/Governance acceptance; those remain open. Existing bundles and durable archives preserved.

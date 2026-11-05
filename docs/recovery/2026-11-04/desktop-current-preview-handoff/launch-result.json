@@ -1,0 +1,21 @@
+{
+  "previousPid67657Gone": true,
+  "terminationSignalSent": false,
+  "existingAxiomProcessesBeforeOpen": [],
+  "openCommand": [
+    "/usr/bin/open",
+    "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-auth-signed-1pyabsch/Axiom Agent Local Preview.app"
+  ],
+  "openExit": 0,
+  "stdout": "",
+  "stderr": "",
+  "elapsedSeconds": 0.099,
+  "currentBinaryMatchesSignedManifest": true,
+  "newProcessObservations": [
+    "80463 Wed Nov  4 19:09:48 2026     /private/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-auth-signed-1pyabsch/Axiom Agent Local Preview.app/Contents/MacOS/axiom-desktop"
+  ],
+  "launchAttemptCount": 1,
+  "nativeVisualOrSessionAccepted": false,
+  "directCredentialOperation": false,
+  "providerMutationOrAiAuthorized": false
+}
