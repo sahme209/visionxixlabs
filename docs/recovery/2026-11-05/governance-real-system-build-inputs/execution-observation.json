@@ -1,0 +1,30 @@
+{
+  "sourceRevision": "0b0e8b48aa3469c1146bc2db38cdce4b2dc1a43d",
+  "toolSession": 74015,
+  "toolExit": 0,
+  "files": [
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-0b0e8b48/terminal-summary.json",
+      "sha256": "c54e0c8423640b11c1b9249dcee9a316b06eb58d2f17f1874d953c4eb939999c",
+      "size": 951
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-0b0e8b48/completed-observation.json",
+      "sha256": "634183ae6eafa38018b426e38534fc25f5b02b3fd9ed5cfe7617929767a30c89",
+      "size": 416815
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-0b0e8b48/materialized/materialization.json",
+      "sha256": "4ebf8083b052592dbc740d3574e14003a040ccbbc8778fa432c9a6f823c4cb82",
+      "size": 379643
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-controller-0b0e8b48/result.json",
+      "sha256": "ca94faf28b82d90b90f537b633639f4f5567905f7e77a70f8bfa3a3c90ef778c",
+      "size": 342
+    }
+  ],
+  "qualification": "ordinary package file set only",
+  "activationAllowed": false,
+  "retryAuthorized": false
+}

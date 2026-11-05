@@ -1,0 +1,10 @@
+{
+  "approval": "call_T1iTbAdTmgrcqZ64mDFjc8y6",
+  "scope": "one exact offline build/package pass",
+  "sourceRevision": "0b0e8b48aa3469c1146bc2db38cdce4b2dc1a43d",
+  "controllerSha256": "b25e38fd49169ef1ed5a0acb359c2579cba22ad1179c389a21f4942ca70449ac",
+  "driverSha256": "9b23e596f229bc25d2b86d62b0c7648f9155f4ba500a3215a09eb52738ddf2f9",
+  "packetSha256": "8b3e95635e610cfeb2af13b1680a5cff0929612a92d5fc8253170c86b88fa6fc",
+  "retryAuthorized": false,
+  "productionOrSigningAuthorized": false
+}
