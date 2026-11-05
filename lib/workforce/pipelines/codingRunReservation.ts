@@ -1,3 +1,4 @@
+import { assertTextAdmissionPolicy, pinTextAdmissionPolicy, type TextAdmissionPolicyRequirement } from "@/lib/ai/textAdmissionPolicy";
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {Prisma,type PrismaClient} from '@prisma/client';
@@ -105,7 +106,7 @@ export async function reserveCodingCall(repo:Repo,handle:CodingRunClaim|undefine
   return {...held,callId:call.id};
  },{isolationLevel:'Serializable'});
 }
-export async function dispatchCodingCall(repo:Repo,handle:CodingRunClaim|undefined,scope:Scope,callId:string,model:string){
+export async function dispatchCodingCall(repo:Repo,handle:CodingRunClaim|undefined,scope:Scope,callId:string,model:string,textPolicy?:TextAdmissionPolicyRequirement){
  const b=codingClaimBinding(handle,scope);
  return repo.$transaction(async tx=>{
   await policyAndExposure(tx,b,model,0);
@@ -113,6 +114,10 @@ export async function dispatchCodingCall(repo:Repo,handle:CodingRunClaim|undefin
   if(!call||call.organizationId!==b.organizationId||call.runId!==b.runId||call.stageRunId!==b.stageRunId||call.claimGeneration!==b.generation||call.actorId!==b.actorId||call.status!=='reserved'||call.usageEventId!==null)codingBudgetUnavailable();
   assertStoredCodingAdmission(call as unknown as AdmissionRow);
   if((call as unknown as AdmissionRow).admissionContract!=='coding_fixed_hold_v1')codingBudgetUnavailable();
+  const exactPolicy=pinTextAdmissionPolicy(textPolicy);
+  if(exactPolicy.model!==model)codingBudgetUnavailable();
+  await tx.$queryRawUnsafe('SELECT "userId" FROM "OrgMembership" WHERE "userId"=$1 AND "organizationId"=$2 FOR SHARE',scope.userId,scope.organizationId);
+  await assertTextAdmissionPolicy(tx,scope.organizationId,exactPolicy);
   const ok=call.allocationPolicy==='axiom_test_anniversary_v2'?await claimNewTestBillableDispatch(tx,scope,call.workspaceReservationId):await claimLegacyAICreditDispatch(tx,scope,call.workspaceReservationId);
   if(!ok)codingBudgetUnavailable();
   const changed=await tx.pipelineAICallReservation.updateMany({where:{id:call.id,status:'reserved',usageEventId:null},data:{status:'dispatch_unknown',dispatchedAt:new Date()}});

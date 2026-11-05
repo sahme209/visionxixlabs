@@ -1,0 +1,39 @@
+{
+  "reviewer": "agent_reliability_review",
+  "mode": "independent read-only source and evidence review; no tests/DB/provider execution",
+  "decision": "CLEAR for bounded local policy-freshness repair; no production activation claim",
+  "resolvedFindings": [
+    "service-default resolved using effectiveGatewayModel",
+    "stream admission consumes checked pinned gatewayOptions"
+  ],
+  "sourceBoundary": [
+    "generic and fixed coding admitAIText producers require concrete Gateway policy requirement",
+    "current normalized policy row lock within durable claim",
+    "opaque admission burned before async final supported manager policy check",
+    "stream uses identical pinned model at consume and provider entry"
+  ],
+  "evidenceReviewed": [
+    "preserved actual-store desired-RED policy diagnostic",
+    "generic actual PG: six passed, zero failed/pending; packet f989f3e58aa89fb751dd73360107df963aa9225b44d9d58a08bcad710f50dab9 equals afterhash; stopped",
+    "coding actual PG: three passed, zero failed/pending; packet 1703854f58fe98f491efa9da3c3a7784479dc0140d7310016a58c3d5097533d8 equals afterhash; stopped",
+    "post-generic manager stream pinned-option change: four focused cases",
+    "missing-policy final focused case",
+    "final scoped types"
+  ],
+  "codingExperiment": {
+    "reviewedPacket": "1703854f58fe98f491efa9da3c3a7784479dc0140d7310016a58c3d5097533d8",
+    "expectedCases": 3,
+    "executionByReviewer": false,
+    "disabledCaseLimitation": "may refuse through existing policyAndExposure before new check; entire ledger rows and usage remain asserted",
+    "result": "3 actual private PostgreSQL tests PASS; owned server stopped; reviewer did not rerun"
+  },
+  "remainingLimits": [
+    "quoted text, extraction and direct legacy paths not universally covered",
+    "no production stream caller proven",
+    "no physical wire atomicity, cancellation of sent requests, fleet custody or A2 qualification",
+    "no pricing/settlement/provider/authentication qualification",
+    "historical codingRunBudget compatibility updates are typed but old suite not executed",
+    "generic six-case snapshot predates only later manager streaming support/pinned-options change; later focused mock-manager checks cover that delta",
+    "disabled coding refusal may occur in existing policyAndExposure before new check; not proof of specific refusal mechanism"
+  ]
+}

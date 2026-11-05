@@ -59,6 +59,7 @@ it('caller strings alone cannot admit a paid coding call even with sufficient sa
  await codeProposeRealExecutor(ctx);expect(f.generate).not.toHaveBeenCalled();
 });
 const model='anthropic/claude-sonnet-5';
+const textPolicy={provider:'vercel_gateway' as const,model};
 type Ctx={organizationId:string;triggeredBy:string;runId:string;stageRunId:string;correlationId:string;codingRunClaim?:import('../codingRunReservation').CodingRunClaim};
 const scope=(ctx:Ctx)=>({organizationId:ctx.organizationId,userId:ctx.triggeredBy,correlationId:ctx.correlationId});
 const key=()=>`budget_${randomUUID().replaceAll('-','')}`;
@@ -66,10 +67,10 @@ async function reserve(ctx:Ctx,amount:number,phase:'initial'|'refinement'='initi
  return reserveCodingCall(f.db,ctx.codingRunClaim,scope(ctx),{idempotencyKey:key(),phase,model,estimatedCents:amount},resolver);
 }
 async function admitted(ctx:Ctx,phase:'initial'|'refinement'='initial'){
- const result=await admitAIText({...scope(ctx),source:'coding_proposal',idempotencyKey:key(),codingRunClaim:ctx.codingRunClaim,codingPhase:phase,codingModel:model},{prompt:'synthetic bounded prompt',system:'synthetic system'});
+ const result=await admitAIText({...scope(ctx),source:'coding_proposal',idempotencyKey:key(),codingRunClaim:ctx.codingRunClaim,codingPhase:phase,codingModel:model,textPolicy},{prompt:'synthetic bounded prompt',system:'synthetic system'});
  if(!result.ok)throw Error('fixture admission refused');
  const generation=`synthetic_${randomUUID()}`;
- await consumeGovernedTextAdmission(result.admission,scope(ctx)).record({provider:'vercel_gateway',model,gatewayGenerationId:generation,usage:{promptTokens:5,completionTokens:2,totalTokens:7}});
+ await consumeGovernedTextAdmission(result.admission,{...scope(ctx),model}).record({provider:'vercel_gateway',model,gatewayGenerationId:generation,usage:{promptTokens:5,completionTokens:2,totalTokens:7}});
  const usage=await f.db.usageEvent.findUniqueOrThrow({where:{externalUsageId:generation}});return {usage,generation};
 }
 const receipt=(generation:string,cents:number)=>({id:generation,totalCost:cents/100,model,providerName:'synthetic',promptTokens:5,completionTokens:2,cachedTokens:0});
@@ -103,15 +104,15 @@ it.each(['cancel','tighten','member','model'] as const)('rechecks %s before disp
  if(kind==='tighten')await f.db.organizationBudgetConfig.update({where:{organizationId:ctx.organizationId},data:{defaultMaxCostCents:500}});
  if(kind==='member')await f.db.orgMembership.update({where:{userId_organizationId:{organizationId:ctx.organizationId,userId:ctx.triggeredBy}},data:{acceptedAt:null}});
  if(kind==='model')await f.db.organizationAIProviderPolicy.update({where:{organizationId:ctx.organizationId},data:{enabled:false}});
- await expect(dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId,model)).rejects.toThrow();
+ await expect(dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId,model,textPolicy)).rejects.toThrow();
  expect(await f.db.pipelineAICallReservation.findUnique({where:{id:held.callId}})).toMatchObject({status:'reserved'});
  expect(await f.db.aIUsageReservation.findUnique({where:{id:held.reservation.id}})).toMatchObject({status:'reserved'});
 });
 it('unknown dispatch cannot release, expire, or replay and retains full allowance',async()=>{
- const ctx=await fixture(2000),held=await reserve(ctx,1000);await dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId,model);
+ const ctx=await fixture(2000),held=await reserve(ctx,1000);await dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId,model,textPolicy);
  await f.db.aIUsageReservation.update({where:{id:held.reservation.id},data:{expiresAt:new Date(0)}});
  await expect(releaseCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId)).rejects.toThrow();
- await expect(dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId,model)).rejects.toThrow();
+ await expect(dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId,model,textPolicy)).rejects.toThrow();
  expect(await readCodingRunExposure(f.db,ctx.organizationId,ctx.runId,ctx.stageRunId)).toBe(1000);
 });
 it('settles exact provider cost separately from billed margin once without stage display double-counting',async()=>{
@@ -195,13 +196,13 @@ it('default refusal is the authoritative run cap, while the same manager seam is
 it('dispatch transaction abort cannot claim only one ledger',async()=>{
  const ctx=await fixture(5000),held=await reserve(ctx,100);
  const repo={$transaction:async(fn:(tx:Prisma.TransactionClient)=>Promise<unknown>,options:unknown)=>f.db.$transaction(async tx=>{await fn(tx);throw Error('synthetic_dispatch_abort');},options as {isolationLevel:'Serializable'})} as unknown as Pick<PrismaClient,'$transaction'>;
- await expect(dispatchCodingCall(repo,ctx.codingRunClaim,scope(ctx),held.callId,model)).rejects.toThrow('synthetic_dispatch_abort');
+ await expect(dispatchCodingCall(repo,ctx.codingRunClaim,scope(ctx),held.callId,model,textPolicy)).rejects.toThrow('synthetic_dispatch_abort');
  expect(await f.db.aIUsageReservation.findUnique({where:{id:held.reservation.id}})).toMatchObject({status:'reserved'});
  expect(await f.db.pipelineAICallReservation.findUnique({where:{id:held.callId}})).toMatchObject({status:'reserved',dispatchedAt:null});
 });
 it.each(['legacy','public','v2'] as const)('%s settlement commits companion/workspace/usage together and provider cost remains separate',async mode=>{
  const {ctx,resolver}=await modeFixture(mode),held=await reserve(ctx,100,'initial',resolver);
- await dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId,model);
+ await dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),held.callId,model,textPolicy);
  const generation=`synthetic_${randomUUID()}`;
  const input={organizationId:ctx.organizationId,triggeredBy:ctx.triggeredBy,correlationId:ctx.correlationId,provider:'vercel_gateway',model,externalUsageId:generation,inputTokens:5,outputTokens:2};
  const {lockCodingFinancial,linkCodingUsage}=await import('../codingRunReservation');
@@ -224,14 +225,14 @@ it.each(['legacy','public','v2'] as const)('%s settlement commits companion/work
  expect(await readCodingRunExposure(f.db,ctx.organizationId,ctx.runId,ctx.stageRunId)).toBe(10);
 });
 it('competing distinct stage refinements serialize against the same run cap',async()=>{
- const ctx=await fixture(300);const first=await reserve(ctx,100);await dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),first.callId,model);
+ const ctx=await fixture(300);const first=await reserve(ctx,100);await dispatchCodingCall(f.db,ctx.codingRunClaim,scope(ctx),first.callId,model,textPolicy);
  const {linkCodingUsage}=await import('../codingRunReservation');
  async function pending(c:Ctx,h:typeof first){const generation=`synthetic_${randomUUID()}`;await f.db.$transaction(async tx=>{const u=await tx.usageEvent.create({data:{organizationId:c.organizationId,eventKind:'ai_invocation',provider:'vercel_gateway',model,externalUsageId:generation,billingStatus:'pending',triggeredBy:c.triggeredBy,correlationId:c.correlationId}});await tx.aIUsageReservation.update({where:{id:h.reservation.id},data:{status:'pending_settlement',usageEventId:u.id}});await linkCodingUsage(tx,h.reservation.id,u.id,generation);},{isolationLevel:'Serializable'});}
  await pending(ctx,first);
  const stage=await f.db.pipelineStageRun.create({data:{runId:ctx.runId,stageId:'synthetic_second_proposal',stageKind:'code_propose',ordering:2}});
  const secondClaim=await claimCodingRunStage(f.db,ctx.organizationId,ctx.runId,stage.id);if(!secondClaim)throw Error('fixture_claim');
  const secondCtx={...ctx,stageRunId:stage.id,codingRunClaim:secondClaim};
- const second=await reserve(secondCtx,100);await dispatchCodingCall(f.db,secondCtx.codingRunClaim,scope(secondCtx),second.callId,model);await pending(secondCtx,second);
+ const second=await reserve(secondCtx,100);await dispatchCodingCall(f.db,secondCtx.codingRunClaim,scope(secondCtx),second.callId,model,textPolicy);await pending(secondCtx,second);
  const outcomes=await Promise.allSettled([reserve(ctx,100,'refinement'),reserve(secondCtx,100,'refinement')]);
  expect(outcomes.filter(o=>o.status==='fulfilled')).toHaveLength(1);
  expect(await readCodingRunExposure(f.db,ctx.organizationId,ctx.runId,ctx.stageRunId)).toBe(300);

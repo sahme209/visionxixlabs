@@ -1,0 +1,34 @@
+{
+  "scope": "focusedunit17PASS +transitiveES2017types withmatching266generatedPrisma; notactualPG/provider/native/currentauthorityqualification",
+  "files": [
+    {
+      "path": "lib/ai/textAdmissionPolicy.ts",
+      "sha256": "6aa3daf8c9ff6120abce64381807493933df980a7c89a2f83d54978de508a2b2"
+    },
+    {
+      "path": "lib/ai/__tests__/textAdmissionPolicy.test.ts",
+      "sha256": "d6e8047c04b592731d4774a442f7dc1914bdebe7ed1171a0e1f71bfee189ae2c"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "8480a12435cd52052fec3b340a0809e56864293d84921c93d169f5850db0879d"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "9fd9a3b5a04ff225c62aab829d2a309b2417dcdeae8f47fa9676e1e370fec252"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeProposeRealExecutor.ts",
+      "sha256": "0efb29ef68b6a9b097fd2e2a5246cb5c68399089584ffde264e249eb68bcd1a6"
+    }
+  ],
+  "evidence": [
+    "initial-actual.log:11PASS1DBdiagnosticFAIL",
+    "final.log:12PASSbeforedefaultcases",
+    "final-defaults.log:17PASSexactlatermodule",
+    "types.log:4actualTS18048errors",
+    "types-corrected.log:harnessTS18003configoverwrittenbyreceipt",
+    "types-final.log:correcteddistinctconfigPASS"
+  ],
+  "configurationCorrection": "firsttypes receipt overwrote same-name config; recreated identicalhistoricalbase+sameaddedroots underdistincttsconfig.scoped.json, no compileroptionsweakened"
+}

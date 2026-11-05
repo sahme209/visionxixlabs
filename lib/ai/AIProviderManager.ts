@@ -233,7 +233,10 @@ export class AIProviderManager {
     const authority = consumeGovernedTextAdmission(admission, preparedOptions, payload);
     const out = await runWithFallback<AITextResponse>(
       [gateway],
-      () => gateway.generateTextOnce(payload.prompt, { ...preparedOptions, ...(authority.codingDispatch ? { codingDispatch: authority.codingDispatch } : {}) }),
+      async () => {
+        await authority.assertCurrentPolicy();
+        return gateway.generateTextOnce(payload.prompt, { ...preparedOptions, ...(authority.codingDispatch ? { codingDispatch: authority.codingDispatch } : {}) });
+      },
       { task: "generate_text", correlationId: options.correlationId, organizationId: options.organizationId },
     );
     await authority.record(out.result);
@@ -253,7 +256,8 @@ export class AIProviderManager {
   ): AsyncGenerator<AIStreamChunk, void, unknown> {
     const gateway = this.admittedGateway(options);
     const gatewayOptions = this.optionsForProvider(gateway, options);
-    const authority = consumeGovernedTextAdmission(admission, options);
+    const authority = consumeGovernedTextAdmission(admission, gatewayOptions ?? options);
+    await authority.assertCurrentPolicy();
     for await (const chunk of gateway.streamTextOnce(redact(prompt), {
       ...gatewayOptions, abortSignal: options.abortSignal,
     })) {

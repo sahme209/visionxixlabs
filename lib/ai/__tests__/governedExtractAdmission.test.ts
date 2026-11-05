@@ -18,7 +18,7 @@ vi.mock("../providers/VercelGatewayProvider", async importOriginal => ({ ...awai
 import { AIProviderManager } from "../AIProviderManager";
 import { admitAIText, admitGovernedExtract } from "@/lib/billing/governedExtractAdmission";
 
-const scope = { organizationId: "org", userId: "member", correlationId: "request:0" };
+const scope = { organizationId: "org", userId: "member", correlationId: "request:0", model: "vendor/model", textPolicy: { provider: "vercel_gateway" as const, model: "vendor/model" } };
 const response = { provider: "vercel_gateway", model: "vendor/model", gatewayGenerationId: "generation", latencyMs: 1, text: '{"action":"respond"}', usage: { promptTokens: 2, completionTokens: 3, totalTokens: 5 } };
 const structured = { provider: response.provider, model: response.model, gatewayGenerationId: response.gatewayGenerationId, latencyMs: 1, data: { action: "respond" }, raw: response.text, usage: response.usage };
 describe("actual manager admitted extraction boundary", () => {
@@ -28,7 +28,7 @@ describe("actual manager admitted extraction boundary", () => {
     m.reserve.mockResolvedValue({ ok: true, reused: false, reservation: { id: "hold" } });
     m.claim.mockResolvedValue(true);
     m.transaction.mockImplementation(async fn => fn({
-      $queryRawUnsafe: vi.fn(async () => [{ id: "hold", organizationId: "org", status: "dispatch_unknown", usageEventId: null }]),
+      $queryRawUnsafe: vi.fn(async (sql: string) => sql.includes("OrganizationAIProviderPolicy") ? [{ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "vendor/model" }, fallbackOrder: ["vercel_gateway"] }] : [{ id: "hold", organizationId: "org", status: "dispatch_unknown", usageEventId: null }]),
       usageEvent: { findUnique: vi.fn(async () => null), create: vi.fn() },
       aIUsageReservation: { updateMany: vi.fn(async () => ({ count: 1 })) },
     }));
@@ -91,6 +91,10 @@ describe("actual manager admitted extraction boundary", () => {
     expect(m.reserve).not.toHaveBeenCalled(); expect(m.claim).not.toHaveBeenCalled();
     expect(m.write).toHaveBeenCalledTimes(1); expect(m.write.mock.calls[0]).toHaveLength(1);
   });
+  it("missing server policy refuses before creating a text reservation", () => {
+    expect(() => admitAIText({ ...scope, textPolicy: undefined, idempotencyKey: "missing_policy_123456" })).toThrow("ai_text_policy_unavailable");
+    expect(m.reserve).not.toHaveBeenCalled(); expect(m.claim).not.toHaveBeenCalled();
+  });
   it("the generic admitted text lane dispatches once and writes once before returning data", async () => {
     const mgr = new AIProviderManager(), admitted = await admitAIText({ ...scope, idempotencyKey: "generic_request_123456" });
     if (!admitted.ok) throw new Error("expected admission");
@@ -110,6 +114,26 @@ describe("actual manager admitted extraction boundary", () => {
     await expect(mgr.generateTextWithAdmission("prompt", scope, admitted.admission)).rejects.toThrow();
     await expect(mgr.generateTextWithAdmission("prompt", scope, admitted.admission)).rejects.toThrow();
     expect(m.text).toHaveBeenCalledOnce();
+  });
+  it.each([undefined, "service-default"])("streams using the same resolved model at admission and provider dispatch: %s", async model => {
+    const admitted = await admitAIText({ ...scope, idempotencyKey: "stream_default_123456" });
+    if (!admitted.ok) throw new Error("expected admission");
+    m.stream.mockImplementation(async function* () { yield { text: "", done: true, response }; });
+    await new AIProviderManager().streamTextWithAdmission("prompt", { ...scope, model, modelSelections: { vercel_gateway: "vendor/model" } }, admitted.admission).next();
+    expect(m.stream).toHaveBeenCalledOnce();
+    expect(m.stream.mock.calls[0][1]).toMatchObject({ model: "vendor/model" });
+    expect(m.write).toHaveBeenCalledOnce();
+  });
+  it.each(["text", "stream"])("a disabled current policy burns %s authority before any provider attempt", async lane => {
+    const admitted = await admitAIText({ ...scope, idempotencyKey: "disabled_policy_123456" });
+    if (!admitted.ok) throw new Error("expected admission");
+    m.transaction.mockImplementation(async fn => fn({ $queryRawUnsafe: vi.fn(async () => [{ enabled: false, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "vendor/model" }, fallbackOrder: ["vercel_gateway"] }]) }));
+    const manager = new AIProviderManager();
+    const run = () => lane === "text" ? manager.generateTextWithAdmission("prompt", scope, admitted.admission) : manager.streamTextWithAdmission("prompt", scope, admitted.admission).next();
+    const results = await Promise.allSettled([run(), run()]);
+    expect(results.every(result => result.status === "rejected")).toBe(true);
+    expect(m.text).not.toHaveBeenCalled(); expect(m.stream).not.toHaveBeenCalled();
+    expect(m.write).not.toHaveBeenCalled(); expect(m.claim).toHaveBeenCalledOnce();
   });
   it("ordinary text generation remains unrelated to the admitted route's accounting", async () => {
     await expect(new AIProviderManager().generateText("prompt", scope)).resolves.toEqual(response);

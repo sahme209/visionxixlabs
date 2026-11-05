@@ -1,0 +1,20 @@
+{
+  "scope": "finite direct source files, not full transitive/runtime attestation",
+  "sha256": {
+    "lib/ai/textAdmissionPolicy.ts": "6aa3daf8c9ff6120abce64381807493933df980a7c89a2f83d54978de508a2b2",
+    "lib/billing/governedExtractAdmission.ts": "8480a12435cd52052fec3b340a0809e56864293d84921c93d169f5850db0879d",
+    "lib/ai/AIProviderManager.ts": "d35b424781c8ea415c1294f8a68fcbb48ae842906112165f29b9d3b4287a97b4",
+    "app/api/ai/generate/route.ts": "88b186fa00db6df7cd15156fd4bfdf41543cd821db85c62bb303385fd753c21d",
+    "lib/workforce/pipelines/codingRunReservation.ts": "f57067373e4fd4912960c908ea24ec3b7ce53f7f7f525cf749cad5d9b43894c7",
+    "lib/workforce/pipelines/codeProposeRealExecutor.ts": "0efb29ef68b6a9b097fd2e2a5246cb5c68399089584ffde264e249eb68bcd1a6",
+    "app/api/ai/generate/__tests__/policyRevocation.pg.test.ts": "d3ca11ca81fbb354c92dc35c43381b14238e0164b7362143404bb10d4d9675b0",
+    "lib/workforce/pipelines/__tests__/codingPolicy.pg.test.ts": "4c35f40c25f4edcfc10240fce758b54f2a63e7cbe92d50c86ed6b291fecfd50b",
+    "lib/ai/__tests__/textAdmissionPolicy.test.ts": "d6e8047c04b592731d4774a442f7dc1914bdebe7ed1171a0e1f71bfee189ae2c",
+    "lib/ai/__tests__/governedExtractAdmission.test.ts": "ed29a71d62b637ca6653b6536a12dd424052c514fde468b50596aea4d0f7ee71",
+    "lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts": "9f9f2f5fd676eaf02c99232ef56a96608e3ac8ea53718cbd2c89ab4b9df71c47",
+    "scripts/run-generic-ai-policy-postgres.py": "46bca6ce90f057d8b8d5f9cea17716f97e4729414cafe302596c387f69653659",
+    "scripts/run-coding-policy-postgres.py": "ec76f73072d8cda5e4a3b8ae445826e5442fca71ae24d7cb921422f31822a370"
+  },
+  "masterUnstagedSha256": "6d54e83fdf2d31f3860ef5245087364b8a79b09a74cc5374c475c87aef2791b3",
+  "productionChanged": false
+}

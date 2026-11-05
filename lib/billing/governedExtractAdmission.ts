@@ -1,3 +1,4 @@
+import { assertTextAdmissionPolicy, pinTextAdmissionPolicy, type TextAdmissionPolicyRequirement } from "@/lib/ai/textAdmissionPolicy";
 import {codingClaimBinding,reserveQuotedCodingCall,dispatchQuotedCodingCall} from "@/lib/workforce/pipelines/codingRunReservation";
 import {prepareCodingRequestEnvelope,quoteCodingRequest,consumeCodingManagerQuoteForRequest,type CodingManagerQuote} from "@/lib/ai/codingRequestQuote";
 import {reserveCodingCall,dispatchCodingCall,releaseCodingCall,lockCodingFinancial,linkCodingUsage,type CodingRunClaim} from "@/lib/workforce/pipelines/codingRunReservation";
@@ -17,14 +18,14 @@ import { prepareSmallSonnetRequest, smallSonnetReservation, smallSonnetReservati
 import { prepareSmallSonnet55Request, smallSonnet55Reservation, smallSonnet55ReservationEvidence, authorizeSmallSonnet55Dispatch, SMALL_SONNET_55_MODEL, type SmallSonnet55Request } from "./smallSonnet55Request";
 import { requestReservationCents } from "./requestReservationCents";
 
-type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string; source?: "coding_proposal"; codingRunClaim?: CodingRunClaim; codingPhase?: "initial"|"refinement"; codingModel?: string }>;
+type Scope = Readonly<{ organizationId: string; userId: string; correlationId: string; source?: "coding_proposal"; codingRunClaim?: CodingRunClaim; codingPhase?: "initial"|"refinement"; codingModel?: string; textPolicy?: TextAdmissionPolicyRequirement }>;
 declare const admissionBrand: unique symbol;
 /** No serializable flag or constructor. Only a committed durable claim mints it. */
 export type GovernedExtractAdmission = { readonly [admissionBrand]: true };
 export type GovernedAIAdmission = GovernedExtractAdmission;
 type Task = "generate_text" | "extract_structured_data";
 type AdmissionResult = { ok: true; admission: GovernedAIAdmission } | { ok: false; error: Extract<AICreditReservationResult, { ok: false }>["error"] | "request_already_reserved" };
-const admissions = new WeakMap<object, Readonly<{ scope: Scope; reservationId: string; v2: boolean; task: Task; small?: SmallSonnetRequest; small55?: SmallSonnet55Request; codingManager?: CodingManagerQuote }>>();
+const admissions = new WeakMap<object, Readonly<{ scope: Scope; reservationId: string; v2: boolean; task: Task; small?: SmallSonnetRequest; small55?: SmallSonnet55Request; codingManager?: CodingManagerQuote; textPolicy?: TextAdmissionPolicyRequirement }>>();
 function deny(): never { throw new Error("governed_extract_admission_unavailable"); }
 
 export function governedExtractReservationKey(scope: Scope): string {
@@ -52,7 +53,8 @@ export async function admitGovernedExtract(input: Scope, request?: { model: stri
  * Task selection and v2 classification are server-owned, never body flags. */
 export function admitAIText(input: Scope & { idempotencyKey: string }, payload?: { prompt: string; system?: string }): Promise<AdmissionResult> {
   if (payload) boundedAIInput(payload.prompt, payload.system);
-  return reserveAndClaim(input, input.idempotencyKey, "generate_text");
+  const textPolicy = pinTextAdmissionPolicy(input.textPolicy);
+  return reserveAndClaim({ ...input, textPolicy }, input.idempotencyKey, "generate_text");
 }
 
 /** Separate server-owned mode. Unqualified quotes refuse before any hold; never
@@ -93,12 +95,19 @@ async function reserveAndClaim(input: Scope, idempotencyKey: string, task: Task,
     throw error;
   }
   const v2 = reserved.allocationPolicy === "axiom_test_anniversary_v2";
-  const claimed = "callId" in reserved && typeof reserved.callId === "string" ? await dispatchCodingCall(prisma,input.codingRunClaim,scope,reserved.callId,input.codingModel!) : await prisma.$transaction(tx => v2
-    ? claimNewTestBillableDispatch(tx, scope, reserved.reservation.id)
-    : claimLegacyAICreditDispatch(tx, scope, reserved.reservation.id), { isolationLevel: "Serializable" });
+  const claimed = "callId" in reserved && typeof reserved.callId === "string" ? await dispatchCodingCall(prisma,input.codingRunClaim,scope,reserved.callId,input.codingModel!, input.textPolicy) : await prisma.$transaction(async tx => {
+    if (task === "generate_text") {
+      // Follow the existing member lock before policy/financial claim. Recheck
+      // policy after the member wait rather than trusting the route snapshot.
+      await tx.$queryRawUnsafe('SELECT "userId" FROM "OrgMembership" WHERE "userId"=$1 AND "organizationId"=$2 FOR SHARE', scope.userId, scope.organizationId);
+      await assertTextAdmissionPolicy(tx, scope.organizationId, pinTextAdmissionPolicy(input.textPolicy));
+    }
+    return v2 ? claimNewTestBillableDispatch(tx, scope, reserved.reservation.id)
+      : claimLegacyAICreditDispatch(tx, scope, reserved.reservation.id);
+  }, { isolationLevel: "Serializable" });
   if (!claimed) deny();
   const capability = Object.freeze({}) as GovernedExtractAdmission;
-  admissions.set(capability, Object.freeze({ scope, reservationId: reserved.reservation.id, v2, task, ...(small && reserved.smallRequestApplied ? { small } : {}), ...(small55 ? { small55 } : {}) }));
+  admissions.set(capability, Object.freeze({ scope, reservationId: reserved.reservation.id, v2, task, ...(input.textPolicy ? { textPolicy: pinTextAdmissionPolicy(input.textPolicy) } : {}), ...(small && reserved.smallRequestApplied ? { small } : {}), ...(small55 ? { small55 } : {}) }));
   return { ok: true, admission: capability };
 }
 
@@ -124,6 +133,7 @@ function consumeAdmission(capability: GovernedAIAdmission, binding: { organizati
   admissions.delete(capability);
   if (!admission || admission.task !== task || binding.organizationId !== admission.scope.organizationId || binding.correlationId !== admission.scope.correlationId) deny();
   const { scope, reservationId, v2 } = admission;
+  if (admission.textPolicy && binding.model !== admission.textPolicy.model) deny();
   const codingDispatch=admission.codingManager
     ? consumeCodingManagerQuoteForRequest(admission.codingManager,{...binding,...(payload && "prompt" in payload ? payload : deny()),model:binding.model ?? deny()},Date.now())
     : undefined;
@@ -137,6 +147,10 @@ function consumeAdmission(capability: GovernedAIAdmission, binding: { organizati
   let recorded = false;
   return Object.freeze({
     ...(codingDispatch ? {codingDispatch} : {}),
+    async assertCurrentPolicy(): Promise<void> {
+      if (admission.textPolicy) await prisma.$transaction(tx => assertTextAdmissionPolicy(tx, scope.organizationId, admission.textPolicy!), { isolationLevel: "Serializable" });
+    },
+    textPolicyBound: admission.textPolicy !== undefined,
     ...(smallAgentDispatch ? { smallAgentDispatch } : {}),
     ...(smallAgent55Dispatch ? { smallAgent55Dispatch } : {}),
     async record(result: ExtractUsage): Promise<void> {

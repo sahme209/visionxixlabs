@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/text-policy-vv83co80/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--no-experimental-webstorage",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/text-policy-vv83co80/vitest.config.mjs",
+    "--configLoader",
+    "native"
+  ],
+  "exitCode": 1,
+  "stopReason": null,
+  "elapsedSeconds": 0.491,
+  "outputBytes": 2346,
+  "processReaped": true
+}

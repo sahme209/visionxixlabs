@@ -1,0 +1,33 @@
+# Workspace AI policy freshness — approved local repair
+
+The explicit user decision approved the [reviewed repair](../generic-ai-policy-revocation-diagnostic/local-repair-proposal.md), not a deployment or completed Governance. The original desired-refusal RED result remains unchanged in its historical evidence directory. No real AI/provider/customer database access, production migration, credential, grant, paid CI or spending occurred.
+
+## Numbered execution checklist
+
+1. ~~Require a server-resolved concrete Gateway provider/model at both current production `admitAIText` callers.~~ Missing requirements refuse before reservation. The caller snapshot is copied and frozen; request-body tenant/admission flags are not accepted as authority. Managed/virtual identifiers and the `service-default` sentinel cannot be the actual admitted model; stored service defaults resolve to a pinned concrete server default.
+2. ~~Read current normalized workspace policy in the durable claim transaction.~~ Generic claims acquire the existing member lock before the policy shared lock and financial transition. Fixed coding keeps its existing run/financial/member sequence and adds the current policy check before either dispatch transition. Current policy writers are standalone upserts; review found no reverse held-lock sequence there. This is not an exhaustive deadlock or fleet qualification.
+3. ~~Bind one-use consumption and final supported dispatch to the exact model.~~ The WeakMap capability is synchronously removed before any final asynchronous policy check. Manager single-attempt text and internal text-stream entries check current policy immediately before provider entry, using the same checked/pinned model handed to that provider. Existing claimed holds remain uncertain on refusal; no refund, replay or automatic retry was added.
+4. ~~Preserve enabled generation and controlled refusals with isolated evidence.~~ Six real owned-PostgreSQL generic cases pass: enabled generation, enabled default resolution, disabling before awaited claim, disabling after claim plus burned reuse, selected-model change, and final-model mismatch plus burned reuse. Three fresh coding cases pass: real dual-ledger admission, disabled-after-reserve preserving both complete rows, and missing policy preserving both rows. Both owned clusters are stopped; direct packet hashes match after execution. Only session/client wiring/final Gateway transport are synthetic in generic tests; coding tests perform no SDK dispatch at all.
+5. ~~Focused compatibility, types and independent review.~~ Seventeen policy unit cases pass. Thirty-six existing manager/accounting checks passed after fixture updates; four subsequent focused streaming/default/disabled concurrent-reuse checks and one missing-policy check pass. These are separate source checkpoints, not a repeated whole-current-suite claim. Final scoped transitive types pass. Initial raw-error handling, four narrowing type errors, a harness config/output filename collision and the default/stream review findings are retained with their corrections.
+6. [ ] Production activation, actual provider acceptance, all-family enforcement and full Governance remain open. This local repair does not close A2/A7 or any other master parent.
+
+## Exact evidence and source limits
+
+- `generic-six/receipt.json` binds packet `f989f3e5…`; its six tests ran before the later text-stream-only manager correction. The non-stream generation implementation exercised there did not change afterward. The later stream correction has focused manager tests and final transitive types; no whole-final-source PG requalification or production-build claim is made.
+- `coding-three/receipt.json` binds packet `1703854f…` and the final runtime source. Its refusal case can stop at existing `policyAndExposure` before the additional policy check, so it does not isolate that new check's branch. Both entire ledger rows are asserted unchanged.
+- `final-source.json` binds the finite current file set; runner packets cover direct files only, not full transitive execution custody.
+- `manager-tests.json`, `manager-policy-focused.json`, `missing-policy-final.json`, `types-final.json`, and the adjacent `text-admission-policy-unit` evidence preserve exact commands/results. Raw unit log bytes are retained losslessly in base64 JSON. Historical preparatory coordinates may say unexecuted; later named execution receipts establish their bounded results.
+- The historical `codingRunBudget.pg.test.ts` callsites were updated for the new requirement, but its old recovery-SQL setup was not run. The new coding file uses a fresh full-schema legacy fixture without that setup. No expired fixture was reused or revived.
+
+## Coverage inventory
+
+| Family | Current local status | Required remaining proof |
+| --- | --- | --- |
+| Generic `/api/ai/generate` | Actual route, durable reservation/claim, current policy and installed SDK synthetic transport exercised | Real authentication/provider/production acceptance and wider schedules |
+| Fixed-hold coding proposal | Both actual callers now supply policy; actual durable coding admission and ledger refusals tested | Composed executor-to-SDK/usage and wider interleavings/variants |
+| Internal admitted text stream | Same one-use/model/policy boundary; focused mocked manager tests | No production caller identified by this static search; real stream/SDK acceptance remains unproven |
+| Quoted coding text | Separate quote issuer/accounting semantics preserved; does not acquire this new requirement | Current policy composition and qualified quote issuance remain separate; no activation implied |
+| Structured extraction / structured stream | Existing authority/financial paths retained; not granted this text-policy coverage | Complete current-policy/final-transport qualification |
+| Ordinary direct/legacy provider calls, health and unfunded helpers | Not universally mediated by this repair | Pending separately reviewed containment/migration and all-caller enforcement |
+
+Shared row locks establish logical claim/check decision points. They do not cancel work already sent, prove atomic physical-wire revocation, hold a database transaction across model responses, authenticate all fleet resources or qualify a canonical executing issuer. Complete custody, enrollment, legacy drain, source freshness, pricing/settlement, true provider behavior and live acceptance remain explicit gates. Production and existing previews were not changed.

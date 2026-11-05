@@ -11,6 +11,8 @@ const f=vi.hoisted(()=>{
 vi.mock('@/lib/db',()=>({get prisma(){return f.db;}}));
 vi.mock('@/lib/auth/currentContext',()=>({currentContext:f.context}));
 import { POST } from '../route';
+import { admitAIText } from "@/lib/billing/governedExtractAdmission";
+import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
 import { _resetAIProviderManagerForTests } from '@/lib/ai/AIProviderManager';
 import { planForStripeTier } from '@/lib/billing/planRegistry';
 const root=process.env.AXIOM_GENERIC_AI_PG_ROOT,model='anthropic/claude-sonnet-5';
@@ -59,6 +61,48 @@ describe.skipIf(!root)('fresh owned generic AI post-admission policy diagnostic'
   }
   throw Error('fresh_reservation_not_observed_within_bound');
  }
+ async function admittedFixture(){
+  const x=await fixture(),key='generic_'+randomUUID();
+  const result=await admitAIText({...x,idempotencyKey:key,textPolicy:{provider:'vercel_gateway',model}}, {prompt:'Synthetic policy check'});
+  if(!result.ok)throw Error('positive_admission_required');
+  return {...x,admission:result.admission};
+ }
+ function options(x:{organizationId:string;correlationId:string}){return{organizationId:x.organizationId,correlationId:x.correlationId,only:'vercel_gateway' as const,model,maxTokens:20,allowedProviders:['vercel_gateway' as const],modelSelections:{vercel_gateway:model}};}
+ it('enabled current policy claims and records exactly one actual-route generation',async()=>{
+  const x=await fixture(),response=await POST(request(x,'generic_'+randomUUID()));
+  expect(response.status).toBe(200);expect(f.fetcher).toHaveBeenCalledTimes(1);
+  expect(await f.db.usageEvent.count({where:{organizationId:x.organizationId}})).toBe(1);
+  const holds=await f.db.aIUsageReservation.findMany({where:{organizationId:x.organizationId}});
+  expect(holds).toHaveLength(1);expect(holds[0].status).toBe('pending_settlement');
+ });
+ it('an enabled service-default policy uses the pinned concrete service model',async()=>{
+  const x=await fixture();
+  await f.db.organizationAIProviderPolicy.update({where:{organizationId:x.organizationId},data:{modelSelections:{vercel_gateway:'service-default'}}});
+  const response=await POST(request(x,'generic_'+randomUUID()));
+  expect(response.status).toBe(200);expect(f.fetcher).toHaveBeenCalledTimes(1);
+ });
+ it('disabling policy after durable claim refuses final dispatch and burns the admission',async()=>{
+  const x=await admittedFixture();
+  await f.db.organizationAIProviderPolicy.update({where:{organizationId:x.organizationId},data:{enabled:false}});
+  await expect(getAIProviderManager().generateTextWithAdmission('Synthetic policy check',options(x),x.admission)).rejects.toThrow();
+  await f.db.organizationAIProviderPolicy.update({where:{organizationId:x.organizationId},data:{enabled:true}});
+  await expect(getAIProviderManager().generateTextWithAdmission('Synthetic policy check',options(x),x.admission)).rejects.toThrow();
+  expect(f.fetcher).not.toHaveBeenCalled();
+  expect(await f.db.usageEvent.count({where:{organizationId:x.organizationId}})).toBe(0);
+  expect((await f.db.aIUsageReservation.findMany({where:{organizationId:x.organizationId}}))[0].status).toBe('dispatch_unknown');
+ });
+ it('a changed selected model after claim refuses final dispatch',async()=>{
+  const x=await admittedFixture();
+  await f.db.organizationAIProviderPolicy.update({where:{organizationId:x.organizationId},data:{modelSelections:{vercel_gateway:'anthropic/claude-sonnet-4'}}});
+  await expect(getAIProviderManager().generateTextWithAdmission('Synthetic policy check',options(x),x.admission)).rejects.toThrow();
+  expect(f.fetcher).not.toHaveBeenCalled();
+ });
+ it('a different final model burns exact admitted authority without dispatch',async()=>{
+  const x=await admittedFixture();
+  await expect(getAIProviderManager().generateTextWithAdmission('Synthetic policy check',{...options(x),model:'anthropic/claude-sonnet-4'},x.admission)).rejects.toThrow();
+  await expect(getAIProviderManager().generateTextWithAdmission('Synthetic policy check',options(x),x.admission)).rejects.toThrow();
+  expect(f.fetcher).not.toHaveBeenCalled();
+ });
  it('refuses final inference when workspace policy is disabled during the awaited financial claim',async()=>{
   const x=await fixture(),key='generic_'+randomUUID(),locked=deferred(),release=deferred();
   let post:Promise<Response>|undefined,setupError:unknown;

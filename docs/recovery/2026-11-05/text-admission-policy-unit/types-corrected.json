@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/text-policy-vv83co80/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--no-experimental-webstorage",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "-p",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/text-admission-policy-unit/types.json"
+  ],
+  "exitCode": 2,
+  "stopReason": null,
+  "elapsedSeconds": 0.043,
+  "outputBytes": 267,
+  "processReaped": true
+}

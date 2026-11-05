@@ -15,7 +15,7 @@ from urllib.parse import quote
 
 REPO=Path(__file__).resolve().parents[1]
 TEST='app/api/ai/generate/__tests__/policyRevocation.pg.test.ts'
-SOURCES=[Path(__file__).resolve()]+[REPO/p for p in ['app/api/ai/generate/route.ts', 'lib/ai/AIProviderManager.ts', 'lib/ai/workspaceProviderPolicy.ts', 'lib/ai/providers/VercelGatewayProvider.ts', 'lib/billing/governedExtractAdmission.ts', 'lib/billing/recordAIUsageEvent.ts', 'node_modules/ai/dist/index.js', 'node_modules/@ai-sdk/gateway/dist/index.js', 'app/api/ai/generate/__tests__/policyRevocation.pg.test.ts', 'prisma/schema.prisma', 'lib/billing/checkWorkspaceAICredits.ts', 'lib/billing/aiCreditReservation.ts', 'lib/billing/requestReservationCents.ts', 'lib/billing/tenantBillingStore.ts', 'lib/billing/planRegistry.ts', 'lib/billing/effectiveEntitlements.ts', 'lib/billing/applyAddOnsToEntitlements.ts', 'package-lock.json']]
+SOURCES=[Path(__file__).resolve()]+[REPO/p for p in ['app/api/ai/generate/route.ts', 'lib/ai/AIProviderManager.ts', 'lib/ai/workspaceProviderPolicy.ts', 'lib/ai/textAdmissionPolicy.ts', 'lib/workforce/pipelines/codingRunReservation.ts', 'lib/workforce/pipelines/codeProposeRealExecutor.ts', 'lib/ai/providers/VercelGatewayProvider.ts', 'lib/billing/governedExtractAdmission.ts', 'lib/billing/recordAIUsageEvent.ts', 'node_modules/ai/dist/index.js', 'node_modules/@ai-sdk/gateway/dist/index.js', 'app/api/ai/generate/__tests__/policyRevocation.pg.test.ts', 'prisma/schema.prisma', 'lib/billing/checkWorkspaceAICredits.ts', 'lib/billing/aiCreditReservation.ts', 'lib/billing/requestReservationCents.ts', 'lib/billing/tenantBillingStore.ts', 'lib/billing/planRegistry.ts', 'lib/billing/effectiveEntitlements.ts', 'lib/billing/applyAddOnsToEntitlements.ts', 'package-lock.json']]
 PG=Path('/opt/homebrew/opt/postgresql@17/bin')
 NODE=Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
 
@@ -91,8 +91,8 @@ def main():
         run('journey',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--config',config_path,'--configLoader','native','--reporter=json','--outputFile='+str(logs/'results.json')],120)
         results=json.loads((logs/'results.json').read_text())
         assertions=[a for suite in results['testResults'] for a in suite.get('assertionResults',[])]
-        expected=1
-        if results['numFailedTests'] or len(assertions)!=expected or any(a['status']!='passed' for a in assertions) or results['numPassedTests']!=expected:raise RuntimeError('one_non_skipped_journey_required')
+        expected=6
+        if results['numFailedTests'] or len(assertions)!=expected or any(a['status']!='passed' for a in assertions) or results['numPassedTests']!=expected:raise RuntimeError('six_non_skipped_policy_journeys_required')
         if packet()!=source_hash:raise RuntimeError('reviewed_direct_sources_changed_during_owned_run')
         (root/'receipt.json').write_text(json.dumps({'packetSha256':source_hash,'tests':expected,'selection':'generic-policy-revocation','excludedCases':0,'provider':'simulated','root':str(root),'schemaSha256':hashlib.sha256(schema.read_bytes()).hexdigest(),'engineSha256':{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in [query,engine]},'productionChanged':False,'directSourceHashAfter':packet(),'sourceBindingScope':str(len(SOURCES))+' direct reviewed application/test/SDK files only, not complete transitive attestation'},indent=2))
     except BaseException as error:

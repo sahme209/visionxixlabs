@@ -207,7 +207,7 @@ export const codeProposeRealExecutor: StageExecutorFn = async (ctx) => {
       const idempotencyKey = "coding_text_" + createHash("sha256").update(JSON.stringify([ctx.organizationId, ctx.stageRunId, phase])).digest("hex");
       const preparedPayload = boundedAIInput(prompt, system);
       const admitted = await admitAIText({ organizationId: ctx.organizationId, userId: ctx.triggeredBy,
-        correlationId: ctx.correlationId, idempotencyKey, source: "coding_proposal", codingRunClaim:ctx.codingRunClaim,codingPhase:phase,codingModel:dispatchModel }, preparedPayload);
+        correlationId: ctx.correlationId, idempotencyKey, source: "coding_proposal", codingRunClaim:ctx.codingRunClaim,codingPhase:phase,codingModel:dispatchModel, textPolicy:{provider:"vercel_gateway",model:dispatchModel,defaultModel:manager.status().find(row=>row.provider==="vercel_gateway")?.defaultModel} }, preparedPayload);
       if (!admitted.ok) throw new CodeProposalCallRefusal("reservation_refused");
       // The admitted manager performs one SDK attempt and durably links its
       // usage before returning. No ordinary retry/fallback or eager writer.

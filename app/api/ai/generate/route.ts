@@ -125,7 +125,7 @@ async function handlePost(req: NextRequest, ctx: Awaited<ReturnType<typeof curre
     if (!gatewayModelOutputBoundVerified(dispatchModel)) {
       throw AxiomErrors.policy("ai.output_bound_unverified", "This model has not demonstrated an enforceable output budget. Choose another enabled model. No generation was run.");
     }
-    const reservation = await admitAIText({ organizationId, userId: ctx.userId, idempotencyKey, correlationId }, { prompt: body.prompt, system: body.system });
+    const reservation = await admitAIText({ organizationId, userId: ctx.userId, idempotencyKey, correlationId, textPolicy: { provider: "vercel_gateway", model: dispatchModel, defaultModel: mgr.status().find(row => row.provider === "vercel_gateway")?.defaultModel } }, { prompt: body.prompt, system: body.system });
     if (!reservation.ok) {
       if (reservation.error === "request_already_reserved") {
         throw AxiomErrors.policy("ai.request_already_in_progress", "This request key is already reserved. Wait for the existing request to finish before retrying.");
