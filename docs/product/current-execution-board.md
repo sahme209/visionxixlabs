@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the [current-source qualification audit](../recovery/2026-11-05/governance-next-qualification-audit.md) shows current signed artifacts still cannot handle a business request if installed. Resolve the connected native custody → authenticated request channel → actual compiled consumer path through a reviewed local design; do not repeat packaging or blindly install still-refusing artifacts. Production resource-owner/writer cutover and full A2/A9 are distinct gates.
 
+## Private handler composition — reviewed next implementation unit
+
+~~Concrete source design and independent review completed~~ ([proposal](../recovery/2026-11-05/governance-private-handler-composition-proposal.md)): extract the existing validated HTTP cores, compose them with the actual private graph and prepare the existing six-operation data adapter. Preserve legacy routes and no-provider history recovery; no listener, startup, positive identity or operational activation. Local implementation awaits the standing validation-first decision; custody/material supply and same-consumer qualification remain explicit later gates, not silently satisfied.
+
 ## Connected consumer — additional source blockers reconciled
 
 ~~Existing channel target and provisioning source audited~~ ([numbered findings](../recovery/2026-11-05/governance-connected-consumer-design-findings.md)): provisioner uses an invalid placeholder database and public fixed test keys; proposed HTTP handlers still import global database/session composition. Direct mounting/installation would therefore not prove the actual private compiled consumer. Next coherent design must supply trusted synthetic material and private-instance handler composition, preserving existing validation, lifetime and independent-review boundaries. No implementation, operational action or Governance completion is inferred.
