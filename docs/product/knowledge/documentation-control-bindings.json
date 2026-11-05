@@ -1,0 +1,146 @@
+{
+  "format": "axiom.product-control-bindings/1",
+  "status": "INTERNAL DRAFT",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "baselineCommit": "eec4945148245f92f35bbd22ea66abf3b9a3a729",
+  "guide": "docs/product/knowledge/documentation-control-bindings.md",
+  "declarations": 2,
+  "renderedControls": 12,
+  "countMethod": "One mapped intrinsic button declaration and one mapped imported ExternalLink seam produce12fixed-data instances; realPrimitives passthrough verified in renderedtests. Not recursive wholeapp coverage.",
+  "source": "desktop/src/views/DocsView.tsx",
+  "baselineSha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd",
+  "currentSourceSha256": "c2566c1805ffba90589a10409b04eb8ebc4778268277910b243e6d64f52b7065",
+  "metadataOnlyReconstructionVerified": true,
+  "runtimeHelpLookupAdded": false,
+  "registeredInGlobalAstChecker": false,
+  "renderedContractTest": "lib/desktop/__tests__/documentationControlIds.test.ts",
+  "nativeAccepted": false,
+  "controls": [
+    {
+      "helpId": "documentation.journey.scope",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "button",
+      "renderedTag": "button",
+      "label": "Open repository",
+      "destination": "repository-workspace",
+      "guideSection": "In-app journey buttons"
+    },
+    {
+      "helpId": "documentation.journey.code",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "button",
+      "renderedTag": "button",
+      "label": "Open Agent",
+      "destination": "agent",
+      "guideSection": "In-app journey buttons"
+    },
+    {
+      "helpId": "documentation.journey.govern",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "button",
+      "renderedTag": "button",
+      "label": "Open deployment requests",
+      "destination": "deployment-requests",
+      "guideSection": "In-app journey buttons"
+    },
+    {
+      "helpId": "documentation.journey.schedule",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "button",
+      "renderedTag": "button",
+      "label": "Open Airflow",
+      "destination": "airflow-automation",
+      "guideSection": "In-app journey buttons"
+    },
+    {
+      "helpId": "documentation.journey.recover",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "button",
+      "renderedTag": "button",
+      "label": "Review deployment evidence",
+      "destination": "deployment-requests",
+      "guideSection": "In-app journey buttons"
+    },
+    {
+      "helpId": "documentation.web.overview",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "ExternalLink",
+      "renderedTag": "a",
+      "label": "Product documentation",
+      "href": "https://visionxixlabs.com/docs",
+      "guideSection": "Web guide links"
+    },
+    {
+      "helpId": "documentation.web.getting-started",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "ExternalLink",
+      "renderedTag": "a",
+      "label": "Getting started",
+      "href": "https://visionxixlabs.com/docs/getting-started",
+      "guideSection": "Web guide links"
+    },
+    {
+      "helpId": "documentation.web.permissions",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "ExternalLink",
+      "renderedTag": "a",
+      "label": "Permissions model",
+      "href": "https://visionxixlabs.com/docs/permissions-model",
+      "guideSection": "Web guide links"
+    },
+    {
+      "helpId": "documentation.web.approvals",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "ExternalLink",
+      "renderedTag": "a",
+      "label": "Approval workflow",
+      "href": "https://visionxixlabs.com/docs/approval-workflow",
+      "guideSection": "Web guide links"
+    },
+    {
+      "helpId": "documentation.web.glossary",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "ExternalLink",
+      "renderedTag": "a",
+      "label": "Glossary",
+      "href": "https://visionxixlabs.com/docs/glossary",
+      "guideSection": "Web guide links"
+    },
+    {
+      "helpId": "documentation.web.troubleshooting",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "ExternalLink",
+      "renderedTag": "a",
+      "label": "Troubleshooting",
+      "href": "https://visionxixlabs.com/docs/troubleshooting",
+      "guideSection": "Web guide links"
+    },
+    {
+      "helpId": "documentation.web.surfaces",
+      "source": "desktop/src/views/DocsView.tsx",
+      "sourceFunction": "DocsView",
+      "sourceTag": "ExternalLink",
+      "renderedTag": "a",
+      "label": "Surfaces",
+      "href": "https://visionxixlabs.com/docs/surfaces",
+      "guideSection": "Web guide links"
+    }
+  ],
+  "unbound": [
+    "Imported passiveCard/ViewShell internals",
+    "All destination actions and browser behavior",
+    "Customer content/editorial/retrieval acceptance"
+  ]
+}

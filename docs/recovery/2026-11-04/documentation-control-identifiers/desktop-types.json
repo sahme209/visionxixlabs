@@ -1,0 +1,4 @@
+{
+  "exitCode": 0,
+  "scope": "desktop tsconfig noEmit; not root tests or production build"
+}

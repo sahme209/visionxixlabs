@@ -169,3 +169,6 @@ Existence-only inspection found helper/packet/controllercopy/fixture from909miss
 
 ### November4 resumed native Documentation observation
 ~~Actual notices/5journeylabels/7guidelabels and one internal Releases handoff~~ observed after explicit usermanualunlock. [Evidence](../recovery/2026-11-04/native-documentation-walkthrough/resume-observation.json). Firstclickcancelled onuserappchange; freshstateused, Apps&skills restored. No external link/providerverification/skill/form/review/execution/AI control used. Keyboard/AT/otherdestinations/browsercontent/editorial/retrieval and fullGov remain open; priorlockreport historical. No source/build/test or screenshot inthisunit. Governance recovery preparation approval remains separately pending.
+
+### November4 Documentation control identifiers — local only
+Twelve existing rendered controls now have stable source identifiers (two mapped declarations). [Evidence](../recovery/2026-11-04/documentation-control-identifiers/README.md). Targeted rendered tests RED then 2 PASS, desktop types PASS, independent review clear; original behavior reconstructs exactly after metadata removal. Current native app unchanged; no customer help/retrieval/global AST or production acceptance. All 21 parents remain open; Governance persistent recovery preparation decision remains pending.

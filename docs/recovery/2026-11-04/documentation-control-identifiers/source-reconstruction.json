@@ -1,0 +1,8 @@
+{
+  "source": "desktop/src/views/DocsView.tsx",
+  "baselineSha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd",
+  "currentSourceSha256": "c2566c1805ffba90589a10409b04eb8ebc4778268277910b243e6d64f52b7065",
+  "removingOnlyMetadataRestoresWholeBaseline": true,
+  "guideAndInventoryCustomerEligible": false,
+  "currentNativeAppUnchanged": true
+}

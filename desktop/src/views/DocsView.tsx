@@ -11,6 +11,7 @@ import { Card, ExternalLink, ViewShell } from "../components/Primitives";
 import { GOVERNED_JOURNEY, GOVERNED_JOURNEY_AVAILABILITY, type GovernedJourneyDestination } from "../../../lib/desktop/governedJourney";
 
 interface DocLink {
+  id: string;
   title: string;
   body: string;
   href: string;
@@ -20,23 +21,23 @@ const DOCS: ReadonlyArray<{ section: string; links: DocLink[] }> = [
   {
     section: "Getting started",
     links: [
-      { title: "Product documentation", body: "Installed application overview and operating model.", href: "https://visionxixlabs.com/docs" },
-      { title: "Getting started", body: "Install, authenticate, and create the first deployment request.", href: "https://visionxixlabs.com/docs/getting-started" },
-      { title: "Permissions model", body: "Approval, merge, execution, and environment authority boundaries.", href: "https://visionxixlabs.com/docs/permissions-model" },
+      { id: "overview", title: "Product documentation", body: "Installed application overview and operating model.", href: "https://visionxixlabs.com/docs" },
+      { id: "getting-started", title: "Getting started", body: "Install, authenticate, and create the first deployment request.", href: "https://visionxixlabs.com/docs/getting-started" },
+      { id: "permissions", title: "Permissions model", body: "Approval, merge, execution, and environment authority boundaries.", href: "https://visionxixlabs.com/docs/permissions-model" },
     ],
   },
   {
     section: "Deployment operations",
     links: [
-      { title: "Approval workflow", body: "Human gates and separation of duties.", href: "https://visionxixlabs.com/docs/approval-workflow" },
-      { title: "Glossary", body: "Deployment and governance terminology.", href: "https://visionxixlabs.com/docs/glossary" },
+      { id: "approvals", title: "Approval workflow", body: "Human gates and separation of duties.", href: "https://visionxixlabs.com/docs/approval-workflow" },
+      { id: "glossary", title: "Glossary", body: "Deployment and governance terminology.", href: "https://visionxixlabs.com/docs/glossary" },
     ],
   },
   {
     section: "Troubleshooting",
     links: [
-      { title: "Troubleshooting",  body: "Common errors + remediations.",        href: "https://visionxixlabs.com/docs/troubleshooting" },
-      { title: "Surfaces",         body: "Where each piece of data is rendered.", href: "https://visionxixlabs.com/docs/surfaces" },
+      { id: "troubleshooting", title: "Troubleshooting",  body: "Common errors + remediations.",        href: "https://visionxixlabs.com/docs/troubleshooting" },
+      { id: "surfaces", title: "Surfaces",         body: "Where each piece of data is rendered.", href: "https://visionxixlabs.com/docs/surfaces" },
     ],
   },
 ];
@@ -64,7 +65,7 @@ export function DocsView({ onNavigate }: { onNavigate: (view: GovernedJourneyDes
               <Card className="h-full p-4">
                 <h3 className="text-sm font-semibold text-white">{stage.title}</h3>
                 <p className="mt-2 text-xs leading-6 text-zinc-400">{stage.detail}</p>
-                <button type="button" onClick={() => onNavigate(stage.destination)} className="mt-3 rounded-md border border-white/15 px-3 py-2 text-xs text-orange-200 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">{stage.cta}</button>
+                <button type="button" data-help-id={`documentation.journey.${stage.id}`} onClick={() => onNavigate(stage.destination)} className="mt-3 rounded-md border border-white/15 px-3 py-2 text-xs text-orange-200 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">{stage.cta}</button>
               </Card>
             </li>
           ))}
@@ -82,6 +83,7 @@ export function DocsView({ onNavigate }: { onNavigate: (view: GovernedJourneyDes
                 <ExternalLink
                   key={link.href}
                   href={link.href}
+                  data-help-id={`documentation.web.${link.id}`}
                   className="block group"
                 >
                   <Card className="p-3 hover:border-violet-500/30 transition-colors">

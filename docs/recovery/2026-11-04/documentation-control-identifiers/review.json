@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "no important findings",
+  "execution": "read-only source review; no tests/network/UI",
+  "scope": "DocsView metadata/test/inventory/reconstruction"
+}
