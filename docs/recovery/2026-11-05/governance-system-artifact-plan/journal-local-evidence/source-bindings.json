@@ -1,0 +1,8 @@
+{
+  "packages/verified-issuer-runtime/native/owner_journal.h": "8a5914c9be5b25602e18b419a41ecd5e133804aa1d854329ca089e137d638c4e",
+  "packages/verified-issuer-runtime/native/owner_journal.c": "ab8055bf5e9023bd61c4b29f0f41c1a917d354ba838d21eb532c5a383d3a32c6",
+  "packages/verified-issuer-runtime/native/owner_journal_native.h": "766dfbd8a2ca0d39d713775d821a1e0d7643863f3df1a9265db239d7d2d7f919",
+  "packages/verified-issuer-runtime/native/owner_journal_native.c": "5b7d8d85be2eccb138902c42e092bccd38a413e863adf14f31a3db0b8e227e12",
+  "packages/verified-issuer-runtime/native/test_owner_journal.c": "793a2b4e93cf0b2615ba95afba3e6f56814870eafe8196e7e60e3fefec0364c0",
+  "packages/verified-issuer-runtime/native/test_owner_journal_native.c": "bcbf73b044ebe94545e8efa2ab5d7a961dea5b78abfdd16452385e1569e22d00"
+}

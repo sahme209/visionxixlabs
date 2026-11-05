@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_supplier_read_mock_test.py", line 31, in <module>
+    assert build.returncode==0,'read mock compile failed'
+AssertionError: read mock compile failed

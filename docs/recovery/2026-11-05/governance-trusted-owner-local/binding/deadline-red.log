@@ -1,0 +1,13 @@
+F...
+======================================================================
+FAIL: test_binding_rejects_validation_that_returns_after_deadline (__main__.OwnerOrdering)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_owner_broker_integration.py", line 27, in test_binding_rejects_validation_that_returns_after_deadline
+    self.assertIn('now_ns()>=response_deadline',body[:auth])
+AssertionError: 'now_ns()>=response_deadline' not found in 'static int validate(xpc_object_t r,const char*status,int stage){\n if(!r||!'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+FAILED (failures=1)

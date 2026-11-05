@@ -8,6 +8,7 @@
 #include "origin_root_binding.h"
 #include "origin_process_identity.h"
 #include "origin_private_bootstrap.h"
+#include "origin_owner_binding.h"
 #include "synthetic_resource_contract.h"
 #include <xpc/xpc.h>
 #include <Security/Security.h>
@@ -64,7 +65,7 @@ static int message_matches(xpc_object_t message,const char*requirement){
 static int alive_pid(pid_t child){if(child<=0)return 0;siginfo_t info;memset(&info,0,sizeof(info));if(waitid(P_PID,(id_t)child,&info,WEXITED|WNOHANG|WNOWAIT))return 0;return info.si_pid==0;}
 static void kill_owned(pid_t child){if(alive_pid(child))kill(child,SIGKILL);}
 static void maybe_exit(void){if(!shutting_down||owned_child>0||delivery.worker_active)return;for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i])return;_exit(0);}
-static void reap_owned(pid_t child,unsigned remaining){int status;pid_t result=waitpid(child,&status,WNOHANG);if(result==child||(result<0&&errno==ECHILD)){if(owned_child==child)owned_child=0;maybe_exit();return;}if(result<0&&errno!=EINTR){fputs("verified_issuer_child_cleanup_unknown\n",stderr);return;}if(!remaining){fputs("verified_issuer_child_cleanup_unknown\n",stderr);return;}dispatch_after(dispatch_time(DISPATCH_TIME_NOW,10000000LL),control,^{reap_owned(child,remaining-1);});}
+static void reap_owned(pid_t child,unsigned remaining){int status;pid_t result=waitpid(child,&status,WNOHANG);if(result==child){if(owned_child==child)owned_child=0;maybe_exit();return;}if(result<0&&errno!=EINTR){fputs("verified_issuer_child_cleanup_unknown\n",stderr);return;}if(!remaining){fputs("verified_issuer_child_cleanup_unknown\n",stderr);return;}dispatch_after(dispatch_time(DISPATCH_TIME_NOW,10000000LL),control,^{reap_owned(child,remaining-1);});}
 static void revoke_slot(void){close_delivery();if(!epoch_revoked){uint64_t old_epoch=epoch;epoch++;epoch_revoked=1;axiom_origin_slot_revoke(&slot);for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i]&&jobs[i]->epoch==old_epoch)atomic_store(&jobs[i]->cancelled,1);}kill_owned(slot.child);if(slot.child>0)reap_owned(slot.child,20);}
 static void reply(xpc_object_t message,const char*status,pid_t child,const unsigned char*a,const unsigned char*b){xpc_object_t value=xpc_dictionary_create_reply(message);if(!value)return;xpc_dictionary_set_string(value,"status",status);xpc_dictionary_set_int64(value,"child",child);if(a)xpc_dictionary_set_data(value,"client",a,32);if(b)xpc_dictionary_set_data(value,"broker",b,32);if(a&&b){xpc_dictionary_set_uint64(value,"epoch",epoch);xpc_dictionary_set_uint64(value,"deadline",slot.deadline);}xpc_connection_t peer=xpc_dictionary_get_remote_connection(message);if(peer)xpc_connection_send_message(peer,value);xpc_release(value);}
 static int claim_startup(void){
@@ -82,7 +83,7 @@ static void retain_peer(Peer*p){atomic_fetch_add(&p->refs,1);}
 static void release_peer(void*value){Peer*p=value;if(atomic_fetch_sub(&p->refs,1)==1)free(p);}
 static void retain_job(Job*j){atomic_fetch_add(&j->refs,1);}
 static void release_job(Job*j){if(atomic_fetch_sub(&j->refs,1)==1){xpc_release(j->message);xpc_release(j->peer->connection);release_peer(j->peer);free(j);}}
-static int work_current(Job*j){return !atomic_load(&j->cancelled)&&!atomic_load(&j->peer->ended)&&now_ns()<j->deadline;}
+static int work_current(Job*j){return !atomic_load(&j->cancelled)&&!atomic_load(&j->peer->ended)&&now_ns()<j->deadline&&axiom_owner_binding_current()&&!atomic_load(&j->cancelled)&&now_ns()<j->deadline;}
 static void cancel_timer(Job*j){if(j->timer){dispatch_source_t timer=j->timer;j->timer=NULL;dispatch_source_cancel(timer);}}
 static void job_reply(Job*j,const char*status,pid_t child,const unsigned char*a,const unsigned char*b){if(j->replied)return;j->replied=1;reply(j->message,status,child,a,b);}
 static void discard_spawn(Job*j){if(j->input>=0){close(j->input);j->input=-1;}if(j->output>=0){close(j->output);j->output=-1;}if(j->error>=0){close(j->error);j->error=-1;}if(j->child>0){kill_owned(j->child);reap_owned(j->child,20);j->child=0;}}
@@ -104,7 +105,7 @@ static void prepare_start(Job*j){
  if(failed||!work_current(j)||!alive_pid(child)||!axiom_origin_root_current(&j->binding)||!work_current(j))return;
  j->prepared=1;
 }
-static int delivery_current(void){return !atomic_load(&delivery.cancelled)&&!shutting_down&&!epoch_revoked&&delivery.binding.epoch==epoch&&delivery.child==owned_child&&delivery.child==slot.child&&delivery.fd>=0&&slot.phase==AXIOM_ORIGIN_CONSUMED&&now_ns()<delivery.binding.deadline&&!memcmp(delivery.binding.client,slot.client,32)&&!memcmp(delivery.binding.broker,slot.broker,32)&&alive_pid(owned_child);}
+static int delivery_current(void){return axiom_owner_binding_current()&&!atomic_load(&delivery.cancelled)&&!shutting_down&&!epoch_revoked&&delivery.binding.epoch==epoch&&delivery.child==owned_child&&delivery.child==slot.child&&delivery.fd>=0&&slot.phase==AXIOM_ORIGIN_CONSUMED&&now_ns()<delivery.binding.deadline&&!memcmp(delivery.binding.client,slot.client,32)&&!memcmp(delivery.binding.broker,slot.broker,32)&&alive_pid(owned_child);}
 static void drain_delivery(void){
  if(!delivery_current()){revoke_slot();return;}
  /* Reserved history becomes consumed before any write that may expose bytes.
@@ -130,7 +131,7 @@ static void start_delivery(void){
   AxiomPrivateMaterial material;memset(&material,0,sizeof(material));int ok=0;
   /* Control exclusively owns descriptor and child. Worker never resumes, writes
    * or kills; cancellation cannot free its bounded storage before API return. */
-  if(!atomic_load(&delivery.cancelled)&&now_ns()<delivery.binding.deadline&&axiom_origin_root_current(&delivery.root)&&!atomic_load(&delivery.cancelled)&&axiom_private_supplier_read(&material,&delivery.cancelled,delivery.binding.deadline)&&!atomic_load(&delivery.cancelled)&&now_ns()<delivery.binding.deadline&&axiom_origin_root_current(&delivery.root))ok=axiom_private_frame_encode(delivery.frame,&delivery.length,&delivery.binding,&material);
+  if(!atomic_load(&delivery.cancelled)&&now_ns()<delivery.binding.deadline&&axiom_owner_binding_current()&&axiom_origin_root_current(&delivery.root)&&!atomic_load(&delivery.cancelled)&&axiom_private_supplier_read(&material,&delivery.cancelled,delivery.binding.deadline)&&axiom_owner_binding_current()&&!atomic_load(&delivery.cancelled)&&now_ns()<delivery.binding.deadline&&axiom_origin_root_current(&delivery.root))ok=axiom_private_frame_encode(delivery.frame,&delivery.length,&delivery.binding,&material);
   axiom_private_material_wipe(&material);
   dispatch_async(control,^{
    delivery.worker_active=0;
@@ -216,7 +217,8 @@ int main(int argc,char**argv){
  char current[PATH_MAX],actual[PATH_MAX],expected[PATH_MAX];uint32_t length=sizeof(current);struct stat own;
  if(_NSGetExecutablePath(current,&length)||!realpath(current,actual)||snprintf(expected,sizeof(expected),"%s%s",AXIOM_ISSUER_CONTROL_APP,AX_SYNTH_BROKER_SUFFIX)>=(int)sizeof(expected)||strcmp(actual,expected)||stat(expected,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&main,&own))return 71;
  /* Dedicated custodian only; no constructor/import invokes these APIs. */
- if(!axiom_private_supplier_startup())return 76;
+ if(!axiom_owner_binding_startup())return 77;
+ if(!axiom_owner_binding_current()||!axiom_private_supplier_startup()||!axiom_owner_binding_current())return 76;
  signal(SIGPIPE,SIG_IGN);
  control=dispatch_queue_create("axiom.issuer.origin.control",DISPATCH_QUEUE_SERIAL);workers=dispatch_queue_create("axiom.issuer.origin.inspection",DISPATCH_QUEUE_CONCURRENT);if(!control||!workers)return 72;
  if(snprintf(peer_requirement,sizeof(peer_requirement),"(%s) or (%s)",AXIOM_ISSUER_NODE_REQUIREMENT,AXIOM_ISSUER_CONTROLLER_REQUIREMENT)>=(int)sizeof(peer_requirement))return 73;
@@ -233,6 +235,6 @@ int main(int argc,char**argv){
  /* Graceful shutdown waits for all creation jobs and tracked child reaping.
   * SIGKILL/OS forced termination while kernel creation is blocked cannot offer
   * a reaping guarantee; any such result remains unknown in qualification. */
- void(^shutdown)(void)=^{shutting_down=1;for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i])atomic_store(&jobs[i]->cancelled,1);revoke_slot();maybe_exit();};
+ void(^shutdown)(void)=^{shutting_down=1;axiom_owner_binding_revoke();for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i])atomic_store(&jobs[i]->cancelled,1);revoke_slot();maybe_exit();};
  dispatch_source_set_event_handler(term,shutdown);dispatch_source_set_event_handler(interrupt,shutdown);dispatch_resume(term);dispatch_resume(interrupt);dispatch_main();
 }

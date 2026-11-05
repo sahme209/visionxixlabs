@@ -13,10 +13,12 @@
 #define SecKeychainItemCopyContent mock_Content
 #define SecKeychainItemFreeContent mock_FreeContent
 #define clock_gettime mock_clock
+#define axiom_owner_binding_current mock_owner_current
 static int ax_test_context(void);
 #include AX_DERIVED_SUPPLIER_SOURCE
 #include <assert.h>
 #include <stdlib.h>
+int mock_owner_current(void){abort();}
 typedef struct {
  CSSM_ACL_OWNER_PROTOTYPE owner; CSSM_ACL_ENTRY_INFO entry;
  CSSM_LIST_ELEMENT n[18]; CSSM_ACL_PROCESS_SUBJECT_SELECTOR process;

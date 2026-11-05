@@ -1,0 +1,1 @@
+Assertion failed: (ax_owner_native_journal_ops(&n,&o)), function run, file test_owner_journal_native.c, line 43.

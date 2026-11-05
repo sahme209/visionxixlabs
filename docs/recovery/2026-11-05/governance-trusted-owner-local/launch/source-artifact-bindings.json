@@ -1,0 +1,44 @@
+{
+  "approval": "call_W7N97qQuQQf9UodqL47w49u4",
+  "scope": "local source compilation and pure/fully stubbed tests only",
+  "source_sha256": {
+    "origin_launch_owner.c": "b0403843963801d873ba59f7ca08c9d769ed6fb276cf0710bae04c45e9b3cd80",
+    "owner_launch.c": "660397d14d8f53b8b9587c83cb5ab23aed50a9905601a86a13ae931640641119",
+    "owner_launch.h": "c7290d0ccc797d23d75a58388a669183a1a0c50e09729b8a4506bd3aa31bf1eb",
+    "owner_launch_test.c": "4fa873b3f523bd3ccd707912af0d8da775ca2b50a5b569b211e6747f1c0d86c9",
+    "owner_privilege_drop.c": "fdc076ad22152c2bb4cc80428704903304ba2f78bdb2da564f7bdc04462739c2",
+    "owner_privilege_drop.h": "4642b5c10afe9675e250b29b36017925a7505becdf05d6345eb3d0c0114e6288",
+    "owner_privilege_drop_test.c": "86f1ff1e94bb2b5c6d3c24dcb68295d816cde3b0d659b0d7a16b4d737d00da0b",
+    "owner_journal.c": "ab8055bf5e9023bd61c4b29f0f41c1a917d354ba838d21eb532c5a383d3a32c6",
+    "owner_journal.h": "8a5914c9be5b25602e18b419a41ecd5e133804aa1d854329ca089e137d638c4e",
+    "owner_journal_native.c": "5b7d8d85be2eccb138902c42e092bccd38a413e863adf14f31a3db0b8e227e12",
+    "owner_journal_native.h": "766dfbd8a2ca0d39d713775d821a1e0d7643863f3df1a9265db239d7d2d7f919",
+    "owner_protocol.c": "3ec882e1742b3e3d046770babd60aab4c127117779980546227d471cfe44ed5f",
+    "owner_protocol.h": "50aecc6ed97d4388bdaedfcae4d320d2d1c310527003f4571ca7ace8cf71c331",
+    "owner_config.h": "953bc71af6aa4ed73ef4edfe5f6eb80a38c26a8bc3263047595920a86d9659cf",
+    "origin_owner_binding.c": "2677c5d4a4723782f0e82576df0fd388c31c75626b7d8e850a8a0bc19b833c1a",
+    "origin_owner_binding.h": "cbef00d97115d64a5c47606e463dc0b35630a5a5803d22e0cfdae8ace2074a4d",
+    "origin_broker.c": "6a59663b27bbed470ce6d83d32627932e7196ea553d9bed30ee11ac1d19931d3",
+    "origin_private_resource_supplier.m": "330c9b340701c54ab6013fca08024ef9b71e5c81445249aa61579417ec48299c"
+  },
+  "artifacts": {
+    "owner-never-run": {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/launch-owner-source/owner-never-run",
+      "sha256": "0e07483140a02e0e10d985c92e360a01bd4d280dafd4ef4a59f2914d4a0fe4cb",
+      "size": 55856,
+      "mode": "0o600",
+      "executed": false
+    },
+    "broker-never-run": {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/launch-owner-source/broker-never-run",
+      "sha256": "7a592ab0e0191287d05288f19d29231089d187379a978bdfdef3555ed3c3fa09",
+      "size": 94576,
+      "mode": "0o600",
+      "executed": false
+    }
+  },
+  "root_operations": false,
+  "company_key_used": false,
+  "operational_gate": 0,
+  "runtime_qualified": false
+}

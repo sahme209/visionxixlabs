@@ -1,4 +1,5 @@
 #include "origin_private_resource_supplier.h"
+#include "origin_owner_binding.h"
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 #import <LocalAuthentication/LocalAuthentication.h>
@@ -15,6 +16,7 @@
 #include <errno.h>
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 static int load_references(void);
+static int installation_context(void);
 extern OSStatus SecKeychainSetUserInteractionAllowed(Boolean) __attribute__((weak_import));
 static atomic_int startup_state;
 int axiom_private_supplier_operational(void){
@@ -26,7 +28,7 @@ int axiom_private_supplier_startup(void){
  int expected=0;if(!atomic_compare_exchange_strong(&startup_state,&expected,-1))return 0;
  #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
- if(!axiom_private_supplier_operational()||!SecKeychainSetUserInteractionAllowed)return 0;
+ if(!axiom_private_supplier_operational()||!axiom_owner_binding_current()||!SecKeychainSetUserInteractionAllowed)return 0;
  OSStatus result=SecKeychainSetUserInteractionAllowed(false);
 #pragma clang diagnostic pop
  if(result!=errSecSuccess||!load_references())return 0;atomic_store(&startup_state,1);return 1;
@@ -40,33 +42,33 @@ static int current(const atomic_int*cancelled,uint64_t deadline){struct timespec
 /* Exact retained references only. Startup remains permanently unavailable until
  * independently qualified installed/principal/pre-main policy exists. */
 static int ax_synthetic_inspect_item(SecKeychainItemRef item,SecKeychainRef expected,unsigned role){
- if(!item||!expected||role<1||role>3||CFGetTypeID(item)!=SecKeychainItemGetTypeID())return 0;
+ if(!item||!expected||role<1||role>3||!installation_context()||CFGetTypeID(item)!=SecKeychainItemGetTypeID())return 0;
  SecKeychainRef containing=NULL;SecAccessRef access=NULL;int ok=0;
  if(SecKeychainItemCopyKeychain(item,&containing)!=errSecSuccess||!containing||!CFEqual(containing,expected))goto done;
  UInt32 tags[]={kSecServiceItemAttr,kSecAccountItemAttr},formats[]={CSSM_DB_ATTRIBUTE_FORMAT_BLOB,CSSM_DB_ATTRIBUTE_FORMAT_BLOB};
  SecKeychainAttributeInfo info={2,tags,formats};SecKeychainAttributeList *attrs=NULL;SecItemClass cls=0;
- if(SecKeychainItemCopyAttributesAndData(item,&info,&cls,&attrs,NULL,NULL)!=errSecSuccess)goto done;
+ if(!installation_context()||SecKeychainItemCopyAttributesAndData(item,&info,&cls,&attrs,NULL,NULL)!=errSecSuccess)goto done;
  const char*values[]={AX_SYNTH_SERVICE,ax_synthetic_account(role)};ok=cls==kSecGenericPasswordItemClass&&attrs&&attrs->count==2&&attrs->attr;
  for(unsigned i=0;ok&&i<2;i++)ok=attrs->attr[i].tag==tags[i]&&attrs->attr[i].length==strlen(values[i])&&attrs->attr[i].data&&!memcmp(attrs->attr[i].data,values[i],attrs->attr[i].length);
  SecKeychainItemFreeAttributesAndData(attrs,NULL);if(!ok)goto done;ok=0;
- if(SecKeychainItemCopyAccess(item,&access)!=errSecSuccess||!access)goto done;
+ if(!installation_context()||SecKeychainItemCopyAccess(item,&access)!=errSecSuccess||!access)goto done;
  uid_t uid=1;gid_t gid=1;SecAccessOwnerType owner_type=0;CFArrayRef acl_list=NULL;
- if(SecAccessCopyOwnerAndACL(access,&uid,&gid,&owner_type,&acl_list)!=errSecSuccess)goto done;
+ if(!installation_context()||SecAccessCopyOwnerAndACL(access,&uid,&gid,&owner_type,&acl_list)!=errSecSuccess)goto done;
  int owner_ok=uid==0&&gid==0&&owner_type==kSecUseOnlyUID;if(acl_list)CFRelease(acl_list);if(!owner_ok)goto done;
  CSSM_ACL_OWNER_PROTOTYPE *owner=NULL;CSSM_ACL_ENTRY_INFO *entries=NULL;uint32 count=0;
- if(SecAccessGetOwnerAndACL(access,&owner,&count,&entries)!=errSecSuccess)goto done;
+ if(!installation_context()||SecAccessGetOwnerAndACL(access,&owner,&count,&entries)!=errSecSuccess)goto done;
  const ax_cssm_policy*policy=ax_cssm_prepared_policy();
  ok=policy&&ax_cssm_inspect_framework(policy,owner,count,entries);
  /* Export allocation/lifetime behavior remains an operational qualification
   * gap; no allocation bound is inferred from three retained item references. */
- done:if(access)CFRelease(access);if(containing)CFRelease(containing);return ok;
+ done:if(access)CFRelease(access);if(containing)CFRelease(containing);return ok&&installation_context();
 }
 static SecKeychainRef selected_keychain;
 static SecKeychainItemRef retained_items[3];
 static int installation_context(void){
  /* Actual installed backing identity, principal and pre-main integrity remain
   * unresolved. operational is immutable false; no manifest/flag can qualify. */
- return axiom_private_supplier_operational();
+ return axiom_private_supplier_operational()&&axiom_owner_binding_current();
 }
 static int safe_stat(int fd,int directory,mode_t mode){
  struct stat s;if(fstat(fd,&s)||s.st_uid||(!directory&&s.st_gid)||!((directory?S_ISDIR(s.st_mode):S_ISREG(s.st_mode)))||(s.st_mode&0777)!=mode||(!directory&&s.st_nlink!=1))return 0;
@@ -80,13 +82,14 @@ static int protected_directory(void){
 /* Internal fixed-startup selector step. This accepts owned bounded locators,
  * never policy/installation authority; caller must independently gate context. */
 static SecKeychainItemRef resolve_reference(CFDataRef locator,SecKeychainRef keychain,unsigned role){
- if(!locator||CFGetTypeID(locator)!=CFDataGetTypeID()||CFDataGetLength(locator)<1||CFDataGetLength(locator)>AX_SYNTH_LOCATOR_MAX||!keychain||role<1||role>3)return NULL;
+ if(!installation_context()||!locator||CFGetTypeID(locator)!=CFDataGetTypeID()||CFDataGetLength(locator)<1||CFDataGetLength(locator)>AX_SYNTH_LOCATOR_MAX||!keychain||role<1||role>3)return NULL;
  NSDictionary*q=@{(__bridge id)kSecClass:(__bridge id)kSecClassGenericPassword,(__bridge id)kSecMatchItemList:@[(__bridge id)locator],(__bridge id)kSecMatchSearchList:@[(__bridge id)keychain],(__bridge id)kSecMatchLimit:(__bridge id)kSecMatchLimitOne,(__bridge id)kSecReturnRef:@YES};
  CFTypeRef value=NULL;OSStatus status=SecItemCopyMatching((__bridge CFDictionaryRef)q,&value);
- if(status!=errSecSuccess||!value||CFGetTypeID(value)!=SecKeychainItemGetTypeID()||!ax_synthetic_inspect_item((SecKeychainItemRef)value,keychain,role)){if(value)CFRelease(value);return NULL;}
+ if(status!=errSecSuccess||!installation_context()||!value||CFGetTypeID(value)!=SecKeychainItemGetTypeID()||!ax_synthetic_inspect_item((SecKeychainItemRef)value,keychain,role)){if(value)CFRelease(value);return NULL;}
  return (SecKeychainItemRef)value;
 }
 static int load_references(void){
+ if(!installation_context())return 0;
  unsigned char record[AX_SYNTH_RECORD_MAX+1];AxSyntheticLocators locators;int directory=protected_directory();if(directory<0)return 0;int fd=openat(directory,"bootstrap-locators.v1",O_RDONLY|O_NOFOLLOW|O_CLOEXEC);close(directory);if(fd<0)return 0;
  struct stat st;int ok=safe_stat(fd,0,0644)&&!fstat(fd,&st)&&st.st_size>0&&st.st_size<=AX_SYNTH_RECORD_MAX;
  size_t used=0;while(ok&&used<sizeof record){ssize_t n=read(fd,record+used,sizeof record-used);if(n<0&&errno==EINTR)continue;if(n<0){ok=0;break;}if(!n)break;used+=(size_t)n;}

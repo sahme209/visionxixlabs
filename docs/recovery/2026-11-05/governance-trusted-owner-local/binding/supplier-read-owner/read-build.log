@@ -1,0 +1,5 @@
+Undefined symbols for architecture arm64:
+  "_axiom_owner_binding_current", referenced from:
+      _axiom_private_supplier_startup in synthetic_supplier_read_mock_test-7534f2.o
+ld: symbol(s) not found for architecture arm64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)

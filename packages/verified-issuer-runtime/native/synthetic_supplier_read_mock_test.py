@@ -1,15 +1,19 @@
 """Derived isolated read simulation; no production/native Security invocation."""
 from pathlib import Path
-import hashlib,json,subprocess,tempfile
+import argparse,hashlib,json,subprocess,tempfile
 root=Path(__file__).resolve().parents[3]
 native=Path(__file__).resolve().parent
-evidence=root/'docs/recovery/2026-11-05/governance-installed-resource-local/adapter'
+parser=argparse.ArgumentParser()
+parser.add_argument('--evidence-dir',type=Path,required=True,help='Fresh evidence directory; never overwrite historical receipts')
+args=parser.parse_args()
+evidence=args.evidence_dir
+evidence.mkdir(parents=True,exist_ok=False)
 source=native/'origin_private_resource_supplier.m'
 original=source.read_bytes()
 before=b'''static int installation_context(void){
  /* Actual installed backing identity, principal and pre-main integrity remain
   * unresolved. operational is immutable false; no manifest/flag can qualify. */
- return axiom_private_supplier_operational();
+ return axiom_private_supplier_operational()&&axiom_owner_binding_current();
 }'''
 after=b'''static int installation_context(void){
  /* DERIVED ISOLATED TEST CONTEXT ONLY: not installation authority. */

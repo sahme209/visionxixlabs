@@ -1,0 +1,1 @@
+Assertion failed: (!ax_owner_journal_reserve(&a,&b)), function main, file test_owner_journal.c, line 34.

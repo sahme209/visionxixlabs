@@ -1,0 +1,19 @@
+{
+  "scope": "local source and ordinary inert mock tests; no OS qualification",
+  "files": {
+    "packages/verified-issuer-runtime/native/owner_config.h": "953bc71af6aa4ed73ef4edfe5f6eb80a38c26a8bc3263047595920a86d9659cf",
+    "packages/verified-issuer-runtime/native/owner_protocol.h": "50aecc6ed97d4388bdaedfcae4d320d2d1c310527003f4571ca7ace8cf71c331",
+    "packages/verified-issuer-runtime/native/owner_protocol.c": "3ec882e1742b3e3d046770babd60aab4c127117779980546227d471cfe44ed5f",
+    "packages/verified-issuer-runtime/native/origin_owner_binding.h": "cbef00d97115d64a5c47606e463dc0b35630a5a5803d22e0cfdae8ace2074a4d",
+    "packages/verified-issuer-runtime/native/origin_owner_binding.c": "2677c5d4a4723782f0e82576df0fd388c31c75626b7d8e850a8a0bc19b833c1a",
+    "packages/verified-issuer-runtime/native/origin_broker.c": "6a59663b27bbed470ce6d83d32627932e7196ea553d9bed30ee11ac1d19931d3",
+    "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m": "330c9b340701c54ab6013fca08024ef9b71e5c81445249aa61579417ec48299c",
+    "packages/verified-issuer-runtime/native/synthetic_supplier_read_mock_test.py": "4de895cc036a58eb672c7bea7d92ee82ea2d068504418c3f4787b8732b5307dc",
+    "packages/verified-issuer-runtime/native/synthetic_supplier_read_mock_test.m": "96d2540e065c84377fa818e74a3dd0d63d086435394e070dfdd40b192b63a70a",
+    "packages/verified-issuer-runtime/native/tests/owner_protocol_test.c": "7b47943183f84d66cc3315b755421a6ccfca6e3bf0fd036dc0444483ea765525",
+    "packages/verified-issuer-runtime/native/tests/owner_binding_closed_test.c": "0ad26231a7b613e1cd9496639912b86542c2071f0eef33e3cfc226b6ac159426",
+    "packages/verified-issuer-runtime/native/tests/owner_binding_validation_test.c": "e5f85a32bfdcec66121fd23c3a80010807a2a4ebddc0e2c7522db595b58374ec",
+    "packages/verified-issuer-runtime/native/tests/owner_xpc_type_mocks.c": "8eb56f1b5117683243edc2d8b06b4b72def0b617caf8f8a253227ddd1f4feac1",
+    "packages/verified-issuer-runtime/native/tests/test_owner_broker_integration.py": "d609d29e9f3f31bd592679fc9b1e99acf3e73d591aa230593c9c62310cb0ee68"
+  }
+}

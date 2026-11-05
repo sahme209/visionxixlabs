@@ -1,0 +1,1 @@
+Assertion failed: (ax_owner_launch_start(&launch,&ops,&jops)==1), function main, file owner_launch_test.c, line 22.

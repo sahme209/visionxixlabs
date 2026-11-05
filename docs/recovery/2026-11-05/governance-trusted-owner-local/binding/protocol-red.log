@@ -1,0 +1,1 @@
+Assertion failed: (ax_owner_slot_reserve(s,1,g)), function setup, file owner_protocol_test.c, line 6.

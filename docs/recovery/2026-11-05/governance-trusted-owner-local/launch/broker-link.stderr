@@ -1,0 +1,7 @@
+Undefined symbols for architecture arm64:
+  "_OBJC_CLASS_$_NSString", referenced from:
+       in origin_private_resource_supplier-f1497b.o
+  "_OBJC_CLASS_$_NSURLComponents", referenced from:
+       in origin_private_resource_supplier-f1497b.o
+ld: symbol(s) not found for architecture arm64
+clang: error: linker command failed with exit code 1 (use -v to see invocation)

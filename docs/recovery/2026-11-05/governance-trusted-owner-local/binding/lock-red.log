@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_owner_lock_refusal_is_permanent (__main__.OwnerOrdering)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_owner_broker_integration.py", line 45, in test_owner_lock_refusal_is_permanent
+    self.assertEqual(source.count('if(pthread_mutex_trylock(&lock)){axiom_owner_binding_revoke();return 0;}'),2)
+AssertionError: 0 != 2
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (failures=1)

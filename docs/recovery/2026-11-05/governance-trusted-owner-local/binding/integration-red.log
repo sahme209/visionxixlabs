@@ -1,0 +1,29 @@
+FFF
+======================================================================
+FAIL: test_owner_before_any_supplier_startup (__main__.OwnerOrdering)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_owner_broker_integration.py", line 8, in test_owner_before_any_supplier_startup
+    self.assertIn('axiom_owner_binding_startup()',main)
+AssertionError: 'axiom_owner_binding_startup()' not found in 'int main(int argc,char**argv){\n (void)argv;if(argc!=1)return 69;\n if(!AXIOM_ISSUER_ORIGIN_SERVICE[0]||!AXIOM_ISSUER_NODE_REQUIREMENT[0]||!AXIOM_ISSUER_CONTROLLER_REQUIREMENT[0]||!ax_synthetic_control_app_matches(AXIOM_ISSUER_CONTROL_APP)||!SecCodeCreateWithXPCMessage)return 70;\n char current[PATH_MAX],actual[PATH_MAX],expected[PATH_MAX];uint32_t length=sizeof(current);struct stat own;\n if(_NSGetExecutablePath(current,&length)||!realpath(current,actual)||snprintf(expected,sizeof(expected),"%s%s",AXIOM_ISSUER_CONTROL_APP,AX_SYNTH_BROKER_SUFFIX)>=(int)sizeof(expected)||strcmp(actual,expected)||stat(expected,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&main,&own))return 71;\n /* Dedicated custodian only; no constructor/import invokes these APIs. */\n if(!axiom_private_supplier_startup())return 76;\n signal(SIGPIPE,SIG_IGN);\n control=dispatch_queue_create("axiom.issuer.origin.control",DISPATCH_QUEUE_SERIAL);workers=dispatch_queue_create("axiom.issuer.origin.inspection",DISPATCH_QUEUE_CONCURRENT);if(!control||!workers)return 72;\n if(snprintf(peer_requirement,sizeof(peer_requirement),"(%s) or (%s)",AXIOM_ISSUER_NODE_REQUIREMENT,AXIOM_ISSUER_CONTROLLER_REQUIREMENT)>=(int)sizeof(peer_requirement))return 73;\n xpc_connection_t listener=xpc_connection_create_mach_service(AXIOM_ISSUER_ORIGIN_SERVICE,control,XPC_CONNECTION_MACH_SERVICE_LISTENER);if(!listener||xpc_connection_set_peer_code_signing_requirement(listener,peer_requirement))return 74;\n xpc_connection_set_event_handler(listener,^(xpc_object_t peer){\n  if(xpc_get_type(peer)!=XPC_TYPE_CONNECTION)return;\n  if(shutting_down||accepted_peers>=64){xpc_connection_set_event_handler(peer,^(xpc_object_t event){(void)event;});xpc_connection_activate(peer);xpc_connection_cancel(peer);return;}\n  Peer*p=calloc(1,sizeof(*p));if(!p){xpc_connection_set_event_handler(peer,^(xpc_object_t event){(void)event;});xpc_connection_activate(peer);xpc_connection_cancel(peer);return;}\n  atomic_init(&p->refs,1);atomic_init(&p->ended,0);p->connection=xpc_retain(peer);xpc_connection_set_context(peer,p);xpc_connection_set_finalizer_f(peer,release_peer);accepted_peers++;xpc_connection_set_target_queue(peer,control);\n  int configured=xpc_connection_set_peer_code_signing_requirement(peer,peer_requirement)==0;\n  xpc_connection_set_event_handler(peer,^(xpc_object_t event){if(atomic_load(&p->ended))return;if(xpc_get_type(event)!=XPC_TYPE_DICTIONARY){end_peer(p);return;}handle(p,event);});xpc_connection_activate(peer);if(!configured)end_peer(p);\n });xpc_connection_activate(listener);\n signal(SIGTERM,SIG_IGN);signal(SIGINT,SIG_IGN);dispatch_source_t term=dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL,SIGTERM,0,control),interrupt=dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL,SIGINT,0,control);if(!term||!interrupt)return 75;\n /* Graceful shutdown waits for all creation jobs and tracked child reaping.\n  * SIGKILL/OS forced termination while kernel creation is blocked cannot offer\n  * a reaping guarantee; any such result remains unknown in qualification. */\n void(^shutdown)(void)=^{shutting_down=1;for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i])atomic_store(&jobs[i]->cancelled,1);revoke_slot();maybe_exit();};\n dispatch_source_set_event_handler(term,shutdown);dispatch_source_set_event_handler(interrupt,shutdown);dispatch_resume(term);dispatch_resume(interrupt);dispatch_main();\n}\n'
+
+======================================================================
+FAIL: test_supplier_read_revalidates_owner_before_and_after (__main__.OwnerOrdering)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_owner_broker_integration.py", line 21, in test_supplier_read_revalidates_owner_before_and_after
+    self.assertIn('axiom_owner_binding_current()',body[:call])
+AssertionError: 'axiom_owner_binding_current()' not found in 'AxiomPrivateMaterial material;memset(&material,0,sizeof(material));int ok=0;\n  /* Control exclusively owns descriptor and child. Worker never resumes, writes\n   * or kills; cancellation cannot free its bounded storage before API return. */\n  if(!atomic_load(&delivery.cancelled)&&now_ns()<delivery.binding.deadline&&axiom_origin_root_current(&delivery.root)&&!atomic_load(&delivery.cancelled)&&'
+
+======================================================================
+FAIL: test_worker_current_and_delivery_require_owner (__main__.OwnerOrdering)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_owner_broker_integration.py", line 15, in test_worker_current_and_delivery_require_owner
+    self.assertIn('axiom_owner_binding_current()',body)
+AssertionError: 'axiom_owner_binding_current()' not found in 'static int work_current(Job*j){return !atomic_load(&j->cancelled)&&!atomic_load(&j->peer->ended)&&now_ns()<j->deadline;}'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=3)

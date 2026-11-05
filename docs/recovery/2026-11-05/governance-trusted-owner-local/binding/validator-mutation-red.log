@@ -1,0 +1,1 @@
+Assertion failed: (!validate(r,"owner_pending",0)), function main, file validator-mutant-test.c, line 40.

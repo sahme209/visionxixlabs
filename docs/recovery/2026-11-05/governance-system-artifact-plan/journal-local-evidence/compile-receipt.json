@@ -1,0 +1,64 @@
+[
+  {
+    "source": "packages/verified-issuer-runtime/native/owner_journal.c",
+    "argv": [
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-c",
+      "packages/verified-issuer-runtime/native/owner_journal.c",
+      "-o",
+      "/private/tmp/axiom-owner-journal-compile-db8t6qv2/owner_journal.c.o"
+    ],
+    "exit": 0,
+    "object": "/private/tmp/axiom-owner-journal-compile-db8t6qv2/owner_journal.c.o",
+    "object_sha256": "b059350c96476ac0145095d1b350ea53343a82aa301d846609fe0fde2b59878f",
+    "mode": "0o600",
+    "executed": false
+  },
+  {
+    "source": "packages/verified-issuer-runtime/native/owner_journal_native.c",
+    "argv": [
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-c",
+      "packages/verified-issuer-runtime/native/owner_journal_native.c",
+      "-o",
+      "/private/tmp/axiom-owner-journal-compile-db8t6qv2/owner_journal_native.c.o"
+    ],
+    "exit": 0,
+    "object": "/private/tmp/axiom-owner-journal-compile-db8t6qv2/owner_journal_native.c.o",
+    "object_sha256": "b05ea59a03fadda85ec7b1b55564443f7e682a50d1795b2e864fcc3bb128e3db",
+    "mode": "0o600",
+    "executed": false
+  },
+  {
+    "stubbed_test_effect_imports": false,
+    "inspected_object": "/private/tmp/axiom-owner-journal-compile-db8t6qv2/stubbed-adapter-test.o"
+  },
+  {
+    "source": "packages/verified-issuer-runtime/native/owner_journal.c",
+    "argv": [
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-c",
+      "packages/verified-issuer-runtime/native/owner_journal.c",
+      "-o",
+      "/private/tmp/axiom-owner-journal-compile-db8t6qv2/owner_journal-final.c.o"
+    ],
+    "exit": 0,
+    "object": "/private/tmp/axiom-owner-journal-compile-db8t6qv2/owner_journal-final.c.o",
+    "object_sha256": "5912951bd25b7583cbe4b3e20ceb7d04ca51c45e251085be144d8bd41c133f34",
+    "mode": "0o600",
+    "executed": false,
+    "supersedes_original_core_object": true
+  }
+]

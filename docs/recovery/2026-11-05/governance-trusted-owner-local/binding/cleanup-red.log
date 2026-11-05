@@ -1,0 +1,13 @@
+....F.
+======================================================================
+FAIL: test_unknown_echild_is_not_successful_broker_cleanup (__main__.OwnerOrdering)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_owner_broker_integration.py", line 41, in test_unknown_echild_is_not_successful_broker_cleanup
+    self.assertNotIn('result==child||(result<0&&errno==ECHILD)',body)
+AssertionError: 'result==child||(result<0&&errno==ECHILD)' unexpectedly found in 'static void reap_owned(pid_t child,unsigned remaining){int status;pid_t result=waitpid(child,&status,WNOHANG);if(result==child||(result<0&&errno==ECHILD)){if(owned_child==child)owned_child=0;maybe_exit();return;}if(result<0&&errno!=EINTR){fputs("verified_issuer_child_cleanup_unknown\\n",stderr);return;}if(!remaining){fputs("verified_issuer_child_cleanup_unknown\\n",stderr);return;}dispatch_after(dispatch_time(DISPATCH_TIME_NOW,10000000LL),control,^{reap_owned(child,remaining-1);});}\n'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (failures=1)

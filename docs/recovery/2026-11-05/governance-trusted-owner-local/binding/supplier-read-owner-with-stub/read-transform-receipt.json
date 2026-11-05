@@ -1,0 +1,39 @@
+{
+  "source": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+  "original_sha256": "330c9b340701c54ab6013fca08024ef9b71e5c81445249aa61579417ec48299c",
+  "derived_sha256": "ee2e571c5a49eea3eaaff7cf8ce9d8d969484db5c695804186192dfb2b0e84f9",
+  "replacement_count": 1,
+  "before_utf8": "static int installation_context(void){\n /* Actual installed backing identity, principal and pre-main integrity remain\n  * unresolved. operational is immutable false; no manifest/flag can qualify. */\n return axiom_private_supplier_operational()&&axiom_owner_binding_current();\n}",
+  "after_utf8": "static int installation_context(void){\n /* DERIVED ISOLATED TEST CONTEXT ONLY: not installation authority. */\n return ax_test_context();\n}",
+  "reversed_bytes_equal_original": true,
+  "production_source_unchanged": true,
+  "test_sha256": "96d2540e065c84377fa818e74a3dd0d63d086435394e070dfdd40b192b63a70a",
+  "build_argv": [
+    "clang",
+    "-fobjc-arc",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-deprecated-declarations",
+    "-I",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+    "-DAX_DERIVED_SUPPLIER_SOURCE=\"/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-supplier-read-mock-an8pxzx6/supplier-context-derived.m\"",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_supplier_read_mock_test.m",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_contract.c",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/cssm_policy_copy.c",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/cssm_policy_inspect.c",
+    "-framework",
+    "Foundation",
+    "-framework",
+    "Security",
+    "-o",
+    "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-supplier-read-mock-an8pxzx6/isolated-read-mock"
+  ],
+  "executed_argv": [
+    "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-supplier-read-mock-an8pxzx6/isolated-read-mock"
+  ],
+  "task_added_environment": {},
+  "security_function_imports": 0,
+  "test_exit": 0,
+  "boundary": "Only installation_context body changed in temporary derived supplier; actual read bodies byte-identical; all Security APIs inert mock; clock deterministic mock; no operational gate replacement or startup acceptance."
+}

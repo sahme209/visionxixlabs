@@ -1,0 +1,1 @@
+Assertion failed: (ax_owner_drop_privileges(&o,501,502)), function main, file owner_privilege_drop_test.c, line 13.
