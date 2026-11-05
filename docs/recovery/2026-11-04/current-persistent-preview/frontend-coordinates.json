@@ -1,0 +1,20 @@
+{
+  "owned": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226",
+  "sourceHead": "5f208e0a3917b32d278e4ee98c586ef275265da8",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/build.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/node_modules/vite/bin/vite.js",
+    "build",
+    ".",
+    "--config",
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/frontend.config.mjs",
+    "--configLoader",
+    "runner"
+  ],
+  "cwd": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop",
+  "viteVersion": "6.4.2",
+  "configSha256": "fa0aa3a3acbde2d1a04c0c07fe56b0bb74d18506c829052c69ebf0b077efb09e"
+}

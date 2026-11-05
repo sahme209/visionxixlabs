@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/build.sb",
+    "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "--features",
+    "tauri/custom-protocol"
+  ],
+  "cwd": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/stage/desktop/src-tauri",
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/cargo-home",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/target",
+    "CLANG_MODULE_CACHE_PATH": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/clang-cache",
+    "HOME": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/home",
+    "PATH": "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains/stable-aarch64-apple-darwin/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "RUSTC": "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+    "RUSTUP_HOME": "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains",
+    "TMPDIR": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/tmp",
+    "XDG_CACHE_HOME": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/cache"
+  },
+  "sourceHead": "5f208e0a3917b32d278e4ee98c586ef275265da8"
+}

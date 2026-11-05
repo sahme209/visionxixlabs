@@ -1,0 +1,5 @@
+{
+  "initialCheckFailed": true,
+  "reason": "expected normalized asset paths not literal dependency spelling; inspect before changing assertion",
+  "noRebuildOrPackagingYet": true
+}

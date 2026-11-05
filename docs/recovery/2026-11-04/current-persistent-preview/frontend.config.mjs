@@ -1,0 +1,3 @@
+import base from "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/vite.config.ts";
+import {mergeConfig} from "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/node_modules/vite/dist/node/index.js";
+export default async env => mergeConfig(await base(env),{"envDir": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/empty-env", "cacheDir": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/cache", "build": {"outDir": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/dist-desktop", "emptyOutDir": true}});

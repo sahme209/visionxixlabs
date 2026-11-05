@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/usr/bin/codesign",
+    "--sign",
+    "4C2E59F247CA275001586AE020A9269464529452",
+    "--options",
+    "runtime",
+    "--timestamp=none",
+    "/Users/samirahmed/Applications/Axiom Local Builds/98326226/Axiom Agent Local Preview.app"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.068,
+  "stdout": "",
+  "stderr": "",
+  "processReaped": true,
+  "newGrantOrPromptApproved": false,
+  "deliberateMetadataCorrectionNotBlindRetry": true
+}

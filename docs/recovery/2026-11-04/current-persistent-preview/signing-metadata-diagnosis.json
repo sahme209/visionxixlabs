@@ -1,0 +1,14 @@
+{
+  "firstSigningFailed": true,
+  "attributes": [
+    {
+      "path": ".",
+      "attributeNames": [
+        "com.apple.FinderInfo",
+        "com.apple.fileprovider.fpfs#P"
+      ]
+    }
+  ],
+  "noAttributeModified": true,
+  "initialInspection": "Python os.listxattr unavailable; standard xattr name-only inspection used instead"
+}

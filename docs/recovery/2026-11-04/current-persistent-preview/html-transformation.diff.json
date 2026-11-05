@@ -1,0 +1,7 @@
+{
+  "originalReceiptPath": "docs/recovery/2026-11-04/current-persistent-preview/html-transformation.diff",
+  "retainedRawPath": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/raw-receipts/html-transformation.diff",
+  "sha256": "4965c6706630c1f81ee04b91ae9f8714af24a60b41003021f438e5f9331fdf71",
+  "text": "--- \n+++ \n@@ -1,10 +1,8 @@\n-<!doctype html>\n-<html lang=\"en\" class=\"dark\">\n-  <head>\n-    <meta charset=\"UTF-8\" />\n-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n+<!DOCTYPE html><html lang=\"en\" class=\"dark\"><head>\n+    <meta charset=\"UTF-8\">\n+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n     <title>Axiom Agent</title>\n-    <style>\n+    <style nonce=\"__TAURI_STYLE_NONCE__\">\n       html, body, #root {\n         margin: 0;\n         padding: 0;\n@@ -19,10 +17,11 @@\n                 user-select: none;\n       }\n     </style>\n-    <script type=\"module\" crossorigin src=\"/assets/index-CW096Fot.js\"></script>\n-    <link rel=\"stylesheet\" crossorigin href=\"/assets/index-xeoNjdaE.css\">\n+    <script type=\"module\" crossorigin=\"\" src=\"/assets/index-CW096Fot.js\"></script>\n+    <link rel=\"stylesheet\" crossorigin=\"\" href=\"/assets/index-xeoNjdaE.css\">\n   </head>\n   <body>\n     <div id=\"root\"></div>\n-  </body>\n-</html>\n+  \n+\n+</body></html>",
+  "losslessWhitespacePreserved": true
+}

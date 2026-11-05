@@ -1,0 +1,11 @@
+{
+  "app": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/package/Axiom Agent Local Preview.app",
+  "unsignedBinarySha256": "a4915b3bd53e4db933090c1893da9629f031be82e3af29f8d1960928aaabddbe",
+  "binaryBytes": 53717168,
+  "nativeFilesVerified": 80,
+  "embeddingVerified": "all six encoded assets found in binary; five decode exactly, HTML differs only standard style nonce/serialization",
+  "originalSourceTargetUnchanged": true,
+  "machoArm64": true,
+  "minimumOS": "11.0",
+  "signatureNotYetApplied": true
+}

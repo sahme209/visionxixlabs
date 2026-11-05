@@ -1,0 +1,1 @@
+(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226"))(allow file-write-data (literal "/dev/null"))(deny process-exec (literal "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/target/debug/axiom-desktop"))

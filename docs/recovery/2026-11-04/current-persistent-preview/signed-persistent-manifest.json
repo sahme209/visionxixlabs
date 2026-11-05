@@ -1,0 +1,38 @@
+{
+  "persistentApp": "/Users/samirahmed/Applications/Axiom Local Builds/98326226/Axiom Agent Local Preview.app",
+  "sourceHead": "5f208e0a3917b32d278e4ee98c586ef275265da8",
+  "unsignedBinarySha256": "a4915b3bd53e4db933090c1893da9629f031be82e3af29f8d1960928aaabddbe",
+  "signedBinarySha256": "74b4353e13892bf34f4417852baddf2104d1fcf9c1a8100431b6419c12bd4659",
+  "exactLeafSHA1": "4C2E59F247CA275001586AE020A9269464529452",
+  "signatureChecks": [
+    {
+      "args": [
+        "--verify",
+        "--strict",
+        "--deep",
+        "--verbose=2"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "/Users/samirahmed/Applications/Axiom Local Builds/98326226/Axiom Agent Local Preview.app: valid on disk\n/Users/samirahmed/Applications/Axiom Local Builds/98326226/Axiom Agent Local Preview.app: satisfies its Designated Requirement\n"
+    },
+    {
+      "args": [
+        "-d",
+        "--verbose=4"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": "Executable=/Users/samirahmed/Applications/Axiom Local Builds/98326226/Axiom Agent Local Preview.app/Contents/MacOS/axiom-desktop\nIdentifier=com.visionxixlabs.axiom\nFormat=app bundle with Mach-O thin (arm64)\nCodeDirectory v=20500 size=104355 flags=0x10000(runtime) hashes=3254+3 location=embedded\nVersionPlatform=1\nVersionMin=720896\nVersionSDK=1705216\nHash type=sha256 size=32\nCandidateCDHash sha256=1a82b79218c299603e7b6ad37c4df1d8ae9253da\nCandidateCDHashFull sha256=1a82b79218c299603e7b6ad37c4df1d8ae9253da71e1fc0303d85fbaa51b5403\nHash choices=sha256\nCMSDigest=1a82b79218c299603e7b6ad37c4df1d8ae9253da71e1fc0303d85fbaa51b5403\nCMSDigestType=2\nExecutable Segment base=0\nExecutable Segment limit=24248320\nExecutable Segment flags=0x1\nPage size=16384\nCDHash=1a82b79218c299603e7b6ad37c4df1d8ae9253da\nSignature size=4680\nAuthority=Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W)\nAuthority=Developer ID Certification Authority\nAuthority=Apple Root CA\nSigned Time=Nov 4, 2026 at 19:32:56\nInfo.plist entries=15\nTeamIdentifier=FG5N98FE6W\nRuntime Version=26.5.0\nSealed Resources version=2 rules=13 files=1\nInternal requirements count=1 size=184\nTotal signatures=1\nChosen signature=1\n"
+    }
+  ],
+  "files": {
+    "Contents/Info.plist": "a611a9266bc12efa53c87eb74cc1fabf95e590c7455cd8459371bdf42007285c",
+    "Contents/_CodeSignature/CodeResources": "2b42b8985aec7c2ff5e2690a9e3e1018451f2be0ac1c034c8c9e17a5a194c940",
+    "Contents/MacOS/axiom-desktop": "74b4353e13892bf34f4417852baddf2104d1fcf9c1a8100431b6419c12bd4659",
+    "Contents/Resources/icon.icns": "1d227b919c4bccbecbc60e6fb8891db148e9b3e97f54179aef6409c0bacd5f62"
+  },
+  "launched": false,
+  "notarized": false,
+  "productionOrGovernanceActivated": false
+}

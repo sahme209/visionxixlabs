@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/usr/bin/codesign",
+    "--sign",
+    "4C2E59F247CA275001586AE020A9269464529452",
+    "--options",
+    "runtime",
+    "--timestamp=none",
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/package/Axiom Agent Local Preview.app"
+  ],
+  "exitCode": 1,
+  "timedOut": false,
+  "elapsedSeconds": 0.015,
+  "stdout": "",
+  "stderr": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/package/Axiom Agent Local Preview.app: resource fork, Finder information, or similar detritus not allowed\n",
+  "processReaped": true,
+  "newGrantOrPromptApproved": false
+}

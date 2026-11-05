@@ -1,0 +1,15 @@
+{
+  "fiveDecodedAssetsExactMatch": true,
+  "htmlTokensMatchApartFromExpectedStyleNonce": true,
+  "insertedNonceCount": 1,
+  "allSixCompressedAssetsPresentInBinary": {
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/1bcbbba030916735cf0becce1b7a73b8b7c03905c13441e650e1e4f7e30e99cb.js": 17685077,
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/35df54ce51fc7c9bfb55f1926c2c6443661257d1be4a90434a5a35e83b9c7214.js": 17684117,
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/395853debf7f851c29dca44d8098527118aae8ce18d57f6f8f5359ad011eec73.css": 17668362,
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/9a4202f02e0ebc3fcb334765e150c91857ceea39e25305e03aa2e1b5496d1705.png": 17657299,
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/cbeb9a20f85e19e3e9d28399cef878efea5d5171458f57edb607cb24053eb433.html": 17656731,
+    "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/current-preview-98326226/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/d54d24f5394cb1223c97d2d267cd58fb7ee8b7e9cd861d5111392f3740c7600c.png": 17642349
+  },
+  "initialRawDependencyPathAssumptionRejected": true,
+  "nativeRebuildOrCodeChangeForVerification": false
+}

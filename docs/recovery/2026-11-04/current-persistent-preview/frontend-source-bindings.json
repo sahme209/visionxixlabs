@@ -1,0 +1,7 @@
+{
+  "desktop/src/components/OutlookActionsPanel.tsx": "0fb15da220faedbc98ee1bc439f823034c1b219ed20ea471842df078c056c2ef",
+  "desktop/src/lib/outlookLocalTime.ts": "93863a98389812d2d217dcfea9ea5520b838ab1a18e5d9dbcc1e46c89464867f",
+  "desktop/vite.config.ts": "864dd39791fed804585bf65d895514d17491c61ce1ad32856c351104c85545dc",
+  "desktop/package.json": "f5f51d3b8e93517349ac985809a4b2ab3877148a13f85fd94e2dc0b656d9dd14",
+  "desktop/package-lock.json": "90380522fafd5147d01536e3caa852f0c922d7b0aaf4b426df9f19265b106886"
+}
