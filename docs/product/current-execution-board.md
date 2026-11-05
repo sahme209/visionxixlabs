@@ -330,3 +330,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Conditional website navigation — local stale-anchor correction
 ~~Three client-only destinations corrected~~ ([evidence](../recovery/2026-11-05/website-stale-fragment-links/README.md)): contact-success capability link and command-palette capability/workflow links no longer target absent homepage fragments. Product route previouslyHTTP200 and workflow heading source-present; reversing onlythreehref literals reconstructs bothcompletebaselinefiles. No form submission, auth/email/provider action or repeated build/test; currentpreview remainsolder0c9. Actualclient/browser/keyboard/deployment acceptance and B4/B6/fullGovernance remainopen.
+
+
+### Contact recording confirmation — local truthful outcome repair
+~~Unconfirmed200responses no longer clear the message or claim durable acceptance~~ ([evidence](../recovery/2026-11-05/contact-recording-confirmation/README.md)): actualclientRED3/4controls→GREEN7withsynthetictransport; scopedtypes pass after preservedTS2688configurationfailure. Existingemailstatus/reference/entitlement distinctions remain. VitestforkEPERMteardownwarnings retained; laterprocessinventory foundnovitestworker, notfullquiescencequalification. Exactclientbaseline reconstruction/independentreview clear; server/persistence/email/worker unchanged. No realformsubmission/DB/provider/build/deploy/spend; currentpreviewolder0c9. All21parents/pendingdecisions remainopen.

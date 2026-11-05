@@ -1,0 +1,27 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ app/(marketing)/contact/__tests__/recordingConfirmation.test.ts (7 tests) 133ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  05:16:38
+   Duration  413ms (transform 19ms, setup 0ms, import 51ms, tests 133ms, environment 177ms)
+
+[vitest-pool]: Failed to terminate forks worker for test files /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/(marketing)/contact/__tests__/recordingConfirmation.test.ts. Error: kill EPERM
+    at ChildProcess.kill (node:internal/child_process:553:26)
+    at ForksPoolWorker.stop (file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3179:8)
+    at file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3057:118
+    at Traces.$ (file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/traces.DT5aQ62U.js:142:27)
+    at PoolRunner.stop (file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3057:23)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async Promise.all (index 0)
+    at Pool.cancel (file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3576:3)
+    at Pool.close (file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3583:3)
+    at async Promise.all (index 0) {
+  errno: -1,
+  code: 'EPERM',
+  syscall: 'kill'
+}
+[vitest-pool]: Timeout terminating forks worker for test files /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/(marketing)/contact/__tests__/recordingConfirmation.test.ts.

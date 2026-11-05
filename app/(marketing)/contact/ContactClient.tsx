@@ -74,9 +74,12 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
         throw new Error(data?.error ?? "Send failed. Try again in a minute.");
       }
       const data = await res.json();
+      if (data?.accepted !== true || typeof data?.referenceId !== "string" || !data.referenceId.trim()) {
+        throw new Error("We could not confirm that your message was recorded. Your message is still here; keep a copy and contact support before sending it again.");
+      }
       setState({
         kind: "ok",
-        referenceId: String(data.referenceId ?? "unavailable"),
+        referenceId: data.referenceId,
         delivery: data.delivery === "sent" || data.delivery === "failed" ? data.delivery : "not_configured",
       });
       setForm(initialForm(intent));

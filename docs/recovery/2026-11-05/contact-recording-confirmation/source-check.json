@@ -1,0 +1,8 @@
+{
+  "baseline": "74c92aa057581468c40a51071abd17bddbb63549",
+  "wholeBaselineReconstructed": true,
+  "runtimeFile": "app/(marketing)/contact/ContactClient.tsx",
+  "sha256": "f22d58f5aee7094511f9a03785c7416f230f93e0237a5640fd9151b5830d9ca1",
+  "change": "success requires accepted true and nonempty string reference; catch retains original form",
+  "serverChanged": false
+}

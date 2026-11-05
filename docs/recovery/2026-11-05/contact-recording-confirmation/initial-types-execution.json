@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/contact-confirmation-0syvzh3c/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "--project",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/contact-confirmation-0syvzh3c/types.json"
+  ],
+  "exitCode": 2,
+  "stopReason": null,
+  "elapsedSeconds": 0.264,
+  "processReaped": true,
+  "outputBytes": 350,
+  "outputBase64": "ZXJyb3IgVFMyNjg4OiBDYW5ub3QgZmluZCB0eXBlIGRlZmluaXRpb24gZmlsZSBmb3IgJ25vZGUnLgogIFRoZSBmaWxlIGlzIGluIHRoZSBwcm9ncmFtIGJlY2F1c2U6CiAgICBFbnRyeSBwb2ludCBvZiB0eXBlIGxpYnJhcnkgJ25vZGUnIHNwZWNpZmllZCBpbiBjb21waWxlck9wdGlvbnMKZXJyb3IgVFMyNjg4OiBDYW5ub3QgZmluZCB0eXBlIGRlZmluaXRpb24gZmlsZSBmb3IgJ3ZpdGVzdC9nbG9iYWxzJy4KICBUaGUgZmlsZSBpcyBpbiB0aGUgcHJvZ3JhbSBiZWNhdXNlOgogICAgRW50cnkgcG9pbnQgb2YgdHlwZSBsaWJyYXJ5ICd2aXRlc3QvZ2xvYmFscycgc3BlY2lmaWVkIGluIGNvbXBpbGVyT3B0aW9ucwo=",
+  "testSha256": "d878af739fd7bf5ab65c13f7613be09f7261a33a243be289e96547df634c735e"
+}

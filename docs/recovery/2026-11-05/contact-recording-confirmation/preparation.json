@@ -1,0 +1,9 @@
+{
+  "ownedDirectory": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/contact-confirmation-0syvzh3c",
+  "scope": "actual contact client, synthetic responses only; no route import/DB/provider/email/actions",
+  "runtimeFiles": [
+    "app/(marketing)/contact/ContactClient.tsx"
+  ],
+  "limitSeconds": 45,
+  "outputLimitBytes": 1048576
+}

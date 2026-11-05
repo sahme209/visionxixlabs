@@ -1,0 +1,6 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "method": "actual source/test diff and recorded RED/GREEN/types evidence; no rerun or network",
+  "limits": "actual client with synthetic responses/animation and link adapters; not durable storage/mail/provider/browser acceptance"
+}

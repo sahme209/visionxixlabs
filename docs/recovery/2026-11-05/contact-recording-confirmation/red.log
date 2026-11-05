@@ -1,0 +1,438 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ app/(marketing)/contact/__tests__/recordingConfirmation.test.ts (7 tests | 3 failed) 3183ms
+   × does not claim durable recording from an unconfirmed 200 body: {"success":true,"accepted":false} 1065ms
+   × does not claim durable recording from an unconfirmed 200 body: {"success":true,"accepted":true} 1023ms
+   × does not claim durable recording from an unconfirmed 200 body: {"success":true,"referenceId":"synthetic-reference"} 1024ms
+   ✓ shows the saved reference separately from email status sent 23ms
+   ✓ shows the saved reference separately from email status failed 15ms
+   ✓ shows the saved reference separately from email status not_configured 13ms
+   ✓ preserves the message on an error response without automatically resubmitting 19ms
+[vitest-pool]: Failed to terminate forks worker for test files /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/(marketing)/contact/__tests__/recordingConfirmation.test.ts. Error: kill EPERM
+    at ChildProcess.kill (node:internal/child_process:553:26)
+    at ForksPoolWorker.stop (file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3179:8)
+    at file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3057:118
+    at Traces.$ (file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/traces.DT5aQ62U.js:142:27)
+    at PoolRunner.stop (file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/cli-api.CnMVyzaz.js:3057:23)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  errno: -1,
+  code: 'EPERM',
+  syscall: 'kill'
+}
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/(marketing)/contact/__tests__/recordingConfirmation.test.ts > does not claim durable recording from an unconfirmed 200 body: {"success":true,"accepted":false}
+ FAIL  app/(marketing)/contact/__tests__/recordingConfirmation.test.ts > does not claim durable recording from an unconfirmed 200 body: {"success":true,"accepted":true}
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-3xl px-6 md:px-10 pt-24 pb-8"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mono-label inline-flex items-center gap-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[#ff783d] tabular-nums"[39m
+          [36m>[39m
+            [0mSupport[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-px w-6 bg-[#f54e00]/60"[39m
+          [36m/>[39m
+          [0mA recovery path when you need it[0m
+        [36m</p>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"font-display mt-5 text-4xl md:text-5xl font-bold leading-[1.04]"[39m
+        [36m>[39m
+          [0mHelp when self-service isn't enough.[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"[39m
+        [36m>[39m
+          [0mDocumentation and in-product recovery should solve supported workflows first. For a genuine product, account, download, or security issue, send it here or email[0m
+          [0m [0m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-orange-300 hover:text-orange-200 underline underline-offset-4"[39m
+            [33mhref[39m=[32m"mailto:support@visionxixlabs.com"[39m
+          [36m>[39m
+            [0msupport@visionxixlabs.com[0m
+          [36m</a>[39m
+          [0m.[0m
+        [36m</p>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-16"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-live[39m=[32m"polite"[39m
+          [33mclass[39m=[32m"rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6"[39m
+          [33mrole[39m=[32m"status"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[12px] font-mono uppercase tracking-widest text-emerald-300"[39m
+          [36m>[39m
+            [0mrequest recorded[0m
+          [36m</p>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"mt-2 text-xl font-semibold text-white"[39m
+          [36m>[39m
+            [0mYour message was durably accepted.[0m
+          [36m</h2>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-2 text-[14px] text-zinc-300 leading-relaxed"[39m
+          [36m>[39m
+            [0mReference [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-mono text-white"[39m
+            [36m>[39m
+              [0munavailable[0m
+            [36m</span>[39m
+            [0m. Email delivery status: [0m
+            [0mnot configured[0m
+            [0m. No response-time or support entitlement is implied.[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mt-5 flex flex-wrap items-center gap-2"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-4 py-2 text-[12.5px] font-medium text-white hover:bg-[#ff641f] transition"[39m
+              [33mhref[39m=[32m"/product"[39m
+            [36m>[39m
+              [0mReview capabilities[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"[39m
+              [33mhref[39m=[32m"/plans"[39m
+            [36m>[39m
+              [0mSee plans[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-3xl px-6 md:px-10 pt-24 pb-8"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mono-label inline-flex items-center gap-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[#ff783d] tabular-nums"[39m
+          [36m>[39m
+            [0mSupport[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-px w-6 bg-[#f54e00]/60"[39m
+          [36m/>[39m
+          [0mA recovery path when you need it[0m
+        [36m</p>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"font-display mt-5 text-4xl md:text-5xl font-bold leading-[1.04]"[39m
+        [36m>[39m
+          [0mHelp when self-service isn't enough.[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"[39m
+        [36m>[39m
+          [0mDocumentation and in-product recovery should solve supported workflows first. For a genuine product, account, download, or security issue, send it here or email[0m
+          [0m [0m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-orange-300 hover:text-orange-200 underline underline-offset-4"[39m
+            [33mhref[39m=[32m"mailto:support@visionxixlabs.com"[39m
+          [36m>[39m
+            [0msupport@visionxixlabs.com[0m
+          [36m</a>[39m
+          [0m.[0m
+        [36m</p>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-16"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-live[39m=[32m"polite"[39m
+          [33mclass[39m=[32m"rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6"[39m
+          [33mrole[39m=[32m"status"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[12px] font-mono uppercase tracking-widest text-emerald-300"[39m
+          [36m>[39m
+            [0mrequest recorded[0m
+          [36m</p>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"mt-2 text-xl font-semibold text-white"[39m
+          [36m>[39m
+            [0mYour message was durably accepted.[0m
+          [36m</h2>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-2 text-[14px] text-zinc-300 leading-relaxed"[39m
+          [36m>[39m
+            [0mReference [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-mono text-white"[39m
+            [36m>[39m
+              [0munavailable[0m
+            [36m</span>[39m
+            [0m. Email delivery status: [0m
+            [0mnot configured[0m
+            [0m. No response-time or support entitlement is implied.[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mt-5 flex flex-wrap items-center gap-2"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-4 py-2 text-[12.5px] font-medium text-white hover:bg-[#ff641f] transition"[39m
+              [33mhref[39m=[32m"/product"[39m
+            [36m>[39m
+              [0mReview capabilities[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"[39m
+              [33mhref[39m=[32m"/plans"[39m
+            [36m>[39m
+              [0mSee plans[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ app/(marketing)/contact/__tests__/recordingConfirmation.test.ts:25:27
+     23| ])('does not claim durable recording from an unconfirmed 200 body: %j'…
+     24|  const fetch=vi.fn(async()=>({ok:true,json:async()=>body}));vi.stubGlo…
+     25|  const alert=await screen.findByRole('alert');
+       |                           ^
+     26|  expect(alert.textContent).toContain('could not confirm');
+     27|  expect(screen.queryByText('Your message was durably accepted.')).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/(marketing)/contact/__tests__/recordingConfirmation.test.ts > does not claim durable recording from an unconfirmed 200 body: {"success":true,"referenceId":"synthetic-reference"}
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-3xl px-6 md:px-10 pt-24 pb-8"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mono-label inline-flex items-center gap-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[#ff783d] tabular-nums"[39m
+          [36m>[39m
+            [0mSupport[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-px w-6 bg-[#f54e00]/60"[39m
+          [36m/>[39m
+          [0mA recovery path when you need it[0m
+        [36m</p>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"font-display mt-5 text-4xl md:text-5xl font-bold leading-[1.04]"[39m
+        [36m>[39m
+          [0mHelp when self-service isn't enough.[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"[39m
+        [36m>[39m
+          [0mDocumentation and in-product recovery should solve supported workflows first. For a genuine product, account, download, or security issue, send it here or email[0m
+          [0m [0m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-orange-300 hover:text-orange-200 underline underline-offset-4"[39m
+            [33mhref[39m=[32m"mailto:support@visionxixlabs.com"[39m
+          [36m>[39m
+            [0msupport@visionxixlabs.com[0m
+          [36m</a>[39m
+          [0m.[0m
+        [36m</p>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-16"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-live[39m=[32m"polite"[39m
+          [33mclass[39m=[32m"rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6"[39m
+          [33mrole[39m=[32m"status"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[12px] font-mono uppercase tracking-widest text-emerald-300"[39m
+          [36m>[39m
+            [0mrequest recorded[0m
+          [36m</p>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"mt-2 text-xl font-semibold text-white"[39m
+          [36m>[39m
+            [0mYour message was durably accepted.[0m
+          [36m</h2>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-2 text-[14px] text-zinc-300 leading-relaxed"[39m
+          [36m>[39m
+            [0mReference [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-mono text-white"[39m
+            [36m>[39m
+              [0msynthetic-reference[0m
+            [36m</span>[39m
+            [0m. Email delivery status: [0m
+            [0mnot configured[0m
+            [0m. No response-time or support entitlement is implied.[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mt-5 flex flex-wrap items-center gap-2"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-4 py-2 text-[12.5px] font-medium text-white hover:bg-[#ff641f] transition"[39m
+              [33mhref[39m=[32m"/product"[39m
+            [36m>[39m
+              [0mReview capabilities[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"[39m
+              [33mhref[39m=[32m"/plans"[39m
+            [36m>[39m
+              [0mSee plans[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-3xl px-6 md:px-10 pt-24 pb-8"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mono-label inline-flex items-center gap-3"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[#ff783d] tabular-nums"[39m
+          [36m>[39m
+            [0mSupport[0m
+          [36m</span>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"h-px w-6 bg-[#f54e00]/60"[39m
+          [36m/>[39m
+          [0mA recovery path when you need it[0m
+        [36m</p>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"font-display mt-5 text-4xl md:text-5xl font-bold leading-[1.04]"[39m
+        [36m>[39m
+          [0mHelp when self-service isn't enough.[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"[39m
+        [36m>[39m
+          [0mDocumentation and in-product recovery should solve supported workflows first. For a genuine product, account, download, or security issue, send it here or email[0m
+          [0m [0m
+          [36m<a[39m
+            [33mclass[39m=[32m"text-orange-300 hover:text-orange-200 underline underline-offset-4"[39m
+            [33mhref[39m=[32m"mailto:support@visionxixlabs.com"[39m
+          [36m>[39m
+            [0msupport@visionxixlabs.com[0m
+          [36m</a>[39m
+          [0m.[0m
+        [36m</p>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33mclass[39m=[32m"relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-16"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33maria-live[39m=[32m"polite"[39m
+          [33mclass[39m=[32m"rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6"[39m
+          [33mrole[39m=[32m"status"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[12px] font-mono uppercase tracking-widest text-emerald-300"[39m
+          [36m>[39m
+            [0mrequest recorded[0m
+          [36m</p>[39m
+          [36m<h2[39m
+            [33mclass[39m=[32m"mt-2 text-xl font-semibold text-white"[39m
+          [36m>[39m
+            [0mYour message was durably accepted.[0m
+          [36m</h2>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-2 text-[14px] text-zinc-300 leading-relaxed"[39m
+          [36m>[39m
+            [0mReference [0m
+            [36m<span[39m
+              [33mclass[39m=[32m"font-mono text-white"[39m
+            [36m>[39m
+              [0msynthetic-reference[0m
+            [36m</span>[39m
+            [0m. Email delivery status: [0m
+            [0mnot configured[0m
+            [0m. No response-time or support entitlement is implied.[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"mt-5 flex flex-wrap items-center gap-2"[39m
+          [36m>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-4 py-2 text-[12.5px] font-medium text-white hover:bg-[#ff641f] transition"[39m
+              [33mhref[39m=[32m"/product"[39m
+            [36m>[39m
+              [0mReview capabilities[0m
+            [36m</a>[39m
+            [36m<a[39m
+              [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"[39m
+              [33mhref[39m=[32m"/plans"[39m
+            [36m>[39m
+              [0mSee plans[0m
+            [36m</a>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ app/(marketing)/contact/__tests__/recordingConfirmation.test.ts:25:27
+     23| ])('does not claim durable recording from an unconfirmed 200 body: %j'…
+     24|  const fetch=vi.fn(async()=>({ok:true,json:async()=>body}));vi.stubGlo…
+     25|  const alert=await screen.findByRole('alert');
+       |                           ^
+     26|  expect(alert.textContent).toContain('could not confirm');
+     27|  expect(screen.queryByText('Your message was durably accepted.')).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 4 passed (7)
+   Start at  05:16:09
+   Duration  3.65s (transform 29ms, setup 0ms, import 96ms, tests 3.18s, environment 317ms)
+
+[vitest-pool]: Timeout terminating forks worker for test files /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/(marketing)/contact/__tests__/recordingConfirmation.test.ts.

@@ -1,0 +1,17 @@
+{
+  "extends": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@types"
+    ]
+  },
+  "include": [
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/(marketing)/contact/ContactClient.tsx",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/(marketing)/contact/__tests__/recordingConfirmation.test.ts"
+  ],
+  "exclude": []
+}
