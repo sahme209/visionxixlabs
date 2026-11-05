@@ -1,0 +1,7 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "method": "source and existing report review only; no HTTP rerun or runtime edits",
+  "verifiedScope": "43 new curated GETs; 33 successful HTML; ten fixed proxy redirect refusals source-correlated; 1508 reference counts; outside-manifest and browser/native limits",
+  "limits": "not full-site, browser, accessibility, production or Governance acceptance"
+}

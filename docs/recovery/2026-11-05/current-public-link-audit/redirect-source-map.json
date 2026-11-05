@@ -1,0 +1,105 @@
+{
+  "rows": [
+    {
+      "path": "/axiom",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/axiom/page.tsx",
+      "sourceSha256": "93c4f6e5a4b5e2500664d514b5664902269ab41f09eccd0bccc0f5293d44bfec",
+      "declaredTarget": "/product",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/cloud-solutions/azure",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/cloud-solutions/azure/page.tsx",
+      "sourceSha256": "e7b6eb2f9a4eb60a95456d2febe3961c083bf44e008ede8d7f62d40c24c71265",
+      "declaredTarget": "/integrations",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/cloud-solutions/gcp",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/cloud-solutions/gcp/page.tsx",
+      "sourceSha256": "3d0e815a1e090b2f9be903e8fe0b2eda854d8f8460a6f746a94784f2b4825e63",
+      "declaredTarget": "/integrations",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/demo/reference",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/demo/reference/page.tsx",
+      "sourceSha256": "8a997d3006c8f18c50279baf346ef3ab14df8d08654b8b68f03dd36cddcfcebd",
+      "declaredTarget": "/demo",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/docs/architecture",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/docs/architecture/page.tsx",
+      "sourceSha256": "e89584e7dc7ad2b0b65b4f8e5814f120bdf36d82eda660832935e85196947640",
+      "declaredTarget": "/docs/releaseops",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/docs/best-practices",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/docs/best-practices/page.tsx",
+      "sourceSha256": "9100c65e1d837ccb82a06eb00957b4a6f62b017f3d7e68872cba6a894245f26f",
+      "declaredTarget": "/docs/quickstart-checklist",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/docs/desktop-architecture",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/docs/desktop-architecture/page.tsx",
+      "sourceSha256": "378c913c435c1c4cb397b937f3e7b28181fddb00759a5fc8236326e1c12738e3",
+      "declaredTarget": "/docs/desktop-install",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/docs/scanning",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/docs/scanning/page.tsx",
+      "sourceSha256": "6e83ba68eff9dad360fcd2b7f45ace937b72cda6e8fd5e505e2f81f8ecb96fd8",
+      "declaredTarget": "/docs/releaseops",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/docs/terraform-export",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/docs/terraform-export/page.tsx",
+      "sourceSha256": "778e16e015dcf24fb22fb0735ed20736430bf102c537b9aa69749876048c00df",
+      "declaredTarget": "/docs/releaseops",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    },
+    {
+      "path": "/team-of-one",
+      "observedStatus": 403,
+      "observedBodyMatchesProxyRedirectRefusal": true,
+      "sourceFile": "app/(marketing)/team-of-one/page.tsx",
+      "sourceSha256": "121357326b7d63dfb809258cdf998a007b1498ef7442014eed1e58131c5084dc",
+      "declaredTarget": "/product",
+      "targetObserved200InCurrentOrPriorBoundedAudit": true,
+      "qualification": "declared source redirect target, not observed upstreamLocation or production acceptance"
+    }
+  ],
+  "directBackendOrExternalRequests": false
+}

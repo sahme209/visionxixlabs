@@ -1,0 +1,18 @@
+[
+  {
+    "source": "/status",
+    "href": "/changelog",
+    "classification": "outside-curated-manifest-unverified",
+    "sourceFile": "app/(marketing)/changelog/page.tsx",
+    "sourceSha256": "5a8dd4e1d8dc040bdc034fdb4ce2e9847dbe186753c0fb8b9af9d16a0b6fbbe6",
+    "httpRequested": false
+  },
+  {
+    "source": "/team",
+    "href": "/manifesto",
+    "classification": "outside-curated-manifest-unverified",
+    "sourceFile": "app/manifesto/page.tsx",
+    "sourceSha256": "a6891ac6b8d70054800aaf74c026010992c54fe792bb8ef1cae04f59501b7933",
+    "httpRequested": false
+  }
+]

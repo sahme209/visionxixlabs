@@ -1,0 +1,7 @@
+{
+  "tool": "cua.listApps",
+  "observation": "The Mac is locked and automatic unlock could not unlock it. Ask the user to unlock the Mac manually before continuing.",
+  "inventoryReturned": false,
+  "appRestartOrUIInputByAgent": false,
+  "qualification": "no native acceptance; wait for manual unlock before UI actions"
+}
