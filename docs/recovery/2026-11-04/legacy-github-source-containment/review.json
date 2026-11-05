@@ -1,0 +1,12 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "reviewed": [
+    "actual runtime/test diff",
+    "20 recorded real-composition synthetic tests",
+    "preserved original stale-Prisma failure",
+    "matching existing generated-client scoped type evidence"
+  ],
+  "limits": "local containment only; no live discovery, migration, full build or production/Governance acceptance",
+  "reviewerRepeatedChecks": false
+}

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/agent-precommit-b5m457tk/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "--project",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/agent-precommit-b5m457tk/legacy-github-source-types.json"
+  ],
+  "exitCode": 2,
+  "timedOut": false,
+  "elapsedSeconds": 1.48,
+  "processReaped": true
+}

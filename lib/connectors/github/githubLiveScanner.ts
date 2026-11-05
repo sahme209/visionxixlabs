@@ -1,6 +1,10 @@
 /**
  * GitHub live read-only scanner.
  *
+ * The legacy ambient-credential live path is contained until a verified
+ * workspace-bound source exists. The retained scanner algorithm is not an
+ * available authority source; preview/disabled paths issue no live calls.
+ *
  * Discovers repositories, workflows, recent workflow runs, and branch
  * protection settings via authenticated REST calls. Emits the same
  * `GithubPreviewSyncOutcome` shape as `runPreviewGithubSync` — consumers
@@ -17,6 +21,7 @@
  */
 
 import "server-only";
+import { TenantGithubSourceUnavailableError } from "./legacyGithubSourceBoundary";
 
 import { createGithubClient, getGithubMode, type GithubClient, type GithubRateLimit } from "./githubLiveClient";
 import type {
@@ -125,12 +130,21 @@ interface ApiEnvironment {
 // Scanner
 // ---------------------------------------------------------------------------
 
+// Intentionally no arguments or configuration escape hatch: an organization
+// name, authenticated caller or server credential alone cannot establish
+// tenant ownership. A separately reviewed tenant-bound collector is required.
+function requireTenantBoundSource(): void {
+  throw new TenantGithubSourceUnavailableError();
+}
+
 export async function runLiveGithubSync(input: GithubLiveScannerInput): Promise<GithubLiveSyncOutcome> {
   const start = Date.now();
   const mode = getGithubMode();
   if (mode !== "live") {
     return emptyOutcome(start, ["GitHub is not in live mode — no live calls were issued."]);
   }
+
+  requireTenantBoundSource();
 
   const client = createGithubClient();
   if (!client.available) {

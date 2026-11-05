@@ -1,18 +1,19 @@
 /**
  * ReleaseOps state aggregator.
  *
- * One pure function the ReleaseOps page + Command Center consume. Always
- * available (no missing-config crash):
- *   - When GitHub is in live mode with a valid PAT, runs the live scanner.
- *     If the live scan partially fails (e.g. permission on branch
- *     protection), the source is marked "partial" with limitations.
- *   - Falls back to preview sync when live is unavailable or fails.
+ * State aggregator consumed by ReleaseOps and Command Center. Source
+ * authority failures are explicit rather than successful observations:
+ *   - Legacy live scans refuse until a workspace-bound source is verified.
+ *     That authority refusal is propagated, never presented as a successful
+ *     preview observation. Explicit preview remains available.
+ *   - Explicit preview/disabled modes remain available without live reads.
  *
  * Honest source-tagging: `source` is always one of "live", "partial",
  * "preview", or "disabled" — never fabricated.
  */
 
 import "server-only";
+import { TenantGithubSourceUnavailableError } from "@/lib/connectors/github/legacyGithubSourceBoundary";
 
 import { runPreviewGithubSync } from "@/lib/connectors/github/githubPreviewSync";
 import type { GithubPreviewSyncOutcome } from "@/lib/connectors/github/githubPreviewSync";
@@ -109,6 +110,8 @@ export async function getReleaseOpsState(input: ReleaseOpsStateInput = {}): Prom
         safeNextAction: { label: "Open ReleaseOps", href: "/dashboard/releaseops" },
       };
     } catch (err) {
+      // Source authority is unavailable, not a transient provider failure.
+      if (err instanceof TenantGithubSourceUnavailableError) throw err;
       // Live scan crashed — fall back to preview with an honest note.
       const message = err instanceof Error ? err.message : String(err);
       return await previewStateWithLimitation(mode, organization, [`Live GitHub scan failed: ${message}`]);

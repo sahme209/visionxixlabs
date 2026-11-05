@@ -1,0 +1,20 @@
+{
+  "extends": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true,
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@types"
+    ]
+  },
+  "files": [
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/next-env.d.ts",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/api/agent/execution-graph/__tests__/tenant-source-regression.test.ts",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/lib/connectors/github/legacyGithubSourceBoundary.ts"
+  ],
+  "include": [],
+  "exclude": []
+}

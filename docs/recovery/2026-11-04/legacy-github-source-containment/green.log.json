@@ -1,0 +1,4 @@
+{
+  "encoding": "utf-8",
+  "text": "\n RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion\n\n \u2713 app/api/agent/execution-graph/__tests__/tenant-source-regression.test.ts (20 tests) 317ms\n\n Test Files  1 passed (1)\n      Tests  20 passed (20)\n   Start at  02:43:00\n   Duration  579ms (transform 103ms, setup 0ms, import 143ms, tests 317ms, environment 0ms)\n\n"
+}

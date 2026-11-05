@@ -1,0 +1,26 @@
+{
+  "schemas": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/prisma/schema.prisma",
+      "sha256": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031",
+      "pipelineCallPresent": true
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-web-quality-build-74b43567-bc69yvow/stage/prisma/schema.prisma",
+      "sha256": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031",
+      "pipelineCallPresent": true
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-web-quality-build-74b43567-bc69yvow/stage/node_modules/.prisma/client/schema.prisma",
+      "sha256": "9452b3204fff38db393aeb2bf5c3e9790816c2a130d1f688eb76ee2fa93ab6c0",
+      "pipelineCallPresent": true
+    }
+  ],
+  "stageGeneratedReservationWhereIncludesPipelineCall": true,
+  "rootTypeFailureRetained": "types.json/types.log.json",
+  "rawGeneratedSchemaEqual": false,
+  "observedDifferences": "Prisma formatting and within-block field/index ordering; raw and global lexical comparisons were not passes",
+  "sourceAndGeneratedBlockStatementMultisetsEqual": true,
+  "comparisonMethod": "each model/enum/generator/datasource block has identical tokenized statement-line multiset, preserving quoted values and ignoring whitespace/comments/order",
+  "schemaSourceMatchesStageSource": true
+}

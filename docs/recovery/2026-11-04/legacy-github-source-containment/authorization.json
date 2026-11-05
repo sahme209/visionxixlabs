@@ -1,0 +1,13 @@
+{
+  "userAnswer": "Approve local containment and tests",
+  "requestQuestionId": "call_mV57sazTurp3qyjwI17xXcHI",
+  "scope": "exact first local containment unit and isolated tests",
+  "excluded": [
+    "deployment",
+    "real GitHub/customer read",
+    "tokens/credentials/grants",
+    "spending",
+    "full tenant-bound discovery qualification"
+  ],
+  "baseRevision": "a4d0a9239f3b5d35b5f8880b8917308852138c73"
+}

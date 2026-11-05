@@ -1,0 +1,18 @@
+[
+  {
+    "path": "lib/connectors/github/githubLiveScanner.ts",
+    "sha256": "6ccad6e2e61425277db81fbe14dea46805ffbdcb88018c2185ee22a5c9b582de"
+  },
+  {
+    "path": "lib/connectors/github/legacyGithubSourceBoundary.ts",
+    "sha256": "b194c4eb09c2490545fea4a53317276ca6db15618d5e6bea7bcf58f805cb18d7"
+  },
+  {
+    "path": "lib/releaseops/getReleaseOpsState.ts",
+    "sha256": "d8ac7ab7b414b52124de5731d41c4df08fc207c912da7a3664fb2e4c63a8442a"
+  },
+  {
+    "path": "app/api/agent/execution-graph/__tests__/tenant-source-regression.test.ts",
+    "sha256": "f3cf1972af096dccae29545661f5238bac7c1b6f721fc2c139529d3e3d4d367a"
+  }
+]
