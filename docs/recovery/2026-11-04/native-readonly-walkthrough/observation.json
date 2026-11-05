@@ -1,0 +1,57 @@
+{
+  "sourceDeliveryCommit": "b92b4e4056637007f56f22584929f8042dda0def",
+  "runtime": "98326226",
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/98326226/Axiom Agent Local Preview.app",
+  "method": "Actual CUA native actions and returned AX/screenshot; selected observed values transcribed below, raw tool history not falsely claimed as local files",
+  "initialState": "Home, workspace connected, access active; no active draft visible",
+  "actions": [
+    {
+      "action": "Command+Shift+P",
+      "observed": "Desktop commands with search combobox and Open Agent selected"
+    },
+    {
+      "action": "Down",
+      "observed": "Open Repositories selected; destination not opened"
+    },
+    {
+      "action": "Escape",
+      "observed": "Home restored; focus returned to original workspace-access summary"
+    },
+    {
+      "action": "Click Releases",
+      "observed": "Loading current workspace requests, then Service last responded 11/4/2026 7:38:57 PM; two saved requests; first automatically selected by app"
+    },
+    {
+      "action": "Read overview only",
+      "observed": "Resolve readiness items; production pull-request approval and verified rollback path not recorded; requester guidance and exact-approval warning visible"
+    },
+    {
+      "action": "Screenshot",
+      "observed": "Actual current Releases screenshot emitted in chat; no local screenshot file saved"
+    },
+    {
+      "action": "Click Axiom home",
+      "observed": "Home rendered again"
+    }
+  ],
+  "releaseWritesOrProviderActionControlsClicked": false,
+  "providerEvidenceRefreshClicked": false,
+  "reviewOrExecutionControlsClicked": false,
+  "independentApprovalRecorded": false,
+  "formFieldsEdited": false,
+  "aiCallRequested": false,
+  "settingsOrSignoutChanged": false,
+  "nativeKeyboardScopeAccepted": [
+    "command shortcut opens",
+    "arrow changes selection without executing",
+    "Escape closes and restores original focus"
+  ],
+  "readinessUiScopeAccepted": [
+    "saved request overview loaded",
+    "readiness blockers remain visible",
+    "guidance does not authorize execution"
+  ],
+  "allNativeAccessibilityOrWorkflowAccepted": false,
+  "allGovernanceAccepted": false,
+  "normalAppBackgroundServerReadsExcludedFromZeroActivityClaim": true
+}
