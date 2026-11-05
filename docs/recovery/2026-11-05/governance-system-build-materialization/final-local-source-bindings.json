@@ -1,0 +1,26 @@
+{
+  "scripts/governance_local_issuer/system_build_inputs.py": {
+    "sha256": "c4feaf6cc22321235c6d65934bee7bc7251507ad7006f723c30f8123371bbd2b",
+    "size": 19618
+  },
+  "scripts/build-local-issuer-package-source.py": {
+    "sha256": "ab4d34507637aba6fa4152a024233cd991cf066a2dd258778cb818269ac315c2",
+    "size": 43467
+  },
+  "scripts/governance_local_issuer/materialize.py": {
+    "sha256": "438416de2e4b54f6a88479f229c46f7678fc66d066ae354f9088e522ab1b1a54",
+    "size": 33139
+  },
+  "scripts/governance_local_issuer/tests/test_system_build_inputs.py": {
+    "sha256": "cde2ce7a5e9ed36cb8221a6d063bea4213ebb5560e1ca6f4fb8b5da67b0f07cd",
+    "size": 13697
+  },
+  "scripts/governance_local_issuer/tests/test_sourcebuilder_system_inputs.py": {
+    "sha256": "92988fef22341851986233c9ceab40cb409b7b6d06fbccf79841bcc7109d3c5d",
+    "size": 2519
+  },
+  "scripts/governance_local_issuer/tests/test_system_materialize.py": {
+    "sha256": "044ce82be853d0080a6a831e32008ad54f4d62e8632c9654e430469cb10d0b87",
+    "size": 11634
+  }
+}

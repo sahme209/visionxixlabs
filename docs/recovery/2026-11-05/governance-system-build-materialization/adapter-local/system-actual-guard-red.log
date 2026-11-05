@@ -1,0 +1,21 @@
+E
+======================================================================
+ERROR: test_actual_guard_saved_byte_shape_is_supported_without_promoting_history (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 69, in test_actual_guard_saved_byte_shape_is_supported_without_promoting_history
+    self.assertFalse(self.record()['historicalBatchAccepted'])
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 37, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 94, in record_system_inputs
+    value=_observe(stage,repo,revision,run,build_node,packet_path)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 69, in _observe
+    commands=r.get('results');_need(isinstance(commands,list) and len(commands)==3 and all(x.get('state')=='completed' and type(x.get('exit',x.get('exit_code')))is int and x.get('exit',x.get('exit_code'))==0 for x in commands),'saved_static_sequence_required')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 18, in _need
+    if not ok:raise ValueError(reason)
+ValueError: saved_static_sequence_required
+
+----------------------------------------------------------------------
+Ran 1 test in 0.018s
+
+FAILED (errors=1)

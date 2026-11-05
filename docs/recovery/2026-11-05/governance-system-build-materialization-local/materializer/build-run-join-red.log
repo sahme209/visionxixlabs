@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_copied_completed_receipts_cannot_change_planned_build_run (test_system_materialize.SystemMaterialize)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_materialize.py", line 120, in test_copied_completed_receipts_cannot_change_planned_build_run
+    m.materialize_isolated(self.observation,other,self.stage,self.f.repo,self.root/'cache',self.root/'bound',self.root/'generation',self.f.build,self.root/'output/package',system_mode_map=MODE)
+AssertionError: PackageUnavailable not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.133s
+
+FAILED (failures=1)

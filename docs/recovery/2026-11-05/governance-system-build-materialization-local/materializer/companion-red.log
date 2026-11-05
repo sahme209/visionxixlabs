@@ -1,0 +1,29 @@
+FFF
+======================================================================
+FAIL: test_companion_equal_bytes_replacement_before_manifest_refuses (test_system_materialize.SystemMaterialize)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_materialize.py", line 100, in test_companion_equal_bytes_replacement_before_manifest_refuses
+    with self.assertRaisesRegex(PackageUnavailable,'system_companion_inventory_changed'):self.build()
+AssertionError: PackageUnavailable not raised
+
+======================================================================
+FAIL: test_companion_mode_promotion_before_manifest_refuses (test_system_materialize.SystemMaterialize)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_materialize.py", line 91, in test_companion_mode_promotion_before_manifest_refuses
+    with self.assertRaisesRegex(PackageUnavailable,'system_companion_inventory_changed'):self.build()
+AssertionError: PackageUnavailable not raised
+
+======================================================================
+FAIL: test_unbound_companion_file_before_manifest_refuses (test_system_materialize.SystemMaterialize)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_materialize.py", line 83, in test_unbound_companion_file_before_manifest_refuses
+    with self.assertRaisesRegex(PackageUnavailable,'system_companion_inventory_changed'):self.build()
+AssertionError: PackageUnavailable not raised
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.208s
+
+FAILED (failures=3)

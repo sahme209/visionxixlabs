@@ -1,0 +1,23 @@
+E
+======================================================================
+ERROR: test_frozen_preparation_file_mutation_refuses (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 76, in test_frozen_preparation_file_mutation_refuses
+    self.record();(self.root/'native-stage/config-header').write_bytes(b'ALTERED')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 65, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 150, in record_system_inputs
+    value=_observe(stage,repo,revision,run,build_node,packet_path)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 114, in _observe
+    _provenance(role,item,r,commands,preparations,build_node)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 49, in _provenance
+    _need(set(proof)=={'signingPacket','compileReceipt','preparationReceipt'},'native_compile_provenance_required')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 18, in _need
+    if not ok:raise ValueError(reason)
+ValueError: native_compile_provenance_required
+
+----------------------------------------------------------------------
+Ran 1 test in 0.026s
+
+FAILED (errors=1)

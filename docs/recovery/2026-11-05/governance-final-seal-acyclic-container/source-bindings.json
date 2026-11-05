@@ -1,0 +1,26 @@
+{
+  "scripts/governance_local_issuer/system_preparation.py": {
+    "sha256": "1cdf90d0b9ad38bc8849d567036db8a83ce26cd0f0c74b2fe5ba5a30024e141e",
+    "size": 15253
+  },
+  "packages/verified-issuer-runtime/native/origin_guard.c": {
+    "sha256": "7652869e0283985b78f25e75bb5201a764bb19023820c8e5234bee6ad4c9c963",
+    "size": 12230
+  },
+  "packages/verified-issuer-runtime/native/origin_root_binding.m": {
+    "sha256": "a74167becb5225348ff6c14bba01e17b93d857c81a5d00a50fccae88cb44b252",
+    "size": 8874
+  },
+  "packages/verified-issuer-runtime/native/system_peer_binding.c": {
+    "sha256": "8da6ff4a7f11d2a815527a33c09b84487f25d823cfba01f5b9fdfa5eabe1b918",
+    "size": 7904
+  },
+  "docs/recovery/2026-11-05/governance-system-broker-bound-preparation/signing-observation/3-stderr.log": {
+    "sha256": "831cf651c8f34ccdec74112fa7e06d3de7f26349f07e8c1db924f42b7a5a4e4d",
+    "size": 1366
+  },
+  "docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/3-stderr.log": {
+    "sha256": "dea5871a987c337e05cc49790e8d50505868c573b81f6776cb84afe12e15f18e",
+    "size": 1277
+  }
+}

@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_companion_mutation_during_manifest_cannot_reach_success (test_system_materialize.SystemMaterialize)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_materialize.py", line 115, in test_companion_mutation_during_manifest_cannot_reach_success
+    with patch.object(m,'write_manifest',side_effect=mutate),self.assertRaisesRegex(PackageUnavailable,'system_companion_inventory_changed'):self.build()
+AssertionError: PackageUnavailable not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.115s
+
+FAILED (failures=1)

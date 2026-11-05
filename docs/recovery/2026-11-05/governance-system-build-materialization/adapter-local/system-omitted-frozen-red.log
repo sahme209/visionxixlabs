@@ -1,0 +1,17 @@
+F
+======================================================================
+FAIL: test_omitted_frozen_source_inventory_entry_refuses (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+ValueError: unexpected_preparation_output
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 87, in test_omitted_frozen_source_inventory_entry_refuses
+    with self.assertRaisesRegex(ValueError,'prepared_required_file_inventory_incomplete'):self.record()
+AssertionError: "prepared_required_file_inventory_incomplete" does not match "unexpected_preparation_output"
+
+----------------------------------------------------------------------
+Ran 1 test in 0.040s
+
+FAILED (failures=1)

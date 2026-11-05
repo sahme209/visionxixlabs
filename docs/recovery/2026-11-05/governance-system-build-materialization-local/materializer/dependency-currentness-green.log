@@ -1,0 +1,23 @@
+E
+======================================================================
+ERROR: test_dependency_changes_after_copy_refuse (test_system_materialize.SystemMaterialize)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_materialize.py", line 15, in setUp
+    self.system=self.f.record();self.stage=self.f.stage;self.run=self.f.run;self.root=self.f.root
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 65, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 150, in record_system_inputs
+    value=_observe(stage,repo,revision,run,build_node,packet_path)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 114, in _observe
+    _provenance(role,item,r,commands,preparations,build_node)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 49, in _provenance
+    _need(set(proof)=={'signingPacket','compileReceipt','preparationReceipt'},'native_compile_provenance_required')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 18, in _need
+    if not ok:raise ValueError(reason)
+ValueError: native_compile_provenance_required
+
+----------------------------------------------------------------------
+Ran 1 test in 0.029s
+
+FAILED (errors=1)

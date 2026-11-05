@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_missing_headers_refuses (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 48, in test_missing_headers_refuses
+    with self.assertRaises(ValueError):self.record()
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.029s
+
+FAILED (failures=1)

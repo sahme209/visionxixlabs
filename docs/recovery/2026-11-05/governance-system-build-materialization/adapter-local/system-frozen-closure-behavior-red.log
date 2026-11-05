@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_frozen_preparation_file_mutation_refuses (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 74, in test_frozen_preparation_file_mutation_refuses
+    with self.assertRaises(ValueError):s.verify_system_inputs(self.stage)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.059s
+
+FAILED (failures=1)

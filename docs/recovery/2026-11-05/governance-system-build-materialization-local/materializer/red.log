@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_default_missing_mode_mapping_refuses_before_copy (test_system_materialize.SystemMaterialize)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_materialize.py", line 37, in test_default_missing_mode_mapping_refuses_before_copy
+    with self.assertRaisesRegex(PackageUnavailable,'system_explicit_mode_map_required'):self.build(None)
+AssertionError: PackageUnavailable not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.051s
+
+FAILED (failures=1)

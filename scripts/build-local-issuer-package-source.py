@@ -349,15 +349,27 @@ def native_overlay_inputs(stage,phase):
  try:return verify_overlay(stage,after_build=phase=='after_build')
  except (RuntimeError,OSError,ValueError,subprocess.SubprocessError):fail('native_overlay_input_verification_failed')
 
+def system_build_inputs(stage,phase):
+ from governance_local_issuer.system_build_inputs import verify_system_inputs
+ try:return verify_system_inputs(stage,after_build=phase=='after_build')
+ except (RuntimeError,OSError,ValueError,KeyError,TypeError):fail('system_build_input_verification_failed')
+
 def verify_build_archive(stage,repo,revision,phase='before_build'):
  if phase not in {'before_build','after_build'}:fail('invalid_build_source_phase')
- stage=private_dir(stage);native_overlay=native_overlay_inputs(stage,phase)
+ stage=private_dir(stage)
+ system_receipt=stage/'_axiom_system_build_inputs.json';legacy_receipt=stage/'_axiom_native_overlay.json'
+ has_system=system_receipt.exists()or system_receipt.is_symlink()
+ has_legacy=legacy_receipt.exists()or legacy_receipt.is_symlink()
+ if has_system and has_legacy:fail('mixed_native_profiles_refused')
+ system_inputs=system_build_inputs(stage,phase)if has_system else None
+ native_overlay=None if has_system else native_overlay_inputs(stage,phase)
+ if system_inputs is not None and system_inputs['sourceRevision']!=revision:fail('system_input_source_revision_mismatch')
  if native_overlay is not None and native_overlay['sourceRevision']!=revision:fail('native_overlay_source_revision_mismatch')
  raw=git_bytes(repo,['archive','--format=tar',revision]);seen=set();folded=set();observed=[];total=paths=0;regular=links=0
  with tarfile.open(fileobj=io.BytesIO(raw),mode='r:')as archive:
   for member in archive:
    name=rel(member.name.rstrip('/'));paths+=len(name)
-   if name in {'_axiom_native_overlay.json','packages/verified-issuer-runtime/native/origin_guard.node','packages/verified-issuer-runtime/native/origin-bootstrap'}:fail('native_overlay_outputs_must_be_generated_prebuild')
+   if name in {'_axiom_system_build_inputs.json','_axiom_native_overlay.json','packages/verified-issuer-runtime/native/origin_guard.node','packages/verified-issuer-runtime/native/origin-bootstrap'}:fail('native_overlay_outputs_must_be_generated_prebuild')
    if name in seen or name.casefold()in folded or len(seen)>=50000 or paths>32*1024*1024:fail('build_archive_duplicate_or_limit')
    if name.split('/')[0]in {'node_modules','.next'}:fail('reserved_build_archive_root')
    seen.add(name);folded.add(name.casefold());path=stage/name
@@ -391,12 +403,14 @@ def verify_build_archive(stage,repo,revision,phase='before_build'):
    if relative=='next-env.d.ts'and relative not in seen and phase=='after_build':
     verify_framework_declaration(stage);continue
    if native_overlay and relative in {'_axiom_native_overlay.json',*native_overlay['stageArtifacts']}:continue
+   if system_inputs and relative in {'_axiom_system_build_inputs.json',*system_inputs['stageArtifacts']}:continue
    if relative not in seen:fail('extra_build_source_entry')
    if name in dirs and not path.is_symlink():kept.append(name)
   dirs[:]=kept
  return {'archiveSha256':sha(raw),'verifiedRegularFiles':regular,'verifiedSymlinks':links,'sourceBytes':total,
          'sourceObservationSha256':sha(json.dumps(sorted(observed),sort_keys=True,separators=(',',':')).encode()),
-         **({'nativeOverlay':native_overlay}if native_overlay is not None else{})}
+         **({'nativeOverlay':native_overlay}if native_overlay is not None else{}),
+         **({'systemBuildInputs':system_inputs}if system_inputs is not None else{})}
 
 def prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node,phase='before_build'):
  stage=private_dir(stage);generation_run=private_dir(generation_run)
@@ -487,6 +501,8 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
  node_identity=tool.stable_file_hash(node);inputs=prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node)
  overlay=inputs.get('sourceArchive',{}).get('nativeOverlay')
  if overlay is not None and overlay['plannedBuildRun']!=str(owned):fail('native_overlay_build_run_mismatch')
+ system_inputs=inputs.get('sourceArchive',{}).get('systemBuildInputs')
+ if system_inputs is not None and (system_inputs['plannedBuildRun']!=str(owned) or system_inputs['buildNode']!=__import__('governance_local_issuer.system_build_inputs',fromlist=['binding']).binding(node)):fail('system_build_run_or_tool_mismatch')
  names=['attempt.json','result.json','node-version.log','contract.log','next-build.log','private-bootstrap-emission.log','tmp']
  if any((owned/name).exists()or(owned/name).is_symlink()for name in names):fail('fresh_build_logs_required')
  handles={}

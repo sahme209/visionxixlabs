@@ -1,0 +1,16 @@
+# Connected System packaging — bounded local source completion
+
+Approvalcall_EGCu...covered local code and focused mocked/filesystem tests only. The real input adapter, actual source-archive compiler branch and paired canonical materializer are implemented; this is not a substitute DTO or alternate quarantine manifest. No actual Next/bootstrap compiler or package invocation was run.
+
+## Verified local flow
+
+1. ~~Fresh System inputs bind full frozen preparation/source/header/config/recipe closure, native compile/sign provenance, fixed roles and every saved raw command log~~. Guard supplemental evidence is joined to unchanged original packet/command/history hashes; its historical failed result is not rewritten. Proposed mode mapping remains data, not authority.
+2. ~~Actual source-archive verification chooses System without calling the legacy overlay helper~~, rejects mixed/dangling profiles and permits only exact receipt/guard/bootstrap generated paths. Original build-tool Node remains separate from signed runtime payload Node; revision/build-run/tool bindings remain checked.
+3. ~~Paired materializer uses actual adapter verification, actual bounded copying, support traces and the unchanged canonical manifest~~. A connected fixture supplies synthetic completed compiler outputs; only that compiler boundary/native-host observer is mocked. Exact module/guard/bootstrap/runtimeNode coordinates, emitted private initializer, separate companion inventory, explicit output modes and original600inputs are preserved. No real artifact mode mapping was applied.
+4. ~~Review-driven mutations and currentness refusals are covered~~: frozen preparation/header/source drift, signing/supplement/raw-log changes, companion extra file/mode promotion/byte-equal replacement, postmanifest mutation, copied completed run mismatch and dependency mutation. Independent final source review found no remaining important issue within this finite scope.
+
+## Evidence counts and limits
+
+Adapter18-case baseline and sourcebuilder6-case focused synthetic runs pass; after final strict Node-entitlement typing correction, two selected cases pass (integer1 refusal and Booleantrue connected positive). No fresh all19 claim. Paired materializer has15testmethods covered across initial9/focusedregressiongroups and materially updated connected positives; counts overlap, not a fresh all15 or project suite. Raw intermediate fixture/schema failures are retained and labeled. See adapter-local and sibling governance-system-build-materialization-local/materializer evidence. No previously passing broad suites were repeated.
+
+All qualification fields remain false/unavailable. Native observer's actual sw_vers/diskutil host reads are excluded from these mocked tests and need the later exact invocation scope. The final app-seal/broker-CDHash cycle is now an explicit unresolved observation, not a runnable package. No production/claim/schema/provider/deployment/Security-API/key/account/service action occurred. Actual compiler/materializer, correct final container seal, System ownership/topology, custody, same compiled consumer, all execution coverage/fleet/native enrollment and all21master parents remain open.

@@ -1,0 +1,21 @@
+E
+======================================================================
+ERROR: test_connected_copy_distinguishes_nodes_and_preserves_quarantine (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 71, in test_connected_copy_distinguishes_nodes_and_preserves_quarantine
+    r=self.record();self.assertEqual(r,s.verify_system_inputs(self.stage));self.assertNotEqual(r['buildNode']['sha256'],r['runtimeNode']['sha256'])
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 69, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 182, in record_system_inputs
+    value=_observe(stage,repo,revision,run,build_node,packet_path)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 135, in _observe
+    _need(set(item)=={'identifier','artifact','resultReceipt','displayStdout','displayStderr','provenance'} and item['identifier']==ROLE_IDENTIFIERS[role],'fixed_role_identifier_required')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 18, in _need
+    if not ok:raise ValueError(reason)
+ValueError: fixed_role_identifier_required
+
+----------------------------------------------------------------------
+Ran 1 test in 0.047s
+
+FAILED (errors=1)

@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_missing_generated_input_refuses_readonly_verification (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 83, in test_missing_generated_input_refuses_readonly_verification
+    with self.assertRaises(ValueError):s.verify_system_inputs(self.stage)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.042s
+
+FAILED (failures=1)

@@ -1,6 +1,6 @@
 # System compiled-consumer build and materialization proposal
 
-Status: proposed; implementation requires an explicit validation-first decision. This document grants no execution or qualification authority.
+Status: local implementation approved via call_EGCu16M8ZdbP31qOfGAi3hU9. Source and focused mocked/filesystem tests are In Progress. This document grants no actual compiler/runtime execution or qualification authority.
 
 ## Problem and bounded outcome
 

@@ -1,0 +1,23 @@
+F
+======================================================================
+FAIL: test_system_profile_never_invokes_legacy_overlay (test_sourcebuilder_system_inputs.SourceBuilderSystemTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_sourcebuilder_system_inputs.py", line 23, in test_system_profile_never_invokes_legacy_overlay
+    with patch.object(self.b,'native_overlay_inputs',side_effect=AssertionError('legacy helper invoked')):self.verify()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_sourcebuilder_system_inputs.py", line 17, in verify
+    with patch.object(self.b,'git_bytes',return_value=self.archive):return self.b.verify_build_archive(f.stage,f.repo,f.revision)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/build-local-issuer-package-source.py", line 359, in verify_build_archive
+    stage=private_dir(stage);system_inputs=system_build_inputs(stage,phase);native_overlay=native_overlay_inputs(stage,phase)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1093, in __call__
+    return self._mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1097, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1152, in _execute_mock_call
+    raise effect
+AssertionError: legacy helper invoked
+
+----------------------------------------------------------------------
+Ran 1 test in 0.047s
+
+FAILED (failures=1)

@@ -36,6 +36,66 @@ def collect_native_prerequisites(root):
     from governance_local_issuer.native_linkage import collect_native_prerequisites as inspect
     return inspect(root)
 
+SYSTEM_MODE_MAP='axiom.system-runtime-output-modes/1'
+SYSTEM_OUTPUT_MODES={'__axiom_runtime__/node':0o755,'__axiom_runtime__/origin-bootstrap':0o755,'node_modules/@axiom/verified-issuer-runtime/native/origin_guard.node':0o644}
+SYSTEM_COMPANIONS={'owner':'Contents/Helpers/AxiomSyntheticLaunchOwner','broker':'Contents/MacOS/AxiomIssuerBroker','controller':'Contents/MacOS/AxiomIssuerController','maintenance':'Contents/Helpers/AxiomSyntheticProvisioner'}
+def _system_inputs_module():
+    from governance_local_issuer import system_build_inputs
+    return system_build_inputs
+
+def _verify_system(stage,expected):
+    try:current=_system_inputs_module().verify_system_inputs(stage,after_build=True)
+    except (OSError,ValueError,RuntimeError):refuse('system_materialization_input_changed')
+    if current!=expected:refuse('system_materialization_input_changed')
+    return current
+
+def _companion_binding(path):
+    info,sha,_=hash_regular(path)
+    return {'sha256':sha,'size':info.st_size,'mode':stat.S_IMODE(info.st_mode),'dev':info.st_dev,'ino':info.st_ino,'uid':info.st_uid,'nlink':info.st_nlink,'mtimeNs':info.st_mtime_ns,'ctimeNs':info.st_ctime_ns}
+
+def _verify_companion_inventory(root,files):
+    if root.is_symlink()or root.resolve()!=root or not root.is_dir()or root.stat().st_uid!=os.getuid()or stat.S_IMODE(root.stat().st_mode)!=0o700:refuse('system_companion_inventory_changed')
+    expected={('Axiom Synthetic Custodian.app/'+coordinate)for coordinate in SYSTEM_COMPANIONS.values()}
+    directories={'.'}
+    for name in expected:directories.update(str(p)for p in Path(name).parents)
+    actual=set()
+    for base,dirs,names in os.walk(root,followlinks=False):
+        for name in dirs+names:
+            path=Path(base)/name;info=path.lstat();rel=path.relative_to(root).as_posix()
+            if path.is_symlink()or info.st_uid!=os.getuid():refuse('system_companion_inventory_changed')
+            if stat.S_ISDIR(info.st_mode):
+                if rel not in directories or info.st_mode&0o022:refuse('system_companion_inventory_changed')
+            elif stat.S_ISREG(info.st_mode):
+                if rel not in expected:refuse('system_companion_inventory_changed')
+                actual.add(rel)
+            else:refuse('system_companion_inventory_changed')
+    if actual!=expected or set(files)!=set(SYSTEM_COMPANIONS):refuse('system_companion_inventory_changed')
+    for role,coordinate in SYSTEM_COMPANIONS.items():
+        target=root/'Axiom Synthetic Custodian.app'/coordinate;item=files[role]
+        if str(target)!=item['materializedPath']or _companion_binding(target)!=item['materializedBinding']or item['copiedMode']!=0o600:refuse('system_companion_inventory_changed')
+
+def _copy_companion(bound,target):
+    source=Path(bound['path']);before,sha,_=hash_regular(source)
+    if source.is_symlink()or sha!=bound['sha256']or before.st_size!=bound['size']or stat.S_IMODE(before.st_mode)!=bound['mode']:refuse('system_companion_input_changed')
+    target.parent.mkdir(parents=True,exist_ok=True)
+    fd=os.open(source,os.O_RDONLY|os.O_NOFOLLOW);copied=0;hasher=hashlib.sha256()
+    try:
+        opened=os.fstat(fd)
+        if any(getattr(before,k)!=getattr(opened,k)for k in ('st_dev','st_ino','st_size','st_mode','st_mtime_ns','st_ctime_ns')):refuse('system_companion_input_changed')
+        with target.open('xb')as output:
+            while True:
+                chunk=os.read(fd,min(1024*1024,before.st_size-copied+1))
+                if not chunk:break
+                copied+=len(chunk)
+                if copied>before.st_size:refuse('system_companion_input_changed')
+                output.write(chunk);hasher.update(chunk)
+        after=os.fstat(fd)
+    finally:os.close(fd)
+    if copied!=before.st_size or hasher.hexdigest()!=sha or any(getattr(before,k)!=getattr(after,k)for k in ('st_dev','st_ino','st_size','st_mode','st_mtime_ns','st_ctime_ns'))or hash_regular(source)[1]!=sha:refuse('system_companion_input_changed')
+    target.chmod(stat.S_IMODE(before.st_mode))
+    if hash_regular(target)[1]!=sha:refuse('system_companion_copy_mismatch')
+    return {'source':bound,'materializedPath':str(target),'sha256':sha,'observedSourceMode':stat.S_IMODE(before.st_mode),'copiedMode':stat.S_IMODE(target.stat().st_mode),'materializedBinding':_companion_binding(target)}
+
 def _source_builder():
     spec=importlib.util.spec_from_file_location('isolated_materializer_source_builder',Path(__file__).resolve().parents[1]/'build-local-issuer-package-source.py')
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
@@ -94,20 +154,35 @@ def isolated_build_details(observation,build_run,stage,repo,cache,bound_dir,gene
               'currentOutputsSha256':digest(canonical(current_outputs)),'currentFrameworkDeclaration':current_types,
               'originalObserverStatus':original.get('status'),'compilerExit':0,'compilerRerun':False,'generationRerun':False,
               'executingIssuerIdentity':'unavailable','executionAuthorized':False}
+    if 'nativeOverlay'in archive and 'systemBuildInputs'in archive:refuse('mixed_native_profiles_refused')
+    if 'systemBuildInputs'in archive and archive['systemBuildInputs'].get('plannedBuildRun')!=str(build_run):refuse('system_completed_build_run_mismatch')
     details={'source':revision,'archiveSha256':archive['archiveSha256'],'verifiedRegularFiles':archive['verifiedRegularFiles'],
-             'exit':0,'nodeVersion':'v24.21.0','stage':str(stage),**({'nativeOverlay':archive['nativeOverlay']}if 'nativeOverlay'in archive else{})}
+             'exit':0,'nodeVersion':'v24.21.0','stage':str(stage),**({'nativeOverlay':archive['nativeOverlay']}if 'nativeOverlay'in archive else{}),**({'systemBuildInputs':archive['systemBuildInputs']}if 'systemBuildInputs'in archive else{})}
     return details,evidence
 
-def materialize_isolated(observation,build_run,stage,repo,cache,bound_dir,generation_run,node,destination):
+def materialize_isolated(observation,build_run,stage,repo,cache,bound_dir,generation_run,node,destination,*,system_mode_map=None):
     details,evidence=isolated_build_details(observation,build_run,stage,repo,cache,bound_dir,generation_run,node)
-    return _materialize(details,digest(canonical(evidence)),node,destination,profile=ISOLATED_PROFILE,isolated_evidence=evidence)
+    return _materialize(details,digest(canonical(evidence)),node,destination,profile=ISOLATED_PROFILE,isolated_evidence=evidence,system_mode_map=system_mode_map)
 
 def materialize(build_receipt,node,destination):
     details,receipt_sha=receipt(build_receipt)
     return _materialize(details,receipt_sha,node,destination)
 
-def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_evidence=None):
+def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_evidence=None,system_mode_map=None):
     stage, node, destination = Path(details["stage"]), Path(node), Path(destination)
+    build_tool_node=node
+    system=details.get('systemBuildInputs')
+    if system is not None:
+        if details.get('nativeOverlay')is not None:refuse('mixed_native_profiles_refused')
+        if profile!=ISOLATED_PROFILE or isolated_evidence is None:refuse('system_completed_compiler_observation_required')
+        if system_mode_map!=SYSTEM_MODE_MAP:refuse('system_explicit_mode_map_required')
+        _verify_system(stage,system)
+        if system.get('proposedOutputModeMap')!=SYSTEM_OUTPUT_MODES or system.get('modeMappingApplied')is not False:refuse('system_explicit_mode_map_required')
+        if system.get('sourceRevision')!=details['source']or Path(system['buildNode']['path'])!=build_tool_node:refuse('system_compiler_node_mismatch')
+        if set(system.get('companionArtifacts',{}))!=set(SYSTEM_COMPANIONS):refuse('system_companion_inventory_required')
+        node=Path(system['runtimeNode']['path'])
+    elif system_mode_map is not None:refuse('system_mode_map_requires_system_inputs')
+    elif(stage/'_axiom_system_build_inputs.json').exists():refuse('unpaired_system_materialization_stage')
     if node.is_symlink() or not node.is_file(): refuse("regular_runtime_binary_required")
     if destination.exists() or destination.is_symlink(): refuse("new_destination_required")
     deps_link = stage/"node_modules"
@@ -126,6 +201,12 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
     if audit_path.exists() or audit_path.is_symlink():refuse("new_materialization_receipt_required")
     native_overlay=details.get('nativeOverlay')
     runtime_root=None
+    companion_root=parent/"system-companions"
+    if system is not None and(companion_root.exists()or companion_root.is_symlink()):refuse("new_system_companion_inventory_required")
+    if system is not None:
+        adapter=_system_inputs_module();PACKAGE_PATH,PACKAGE_FILES,GENERATED_STAGE=adapter.PACKAGE_PATH,adapter.PACKAGE_FILES,adapter.GENERATED_STAGE
+        runtime_root=stage/PACKAGE_PATH
+        if runtime_root.is_symlink()or runtime_root.resolve()!=runtime_root:refuse("native_runtime_root_aliased")
     if native_overlay is not None:
         from governance_local_issuer.native_overlay import verify_overlay,PACKAGE_PATH,PACKAGE_FILES,GENERATED_STAGE
         if verify_overlay(stage,after_build=True)!=native_overlay:refuse('native_overlay_materialization_input_changed')
@@ -138,6 +219,10 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
     if native_overlay is not None:
         recorded_hashes[str(node)] = native_overlay['node']['sha256']
         recorded_hashes.update({str(stage/name): item['sha256'] for name,item in native_overlay['stageArtifacts'].items()})
+    if system is not None:
+        recorded_hashes[str(node)]=system['runtimeNode']['sha256']
+        recorded_hashes.update({str(stage/name):item['sha256']for name,item in system['stageArtifacts'].items()})
+    system_modes={};companion_files={};companions_created=False
     copied_bindings = {}
     active_targets = set()
     total = 0
@@ -145,6 +230,13 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
 
     def mapped(source):
         resolved = source.resolve(strict=True)
+        if system is not None:
+            if resolved==node:return '__axiom_runtime__/node'
+            if resolved==stage/GENERATED_STAGE[1]:return '__axiom_runtime__/origin-bootstrap'
+            try:
+                part=resolved.relative_to(runtime_root).as_posix()
+                return 'node_modules/@axiom/verified-issuer-runtime'+(''if part=='.'else'/'+part)
+            except ValueError:pass
         if native_overlay is not None and resolved==stage/GENERATED_STAGE[1]:return '__axiom_runtime__/origin-bootstrap'
         try: return "node_modules" if resolved==deps else "node_modules/"+resolved.relative_to(deps).as_posix()
         except ValueError: pass
@@ -158,6 +250,9 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         if target in active_targets: refuse("recursive_materialization_alias")
         source = Path(source)
         info = source.lstat()
+        if system is not None and source==deps/'@axiom/verified-issuer-runtime':
+            if source.resolve(strict=True)!=runtime_root:refuse('system_runtime_dependency_alias_mismatch')
+            source=runtime_root;info=source.lstat()
         if runtime_root is not None:
             try: runtime_relative=source.resolve(strict=True).relative_to(runtime_root).as_posix()
             except ValueError: runtime_relative=None
@@ -224,7 +319,9 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             if copied!=info.st_size or copy_hash.hexdigest()!=source_sha:refuse("copy_mismatch")
             if any(getattr(info,k)!=getattr(copied_info,k) for k in ("st_dev","st_ino","st_size","st_mtime_ns","st_ctime_ns")):refuse("source_changed_during_copy")
             copied_bindings[target] = (source, source_sha)
-            out.chmod(stat.S_IMODE(info.st_mode))
+            output_mode=SYSTEM_OUTPUT_MODES.get(target,stat.S_IMODE(info.st_mode))if system is not None else stat.S_IMODE(info.st_mode)
+            out.chmod(output_mode)
+            if system is not None and target in SYSTEM_OUTPUT_MODES:system_modes[target]={'observedSourceMode':stat.S_IMODE(info.st_mode),'proposedOutputMode':output_mode,'sourceSha256':source_sha}
             after=source.lstat()
             if any(getattr(info,k)!=getattr(after,k) for k in ("st_dev","st_ino","st_size","st_mtime_ns","st_ctime_ns")):
                 refuse("source_changed_during_copy")
@@ -233,6 +330,11 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         else: refuse("special_source_file")
 
     def verify_copy_bindings():
+        if system is not None:
+            _verify_system(stage,system)
+            _verify_companion_inventory(companion_root,companion_files)
+            for target,modes in system_modes.items():
+                if stat.S_IMODE((destination/target).stat().st_mode)!=modes['proposedOutputMode']:refuse('system_output_mode_changed')
         if native_overlay is not None and verify_overlay(stage,after_build=True)!=native_overlay:
             refuse('native_overlay_materialization_input_changed')
         relocated = {item['path']: item['packagedSha256'] for item in transformations}
@@ -249,7 +351,14 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             elif name not in ["public","tsconfig.json"]: refuse("required_stage_input_missing")
         copy(deps,"node_modules")
         copy(node,"__axiom_runtime__/node")
-        if native_overlay is not None:copy(stage/GENERATED_STAGE[1],'__axiom_runtime__/origin-bootstrap')
+        if native_overlay is not None or system is not None:copy(stage/GENERATED_STAGE[1],'__axiom_runtime__/origin-bootstrap')
+        if system is not None:
+            if not(destination/'.next/server/__axiom_private__/release-merge-bootstrap.cjs').is_file():refuse('system_compiled_private_bootstrap_missing')
+            if set(system_modes)!=set(SYSTEM_OUTPUT_MODES):refuse('system_runtime_mode_inventory_incomplete')
+            companion_root.mkdir(mode=0o700);companions_created=True
+            for role,coordinate in SYSTEM_COMPANIONS.items():
+                companion_files[role]=_copy_companion(system['companionArtifacts'][role],companion_root/'Axiom Synthetic Custodian.app'/coordinate)
+                companion_files[role]['intendedInstalledCoordinate']=system['layout']['app']+'/'+coordinate
         # Resolve ORIGINAL trace paths against the ORIGINAL build, map only the
         # two allowed stage/dependency roots, and retain source+packaged hashes.
         trace_count=trace_bytes=trace_entries=trace_path_bytes=0
@@ -279,6 +388,7 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         for link in links:
             if not (destination/link["resolved"]).exists(): refuse("unmaterialized_link_target")
         native=collect_native_prerequisites(destination)
+        companion_native=collect_native_prerequisites(companion_root)if system is not None else None
         verify_copy_bindings()
         audit={"format":"axiom.local-issuer-materialization/2" if profile==ISOLATED_PROFILE else "axiom.local-issuer-materialization/1","source":details["source"],
                "buildReceiptSha256":receipt_sha,"copiedEntryCount":len(selected),
@@ -292,6 +402,14 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             audit['runtimeDistributionAllowlist']=list(PACKAGE_FILES)
             audit['runtimeSourceFilesExcluded']=sorted(p.relative_to(runtime_root).as_posix()for p in runtime_root.rglob('*')if p.is_file()and p.relative_to(runtime_root).as_posix()not in PACKAGE_FILES)
             audit['included']='fixed Next inputs/traces and dependency closure; issuer runtime uses explicit reviewed distribution allowlist and bootstrap relocation'
+        if system is not None:
+            audit['systemBuildInputs']=system;audit['runtimeDistributionAllowlist']=list(PACKAGE_FILES)
+            audit['buildToolNode']=system['buildNode'];audit['runtimeNode']=system['runtimeNode']
+            audit['systemOutputModeMap']={'name':system_mode_map,'files':system_modes,'originalInputModesChanged':False,'declarationNotExecutionAuthority':True}
+            audit['systemCompanions']={'files':companion_files,'nativePrerequisites':companion_native,'installationReady':False,'executingIdentity':'unavailable'}
+            audit['runtimeLaunchability']='unavailable';audit['installationReady']=False;audit['activationAllowed']=False
+            audit['runtimeSourceFilesExcluded']=sorted(p.relative_to(runtime_root).as_posix()for p in runtime_root.rglob('*')if p.is_file()and p.relative_to(runtime_root).as_posix()not in PACKAGE_FILES and str(p.relative_to(stage))!=GENERATED_STAGE[1])
+            audit['included']='fixed compiled Next/private bootstrap and dependency closure; exact System runtime distribution and distinct signed runtime Node; companions separately bound outside payload'
         if isolated_evidence is not None:
             audit['isolatedBuildEvidence']=isolated_evidence
             audit['packageProfile']=profile
@@ -302,15 +420,18 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             fd=os.open("materialization.json",os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600,dir_fd=parent_fd)
             with os.fdopen(fd,"wb") as output:output.write(audit_bytes)
         finally:os.close(parent_fd)
-        if native["unresolved"]: refuse("native_dependency_resolution_unavailable")
+        if native["unresolved"]or(companion_native is not None and companion_native["unresolved"]): refuse("native_dependency_resolution_unavailable")
         provenance={"sourceRevision":details["source"],"archiveSha256":details["archiveSha256"],
                     "buildReceiptSha256":receipt_sha,"materializationReceiptSha256":digest(audit_bytes)}
         verify_copy_bindings()
         write_manifest(destination,provenance,details["nodeVersion"],profile=profile)
-        return {**verify_package(destination),"materializationReceipt":str(audit_path),
-                "sourceRevision":details["source"]}
+        verified=verify_package(destination)
+        if system is not None:verify_copy_bindings()
+        return {**verified,"materializationReceipt":str(audit_path),
+                "sourceRevision":details["source"],**({"runtimeLaunchability":"unavailable","installationReady":False,"activationAllowed":False}if system is not None else{})}
     except BaseException:
         shutil.rmtree(destination)
+        if companions_created:shutil.rmtree(companion_root)
         raise
 
 def main():
@@ -321,14 +442,15 @@ def main():
     for flag in ["build-run","stage","repo","cache-source","bound-engines","generation-run"]:parser.add_argument("--"+flag)
     parser.add_argument("--node",required=True)
     parser.add_argument("--destination",required=True)
+    parser.add_argument("--system-mode-map",choices=[SYSTEM_MODE_MAP])
     args=parser.parse_args()
     try:
         isolated=[args.build_run,args.stage,args.repo,args.cache_source,args.bound_engines,args.generation_run]
         if args.completed_build_observation:
             if not all(isolated):refuse('isolated_materialization_coordinates_required')
-            result=materialize_isolated(args.completed_build_observation,args.build_run,args.stage,args.repo,args.cache_source,args.bound_engines,args.generation_run,args.node,args.destination)
+            result=materialize_isolated(args.completed_build_observation,args.build_run,args.stage,args.repo,args.cache_source,args.bound_engines,args.generation_run,args.node,args.destination,system_mode_map=args.system_mode_map)
         else:
-            if any(isolated):refuse('isolated_arguments_require_observation')
+            if any(isolated)or args.system_mode_map:refuse('isolated_arguments_require_observation')
             result=materialize(args.build_receipt,args.node,args.destination)
         print(json.dumps(result,sort_keys=True))
     except (PackageUnavailable,OSError,ValueError) as exc:

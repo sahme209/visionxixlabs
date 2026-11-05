@@ -2,9 +2,13 @@
 
 Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
+## November5 final-seal dependency — source/evidence-confirmed blocker
+
+The current broker-main app seal would change the broker CDHash after the guard pins it, creating a guard→DMG→outer-seal→broker cycle. Existing real bundle/detached observations corroborate it. ~~A concrete acyclic container-main design is prepared and independently reviewed~~ ([proposal](../recovery/2026-11-05/governance-final-seal-acyclic-container/PROPOSAL.md)). **Pending:** explicit approval for local source/preparation only. No signing loop, skipped sealed_control or authoritative leaf change. Old profiles remain unresolved and all21parents stay open.
+
 ## November5 connected System build/materialization — reviewed proposal
 
-~~Actual missing compiler/materializer seams traced to current source~~ ([proposal](../recovery/2026-11-05/governance-system-build-materialization/PROPOSAL.md)). One connected local unit would bind System artifacts into a fresh real source-compiler profile and paired package materializer, preserving distinct build-tool/runtime Node, actual compiled private bootstrap, exact role/loader closure, companion separation and immutable provenance. Quarantined input modes and eventual mode mapping stay distinct. **Pending validation-first approval:** source/mock-filesystem implementation only; actual build/sign/install/runtime qualification excluded. All21parents remain open.
+~~Actual missing compiler/materializer seams traced to current source~~ ([proposal](../recovery/2026-11-05/governance-system-build-materialization/PROPOSAL.md)). One connected local unit would bind System artifacts into a fresh real source-compiler profile and paired package materializer, preserving distinct build-tool/runtime Node, actual compiled private bootstrap, exact role/loader closure, companion separation and immutable provenance. Quarantined input modes and eventual mode mapping stay distinct. ~~Approved connected source/mock-filesystem implementation now verified locally~~ ([completion and limits](../recovery/2026-11-05/governance-system-build-materialization/LOCAL-COMPLETION.md)): actual adapter/archive/materializer code with synthetic compiler boundaries, independent review and explicit source/provenance/currentness checks. Actual build/sign/install/runtime qualification remains excluded. All21parents remain open.
 
 ## November5 remaining native signatures — exact batch prepared
 

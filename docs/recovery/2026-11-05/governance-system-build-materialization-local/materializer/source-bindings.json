@@ -1,0 +1,11 @@
+{
+  "scope": "localcodeandfakefilesystemtests",
+  "files": {
+    "scripts/governance_local_issuer/materialize.py": "438416de2e4b54f6a88479f229c46f7678fc66d066ae354f9088e522ab1b1a54",
+    "scripts/governance_local_issuer/tests/test_system_materialize.py": "044ce82be853d0080a6a831e32008ad54f4d62e8632c9654e430469cb10d0b87"
+  },
+  "realCompilerRun": false,
+  "realNativeObserverRun": false,
+  "realModeMappingApplied": false,
+  "qualified": false
+}

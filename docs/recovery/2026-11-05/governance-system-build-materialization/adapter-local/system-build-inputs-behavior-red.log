@@ -1,0 +1,65 @@
+.EEEE.E.
+======================================================================
+ERROR: test_connected_copy_distinguishes_nodes_and_preserves_quarantine (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 39, in test_connected_copy_distinguishes_nodes_and_preserves_quarantine
+    r=self.record();self.assertEqual(r,s.verify_system_inputs(self.stage));self.assertNotEqual(r['buildNode']['sha256'],r['runtimeNode']['sha256'])
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 37, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 16, in record_system_inputs
+    def record_system_inputs(*args,**kwargs):raise ValueError('system adapter not implemented')
+ValueError: system adapter not implemented
+
+======================================================================
+ERROR: test_external_role_mutation_refuses (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 44, in test_external_role_mutation_refuses
+    self.record();(self.root/'broker').write_bytes(b'CHANGED')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 37, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 16, in record_system_inputs
+    def record_system_inputs(*args,**kwargs):raise ValueError('system adapter not implemented')
+ValueError: system adapter not implemented
+
+======================================================================
+ERROR: test_generated_mutation_refuses (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 50, in test_generated_mutation_refuses
+    self.record();(self.stage/s.GENERATED_STAGE[0]).write_bytes(b'CHANGED')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 37, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 16, in record_system_inputs
+    def record_system_inputs(*args,**kwargs):raise ValueError('system adapter not implemented')
+ValueError: system adapter not implemented
+
+======================================================================
+ERROR: test_historical_failure_not_promoted (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 63, in test_historical_failure_not_promoted
+    r=self.record();self.assertFalse(r['historicalBatchAccepted']);self.assertFalse(r['cryptographicSignatureVerifiedHere'])
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 37, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 16, in record_system_inputs
+    def record_system_inputs(*args,**kwargs):raise ValueError('system adapter not implemented')
+ValueError: system adapter not implemented
+
+======================================================================
+ERROR: test_source_mutation_refuses (test_system_build_inputs.SystemBuildInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 47, in test_source_mutation_refuses
+    self.record();(self.repo/prep.PACKAGE_SOURCE_PATHS[0]).write_bytes(b'CHANGED')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_build_inputs.py", line 37, in record
+    def record(self):return s.record_system_inputs(self.stage,self.repo,self.revision,self.run,self.build,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 16, in record_system_inputs
+    def record_system_inputs(*args,**kwargs):raise ValueError('system adapter not implemented')
+ValueError: system adapter not implemented
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.056s
+
+FAILED (errors=5)
