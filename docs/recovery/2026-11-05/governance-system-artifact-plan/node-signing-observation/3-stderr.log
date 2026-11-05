@@ -1,0 +1,31 @@
+Executable=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy
+Identifier=com.visionxixlabs.axiom.synthetic-node
+Format=Mach-O thin (arm64)
+CodeDirectory v=20500 size=237042 flags=0x10000(runtime) hashes=7396+7 location=embedded
+VersionPlatform=1
+VersionMin=853248
+VersionSDK=983040
+Hash type=sha256 size=32
+CandidateCDHash sha256=2965bacde5394d71a94682b246ad01efe316e036
+CandidateCDHashFull sha256=2965bacde5394d71a94682b246ad01efe316e0363347c7dd3f56c7775dba8f2f
+Hash choices=sha256
+CMSDigest=2965bacde5394d71a94682b246ad01efe316e0363347c7dd3f56c7775dba8f2f
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=91422720
+Executable Segment flags=0x1
+Page size=16384
+CDHash=2965bacde5394d71a94682b246ad01efe316e036
+Signature size=4680
+Authority=Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Signed Time=Nov 5, 2026 at 10:54:13
+Info.plist=not bound
+TeamIdentifier=FG5N98FE6W
+Runtime Version=15.0.0
+Sealed Resources=none
+Internal requirements count=1 size=200
+warning: Specifying ':' in the path is deprecated and will not work in a future release
+Total signatures=1
+Chosen signature=1
