@@ -1,0 +1,291 @@
+{
+  "scope": "All direct button and Link JSX declarations in the two selected shared components, and literal destination arrays; not runtime instances, mounted visibility, browser execution, destination health or permissions.",
+  "typescriptVersion": "5.9.3",
+  "linkArrays": {
+    "primaryLinks": [
+      {
+        "label": "Product",
+        "href": "/product"
+      },
+      {
+        "label": "Integrations",
+        "href": "/integrations"
+      },
+      {
+        "label": "Security",
+        "href": "/security"
+      },
+      {
+        "label": "Docs",
+        "href": "/docs"
+      },
+      {
+        "label": "Demo",
+        "href": "/demo"
+      }
+    ],
+    "secondaryLinks": [
+      {
+        "label": "Pricing",
+        "href": "/plans"
+      },
+      {
+        "label": "Support (account required)",
+        "href": "/account/help"
+      },
+      {
+        "label": "Status",
+        "href": "/status"
+      },
+      {
+        "label": "Company",
+        "href": "/axiom"
+      }
+    ],
+    "mobileLinks": [
+      {
+        "label": "Product",
+        "href": "/product"
+      },
+      {
+        "label": "Integrations",
+        "href": "/integrations"
+      },
+      {
+        "label": "Security",
+        "href": "/security"
+      },
+      {
+        "label": "Docs",
+        "href": "/docs"
+      },
+      {
+        "label": "Demo",
+        "href": "/demo"
+      },
+      {
+        "label": "Pricing",
+        "href": "/plans"
+      },
+      {
+        "label": "Support (account required)",
+        "href": "/account/help"
+      },
+      {
+        "label": "Status",
+        "href": "/status"
+      },
+      {
+        "label": "Company",
+        "href": "/axiom"
+      },
+      {
+        "label": "Founding Supporters",
+        "href": "/support"
+      }
+    ]
+  },
+  "columns": [
+    {
+      "title": "Product",
+      "links": [
+        {
+          "label": "Product",
+          "href": "/product"
+        },
+        {
+          "label": "Demo",
+          "href": "/demo"
+        },
+        {
+          "label": "Docs",
+          "href": "/docs"
+        },
+        {
+          "label": "Download",
+          "href": "/download"
+        },
+        {
+          "label": "Integrations",
+          "href": "/integrations"
+        },
+        {
+          "label": "Pricing",
+          "href": "/plans"
+        },
+        {
+          "label": "Security",
+          "href": "/security"
+        }
+      ]
+    },
+    {
+      "title": "Company",
+      "links": [
+        {
+          "label": "About",
+          "href": "/axiom"
+        },
+        {
+          "label": "Founding Supporters",
+          "href": "/support"
+        },
+        {
+          "label": "Support (account required)",
+          "href": "/account/help"
+        },
+        {
+          "label": "Contact",
+          "href": "/contact"
+        },
+        {
+          "label": "Service status",
+          "href": "/status"
+        }
+      ]
+    },
+    {
+      "title": "Legal",
+      "links": [
+        {
+          "label": "Privacy",
+          "href": "/privacy"
+        },
+        {
+          "label": "Terms",
+          "href": "/terms"
+        },
+        {
+          "label": "Security",
+          "href": "/security"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": "components/Navigation.tsx",
+      "sha256": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5",
+      "declarations": [
+        {
+          "tag": "button",
+          "startLine": 186,
+          "endLine": 192,
+          "nodeSha256": "af7eca3f951eb10d453bc5eb39ad7d55bf1f21f9a7ba1f34d96c02f08d8824da",
+          "sourceText": "<button\n          type=\"button\"\n          onClick={skipToContent}\n          className=\"sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-3 focus:z-10 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-black focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-orange-300\"\n        >\n          Skip to content\n        </button>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 193,
+          "endLine": 196,
+          "nodeSha256": "e7e2590cd67d459cbb701ea8b7fdd32e37ffba36858796cade4d1ad6ca7f199d",
+          "sourceText": "<Link ref={homeLinkRef} href=\"/\" onClick={closeMenu} className=\"flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100\" aria-label=\"Vision XIX Labs home\">\n          <Image src=\"/vision-xix-logo.png\" alt=\"\" width={28} height={28} className=\"object-contain\" priority />\n          <span>Vision XIX Labs</span>\n        </Link>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 200,
+          "endLine": 202,
+          "nodeSha256": "efe1661069f4966b72b5ceeb5b3233924ebe8033f3710406cf666e1aee746dfb",
+          "sourceText": "<Link key={item.href} href={item.href} onClick={closeMenu} className=\"text-sm text-zinc-400 transition-colors hover:text-white\">\n              {item.label}\n            </Link>"
+        },
+        {
+          "tag": "button",
+          "startLine": 207,
+          "endLine": 215,
+          "nodeSha256": "264cc3d68039af256d2836a7c0a70a951bde316ced56da34b281d4d919ed17d1",
+          "sourceText": "<button ref={moreButtonRef} type=\"button\" aria-expanded={moreOpen} aria-controls=\"more-navigation\"\n              className=\"flex items-center gap-1 py-2 text-sm text-zinc-400 transition-colors hover:text-white\"\n              onClick={() => setMoreOpen((open) => !open)} onKeyDown={(event) => {\n                if (event.key === \"ArrowDown\") {\n                  event.preventDefault();\n                  if (moreOpen) moreRef.current?.querySelector<HTMLElement>(\"a[href]\")?.focus();\n                  else { focusMoreLink.current = true; setMoreOpen(true); }\n                }\n              }}>More <span aria-hidden=\"true\" className=\"text-[10px]\">⌄</span></button>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 218,
+          "endLine": 219,
+          "nodeSha256": "a6931e0db0ebb62c36935b35ddaca3cd74209aa9bb3c950c2bc45c3399e087f7",
+          "sourceText": "<Link key={item.href} href={item.href} onClick={closeMenu}\n                className=\"block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white\">{item.label}</Link>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 225,
+          "endLine": 225,
+          "nodeSha256": "39a30beb0e606e78a921d441bae287a356603ca1934849bf2506b735b1278e77",
+          "sourceText": "<Link href=\"/auth/signin\" className=\"px-2 py-2 text-sm text-zinc-300 transition-colors hover:text-white\">Sign in</Link>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 226,
+          "endLine": 226,
+          "nodeSha256": "f87ecb3393b7472d9ed634d1a01a0a047c6b092a92564904a95c43c33acbd979",
+          "sourceText": "<Link href=\"/download\" className=\"rounded-lg bg-[#f0f0eb] px-4 py-2 text-sm font-semibold text-[#11120f] transition hover:bg-white\">Download</Link>"
+        },
+        {
+          "tag": "button",
+          "startLine": 229,
+          "endLine": 239,
+          "nodeSha256": "a660eed58ea87b4024d1462d8191e305e462ed6e7224e10658fea06d40146d1f",
+          "sourceText": "<button\n          ref={menuButtonRef}\n          type=\"button\"\n          aria-expanded={mobileMenuOpen}\n          aria-controls=\"mobile-navigation\"\n          aria-label=\"Open navigation menu\"\n          onClick={() => { setMoreOpen(false); setMobileMenuOpen((open) => !open); }}\n          className=\"flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden\"\n        >\n          <Bars3Icon className=\"h-6 w-6\" />\n        </button>"
+        },
+        {
+          "tag": "button",
+          "startLine": 254,
+          "endLine": 257,
+          "nodeSha256": "540b201f5245298678cc4702fd2edf2017dce190443489a904fb0afaa49888d0",
+          "sourceText": "<button type=\"button\" aria-label=\"Close navigation menu\" onClick={closeMobileMenu}\n                className=\"flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg px-2 text-sm text-zinc-300 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300\">\n                Close <XMarkIcon aria-hidden=\"true\" className=\"h-5 w-5\" />\n              </button>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 261,
+          "endLine": 263,
+          "nodeSha256": "6cf1a51fe398d56c0e13ec492a687a2f23120f02318f05a5379a723f3c6ba2c9",
+          "sourceText": "<Link key={item.href} href={item.href} onClick={closeMenu} className=\"flex min-h-12 items-center px-1 text-base font-medium text-zinc-200 transition hover:text-orange-200\">\n                  {item.label}\n                </Link>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 269,
+          "endLine": 269,
+          "nodeSha256": "f173c437281cf7458485944f493e56f08683845ea4663e21e727f7b436cc6290",
+          "sourceText": "<Link href=\"/auth/signin\" onClick={closeMenu} className=\"rounded-full border border-white/[0.14] px-4 py-3 text-center text-sm text-zinc-200\">Sign in</Link>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 270,
+          "endLine": 270,
+          "nodeSha256": "b45fb9fed083bcaf57e11b972e2d32e75b92278b0bb6331ff78f78bb4b482014",
+          "sourceText": "<Link href=\"/download\" onClick={closeMenu} className=\"rounded-full bg-white px-4 py-3 text-center text-sm font-medium text-black\">Download</Link>"
+        }
+      ]
+    },
+    {
+      "path": "components/Footer.tsx",
+      "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091",
+      "declarations": [
+        {
+          "tag": "Link",
+          "startLine": 47,
+          "endLine": 47,
+          "nodeSha256": "4ea075d5dd64c25ed7f546125f5d3d440d2beae09931c939cd29721b684b46c5",
+          "sourceText": "<Link href=\"/product\" className=\"rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-white\">Explore Axiom</Link>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 48,
+          "endLine": 48,
+          "nodeSha256": "f4d09bbfbdf5e4f48a5da1621083e7d278201b9733f931ad9310468dd00dcefa",
+          "sourceText": "<Link href=\"/support\" className=\"rounded-lg border border-orange-300/30 px-5 py-3 text-sm font-medium text-orange-200 transition hover:border-orange-300/60 hover:bg-orange-300/[0.06]\">Founding Supporters</Link>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 54,
+          "endLine": 57,
+          "nodeSha256": "d8f2e47a20e31793fde9389b6c6106da9adb52cdade80f7fac2123874189926a",
+          "sourceText": "<Link href=\"/\" className=\"inline-flex items-center gap-2.5 text-sm font-semibold text-zinc-100\">\n              <Image src=\"/vision-xix-logo.png\" alt=\"\" width={28} height={28} className=\"object-contain\" />\n              Vision XIX Labs\n            </Link>"
+        },
+        {
+          "tag": "Link",
+          "startLine": 67,
+          "endLine": 67,
+          "nodeSha256": "f1454cc69b6cf3b13bc52d7dd21db76b7fc6568c0cf9491e473b5eafcdae9016",
+          "sourceText": "<Link href={href} className=\"text-sm text-zinc-400 transition-colors hover:text-white\">{label}</Link>"
+        }
+      ]
+    }
+  ]
+}

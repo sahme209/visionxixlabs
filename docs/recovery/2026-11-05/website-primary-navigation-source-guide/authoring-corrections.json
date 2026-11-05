@@ -1,0 +1,18 @@
+{
+  "reportedBy": "agent_execution_coordinator",
+  "scope": "Pre-final source-range authoring assertions, not runtime/product test failures",
+  "corrections": [
+    {
+      "path": "app/product/page.tsx",
+      "rejectedEnd": 77,
+      "actualEnd": 76
+    },
+    {
+      "path": "app/(marketing)/layout.tsx",
+      "rejectedEnd": 34,
+      "actualEnd": 33
+    }
+  ],
+  "currentLedgerVerifiedByRoot": true,
+  "rawRejectedLedgerWasNotSaved": true
+}

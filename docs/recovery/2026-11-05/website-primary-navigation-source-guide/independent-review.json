@@ -1,0 +1,17 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR within finite source-documentation scope",
+  "extractorReview": "TypeScript-only parser;16directdeclarations/5primary/4secondary/10expandedmobile/15footerrecords consistent",
+  "finalContentReview": [
+    "More group not ARIA menu or roving focus",
+    "selected key handlers have no IME ownership guard",
+    "mobile inert only header bar and boundary Tab containment",
+    "conditional open-panel breakpoint focus recovery",
+    "pathname vs query/hash and first-main skip limits",
+    "blank dialog space is inside, not backdrop dismissal",
+    "footer copy and destination presence are not authority or availability evidence",
+    "selected mounting examples, not every site shell"
+  ],
+  "runtimeTestsOrProviderActionsByReviewer": false,
+  "genuineHumanEditorialApproval": false
+}

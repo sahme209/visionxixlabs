@@ -1,0 +1,17 @@
+{
+  "command": "node docs/recovery/2026-11-05/website-primary-navigation-source-guide/extract.cjs",
+  "exitCode": 0,
+  "kind": "finite-static-source-extraction",
+  "extractorSha256": "73dd7e9098e9a1c2ca5c1fb0518efb5c53ac41b907c590f0f599a046cc867ca9",
+  "extractionSha256": "bad27dd998c0169312d36b4f996e682175d163120298cc59e2dababc3188dcb1",
+  "directDeclarations": 16,
+  "counts": {
+    "primary": 5,
+    "secondary": 4,
+    "expandedMobile": 10,
+    "footerLiteralRecords": 15
+  },
+  "notRuntimeInstanceCounts": true,
+  "applicationModulesImported": false,
+  "browserProviderDatabaseCalls": false
+}

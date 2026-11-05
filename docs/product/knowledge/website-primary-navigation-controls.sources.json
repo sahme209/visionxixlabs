@@ -1,0 +1,835 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "sourceRevision": "8a80fafb9c19fd220cd39a4b4c768cb8937be4e4",
+  "owner": "Axiom documentation workstream",
+  "author": "Codex draft",
+  "humanEditorialOwner": null,
+  "sourceReviewDate": "2026-11-05",
+  "sources": [
+    {
+      "key": "navigation",
+      "path": "components/Navigation.tsx",
+      "sha256": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5",
+      "lineCount": 278,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 278,
+          "sha256": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5"
+        }
+      ]
+    },
+    {
+      "key": "footer",
+      "path": "components/Footer.tsx",
+      "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091",
+      "lineCount": 81,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 81,
+          "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091"
+        }
+      ]
+    },
+    {
+      "key": "home-mount",
+      "path": "app/page.tsx",
+      "sha256": "9e5bcdce1091ee3cfb4502ac427a15680580634cdff3094eef9f2697deab357c",
+      "lineCount": 154,
+      "ranges": [
+        {
+          "start": 38,
+          "end": 45,
+          "sha256": "c6fbf57622bbce5528a013896b7d2cd0600a8bdb9abed7de1f1f24fbb8a0fda6"
+        },
+        {
+          "start": 135,
+          "end": 141,
+          "sha256": "7499a046f74998e7f835403b0b738f554fecc524ce663d8f10186287e4fdf9d9"
+        }
+      ]
+    },
+    {
+      "key": "product-mount",
+      "path": "app/product/page.tsx",
+      "sha256": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+      "lineCount": 76,
+      "ranges": [
+        {
+          "start": 24,
+          "end": 31,
+          "sha256": "f5a7872068e59c58878c57dc7b5db5f525427c83ed54438519611ec887b8754f"
+        },
+        {
+          "start": 69,
+          "end": 76,
+          "sha256": "9b274d87fd301bb290dfd1a2110b95b4381c4ac8b1ca46ab1a19742bc92eac08"
+        }
+      ]
+    },
+    {
+      "key": "marketing-mount",
+      "path": "app/(marketing)/layout.tsx",
+      "sha256": "ddb4b4430acf31a7116204232af84aca29f6a614aaaa68b5b0c63223f88d7c88",
+      "lineCount": 33,
+      "ranges": [
+        {
+          "start": 19,
+          "end": 33,
+          "sha256": "322fe549492da9a29daf45e165a6dd9ea5b60509cc9be24b577b411547a8a16b"
+        }
+      ]
+    },
+    {
+      "key": "docs-mount",
+      "path": "app/docs/layout.tsx",
+      "sha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+      "lineCount": 22,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 22,
+          "sha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce"
+        }
+      ]
+    },
+    {
+      "key": "account-help-destination",
+      "path": "app/account/help/page.tsx",
+      "sha256": "5700ec264a256c97f2d014789a7f9f78c1f2653dca17e8466701bce1f5f003e8",
+      "lineCount": 32,
+      "ranges": [
+        {
+          "start": 13,
+          "end": 22,
+          "sha256": "ac4c07d0f05185e331c57cac110180360b8b43596f737b034e0147dcd700d0b5"
+        }
+      ]
+    },
+    {
+      "key": "destination:/",
+      "path": "app/page.tsx",
+      "sha256": "9e5bcdce1091ee3cfb4502ac427a15680580634cdff3094eef9f2697deab357c",
+      "lineCount": 154,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "65c7f2c73549031666992da641eab4d04d53382889873f8b410fb9f05f002d3e"
+        }
+      ]
+    },
+    {
+      "key": "destination:/product",
+      "path": "app/product/page.tsx",
+      "sha256": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+      "lineCount": 76,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "e5c8c450920929c59d86b8aa14a7c440b53b82ecb6a49efb9cf2f6cf3bf837b7"
+        }
+      ]
+    },
+    {
+      "key": "destination:/integrations",
+      "path": "app/integrations/page.tsx",
+      "sha256": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce",
+      "lineCount": 15,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "84fb538e2cc761141258af103ef0136571ea1a1ebcc2ac4e782dad79bd77697e"
+        }
+      ]
+    },
+    {
+      "key": "destination:/security",
+      "path": "app/security/page.tsx",
+      "sha256": "c449cb38d23eba652b7738f59dc6e8515167f6de4247de9e175e99468d736639",
+      "lineCount": 42,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "5aa91630bb60589f94d066e9cf8e47077745d40da0c9784429c6a5ca61616f96"
+        }
+      ]
+    },
+    {
+      "key": "destination:/docs",
+      "path": "app/docs/page.tsx",
+      "sha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "lineCount": 63,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "a80d17c0892b04e2cd131739a16ffd092b572460a13a0de81cfb99fa93077346"
+        }
+      ]
+    },
+    {
+      "key": "destination:/demo",
+      "path": "app/demo/page.tsx",
+      "sha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a",
+      "lineCount": 98,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "7804ddcc51de226bc1d1fcbc099267a46785425f52c38cc1d7e60ca8e8fb9cda"
+        }
+      ]
+    },
+    {
+      "key": "destination:/plans",
+      "path": "app/(marketing)/plans/page.tsx",
+      "sha256": "ef9ecb4583ebf266ec7d828c9c39e485c76a7ac5532a50136bfe3b609bb6367c",
+      "lineCount": 84,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "2b799727d52d1b549260ad7d0584b28097df97f29963a2d86a8f58ebe8c16740"
+        }
+      ]
+    },
+    {
+      "key": "destination:/account/help",
+      "path": "app/account/help/page.tsx",
+      "sha256": "5700ec264a256c97f2d014789a7f9f78c1f2653dca17e8466701bce1f5f003e8",
+      "lineCount": 32,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "5b1c950ee5944304457023320018bd665d4a35133331ec57c5c05ec3e0c872c7"
+        }
+      ]
+    },
+    {
+      "key": "destination:/status",
+      "path": "app/status/page.tsx",
+      "sha256": "5a9dcebae33f9af8ddaa5db374823c1fa337a4aac89ff9d9af17b94f9ad0c5a8",
+      "lineCount": 129,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "15843bd8f0eb0d3f91bbf55cea62f92d13e41d2b1b559818f1173dae10d96437"
+        }
+      ]
+    },
+    {
+      "key": "destination:/axiom",
+      "path": "app/axiom/page.tsx",
+      "sha256": "93c4f6e5a4b5e2500664d514b5664902269ab41f09eccd0bccc0f5293d44bfec",
+      "lineCount": 17,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "e0f04de1438967768ac7c5ffd310411d420326d3a0060d77f5678cc80ee38841"
+        }
+      ]
+    },
+    {
+      "key": "destination:/support",
+      "path": "app/(marketing)/support/page.tsx",
+      "sha256": "928bfaa5791c630446622e66f287c8292fcc6889d97c94243c3cc3503ec34b11",
+      "lineCount": 180,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "b337d38b1a89b9ee5ada319cfd095f6462b0edfbd125e109749aff0f38a0659d"
+        }
+      ]
+    },
+    {
+      "key": "destination:/auth/signin",
+      "path": "app/auth/signin/page.tsx",
+      "sha256": "db3cc1f97a2c2c23e32c33004c3c08171d1970298edbd994dcfad44604ef47d3",
+      "lineCount": 7,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 7,
+          "sha256": "db3cc1f97a2c2c23e32c33004c3c08171d1970298edbd994dcfad44604ef47d3"
+        }
+      ]
+    },
+    {
+      "key": "destination:/download",
+      "path": "app/download/page.tsx",
+      "sha256": "b313b2b557231890a48974f69d6d5cc4f82581549e3a5778410003979846489f",
+      "lineCount": 2,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 2,
+          "sha256": "b313b2b557231890a48974f69d6d5cc4f82581549e3a5778410003979846489f"
+        }
+      ]
+    },
+    {
+      "key": "destination:/contact",
+      "path": "app/(marketing)/contact/page.tsx",
+      "sha256": "0839c1483337e12d962a538fdce153c4abddf0bc2af2b2c0f3e96e0ef03f14a6",
+      "lineCount": 19,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "30ec468c4a1d5bec4d0aef07d63728ff8144313a66a9c0a7e0164895cfad19b0"
+        }
+      ]
+    },
+    {
+      "key": "destination:/privacy",
+      "path": "app/privacy/page.tsx",
+      "sha256": "6a7c72becc33aacd0ca8b77ee06e048c6a3aac6444813668181717033f33b7bb",
+      "lineCount": 454,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "0c89bae29ef1e3d26061fc970266e4d768d193d684eb04b23a138c90cc6d608e"
+        }
+      ]
+    },
+    {
+      "key": "destination:/terms",
+      "path": "app/terms/page.tsx",
+      "sha256": "3f68e758394f9b50ad650be266aad8457118a1f378a97a9de92f2420f469372d",
+      "lineCount": 357,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "10bece856d0afb39bc329b676690511141cb262843766796784c31f999a56a6f"
+        }
+      ]
+    }
+  ],
+  "controlFamilies": [
+    {
+      "id": "website.primary.skip",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "button",
+        "startLine": 186,
+        "endLine": 192,
+        "nodeSha256": "af7eca3f951eb10d453bc5eb39ad7d55bf1f21f9a7ba1f34d96c02f08d8824da"
+      }
+    },
+    {
+      "id": "website.primary.home",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "Link",
+        "startLine": 193,
+        "endLine": 196,
+        "nodeSha256": "e7e2590cd67d459cbb701ea8b7fdd32e37ffba36858796cade4d1ad6ca7f199d"
+      }
+    },
+    {
+      "id": "website.primary.link",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "Link",
+        "startLine": 200,
+        "endLine": 202,
+        "nodeSha256": "efe1661069f4966b72b5ceeb5b3233924ebe8033f3710406cf666e1aee746dfb"
+      }
+    },
+    {
+      "id": "website.primary.more-toggle",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "button",
+        "startLine": 207,
+        "endLine": 215,
+        "nodeSha256": "264cc3d68039af256d2836a7c0a70a951bde316ced56da34b281d4d919ed17d1"
+      }
+    },
+    {
+      "id": "website.primary.more-link",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "Link",
+        "startLine": 218,
+        "endLine": 219,
+        "nodeSha256": "a6931e0db0ebb62c36935b35ddaca3cd74209aa9bb3c950c2bc45c3399e087f7"
+      }
+    },
+    {
+      "id": "website.primary.signin-wide",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "Link",
+        "startLine": 225,
+        "endLine": 225,
+        "nodeSha256": "39a30beb0e606e78a921d441bae287a356603ca1934849bf2506b735b1278e77"
+      }
+    },
+    {
+      "id": "website.primary.download-wide",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "Link",
+        "startLine": 226,
+        "endLine": 226,
+        "nodeSha256": "f87ecb3393b7472d9ed634d1a01a0a047c6b092a92564904a95c43c33acbd979"
+      }
+    },
+    {
+      "id": "website.primary.mobile-open",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "button",
+        "startLine": 229,
+        "endLine": 239,
+        "nodeSha256": "a660eed58ea87b4024d1462d8191e305e462ed6e7224e10658fea06d40146d1f"
+      }
+    },
+    {
+      "id": "website.primary.mobile-close",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "button",
+        "startLine": 254,
+        "endLine": 257,
+        "nodeSha256": "540b201f5245298678cc4702fd2edf2017dce190443489a904fb0afaa49888d0"
+      }
+    },
+    {
+      "id": "website.primary.mobile-link",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "Link",
+        "startLine": 261,
+        "endLine": 263,
+        "nodeSha256": "6cf1a51fe398d56c0e13ec492a687a2f23120f02318f05a5379a723f3c6ba2c9"
+      }
+    },
+    {
+      "id": "website.primary.signin-mobile",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "Link",
+        "startLine": 269,
+        "endLine": 269,
+        "nodeSha256": "f173c437281cf7458485944f493e56f08683845ea4663e21e727f7b436cc6290"
+      }
+    },
+    {
+      "id": "website.primary.download-mobile",
+      "sourceKey": "navigation",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Navigation.tsx",
+        "tag": "Link",
+        "startLine": 270,
+        "endLine": 270,
+        "nodeSha256": "b45fb9fed083bcaf57e11b972e2d32e75b92278b0bb6331ff78f78bb4b482014"
+      }
+    },
+    {
+      "id": "website.footer.explore",
+      "sourceKey": "footer",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Footer.tsx",
+        "tag": "Link",
+        "startLine": 47,
+        "endLine": 47,
+        "nodeSha256": "4ea075d5dd64c25ed7f546125f5d3d440d2beae09931c939cd29721b684b46c5"
+      }
+    },
+    {
+      "id": "website.footer.supporters",
+      "sourceKey": "footer",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Footer.tsx",
+        "tag": "Link",
+        "startLine": 48,
+        "endLine": 48,
+        "nodeSha256": "f4d09bbfbdf5e4f48a5da1621083e7d278201b9733f931ad9310468dd00dcefa"
+      }
+    },
+    {
+      "id": "website.footer.home",
+      "sourceKey": "footer",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Footer.tsx",
+        "tag": "Link",
+        "startLine": 54,
+        "endLine": 57,
+        "nodeSha256": "d8f2e47a20e31793fde9389b6c6106da9adb52cdade80f7fac2123874189926a"
+      }
+    },
+    {
+      "id": "website.footer.column-link",
+      "sourceKey": "footer",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/Footer.tsx",
+        "tag": "Link",
+        "startLine": 67,
+        "endLine": 67,
+        "nodeSha256": "f1454cc69b6cf3b13bc52d7dd21db76b7fc6568c0cf9491e473b5eafcdae9016"
+      }
+    }
+  ],
+  "literalCatalogues": {
+    "primaryLinks": [
+      {
+        "label": "Product",
+        "href": "/product"
+      },
+      {
+        "label": "Integrations",
+        "href": "/integrations"
+      },
+      {
+        "label": "Security",
+        "href": "/security"
+      },
+      {
+        "label": "Docs",
+        "href": "/docs"
+      },
+      {
+        "label": "Demo",
+        "href": "/demo"
+      }
+    ],
+    "secondaryLinks": [
+      {
+        "label": "Pricing",
+        "href": "/plans"
+      },
+      {
+        "label": "Support (account required)",
+        "href": "/account/help"
+      },
+      {
+        "label": "Status",
+        "href": "/status"
+      },
+      {
+        "label": "Company",
+        "href": "/axiom"
+      }
+    ],
+    "mobileLinks": [
+      {
+        "label": "Product",
+        "href": "/product"
+      },
+      {
+        "label": "Integrations",
+        "href": "/integrations"
+      },
+      {
+        "label": "Security",
+        "href": "/security"
+      },
+      {
+        "label": "Docs",
+        "href": "/docs"
+      },
+      {
+        "label": "Demo",
+        "href": "/demo"
+      },
+      {
+        "label": "Pricing",
+        "href": "/plans"
+      },
+      {
+        "label": "Support (account required)",
+        "href": "/account/help"
+      },
+      {
+        "label": "Status",
+        "href": "/status"
+      },
+      {
+        "label": "Company",
+        "href": "/axiom"
+      },
+      {
+        "label": "Founding Supporters",
+        "href": "/support"
+      }
+    ]
+  },
+  "footerColumns": [
+    {
+      "title": "Product",
+      "links": [
+        {
+          "label": "Product",
+          "href": "/product"
+        },
+        {
+          "label": "Demo",
+          "href": "/demo"
+        },
+        {
+          "label": "Docs",
+          "href": "/docs"
+        },
+        {
+          "label": "Download",
+          "href": "/download"
+        },
+        {
+          "label": "Integrations",
+          "href": "/integrations"
+        },
+        {
+          "label": "Pricing",
+          "href": "/plans"
+        },
+        {
+          "label": "Security",
+          "href": "/security"
+        }
+      ]
+    },
+    {
+      "title": "Company",
+      "links": [
+        {
+          "label": "About",
+          "href": "/axiom"
+        },
+        {
+          "label": "Founding Supporters",
+          "href": "/support"
+        },
+        {
+          "label": "Support (account required)",
+          "href": "/account/help"
+        },
+        {
+          "label": "Contact",
+          "href": "/contact"
+        },
+        {
+          "label": "Service status",
+          "href": "/status"
+        }
+      ]
+    },
+    {
+      "title": "Legal",
+      "links": [
+        {
+          "label": "Privacy",
+          "href": "/privacy"
+        },
+        {
+          "label": "Terms",
+          "href": "/terms"
+        },
+        {
+          "label": "Security",
+          "href": "/security"
+        }
+      ]
+    }
+  ],
+  "fixedLinks": [
+    {
+      "surface": "header-home",
+      "label": "Vision XIX Labs home",
+      "href": "/"
+    },
+    {
+      "surface": "header-wide",
+      "label": "Sign in",
+      "href": "/auth/signin"
+    },
+    {
+      "surface": "header-wide",
+      "label": "Download",
+      "href": "/download"
+    },
+    {
+      "surface": "mobile",
+      "label": "Sign in",
+      "href": "/auth/signin"
+    },
+    {
+      "surface": "mobile",
+      "label": "Download",
+      "href": "/download"
+    },
+    {
+      "surface": "footer-cta",
+      "label": "Explore Axiom",
+      "href": "/product"
+    },
+    {
+      "surface": "footer-cta",
+      "label": "Founding Supporters",
+      "href": "/support"
+    },
+    {
+      "surface": "footer-home",
+      "label": "Vision XIX Labs",
+      "href": "/"
+    }
+  ],
+  "destinationSources": [
+    {
+      "href": "/",
+      "path": "app/page.tsx",
+      "sourceKey": "destination:/",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/product",
+      "path": "app/product/page.tsx",
+      "sourceKey": "destination:/product",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/integrations",
+      "path": "app/integrations/page.tsx",
+      "sourceKey": "destination:/integrations",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/security",
+      "path": "app/security/page.tsx",
+      "sourceKey": "destination:/security",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/docs",
+      "path": "app/docs/page.tsx",
+      "sourceKey": "destination:/docs",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/demo",
+      "path": "app/demo/page.tsx",
+      "sourceKey": "destination:/demo",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/plans",
+      "path": "app/(marketing)/plans/page.tsx",
+      "sourceKey": "destination:/plans",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/account/help",
+      "path": "app/account/help/page.tsx",
+      "sourceKey": "destination:/account/help",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/status",
+      "path": "app/status/page.tsx",
+      "sourceKey": "destination:/status",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/axiom",
+      "path": "app/axiom/page.tsx",
+      "sourceKey": "destination:/axiom",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/support",
+      "path": "app/(marketing)/support/page.tsx",
+      "sourceKey": "destination:/support",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/auth/signin",
+      "path": "app/auth/signin/page.tsx",
+      "sourceKey": "destination:/auth/signin",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/download",
+      "path": "app/download/page.tsx",
+      "sourceKey": "destination:/download",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/contact",
+      "path": "app/(marketing)/contact/page.tsx",
+      "sourceKey": "destination:/contact",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/privacy",
+      "path": "app/privacy/page.tsx",
+      "sourceKey": "destination:/privacy",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    },
+    {
+      "href": "/terms",
+      "path": "app/terms/page.tsx",
+      "sourceKey": "destination:/terms",
+      "qualification": "pinned source presence only, not HTTP/browser/authentication/current availability or body acceptance"
+    }
+  ],
+  "coverage": {
+    "familiesAndDirectSelectedDeclarations": 16,
+    "navigationDeclarations": 12,
+    "footerDeclarations": 4,
+    "primaryCatalogueRecords": 5,
+    "secondaryCatalogueRecords": 4,
+    "expandedMobileCatalogueRecords": 10,
+    "footerColumnRecords": 15,
+    "uniqueLiteralDestinations": 16,
+    "allSiteMountsOrBodyControlsAudited": false
+  },
+  "authorization": "Existing master B4 source-only coverage of mounted shared website Navigation/Footer; no runtime, test, build, network, browser, provider, authentication or publication operation",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "genuineEditorialApproval": false,
+  "mediaAccepted": false,
+  "browserNativeAssistiveTechnologyAccepted": false,
+  "retrievalEvaluationExecuted": false,
+  "runtimeMetadataChanged": false,
+  "documentationIdsAreRuntimeIds": false
+}
