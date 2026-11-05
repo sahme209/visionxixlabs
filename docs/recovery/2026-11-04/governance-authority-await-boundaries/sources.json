@@ -1,0 +1,10 @@
+{
+  "files": {
+    "lib/governance/intelligence/requestAuthorityCore.ts": "59db20c73cab7b32fd9268c1ddf28f7992fe46f5d1f85391d39e5cdd268ff217",
+    "lib/governance/intelligence/__tests__/requestAuthorityAwaitBoundaries.test.ts": "ecc8fa0087f45388cf47b44a3776d3b7ece1b36c519ff68e0300a842613c2312"
+  },
+  "runtimeChanged": false,
+  "realStore": false,
+  "providerOrIssuerQualified": false,
+  "tests": 9
+}

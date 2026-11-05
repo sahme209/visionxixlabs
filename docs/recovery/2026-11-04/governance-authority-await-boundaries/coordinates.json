@@ -1,0 +1,27 @@
+{
+  "owned": "/private/tmp/axiom-authority-await-bfc4bkok",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-authority-await-bfc4bkok/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--no-experimental-webstorage",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "/private/tmp/axiom-authority-await-bfc4bkok/vitest.config.mjs",
+    "--configLoader",
+    "native"
+  ],
+  "environmentKeys": [
+    "HOME",
+    "TMPDIR",
+    "PATH",
+    "CI",
+    "NODE_ENV",
+    "NODE_OPTIONS",
+    "NO_COLOR"
+  ],
+  "network": "kernel denied",
+  "scope": "new file only"
+}

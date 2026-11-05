@@ -1,0 +1,1 @@
+(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath "/private/tmp/axiom-authority-await-bfc4bkok"))(allow file-write-data (literal "/dev/null"))
