@@ -1,0 +1,10 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-266b3987-5264/test_preview_bindings.py"
+  ],
+  "exitCode": 0,
+  "testsPassed": 5,
+  "evidence": "root-observed direct CLI tool output; no server invocation in tests",
+  "limits": "prepared source/assets/profile/cache bindings only"
+}

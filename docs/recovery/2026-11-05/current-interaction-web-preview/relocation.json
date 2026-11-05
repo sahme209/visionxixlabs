@@ -1,0 +1,46 @@
+{
+  "priorDirectory": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-04/current-quality-web-preview",
+  "newRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-266b3987-5264",
+  "newBuild": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-interaction-quality-build-266b3987-19gg42c_",
+  "replacements": [
+    [
+      "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+      "266b3987d18ae68b2e34caa5a12ebfbe4aa3f087"
+    ],
+    [
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-quality-build-0c9d0e40-ya3nsqus",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-interaction-quality-build-266b3987-19gg42c_"
+    ],
+    [
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-0c9d0e40-5262",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-266b3987-5264"
+    ],
+    [
+      "0c9d0e40",
+      "266b3987"
+    ],
+    [
+      "5263",
+      "5265"
+    ],
+    [
+      "5262",
+      "5264"
+    ],
+    [
+      "4fb483b18a98578b66bb2899f3b785c6ac501be9b1fc0319784c2c8de5ec96ef",
+      "PENDING_BUILD_MANIFEST_NOT_STARTABLE"
+    ]
+  ],
+  "files": [
+    "prepare-runtime.py",
+    "launch_preview.py",
+    "preview_proxy.py",
+    "backend.sb",
+    "proxy.sb",
+    "preparation.sb",
+    "test_preview_bindings.py"
+  ],
+  "sourceRevision": "266b3987d18ae68b2e34caa5a12ebfbe4aa3f087",
+  "serversStarted": false
+}

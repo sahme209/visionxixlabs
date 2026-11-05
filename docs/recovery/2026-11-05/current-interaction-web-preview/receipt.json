@@ -1,0 +1,18 @@
+{
+  "sourceRevision": "266b3987d18ae68b2e34caa5a12ebfbe4aa3f087",
+  "backendToolSession": 28523,
+  "proxyToolSession": 95491,
+  "backendReadyObserved": true,
+  "bothHandlesRepolledRunning": true,
+  "previewUrl": "http://127.0.0.1:5264/__axiom_preview",
+  "publicAssets": 45,
+  "staticAssets": 1150,
+  "manifestSha256": "9d45fc98826b5f4e03acc6b60913d7dd2b77694de5ebfd1e9c1186215802de4f",
+  "pureBindingChecks": 5,
+  "httpChecks": 12,
+  "buildRepeated": false,
+  "oldPreviewsReplaced": false,
+  "browserAcceptance": false,
+  "governanceQualified": false,
+  "productionChanged": false
+}

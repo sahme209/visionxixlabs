@@ -1,0 +1,84 @@
+{
+  "sourceRevision": "266b3987d18ae68b2e34caa5a12ebfbe4aa3f087",
+  "manifestSha256": "9d45fc98826b5f4e03acc6b60913d7dd2b77694de5ebfd1e9c1186215802de4f",
+  "checksCompleted": 12,
+  "rows": [
+    {
+      "path": "/",
+      "status": 200,
+      "bytes": 103174,
+      "sha256": "d5993b655c185ffc7cf85967bdc4d1485d5acdf5c09bf9291cdec480ebf932ac"
+    },
+    {
+      "path": "/contact",
+      "status": 200,
+      "bytes": 50650,
+      "sha256": "5190d319efe27ad3a8a048c80b610fd4c9c777fad418401b4b240871faf642d9"
+    },
+    {
+      "path": "/product",
+      "status": 200,
+      "bytes": 84253,
+      "sha256": "e490f9d49f6913ed7da781d9ef65a377d23976a3bdd86d649b38dee1344901ad"
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "bytes": 117265,
+      "sha256": "5d83cae632ca3df89d19933a55da9fab1a130426e2b6e7f0eab4e23437798c2b"
+    },
+    {
+      "path": "/__axiom_preview",
+      "status": 200,
+      "bytes": 620,
+      "sha256": "38d7c4f2299d389eda821e43395259516fc704845c36576a491b160347047dea"
+    },
+    {
+      "asset": "/_next/static/chunks/app/(marketing)/contact/page-116cdd8ef19d02ec.js",
+      "family": "contact",
+      "status": 200,
+      "sha256": "c632f464c286cb13e0ebf3439da900680a9894ba7f823c6b866a463e1aa6d13d",
+      "markerCheck": "present, not executed"
+    },
+    {
+      "asset": "/_next/static/chunks/app/layout-fb2f836588cae72a.js",
+      "family": "command",
+      "status": 200,
+      "sha256": "111d0d7d3bad18765fc5960a0faeb1b0a2570f1ce091512a4406521d1998a861",
+      "markerCheck": "present, not executed"
+    },
+    {
+      "path": "/api/auth/session",
+      "method": "GET",
+      "status": 403,
+      "qualification": "guard refused; not backend action acceptance"
+    },
+    {
+      "path": "/auth/signin",
+      "method": "GET",
+      "status": 403,
+      "qualification": "guard refused; not backend action acceptance"
+    },
+    {
+      "path": "/api/contact",
+      "method": "POST",
+      "status": 403,
+      "qualification": "guard refused; not backend action acceptance"
+    },
+    {
+      "path": "/docs?_rsc=synthetic",
+      "method": "GET",
+      "status": 403,
+      "qualification": "guard refused; not backend action acceptance"
+    },
+    {
+      "path": "/docs?unexpected=synthetic",
+      "method": "GET",
+      "status": 403,
+      "qualification": "guard refused; not backend action acceptance"
+    }
+  ],
+  "elapsedSeconds": 0.076,
+  "failure": null,
+  "limits": "fixedloopback guardedHTTP delivery/compiledmarkers/refusal only; not browser/IME/AT/performance/Governance/customer acceptance"
+}

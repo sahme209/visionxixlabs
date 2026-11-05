@@ -1,0 +1,12 @@
+{
+  "root": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-266b3987-5264",
+  "build": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-interaction-quality-build-266b3987-19gg42c_",
+  "ports": [
+    5264,
+    5265
+  ],
+  "listenerCheck": "lsof returned no listeners; no bind attempted",
+  "cacheCreated": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-interaction-quality-build-266b3987-19gg42c_/stage/.next/cache/images",
+  "preparedOnly": true,
+  "serversStarted": false
+}

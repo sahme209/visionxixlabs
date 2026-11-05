@@ -1,0 +1,12 @@
+{
+  "sourceRevision": "266b3987d18ae68b2e34caa5a12ebfbe4aa3f087",
+  "chunks": {
+    "contact": [
+      "/_next/static/chunks/app/(marketing)/contact/page-116cdd8ef19d02ec.js"
+    ],
+    "command": [
+      "/_next/static/chunks/app/layout-fb2f836588cae72a.js"
+    ]
+  },
+  "scope": "local compiled string markers only; no JS execution or browser qualification"
+}

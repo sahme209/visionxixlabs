@@ -1,0 +1,6 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "method": "independent seven-artifact reconstruction including final manifest pin and actual cache identity",
+  "scope": "same guard/CSP/allowlist/profiles with fixed source/build/root/port/manifest substitutions; no execution"
+}

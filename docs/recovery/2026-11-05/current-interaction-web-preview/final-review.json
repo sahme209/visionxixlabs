@@ -1,0 +1,7 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "method": "fixed-loopback script/report/sourcebinding review only, no rerun or server/browser actions",
+  "scope": "5public200+2exactchangedchunk hashes/markers+5guard403; markers present not executed",
+  "limits": "not browser/IME/auth/contactbackend/issuer/customer acceptance"
+}
