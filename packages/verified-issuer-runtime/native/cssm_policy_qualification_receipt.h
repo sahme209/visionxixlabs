@@ -1,4 +1,3 @@
-/* Draft provenance: ordered builder/copier/header/once/inspector/header bytes.
- * Not build approval, execution approval, authority, or a runtime grant input. */
-#define AX_QUAL_SOURCE_REVISION "ad8efae1-source-preparation"
-#define AX_QUAL_SOURCE_SHA256 "86f79ef1efb1fd05486eabb0df99d3173ea75c157ad2a3bccf8a62acc4b888d9"
+/* Preparation provenance only; not authority or execution approval. */
+#define AX_QUAL_SOURCE_REVISION "persistent-v2-e7e493d9"
+#define AX_QUAL_SOURCE_SHA256 "3f6899ea5d681c55fd4baa9d959574f41e803587f953c48bb22805452b2145d3"

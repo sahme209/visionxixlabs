@@ -1,0 +1,37 @@
+EEF
+======================================================================
+ERROR: test_binding_captures_current_identity_and_refuses_alias_or_hardlink (__main__.PreparationFiles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/test-cssm-persistent-preparation.py", line 46, in test_binding_captures_current_identity_and_refuses_alias_or_hardlink
+    actual = p.bind_owned_file(source)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/prepare-cssm-persistent-qualification.py", line 12, in bind_owned_file
+    raise ValueError('preparation-not-implemented')
+ValueError: preparation-not-implemented
+
+======================================================================
+ERROR: test_new_lab_private_and_existing_destination_never_adopted (__main__.PreparationFiles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/test-cssm-persistent-preparation.py", line 24, in test_new_lab_private_and_existing_destination_never_adopted
+    self.assertEqual(p.create_fresh_lab(), destination)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/prepare-cssm-persistent-qualification.py", line 8, in create_fresh_lab
+    raise ValueError('preparation-not-implemented')
+ValueError: preparation-not-implemented
+
+======================================================================
+FAIL: test_symlink_ancestor_refuses_without_creating_destination (__main__.PreparationFiles)
+----------------------------------------------------------------------
+ValueError: preparation-not-implemented
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/test-cssm-persistent-preparation.py", line 39, in test_symlink_ancestor_refuses_without_creating_destination
+    p.create_fresh_lab()
+AssertionError: "ancestor" does not match "preparation-not-implemented"
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=1, errors=2)

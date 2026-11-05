@@ -1,0 +1,215 @@
+[
+  {
+    "argv": [
+      "/usr/bin/xcrun",
+      "--find",
+      "clang"
+    ],
+    "exit": 0,
+    "stdout": "/Library/Developer/CommandLineTools/usr/bin/clang\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "--version"
+    ],
+    "exit": 0,
+    "stdout": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin27.2.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/xcrun",
+      "--show-sdk-path"
+    ],
+    "exit": 0,
+    "stdout": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/xcrun",
+      "--show-sdk-version"
+    ],
+    "exit": 0,
+    "stdout": "26.5\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-isysroot",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-fsanitize=address,undefined",
+      "cssm_policy_copy_test.c",
+      "cssm_policy_copy.c",
+      "-o",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-test"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-isysroot",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-DAX_CSSM_PROFILE=1",
+      "cssm_policy_qualification.c",
+      "cssm_policy_copy.c",
+      "cssm_policy_inspect.c",
+      "-framework",
+      "Security",
+      "-framework",
+      "CoreFoundation",
+      "-o",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/qualification-helper"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/nm",
+      "-u",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/qualification-helper"
+    ],
+    "exit": 0,
+    "stdout": "_CFArrayCreate\n_SecACLCreateWithSimpleContents\n_SecACLUpdateAuthorizations\n_SecAccessCreateFromOwnerAndACL\n_SecAccessGetOwnerAndACL\n_SecTrustedApplicationCreateFromPath\n___CFConstantStringClassReference\n___chkstk_darwin\n___memcpy_chk\n___memset_chk\n___stack_chk_fail\n___stack_chk_guard\n_bzero\n_kCFTypeArrayCallBacks\n_kSecACLAuthorizationDecrypt\n_kSecACLAuthorizationKeychainItemRead\n_memcmp\n_memcpy\n_memset\n_printf\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/otool",
+      "-L",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/qualification-helper"
+    ],
+    "exit": 0,
+    "stdout": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/qualification-helper:\n\t/System/Library/Frameworks/Security.framework/Versions/A/Security (compatibility version 1.0.0, current version 61901.120.67)\n\t/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation (compatibility version 150.0.0, current version 5026.5.4)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/otool",
+      "-L",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-test"
+    ],
+    "exit": 0,
+    "stdout": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-test:\n\t@rpath/libclang_rt.asan_osx_dynamic.dylib (compatibility version 0.0.0, current version 0.0.0)\n\t/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1356.0.0)\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-isysroot",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-fsanitize=address,undefined",
+      "cssm_policy_copy_test.c",
+      "cssm_policy_copy.c",
+      "-o",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-tests/copy"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-tests/copy"
+    ],
+    "exit": 0,
+    "stdout": "PASS: owned complete subject, both branch orders, 19 malformed cases, range/count refusal; no Security linkage\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-isysroot",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-fsanitize=address,undefined",
+      "cssm_policy_inspect_test.c",
+      "cssm_policy_copy.c",
+      "cssm_policy_inspect.c",
+      "-o",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-tests/inspect"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-tests/inspect"
+    ],
+    "exit": 0,
+    "stdout": "PASS: final application-only equality and 18 malformed/mismatch refusals; no Security linkage\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-isysroot",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-fsanitize=address,undefined",
+      "cssm_policy_once_test.c",
+      "-pthread",
+      "-o",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-tests/once"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-tests/once"
+    ],
+    "exit": 0,
+    "stdout": "PASS: exactly one of 32 concurrent claims; subsequent attempt refused after consumed failure\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/python3",
+      "-B",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2",
+      "-p",
+      "cssm_policy_watchdog_test.py"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": "........\n----------------------------------------------------------------------\nRan 8 tests in 0.002s\n\nOK\n"
+  }
+]

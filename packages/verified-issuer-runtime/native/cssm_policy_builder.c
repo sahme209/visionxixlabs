@@ -10,7 +10,7 @@
 #if AX_CSSM_PROFILE == 0
 static const char proposed_path[] = "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/origin-broker";
 #elif AX_CSSM_PROFILE == 1
-static const char proposed_path[] = "/private/tmp/axiom-cssm-policy-artifacts/pure-test";
+static const char proposed_path[] = "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-test";
 #else
 #error Unsupported CSSM profile: only fixed literal profiles 0 and 1 exist
 #endif

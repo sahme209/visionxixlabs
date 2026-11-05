@@ -1,0 +1,203 @@
+{
+  "state": "compile-reviewed-execution-still-requires-specific-approval",
+  "source": "persistent-v2-preparation-actualexecutionUNAUTHORIZED",
+  "behavior_source_freeze": "persistent-v2-e7e493d9",
+  "execution_authorized": false,
+  "files": [
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_builder.c",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614153,
+      "size": 4191,
+      "mtime_ns": 1793886924139129194,
+      "ctime_ns": 1793886924139129194,
+      "sha256": "0de1a9e667dfefd11ec76af41fb4937d5e44aba14586d9d80f97f431f56eb856"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_copy.c",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614154,
+      "size": 8089,
+      "mtime_ns": 1793886924139295861,
+      "ctime_ns": 1793886924139295861,
+      "sha256": "e3bd87182c7f1c07e845618d46c6e6f0192a9591b0eb887bee753b59fd568dde"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_copy.h",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614155,
+      "size": 1035,
+      "mtime_ns": 1793886924139386111,
+      "ctime_ns": 1793886924139386111,
+      "sha256": "3aa8ace9335dbc63fb20aafec7ba717fb0dc76f13035c0b31efa1b6b1d0a1574"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_once.h",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614156,
+      "size": 362,
+      "mtime_ns": 1793886924139465944,
+      "ctime_ns": 1793886924139465944,
+      "sha256": "573d53fccd0fd6861c5da42d388c790166f10b864e3b2f9687f419ebbe133d88"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_inspect.c",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614157,
+      "size": 4807,
+      "mtime_ns": 1793886924139563069,
+      "ctime_ns": 1793886924139563069,
+      "sha256": "bd4489741875db3522090ce54d741706eaedb4547c14cf246ed8f99c0b674ee9"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_inspect.h",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614158,
+      "size": 625,
+      "mtime_ns": 1793886924139645778,
+      "ctime_ns": 1793886924139645778,
+      "sha256": "b0430cf1cfc4b24759d95b3f60f6dd7bf24c58585ff75a89c1b918e9e99c0902"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_copy_test.c",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614159,
+      "size": 6324,
+      "mtime_ns": 1793886924139744278,
+      "ctime_ns": 1793886924139744278,
+      "sha256": "5be2a4dc5eba9d14607f08d92c6995933a64ae897bcc9ce23fc5a8375d9fb691"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_once_test.c",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614160,
+      "size": 1122,
+      "mtime_ns": 1793886924139816403,
+      "ctime_ns": 1793886924139816403,
+      "sha256": "6cb5c1839b61afe16a378c07a4e2f8502ecb6a2ec9017937a4a464093499b387"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_inspect_test.c",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614161,
+      "size": 4973,
+      "mtime_ns": 1793886924139907111,
+      "ctime_ns": 1793886924139907111,
+      "sha256": "d121e6553b3afefcb5be79ed74ea1cc65967adac16c48af12091be4a9915bd90"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_qualification.c",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614162,
+      "size": 1362,
+      "mtime_ns": 1793886924140011612,
+      "ctime_ns": 1793886924140011612,
+      "sha256": "087fbe77b01d74997c892abd3c2337ffec8cfcfae634b22eb840ee170a791855"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_qualification_receipt.h",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614163,
+      "size": 226,
+      "mtime_ns": 1793886924140095570,
+      "ctime_ns": 1793886924140095570,
+      "sha256": "d22bf76e7b25a3d6c4cea7d025d0af727fb05d5ee1efe24559c2f49fe4499f6d"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/source/cssm_policy_watchdog_test.py",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614164,
+      "size": 4491,
+      "mtime_ns": 1793886924140181945,
+      "ctime_ns": 1793886924140181945,
+      "sha256": "e1652445e31d4a0151ea73afb412cf8b1707333188326fedfc962381d396627c"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/qualification-helper",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614189,
+      "size": 52776,
+      "mtime_ns": 1793886924717329871,
+      "ctime_ns": 1793886924719603873,
+      "sha256": "3737856eff4c166f29ea2b9b1874942ee59a74e9656ee4e9dd9758e7433891cf"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-test",
+      "uid": 501,
+      "mode": 384,
+      "dev": 16777232,
+      "ino": 16614182,
+      "size": 137928,
+      "mtime_ns": 1793886924552515713,
+      "ctime_ns": 1793886924719594665,
+      "sha256": "41dddf2e3c44f7dfd490e6919bba3978965a2071f871ca1c0ec981452b64e0a1"
+    }
+  ],
+  "limits": {
+    "wall_deadline_seconds": 10,
+    "output_limit_bytes": 2048,
+    "owned_children": 1,
+    "retries": 0,
+    "reap_confirmation_seconds": 1
+  },
+  "build": {
+    "compiler": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin27.2.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+    "sdk_path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+    "sdk_version": "26.5",
+    "umask": "0177",
+    "helper_profile": 1,
+    "canonical_profile_default": 0,
+    "commands_file": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/commands.json"
+  },
+  "controller_binding": "EXTERNAL REVIEW INSTRUCTION ONLY; controller and packet/self and external receipt excluded from files",
+  "source_fingerprint": {
+    "sha256": "3f6899ea5d681c55fd4baa9d959574f41e803587f953c48bb22805452b2145d3",
+    "ordered_files": [
+      "cssm_policy_builder.c",
+      "cssm_policy_copy.c",
+      "cssm_policy_copy.h",
+      "cssm_policy_once.h",
+      "cssm_policy_inspect.c",
+      "cssm_policy_inspect.h"
+    ],
+    "self_exclusions": "Fingerprint excludes generated receipt header, helper main, controller, packet and external receipt to avoid circular code hashes. Those source bytes are separately packet-bound except externally bound controller."
+  },
+  "mode_transition": "Future separately approved RUN only: helper0600->0700->0600; capture actual ctime. Fixture remains0600.",
+  "security_trace": [
+    "SecAccessCreateFromOwnerAndACL",
+    "SecTrustedApplicationCreateFromPath",
+    "SecACLCreateWithSimpleContents",
+    "SecACLUpdateAuthorizations",
+    "SecAccessGetOwnerAndACL",
+    "SecAccessCreateFromOwnerAndACL",
+    "SecAccessGetOwnerAndACL"
+  ],
+  "cfarraycreate_success_calls": 2,
+  "notice": "Serialization compatibility preparation only. Test-only path/profile differs from canonical installation path; no installed-path, code-identity exclusivity, custody or executing-issuer qualification follows. Supplier gate false; private business channel unmounted."
+}

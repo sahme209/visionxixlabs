@@ -1,0 +1,17 @@
+.E.
+======================================================================
+ERROR: test_new_lab_private_and_existing_destination_never_adopted (__main__.PreparationFiles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/test-cssm-persistent-preparation.py", line 26, in test_new_lab_private_and_existing_destination_never_adopted
+    self.assertEqual(p.create_fresh_lab(), destination)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/prepare-cssm-persistent-qualification.py", line 23, in create_fresh_lab
+    LAB.mkdir(mode=0o700)  # deliberately no exist_ok; even our old lab refuses
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1313, in mkdir
+    self._accessor.mkdir(self, mode)
+PermissionError: [Errno 13] Permission denied: '/private/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-preparation-pure-50fxoi29/owned-parent/fresh'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.003s
+
+FAILED (errors=1)

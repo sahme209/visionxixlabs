@@ -1,0 +1,15 @@
+E..
+======================================================================
+ERROR: test_binding_captures_current_identity_and_refuses_alias_or_hardlink (__main__.PreparationFiles)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/test-cssm-persistent-preparation.py", line 46, in test_binding_captures_current_identity_and_refuses_alias_or_hardlink
+    actual = p.bind_owned_file(source)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/prepare-cssm-persistent-qualification.py", line 48, in bind_owned_file
+    if identity(before) != identity(after) or identity(after) != identity(path.stat(follow_symlinks=False)):
+TypeError: stat() got an unexpected keyword argument 'follow_symlinks'
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.002s
+
+FAILED (errors=1)
