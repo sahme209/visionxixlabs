@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)(deny file-write*)",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/releases-execution-intake-source-guide/extract-declarations.cjs"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.105520541,
+  "stderrBase64": "",
+  "appCodeImported": false,
+  "scope": "TypeScript parse/traversal only"
+}

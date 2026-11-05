@@ -1,0 +1,37 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR for finite unpublished source guide",
+  "scope": "four Execution intake components and referenced parent/schema/read-route boundaries",
+  "sourceRevision": "475c4fd9130e0db4b9b8295f4f80cdca1caef341",
+  "markdownSha256": "d17efbcb8941aa4adc7b4d8fc0b811838cd09f9e158b7ae282efbf4dfe9d9b17",
+  "ledgerSha256": "43c65bcbc11cd0afd53bed7b3f6e30a6feaa401f32a92b4d3048d4a531c5cab6",
+  "sourceKeys": 18,
+  "uniqueSourceFiles": 14,
+  "inclusiveRanges": 20,
+  "interactiveDeclarations": 19,
+  "documentationFamilies": 22,
+  "all19DeclarationsReferenced": true,
+  "sourceFileHashesIndependentlyReadAndMatched": true,
+  "contentReviewed": [
+    "each declaration family purpose/prerequisite/steps/result/limits/recovery",
+    "manual JSON/row errors, absent-only defaults and declared type handling",
+    "Airflow candidate vs dependency, connection mismatch/logical date/duplicates/25 cap",
+    "read-only client/API permissions and distinct parser bounds",
+    "parent source/advance/save ownership and outcome uncertainty"
+  ],
+  "resolvedDocumentationFindings": [
+    "explicit draft owner and source verification date/revision added",
+    "github.com host wording avoids public/private repository claim",
+    "catalogue200 acceptance bound distinguished from truncation",
+    "parser character cap specifies JavaScript code units"
+  ],
+  "limitations": [
+    "internal Codex-authored draft; human editorial owner/approval unassigned",
+    "no supported release/native/browser/keyboard/AT/media/retrieval acceptance",
+    "no runtime help identifiers or unique rendered-instance coverage",
+    "not universal stale safety, backend authority, dispatch approval or full B4/B5/Governance completion"
+  ],
+  "applicationCodeExecutedByReviewer": false,
+  "productTestsRunByReviewer": false,
+  "providerOrBrowserCalls": false
+}

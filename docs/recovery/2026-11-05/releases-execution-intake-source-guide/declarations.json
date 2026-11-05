@@ -1,0 +1,182 @@
+{
+  "scope": "four fixed source files; interactive intrinsic JSX declarations, not mounted instances, complete dynamic schema or runtime help identifiers",
+  "total": 19,
+  "files": [
+    {
+      "path": "desktop/src/components/WorkflowCatalogue.tsx",
+      "sha256": "d71cb1f2ebe171596092b811babcd94d78004a41af73a2c8e136d8342ef2e196",
+      "declarations": [
+        {
+          "tag": "button",
+          "startLine": 31,
+          "endLine": 31,
+          "nodeSha256": "72f0b78bdad36ce393e8c9adfe4ac04c2395ebf74fbf6d56a5ad382228c84b89",
+          "opening": "<button type=\"button\" className=\"btn-secondary shrink-0\" disabled={!canRead || owned?.status === \"loading\"} onClick={() => void read()}>",
+          "sourceText": "<button type=\"button\" className=\"btn-secondary shrink-0\" disabled={!canRead || owned?.status === \"loading\"} onClick={() => void read()}>{owned?.status === \"loading\" ? \"Finding workflows…\" : \"Find workflows\"}</button>"
+        },
+        {
+          "tag": "select",
+          "startLine": 33,
+          "endLine": 33,
+          "nodeSha256": "84081944d4de595e60a3185aa3ef5801516acfd5ef39ea5d72c242af669a9825",
+          "opening": "<select aria-label=\"Repository workflow\" value={listed ? workflowPath : \"\"} className=\"w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-200\" onChange={event => { if (data.files.some(file => file.path === event.target.value)) onSelect(event.target.value); }}>",
+          "sourceText": "<select aria-label=\"Repository workflow\" value={listed ? workflowPath : \"\"} className=\"w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-200\" onChange={event => { if (data.files.some(file => file.path === event.target.value)) onSelect(event.target.value); }}><option value=\"\">Choose a workflow file</option>{data.files.map(file => <option key={file.path} value={file.path}>{file.name}</option>)}</select>"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+      "sha256": "38f48423fcccec7f3b9a001daf8019685716af74f5dc5eb93c6a65fe65a3c29f",
+      "declarations": [
+        {
+          "tag": "button",
+          "startLine": 73,
+          "endLine": 73,
+          "nodeSha256": "d178ec1b5e48120ad637c908c7830145e75c522a52c42023d0c9b06d6e854326",
+          "opening": "<button type=\"button\" className=\"btn-secondary shrink-0\" disabled={!canRead || loading || Boolean(manualIssue)} onClick={() => void read()}>",
+          "sourceText": "<button type=\"button\" className=\"btn-secondary shrink-0\" disabled={!canRead || loading || Boolean(manualIssue)} onClick={() => void read()}>{loading ? \"Reading fields…\" : \"Read workflow fields\"}</button>"
+        },
+        {
+          "tag": "button",
+          "startLine": 76,
+          "endLine": 76,
+          "nodeSha256": "36f121e6f3a69e020b9af133d2c411eb803a60b55caf3a6c1075003dbd47c8eb",
+          "opening": "<button type=\"button\" onClick={defaults} className=\"text-xs text-zinc-300 underline\">",
+          "sourceText": "<button type=\"button\" onClick={defaults} className=\"text-xs text-zinc-300 underline\">Apply missing defaults</button>"
+        },
+        {
+          "tag": "select",
+          "startLine": 81,
+          "endLine": 81,
+          "nodeSha256": "ed2c342f453031574ad01a2b81fa999a301a04c14677f2e9a186c4b03fd597ed",
+          "opening": "<select aria-label={field.name} value={selected} className={inputClass} onChange={event => change(field.name, event.target.value)}>",
+          "sourceText": "<select aria-label={field.name} value={selected} className={inputClass} onChange={event => change(field.name, event.target.value)}><option value=\"\">Not specified</option>{(field.type === \"boolean\" ? [\"true\", \"false\"] : field.options ?? []).map(option => <option key={option} value={option}>{option}</option>)}</select>"
+        },
+        {
+          "tag": "input",
+          "startLine": 81,
+          "endLine": 81,
+          "nodeSha256": "d517171dfbecbdd1c258d3a48a5b69e7da7d33aecd4185eafc1d4ca654e0d514",
+          "opening": "<input aria-label={field.name} type={field.type === \"number\" && (selected === \"\" || validNumber(selected)) ? \"number\" : \"text\"} step={field.type === \"number\" ? \"any\" : undefined} className={inputClass} value={selected} onChange={event => change(field.name, event.target.value)} />",
+          "sourceText": "<input aria-label={field.name} type={field.type === \"number\" && (selected === \"\" || validNumber(selected)) ? \"number\" : \"text\"} step={field.type === \"number\" ? \"any\" : undefined} className={inputClass} value={selected} onChange={event => change(field.name, event.target.value)} />"
+        },
+        {
+          "tag": "button",
+          "startLine": 85,
+          "endLine": 85,
+          "nodeSha256": "f13ce4261a1cc6b242734e977cab74fe6380527fac2826aca59195bf7737cf1e",
+          "opening": "<button type=\"button\" className=\"underline\" aria-label={`Remove undeclared input ${name}`} onClick={() => change(name, \"\")}>",
+          "sourceText": "<button type=\"button\" className=\"underline\" aria-label={`Remove undeclared input ${name}`} onClick={() => change(name, \"\")}>Remove</button>"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+      "sha256": "ecc6c66c7be63edb881aba3e0f99980b491e859515577840508d22caa5606195",
+      "declarations": [
+        {
+          "tag": "button",
+          "startLine": 50,
+          "endLine": 50,
+          "nodeSha256": "24aaccbe6e54b13586a8496289593fc0f074b1dd1905734dbf1b326eda3c9acb",
+          "opening": "<button type=\"button\" disabled={state.invalidJson} onClick={() => edit([...state.rows, { name: \"\", value: \"\" }])} className=\"btn-secondary shrink-0\">",
+          "sourceText": "<button type=\"button\" disabled={state.invalidJson} onClick={() => edit([...state.rows, { name: \"\", value: \"\" }])} className=\"btn-secondary shrink-0\">Add input</button>"
+        },
+        {
+          "tag": "input",
+          "startLine": 54,
+          "endLine": 54,
+          "nodeSha256": "0be387d71364c381d775d44d7bd5d5c3d306fb006b8db90665c2944e6a940778",
+          "opening": "<input aria-label={`Input name ${index + 1}`} className={inputClass} value={row.name} onChange={event => edit(state.rows.map((item, i) => i === index ? { ...item, name: event.target.value } : item))} />",
+          "sourceText": "<input aria-label={`Input name ${index + 1}`} className={inputClass} value={row.name} onChange={event => edit(state.rows.map((item, i) => i === index ? { ...item, name: event.target.value } : item))} />"
+        },
+        {
+          "tag": "input",
+          "startLine": 55,
+          "endLine": 55,
+          "nodeSha256": "d7cc5f0bae398f406e5b16a91bad4eb4e9452280cf883eec66677c39dbf0754b",
+          "opening": "<input aria-label={`Input value ${index + 1}`} className={inputClass} value={row.value} onChange={event => edit(state.rows.map((item, i) => i === index ? { ...item, value: event.target.value } : item))} />",
+          "sourceText": "<input aria-label={`Input value ${index + 1}`} className={inputClass} value={row.value} onChange={event => edit(state.rows.map((item, i) => i === index ? { ...item, value: event.target.value } : item))} />"
+        },
+        {
+          "tag": "button",
+          "startLine": 56,
+          "endLine": 56,
+          "nodeSha256": "2d84ce6c6e11bfba86b6f5af4415f94cfac8e4728783e93181a803dc072c1d79",
+          "opening": "<button type=\"button\" aria-label={`Remove input ${index + 1}`} className=\"btn-secondary\" onClick={() => edit(state.rows.filter((_, i) => i !== index))}>",
+          "sourceText": "<button type=\"button\" aria-label={`Remove input ${index + 1}`} className=\"btn-secondary\" onClick={() => edit(state.rows.filter((_, i) => i !== index))}>Remove</button>"
+        },
+        {
+          "tag": "button",
+          "startLine": 59,
+          "endLine": 59,
+          "nodeSha256": "4fe3896e02e34fbdb907e9cce0eeadc8a96005ffa2301a903d7bf53910a63836",
+          "opening": "<button type=\"button\" className=\"text-xs text-zinc-400 underline\" aria-expanded={advanced} onClick={() => setAdvanced(open => !open)}>",
+          "sourceText": "<button type=\"button\" className=\"text-xs text-zinc-400 underline\" aria-expanded={advanced} onClick={() => setAdvanced(open => !open)}>Advanced JSON</button>"
+        },
+        {
+          "tag": "textarea",
+          "startLine": 60,
+          "endLine": 60,
+          "nodeSha256": "bc88a90c070cd2bfc067c7f33c3d23e2cc70a752dc51fd42cda359c44b4455b6",
+          "opening": "<textarea className={`${inputClass} min-h-24 font-mono`} value={value} onChange={event => editJson(event.target.value)} />",
+          "sourceText": "<textarea className={`${inputClass} min-h-24 font-mono`} value={value} onChange={event => editJson(event.target.value)} />"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+      "sha256": "7b9b2617ddc3ea2cbeffe0e9bdfdf36c8a27b8a9ed76fcd619abf1815781d243",
+      "declarations": [
+        {
+          "tag": "button",
+          "startLine": 60,
+          "endLine": 60,
+          "nodeSha256": "1b8ccc88b01d60b844c62ff22cb8383dd0f9b13cbc921f264798071323160aca",
+          "opening": "<button type=\"button\" className=\"btn-secondary\" disabled={busy} onClick={() => void read(\"connection\")}>",
+          "sourceText": "<button type=\"button\" className=\"btn-secondary\" disabled={busy} onClick={() => void read(\"connection\")}>Read Airflow connection</button>"
+        },
+        {
+          "tag": "input",
+          "startLine": 64,
+          "endLine": 64,
+          "nodeSha256": "d2416b848a8dfc1e0b717e47f408a0465ceaf07f3d3b4d71e60685a63f8f8f47",
+          "opening": "<input aria-label=\"Batch DAG\" className=\"mt-1 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2\" value={dagId} disabled={busy} onChange={event => { setDagId(event.target.value); setSelection(\"\"); }} />",
+          "sourceText": "<input aria-label=\"Batch DAG\" className=\"mt-1 w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2\" value={dagId} disabled={busy} onChange={event => { setDagId(event.target.value); setSelection(\"\"); }} />"
+        },
+        {
+          "tag": "button",
+          "startLine": 64,
+          "endLine": 64,
+          "nodeSha256": "3268902c05c16c3db593b44f3c655717680d396c80d524bc3b1c6c940cc802bd",
+          "opening": "<button type=\"button\" className=\"btn-secondary self-end\" disabled={busy || !active || !dagId.trim()} onClick={() => void read(\"runs\")}>",
+          "sourceText": "<button type=\"button\" className=\"btn-secondary self-end\" disabled={busy || !active || !dagId.trim()} onClick={() => void read(\"runs\")}>Find batch runs</button>"
+        },
+        {
+          "tag": "select",
+          "startLine": 65,
+          "endLine": 65,
+          "nodeSha256": "e35a33c079f8b66e9c61849978b2bd23cc5ff2297930eff7ad8b07205c9b8823",
+          "opening": "<select aria-label=\"Exact batch run\" className=\"min-w-0 flex-1 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs\" value={selection} disabled={busy} onChange={event => setSelection(event.target.value)}>",
+          "sourceText": "<select aria-label=\"Exact batch run\" className=\"min-w-0 flex-1 rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs\" value={selection} disabled={busy} onChange={event => setSelection(event.target.value)}><option value=\"\">Choose a specific run</option>{runs.map(run => <option key={run.dagRunId} value={run.dagRunId}>{run.dagRunId} · {run.state}</option>)}</select>"
+        },
+        {
+          "tag": "button",
+          "startLine": 65,
+          "endLine": 65,
+          "nodeSha256": "8439f4da57f5b7ea8c4458c524b53fbe1e843a4f9c494e5303c62b39373a8a93",
+          "opening": "<button type=\"button\" className=\"btn-secondary\" disabled={busy || !selected || duplicate || wrongConnection || (value?.runs.length ?? 0) >= 25} onClick={useBatch}>",
+          "sourceText": "<button type=\"button\" className=\"btn-secondary\" disabled={busy || !selected || duplicate || wrongConnection || (value?.runs.length ?? 0) >= 25} onClick={useBatch}>Use selected batch</button>"
+        },
+        {
+          "tag": "button",
+          "startLine": 66,
+          "endLine": 66,
+          "nodeSha256": "fe59139b5eb8c5cf1d73b905b1b29b394670bd949d479dc43dcbc7704641c116",
+          "opening": "<button type=\"button\" aria-label={`Remove batch ${run.dagId} ${run.dagRunId}`} onClick={() => { const runs = value.runs.filter(item => item.dagId !== run.dagId || item.dagRunId !== run.dagRunId); onChange(runs.length ? { ...value, runs } : undefined); }}>",
+          "sourceText": "<button type=\"button\" aria-label={`Remove batch ${run.dagId} ${run.dagRunId}`} onClick={() => { const runs = value.runs.filter(item => item.dagId !== run.dagId || item.dagRunId !== run.dagRunId); onChange(runs.length ? { ...value, runs } : undefined); }}>Remove</button>"
+        }
+      ]
+    }
+  ]
+}

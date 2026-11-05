@@ -1,0 +1,12 @@
+{
+  "historicalSourceMapsUnchanged": {
+    "docs/product/knowledge/releases-intake-fields.md": true,
+    "docs/product/knowledge/releases-intake-fields.json": true,
+    "docs/product/knowledge/releases-intake-fields.sources.json": true,
+    "docs/product/knowledge/releases-workspace-bindings.md": true,
+    "docs/product/knowledge/releases-workspace-bindings.sources.json": true
+  },
+  "masterWorkingSha256": "7ce16009c2080bcf872819556d161a13adce8846c608de89d5d10a5a1fd21ccf",
+  "runtimeFilesChanged": false,
+  "sourceGuideOnly": true
+}

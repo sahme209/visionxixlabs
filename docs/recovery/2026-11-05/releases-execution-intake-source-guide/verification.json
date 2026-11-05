@@ -1,0 +1,17 @@
+{
+  "sourceRevision": "475c4fd9130e0db4b9b8295f4f80cdca1caef341",
+  "sourceKeys": 18,
+  "uniqueSourceFiles": 14,
+  "inclusiveRangesChecked": 20,
+  "allSourceBytesMatchPinnedGit": true,
+  "interactiveSourceDeclarations": 19,
+  "documentationFamilies": 22,
+  "allSelectedDeclarationsCovered": true,
+  "markdownSha256": "d17efbcb8941aa4adc7b4d8fc0b811838cd09f9e158b7ae282efbf4dfe9d9b17",
+  "ledgerSha256": "43c65bcbc11cd0afd53bed7b3f6e30a6feaa401f32a92b4d3048d4a531c5cab6",
+  "coverageLimit": "four fixed component declaration families only; no unique runtime instance or future-syntax guarantee",
+  "applicationCodeExecuted": false,
+  "productTestsRun": false,
+  "externalReads": false,
+  "customerEligible": false
+}

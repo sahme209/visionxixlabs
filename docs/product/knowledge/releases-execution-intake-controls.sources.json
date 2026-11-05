@@ -1,0 +1,590 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "sourceRevision": "475c4fd9130e0db4b9b8295f4f80cdca1caef341",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "genuineEditorialApproval": false,
+  "mediaAccepted": false,
+  "nativeBrowserAssistiveTechnologyAccepted": false,
+  "retrievalEvaluationExecuted": false,
+  "runtimeMetadataChanged": false,
+  "documentationIdsAreRuntimeIds": false,
+  "scope": "22 interactive families in four mounted Execution intake components, with finite parent/read-route/schema boundary tracing; not unique rendered controls or complete backend/Governance qualification",
+  "sources": [
+    {
+      "key": "catalogue",
+      "path": "desktop/src/components/WorkflowCatalogue.tsx",
+      "sha256": "d71cb1f2ebe171596092b811babcd94d78004a41af73a2c8e136d8342ef2e196",
+      "lineCount": 38,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 38,
+          "sha256": "d71cb1f2ebe171596092b811babcd94d78004a41af73a2c8e136d8342ef2e196"
+        }
+      ]
+    },
+    {
+      "key": "definition",
+      "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+      "sha256": "38f48423fcccec7f3b9a001daf8019685716af74f5dc5eb93c6a65fe65a3c29f",
+      "lineCount": 90,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 90,
+          "sha256": "38f48423fcccec7f3b9a001daf8019685716af74f5dc5eb93c6a65fe65a3c29f"
+        }
+      ]
+    },
+    {
+      "key": "manual-editor",
+      "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+      "sha256": "ecc6c66c7be63edb881aba3e0f99980b491e859515577840508d22caa5606195",
+      "lineCount": 63,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 63,
+          "sha256": "ecc6c66c7be63edb881aba3e0f99980b491e859515577840508d22caa5606195"
+        }
+      ]
+    },
+    {
+      "key": "batch-selection",
+      "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+      "sha256": "7b9b2617ddc3ea2cbeffe0e9bdfdf36c8a27b8a9ed76fcd619abf1815781d243",
+      "lineCount": 68,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 68,
+          "sha256": "7b9b2617ddc3ea2cbeffe0e9bdfdf36c8a27b8a9ed76fcd619abf1815781d243"
+        }
+      ]
+    },
+    {
+      "key": "source-selection",
+      "path": "desktop/src/lib/workflowReadSource.ts",
+      "sha256": "10190e72611520650ad7e6906dce9726364fa93258393d8a403252bf7ca0e35d",
+      "lineCount": 30,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 30,
+          "sha256": "10190e72611520650ad7e6906dce9726364fa93258393d8a403252bf7ca0e35d"
+        }
+      ]
+    },
+    {
+      "key": "intake-context",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 960,
+          "end": 1018,
+          "sha256": "5d1e9a6dcad14577df91322fa3f06d44c9151b7607c0a09adae14925c584da6a"
+        }
+      ]
+    },
+    {
+      "key": "intake-payload",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 1019,
+          "end": 1035,
+          "sha256": "068529a0db8bea7502b7c614de0a9f5d9019180ff4d1ff9c2bf9211dacf6acd2"
+        },
+        {
+          "start": 1056,
+          "end": 1070,
+          "sha256": "78a2ccccbc9c9e2b1a210ce60cfe14f5c069f037469e5c664217c568c59605c0"
+        }
+      ]
+    },
+    {
+      "key": "intake-save",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 1122,
+          "end": 1145,
+          "sha256": "4061ef8006bf01cb1b0030d2c3956c17ff4f1803805ed02fccb507da34e02e0d"
+        }
+      ]
+    },
+    {
+      "key": "intake-mount",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 1198,
+          "end": 1212,
+          "sha256": "eae5b91ae0ce2fae25ed31b2b76a58cf8f986ebe3ec9552271b14040e001c9ae"
+        }
+      ]
+    },
+    {
+      "key": "intake-navigation",
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b",
+      "lineCount": 1356,
+      "ranges": [
+        {
+          "start": 1267,
+          "end": 1288,
+          "sha256": "ad7ec8dc5974c83722829b054363154f7f3633ff5070746b7b79c845e8818de1"
+        }
+      ]
+    },
+    {
+      "key": "read-clients",
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1",
+      "lineCount": 2200,
+      "ranges": [
+        {
+          "start": 1210,
+          "end": 1224,
+          "sha256": "f9ee8c1c938799b3bc3fd0751b29343dcc9c17e92ec3723a9bb3d78d459b1231"
+        },
+        {
+          "start": 1278,
+          "end": 1291,
+          "sha256": "58b7f0ac9aea16eb37fce0d1db57fd12127646993366b441f939ee691925071f"
+        }
+      ]
+    },
+    {
+      "key": "input-dto",
+      "path": "lib/connectors/github/workflowDispatchInputDto.ts",
+      "sha256": "73060c0a76dd20dcf638096912a987eaaaac531b3cde77f3578fb5008c852e0c",
+      "lineCount": 8,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 8,
+          "sha256": "73060c0a76dd20dcf638096912a987eaaaac531b3cde77f3578fb5008c852e0c"
+        }
+      ]
+    },
+    {
+      "key": "batch-schema",
+      "path": "lib/integrations/airflow/releaseDependencySchema.ts",
+      "sha256": "a9edd02a51353e3661931e187c3eedc8a89ab84290db3a8c0354a4b489dbda88",
+      "lineCount": 12,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "a9edd02a51353e3661931e187c3eedc8a89ab84290db3a8c0354a4b489dbda88"
+        }
+      ]
+    },
+    {
+      "key": "catalogue-route",
+      "path": "app/api/desktop/github/workflows/route.ts",
+      "sha256": "83d08bf98fd055430b80be4f53861f9d86008e9cd06a553db437940996c1a2b5",
+      "lineCount": 21,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 21,
+          "sha256": "83d08bf98fd055430b80be4f53861f9d86008e9cd06a553db437940996c1a2b5"
+        }
+      ]
+    },
+    {
+      "key": "definition-route",
+      "path": "app/api/desktop/github/workflow-inputs/route.ts",
+      "sha256": "3b6ff1eddbf8f7c12c26d3bf605e3153e3357586bdd2edab52a2a1d90e83ad6b",
+      "lineCount": 29,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 29,
+          "sha256": "3b6ff1eddbf8f7c12c26d3bf605e3153e3357586bdd2edab52a2a1d90e83ad6b"
+        }
+      ]
+    },
+    {
+      "key": "definition-parser",
+      "path": "lib/connectors/github/workflowDispatchInputs.ts",
+      "sha256": "64eaa9279f7a04c60392668e43406413e79da7d80ac1569e8fba6f5dd64c0d6b",
+      "lineCount": 50,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 50,
+          "sha256": "64eaa9279f7a04c60392668e43406413e79da7d80ac1569e8fba6f5dd64c0d6b"
+        }
+      ]
+    },
+    {
+      "key": "airflow-connection-route",
+      "path": "app/api/desktop/airflow/connection/route.ts",
+      "sha256": "6f6960b0a88c3a6d4bbfa56b7b6a61f8b4eac28b273bfeb834148a1c51c13cbd",
+      "lineCount": 97,
+      "ranges": [
+        {
+          "start": 26,
+          "end": 33,
+          "sha256": "7beef46f4168c2f18fecc07ae28da2222fa22e2cb98fac6c15ceeec6c5bee6d4"
+        }
+      ]
+    },
+    {
+      "key": "airflow-runs-route",
+      "path": "app/api/desktop/airflow/dags/[dagId]/runs/route.ts",
+      "sha256": "db69b3d581a1aaa09ba8d986730b08df5ce4acda55a9170bbef243c7c80f74fd",
+      "lineCount": 40,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 17,
+          "sha256": "85f2c62786f9c4c6ef021208faf6741144e2330ddbe0e607619e7ddf85782c63"
+        }
+      ]
+    }
+  ],
+  "controlFamilies": [
+    {
+      "id": "execution-intake.workflow.find",
+      "sourceKey": "catalogue",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowCatalogue.tsx",
+        "tag": "button",
+        "startLine": 31,
+        "endLine": 31,
+        "nodeSha256": "72f0b78bdad36ce393e8c9adfe4ac04c2395ebf74fbf6d56a5ad382228c84b89"
+      }
+    },
+    {
+      "id": "execution-intake.workflow.select",
+      "sourceKey": "catalogue",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowCatalogue.tsx",
+        "tag": "select",
+        "startLine": 33,
+        "endLine": 33,
+        "nodeSha256": "84081944d4de595e60a3185aa3ef5801516acfd5ef39ea5d72c242af669a9825"
+      }
+    },
+    {
+      "id": "execution-intake.definition.read",
+      "sourceKey": "definition",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+        "tag": "button",
+        "startLine": 73,
+        "endLine": 73,
+        "nodeSha256": "d178ec1b5e48120ad637c908c7830145e75c522a52c42023d0c9b06d6e854326"
+      }
+    },
+    {
+      "id": "execution-intake.definition.defaults",
+      "sourceKey": "definition",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+        "tag": "button",
+        "startLine": 76,
+        "endLine": 76,
+        "nodeSha256": "36f121e6f3a69e020b9af133d2c411eb803a60b55caf3a6c1075003dbd47c8eb"
+      }
+    },
+    {
+      "id": "execution-intake.definition.string",
+      "sourceKey": "definition",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+        "tag": "input",
+        "startLine": 81,
+        "endLine": 81,
+        "nodeSha256": "d517171dfbecbdd1c258d3a48a5b69e7da7d33aecd4185eafc1d4ca654e0d514"
+      }
+    },
+    {
+      "id": "execution-intake.definition.number",
+      "sourceKey": "definition",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+        "tag": "input",
+        "startLine": 81,
+        "endLine": 81,
+        "nodeSha256": "d517171dfbecbdd1c258d3a48a5b69e7da7d33aecd4185eafc1d4ca654e0d514"
+      }
+    },
+    {
+      "id": "execution-intake.definition.boolean",
+      "sourceKey": "definition",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+        "tag": "select",
+        "startLine": 81,
+        "endLine": 81,
+        "nodeSha256": "ed2c342f453031574ad01a2b81fa999a301a04c14677f2e9a186c4b03fd597ed"
+      }
+    },
+    {
+      "id": "execution-intake.definition.choice",
+      "sourceKey": "definition",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+        "tag": "select",
+        "startLine": 81,
+        "endLine": 81,
+        "nodeSha256": "ed2c342f453031574ad01a2b81fa999a301a04c14677f2e9a186c4b03fd597ed"
+      }
+    },
+    {
+      "id": "execution-intake.definition.environment",
+      "sourceKey": "definition",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+        "tag": "input",
+        "startLine": 81,
+        "endLine": 81,
+        "nodeSha256": "d517171dfbecbdd1c258d3a48a5b69e7da7d33aecd4185eafc1d4ca654e0d514"
+      }
+    },
+    {
+      "id": "execution-intake.definition.remove-undeclared",
+      "sourceKey": "definition",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+        "tag": "button",
+        "startLine": 85,
+        "endLine": 85,
+        "nodeSha256": "f13ce4261a1cc6b242734e977cab74fe6380527fac2826aca59195bf7737cf1e"
+      }
+    },
+    {
+      "id": "execution-intake.manual.add",
+      "sourceKey": "manual-editor",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+        "tag": "button",
+        "startLine": 50,
+        "endLine": 50,
+        "nodeSha256": "24aaccbe6e54b13586a8496289593fc0f074b1dd1905734dbf1b326eda3c9acb"
+      }
+    },
+    {
+      "id": "execution-intake.manual.name",
+      "sourceKey": "manual-editor",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+        "tag": "input",
+        "startLine": 54,
+        "endLine": 54,
+        "nodeSha256": "0be387d71364c381d775d44d7bd5d5c3d306fb006b8db90665c2944e6a940778"
+      }
+    },
+    {
+      "id": "execution-intake.manual.value",
+      "sourceKey": "manual-editor",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+        "tag": "input",
+        "startLine": 55,
+        "endLine": 55,
+        "nodeSha256": "d7cc5f0bae398f406e5b16a91bad4eb4e9452280cf883eec66677c39dbf0754b"
+      }
+    },
+    {
+      "id": "execution-intake.manual.remove",
+      "sourceKey": "manual-editor",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+        "tag": "button",
+        "startLine": 56,
+        "endLine": 56,
+        "nodeSha256": "2d84ce6c6e11bfba86b6f5af4415f94cfac8e4728783e93181a803dc072c1d79"
+      }
+    },
+    {
+      "id": "execution-intake.manual.advanced",
+      "sourceKey": "manual-editor",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+        "tag": "button",
+        "startLine": 59,
+        "endLine": 59,
+        "nodeSha256": "4fe3896e02e34fbdb907e9cce0eeadc8a96005ffa2301a903d7bf53910a63836"
+      }
+    },
+    {
+      "id": "execution-intake.manual.json",
+      "sourceKey": "manual-editor",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+        "tag": "textarea",
+        "startLine": 60,
+        "endLine": 60,
+        "nodeSha256": "bc88a90c070cd2bfc067c7f33c3d23e2cc70a752dc51fd42cda359c44b4455b6"
+      }
+    },
+    {
+      "id": "execution-intake.batch.connection",
+      "sourceKey": "batch-selection",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+        "tag": "button",
+        "startLine": 60,
+        "endLine": 60,
+        "nodeSha256": "1b8ccc88b01d60b844c62ff22cb8383dd0f9b13cbc921f264798071323160aca"
+      }
+    },
+    {
+      "id": "execution-intake.batch.dag",
+      "sourceKey": "batch-selection",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+        "tag": "input",
+        "startLine": 64,
+        "endLine": 64,
+        "nodeSha256": "d2416b848a8dfc1e0b717e47f408a0465ceaf07f3d3b4d71e60685a63f8f8f47"
+      }
+    },
+    {
+      "id": "execution-intake.batch.find",
+      "sourceKey": "batch-selection",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+        "tag": "button",
+        "startLine": 64,
+        "endLine": 64,
+        "nodeSha256": "3268902c05c16c3db593b44f3c655717680d396c80d524bc3b1c6c940cc802bd"
+      }
+    },
+    {
+      "id": "execution-intake.batch.select",
+      "sourceKey": "batch-selection",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+        "tag": "select",
+        "startLine": 65,
+        "endLine": 65,
+        "nodeSha256": "e35a33c079f8b66e9c61849978b2bd23cc5ff2297930eff7ad8b07205c9b8823"
+      }
+    },
+    {
+      "id": "execution-intake.batch.use",
+      "sourceKey": "batch-selection",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+        "tag": "button",
+        "startLine": 65,
+        "endLine": 65,
+        "nodeSha256": "8439f4da57f5b7ea8c4458c524b53fbe1e843a4f9c494e5303c62b39373a8a93"
+      }
+    },
+    {
+      "id": "execution-intake.batch.remove",
+      "sourceKey": "batch-selection",
+      "sourceRanges": "all ranges for the referenced finite component",
+      "scope": "documentation-control-family-only",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+        "tag": "button",
+        "startLine": 66,
+        "endLine": 66,
+        "nodeSha256": "fe59139b5eb8c5cf1d73b905b1b29b394670bd949d479dc43dcbc7704641c116"
+      }
+    }
+  ],
+  "coverageStates": [
+    "discovery prerequisite/loading/error/empty/recorded-file-absent",
+    "definition exact-source/loading/error/defaults/required/types/undeclared/zero-input",
+    "manual invalidJSON/nameissues/emptyobject/rawdraftretention/advancedtoggle",
+    "batch connection mismatch/loading/error/empty/exactselection/duplicates/logicaldate/25limit",
+    "context revision/config ownership/late responses/parent issues/save outcome uncertainty"
+  ],
+  "authorization": "Existing master B4 every supported control/state documentation; no runtime action, provider grant or publication approval inferred",
+  "sourceDeclarationCoverage": {
+    "interactiveIntrinsicDeclarations": 19,
+    "documentationFamilies": 22,
+    "allSelectedDeclarationsReferenced": true,
+    "typedVariantNote": "Definition choice/boolean share one select declaration; string/number/environment share one input declaration. Repeated runtime instances are not counted.",
+    "rootDeclarationEvidence": "docs/recovery/2026-11-05/releases-execution-intake-source-guide/declarations.json"
+  },
+  "owner": "Axiom documentation workstream (Codex-authored source draft)",
+  "humanEditorialOwnerAssigned": false,
+  "lastSourceVerifiedDate": "2026-11-05",
+  "lastSourceVerifiedRevision": "475c4fd9130e0db4b9b8295f4f80cdca1caef341",
+  "supportedReleaseAccepted": false
+}
