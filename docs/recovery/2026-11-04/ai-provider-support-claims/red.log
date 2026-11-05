@@ -1,0 +1,47 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ lib/validation/__tests__/platformValidationMatrix.test.ts (8 tests) 17ms
+ ❯ lib/validation/__tests__/legacyAiProviderReadiness.test.ts (9 tests | 9 failed) 5ms
+   × does not report retained github_models code as a passing service provider 3ms
+   × does not report retained ollama code as a passing service provider 0ms
+   × does not report retained lm_studio code as a passing service provider 0ms
+   × does not report retained groq code as a passing service provider 0ms
+   × does not report retained hugging_face code as a passing service provider 0ms
+   × does not report retained openrouter code as a passing service provider 0ms
+   × does not report retained gemini code as a passing service provider 0ms
+   × does not report retained cloudflare code as a passing service provider 0ms
+   × does not report retained mock code as a passing service provider 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained github_models code as a passing service provider
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained ollama code as a passing service provider
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained lm_studio code as a passing service provider
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained groq code as a passing service provider
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained hugging_face code as a passing service provider
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained openrouter code as a passing service provider
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained gemini code as a passing service provider
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained cloudflare code as a passing service provider
+ FAIL  lib/validation/__tests__/legacyAiProviderReadiness.test.ts > does not report retained mock code as a passing service provider
+AssertionError: expected 'passing' to be 'preview' // Object.is equality
+
+Expected: "preview"
+Received: "passing"
+
+ ❯ lib/validation/__tests__/legacyAiProviderReadiness.test.ts:14:23
+     12|   const row = VALIDATION_MATRIX.find(entry => entry.id === `ai.free.${…
+     13|   expect(row).toBeDefined();
+     14|   expect(row!.status).toBe('preview');
+       |                       ^
+     15|   expect(row!.nextFix).toMatch(/not registered/i);
+     16| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  9 failed | 8 passed (17)
+   Start at  04:29:53
+   Duration  391ms (transform 157ms, setup 0ms, import 242ms, tests 21ms, environment 0ms)
+

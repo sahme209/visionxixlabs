@@ -1,0 +1,11 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ lib/validation/__tests__/legacyAiProviderReadiness.test.ts (9 tests) 2ms
+ ✓ lib/validation/__tests__/platformValidationMatrix.test.ts (8 tests) 17ms
+
+ Test Files  2 passed (2)
+      Tests  17 passed (17)
+   Start at  04:30:27
+   Duration  422ms (transform 155ms, setup 0ms, import 238ms, tests 19ms, environment 0ms)
+

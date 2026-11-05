@@ -1,106 +1,52 @@
-# Free AI provider system (GitHub Models primary)
+# AI execution and admission — current source guide
 
-Sibling to the legacy paid orchestrator (`orchestrator.ts`) — this
-subsystem uses **only free / free-to-start providers** by default.
+The filename is historical. The current `AIProviderManager` registers **only Vercel AI Gateway**. Missing configuration refuses; it does not silently select GitHub Models, a local model or Mock. Retained provider classes and model catalogs are not evidence of current service support, a free tier or an air-gapped deployment.
 
-**Hard rules:**
-- No paid OpenAI API usage from this module.
-- No paid Anthropic API usage from this module.
-- No credit card required.
-- API keys never appear in logs or response payloads.
+This is an internal source guide, not a live readiness test, customer price commitment or full Governance acceptance. The prior free-provider/Mock-fallback instructions are superseded; their original bytes remain in Git history. All broader security, integration and offline requirements remain in the master plan.
 
-## Provider priority (fallback chain)
+## Configuration is not permission or funding
 
-1. **GitHub Models** — primary. One token, many models (OpenAI/Llama/
-   Mistral/Phi/DeepSeek). OpenAI-compatible API.
-2. **Ollama** — local fallback. No key. Defaults to
-   `http://localhost:11434`.
-3. **LM Studio** — second local fallback. No key. Defaults to
-   `http://localhost:1234`.
-4. **Groq** — fast free tier (Llama, Mixtral, Gemma).
-5. **Hugging Face Inference API** — free tier.
-6. **OpenRouter** — free model routing.
-7. **Gemini** — Google AI Studio free tier (Flash family).
-8. **Cloudflare Workers AI** — free tier (Llama, Mistral, Qwen, Gemma).
-9. **Mock** — deterministic local stub. Always succeeds. Last resort.
+Gateway configuration uses `AI_GATEWAY_MODEL` plus server-side `AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN`. Do not expose values to a browser or paste credentials into documentation. A concrete configured model and service credential do not establish workspace approval, actual availability, cost or an enforceable budget.
 
-When a provider fails (invalid key, rate limit, model not found,
-network hiccup, timeout) the manager records the failure and slides to
-the next provider. The Mock provider is always last so calling code
-never sees a hard failure just because keys are missing.
+Workspace provider policy is opt-in. A missing or disabled policy does not authorize generation. A model in a compatibility catalog is not an approved model or qualified price. Direct-provider keys in old adapter code do not enable a supported BYOK offering through the current manager; provider-managed BYOK charges and customer consent require separate qualification.
 
-## Environment variables
+## Existing admitted entry points
 
-All are optional. Set only the ones you have.
+| Entry | Current source responsibilities | Important limits |
+| --- | --- | --- |
+| `POST /api/ai/generate` | Authenticated org/user, ready workspace policy, credit precheck, stable `Idempotency-Key`, reservation/dispatch claim, one-use capability and usage linkage | Generic fixed-hold scope/task binding is not a full exact-payload price quote. Real pricing, complete policy freshness and custody qualification are separate. |
+| Agent decisions | Current conversation/session owner, per-extract policy checks, bounded admitted extraction/streaming and usage handling | Fixed holds and specialized small-model envelopes have different binding guarantees. A logged user or optional caller fence is not universal financial or policy coverage. |
+| Coding proposals | Persisted run/stage actor and claim, per-phase policy/model checks, run/workspace reservation and accounted generation linkage | Machine labels do not silently charge an owner. Canonical qualified quote mode remains unavailable; local synthetic quotes are not production rate authority. |
 
-| Var                     | Used by                  | Default                              |
-| ----------------------- | ------------------------ | ------------------------------------ |
-| `GITHUB_TOKEN`          | GitHub Models            | required                             |
-| `GITHUB_MODEL_NAME`     | GitHub Models            | `openai/gpt-4o-mini`                 |
-| `GROQ_API_KEY`          | Groq                     | required                             |
-| `HUGGINGFACE_API_KEY`   | Hugging Face             | required                             |
-| `OPENROUTER_API_KEY`    | OpenRouter               | required                             |
-| `GEMINI_API_KEY`        | Gemini                   | required                             |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare Workers AI    | required                             |
-| `CLOUDFLARE_API_TOKEN`  | Cloudflare Workers AI    | required                             |
-| `OLLAMA_BASE_URL`       | Ollama                   | `http://localhost:11434`             |
-| `LM_STUDIO_BASE_URL`    | LM Studio                | `http://localhost:1234`              |
-| `AI_USAGE_VERBOSE`      | usage logger             | `0` (set to `1` for JSON stdout)     |
+Use the existing reviewed request/run composition. Calling ordinary `generateText`, `extractStructuredData`, an orchestrator or a legacy helper does **not** by itself supply financial admission. Credit-meter checks and post-call telemetry do not reserve concurrent capacity. Do not attach a guessed tenant, select a paid model or add an automatic retry to make an unavailable path appear successful.
 
-## Usage from feature code
+## Generic route contract
 
-```ts
-import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
+The request body includes a nonempty bounded `prompt`, optional bounded `system`, `maxTokens`, `temperature`, and only approved model/provider selections. Tenant/user identity comes from authenticated server context, not body fields. A stable request key (16–200 allowed alphanumeric/underscore/hyphen characters) is required in `Idempotency-Key`; it is not an authorization token.
 
-const ai = getAIProviderManager();
+The admitted path claims before dispatch, uses one Gateway attempt, then links returned generation/token evidence before returning success. A missing key refuses before reservation; a reused reservation does not dispatch again. Missing usage, a provider timeout or usage-link failure leaves claimed capacity uncertain. Do not change the key to replay an unknown operation or infer that a disconnected request was free. Settlement is separate; `pending` or a null cost is not zero final cost.
 
-const result = await ai.generateText("Summarize today's incidents.", {
-  maxTokens: 256,
-  temperature: 0.4,
-});
-// result.provider === "github_models" | "groq" | ... | "mock"
-// result.model    === the actual model id that answered
-// result.usage    === { promptTokens, completionTokens, totalTokens } | null
-```
+See [joined generic-route evidence](../../docs/recovery/2026-11-04/generic-ai-installed-sdk-composition/README.md). The installed SDK test uses synthetic external authority/storage/transport, not a real financial transaction or model acceptance.
 
-Other surface:
-- `ai.summarize(text, opts)`
-- `ai.classify(text, labels, opts)`
-- `ai.extractStructuredData(text, schemaHint, opts)`
-- `for await (const chunk of ai.streamText(prompt, opts)) { ... }`
-- `ai.healthCheckAll()`
+## Diagnostic and legacy paths
 
-## Settings UI
+- `/api/ai/status` reports configured service/provider-policy metadata; it does not prove successful inference or accepted financial controls.
+- `/api/ai/health` currently runs a model probe for an enabled workspace. It is **not** a free metadata read merely because its response says `audit_read_only`. The reproduced synthetic funding/attribution gap and [proposed non-billable replacement](../../docs/recovery/2026-11-04/health-inference-admission-diagnostic/local-diagnostics-proposal.md) remain separate; that design has not been approved or implemented.
+- The settings generation tester's current source does not send the required request key. Do not treat it as an accepted billing demonstration or work around server admission; a reviewed client contract repair is still needed.
+- The local legacy website assistant returns `ai.public_admission_unavailable` after its IP limit. The separately named public bot product has different owner/quota paths; it is not automatically funded by that containment.
+- Administrator/cron access, product tiers, a linked connector or job status do not issue an AI spending allowance. Growth image generation uses an image-specific SDK path and needs separate pricing/usage qualification.
+- One legacy remediation callback can plan with AI, but its real GitHub writer refuses missing `beforeWrite` authority before network. An `approvalRequired` field in model output does not create genuine approval or open that writer.
 
-`/dashboard/ai-settings` shows:
-- which providers are configured (env booleans only),
-- the default model per provider + the full recommended-model list,
-- a health-check button that pings every provider,
-- a `Try it` affordance that shows which provider answered.
+The [ownership audit](../../docs/recovery/2026-11-04/ai-admission-ownership-map/README.md) and [callback follow-up](../../docs/recovery/2026-11-04/ai-helper-reference-followup/README.md) retain current bounded source evidence. They are not a universal transport or financial audit.
 
-## API surface
+## Retained adapters and future integrations
 
-- `GET  /api/ai/status`  — provider table + active provider/model
-- `POST /api/ai/health`  — per-provider healthCheck
-- `POST /api/ai/generate` — generic text generation
+Direct OpenAI/Anthropic/Gemini SDK functions and other provider adapters remain in source. Source presence, re-exports, historical tests or environment-variable names do not prove reachable service wiring. They must not be advertised as configured/free fallbacks. Local/offline models and customer-controlled execution remain explicit unfinished requirements, not deleted scope.
 
-## Logging guarantees
+Adding a provider requires a reviewed identity/tenant/data/consent contract, current routing and model policy, exact-purpose financial admission, retry/unknown handling, redaction, usage/settlement evidence and independent acceptance. Do not enable an adapter simply by registering it or setting a key. Evaluate dependency/license/network behavior before adoption; no new installation is authorized by this guide.
 
-The usage logger NEVER records:
-- API keys, tokens, secrets
-- user prompts
-- response bodies
+## Logging and evidence
 
-It DOES record:
-- provider name, model id, task kind, latency, status, error kind,
-  correlation id.
+Usage metadata, invocation logs, reservations and settlement have different roles. A process-local usage buffer or successful audit write is not a financial hold. Known-credential redaction is a pattern-based defense, not complete PII removal or proof against every secret format. Keep prompts, customer content and credentials out of diagnostic fixtures and externally shared evidence.
 
-Buffer is bounded at 500 events.
-
-## Adding a future paid provider
-
-By choice, paid providers are NOT in this subsystem. If/when you enable
-them, add a new file under `lib/ai/providers/`, register it in
-`AIProviderManager`, and re-order `PROVIDER_PRIORITY` in
-`AIModelRegistry.ts`. Free providers should remain ahead of paid by
-default.
+All claims here are source-scoped. Current source, local tests, compiled artifacts, production deployment and real provider acceptance must remain separately versioned. Full Governance/custody/coverage, real prices and the enterprise security program remain open.

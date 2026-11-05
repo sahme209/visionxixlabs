@@ -1,0 +1,8 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "no important findings",
+  "scope": "actual supportguide/metadata/test changes and reporting consumers",
+  "counts": "9newregistration-vs-metadata cases+8existingmatrixcontrols=17",
+  "reportingImpact": "can lower static readiness/counts; no provider registration or financial admission authority granted",
+  "limits": "not real provider or full runtime qualification"
+}

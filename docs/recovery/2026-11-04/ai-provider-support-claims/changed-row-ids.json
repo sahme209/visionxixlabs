@@ -1,0 +1,15 @@
+[
+  "ai.free.provider_interface",
+  "ai.free.model_registry",
+  "ai.free.github_models",
+  "ai.free.ollama",
+  "ai.free.lm_studio",
+  "ai.free.groq",
+  "ai.free.hugging_face",
+  "ai.free.openrouter",
+  "ai.free.gemini",
+  "ai.free.cloudflare",
+  "ai.free.mock",
+  "ai.free.provider_manager",
+  "ai.free.setup_docs"
+]

@@ -1,0 +1,58 @@
+{
+  "files": [
+    {
+      "path": "lib/validation/platformValidationMatrix.ts",
+      "sha256": "a141cc994940dbf0d54291a47e52c4035c57aaa99875e83c432743a3cfb20b26"
+    },
+    {
+      "path": "lib/validation/__tests__/legacyAiProviderReadiness.test.ts",
+      "sha256": "fa40966c53076eeb11df0fd7f5cc1b1dc45a42fb688b84a6ee02e074bcb8b233"
+    },
+    {
+      "path": "lib/ai/FREE_PROVIDERS.md",
+      "sha256": "99ef57e83047a3c47c6b561e29dd11ab137ab4eb6a198c1a9117c852f2722831"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "caa33541753d3629424e7bb5302f634ffa89eb2186c9e1d6581c29b8eeaf2ceb"
+    },
+    {
+      "path": "lib/ai/AIModelRegistry.ts",
+      "sha256": "fe1addf77024cd62a9e8dea1878fcbe1d928be5e6c15b6406fe8763da481a79d"
+    },
+    {
+      "path": "lib/ai/AIProvider.ts",
+      "sha256": "1494950f3a82c66e8425d21305e541554e91f7f67d276af8ae93f32923b3f67c"
+    },
+    {
+      "path": "lib/ai/providers/index.ts",
+      "sha256": "284cfa58f6443449571bad470f537dade16198b1175ccbde90286d094d9fbde4"
+    },
+    {
+      "path": "lib/ai/providers/openai.ts",
+      "sha256": "96133a18ee1f0f0a1f036e9451fd0f95954d7f919ebebb9a5896d20c2241ea83"
+    },
+    {
+      "path": "lib/ai/providers/anthropic.ts",
+      "sha256": "50516d8cfc4540a36593f29ef132797d64fff474eea4a1f551c110b240774ed1"
+    },
+    {
+      "path": "lib/ai/providers/gemini.ts",
+      "sha256": "887ef45e27c0d0e8b6c23297aea8ffe74a68c80572a418c3b765867931f223ae"
+    },
+    {
+      "path": "app/api/ai/generate/route.ts",
+      "sha256": "030f73f18e9f945a4bd84172aa1a9cefe3970119703ee7955bbcc40d7293cc55"
+    },
+    {
+      "path": "app/api/ai/health/route.ts",
+      "sha256": "8a4eda4f73f7b8ab5d0fa4c4c361d38bf9a6330d65a9282af72f957d53ae7ec8"
+    },
+    {
+      "path": "app/dashboard/ai-settings/page.tsx",
+      "sha256": "76da760c36bc4e98957591225241995c9800271b88a473768528b9201156f52d"
+    }
+  ],
+  "guideLocalLinksResolve": 4,
+  "scope": "direct inspected source only; no live/provider/closure qualification"
+}

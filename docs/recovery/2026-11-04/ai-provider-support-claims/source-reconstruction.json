@@ -1,0 +1,23 @@
+{
+  "baseline": "757b9451:lib/validation/platformValidationMatrix.ts",
+  "changedRowIds": [
+    "ai.free.provider_interface",
+    "ai.free.model_registry",
+    "ai.free.github_models",
+    "ai.free.ollama",
+    "ai.free.lm_studio",
+    "ai.free.groq",
+    "ai.free.hugging_face",
+    "ai.free.openrouter",
+    "ai.free.gemini",
+    "ai.free.cloudflare",
+    "ai.free.mock",
+    "ai.free.provider_manager",
+    "ai.free.setup_docs"
+  ],
+  "wholePriorFileRestoredAfterOnly13RowsAndHeader": true,
+  "rowIdsAndOrderUnchanged": true,
+  "baselineSha256": "0420dbe1b93be7b1e64383b06cc779abd72348f1e956419f4d7fb026e3ef7901",
+  "currentSha256": "a141cc994940dbf0d54291a47e52c4035c57aaa99875e83c432743a3cfb20b26",
+  "reportingImpact": "nine passing\u2192preview statuses can lower displayed readiness summaries; no provider/admission implementation change"
+}
