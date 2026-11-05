@@ -266,3 +266,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Compiled public assistant refusal smoke
 ~~Actual compiled source201 userland POST returns the expected refusal and rate limit~~ ([evidence](../recovery/2026-11-04/compiled-public-assistant-smoke/README.md)): 14 direct invocations passed in one network/write-denied child, without an HTTP server or source mocks. Three pure controller checks also passed after correcting a false-positive result edge case. This is not browser/provider, custody/issuer, complete-closure or Governance acceptance. Current previews/native session and all21parents remain preserved.
+
+### Internal source-refusal support guide
+~~Source-backed explanations and safe recovery boundaries for the two new refusals~~ ([guide](knowledge/local-source-refusals.md), [evidence](../recovery/2026-11-04/containment-support-guide/README.md)):15files/20inclusive ranges match current and pinned Git bytes, all evidence references/local links resolve, independent source/content review passed. Internal index updated. This is unpublished/customer-ineligible source documentation, not accepted media, editorial/retrieval authority, runtime control IDs or B4/B5 completion. No code/build/UI/provider/DB/deploy change; all21parents remain open.

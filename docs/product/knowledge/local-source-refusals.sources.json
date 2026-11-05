@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "sourceRevision": "82c378d1924ac9c8bc03516b8a73208e41721680",
+  "applicationRuntimeRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "productionAccepted": false,
+  "browserAssistiveTechnologyVerified": false,
+  "nativeInstalledVersionVerified": false,
+  "genuineEditorialApproval": false,
+  "evidenceKeysAreRuntimeIds": false,
+  "rangeConvention": "One-based inclusive; exact original bytes including line endings",
+  "limits": "Bounded local source and separate synthetic/compiled-negative evidence; not universal runtime/provider/customer qualification",
+  "sources": [
+    {
+      "key": "github-refusal",
+      "path": "lib/connectors/github/legacyGithubSourceBoundary.ts",
+      "sha256": "b194c4eb09c2490545fea4a53317276ca6db15618d5e6bea7bcf58f805cb18d7",
+      "lineCount": 12,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "b194c4eb09c2490545fea4a53317276ca6db15618d5e6bea7bcf58f805cb18d7"
+        }
+      ]
+    },
+    {
+      "key": "github-scanner-gate",
+      "path": "lib/connectors/github/githubLiveScanner.ts",
+      "sha256": "6ccad6e2e61425277db81fbe14dea46805ffbdcb88018c2185ee22a5c9b582de",
+      "lineCount": 375,
+      "ranges": [
+        {
+          "start": 130,
+          "end": 151,
+          "sha256": "27054dd512c03174b686f803fde958d06f7b88fe5f0653ce4ca25469d5d3dbab"
+        }
+      ]
+    },
+    {
+      "key": "github-state-propagation",
+      "path": "lib/releaseops/getReleaseOpsState.ts",
+      "sha256": "d8ac7ab7b414b52124de5731d41c4df08fc207c912da7a3664fb2e4c63a8442a",
+      "lineCount": 167,
+      "ranges": [
+        {
+          "start": 56,
+          "end": 75,
+          "sha256": "305b702925318539c7e433679b50c2678dd1c267be23b1ee81988a8227c6519b"
+        },
+        {
+          "start": 110,
+          "end": 123,
+          "sha256": "1facb7a5dc9aedcc849aa9fdaee4f03a085a0791e358ef253879b1ab8322b4f3"
+        }
+      ]
+    },
+    {
+      "key": "graph-route",
+      "path": "app/api/agent/execution-graph/route.ts",
+      "sha256": "dbaea897a8b8394a11abc7eb9504ef097321fd42481b99f784a8131530bb49ee",
+      "lineCount": 31,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 31,
+          "sha256": "dbaea897a8b8394a11abc7eb9504ef097321fd42481b99f784a8131530bb49ee"
+        }
+      ]
+    },
+    {
+      "key": "github-sync-route",
+      "path": "app/api/github/sync/route.ts",
+      "sha256": "10b259c2c0bdcf5076a2b3feb4306a2d6e681dbac4c33c672726e9bf2648192d",
+      "lineCount": 127,
+      "ranges": [
+        {
+          "start": 20,
+          "end": 59,
+          "sha256": "c82370ab3eb75ab267086560bef58bd9dd788dc7166b647d5dd822d503463b89"
+        },
+        {
+          "start": 117,
+          "end": 127,
+          "sha256": "16f6dc9045d2da24b4c690d06afeeb239b02babfbac9e75c68a6f7414a207c54"
+        }
+      ]
+    },
+    {
+      "key": "releaseops-state-route",
+      "path": "app/api/releaseops/state/route.ts",
+      "sha256": "98f8edd72aec08613285b27ac1fca93ee2b79743c3a73473f325f7b9ec6d085a",
+      "lineCount": 34,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 34,
+          "sha256": "98f8edd72aec08613285b27ac1fca93ee2b79743c3a73473f325f7b9ec6d085a"
+        }
+      ]
+    },
+    {
+      "key": "releaseops-scan-route",
+      "path": "app/api/releaseops/scan/route.ts",
+      "sha256": "efd84122786ac9e83669ae853f1dfa4f70c458d5cb6abc0d78895ef0a889f825",
+      "lineCount": 70,
+      "ranges": [
+        {
+          "start": 22,
+          "end": 70,
+          "sha256": "f347d915e5a0ff4f18c6bcb9cb5af320bfc5f1dcf76a1f134f2efca77e34e9c0"
+        }
+      ]
+    },
+    {
+      "key": "public-assistant-guard",
+      "path": "app/api/visionxix-ai-chat/route.ts",
+      "sha256": "3d2af75e1c28481926937feed44f7c9c105b7fc6a7cbe451407d7905f1194d21",
+      "lineCount": 120,
+      "ranges": [
+        {
+          "start": 7,
+          "end": 16,
+          "sha256": "0b245b1ff6d759338d3be65cb0dec7af4185975861287e2d1d2060d5c4679106"
+        },
+        {
+          "start": 46,
+          "end": 61,
+          "sha256": "824d439fb336f002a11a83dd9103f3717e532ad7a3ca362da8ead42d0d2ba304"
+        },
+        {
+          "start": 94,
+          "end": 100,
+          "sha256": "46be849d3a499a795fd1d27e802bad28f5cb315be4fab9ea1cc72ab10bf2660a"
+        }
+      ]
+    },
+    {
+      "key": "admitted-app-ai",
+      "path": "app/api/ai/generate/route.ts",
+      "sha256": "030f73f18e9f945a4bd84172aa1a9cefe3970119703ee7955bbcc40d7293cc55",
+      "lineCount": 170,
+      "ranges": [
+        {
+          "start": 42,
+          "end": 65,
+          "sha256": "887a71b474a699d08d635e5b39fcf6a51787f3354b270577615dc405f686dd8d"
+        },
+        {
+          "start": 125,
+          "end": 167,
+          "sha256": "e6fa79013a3d3705f2c53de287634fb96d63419c04ba3df17a194269306e2734"
+        }
+      ]
+    },
+    {
+      "key": "scoped-github-resolver",
+      "path": "lib/connectors/github/resolveTenantScopedToken.ts",
+      "sha256": "ba21315843824d1a6df32313428deca253c30120c1881d3ad8bc32fe7f8ff314",
+      "lineCount": 108,
+      "ranges": [
+        {
+          "start": 53,
+          "end": 105,
+          "sha256": "bc1812b15332112681c37e631948eccb05e0ec0a1a65519293f464560c1f3531"
+        }
+      ]
+    },
+    {
+      "key": "github-local-evidence",
+      "path": "docs/recovery/2026-11-04/legacy-github-source-containment/README.md",
+      "sha256": "80d6f2a86de7c085bc495b42831de1f5611627cd0fcdd0ae8a37372aad790fb0",
+      "lineCount": 12,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 12,
+          "sha256": "80d6f2a86de7c085bc495b42831de1f5611627cd0fcdd0ae8a37372aad790fb0"
+        }
+      ]
+    },
+    {
+      "key": "assistant-local-evidence",
+      "path": "docs/recovery/2026-11-04/public-assistant-admission-containment/README.md",
+      "sha256": "80454b87f4e8e7473ed13237f81f86e929e3d6fa642a4d759924470a3625ebad",
+      "lineCount": 9,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 9,
+          "sha256": "80454b87f4e8e7473ed13237f81f86e929e3d6fa642a4d759924470a3625ebad"
+        }
+      ]
+    },
+    {
+      "key": "compiled-refusal-evidence",
+      "path": "docs/recovery/2026-11-04/compiled-public-assistant-smoke/result.json",
+      "sha256": "1cc37010650178569854b10a44c1912fd6cfa286837c9036f9e4e29d3ec385c9",
+      "lineCount": 51,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 51,
+          "sha256": "1cc37010650178569854b10a44c1912fd6cfa286837c9036f9e4e29d3ec385c9"
+        }
+      ]
+    },
+    {
+      "key": "ordinary-build-evidence",
+      "path": "docs/recovery/2026-11-04/security-containment-web-build/terminal-summary.json",
+      "sha256": "08ffec6daf4c514d6fb44f86b88d840f0fe44bfbeb36b0afeef647d156105525",
+      "lineCount": 1,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 1,
+          "sha256": "08ffec6daf4c514d6fb44f86b88d840f0fe44bfbeb36b0afeef647d156105525"
+        }
+      ]
+    },
+    {
+      "key": "error-http-status",
+      "path": "lib/errors/axiomErrors.ts",
+      "sha256": "db701a4d3456f5d2c61444f20137888137f450ba67c2f0cce01d83b3edc19c22",
+      "lineCount": 144,
+      "ranges": [
+        {
+          "start": 129,
+          "end": 144,
+          "sha256": "a6dd5003e3bf153bcb06a8ec5bdacc1980feb75f6bb4a1d590892c8ffe8adb51"
+        }
+      ]
+    }
+  ]
+}

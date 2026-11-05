@@ -1,0 +1,7 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "scope": "source/content and internal index review; no tests/actions/edits",
+  "rootAdditionalReference": "HTTP status mapping pinned and exact range validated",
+  "limits": "source-only/customer-ineligible; no universal control coverage/media/editorial/retrieval/runtime/production acceptance"
+}

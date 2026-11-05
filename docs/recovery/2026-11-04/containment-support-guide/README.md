@@ -1,0 +1,7 @@
+# Internal source-refusal support guide
+
+Added an internal task-index entry and source guide for the legacy GitHub tenant-source and public-assistant usage-allowance refusals. The guide separates affected legacy surfaces from unchanged workspace-scoped GitHub and admitted app AI, explains rate-limit/audit-start distinctions, preserves uncertain histories, and avoids recommending reconnect, resend, expanded tokens, guessed identities or an execution bypass.
+
+Fifteen exact source/evidence files and twenty inclusive ranges match both the current tree and pinned Git82source bytes. Evidence references and local links resolve. Independent content/source review found no important issue; root added the direct HTTP status mapper reference and validated its exact bytes as well. This is document/hash validation, not a runtime test or universal coverage proof.
+
+The guide remains unpublished and customer-ineligible. No article ingestion, retrieval binding, new runtime help/control ID, accepted customer content, authentic image, editorial authority, browser/AT, native/production release or provider validation is claimed. Prior synthetic and compiled-negative evidence remains separately scoped. Application runtime remains201; later source documentation does not update a running app or production. No runtime code, test/build, UI, provider, database, credentials/grants, paid service or deployment changed. All21master parents and remaining genuine qualification/review requirements are preserved.

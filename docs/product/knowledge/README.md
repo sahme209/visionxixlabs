@@ -26,6 +26,7 @@
 | Connect Outlook or read mailbox/calendar metadata | [Outlook controls](outlook-controls.md) | Selected fields do not narrow the entire Microsoft consent grant. Actions require separate access/review. |
 | Prepare a Slack notification | [Slack reviewed action](slack-reviewed-action-controls.md) | Genuine independent review and requester execution remain separate. |
 | Prepare a Teams message or Linear issue | [Teams/Linear controls](teams-linear-controls.md) | Provider, target, task/version and connection binding matter; approvals are not interchangeable. |
+| Understand the new local GitHub-source or public-AI allowance refusal | [Local source refusals](local-source-refusals.md) | Internal, unpublished source snapshot; separate legacy discovery/public assistant boundaries, not all GitHub/app AI. No reconnect, resend or guard bypass. |
 | Prepare and follow a release request | [Releases workspace controls](releases-workspace-controls.md) | Scope, exact plans, approval, execution, evidence and Axiom record closure are distinct. |
 | Map directly authored Releases controls | [Releases static bindings](releases-workspace-bindings.md) |29source declarations; generic fields/mapped rows are families and imported panels remain excluded. |
 | Identify named release intake fields | [Named intake source fields](releases-intake-fields.md) |52source callsites with labels/constraints/save semantics; no DOM lookup or customer/native qualification. |

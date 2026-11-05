@@ -1,0 +1,11 @@
+{
+  "guideSha256": "885008665c84e0948cc244f46a30d115fbc221f86efb664dc1e5f61e6dda57fd",
+  "manifestSha256": "3ff5ce4982fe53dff779b18439d3e60294ab573f2ad9b21de269d9e20a07d679",
+  "sourceFiles": 15,
+  "inclusiveRanges": 20,
+  "currentAndPinnedGitHashesMatch": true,
+  "allEvidenceReferencesResolve": true,
+  "guideLocalLinksExist": true,
+  "eligibilityAndPublicationRemainFalse": true,
+  "scope": "source/hash/range/reference validation only; no runtime tests or customer acceptance"
+}
