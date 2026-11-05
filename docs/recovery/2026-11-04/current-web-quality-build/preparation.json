@@ -1,0 +1,14 @@
+{
+  "sourceRevision": "74b435675590b2385817950fb88f725436ecb1d8",
+  "referenceRevision": "d9b201be135966412033d6a5c2d92181ebd5a5f7",
+  "helperHashesUnchanged": {
+    "scripts/build-local-issuer-package-source.py": "c099c90b95778062873ed4b17546d84c915f707fdaa4c5399b4938e5f31cb2a1",
+    "scripts/local_prisma_engine_inputs.py": "6def73deece943de43643b385d83321abdbfcdd17c59eb48f84eeb647293fb2f"
+  },
+  "fixedOwnedParent": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds",
+  "driverSha256": "f3215e40cbf7b534fa146c3de60b49e8e355c8557f0361ee87c7bfc532e0c66c",
+  "buildStarted": false,
+  "previewStarted": false,
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false
+}

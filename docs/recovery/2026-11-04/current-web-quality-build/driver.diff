@@ -1,0 +1,20 @@
+--- reviewed-d9-driver
++++ current-quality-driver
+@@ -11,7 +11,7 @@
+ 
+ sys.dont_write_bytecode = True
+ REPO = Path('/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion')
+-SOURCE_REVISION = 'd9b201be135966412033d6a5c2d92181ebd5a5f7'
++SOURCE_REVISION = '74b435675590b2385817950fb88f725436ecb1d8'
+ NODE = Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
+ sys.path.insert(0, str(REPO / 'scripts'))
+ 
+@@ -33,7 +33,7 @@
+     builder = load('product_hierarchy_source_builder', 'build-local-issuer-package-source.py')
+     engines = load('product_hierarchy_local_engines', 'local_prisma_engine_inputs.py')
+     cache = Path.home() / '.npm/_cacache'
+-    owned = Path(tempfile.mkdtemp(prefix='axiom-product-hierarchy-build-' + revision[:8] + '-', dir='/private/tmp'))
++    owned = Path(tempfile.mkdtemp(prefix='axiom-current-web-quality-build-' + revision[:8] + '-', dir='/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds'))
+     coordinates = {'owned': str(owned), 'sourceRevision': revision, 'previewStarted': False,
+                    'executingIssuerIdentity': 'unavailable', 'executionAuthorized': False}
+     (owned / 'coordinates.json').write_text(json.dumps(coordinates, sort_keys=True) + '\n')

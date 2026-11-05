@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear for fixedsource/persistentparent delta",
+  "execution": "read-only no builds/tests",
+  "limits": "ordinary offlinebuild only, no preview/nativeissuerqualification"
+}
