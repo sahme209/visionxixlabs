@@ -145,7 +145,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
               </p>
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <Link
-                  href="/#capabilities"
+                  href="/product"
                   className="inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-4 py-2 text-[12.5px] font-medium text-white hover:bg-[#ff641f] transition"
                 >
                   Review capabilities

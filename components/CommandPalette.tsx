@@ -45,8 +45,8 @@ interface CommandItem {
 const COMMANDS: readonly CommandItem[] = [
   // Product
   { id: "home",       label: "Home",              href: "/",                       category: "Product",   icon: SparklesIcon,      hint: "The landing page" },
-  { id: "axiom",      label: "Axiom capabilities", href: "/#capabilities",          category: "Product",   icon: RocketLaunchIcon,  hint: "Verified product capability inventory" },
-  { id: "releaseops", label: "Axiom workflow",     href: "/#workflow",              category: "Product",   icon: ShieldCheckIcon,   hint: "Deployment intake through audit history" },
+  { id: "axiom",      label: "Axiom capabilities", href: "/product",          category: "Product",   icon: RocketLaunchIcon,  hint: "Verified product capability inventory" },
+  { id: "releaseops", label: "Axiom workflow",     href: "/product#workflow-overview",              category: "Product",   icon: ShieldCheckIcon,   hint: "Deployment intake through audit history" },
   { id: "demo",       label: "Try the sandbox",   href: "/demo",                   category: "Product",   icon: PlayCircleIcon,    hint: "Fictional sample data; no production execution" },
   { id: "operator",   label: "Download Axiom Agent", href: "/download",               category: "Product", icon: CloudIcon, hint: "Install the application", keywords: ["start", "install", "onboard", "access"] },
   { id: "plans",      label: "Access and pricing", href: "/plans",                  category: "Product",   icon: DocumentTextIcon,  hint: "Contact-based production access", keywords: ["pricing", "cost"] },

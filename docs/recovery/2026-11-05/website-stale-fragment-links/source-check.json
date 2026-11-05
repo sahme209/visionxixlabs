@@ -1,0 +1,36 @@
+{
+  "baseline": "420c3712bfb014d20f28429097436790524917e3",
+  "changes": [
+    {
+      "file": "app/(marketing)/contact/ContactClient.tsx",
+      "before": "href=\"/#capabilities\"",
+      "after": "href=\"/product\""
+    },
+    {
+      "file": "components/CommandPalette.tsx",
+      "before": "href: \"/#capabilities\"",
+      "after": "href: \"/product\""
+    },
+    {
+      "file": "components/CommandPalette.tsx",
+      "before": "href: \"/#workflow\"",
+      "after": "href: \"/product#workflow-overview\""
+    }
+  ],
+  "wholeBaselineReconstructed": true,
+  "homeHtmlIds": [
+    "_R_",
+    "footer-cta-heading",
+    "product-tour"
+  ],
+  "productPagePreviouslyObserved200": true,
+  "workflowTargetDeclaredInProductSource": true,
+  "newBrowserOrHttpRun": false,
+  "testsOrBuildRepeated": false,
+  "limits": "source-only navigation literal correction; current running preview remains older source",
+  "resultSourceSha256": {
+    "components/CommandPalette.tsx": "5e608b5ee78b56774fb8b49eb04385ed8173e818a3155aa664529be4e625630a",
+    "app/(marketing)/contact/ContactClient.tsx": "cb7dc84cb1db2f6f741bdbec43610ebe7ff21175be3b2688cb3ab08317b1219b"
+  },
+  "productTargetSourceSha256": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a"
+}

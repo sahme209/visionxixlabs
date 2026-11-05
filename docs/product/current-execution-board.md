@@ -326,3 +326,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Broader current public-page delivery audit — bounded local evidence
 ~~Remaining43curated public paths requested once through the current guarded preview~~ ([evidence](../recovery/2026-11-05/current-public-link-audit/README.md)):33HTTP200 and10intentional redirect refusals, corroborated against exact source declarations and refusal-body hashes;1508anchor references inventoried. Two outside-manifest destinations have source files but remain HTTP-unverified; six observed fragments present. No guard expansion, redirect follow, backend/private/external request, repeated build or production/browser/AT/full-site acceptance. Native tool reported Maclocked; manualunlock pending, no workaround/restart. B4/B6/all21parents and pending Governance/health/funded-helper decisions remain open.
+
+
+### Conditional website navigation — local stale-anchor correction
+~~Three client-only destinations corrected~~ ([evidence](../recovery/2026-11-05/website-stale-fragment-links/README.md)): contact-success capability link and command-palette capability/workflow links no longer target absent homepage fragments. Product route previouslyHTTP200 and workflow heading source-present; reversing onlythreehref literals reconstructs bothcompletebaselinefiles. No form submission, auth/email/provider action or repeated build/test; currentpreview remainsolder0c9. Actualclient/browser/keyboard/deployment acceptance and B4/B6/fullGovernance remainopen.
