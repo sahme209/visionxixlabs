@@ -1,0 +1,257 @@
+{
+  "scope": "Only the 28 documented operation families; three enclosing details nodes are structural and not additional family IDs. Includes one focusable output and one custom ExternalLink boundary; runtime instances and shared ExternalLink internals excluded.",
+  "mappings": [
+    {
+      "documentationId": "repository.operations.worktree.disclosure",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "tag": "summary",
+      "kind": "intrinsic-interactive",
+      "startLine": 35,
+      "endLine": 35,
+      "nodeSha256": "c6b475c56c73c4388d55ea8a217920c4d847e8205e65cb4250b3909825e7a72d"
+    },
+    {
+      "documentationId": "repository.operations.worktree.branch",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "tag": "input",
+      "kind": "intrinsic-interactive",
+      "startLine": 37,
+      "endLine": 37,
+      "nodeSha256": "58ff7115bbf1a2ae5c169fb407007cbf6039ad93eb94f96fe8ac59cbcb888af1"
+    },
+    {
+      "documentationId": "repository.operations.worktree.create",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 38,
+      "endLine": 38,
+      "nodeSha256": "774007c46e7ed608bb370c2afd8c40af3c70b2c00dda2fb331435a82a8ca5c4f"
+    },
+    {
+      "documentationId": "repository.operations.worktree.refresh",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 38,
+      "endLine": 38,
+      "nodeSha256": "fd385de85975a4d0950f2a33f6944e08b47f9dff738967200ac37c9a6191564c"
+    },
+    {
+      "documentationId": "repository.operations.worktree.open",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 42,
+      "endLine": 42,
+      "nodeSha256": "9a3f9f0cfe95b86cfd2a55e0b501f4d6565bb8b622611fdae409a58b47262a52"
+    },
+    {
+      "documentationId": "repository.operations.worktree.remove",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 42,
+      "endLine": 42,
+      "nodeSha256": "284dcb1c5b71978e1c453e7985dd4662021d47834bf21e49faaaa819f3e53892"
+    },
+    {
+      "documentationId": "repository.operations.worktree.cancel",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 43,
+      "endLine": 43,
+      "nodeSha256": "459946cfd718e3e24523adb1713a1e0ef5d3b201267e957eb6ad163cb81551b0"
+    },
+    {
+      "documentationId": "repository.operations.worktree.confirm-remove",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 43,
+      "endLine": 43,
+      "nodeSha256": "87af6b242f266fbbc77502e0aa5710b0f581183641d045b3770c61b11b46da14"
+    },
+    {
+      "documentationId": "repository.operations.check.run",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 790,
+      "endLine": 790,
+      "nodeSha256": "f051c7970857b8e489966cc5ed6755e813240a6965f0377f2797afbc87d29ebc"
+    },
+    {
+      "documentationId": "repository.operations.check.stop",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 791,
+      "endLine": 791,
+      "nodeSha256": "13672fb5bce5babc3d4275ebb0f1503d17715065d68c8df6bb49b0541520e0a2"
+    },
+    {
+      "documentationId": "repository.operations.check.output-toggle",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 792,
+      "endLine": 792,
+      "nodeSha256": "e695eb5b9da504d1e37b4e82bdbe0f1e5c7aeedf84b7b8f4b89d4c6708b92398"
+    },
+    {
+      "documentationId": "repository.operations.check.output",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "pre",
+      "kind": "focusable-output",
+      "startLine": 798,
+      "endLine": 798,
+      "nodeSha256": "7c8ed861276be8fd563b0120c2eeb516f2712c502737615d8d7b6fddd05fdf8a"
+    },
+    {
+      "documentationId": "repository.operations.check.agent-output",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 800,
+      "endLine": 800,
+      "nodeSha256": "85cdfea888f5a684350884bd8bc033d1b0a01e2c4ddd386ccf7ef9e8480fd131"
+    },
+    {
+      "documentationId": "repository.operations.check.agent-repair",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 801,
+      "endLine": 801,
+      "nodeSha256": "dacd284937740f663f18713e0293a8ca521ca0aeaad79c7f772f35013abd9a5b"
+    },
+    {
+      "documentationId": "repository.operations.git.disclosure",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "summary",
+      "kind": "intrinsic-interactive",
+      "startLine": 836,
+      "endLine": 836,
+      "nodeSha256": "a061c5640e68b9f1a710a80afcad418fcf96d7f4700fdbc30b1e6d7060eebe55"
+    },
+    {
+      "documentationId": "repository.operations.git.branch-name",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "input",
+      "kind": "intrinsic-interactive",
+      "startLine": 838,
+      "endLine": 838,
+      "nodeSha256": "e4caa9b2877da598a668799ed44f0ffa0f1275b7dce03ae5ea2e38b9112c58d8"
+    },
+    {
+      "documentationId": "repository.operations.git.branch-create",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 839,
+      "endLine": 839,
+      "nodeSha256": "d7fad69890a77787ba42856369a91a4922ea20042fdfc268f54e84093edf9864"
+    },
+    {
+      "documentationId": "repository.operations.git.pull",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 840,
+      "endLine": 840,
+      "nodeSha256": "2d52ae532f4a118f4958cf1eeb8863bcd4ff1e12d1dcbbdc327916502abff02a"
+    },
+    {
+      "documentationId": "repository.operations.git.push",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 841,
+      "endLine": 841,
+      "nodeSha256": "eba9bfeec9a17d59df3b0ba7920dab24c441ef3788bb5e9ac07b5c90d0e4680b"
+    },
+    {
+      "documentationId": "repository.operations.publish.disclosure",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "summary",
+      "kind": "intrinsic-interactive",
+      "startLine": 879,
+      "endLine": 879,
+      "nodeSha256": "72791dffc8037c5b9ce318f70cbbfb165eea1a6d6577f8174d30c6cd759f8b36"
+    },
+    {
+      "documentationId": "repository.operations.publish.commit-message",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "input",
+      "kind": "intrinsic-interactive",
+      "startLine": 881,
+      "endLine": 881,
+      "nodeSha256": "5b82a5e10a216d632256e72642973d2a216c365f34d3afc671ea50eb6ed84d88"
+    },
+    {
+      "documentationId": "repository.operations.publish.commit",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 882,
+      "endLine": 882,
+      "nodeSha256": "5d41d1636cf8b7a507930574a240038b56edd658704946b6d72f72e7e798e9d4"
+    },
+    {
+      "documentationId": "repository.operations.publish.title",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "input",
+      "kind": "intrinsic-interactive",
+      "startLine": 883,
+      "endLine": 883,
+      "nodeSha256": "893499f92fa267be2e1ca7f22ccbf897a081f7a6196fb69b3ff5565e1e24bd6d"
+    },
+    {
+      "documentationId": "repository.operations.publish.base",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "input",
+      "kind": "intrinsic-interactive",
+      "startLine": 884,
+      "endLine": 884,
+      "nodeSha256": "692170f4e522f8ac1f796aec3c4a9447f372a24bc39893a95f924bc3dfd233a2"
+    },
+    {
+      "documentationId": "repository.operations.publish.open-link",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "ExternalLink",
+      "kind": "custom-link-boundary",
+      "startLine": 885,
+      "endLine": 885,
+      "nodeSha256": "e6b61625e9cdad7d9bbc74b7bfbbb66b0a2b6731ce2b0d45a677b43cd71dc215"
+    },
+    {
+      "documentationId": "repository.operations.publish.review",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 885,
+      "endLine": 885,
+      "nodeSha256": "5661ffb32f2650ff61665ea8f0ac01a90018167abbe980c65f3b924b6d32d176"
+    },
+    {
+      "documentationId": "repository.operations.confirm.cancel",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 897,
+      "endLine": 897,
+      "nodeSha256": "e121e05b0093be859abc023dd2ed98f80e1dbe48ff48acb25fdd5578f2a69cc3"
+    },
+    {
+      "documentationId": "repository.operations.confirm.execute",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "tag": "button",
+      "kind": "intrinsic-interactive",
+      "startLine": 898,
+      "endLine": 898,
+      "nodeSha256": "199a9f362047971229413ffdf4b5fc2538e0ff9894df7d7028802597222b62c9"
+    }
+  ]
+}

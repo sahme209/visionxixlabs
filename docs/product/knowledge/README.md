@@ -18,6 +18,7 @@
 | Map Bot composer and app-launcher controls | [Composer/action source bindings](bot-composer-action-bindings.md) |11declarations; portal/provider families, not unique runtime targets or customer qualification. |
 | Open or acquire repository source | [Repository acquisition](repository-acquisition-controls.md) | Local checkout and authorized clone; not a release approval. |
 | Inspect and edit repository text | [Editor controls](repository-editor-controls.md), [nested confirmations and diff pages](repository-editor-nested-controls.md) | Discard, cancellation, saving and uncertain outcomes differ. |
+| Manage worktrees, run checks, commit or publish a repository branch | [Repository operations](repository-operations-controls.md) | Unsandboxed checks, partial Git effects and repository-wide bearer lifetime need distinct recovery; local confirmation is not independent review. |
 | Map editor help metadata | [Static bindings](repository-editor-bindings.md) | Family attributes are not unique DOM identities or completed customer help. |
 | Manage desktop Apps & skills top-level controls | [Desktop Apps & skills](desktop-apps-skills-controls.md) | Saved status, provider validation/consent, skill metadata and Agent composer handoff are separate; nested connector controls remain separately scoped. |
 | Browse available integrations | [Catalog controls](integrations-catalog-controls.md) | A catalog entry is not a connected account or granted capability. |

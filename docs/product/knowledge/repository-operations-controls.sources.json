@@ -1,0 +1,497 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "sourceRevision": "3e6c849e7f022b32827d0afcdfaa89636fadc15d",
+  "owner": "Axiom documentation workstream",
+  "author": "Codex draft",
+  "humanEditorialOwner": null,
+  "sourceReviewDate": "2026-11-05",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "genuineEditorialApproval": false,
+  "mediaAccepted": false,
+  "nativeBrowserAssistiveTechnologyAccepted": false,
+  "retrievalEvaluationExecuted": false,
+  "runtimeMetadataChanged": false,
+  "documentationIdsAreRuntimeIds": false,
+  "sources": [
+    {
+      "key": "workspace-context",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "lineCount": 903,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 288,
+          "sha256": "89160785ede3730c94417616469db0d4b3131fe7aec37bd1099bbd4718cfb079"
+        }
+      ]
+    },
+    {
+      "key": "workspace-status",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "lineCount": 903,
+      "ranges": [
+        {
+          "start": 205,
+          "end": 285,
+          "sha256": "6ed857532f19b83aeb4bf397b4e239fbfb2bb0808b5af98561d387c0cdf25d69"
+        }
+      ]
+    },
+    {
+      "key": "workspace-operations",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "lineCount": 903,
+      "ranges": [
+        {
+          "start": 374,
+          "end": 566,
+          "sha256": "a0561c21a127a27c0212df28a007b3528dc11795a2e29dc49709a575142c8313"
+        },
+        {
+          "start": 606,
+          "end": 665,
+          "sha256": "e8c0e6bc7c1b877351ff54917bd013e755176e38a5415baf493230aee4040bda"
+        }
+      ]
+    },
+    {
+      "key": "workspace-controls",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "lineCount": 903,
+      "ranges": [
+        {
+          "start": 785,
+          "end": 885,
+          "sha256": "5bc5465c710a61f2b7fc86267268aa2a4e35988bfb27b3f45cc09ebf71534067"
+        }
+      ]
+    },
+    {
+      "key": "workspace-mount",
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "lineCount": 903,
+      "ranges": [
+        {
+          "start": 805,
+          "end": 817,
+          "sha256": "ee72213e34864f3590f1aaf8412d6aff1fbf887471613b4d5d2c1136e7c82114"
+        }
+      ]
+    },
+    {
+      "key": "worktree-ui",
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "sha256": "c499b725d5fca2a5b9c81ab9b53ee59af1d5e3bc8f98e46f0814f9972d746970",
+      "lineCount": 45,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 45,
+          "sha256": "c499b725d5fca2a5b9c81ab9b53ee59af1d5e3bc8f98e46f0814f9972d746970"
+        }
+      ]
+    },
+    {
+      "key": "worktree-native",
+      "path": "desktop/src-tauri/src/worktrees.rs",
+      "sha256": "6b1cafbeb50529c4cd3227d30d174f785dc70141b50f226e4880831fa9184dbd",
+      "lineCount": 252,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 134,
+          "sha256": "41ccde33acfce3f52a0a779120b0f0f48a2fb005b0f932ca9578659962325f15"
+        }
+      ]
+    },
+    {
+      "key": "verification-native",
+      "path": "desktop/src-tauri/src/verification.rs",
+      "sha256": "85fb8d738898dcd54eb6c09756551f942549e86d44f0ee4bb28f43ad46e3a696",
+      "lineCount": 546,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 355,
+          "sha256": "4ea49cac7b7115af21a933b894bff5aaf78b602b42b66fcf5f4f6b02ab24e94b"
+        }
+      ]
+    },
+    {
+      "key": "receipt-parser",
+      "path": "desktop/src/lib/verificationReceipt.ts",
+      "sha256": "0932c7d9314a47ac9aa4f9e6de4ffcfbf318566121638df38cdb7a2b5f625063",
+      "lineCount": 13,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 13,
+          "sha256": "0932c7d9314a47ac9aa4f9e6de4ffcfbf318566121638df38cdb7a2b5f625063"
+        }
+      ]
+    },
+    {
+      "key": "credential-route",
+      "path": "app/api/desktop/github/clone-token/route.ts",
+      "sha256": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927",
+      "lineCount": 80,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 80,
+          "sha256": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927"
+        }
+      ]
+    },
+    {
+      "key": "git-native",
+      "path": "desktop/src-tauri/src/git.rs",
+      "sha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66",
+      "lineCount": 830,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 224,
+          "sha256": "ab1378bd888ddf4cce7c86ec9ece916529b0e5bd2773fcd319c30a2bd74e5f97"
+        },
+        {
+          "start": 300,
+          "end": 315,
+          "sha256": "187c6e375d6f2d0478239910df8fdc82c48e44d9ae7c7e2fa80f78e05d42d74d"
+        },
+        {
+          "start": 385,
+          "end": 448,
+          "sha256": "16d34b3d3393bbd0a264e6e8b5363d9a80128d350b340fc0d4585b7c31b260c2"
+        }
+      ]
+    },
+    {
+      "key": "client-methods",
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1",
+      "lineCount": 2200,
+      "ranges": [
+        {
+          "start": 1241,
+          "end": 1249,
+          "sha256": "a48b9a0deb915f7822e4d7f9710caab5677b709708d8bcec128cf31654e27b84"
+        }
+      ]
+    },
+    {
+      "key": "pr-route",
+      "path": "app/api/desktop/github/pull-request/route.ts",
+      "sha256": "a2ab882d237bcf99258c30b753ac6712750d62ab39e0f3ead3990089440d091f",
+      "lineCount": 91,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 91,
+          "sha256": "a2ab882d237bcf99258c30b753ac6712750d62ab39e0f3ead3990089440d091f"
+        }
+      ]
+    },
+    {
+      "key": "github-authority",
+      "path": "lib/desktop/currentGithubWriteAuthority.ts",
+      "sha256": "4a4a0dc9cdeb621a8b491322203cd017c9004d6269005541c2811d7857aaeb41",
+      "lineCount": 74,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 74,
+          "sha256": "4a4a0dc9cdeb621a8b491322203cd017c9004d6269005541c2811d7857aaeb41"
+        }
+      ]
+    },
+    {
+      "key": "native-registration",
+      "path": "desktop/src-tauri/src/main.rs",
+      "sha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf",
+      "lineCount": 176,
+      "ranges": [
+        {
+          "start": 70,
+          "end": 96,
+          "sha256": "46a0ec84e5b01ca8201dc3379a472b21cff55bcbdc55ec024d374dae42fb8783"
+        }
+      ]
+    },
+    {
+      "key": "surface-mount",
+      "path": "desktop/src/App.tsx",
+      "sha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348",
+      "lineCount": 253,
+      "ranges": [
+        {
+          "start": 210,
+          "end": 219,
+          "sha256": "f754d92aa73912991c23e93aa4aa28a2353b862651f02cd18fd397846965a4dd"
+        }
+      ]
+    }
+  ],
+  "controlFamilies": [
+    {
+      "id": "repository.operations.worktree.disclosure",
+      "sourceKeys": [
+        "worktree-ui"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.worktree.branch",
+      "sourceKeys": [
+        "worktree-ui"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.worktree.create",
+      "sourceKeys": [
+        "worktree-ui"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.worktree.refresh",
+      "sourceKeys": [
+        "worktree-ui"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.worktree.open",
+      "sourceKeys": [
+        "worktree-ui"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.worktree.remove",
+      "sourceKeys": [
+        "worktree-ui"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.worktree.cancel",
+      "sourceKeys": [
+        "worktree-ui"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.worktree.confirm-remove",
+      "sourceKeys": [
+        "worktree-ui"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.check.run",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.check.stop",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.check.output-toggle",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.check.output",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.check.agent-output",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.check.agent-repair",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.git.disclosure",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.git.branch-name",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.git.branch-create",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.git.pull",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.git.push",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.publish.disclosure",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.publish.commit-message",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.publish.commit",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.publish.title",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.publish.base",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.publish.review",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.publish.open-link",
+      "sourceKeys": [
+        "workspace-controls",
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.confirm.cancel",
+      "sourceKeys": [
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    },
+    {
+      "id": "repository.operations.confirm.execute",
+      "sourceKeys": [
+        "workspace-operations"
+      ],
+      "runtimeId": false,
+      "scope": "documentation family, not unique rendered instance or new runtime metadata"
+    }
+  ],
+  "coverage": {
+    "documentationFamilies": 28,
+    "worktreeFamilies": 8,
+    "checkFamilies": 6,
+    "branchSyncFamilies": 5,
+    "commitPublicationFamilies": 7,
+    "sharedConfirmationFamilies": 2,
+    "nativeOrProviderActionsExecuted": false,
+    "allRepositoryControlsOrBackendInvariantsCovered": false
+  },
+  "authorization": "Existing master B4 source documentation of actual mounted supported controls; no permission to execute Git/checks/native/provider/credential actions or publish"
+}

@@ -1,0 +1,23 @@
+{
+  "kind": "pure-typescript-source-extraction-not-product-test",
+  "sourceRevision": "3e6c849e7f022b32827d0afcdfaa89636fadc15d",
+  "command": "node docs/recovery/2026-11-05/repository-operations-source-guide/extract-operation-declarations.cjs",
+  "exitCode": 0,
+  "typescriptOnly": true,
+  "applicationOrNativeModulesImported": false,
+  "runtimeBehaviorExercised": false,
+  "testsBuildProviderNetworkCredentialDatabaseActions": false,
+  "extractorSha256": "8ef2b3461f07220e2da255cba226cc83d34a3adffcd40d401c6895c47d2f4794",
+  "declarationsSha256": "60689306896b91d0f9b0e1e1b480b813bc66d2ad6fac07e53381d07ad92ad820",
+  "mappingSha256": "c7dbb598ea85c0981c8563c3bb796d2c3b2d7f04fba4aedebbd62d6f7826c59e",
+  "counts": {
+    "selectedDeclarations": 31,
+    "intrinsicInteractive": 26,
+    "focusableOutput": 1,
+    "customLinkBoundaries": 1,
+    "structuralDisclosureContainers": 3
+  },
+  "documentedFamiliesMapped": 28,
+  "all28LedgerIdsHaveOneSelectedDeclaration": true,
+  "selectedSourceHashesMatchGuideSidecar": true
+}

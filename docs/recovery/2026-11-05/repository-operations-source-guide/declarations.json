@@ -1,0 +1,357 @@
+{
+  "scope": "Whole RepositoryWorktrees plus fixed opening-line operation ranges of mounted RepositoryWorkspaceView; prior acquisition/editor controls excluded. AST nodes are source declarations, not runtime instances, permissions or native acceptance.",
+  "counts": {
+    "selectedDeclarations": 31,
+    "intrinsicInteractive": 26,
+    "focusableOutput": 1,
+    "customLinkBoundaries": 1,
+    "structuralDisclosureContainers": 3
+  },
+  "files": [
+    {
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "wholeFile": true,
+      "sha256": "c499b725d5fca2a5b9c81ab9b53ee59af1d5e3bc8f98e46f0814f9972d746970",
+      "declarations": [
+        {
+          "tag": "details",
+          "kind": "structural-disclosure-container",
+          "scope": "whole-worktree-component",
+          "startLine": 34,
+          "endLine": 44,
+          "nodeSha256": "bfd6f95544368ae3d5f831ca885dd5966579238e469a3093b3fa03a3ac51e67f",
+          "opening": "<details className=\"shrink-0 border-b border-white/[0.06] p-2\">",
+          "sourceText": "<details className=\"shrink-0 border-b border-white/[0.06] p-2\">\n    <summary className=\"cursor-pointer px-1 py-1 text-xs text-zinc-400\">Workspaces <span className=\"text-zinc-600\">{verified ? `· ${rows.length} isolated` : \"· checking\"}</span></summary>\n    <p className=\"mt-2 text-[10px] leading-4 text-zinc-500\">Separate branches and files. Starts at the selected checkout’s committed HEAD; uncommitted edits stay here. No automatic tests or dependency installs. Repository hooks and custom checkout filters are skipped.</p>\n    <label className=\"mt-2 block text-[10px] text-zinc-500\">New worktree branch<input aria-label=\"New worktree branch\" maxLength={200} value={branch} onChange={event => setBranch(event.target.value)} disabled={disabled || busy} placeholder=\"axiom/my-task\" className=\"mt-1 w-full rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs text-zinc-200\"/></label>\n    <div className=\"mt-2 flex flex-wrap gap-2\"><button type=\"button\" disabled={disabled || busy || !verified || !branch.trim()} onClick={() => void perform(\"create\")} className=\"rounded border border-white/10 px-2 py-1 text-[10px] text-zinc-300 disabled:opacity-40\">Create worktree</button><button type=\"button\" disabled={disabled || busy} onClick={() => {setNotice(null); void load();}} className=\"text-[10px] text-zinc-500 underline disabled:opacity-40\">Refresh workspaces</button></div>\n    <p className=\"mt-2 text-[10px] text-zinc-600\">Up to 25 checkouts · 50 GB combined file bytes · shared Git objects excluded</p>\n    {notice && <p role=\"status\" className=\"mt-2 break-words text-[10px] leading-4 text-zinc-400\">{notice}</p>}\n    {verified && rows.length === 0 && <p className=\"mt-2 text-[10px] text-zinc-500\">No managed worktrees yet.</p>}\n    <div className=\"mt-2 max-h-48 overflow-y-auto\">{rows.map(row => <div key={row.path} className=\"border-t border-white/[0.06] py-2\"><p className=\"truncate text-xs text-zinc-300\" title={row.path}>{row.branch || \"Detached checkout\"}{row.path === repositoryPath ? \" · current\" : \"\"}</p><p className=\"mt-1 text-[10px] text-zinc-600\">{(row.bytes / 1024 / 1024).toFixed(1)} MB</p><div className=\"mt-1 flex gap-3\"><button type=\"button\" aria-label={`Open ${row.branch}`} disabled={disabled || busy || !verified || row.path === repositoryPath} onClick={() => onOpen(row.path)} className=\"text-[10px] text-zinc-400 underline disabled:opacity-40\">Open</button><button type=\"button\" aria-label={`Remove ${row.branch}`} disabled={disabled || busy || !verified || row.path === repositoryPath} onClick={() => setRemoving(row)} className=\"text-[10px] text-zinc-500 hover:text-rose-300 disabled:opacity-40\">Remove</button></div></div>)}</div>\n    {removing && <DesktopDialog label=\"Remove isolated checkout\" busy={busy} onClose={() => setRemoving(null)}><h2 className=\"text-sm font-semibold text-white\">Remove {removing.branch} checkout?</h2><p className=\"mt-3 text-xs leading-5 text-zinc-400\">The local checkout folder will be removed only if it has no changed, untracked or ignored files. The branch and commits remain. Locked worktrees are never forced or pruned.</p><p className=\"mt-2 break-all font-mono text-[10px] text-zinc-500\">{removing.path}</p><div className=\"mt-5 flex justify-end gap-2\"><button type=\"button\" onClick={() => setRemoving(null)} className=\"btn-secondary\">Cancel</button><button type=\"button\" onClick={() => void perform(\"remove\", removing)} className=\"btn-secondary\">Remove clean checkout</button></div></DesktopDialog>}\n  </details>"
+        },
+        {
+          "tag": "summary",
+          "kind": "intrinsic-interactive",
+          "scope": "whole-worktree-component",
+          "startLine": 35,
+          "endLine": 35,
+          "nodeSha256": "c6b475c56c73c4388d55ea8a217920c4d847e8205e65cb4250b3909825e7a72d",
+          "opening": "<summary className=\"cursor-pointer px-1 py-1 text-xs text-zinc-400\">",
+          "sourceText": "<summary className=\"cursor-pointer px-1 py-1 text-xs text-zinc-400\">Workspaces <span className=\"text-zinc-600\">{verified ? `· ${rows.length} isolated` : \"· checking\"}</span></summary>"
+        },
+        {
+          "tag": "input",
+          "kind": "intrinsic-interactive",
+          "scope": "whole-worktree-component",
+          "startLine": 37,
+          "endLine": 37,
+          "nodeSha256": "58ff7115bbf1a2ae5c169fb407007cbf6039ad93eb94f96fe8ac59cbcb888af1",
+          "opening": "<input aria-label=\"New worktree branch\" maxLength={200} value={branch} onChange={event => setBranch(event.target.value)} disabled={disabled || busy} placeholder=\"axiom/my-task\" className=\"mt-1 w-full rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs text-zinc-200\"/>",
+          "sourceText": "<input aria-label=\"New worktree branch\" maxLength={200} value={branch} onChange={event => setBranch(event.target.value)} disabled={disabled || busy} placeholder=\"axiom/my-task\" className=\"mt-1 w-full rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs text-zinc-200\"/>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "whole-worktree-component",
+          "startLine": 38,
+          "endLine": 38,
+          "nodeSha256": "774007c46e7ed608bb370c2afd8c40af3c70b2c00dda2fb331435a82a8ca5c4f",
+          "opening": "<button type=\"button\" disabled={disabled || busy || !verified || !branch.trim()} onClick={() => void perform(\"create\")} className=\"rounded border border-white/10 px-2 py-1 text-[10px] text-zinc-300 disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" disabled={disabled || busy || !verified || !branch.trim()} onClick={() => void perform(\"create\")} className=\"rounded border border-white/10 px-2 py-1 text-[10px] text-zinc-300 disabled:opacity-40\">Create worktree</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "whole-worktree-component",
+          "startLine": 38,
+          "endLine": 38,
+          "nodeSha256": "fd385de85975a4d0950f2a33f6944e08b47f9dff738967200ac37c9a6191564c",
+          "opening": "<button type=\"button\" disabled={disabled || busy} onClick={() => {setNotice(null); void load();}} className=\"text-[10px] text-zinc-500 underline disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" disabled={disabled || busy} onClick={() => {setNotice(null); void load();}} className=\"text-[10px] text-zinc-500 underline disabled:opacity-40\">Refresh workspaces</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "whole-worktree-component",
+          "startLine": 42,
+          "endLine": 42,
+          "nodeSha256": "9a3f9f0cfe95b86cfd2a55e0b501f4d6565bb8b622611fdae409a58b47262a52",
+          "opening": "<button type=\"button\" aria-label={`Open ${row.branch}`} disabled={disabled || busy || !verified || row.path === repositoryPath} onClick={() => onOpen(row.path)} className=\"text-[10px] text-zinc-400 underline disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" aria-label={`Open ${row.branch}`} disabled={disabled || busy || !verified || row.path === repositoryPath} onClick={() => onOpen(row.path)} className=\"text-[10px] text-zinc-400 underline disabled:opacity-40\">Open</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "whole-worktree-component",
+          "startLine": 42,
+          "endLine": 42,
+          "nodeSha256": "284dcb1c5b71978e1c453e7985dd4662021d47834bf21e49faaaa819f3e53892",
+          "opening": "<button type=\"button\" aria-label={`Remove ${row.branch}`} disabled={disabled || busy || !verified || row.path === repositoryPath} onClick={() => setRemoving(row)} className=\"text-[10px] text-zinc-500 hover:text-rose-300 disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" aria-label={`Remove ${row.branch}`} disabled={disabled || busy || !verified || row.path === repositoryPath} onClick={() => setRemoving(row)} className=\"text-[10px] text-zinc-500 hover:text-rose-300 disabled:opacity-40\">Remove</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "whole-worktree-component",
+          "startLine": 43,
+          "endLine": 43,
+          "nodeSha256": "459946cfd718e3e24523adb1713a1e0ef5d3b201267e957eb6ad163cb81551b0",
+          "opening": "<button type=\"button\" onClick={() => setRemoving(null)} className=\"btn-secondary\">",
+          "sourceText": "<button type=\"button\" onClick={() => setRemoving(null)} className=\"btn-secondary\">Cancel</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "whole-worktree-component",
+          "startLine": 43,
+          "endLine": 43,
+          "nodeSha256": "87af6b242f266fbbc77502e0aa5710b0f581183641d045b3770c61b11b46da14",
+          "opening": "<button type=\"button\" onClick={() => void perform(\"remove\", removing)} className=\"btn-secondary\">",
+          "sourceText": "<button type=\"button\" onClick={() => void perform(\"remove\", removing)} className=\"btn-secondary\">Remove clean checkout</button>"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "openingLineScopes": [
+        {
+          "name": "checks-output-handoffs",
+          "start": 788,
+          "end": 802
+        },
+        {
+          "name": "branch-sync",
+          "start": 834,
+          "end": 844
+        },
+        {
+          "name": "commit-publication",
+          "start": 878,
+          "end": 885
+        },
+        {
+          "name": "shared-operation-confirmation",
+          "start": 897,
+          "end": 898
+        }
+      ],
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a",
+      "declarations": [
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "checks-output-handoffs",
+          "startLine": 790,
+          "endLine": 790,
+          "nodeSha256": "f051c7970857b8e489966cc5ed6755e813240a6965f0377f2797afbc87d29ebc",
+          "opening": "<button key={check.id} type=\"button\" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className=\"rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40\">",
+          "sourceText": "<button key={check.id} type=\"button\" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className=\"rounded-md border border-white/[0.08] bg-white/[0.03] px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40\">{busy === `verify:${check.id}` ? `Running ${check.label}…` : check.label}</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "checks-output-handoffs",
+          "startLine": 791,
+          "endLine": 791,
+          "nodeSha256": "13672fb5bce5babc3d4275ebb0f1503d17715065d68c8df6bb49b0541520e0a2",
+          "opening": "<button type=\"button\" onClick={cancelVerification} className=\"btn-secondary\">",
+          "sourceText": "<button type=\"button\" onClick={cancelVerification} className=\"btn-secondary\">Stop check (direct child only)</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "checks-output-handoffs",
+          "startLine": 792,
+          "endLine": 792,
+          "nodeSha256": "e695eb5b9da504d1e37b4e82bdbe0f1e5c7aeedf84b7b8f4b89d4c6708b92398",
+          "opening": "<button type=\"button\" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationStale ? \"bg-amber-500/10 text-amber-200\" : verificationResult.success ? \"bg-emerald-500/10 text-emerald-300\" : \"bg-rose-500/10 text-rose-300\"}`}>",
+          "sourceText": "<button type=\"button\" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationStale ? \"bg-amber-500/10 text-amber-200\" : verificationResult.success ? \"bg-emerald-500/10 text-emerald-300\" : \"bg-rose-500/10 text-rose-300\"}`}>{verificationStale ? \"Previous check result (stale)\" : verificationResult.success ? \"Last check passed\" : \"Last check failed\"} · {showVerification ? \"hide output\" : \"show output\"}</button>"
+        },
+        {
+          "tag": "pre",
+          "kind": "focusable-output",
+          "scope": "checks-output-handoffs",
+          "startLine": 798,
+          "endLine": 798,
+          "nodeSha256": "7c8ed861276be8fd563b0120c2eeb516f2712c502737615d8d7b6fddd05fdf8a",
+          "opening": "<pre tabIndex={0} className=\"whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-zinc-300\">",
+          "sourceText": "<pre tabIndex={0} className=\"whitespace-pre-wrap break-words font-mono text-[11px] leading-5 text-zinc-300\">{verificationResult.output || \"The check completed without output.\"}</pre>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "checks-output-handoffs",
+          "startLine": 800,
+          "endLine": 800,
+          "nodeSha256": "85cdfea888f5a684350884bd8bc033d1b0a01e2c4ddd386ccf7ef9e8480fd131",
+          "opening": "<button type=\"button\" disabled={Boolean(busy) || !verificationResult.output} onClick={askAboutVerification} className=\"btn-secondary disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" disabled={Boolean(busy) || !verificationResult.output} onClick={askAboutVerification} className=\"btn-secondary disabled:opacity-40\">Prepare check output for Agent</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "checks-output-handoffs",
+          "startLine": 801,
+          "endLine": 801,
+          "nodeSha256": "dacd284937740f663f18713e0293a8ca521ca0aeaad79c7f772f35013abd9a5b",
+          "opening": "<button type=\"button\" disabled={Boolean(busy) || verificationStale || verificationResult.success || !verificationTarget || !selectedFile || content !== savedContent || !localCodeContextPrompt({kind: \"repair\", ...verificationTarget, path: selectedFile, checkId: verificationResult.checkId, exitCode: verificationResult.exitCode ?? 0, stale: false, excerpt: verificationResult.output.slice(0, 8000)})} onClick={prepareRepair} className=\"btn-secondary disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" disabled={Boolean(busy) || verificationStale || verificationResult.success || !verificationTarget || !selectedFile || content !== savedContent || !localCodeContextPrompt({kind: \"repair\", ...verificationTarget, path: selectedFile, checkId: verificationResult.checkId, exitCode: verificationResult.exitCode ?? 0, stale: false, excerpt: verificationResult.output.slice(0, 8000)})} onClick={prepareRepair} className=\"btn-secondary disabled:opacity-40\">Prepare repair with Agent</button>"
+        },
+        {
+          "tag": "details",
+          "kind": "structural-disclosure-container",
+          "scope": "branch-sync",
+          "startLine": 835,
+          "endLine": 843,
+          "nodeSha256": "687cc2a00be94adb435e0b60bbc174219bc3643163bb744a86a6e76cb56bfacb",
+          "opening": "<details className=\"editor-git-controls\" open={!compact}>",
+          "sourceText": "<details className=\"editor-git-controls\" open={!compact}>\n          <summary className={compact ? \"cursor-pointer px-3 py-2 text-xs text-zinc-400\" : \"hidden\"}>Branch & sync</summary>\n          <div className=\"flex flex-wrap items-center gap-2 border-b border-white/[0.07] px-3 py-2\">\n          <input value={branchName} onChange={(event) => setBranchName(event.target.value)} placeholder=\"new branch\" className=\"w-36 rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs outline-none\" />\n          <button type=\"button\" disabled={Boolean(busy) || !selectedRepository || !branchName.trim()} onClick={() => void createBranch()} className=\"btn-secondary disabled:opacity-40\">Branch</button>\n          <button type=\"button\" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync(\"pull\")} className=\"btn-secondary disabled:opacity-40\">{busy === \"pull\" ? \"Pulling…\" : \"Pull\"}</button>\n          <button type=\"button\" disabled={Boolean(busy) || !status?.repositoryFullName || onDefaultBranch} title={onDefaultBranch ? \"Create a branch; direct pushes to the default branch are blocked.\" : undefined} onClick={() => sync(\"push\")} className=\"btn-secondary disabled:opacity-40\">{busy === \"push\" ? \"Pushing…\" : \"Push\"}</button>\n        </div>\n        </details>"
+        },
+        {
+          "tag": "summary",
+          "kind": "intrinsic-interactive",
+          "scope": "branch-sync",
+          "startLine": 836,
+          "endLine": 836,
+          "nodeSha256": "a061c5640e68b9f1a710a80afcad418fcf96d7f4700fdbc30b1e6d7060eebe55",
+          "opening": "<summary className={compact ? \"cursor-pointer px-3 py-2 text-xs text-zinc-400\" : \"hidden\"}>",
+          "sourceText": "<summary className={compact ? \"cursor-pointer px-3 py-2 text-xs text-zinc-400\" : \"hidden\"}>Branch & sync</summary>"
+        },
+        {
+          "tag": "input",
+          "kind": "intrinsic-interactive",
+          "scope": "branch-sync",
+          "startLine": 838,
+          "endLine": 838,
+          "nodeSha256": "e4caa9b2877da598a668799ed44f0ffa0f1275b7dce03ae5ea2e38b9112c58d8",
+          "opening": "<input value={branchName} onChange={(event) => setBranchName(event.target.value)} placeholder=\"new branch\" className=\"w-36 rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs outline-none\" />",
+          "sourceText": "<input value={branchName} onChange={(event) => setBranchName(event.target.value)} placeholder=\"new branch\" className=\"w-36 rounded border border-white/10 bg-black/20 px-2 py-1.5 text-xs outline-none\" />"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "branch-sync",
+          "startLine": 839,
+          "endLine": 839,
+          "nodeSha256": "d7fad69890a77787ba42856369a91a4922ea20042fdfc268f54e84093edf9864",
+          "opening": "<button type=\"button\" disabled={Boolean(busy) || !selectedRepository || !branchName.trim()} onClick={() => void createBranch()} className=\"btn-secondary disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" disabled={Boolean(busy) || !selectedRepository || !branchName.trim()} onClick={() => void createBranch()} className=\"btn-secondary disabled:opacity-40\">Branch</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "branch-sync",
+          "startLine": 840,
+          "endLine": 840,
+          "nodeSha256": "2d52ae532f4a118f4958cf1eeb8863bcd4ff1e12d1dcbbdc327916502abff02a",
+          "opening": "<button type=\"button\" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync(\"pull\")} className=\"btn-secondary disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" disabled={Boolean(busy) || !status?.repositoryFullName} onClick={() => sync(\"pull\")} className=\"btn-secondary disabled:opacity-40\">{busy === \"pull\" ? \"Pulling…\" : \"Pull\"}</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "branch-sync",
+          "startLine": 841,
+          "endLine": 841,
+          "nodeSha256": "eba9bfeec9a17d59df3b0ba7920dab24c441ef3788bb5e9ac07b5c90d0e4680b",
+          "opening": "<button type=\"button\" disabled={Boolean(busy) || !status?.repositoryFullName || onDefaultBranch} title={onDefaultBranch ? \"Create a branch; direct pushes to the default branch are blocked.\" : undefined} onClick={() => sync(\"push\")} className=\"btn-secondary disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" disabled={Boolean(busy) || !status?.repositoryFullName || onDefaultBranch} title={onDefaultBranch ? \"Create a branch; direct pushes to the default branch are blocked.\" : undefined} onClick={() => sync(\"push\")} className=\"btn-secondary disabled:opacity-40\">{busy === \"push\" ? \"Pushing…\" : \"Push\"}</button>"
+        },
+        {
+          "tag": "details",
+          "kind": "structural-disclosure-container",
+          "scope": "commit-publication",
+          "startLine": 878,
+          "endLine": 887,
+          "nodeSha256": "c97baa4770880f98c45332a7669cfa08b85f80eb1cac37fc7a6faa30eed21861",
+          "opening": "<details open={!compact || publishExpanded} onToggle={event => { if (compact) setPublishExpanded(event.currentTarget.open); }} className=\"shrink-0 border-t border-white/[0.07] bg-[#111315]\">",
+          "sourceText": "<details open={!compact || publishExpanded} onToggle={event => { if (compact) setPublishExpanded(event.currentTarget.open); }} className=\"shrink-0 border-t border-white/[0.07] bg-[#111315]\">\n            <summary className={compact ? \"cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300\" : \"hidden\"}>Commit & publish{prUrl ? \" · PR available\" : \"\"}</summary>\n          <div className=\"grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-3\">\n            <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} aria-label=\"Commit message for this file\" placeholder=\"Commit message for this file\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />\n            <button type=\"button\" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? \"Create a branch before committing.\" : undefined} onClick={() => void commit()} className=\"btn-primary disabled:opacity-40\">{busy === \"commit\" ? \"Committing…\" : \"Commit file\"}</button>\n            <input value={prTitle} onChange={(event) => setPrTitle(event.target.value)} aria-label=\"Pull request title\" placeholder=\"Pull request title\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />\n            <input value={prBase} onChange={(event) => setPrBase(event.target.value)} aria-label=\"Pull request base branch\" placeholder=\"base\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />\n            {prUrl ? <ExternalLink href={prUrl} className=\"text-xs text-emerald-300 hover:text-white\">Open PR ↗</ExternalLink> : <button type=\"button\" disabled={Boolean(busy) || !prTitle.trim() || !prBase.trim() || !status || status.branch === prBase.trim() || status.changedFiles.length > 0 || content !== savedContent} onClick={reviewPullRequest} className=\"btn-secondary disabled:opacity-40\" title={status && status.changedFiles.length > 0 ? \"Commit all working-tree changes before publishing a pull request.\" : undefined}>{busy === \"pr\" ? \"Publishing…\" : \"Publish & open PR\"}</button>}\n          </div>\n          </details>"
+        },
+        {
+          "tag": "summary",
+          "kind": "intrinsic-interactive",
+          "scope": "commit-publication",
+          "startLine": 879,
+          "endLine": 879,
+          "nodeSha256": "72791dffc8037c5b9ce318f70cbbfb165eea1a6d6577f8174d30c6cd759f8b36",
+          "opening": "<summary className={compact ? \"cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300\" : \"hidden\"}>",
+          "sourceText": "<summary className={compact ? \"cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-300\" : \"hidden\"}>Commit & publish{prUrl ? \" · PR available\" : \"\"}</summary>"
+        },
+        {
+          "tag": "input",
+          "kind": "intrinsic-interactive",
+          "scope": "commit-publication",
+          "startLine": 881,
+          "endLine": 881,
+          "nodeSha256": "5b82a5e10a216d632256e72642973d2a216c365f34d3afc671ea50eb6ed84d88",
+          "opening": "<input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} aria-label=\"Commit message for this file\" placeholder=\"Commit message for this file\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />",
+          "sourceText": "<input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} aria-label=\"Commit message for this file\" placeholder=\"Commit message for this file\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "commit-publication",
+          "startLine": 882,
+          "endLine": 882,
+          "nodeSha256": "5d41d1636cf8b7a507930574a240038b56edd658704946b6d72f72e7e798e9d4",
+          "opening": "<button type=\"button\" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? \"Create a branch before committing.\" : undefined} onClick={() => void commit()} className=\"btn-primary disabled:opacity-40\">",
+          "sourceText": "<button type=\"button\" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? \"Create a branch before committing.\" : undefined} onClick={() => void commit()} className=\"btn-primary disabled:opacity-40\">{busy === \"commit\" ? \"Committing…\" : \"Commit file\"}</button>"
+        },
+        {
+          "tag": "input",
+          "kind": "intrinsic-interactive",
+          "scope": "commit-publication",
+          "startLine": 883,
+          "endLine": 883,
+          "nodeSha256": "893499f92fa267be2e1ca7f22ccbf897a081f7a6196fb69b3ff5565e1e24bd6d",
+          "opening": "<input value={prTitle} onChange={(event) => setPrTitle(event.target.value)} aria-label=\"Pull request title\" placeholder=\"Pull request title\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />",
+          "sourceText": "<input value={prTitle} onChange={(event) => setPrTitle(event.target.value)} aria-label=\"Pull request title\" placeholder=\"Pull request title\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />"
+        },
+        {
+          "tag": "input",
+          "kind": "intrinsic-interactive",
+          "scope": "commit-publication",
+          "startLine": 884,
+          "endLine": 884,
+          "nodeSha256": "692170f4e522f8ac1f796aec3c4a9447f372a24bc39893a95f924bc3dfd233a2",
+          "opening": "<input value={prBase} onChange={(event) => setPrBase(event.target.value)} aria-label=\"Pull request base branch\" placeholder=\"base\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />",
+          "sourceText": "<input value={prBase} onChange={(event) => setPrBase(event.target.value)} aria-label=\"Pull request base branch\" placeholder=\"base\" className=\"min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-none\" />"
+        },
+        {
+          "tag": "ExternalLink",
+          "kind": "custom-link-boundary",
+          "scope": "commit-publication",
+          "startLine": 885,
+          "endLine": 885,
+          "nodeSha256": "e6b61625e9cdad7d9bbc74b7bfbbb66b0a2b6731ce2b0d45a677b43cd71dc215",
+          "opening": "<ExternalLink href={prUrl} className=\"text-xs text-emerald-300 hover:text-white\">",
+          "sourceText": "<ExternalLink href={prUrl} className=\"text-xs text-emerald-300 hover:text-white\">Open PR ↗</ExternalLink>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "commit-publication",
+          "startLine": 885,
+          "endLine": 885,
+          "nodeSha256": "5661ffb32f2650ff61665ea8f0ac01a90018167abbe980c65f3b924b6d32d176",
+          "opening": "<button type=\"button\" disabled={Boolean(busy) || !prTitle.trim() || !prBase.trim() || !status || status.branch === prBase.trim() || status.changedFiles.length > 0 || content !== savedContent} onClick={reviewPullRequest} className=\"btn-secondary disabled:opacity-40\" title={status && status.changedFiles.length > 0 ? \"Commit all working-tree changes before publishing a pull request.\" : undefined}>",
+          "sourceText": "<button type=\"button\" disabled={Boolean(busy) || !prTitle.trim() || !prBase.trim() || !status || status.branch === prBase.trim() || status.changedFiles.length > 0 || content !== savedContent} onClick={reviewPullRequest} className=\"btn-secondary disabled:opacity-40\" title={status && status.changedFiles.length > 0 ? \"Commit all working-tree changes before publishing a pull request.\" : undefined}>{busy === \"pr\" ? \"Publishing…\" : \"Publish & open PR\"}</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "shared-operation-confirmation",
+          "startLine": 897,
+          "endLine": 897,
+          "nodeSha256": "e121e05b0093be859abc023dd2ed98f80e1dbe48ff48acb25fdd5578f2a69cc3",
+          "opening": "<button type=\"button\" autoFocus className=\"btn-secondary\" onClick={() => setConfirmation(null)}>",
+          "sourceText": "<button type=\"button\" autoFocus className=\"btn-secondary\" onClick={() => setConfirmation(null)}>Cancel</button>"
+        },
+        {
+          "tag": "button",
+          "kind": "intrinsic-interactive",
+          "scope": "shared-operation-confirmation",
+          "startLine": 898,
+          "endLine": 898,
+          "nodeSha256": "199a9f362047971229413ffdf4b5fc2538e0ff9894df7d7028802597222b62c9",
+          "opening": "<button type=\"button\" className={confirmation.destructive ? \"rounded-md bg-rose-500/90 px-3 py-2 text-xs font-medium text-white hover:bg-rose-400\" : \"btn-primary\"} onClick={() => void confirmAction()}>",
+          "sourceText": "<button type=\"button\" className={confirmation.destructive ? \"rounded-md bg-rose-500/90 px-3 py-2 text-xs font-medium text-white hover:bg-rose-400\" : \"btn-primary\"} onClick={() => void confirmAction()}>{confirmation.confirmLabel}</button>"
+        }
+      ]
+    }
+  ]
+}
