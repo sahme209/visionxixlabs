@@ -1,0 +1,19 @@
+{
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.63,
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-outlook-lock-6xk4jc3n/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--no-experimental-webstorage",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "/private/tmp/axiom-outlook-lock-6xk4jc3n/vitest.config.mjs",
+    "--configLoader",
+    "native"
+  ],
+  "processReaped": true
+}

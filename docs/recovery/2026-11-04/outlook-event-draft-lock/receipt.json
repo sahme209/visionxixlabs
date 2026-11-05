@@ -1,0 +1,20 @@
+{
+  "baselineHead": "50d7953005400a967b33823a7efe69d1c1d1ed42",
+  "runtimeBeforeSha256": "60e72e4ff6c3131f7177ac337dcffb3a7a61bc70c4a6d01d14366638d3ad874e",
+  "runtimeAfterSha256": "17143580af35d3d5d3fa5dc5817b45946fad350675472d1b5da9668c65a9286b",
+  "exactlyTwoDisabledAttributesOnly": true,
+  "testSha256": "d3a68c4edbcd7459fa41afc1c034450bccc54b52df1b7c4de83649e773efafd8",
+  "red": {
+    "failed": 2,
+    "reason": "event time controls remain enabled while pending or uncertain"
+  },
+  "green": {
+    "passed": 2
+  },
+  "compatibility": {
+    "passed": 3,
+    "includesSameTwoNewCases": true
+  },
+  "desktopTypesPassed": true,
+  "nativeOrLiveOrFullSuiteAccepted": false
+}

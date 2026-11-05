@@ -1,0 +1,11 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ lib/desktop/__tests__/outlookEventDraftLock.test.ts (2 tests) 200ms
+ ✓ lib/desktop/__tests__/outlookDraftDisclosure.test.ts (1 test) 139ms
+
+ Test Files  2 passed (2)
+      Tests  3 passed (3)
+   Start at  00:12:56
+   Duration  1.73s (transform 64ms, setup 0ms, import 262ms, tests 339ms, environment 935ms)
+

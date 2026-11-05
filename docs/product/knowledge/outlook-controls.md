@@ -58,3 +58,7 @@ If a mutating request fails/unconfirms, the panel locks further mutations with i
 ## Evidence boundary
 
 The manifest binds actual navigation/view mounts, card/panel, desktop transports/routes, read and action HTTP authority, current role mapping, browser page/consent/OAuth, scope contract, bounded reader/runtime, shared action store and provider action transport. Source hashes establish identity only. No current external/provider/status/customer/database/OAuth/native/UI read or action was performed, and no credential/Keychain/runtime configuration was accessed. No build, old suite, source experiment, new grant or retry was run. Native walkthrough, approved media, visual/keyboard/accessibility validation, editorial acceptance, release/shipped acceptance and approved customer retrieval/publication remain unaccepted.
+
+## November4 local calendar draft-lock supplement
+
+The original source bindings above remain historical and are not silently requalified. A later [two-field local repair](../../recovery/2026-11-04/outlook-event-draft-lock/README.md) makes calendar Start/End follow the other draft fields: they lock while saving or while its result is uncertain. Reloading without finding the original pending draft keeps them locked; confirmed readback restores editing. This is local source/component evidence only, not a shipped/native/provider acceptance or customer-approved article revision. No automatic replacement or resend is added.

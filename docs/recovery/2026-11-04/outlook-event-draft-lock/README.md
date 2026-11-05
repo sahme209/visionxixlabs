@@ -1,0 +1,9 @@
+# Outlook calendar draft editing lock
+
+The actual Outlook action form disabled kind, recipients, subject and body while busy/uncertain, but omitted that same guard on its two calendar datetime inputs. Two rendered regressions first failed for those enabled controls. Adding only disabled={busy||uncertain} to start and end fixes that inconsistent editing state; root reconstructed the original whole component by removing exactly those two attributes, proving no other runtime change.
+
+Exact new tests passed2; relevant disclosure compatibility run passed3 total (the same2new plus1existing), not5unique. Full desktop noEmit TypeScript passed. Deferred synthetic transport preserves exact submitted UTC times and one original save. Tests cover pending save and success, unknown save, absent readback holding the lock, and matching-original-draft readback clearing it. No actual mailbox, event, consent or provider action occurred. All test transport/context data is mocked; no client/server/live qualification follows.
+
+FixedNode24.21.0/Vitest4.1.11 ran under kernel network denial with owned emptyenv/cache/home/tmp and scrubbed environment. First runs selected only the new file; compatibility config adds the one existing disclosure test. Logs/results/coordinates retained. Broad suites and previous unrelated passing batches were intentionally not repeated under the user's conservation instructions; no full-suite claim is made. Runtime change was source-reviewed independently with no important finding.
+
+Current signed/open app remains the prior916artifact. This source repair is not embedded, native-accepted, deployed or shipped. No app restart, signing, installer, production setting, schema, grant, credential, provider write or new recovery authority was introduced. Historical knowledge source hashes/articles remain pinned to their stated older versions; the appended guide supplement points here rather than silently rewriting those bindings.

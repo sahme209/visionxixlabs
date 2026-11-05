@@ -1,0 +1,53 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/outlookEventDraftLock.test.ts (2 tests | 2 failed) 90ms
+   × locks both event times while their exact draft save is pending, then restores editing on success 72ms
+   × keeps times locked after an uncertain save and absent readback until the original draft is confirmed 18ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/outlookEventDraftLock.test.ts > locks both event times while their exact draft save is pending, then restores editing on success
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ lib/desktop/__tests__/outlookEventDraftLock.test.ts:32:26
+     30|   fixture.request.mockImplementationOnce(() => new Promise(resolve => …
+     31|   fireEvent.click(save);
+     32|   expect(start.disabled).toBe(true); expect(end.disabled).toBe(true);
+       |                          ^
+     33|   expect(save).toHaveProperty('disabled', true);
+     34|   await act(async () => finish(available()));
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/desktop/__tests__/outlookEventDraftLock.test.ts > keeps times locked after an uncertain save and absent readback until the original draft is confirmed
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ lib/desktop/__tests__/outlookEventDraftLock.test.ts:48:26
+     46|   fireEvent.click(save);
+     47|   await screen.findByText('Synthetic unknown save');
+     48|   expect(start.disabled).toBe(true); expect(end.disabled).toBe(true);
+       |                          ^
+     49|   expect(save).toHaveProperty('disabled', true);
+     50|   fixture.request.mockResolvedValueOnce(available());
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  00:12:21
+   Duration  636ms (transform 33ms, setup 0ms, import 109ms, tests 90ms, environment 379ms)
+
