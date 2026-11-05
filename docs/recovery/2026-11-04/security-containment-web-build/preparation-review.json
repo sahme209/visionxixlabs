@@ -1,0 +1,35 @@
+{
+  "sourceRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "referenceRevision": "74b435675590b2385817950fb88f725436ecb1d8",
+  "driverSha256": "f75af10087e4ff6149824e81852024841f9fef923e79c1a226d0a92f48b311c4",
+  "exactLiteralChangesOnly": true,
+  "changes": {
+    "SOURCE_REVISION": [
+      "74b435675590b2385817950fb88f725436ecb1d8",
+      "201f5e77e70ba261e57958247f77a0fe23567824"
+    ],
+    "ownedPrefix": [
+      "axiom-current-web-quality-build",
+      "axiom-security-containment-build"
+    ]
+  },
+  "helpers": [
+    {
+      "path": "scripts/build-local-issuer-package-source.py",
+      "sha256": "c099c90b95778062873ed4b17546d84c915f707fdaa4c5399b4938e5f31cb2a1",
+      "referenceGitEqualsTargetGitEqualsWorking": true
+    },
+    {
+      "path": "scripts/local_prisma_engine_inputs.py",
+      "sha256": "6def73deece943de43643b385d83321abdbfcdd17c59eb48f84eeb647293fb2f",
+      "referenceGitEqualsTargetGitEqualsWorking": true
+    }
+  ],
+  "fixedOwnedParentUnchanged": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds",
+  "preparationScope": "source/byte comparisons and Python syntax parsing only; no execution of driver/helpers",
+  "buildStarted": false,
+  "generationStarted": false,
+  "previewStarted": false,
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false
+}
