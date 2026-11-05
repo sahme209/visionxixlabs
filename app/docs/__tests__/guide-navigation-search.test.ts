@@ -4,6 +4,8 @@ import { cleanup, fireEvent, render, screen, within } from "@testing-library/rea
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 const route = vi.hoisted(() => ({ path: "/docs/permissions-model" }));
 vi.mock("next/navigation", () => ({ usePathname: () => route.path }));
+import fs from "node:fs";
+import path from "node:path";
 import { DocsSidebar } from "@/components/docs/DocsSidebar";
 import { DocsContents } from "@/components/docs/DocsContents";
 beforeEach(() => { route.path = "/docs/permissions-model"; vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false }))); });
@@ -40,8 +42,8 @@ it("reports an empty title match, then clears the filter and returns focus to it
   clear.focus(); fireEvent.click(clear);
   expect((field as HTMLInputElement).value).toBe("");
   expect(document.activeElement).toBe(field);
-  expect(screen.getAllByRole("link")).toHaveLength(19);
-  expect(screen.getByRole("status").textContent).toBe("19 guides shown");
+  expect(screen.getAllByRole("link")).toHaveLength(24);
+  expect(screen.getByRole("status").textContent).toBe("24 guides shown");
   expect(screen.queryByRole("button", { name: "Clear guide filter" })).toBeNull();
 });
 it("retains mobile Escape and route-change close behavior while filtering", () => {
@@ -58,4 +60,18 @@ it("retains mobile Escape and route-change close behavior while filtering", () =
   route.path = "/docs/security-model"; view.rerender(createElement(DocsContents));
   expect(toggle.getAttribute("aria-expanded")).toBe("false");
   expect(document.activeElement).toBe(toggle);
+});
+
+it("lists every authored public guide once without adding legacy redirect aliases",()=>{
+ const aliases=new Set(["/docs/desktop-architecture","/docs/best-practices","/docs/terraform-export","/docs/scanning"]);
+ const docsRoot=path.resolve(process.cwd(),"app/docs");
+ const pages=fs.readdirSync(docsRoot,{recursive:true}).filter((file):file is string=>typeof file==="string" && (file==="page.tsx" || file.endsWith("/page.tsx")));
+ const authored=pages.map(file=>"/docs"+(file==="page.tsx"?"":"/"+file.slice(0,-9))).filter(route=>!aliases.has(route)).sort();
+ render(createElement(DocsSidebar));const hrefs=screen.getAllByRole("link").map(link=>link.getAttribute("href")!).sort();
+ expect(hrefs).toEqual(authored);expect(new Set(hrefs).size).toBe(hrefs.length);
+ for(const alias of aliases)expect(fs.readFileSync(path.join(docsRoot,alias.slice(6),"page.tsx"),"utf8")).toContain("redirect(");
+});
+it.each([["Source modes","/docs/source-modes"],["OAuth setup","/docs/oauth-setup"],["Execution plans","/docs/execution-plans"],["Audit evidence","/docs/audit-logs"],["Product surfaces","/docs/surfaces"]])("finds existing omitted guide %s",(label,href)=>{
+ render(createElement(DocsSidebar));fireEvent.change(screen.getByRole("searchbox",{name:"Find a guide"}),{target:{value:label}});
+ expect(screen.getByRole("link",{name:label}).getAttribute("href")).toBe(href);expect(screen.getAllByRole("link")).toHaveLength(1);
 });

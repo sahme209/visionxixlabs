@@ -36,6 +36,8 @@ export const DOC_SECTIONS: DocSection[] = [
       { href: "/docs/quickstart-checklist", label: "Quickstart checklist", icon: RocketLaunchIcon },
       { href: "/docs/getting-started", label: "Getting started", icon: RocketLaunchIcon },
       { href: "/docs/architecture", label: "Architecture overview", icon: MapIcon },
+      { href: "/docs/source-modes", label: "Source modes", icon: BookOpenIcon },
+      { href: "/docs/surfaces", label: "Product surfaces", icon: MapIcon },
     ],
   },
   {
@@ -50,6 +52,7 @@ export const DOC_SECTIONS: DocSection[] = [
     title: "Operate",
     items: [
       { href: "/docs/approval-workflow", label: "Approval workflow", icon: LockClosedIcon },
+      { href: "/docs/execution-plans", label: "Execution plans", icon: RocketLaunchIcon },
       { href: "/docs/rollback", label: "AWS ECS rollback", icon: WrenchScrewdriverIcon },
     ],
   },
@@ -73,12 +76,14 @@ export const DOC_SECTIONS: DocSection[] = [
     items: [
       { href: "/docs/security-model", label: "Security model", icon: ShieldCheckIcon },
       { href: "/docs/permissions-model", label: "Permissions model", icon: LockClosedIcon },
+      { href: "/docs/oauth-setup", label: "OAuth setup", icon: LockClosedIcon },
     ],
   },
   {
     title: "Reference",
     items: [
       { href: "/docs/troubleshooting", label: "Troubleshooting", icon: WrenchScrewdriverIcon },
+      { href: "/docs/audit-logs", label: "Audit evidence", icon: BookOpenIcon },
       { href: "/docs/faq", label: "FAQ", icon: QuestionMarkCircleIcon },
       { href: "/docs/glossary", label: "Glossary", icon: BookOpenIcon },
     ],

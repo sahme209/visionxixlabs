@@ -1,0 +1,10 @@
+{
+  "result": "timed_out",
+  "deadlineSeconds": 45,
+  "session": 46931,
+  "terminalShellExit": 1,
+  "error": "subprocess.TimeoutExpired",
+  "pass": false,
+  "automaticRetry": false,
+  "limitation": "scoped type qualification remains open; no cause inferred"
+}

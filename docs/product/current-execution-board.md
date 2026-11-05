@@ -196,3 +196,6 @@ Existing native Documentation page inspected through AX and screenshot without i
 
 ### November4 current Agent source-map requalification
 ~~46main+19child control bindings requalified to actual182Git source~~: two expected stale-baseline failures/eight passes became current10/0/0; all65control records unchanged. [Evidence](../recovery/2026-11-04/agent-binding-requalification/README.md). Removing only reviewed guards plus existing metadata reconstructs exact oldGit bytes. Fifteen source records verified; tests/registry pins unchanged; historical prose separated and finalreview clear. No runtime/customer/native983/retrieval acceptance or fullregistered-suite claim. All21parents and pending Governance decision preserved.
+
+### November4 canonical public guide navigation — partial verification
+Five omitted authored guides added; actual rendered page-inventory/titlelookup RED6fail4pass→GREEN10, independent source review clear. [Evidence](../recovery/2026-11-04/docs-canonical-navigation/README.md). All24authored routes uniquely linked, four redirect aliases excluded, existing19destinations unchanged. Scopedtypes TIMEDOUT45s/no retry/notpassed; build/browser/currentpreview and richer search remain open. This local source is not production/customer documentation acceptance. All21parents preserved.

@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear for source/navigation/test scope",
+  "execution": "read-only no reruns",
+  "types": "separate timed-out gate remains open"
+}
