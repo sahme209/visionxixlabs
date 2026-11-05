@@ -1,0 +1,51 @@
+{
+  "priorDirectory": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/current-interaction-web-preview",
+  "newRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-95905542-5266",
+  "newBuild": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-docs-focus-build-95905542-bmlib1qf",
+  "sourceRevision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+  "files": [
+    "prepare-runtime.py",
+    "launch_preview.py",
+    "preview_proxy.py",
+    "backend.sb",
+    "proxy.sb",
+    "preparation.sb",
+    "test_preview_bindings.py"
+  ],
+  "replacements": [
+    [
+      "266b3987d18ae68b2e34caa5a12ebfbe4aa3f087",
+      "959055428a320ab954560ddfd0b793ccd11e8e7b"
+    ],
+    [
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-interaction-quality-build-266b3987-19gg42c_",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-docs-focus-build-95905542-bmlib1qf"
+    ],
+    [
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-266b3987-5264",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-95905542-5266"
+    ],
+    [
+      "266b3987",
+      "95905542"
+    ],
+    [
+      "5265",
+      "5267"
+    ],
+    [
+      "5264",
+      "5266"
+    ],
+    [
+      "9d45fc98826b5f4e03acc6b60913d7dd2b77694de5ebfd1e9c1186215802de4f",
+      "PENDING_BUILD_MANIFEST_NOT_STARTABLE"
+    ]
+  ],
+  "serversStarted": false,
+  "ports": [
+    5266,
+    5267
+  ],
+  "listenerCheck": "lsof returned no listeners before preparation; no bind attempted"
+}

@@ -1,0 +1,13 @@
+# Updated Docs — guarded local HTML/static preview
+
+Source95905542 is available at [Docs](http://127.0.0.1:5266/docs), [Getting started](http://127.0.0.1:5266/docs/getting-started) and the [labeled wrapper](http://127.0.0.1:5266/__axiom_preview). It reuses the completed current build without replacing older previews or native/reviewer apps.
+
+Seven guard artifacts reconstruct exactly from the previously reviewed266 guards with only source/build/root/port/manifest substitutions. The 47 curated public paths, asset restrictions, CSP and header/method/private-path rules are unchanged. Manifest `b268efb2…` binds45public/1150static assets, exact runtime/build inputs and the newly owned0700image-cache directory. This narrow writable runtime directory is not a claim of whole-stage immutability or issuer custody.
+
+Five pure source/binding/profile checks passed before startup. Ten bounded loopback HTTP checks passed afterward: four public pages, the exact current Docs-layout JavaScript chunk and five private/API/POST/query refusals. The delivered chunk contains the new focus-recovery code; HTTP marker presence does not execute that code or prove its browser behavior. The checker caps the whole invocation at45seconds, each socket at5seconds and bodies at32MiB, follows no redirects and supplies no real credentials.
+
+Backend outbound network access is denied, its configuration is synthetic, and only the fixed image cache is writable. The proxy reaches only its fixed loopback backend and approved public GET targets; account/auth/private/API/form actions and unsupported queries remain blocked. In particular, RSC/client navigation interactions are not accepted by these tests. This is a guarded HTML/static presentation, not a working authenticated customer environment or full product acceptance.
+
+Owned backend session52973 and proxy63333 were both re-polled running after successful checks. Keep those same handles; observation timeouts must not cause a duplicate start. Existing source266/older previews and paired native/reviewer sessions are preserved. No disabled-browser workaround, actual browser/OSIME/keyboard/AT/layout/performance acceptance, provider/customerDB/action, real AI, production/Vercel/GitHub CI, migration/grant/credential/purchase or spending occurred. Native/manual/human gates remain separate. All21master parents remain open.
+
+Preparation, startup and final independent reviews passed. See `relocation.json`, `cache-creation.json`, `asset-manifest.json`, `launch-binding.json`, `pure-bindings.json`, `http-checks.json`, `receipt.json` and `final-review.json`. A source header or manifest hash is delivery provenance, not current provider access, genuine approval or completed Governance.

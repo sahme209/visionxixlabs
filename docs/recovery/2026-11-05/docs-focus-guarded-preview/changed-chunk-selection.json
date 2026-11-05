@@ -1,0 +1,11 @@
+{
+  "scope": "one current Docs layout production chunk; marker presence only, not browser execution",
+  "chunks": [
+    {
+      "url": "/_next/static/chunks/app/docs/layout-534bc1c4b7076871.js",
+      "relativePath": ".next/static/chunks/app/docs/layout-534bc1c4b7076871.js",
+      "bytes": 27474,
+      "sha256": "5e2bbb3d34c3932899fa42b417d600e33f064e01f703848ddcf234c429201958"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "decision": "CLEAR",
+  "scope": "Guarded local preview startup readiness only; no runtime/browser acceptance or production qualification",
+  "sourceRevision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+  "manifestSha256": "b268efb2bd39c1ecc338399dc2ac0ae033e6e8b188c4420b8766b11df2517149",
+  "stage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-docs-focus-build-95905542-bmlib1qf/stage",
+  "ports": {
+    "proxy": 5266,
+    "backend": 5267
+  },
+  "normalizedSevenFiles": [
+    {
+      "path": "prepare-runtime.py",
+      "exact": true
+    },
+    {
+      "path": "launch_preview.py",
+      "exact": true
+    },
+    {
+      "path": "preview_proxy.py",
+      "exact": true
+    },
+    {
+      "path": "backend.sb",
+      "exact": true
+    },
+    {
+      "path": "proxy.sb",
+      "exact": true
+    },
+    {
+      "path": "preparation.sb",
+      "exact": true
+    },
+    {
+      "path": "test_preview_bindings.py",
+      "exact": true
+    }
+  ],
+  "onlyAdditionalPreparedReplacement": "preview_proxy.py manifest placeholder replaced by exact asset-manifest SHA256",
+  "boundFilesVerified": 1122,
+  "publicAssetsVerified": 45,
+  "staticAssetsVerified": 1150,
+  "publicPageWhitelistCount": 47,
+  "publicAndImageAllowlistsUnchanged": true,
+  "cspAndSecurityLogicUnchanged": true,
+  "cacheIdentity": {
+    "device": 16777232,
+    "inode": 16398856,
+    "uid": 501,
+    "mode": 448
+  },
+  "cacheMatchesCreationAndBinding": true,
+  "cacheAncestorsRealDirectories": true,
+  "stageEnvFilesAbsent": true,
+  "pureBindingReceipt": {
+    "tests": 5,
+    "failures": 0,
+    "exitCode": 0,
+    "toolChunk": "f0ae91"
+  },
+  "reviewerExecutionPerformed": false,
+  "limits": [
+    "No servers, HTTP, browser, build or provider execution by reviewer",
+    "Build final evidence review remains separate",
+    "Only fixed image-cache path is writable by backend; no whole-stage immutability or issuer-custody qualification",
+    "Preserve old previews and sessions"
+  ]
+}

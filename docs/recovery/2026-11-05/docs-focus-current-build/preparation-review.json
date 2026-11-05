@@ -1,0 +1,8 @@
+{
+  "reviewer": "agent_reliability_review",
+  "recordedBy": "root from actual message",
+  "decision": "CLEAR for ordinary offline build",
+  "scope": "exact source revision and owned prefix replacements only; unchanged reviewed helpers/closed issuer/offline cached stage/sanitized environment/output checks",
+  "executionByReviewer": false,
+  "previewAuthorization": "separate existing user local-presentation authority and guard review, not compiler proof"
+}

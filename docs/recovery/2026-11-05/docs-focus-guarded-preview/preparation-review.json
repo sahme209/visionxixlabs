@@ -1,0 +1,59 @@
+{
+  "decision": "CLEAR",
+  "scope": "Preparation only; not startup authorization or runtime qualification",
+  "sourceRevision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+  "reviewMethod": "Read-only normalized byte comparison of all seven files against prior reviewed 266 preview using only relocation.json replacements; inspected preparation and launch guards.",
+  "files": [
+    {
+      "path": "prepare-runtime.py",
+      "exactNormalizedMatch": true,
+      "sha256": "d5fbef8a7884e3d13ff21875c82d5931ff93baadb4ec2585a348a540e7bf2580"
+    },
+    {
+      "path": "launch_preview.py",
+      "exactNormalizedMatch": true,
+      "sha256": "4a914b94e2c74af068a77da0f37bd56f8c54a4cfe7bef7d5de882d0982f921f3"
+    },
+    {
+      "path": "preview_proxy.py",
+      "exactNormalizedMatch": true,
+      "sha256": "acd8d4c1a2cad5e68df1038bc84b3c975051086016be8464894416ca81b5483f"
+    },
+    {
+      "path": "backend.sb",
+      "exactNormalizedMatch": true,
+      "sha256": "4ea8a12c267eccc48d8c2baee3cd5e83ae7e7789dfde18b4d6d5f7fadd4c5a4c"
+    },
+    {
+      "path": "proxy.sb",
+      "exactNormalizedMatch": true,
+      "sha256": "9cc09534728200fb3d69055168803aa4c2b25c5a42beb6c0179280250ff018e2"
+    },
+    {
+      "path": "preparation.sb",
+      "exactNormalizedMatch": true,
+      "sha256": "9176a6f10fbf5cba908c493f061312fc2f12df81f986c6d6e89a41119aacaab7"
+    },
+    {
+      "path": "test_preview_bindings.py",
+      "exactNormalizedMatch": true,
+      "sha256": "ad45c7da5ea72b88ee3a32e58f7ea53aba80c9d508c9e0584682bd17c6181d34"
+    }
+  ],
+  "securityLogicExpanded": false,
+  "cspOrAllowlistExpanded": false,
+  "placeholder": "PENDING_BUILD_MANIFEST_NOT_STARTABLE",
+  "executionPerformedByReviewer": false,
+  "remainingGates": [
+    "Successful exact-source build and output proof",
+    "Fresh owned stage/.next/cache/images directory with exact mode 0700 and verified nonsymlink ancestors",
+    "Preparation under fixed network-deny profile writable only at new preview root",
+    "Exact asset-manifest and launch-binding verification plus five pure binding checks",
+    "Separate startup readiness review before server launch"
+  ],
+  "limits": [
+    "No listener, service, browser, provider or build execution by reviewer",
+    "Listener availability and build progress are parent-reported; no current startup acceptance",
+    "Old previews and artifacts remain preserved"
+  ]
+}

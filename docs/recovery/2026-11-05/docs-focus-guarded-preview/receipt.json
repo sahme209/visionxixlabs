@@ -1,0 +1,15 @@
+{
+  "sourceRevision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+  "root": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-95905542-5266",
+  "backendSession": 52973,
+  "proxySession": 63333,
+  "backend": "http://127.0.0.1:5267",
+  "publicPreview": "http://127.0.0.1:5266/docs",
+  "wrapper": "http://127.0.0.1:5266/__axiom_preview",
+  "observedLive": "both owned handles re-polled running after successful HTTP checks",
+  "httpChecks": 10,
+  "pureChecks": 5,
+  "browserInteractionAccepted": false,
+  "productionChanged": false,
+  "providerActionsPerformed": false
+}

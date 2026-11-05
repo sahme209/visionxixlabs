@@ -1,0 +1,9 @@
+# Current Docs focus repair — ordinary offline build PASS
+
+The later one-file DocsContents focus repair is now included in a complete offline Next production build of frozen `95905542`. Cached preparation, stage-only Prisma generation, compilation 36.3 seconds, production-web TypeScript 24.9 seconds, 303 static pages, tracing and the existing output contract passed. Tool session8035 terminated exit0; no restart or retry occurred and focused tests were not rerun. Utility-mode caffeinate ended with the command.
+
+The archive contains 9,617 verified regular inputs,104,417,280 bytes, SHA256 `34923bae78ed439cd964bbd0f0b7120b44d67ea103181854669235890284a40e`. Current tracked application/script bytes match the frozen source. The driver differs from the prior836 driver only by fixed revision/output prefix; helper hashes are unchanged. The three existing dependency warnings and four optional cache misses remain recorded.
+
+Only build outputs are verified. Compatibility remains false; complete executable closure, executing issuer, runtime/activation and descendant-quiescence qualification remain unavailable, with governed execution unauthorized. This is ordinary compiler/output evidence, not real provider/database compatibility, full custody, complete Governance or customer acceptance. No production build, deployment, schema apply, provider/customer/AI call, credentials/grants, native helper/service, purchase or spending occurred.
+
+The successful artifact was reused for the separately guarded [local presentation](../docs-focus-guarded-preview/README.md). That does not promote this source to production or replace authentic browser/keyboard/AT acceptance. The intentional unstaged master remains outside the Git archive with its verified recovery patch preserved. All21parents remain open. Full receipts/logs, current-source comparison and independent review are retained here.

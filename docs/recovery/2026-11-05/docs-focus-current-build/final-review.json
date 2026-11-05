@@ -1,0 +1,76 @@
+{
+  "decision": "CLEAR",
+  "scope": "Offline build output evidence only",
+  "sourceRevision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+  "terminalSession": 8035,
+  "terminalExit": 0,
+  "preparation": {
+    "revision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+    "count": 9617,
+    "archiveBytes": 104417280,
+    "archiveSha": "34923bae78ed439cd964bbd0f0b7120b44d67ea103181854669235890284a40e",
+    "network": "kernel_denied",
+    "lifecycleScriptsExecuted": false,
+    "status": "offline_install_observed_unqualified"
+  },
+  "generation": {
+    "exit": 0,
+    "verified": true,
+    "schemaComparison": {
+      "canonicalArchiveSha256": "9452b3204fff38db393aeb2bf5c3e9790816c2a130d1f688eb76ee2fa93ab6c0",
+      "canonicalGeneratedSha256": "9452b3204fff38db393aeb2bf5c3e9790816c2a130d1f688eb76ee2fa93ab6c0",
+      "kind": "canonical_formatted_scratch_bytes",
+      "rawArchiveSha256": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031",
+      "rawGeneratedSha256": "9452b3204fff38db393aeb2bf5c3e9790816c2a130d1f688eb76ee2fa93ab6c0",
+      "semanticAttestation": "unavailable"
+    },
+    "compat": false
+  },
+  "losslessLogSha256": "311e2a3c0c7f42b08eea6101b8edcebe55954a1bfdf19a190932aef817daac60",
+  "logHashVerified": true,
+  "compileSeconds": 36.3,
+  "typeSeconds": 24.9,
+  "staticPages": 303,
+  "requiredMetadataVerified": 1112,
+  "outputMismatches": [],
+  "criticalDependencyWarnings": 3,
+  "warningSource": "packages/verified-issuer-runtime/index.cjs dynamic dependency expressions",
+  "optionalCacheMisses": [
+    {
+      "location": "node_modules/@emnapi/core",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@emnapi/wasi-threads",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@napi-rs/wasm-runtime",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@tybys/wasm-util",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    }
+  ],
+  "qualification": {
+    "compat": false,
+    "runtime": "unavailable",
+    "closure": "unavailable",
+    "issuer": "unavailable",
+    "activation": "unavailable",
+    "descendants": "unavailable",
+    "authorized": false,
+    "bounds": "original_process_group_only"
+  },
+  "currentSourceReceipt": "current-source-check.json records empty tracked application/script diff",
+  "limits": [
+    "No real-browser/RSC/client-navigation/keyboard/layout/assistive-technology acceptance",
+    "No runtime-custody, issuer identity, complete closure, descendant quiescence or customer acceptance qualification",
+    "Reviewer performed no build, tests, service, HTTP, browser or provider actions"
+  ]
+}

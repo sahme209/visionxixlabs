@@ -1,0 +1,15 @@
+{
+  "method": "actual unittest runner under fixed network-denied preparation profile; no startup or profile application by tests",
+  "toolChunk": "f0ae91",
+  "exitCode": 0,
+  "tests": 5,
+  "failures": 0,
+  "scope": [
+    "runtime/source/asset/cache identities",
+    "fixed ports and narrow cache write path",
+    "no authority headers/method bypass",
+    "private/unknown path refusal"
+  ],
+  "applicationExecuted": false,
+  "serversStarted": false
+}

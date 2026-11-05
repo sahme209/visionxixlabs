@@ -1,0 +1,70 @@
+{
+  "sourceRevision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+  "manifestSha256": "b268efb2bd39c1ecc338399dc2ac0ae033e6e8b188c4420b8766b11df2517149",
+  "checksCompleted": 10,
+  "rows": [
+    {
+      "path": "/docs",
+      "status": 200,
+      "bytes": 117265,
+      "sha256": "23a669f99e8cec36d80bbb7514810fc5f642af56a4fe16b59c884539c2c38d5a"
+    },
+    {
+      "path": "/docs/getting-started",
+      "status": 200,
+      "bytes": 122133,
+      "sha256": "4d9b50b44b5e0190c6e188372a26ff649dbfee5e3a2890dd09ed6cd905f317da"
+    },
+    {
+      "path": "/product",
+      "status": 200,
+      "bytes": 84253,
+      "sha256": "635d653c97510093e8cd1723d55ef32d2ca74afda8f7e8940c7a2d17a88a27e2"
+    },
+    {
+      "path": "/__axiom_preview",
+      "status": 200,
+      "bytes": 620,
+      "sha256": "80a0b5de5e1f3ad2dba51695b7976157b7c564be3fec09f415096c30d704eb6e"
+    },
+    {
+      "asset": "/_next/static/chunks/app/docs/layout-534bc1c4b7076871.js",
+      "status": 200,
+      "sha256": "5e2bbb3d34c3932899fa42b417d600e33f064e01f703848ddcf234c429201958",
+      "markers": "focus-recovery code present; not browser-executed"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/session",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/signin",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/docs?_rsc=synthetic",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/docs?unexpected=synthetic",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    }
+  ],
+  "elapsedSeconds": 0.046,
+  "failure": null,
+  "limits": "fixed-loopback HTTP delivery/current compiled markers and guard refusals; no browser/layout/keyboard/AT/runtime-custody/production acceptance"
+}

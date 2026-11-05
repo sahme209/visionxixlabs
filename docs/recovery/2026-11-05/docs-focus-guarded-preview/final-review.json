@@ -1,0 +1,75 @@
+{
+  "decision": "CLEAR",
+  "scope": "Guarded loopback HTML/static delivery and finite guard-refusal evidence only",
+  "sourceRevision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+  "manifestSha256": "b268efb2bd39c1ecc338399dc2ac0ae033e6e8b188c4420b8766b11df2517149",
+  "publicPreview": "http://127.0.0.1:5266/docs",
+  "ownedSessions": {
+    "backend": 52973,
+    "proxy": 63333
+  },
+  "livenessEvidence": "Parent receipt records both owned handles re-polled running; reviewer did not poll services",
+  "pureBindingChecks": 5,
+  "httpChecks": 10,
+  "httpFailure": null,
+  "delivery": {
+    "htmlPages": 4,
+    "currentDocsLayoutAsset": {
+      "asset": "/_next/static/chunks/app/docs/layout-534bc1c4b7076871.js",
+      "status": 200,
+      "sha256": "5e2bbb3d34c3932899fa42b417d600e33f064e01f703848ddcf234c429201958",
+      "markers": "focus-recovery code present; not browser-executed"
+    }
+  },
+  "refusals": [
+    {
+      "method": "GET",
+      "path": "/api/auth/session",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/signin",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/docs?_rsc=synthetic",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/docs?unexpected=synthetic",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    }
+  ],
+  "checkerBounds": {
+    "overallSeconds": 45,
+    "perConnectionSeconds": 5,
+    "responseBytes": 33554432,
+    "fixedLoopbackOnly": true,
+    "redirectFollowing": false,
+    "credentials": "Synthetic refusal probes only; no real authorization forwarding"
+  },
+  "normalizedGuardsUnchanged": true,
+  "allowlistOrCspExpansion": false,
+  "buildFinalReview": "../docs-focus-current-build/final-review.json",
+  "browserInteractionAccepted": false,
+  "productionChanged": false,
+  "providerActionsPerformed": false,
+  "limits": [
+    "No real-browser/RSC/client-navigation/keyboard/layout/assistive-technology acceptance",
+    "No runtime-custody, issuer identity, complete closure, descendant quiescence or customer acceptance qualification",
+    "Reviewer performed no build, tests, service, HTTP, browser or provider actions"
+  ]
+}

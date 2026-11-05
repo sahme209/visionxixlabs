@@ -1,0 +1,50 @@
+{
+  "sourceRevision": "959055428a320ab954560ddfd0b793ccd11e8e7b",
+  "toolSession": 8035,
+  "terminalExitCode": 0,
+  "verifiedRegularFiles": 9617,
+  "archiveBytes": 104417280,
+  "archiveSha256": "34923bae78ed439cd964bbd0f0b7120b44d67ea103181854669235890284a40e",
+  "buildOutputsVerified": true,
+  "buildCompatibilityVerified": false,
+  "compile": [
+    "Compiled successfully in 36.3s"
+  ],
+  "types": [
+    "Finished TypeScript in 24.9s ..."
+  ],
+  "static": [
+    "Generating static pages using 1 worker (303/303) in 1851ms"
+  ],
+  "warnings": 3,
+  "missingOptional": [
+    {
+      "location": "node_modules/@emnapi/core",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@emnapi/wasi-threads",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@napi-rs/wasm-runtime",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@tybys/wasm-util",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    }
+  ],
+  "runtimeQualification": "unavailable",
+  "completeExecutableClosure": "unavailable",
+  "executingIssuerIdentity": "unavailable",
+  "activationQualification": "unavailable",
+  "descendantQuiescence": "unavailable",
+  "executionAuthorized": false,
+  "previewStarted": false,
+  "productionChanged": false
+}
