@@ -1,0 +1,17 @@
+F
+======================================================================
+FAIL: test_destination_inside_protected_package_refuses_before_mutation (test_container_assembly.ContainerAssemblyTests)
+----------------------------------------------------------------------
+ValueError: assembly_input_unavailable:package_changed_or_partial
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 82, in test_destination_inside_protected_package_refuses_before_mutation
+    with self.assertRaisesRegex(ValueError,'assembly_destination_overlaps_input'):self.assemble()
+AssertionError: "assembly_destination_overlaps_input" does not match "assembly_input_unavailable:package_changed_or_partial"
+
+----------------------------------------------------------------------
+Ran 1 test in 0.019s
+
+FAILED (failures=1)

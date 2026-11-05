@@ -1,0 +1,10 @@
+{
+  "approval": "call_FS31u67HDXMXUcf9trVGQgS2",
+  "scope": "local connected assembly source and synthetic pure/mock owned-filesystem tests",
+  "proposalSha256": "60a2701b4270afd33ce530a344257474a1efb896bd3acebb9d91e191f349298c",
+  "realAssemblyAuthorized": false,
+  "imageCreationAuthorized": false,
+  "signingAuthorized": false,
+  "installationAuthorized": false,
+  "activationAllowed": false
+}

@@ -1,0 +1,53 @@
+..E..EEF.
+======================================================================
+ERROR: test_final_seal_observation_never_accepts_leaf_mutation_or_deep_signing (test_container_assembly.ContainerAssemblyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 80, in test_final_seal_observation_never_accepts_leaf_mutation_or_deep_signing
+    r=self.assemble();observed={'format':a.SEAL_OBSERVATION_FORMAT,'assemblyReceiptSha256':a.binding(self.destination/a.RECEIPT)['sha256'],'deepSigningUsed':False,'authoritativeLeaves':{k:v['sha256']for k,v in r['authoritativeCopies'].items()},'mutatedPaths':['container-main-signature','Contents/_CodeSignature/CodeResources'],'signatureValidity':'unavailable'}
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 33, in assemble
+    def assemble(self):return a.assemble_container_inputs(self.packet,self.destination)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_assembly.py", line 10, in assemble_container_inputs
+    def assemble_container_inputs(*args,**kwargs):raise ValueError('container assembly not implemented')
+ValueError: container assembly not implemented
+
+======================================================================
+ERROR: test_output_tamper_and_extra_files_refuse (test_container_assembly.ContainerAssemblyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 77, in test_output_tamper_and_extra_files_refuse
+    self.assemble();self.put(self.destination/'unexpected',b'EXTRA')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 33, in assemble
+    def assemble(self):return a.assemble_container_inputs(self.packet,self.destination)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_assembly.py", line 10, in assemble_container_inputs
+    def assemble_container_inputs(*args,**kwargs):raise ValueError('container assembly not implemented')
+ValueError: container assembly not implemented
+
+======================================================================
+ERROR: test_positive_real_copy_graph_preserves_exact_bytes_control_and_closed_gates (test_container_assembly.ContainerAssemblyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 36, in test_positive_real_copy_graph_preserves_exact_bytes_control_and_closed_gates
+    r=self.assemble();self.assertEqual(a.verify_assembly(self.destination),r)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 33, in assemble
+    def assemble(self):return a.assemble_container_inputs(self.packet,self.destination)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_assembly.py", line 10, in assemble_container_inputs
+    def assemble_container_inputs(*args,**kwargs):raise ValueError('container assembly not implemented')
+ValueError: container assembly not implemented
+
+======================================================================
+FAIL: test_unjoined_image_source_and_manifest_refuse (test_container_assembly.ContainerAssemblyTests)
+----------------------------------------------------------------------
+ValueError: container assembly not implemented
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 52, in test_unjoined_image_source_and_manifest_refuse
+    with self.assertRaisesRegex(ValueError,'image_package_provenance_mismatch'):self.assemble()
+AssertionError: "image_package_provenance_mismatch" does not match "container assembly not implemented"
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.086s
+
+FAILED (failures=1, errors=3)

@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_forged_control_source_and_affirmative_preparation_refuse (test_container_assembly.ContainerAssemblyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 67, in test_forged_control_source_and_affirmative_preparation_refuse
+    with self.assertRaisesRegex(ValueError,'main_fixed_source_coordinates_required'):self.assemble()
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.022s
+
+FAILED (failures=1)

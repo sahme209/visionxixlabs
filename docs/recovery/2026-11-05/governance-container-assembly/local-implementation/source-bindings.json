@@ -1,0 +1,10 @@
+{
+  "files": {
+    "scripts/governance_local_issuer/container_assembly.py": "2cb2c62b0fe42c26393dece60f42d6e31a83a865fb2e888810c1204ba3847ae9",
+    "scripts/governance_local_issuer/tests/test_container_assembly.py": "8965eb2efa5339eda5d68cd57e0a442eb3283dcdf3ee160594ee6b07a086d5c1"
+  },
+  "actualRealAssemblyPerformed": false,
+  "actualImageOperationPerformed": false,
+  "signingOrRuntimePerformed": false,
+  "executionAuthorized": false
+}
