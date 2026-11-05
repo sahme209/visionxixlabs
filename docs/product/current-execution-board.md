@@ -342,3 +342,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Website command-palette composition — local keyboard repair
 ~~IME composition no longer toggles/dismisses/navigates the command palette or consumes candidate-navigation keys~~ ([evidence](../recovery/2026-11-05/website-command-ime/README.md)): actualcomponentRED10/3controls→GREEN13/scopedtypes/review pass; exactlytwoearlyreturns reconstructwholepriorfile. Threadpool boundednetworkdeniedchild exits/reaped withoutpriorforkwarnings; no repeatcontacttests. Query/focus/default/nonnavigation and ordinaryarrowsEnter/Escape/accountvisibility verifiedinDOMonly; realbrowser/OSIME/AT/native/build/deploy acceptancepending. Currentpreviewolder0c9; all21parents/pendingGovernance decisions preserved.
+
+
+### Recent interaction fixes — ordinary local integration build
+~~Frozen266website batch compiled, production-web types/303staticpages/finaltracing/outputverification passed~~ ([evidence](../recovery/2026-11-05/current-interaction-web-batch/README.md)):9343regulararchiveinputs/102225920bytes/SHA782a3ba5..., primary35950terminal0. Integrates three reviewedruntime increments without repeatedfocusedtests. Three existing dependencywarnings/fouroptionalmisses retained; buildCompatibilityfalse/issuer-runtime-closure-activation-descendantquiescence unavailable/executionAuthorizedfalse. No newpreview/native restart/deploy/provider/AI/customerDB/schema/spend. Current0c9runningpreviewolder; actualbrowser/OSIME/AT/customer/Governance acceptance andall21parents remainopen.

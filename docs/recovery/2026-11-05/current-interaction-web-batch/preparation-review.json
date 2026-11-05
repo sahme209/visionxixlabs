@@ -1,0 +1,6 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "method": "actual driver diff, fixed source/helper pins and packet review; no execution",
+  "scope": "only source revision and owned prefix differ; no mechanism/permission/authority changes"
+}
