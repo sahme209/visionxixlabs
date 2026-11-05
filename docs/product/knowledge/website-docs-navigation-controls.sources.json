@@ -1,0 +1,1525 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "sourceRevision": "49c5d4b5de5d9efa03b06e544106404da8387f36",
+  "owner": "Axiom documentation workstream",
+  "author": "Codex draft",
+  "genuineHumanEditorialOwner": null,
+  "sourceReviewDate": "2026-11-05",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "genuineEditorialApproval": false,
+  "mediaAccepted": false,
+  "browserNativeAssistiveTechnologyAccepted": false,
+  "retrievalEvaluationExecuted": false,
+  "runtimeMetadataChanged": false,
+  "documentationIdsAreRuntimeIds": false,
+  "sources": [
+    {
+      "key": "layout",
+      "path": "app/docs/layout.tsx",
+      "sha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+      "lineCount": 22,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 22,
+          "sha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce"
+        }
+      ]
+    },
+    {
+      "key": "landing",
+      "path": "app/docs/page.tsx",
+      "sha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "lineCount": 63,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 63,
+          "sha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32"
+        }
+      ]
+    },
+    {
+      "key": "contents",
+      "path": "components/docs/DocsContents.tsx",
+      "sha256": "9bf4930205a7c2ddff2194255816f7d26cedadd55b65198c8ae0ef8442c17d8b",
+      "lineCount": 74,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 74,
+          "sha256": "9bf4930205a7c2ddff2194255816f7d26cedadd55b65198c8ae0ef8442c17d8b"
+        }
+      ]
+    },
+    {
+      "key": "sidebar",
+      "path": "components/docs/DocsSidebar.tsx",
+      "sha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+      "lineCount": 181,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 181,
+          "sha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a"
+        }
+      ]
+    },
+    {
+      "key": "primitives",
+      "path": "components/docs/DocPrimitives.tsx",
+      "sha256": "b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855",
+      "lineCount": 223,
+      "ranges": [
+        {
+          "start": 55,
+          "end": 98,
+          "sha256": "5acd2bb7ff5c565abd99faefa19c56e366f99a15e4e661790abbc5bb61ca9810"
+        },
+        {
+          "start": 166,
+          "end": 223,
+          "sha256": "e58c36febf65e9329eba17e5df24814451f29f58cdb603ce4afbe66acf243d7c"
+        }
+      ]
+    },
+    {
+      "key": "heading-index",
+      "path": "lib/docs/guide-heading-index.json",
+      "sha256": "d2e232775d3c28b1fb64fc9eb4a7e8c7b2b73a6a6650499506eb612d9d25369f",
+      "lineCount": 332,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 332,
+          "sha256": "d2e232775d3c28b1fb64fc9eb4a7e8c7b2b73a6a6650499506eb612d9d25369f"
+        }
+      ]
+    },
+    {
+      "key": "heading-generator",
+      "path": "scripts/generate-docs-heading-index.cjs",
+      "sha256": "9d481bdd8a7aef0b4970ce99ae97c10dec18c60e37897d0ef906eae7a1b483c3",
+      "lineCount": 21,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 21,
+          "sha256": "9d481bdd8a7aef0b4970ce99ae97c10dec18c60e37897d0ef906eae7a1b483c3"
+        }
+      ]
+    },
+    {
+      "key": "heading-build-gate",
+      "path": "scripts/check-vercel-build.mjs",
+      "sha256": "72247c1c379b845133f9e5cd570697660b30c58190ab0901169b8f9e63e15163",
+      "lineCount": 66,
+      "ranges": [
+        {
+          "start": 50,
+          "end": 62,
+          "sha256": "731ea8c3872c194c5eac7fbb30ff4b4e521d82e01a3892d5303f13e3557da97a"
+        }
+      ]
+    },
+    {
+      "key": "contact-destination",
+      "path": "app/(marketing)/contact/page.tsx",
+      "sha256": "0839c1483337e12d962a538fdce153c4abddf0bc2af2b2c0f3e96e0ef03f14a6",
+      "lineCount": 19,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 19,
+          "sha256": "0839c1483337e12d962a538fdce153c4abddf0bc2af2b2c0f3e96e0ef03f14a6"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/approval-workflow/page.tsx",
+      "path": "app/docs/approval-workflow/page.tsx",
+      "sha256": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16",
+      "lineCount": 62,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "3f3e0de3e730de696cfac8f7ad7dba49428c8731e6af6f487bbd4957187f6629"
+        },
+        {
+          "start": 58,
+          "end": 58,
+          "sha256": "44071a5a8134a63b98eb03725fbf12b73e80fbc0a11055dbd1ff87c921e26053"
+        },
+        {
+          "start": 59,
+          "end": 59,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/architecture/page.tsx",
+      "path": "app/docs/architecture/page.tsx",
+      "sha256": "e89584e7dc7ad2b0b65b4f8e5814f120bdf36d82eda660832935e85196947640",
+      "lineCount": 17,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "224dc0526224b6d19522e4ac5fdd3c9afdc3a09e6f1762a1a81ef09d40d8166a"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/audit-logs/page.tsx",
+      "path": "app/docs/audit-logs/page.tsx",
+      "sha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945",
+      "lineCount": 38,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "d410dd45dbe2dbd530bedba9dcff8e115956aaf8dc5c6eb780c8c9f3ad470074"
+        },
+        {
+          "start": 36,
+          "end": 36,
+          "sha256": "e0197cd5655ca2ec570e0dcb5ec8237df5af7fa7e549a212cfb0b42b0b173c52"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/aws-setup/page.tsx",
+      "path": "app/docs/aws-setup/page.tsx",
+      "sha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be",
+      "lineCount": 53,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "abeeab415e7f0a016dacd21ecf4bc72a0f2799474fe4e0c2465f98f4d9bec515"
+        },
+        {
+          "start": 49,
+          "end": 49,
+          "sha256": "654231ddc414ecd33f30ff79a4efab04f07394f43528efe948212e071bfe6221"
+        },
+        {
+          "start": 50,
+          "end": 50,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/azure-setup/page.tsx",
+      "path": "app/docs/azure-setup/page.tsx",
+      "sha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01",
+      "lineCount": 81,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "cbea9b06df1611bc70e66e791fcc9e446dac1fe92921de59872490e91f9c7d1c"
+        },
+        {
+          "start": 74,
+          "end": 77,
+          "sha256": "c562d1b04a4fedf8d95adf71b356739c371d69a75a49e1893a112af84e89a0b2"
+        },
+        {
+          "start": 78,
+          "end": 78,
+          "sha256": "80a27ae233feaa25576b6c9a74e24870091af593da5ad0d9b6b8d7ac87d07e66"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/best-practices/page.tsx",
+      "path": "app/docs/best-practices/page.tsx",
+      "sha256": "9100c65e1d837ccb82a06eb00957b4a6f62b017f3d7e68872cba6a894245f26f",
+      "lineCount": 5,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "9100c65e1d837ccb82a06eb00957b4a6f62b017f3d7e68872cba6a894245f26f"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/desktop-architecture/page.tsx",
+      "path": "app/docs/desktop-architecture/page.tsx",
+      "sha256": "378c913c435c1c4cb397b937f3e7b28181fddb00759a5fc8236326e1c12738e3",
+      "lineCount": 5,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "378c913c435c1c4cb397b937f3e7b28181fddb00759a5fc8236326e1c12738e3"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/desktop-install/page.tsx",
+      "path": "app/docs/desktop-install/page.tsx",
+      "sha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c",
+      "lineCount": 120,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "fc7f8476787db4c43fcfac7ccd200164c32385761c8237e11610e15f49ea4b6e"
+        },
+        {
+          "start": 113,
+          "end": 116,
+          "sha256": "612d2483ada4c937cfb9b594701b162c53f87b321cf051fdbaef20fbe4903e8a"
+        },
+        {
+          "start": 117,
+          "end": 117,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/execution-plans/page.tsx",
+      "path": "app/docs/execution-plans/page.tsx",
+      "sha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a",
+      "lineCount": 54,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "196af6fbff55a83a368289d599ea606014740d08cb6682e01aa444ddda9813e1"
+        },
+        {
+          "start": 52,
+          "end": 52,
+          "sha256": "35ab9d7b9d79e2ecac8c9de1d3b2250bc4540a224bef2da8127b02e6dd41ce94"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/faq/page.tsx",
+      "path": "app/docs/faq/page.tsx",
+      "sha256": "333d6185edf68082966fe41f71b89a60cfdc0ff43854e6459a5ca1b57524b999",
+      "lineCount": 181,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "3b90d824e90d83652ea8aca878c6ccc324e4e5a92f3972851c05160d0f3a04d2"
+        },
+        {
+          "start": 174,
+          "end": 177,
+          "sha256": "b4a6122322989b18f9a2cbf786049a124ea6670937398f5bd3b66cc31aca5a0d"
+        },
+        {
+          "start": 178,
+          "end": 178,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/gcp-setup/page.tsx",
+      "path": "app/docs/gcp-setup/page.tsx",
+      "sha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba",
+      "lineCount": 75,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "cbea9b06df1611bc70e66e791fcc9e446dac1fe92921de59872490e91f9c7d1c"
+        },
+        {
+          "start": 68,
+          "end": 71,
+          "sha256": "ad34392e869638c9c9e030711851a0c05612bd2acea6d0e55e0ce7b59e8ac7b6"
+        },
+        {
+          "start": 72,
+          "end": 72,
+          "sha256": "80a27ae233feaa25576b6c9a74e24870091af593da5ad0d9b6b8d7ac87d07e66"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/getting-started/page.tsx",
+      "path": "app/docs/getting-started/page.tsx",
+      "sha256": "73d5f64e12ad08fedcf8a05c0c5ded47bf799daa772f1bd0e72f8e19fd0e315e",
+      "lineCount": 146,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "00f2f60fb3cd9bb0ef9654352a67f3db7b419e874696d568055b489b6c42655e"
+        },
+        {
+          "start": 139,
+          "end": 142,
+          "sha256": "719f147caac99d30e4b2108b375ff2c8380308c4dc8defd4cb3dccb57ace7adc"
+        },
+        {
+          "start": 143,
+          "end": 143,
+          "sha256": "80a27ae233feaa25576b6c9a74e24870091af593da5ad0d9b6b8d7ac87d07e66"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/glossary/page.tsx",
+      "path": "app/docs/glossary/page.tsx",
+      "sha256": "d6b7283b7bb71a7c36e932f30e2eed5c98a65581160db5ac3ed6c5d55d527d3f",
+      "lineCount": 51,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "63fd1a9350d4f0b0ec6b81fad17baffde2a68d7772188d09b0020b5fda2a8918"
+        },
+        {
+          "start": 45,
+          "end": 47,
+          "sha256": "715e8f06bb19fb2d9f39c118319e7e6ccccad2d6ac143afad1d9c9780c560ce2"
+        },
+        {
+          "start": 48,
+          "end": 48,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/integration-setup/page.tsx",
+      "path": "app/docs/integration-setup/page.tsx",
+      "sha256": "f939343248aa38633f7ee1f8e4b13ae136b9a34bfbb74eef02686109df07269c",
+      "lineCount": 108,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "7d538c5b452da8844d1f0d7c58916e8360957cc1429a7fff1a0f152e1c469820"
+        },
+        {
+          "start": 101,
+          "end": 104,
+          "sha256": "86d80c4b20326f7a4a141e969c73b3a520b8bff7ec598e21273d9d4b2d9da870"
+        },
+        {
+          "start": 105,
+          "end": 105,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/oauth-setup/page.tsx",
+      "path": "app/docs/oauth-setup/page.tsx",
+      "sha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820",
+      "lineCount": 156,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "1647e2d05b976f056a1199c6267b6abd553d539c1f5000d405bf65c4ce1639b6"
+        },
+        {
+          "start": 146,
+          "end": 149,
+          "sha256": "abb7f6d8124052e2b8490e7814dd0e25ddf0ff83b6a74b2a857a2aa4ac327d5f"
+        },
+        {
+          "start": 150,
+          "end": 150,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/page.tsx",
+      "path": "app/docs/page.tsx",
+      "sha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "lineCount": 63,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "2adfd61d4ba1194c5987a975748f7d766701f45efec69e18c2c2043432651106"
+        },
+        {
+          "start": 61,
+          "end": 61,
+          "sha256": "d3de2d9a3097c9ea1b227405edea41286f55de92c935b475066943bfd8aac4c9"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/permissions-model/page.tsx",
+      "path": "app/docs/permissions-model/page.tsx",
+      "sha256": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c",
+      "lineCount": 57,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "0a2eb3a7bb523c4c901b8474d52ffaf1a28aeddc3b3da394e67a52e7ed4f7965"
+        },
+        {
+          "start": 53,
+          "end": 53,
+          "sha256": "f32a8cbc72381bd859712bc545b824363a14578e9d2c06ce2f1ce84f0a1f16a7"
+        },
+        {
+          "start": 54,
+          "end": 54,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/quickstart-checklist/page.tsx",
+      "path": "app/docs/quickstart-checklist/page.tsx",
+      "sha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc",
+      "lineCount": 157,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "eb4ddca423bf2377ecae68bda840aec7757e7f808ba21381715f5debf7fc8410"
+        },
+        {
+          "start": 154,
+          "end": 154,
+          "sha256": "80a27ae233feaa25576b6c9a74e24870091af593da5ad0d9b6b8d7ac87d07e66"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/releaseops/connectors/page.tsx",
+      "path": "app/docs/releaseops/connectors/page.tsx",
+      "sha256": "bb77feb3010780bcc416a307547d1c2dc5682781b806fcdbebc70765d2320104",
+      "lineCount": 106,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "c18a37f6dee385387c85b159a8ba8aa84c2fcb5b8bb0439fa7d572bfec576a48"
+        },
+        {
+          "start": 99,
+          "end": 102,
+          "sha256": "1e79b9376857faaee5cf4a954d3efc1c2555bebe8fd1d640d3c62e8f95c5a5d0"
+        },
+        {
+          "start": 103,
+          "end": 103,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/releaseops/page.tsx",
+      "path": "app/docs/releaseops/page.tsx",
+      "sha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38",
+      "lineCount": 77,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "cbea9b06df1611bc70e66e791fcc9e446dac1fe92921de59872490e91f9c7d1c"
+        },
+        {
+          "start": 70,
+          "end": 73,
+          "sha256": "a18de108aea73305e6e213cf014dccc212f547505669aa26ead7871bb9398dde"
+        },
+        {
+          "start": 74,
+          "end": 74,
+          "sha256": "80a27ae233feaa25576b6c9a74e24870091af593da5ad0d9b6b8d7ac87d07e66"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/releaseops/readiness/page.tsx",
+      "path": "app/docs/releaseops/readiness/page.tsx",
+      "sha256": "0c34ac29fe6525f68df106f2fc305bd81bdb8a7b138aa312227327d875b10e3a",
+      "lineCount": 84,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "8e229af69d25173ca940111fee2e19bf002035c9e42516ddba1954dfc951dcd4"
+        },
+        {
+          "start": 77,
+          "end": 80,
+          "sha256": "659373938c3c1762a25c9400108682e88f4a3b3dff65a9ef411250456cf3930f"
+        },
+        {
+          "start": 81,
+          "end": 81,
+          "sha256": "80a27ae233feaa25576b6c9a74e24870091af593da5ad0d9b6b8d7ac87d07e66"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/rollback/page.tsx",
+      "path": "app/docs/rollback/page.tsx",
+      "sha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140",
+      "lineCount": 51,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "5294627655113936f8ed3887fa17cba00e9ba3deb15862f49baf1ad73eaa5c89"
+        },
+        {
+          "start": 47,
+          "end": 47,
+          "sha256": "9f93ec1d064ba0571bbfe1a907c162f78be7a5e56275575d93dc53f0b9db2f0d"
+        },
+        {
+          "start": 48,
+          "end": 48,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/scanning/page.tsx",
+      "path": "app/docs/scanning/page.tsx",
+      "sha256": "6e83ba68eff9dad360fcd2b7f45ace937b72cda6e8fd5e505e2f81f8ecb96fd8",
+      "lineCount": 5,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "6e83ba68eff9dad360fcd2b7f45ace937b72cda6e8fd5e505e2f81f8ecb96fd8"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/security-model/page.tsx",
+      "path": "app/docs/security-model/page.tsx",
+      "sha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7",
+      "lineCount": 60,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "f44154294997300d40b26a64f317145435d33741e3e95a8e743ecc8ae58c6b56"
+        },
+        {
+          "start": 56,
+          "end": 56,
+          "sha256": "5752e366e5644373dd595110c7de4d7f11e694455b647ed90fdcbe1846acc4af"
+        },
+        {
+          "start": 57,
+          "end": 57,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/source-modes/page.tsx",
+      "path": "app/docs/source-modes/page.tsx",
+      "sha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456",
+      "lineCount": 59,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "9dccec2f6b569318158e1a264becee998edcd092a89b9fe2dac0123e05d11da9"
+        },
+        {
+          "start": 55,
+          "end": 55,
+          "sha256": "af7bf46872929232af95b42efa62575ff6195f6457cdb673734cae8a48071d0a"
+        },
+        {
+          "start": 56,
+          "end": 56,
+          "sha256": "dddcb7c8a9f408733e8ed9a38367bfe0ea5c0dcd6338b401c0d293958412c112"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/surfaces/page.tsx",
+      "path": "app/docs/surfaces/page.tsx",
+      "sha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f",
+      "lineCount": 46,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "0e9cdfdae6a137db939ff3829a14ce956bc88adabc198dcbc892da741a9b439f"
+        },
+        {
+          "start": 45,
+          "end": 45,
+          "sha256": "b567f05dd0dbe1bdb3cfc6f7244ba84e6fe410a7fdb881dd009415425858e115"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/terraform-export/page.tsx",
+      "path": "app/docs/terraform-export/page.tsx",
+      "sha256": "778e16e015dcf24fb22fb0735ed20736430bf102c537b9aa69749876048c00df",
+      "lineCount": 5,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "778e16e015dcf24fb22fb0735ed20736430bf102c537b9aa69749876048c00df"
+        }
+      ]
+    },
+    {
+      "key": "route:app/docs/troubleshooting/page.tsx",
+      "path": "app/docs/troubleshooting/page.tsx",
+      "sha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0",
+      "lineCount": 58,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "92ce1892170efff3cbd34f907f8504cebd33818cf724fc535f3bb553432d3715"
+        }
+      ]
+    }
+  ],
+  "controlFamilies": [
+    {
+      "id": "website.docs.landing.task-link",
+      "sourceKey": "landing",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "app/docs/page.tsx",
+        "tag": "Link",
+        "startLine": 51,
+        "endLine": 54,
+        "nodeSha256": "148b73f5d4bdb3d3cbfc251a0a9b9d3a5e2bf1604efc95f5e74c8a3c50b744ce"
+      }
+    },
+    {
+      "id": "website.docs.contents.toggle",
+      "sourceKey": "contents",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/docs/DocsContents.tsx",
+        "tag": "button",
+        "startLine": 58,
+        "endLine": 63,
+        "nodeSha256": "b1efcb04c7e9d646f48dc6b8d8a7ea1ff3f2c9948f4ded3827bb54c37f130e8f"
+      }
+    },
+    {
+      "id": "website.docs.filter.query",
+      "sourceKey": "sidebar",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/docs/DocsSidebar.tsx",
+        "tag": "input",
+        "startLine": 114,
+        "endLine": 117,
+        "nodeSha256": "358c48338162f57ecca0887631a0c789cb60a974777651401a75466c49f98f91"
+      }
+    },
+    {
+      "id": "website.docs.filter.clear",
+      "sourceKey": "sidebar",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/docs/DocsSidebar.tsx",
+        "tag": "button",
+        "startLine": 118,
+        "endLine": 118,
+        "nodeSha256": "ec2e755f7c037776df027d854427ff2365b9b594791351c858a6af24a77a3ad6"
+      }
+    },
+    {
+      "id": "website.docs.sidebar.guide-link",
+      "sourceKey": "sidebar",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/docs/DocsSidebar.tsx",
+        "tag": "Link",
+        "startLine": 148,
+        "endLine": 159,
+        "nodeSha256": "cba3b23cbd25e3b1eb409c3f3df4e68083486c6069d0d2e96d9df7470ebf6385"
+      }
+    },
+    {
+      "id": "website.docs.article.previous",
+      "sourceKey": "primitives",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/docs/DocPrimitives.tsx",
+        "tag": "Link",
+        "startLine": 177,
+        "endLine": 187,
+        "nodeSha256": "c06c4125e06d01cf1efb51a0d4d5e8f478c9ee61b9c99cffd163c2b036e87a14"
+      }
+    },
+    {
+      "id": "website.docs.article.next",
+      "sourceKey": "primitives",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/docs/DocPrimitives.tsx",
+        "tag": "Link",
+        "startLine": 190,
+        "endLine": 200,
+        "nodeSha256": "816a89aaff62f06847aa2d00306429de188f438baf3a8205eb64293cec3501e2"
+      }
+    },
+    {
+      "id": "website.docs.feedback.contact",
+      "sourceKey": "primitives",
+      "runtimeId": false,
+      "sourceDeclarationRef": {
+        "path": "components/docs/DocPrimitives.tsx",
+        "tag": "Link",
+        "startLine": 214,
+        "endLine": 220,
+        "nodeSha256": "ffee966da19f9df6c77818bc16ee30e37485125315c0a8378e1f3b8c2479680c"
+      }
+    }
+  ],
+  "sidebarEntries": [
+    {
+      "section": "Start here",
+      "href": "/docs",
+      "label": "Overview",
+      "sourceKey": "sidebar",
+      "line": 36
+    },
+    {
+      "section": "Start here",
+      "href": "/docs/quickstart-checklist",
+      "label": "Quickstart checklist",
+      "sourceKey": "sidebar",
+      "line": 37
+    },
+    {
+      "section": "Start here",
+      "href": "/docs/getting-started",
+      "label": "Getting started",
+      "sourceKey": "sidebar",
+      "line": 38
+    },
+    {
+      "section": "Start here",
+      "href": "/docs/source-modes",
+      "label": "Source modes",
+      "sourceKey": "sidebar",
+      "line": 39
+    },
+    {
+      "section": "Start here",
+      "href": "/docs/surfaces",
+      "label": "Product surfaces",
+      "sourceKey": "sidebar",
+      "line": 40
+    },
+    {
+      "section": "Configure delivery",
+      "href": "/docs/aws-setup",
+      "label": "AWS setup",
+      "sourceKey": "sidebar",
+      "line": 46
+    },
+    {
+      "section": "Configure delivery",
+      "href": "/docs/azure-setup",
+      "label": "Azure setup",
+      "sourceKey": "sidebar",
+      "line": 47
+    },
+    {
+      "section": "Configure delivery",
+      "href": "/docs/gcp-setup",
+      "label": "GCP setup",
+      "sourceKey": "sidebar",
+      "line": 48
+    },
+    {
+      "section": "Operate",
+      "href": "/docs/approval-workflow",
+      "label": "Approval workflow",
+      "sourceKey": "sidebar",
+      "line": 54
+    },
+    {
+      "section": "Operate",
+      "href": "/docs/execution-plans",
+      "label": "Execution plans",
+      "sourceKey": "sidebar",
+      "line": 55
+    },
+    {
+      "section": "Operate",
+      "href": "/docs/rollback",
+      "label": "AWS ECS rollback",
+      "sourceKey": "sidebar",
+      "line": 56
+    },
+    {
+      "section": "ReleaseOps",
+      "href": "/docs/releaseops",
+      "label": "ReleaseOps overview",
+      "sourceKey": "sidebar",
+      "line": 62
+    },
+    {
+      "section": "ReleaseOps",
+      "href": "/docs/releaseops/connectors",
+      "label": "CI/CD connectors",
+      "sourceKey": "sidebar",
+      "line": 63
+    },
+    {
+      "section": "ReleaseOps",
+      "href": "/docs/releaseops/readiness",
+      "label": "Readiness scoring",
+      "sourceKey": "sidebar",
+      "line": 64
+    },
+    {
+      "section": "Desktop",
+      "href": "/docs/desktop-install",
+      "label": "Install the desktop app",
+      "sourceKey": "sidebar",
+      "line": 70
+    },
+    {
+      "section": "Desktop",
+      "href": "/docs/integration-setup",
+      "label": "Integration setup",
+      "sourceKey": "sidebar",
+      "line": 71
+    },
+    {
+      "section": "Trust & security",
+      "href": "/docs/security-model",
+      "label": "Security model",
+      "sourceKey": "sidebar",
+      "line": 77
+    },
+    {
+      "section": "Trust & security",
+      "href": "/docs/permissions-model",
+      "label": "Permissions model",
+      "sourceKey": "sidebar",
+      "line": 78
+    },
+    {
+      "section": "Trust & security",
+      "href": "/docs/oauth-setup",
+      "label": "OAuth setup",
+      "sourceKey": "sidebar",
+      "line": 79
+    },
+    {
+      "section": "Reference",
+      "href": "/docs/troubleshooting",
+      "label": "Troubleshooting",
+      "sourceKey": "sidebar",
+      "line": 85
+    },
+    {
+      "section": "Reference",
+      "href": "/docs/audit-logs",
+      "label": "Audit evidence",
+      "sourceKey": "sidebar",
+      "line": 86
+    },
+    {
+      "section": "Reference",
+      "href": "/docs/faq",
+      "label": "FAQ",
+      "sourceKey": "sidebar",
+      "line": 87
+    },
+    {
+      "section": "Reference",
+      "href": "/docs/glossary",
+      "label": "Glossary",
+      "sourceKey": "sidebar",
+      "line": 88
+    }
+  ],
+  "landingEntries": [
+    {
+      "group": "Get started",
+      "href": "/docs/getting-started",
+      "label": "Start with Axiom",
+      "description": "Understand the setup sequence and prerequisites.",
+      "sourceKey": "landing",
+      "line": 14
+    },
+    {
+      "group": "Get started",
+      "href": "/docs/desktop-install",
+      "label": "Install the desktop app",
+      "description": "Check platform and installation guidance.",
+      "sourceKey": "landing",
+      "line": 15
+    },
+    {
+      "group": "Get started",
+      "href": "/docs/quickstart-checklist",
+      "label": "Follow the quickstart checklist",
+      "description": "Separate installation from workflow readiness.",
+      "sourceKey": "landing",
+      "line": 16
+    },
+    {
+      "group": "Complete a task",
+      "href": "/docs/approval-workflow",
+      "label": "Understand approval and execution",
+      "description": "Check review and execution steps for your version.",
+      "sourceKey": "landing",
+      "line": 19
+    },
+    {
+      "group": "Complete a task",
+      "href": "/docs/releaseops",
+      "label": "Explore ReleaseOps",
+      "description": "Inspect the release workflow and its boundaries.",
+      "sourceKey": "landing",
+      "line": 20
+    },
+    {
+      "group": "Complete a task",
+      "href": "/docs/integration-setup",
+      "label": "Set up an integration",
+      "description": "Check connection-specific setup and permissions.",
+      "sourceKey": "landing",
+      "line": 21
+    },
+    {
+      "group": "Complete a task",
+      "href": "/docs/source-modes",
+      "label": "Choose a source mode",
+      "description": "Understand where repository context comes from.",
+      "sourceKey": "landing",
+      "line": 22
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/permissions-model",
+      "label": "Check the permissions model",
+      "description": "Understand roles and operation-specific access.",
+      "sourceKey": "landing",
+      "line": 25
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/execution-plans",
+      "label": "Read about execution plans",
+      "description": "Distinguish a recorded plan from an authorized action.",
+      "sourceKey": "landing",
+      "line": 26
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/surfaces",
+      "label": "Find the right product surface",
+      "description": "Compare where a workflow is presented.",
+      "sourceKey": "landing",
+      "line": 27
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/glossary",
+      "label": "Look up a term",
+      "description": "Find the vocabulary used in the guides.",
+      "sourceKey": "landing",
+      "line": 28
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/audit-logs",
+      "label": "Inspect recorded activity",
+      "description": "Understand the scope of saved outcome records.",
+      "sourceKey": "landing",
+      "line": 29
+    },
+    {
+      "group": "Resolve a problem",
+      "href": "/docs/troubleshooting",
+      "label": "Find troubleshooting guidance",
+      "description": "Start with the symptom and inspect existing records.",
+      "sourceKey": "landing",
+      "line": 32
+    },
+    {
+      "group": "Resolve a problem",
+      "href": "/docs/faq",
+      "label": "Read frequently asked questions",
+      "description": "Find answers about setup and product behavior.",
+      "sourceKey": "landing",
+      "line": 33
+    },
+    {
+      "group": "Resolve a problem",
+      "href": "/docs/releaseops/readiness",
+      "label": "Understand release readiness",
+      "description": "Check readiness signals and their limitations.",
+      "sourceKey": "landing",
+      "line": 34
+    }
+  ],
+  "sharedPaginationCalls": [
+    {
+      "path": "app/docs/approval-workflow/page.tsx",
+      "sourceKey": "route:app/docs/approval-workflow/page.tsx",
+      "startLine": 58,
+      "endLine": 58,
+      "nodeSha256": "ea44200495e341df7060ee96c6e5736d6afd90c97d11bd399bbd8b667d8ae6fc",
+      "prev": {
+        "href": "/docs/releaseops",
+        "label": "ReleaseOps overview"
+      },
+      "next": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      }
+    },
+    {
+      "path": "app/docs/audit-logs/page.tsx",
+      "sourceKey": "route:app/docs/audit-logs/page.tsx",
+      "startLine": 36,
+      "endLine": 36,
+      "nodeSha256": "e8a1c23b9efd791b734081b31a385e4c67bbce3fca5796c83c8b4d3b5c417d84",
+      "prev": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      },
+      "next": {
+        "href": "/docs/troubleshooting",
+        "label": "Troubleshooting"
+      }
+    },
+    {
+      "path": "app/docs/aws-setup/page.tsx",
+      "sourceKey": "route:app/docs/aws-setup/page.tsx",
+      "startLine": 49,
+      "endLine": 49,
+      "nodeSha256": "6ce6835e6c70feb1d07a9dcd8ccce92bab5fe61d5d7bed0e04d7b7ed18aaa9bc",
+      "prev": {
+        "href": "/docs/integration-setup",
+        "label": "Integration setup"
+      },
+      "next": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      }
+    },
+    {
+      "path": "app/docs/azure-setup/page.tsx",
+      "sourceKey": "route:app/docs/azure-setup/page.tsx",
+      "startLine": 74,
+      "endLine": 77,
+      "nodeSha256": "dd8d4b82d840f7c875eb7179485e4bcd959cf424a500176003c5a248e15473b5",
+      "prev": {
+        "href": "/docs/aws-setup",
+        "label": "AWS setup"
+      },
+      "next": {
+        "href": "/docs/gcp-setup",
+        "label": "GCP setup"
+      }
+    },
+    {
+      "path": "app/docs/desktop-install/page.tsx",
+      "sourceKey": "route:app/docs/desktop-install/page.tsx",
+      "startLine": 113,
+      "endLine": 116,
+      "nodeSha256": "3fd9a5bbe291cb16057ae1cc29a3ab7011838371afc8312be4669ca64574074a",
+      "prev": {
+        "href": "/docs/releaseops/readiness",
+        "label": "Readiness scoring"
+      },
+      "next": {
+        "href": "/docs/releaseops",
+        "label": "ReleaseOps overview"
+      }
+    },
+    {
+      "path": "app/docs/execution-plans/page.tsx",
+      "sourceKey": "route:app/docs/execution-plans/page.tsx",
+      "startLine": 52,
+      "endLine": 52,
+      "nodeSha256": "a0d8d24613662997bfcccf2d76e392ec4b72ad1edbf034a924720c4a8334df24",
+      "prev": {
+        "href": "/docs/permissions-model",
+        "label": "Permissions model"
+      },
+      "next": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      }
+    },
+    {
+      "path": "app/docs/faq/page.tsx",
+      "sourceKey": "route:app/docs/faq/page.tsx",
+      "startLine": 174,
+      "endLine": 177,
+      "nodeSha256": "b777860394c2a90e83433830f3e2b4f277bb6896ddecfc016c98d609f9e5b53e",
+      "prev": {
+        "href": "/docs/troubleshooting",
+        "label": "Troubleshooting"
+      },
+      "next": {
+        "href": "/docs/glossary",
+        "label": "Glossary"
+      }
+    },
+    {
+      "path": "app/docs/gcp-setup/page.tsx",
+      "sourceKey": "route:app/docs/gcp-setup/page.tsx",
+      "startLine": 68,
+      "endLine": 71,
+      "nodeSha256": "252618693823d24985d388253408858a0e1a54be6a8cf73d68189deeec852265",
+      "prev": {
+        "href": "/docs/azure-setup",
+        "label": "Azure setup"
+      },
+      "next": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      }
+    },
+    {
+      "path": "app/docs/getting-started/page.tsx",
+      "sourceKey": "route:app/docs/getting-started/page.tsx",
+      "startLine": 139,
+      "endLine": 142,
+      "nodeSha256": "9c63d0af0002c2cb7508be688ba9dc2aa8988dd1d334cad192cfd91a2f7030c0",
+      "prev": {
+        "href": "/docs",
+        "label": "Documentation overview"
+      },
+      "next": {
+        "href": "/docs/desktop-install",
+        "label": "Desktop installation"
+      }
+    },
+    {
+      "path": "app/docs/glossary/page.tsx",
+      "sourceKey": "route:app/docs/glossary/page.tsx",
+      "startLine": 45,
+      "endLine": 47,
+      "nodeSha256": "d47279cd650fb86325cbc68ea08122c390c30f7b794aa8f6d2ce6b8b72c37f09",
+      "prev": {
+        "href": "/docs/faq",
+        "label": "FAQ"
+      },
+      "next": null
+    },
+    {
+      "path": "app/docs/integration-setup/page.tsx",
+      "sourceKey": "route:app/docs/integration-setup/page.tsx",
+      "startLine": 101,
+      "endLine": 104,
+      "nodeSha256": "42d7b480a92606620f01cd665212a83a873f1a9a2bb662f627be0b5fde319566",
+      "prev": {
+        "href": "/docs/desktop-architecture",
+        "label": "Desktop architecture"
+      },
+      "next": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      }
+    },
+    {
+      "path": "app/docs/oauth-setup/page.tsx",
+      "sourceKey": "route:app/docs/oauth-setup/page.tsx",
+      "startLine": 146,
+      "endLine": 149,
+      "nodeSha256": "6e357c2e5a911179bd993b51e5bf57f5101cfbd8fa5cc6b0a5182e2dd083d97c",
+      "prev": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      },
+      "next": {
+        "href": "/docs/permissions-model",
+        "label": "Permissions model"
+      }
+    },
+    {
+      "path": "app/docs/permissions-model/page.tsx",
+      "sourceKey": "route:app/docs/permissions-model/page.tsx",
+      "startLine": 53,
+      "endLine": 53,
+      "nodeSha256": "d92b0275de29bef7c2c9cf9cf826e126d4e5da992017ac0d544dab552fa86a29",
+      "prev": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      },
+      "next": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      }
+    },
+    {
+      "path": "app/docs/releaseops/connectors/page.tsx",
+      "sourceKey": "route:app/docs/releaseops/connectors/page.tsx",
+      "startLine": 99,
+      "endLine": 102,
+      "nodeSha256": "1be21bd980fcd0874ee7d4d4da97f8207b9919da3b7cf7bcc724ea8917c9a8cb",
+      "prev": {
+        "href": "/docs/releaseops",
+        "label": "ReleaseOps overview"
+      },
+      "next": {
+        "href": "/docs/releaseops/readiness",
+        "label": "Readiness scoring"
+      }
+    },
+    {
+      "path": "app/docs/releaseops/page.tsx",
+      "sourceKey": "route:app/docs/releaseops/page.tsx",
+      "startLine": 70,
+      "endLine": 73,
+      "nodeSha256": "756e39fdbe673db7dfebafd3afe4a6ba400e4ef0d1d492cd758b16316c1af88d",
+      "prev": {
+        "href": "/docs/rollback",
+        "label": "Rollback strategy"
+      },
+      "next": {
+        "href": "/docs/releaseops/connectors",
+        "label": "CI/CD connectors"
+      }
+    },
+    {
+      "path": "app/docs/releaseops/readiness/page.tsx",
+      "sourceKey": "route:app/docs/releaseops/readiness/page.tsx",
+      "startLine": 77,
+      "endLine": 80,
+      "nodeSha256": "7d955a512acc64f557f252cbac15458a8ac837ecaa674f552e78fef0a2968eb4",
+      "prev": {
+        "href": "/docs/releaseops/connectors",
+        "label": "CI/CD connectors"
+      },
+      "next": {
+        "href": "/docs/desktop-install",
+        "label": "Install the desktop app"
+      }
+    },
+    {
+      "path": "app/docs/rollback/page.tsx",
+      "sourceKey": "route:app/docs/rollback/page.tsx",
+      "startLine": 47,
+      "endLine": 47,
+      "nodeSha256": "74ad8ca88d2b4b2a979df4732d88157bb63cdfb929d2cfaed7339708e1346200",
+      "prev": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      },
+      "next": {
+        "href": "/docs/releaseops",
+        "label": "ReleaseOps overview"
+      }
+    },
+    {
+      "path": "app/docs/security-model/page.tsx",
+      "sourceKey": "route:app/docs/security-model/page.tsx",
+      "startLine": 56,
+      "endLine": 56,
+      "nodeSha256": "c3e36c37661aa5102a4f4be571bb0b2ac5fe50e1598d80f4f6f2ae42d2080a45",
+      "prev": {
+        "href": "/docs/aws-setup",
+        "label": "AWS setup"
+      },
+      "next": {
+        "href": "/docs/troubleshooting",
+        "label": "Troubleshooting"
+      }
+    },
+    {
+      "path": "app/docs/source-modes/page.tsx",
+      "sourceKey": "route:app/docs/source-modes/page.tsx",
+      "startLine": 55,
+      "endLine": 55,
+      "nodeSha256": "535f3383eee02b49101b1a7f34cf37f4bb598b3817ff15987816cc89a20e2be4",
+      "prev": {
+        "href": "/docs/getting-started",
+        "label": "Getting started"
+      },
+      "next": {
+        "href": "/docs/permissions-model",
+        "label": "Permissions model"
+      }
+    },
+    {
+      "path": "app/docs/surfaces/page.tsx",
+      "sourceKey": "route:app/docs/surfaces/page.tsx",
+      "startLine": 45,
+      "endLine": 45,
+      "nodeSha256": "8cd922fc361ca32169c1d77c4b6ea72e6bc5bfb40ff2c6087342bb3399e169fa",
+      "prev": {
+        "href": "/docs/execution-plans",
+        "label": "Execution plans"
+      },
+      "next": {
+        "href": "/docs/glossary",
+        "label": "Glossary"
+      }
+    }
+  ],
+  "sharedFeedbackCalls": [
+    {
+      "path": "app/docs/approval-workflow/page.tsx",
+      "sourceKey": "route:app/docs/approval-workflow/page.tsx",
+      "line": 59
+    },
+    {
+      "path": "app/docs/aws-setup/page.tsx",
+      "sourceKey": "route:app/docs/aws-setup/page.tsx",
+      "line": 50
+    },
+    {
+      "path": "app/docs/azure-setup/page.tsx",
+      "sourceKey": "route:app/docs/azure-setup/page.tsx",
+      "line": 78
+    },
+    {
+      "path": "app/docs/desktop-install/page.tsx",
+      "sourceKey": "route:app/docs/desktop-install/page.tsx",
+      "line": 117
+    },
+    {
+      "path": "app/docs/faq/page.tsx",
+      "sourceKey": "route:app/docs/faq/page.tsx",
+      "line": 178
+    },
+    {
+      "path": "app/docs/gcp-setup/page.tsx",
+      "sourceKey": "route:app/docs/gcp-setup/page.tsx",
+      "line": 72
+    },
+    {
+      "path": "app/docs/getting-started/page.tsx",
+      "sourceKey": "route:app/docs/getting-started/page.tsx",
+      "line": 143
+    },
+    {
+      "path": "app/docs/glossary/page.tsx",
+      "sourceKey": "route:app/docs/glossary/page.tsx",
+      "line": 48
+    },
+    {
+      "path": "app/docs/integration-setup/page.tsx",
+      "sourceKey": "route:app/docs/integration-setup/page.tsx",
+      "line": 105
+    },
+    {
+      "path": "app/docs/oauth-setup/page.tsx",
+      "sourceKey": "route:app/docs/oauth-setup/page.tsx",
+      "line": 150
+    },
+    {
+      "path": "app/docs/page.tsx",
+      "sourceKey": "route:app/docs/page.tsx",
+      "line": 61
+    },
+    {
+      "path": "app/docs/permissions-model/page.tsx",
+      "sourceKey": "route:app/docs/permissions-model/page.tsx",
+      "line": 54
+    },
+    {
+      "path": "app/docs/quickstart-checklist/page.tsx",
+      "sourceKey": "route:app/docs/quickstart-checklist/page.tsx",
+      "line": 154
+    },
+    {
+      "path": "app/docs/releaseops/connectors/page.tsx",
+      "sourceKey": "route:app/docs/releaseops/connectors/page.tsx",
+      "line": 103
+    },
+    {
+      "path": "app/docs/releaseops/page.tsx",
+      "sourceKey": "route:app/docs/releaseops/page.tsx",
+      "line": 74
+    },
+    {
+      "path": "app/docs/releaseops/readiness/page.tsx",
+      "sourceKey": "route:app/docs/releaseops/readiness/page.tsx",
+      "line": 81
+    },
+    {
+      "path": "app/docs/rollback/page.tsx",
+      "sourceKey": "route:app/docs/rollback/page.tsx",
+      "line": 48
+    },
+    {
+      "path": "app/docs/security-model/page.tsx",
+      "sourceKey": "route:app/docs/security-model/page.tsx",
+      "line": 57
+    },
+    {
+      "path": "app/docs/source-modes/page.tsx",
+      "sourceKey": "route:app/docs/source-modes/page.tsx",
+      "line": 56
+    }
+  ],
+  "nonCatalogueDocsRoutes": [
+    {
+      "href": "/docs/architecture",
+      "path": "app/docs/architecture/page.tsx",
+      "sourceKey": "route:app/docs/architecture/page.tsx",
+      "scope": "source presence/shared primitive uses only; article body excluded"
+    },
+    {
+      "href": "/docs/best-practices",
+      "path": "app/docs/best-practices/page.tsx",
+      "sourceKey": "route:app/docs/best-practices/page.tsx",
+      "scope": "source presence/shared primitive uses only; article body excluded"
+    },
+    {
+      "href": "/docs/desktop-architecture",
+      "path": "app/docs/desktop-architecture/page.tsx",
+      "sourceKey": "route:app/docs/desktop-architecture/page.tsx",
+      "scope": "source presence/shared primitive uses only; article body excluded"
+    },
+    {
+      "href": "/docs/scanning",
+      "path": "app/docs/scanning/page.tsx",
+      "sourceKey": "route:app/docs/scanning/page.tsx",
+      "scope": "source presence/shared primitive uses only; article body excluded"
+    },
+    {
+      "href": "/docs/terraform-export",
+      "path": "app/docs/terraform-export/page.tsx",
+      "sourceKey": "route:app/docs/terraform-export/page.tsx",
+      "scope": "source presence/shared primitive uses only; article body excluded"
+    }
+  ],
+  "coverage": {
+    "families": 8,
+    "sidebarEntries": 23,
+    "landingEntries": 15,
+    "actualDocsPageFiles": 28,
+    "sharedPaginationCalls": 20,
+    "sharedFeedbackCalls": 19,
+    "notInSidebarOrHeadingIndex": 5,
+    "allArticleBodiesAudited": false
+  },
+  "authorization": "Existing master B4 source documentation, no test, runtime, provider, credential, publication or execution authority",
+  "supportedReleaseAccepted": false,
+  "lastSourceVerifiedRevision": "49c5d4b5de5d9efa03b06e544106404da8387f36",
+  "requalification": "After independently reviewed breakpoint focus repair; only DocsContents source key changed, existing catalogue/landing/pagination/feedback records retained."
+}

@@ -1,0 +1,22 @@
+{
+  "sourceRevision": "49c5d4b5de5d9efa03b06e544106404da8387f36",
+  "sourceKeys": 37,
+  "uniqueFiles": 36,
+  "inclusiveRangesChecked": 77,
+  "allCurrentAndPinnedBytesMatch": true,
+  "sharedControlDeclarations": 8,
+  "documentationFamilies": 8,
+  "sidebarEntries": 23,
+  "landingEntries": 15,
+  "paginationCallsites": 20,
+  "feedbackCallsites": 19,
+  "docsPageSourceFiles": 28,
+  "nonCatalogueRoutes": 5,
+  "getDocAdjacentCallsInDocsPages": 0,
+  "markdownSha256": "a9838a4d00d2c144c78e76ad5e43745462b67e5274906865f749c32f289d9cf2",
+  "ledgerSha256": "686b039fb26f99ab47a42dc730b188368639757b2a38b7a63efd05da64b92192",
+  "scope": "fixed source sets only; no runtime instances, body control inventory, HTTP/browser or content/editorial acceptance",
+  "applicationCodeExecuted": false,
+  "productTestsRun": false,
+  "customerEligible": false
+}

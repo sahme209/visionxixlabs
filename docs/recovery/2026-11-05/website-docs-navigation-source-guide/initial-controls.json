@@ -1,0 +1,1009 @@
+{
+  "scope": "current fixed shared Docs controls/catalogue and static page callsites, not body controls/runtime instances/link or content acceptance",
+  "declarations": [
+    {
+      "path": "app/docs/layout.tsx",
+      "sha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+      "nodes": []
+    },
+    {
+      "path": "app/docs/page.tsx",
+      "sha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "nodes": [
+        {
+          "tag": "Link",
+          "startLine": 51,
+          "endLine": 54,
+          "nodeSha256": "148b73f5d4bdb3d3cbfc251a0a9b9d3a5e2bf1604efc95f5e74c8a3c50b744ce",
+          "opening": "<Link href={href} className=\"group flex items-start justify-between gap-4 rounded-lg px-3 py-3 -mx-3 transition-colors hover:bg-white/[0.04] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950\">"
+        }
+      ]
+    },
+    {
+      "path": "components/docs/DocsContents.tsx",
+      "sha256": "9bf4930205a7c2ddff2194255816f7d26cedadd55b65198c8ae0ef8442c17d8b",
+      "nodes": [
+        {
+          "tag": "button",
+          "startLine": 58,
+          "endLine": 63,
+          "nodeSha256": "b1efcb04c7e9d646f48dc6b8d8a7ea1ff3f2c9948f4ded3827bb54c37f130e8f",
+          "opening": "<button ref={button} type=\"button\" aria-expanded={open} aria-controls=\"docs-contents-panel\"\n        onClick={() => setOpen(value => !value)}\n        className=\"flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden\">"
+        }
+      ]
+    },
+    {
+      "path": "components/docs/DocsSidebar.tsx",
+      "sha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+      "nodes": [
+        {
+          "tag": "input",
+          "startLine": 114,
+          "endLine": 117,
+          "nodeSha256": "358c48338162f57ecca0887631a0c789cb60a974777651401a75466c49f98f91",
+          "opening": "<input ref={field} id={`${prefix}-query`} type=\"search\" value={query}\n          aria-describedby={`${prefix}-scope`} aria-controls={`${prefix}-results`}\n          onChange={event => setQuery(event.target.value)} placeholder=\"Task, heading or guide title\"\n          className=\"min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300\" />"
+        },
+        {
+          "tag": "button",
+          "startLine": 118,
+          "endLine": 118,
+          "nodeSha256": "ec2e755f7c037776df027d854427ff2365b9b594791351c858a6af24a77a3ad6",
+          "opening": "<button type=\"button\" onClick={() => { setQuery(\"\"); field.current?.focus(); }} className=\"min-h-11 rounded-lg px-2 text-xs text-zinc-300 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300\">"
+        },
+        {
+          "tag": "Link",
+          "startLine": 148,
+          "endLine": 159,
+          "nodeSha256": "cba3b23cbd25e3b1eb409c3f3df4e68083486c6069d0d2e96d9df7470ebf6385",
+          "opening": "<Link\n                      href={item.href}\n                      aria-current={isActive ? \"page\" : undefined}\n                      className={`flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-sm transition-colors ${\n                        isActive\n                          ? \"bg-orange-500/10 text-orange-300 border border-orange-500/20\"\n                          : \"text-zinc-400 hover:text-white hover:bg-white/[0.04] border border-transparent\"\n                      }`}\n                    >"
+        }
+      ]
+    },
+    {
+      "path": "components/docs/DocPrimitives.tsx",
+      "sha256": "b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855",
+      "nodes": [
+        {
+          "tag": "Link",
+          "startLine": 177,
+          "endLine": 187,
+          "nodeSha256": "c06c4125e06d01cf1efb51a0d4d5e8f478c9ee61b9c99cffd163c2b036e87a14",
+          "opening": "<Link\n          href={prev.href}\n          className=\"rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all group\"\n        >"
+        },
+        {
+          "tag": "Link",
+          "startLine": 190,
+          "endLine": 200,
+          "nodeSha256": "816a89aaff62f06847aa2d00306429de188f438baf3a8205eb64293cec3501e2",
+          "opening": "<Link\n          href={next.href}\n          className=\"rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all group text-right sm:text-right\"\n        >"
+        },
+        {
+          "tag": "Link",
+          "startLine": 214,
+          "endLine": 220,
+          "nodeSha256": "ffee966da19f9df6c77818bc16ee30e37485125315c0a8378e1f3b8c2479680c",
+          "opening": "<Link\n        href=\"/contact\"\n        className=\"inline-flex items-center gap-2 px-4 py-2 border border-white/[0.1] text-zinc-300 rounded-full text-xs font-semibold hover:bg-white/5 hover:border-white/20 transition-colors\"\n      >"
+        }
+      ]
+    }
+  ],
+  "catalogue": [
+    {
+      "section": "Start here",
+      "href": "/docs",
+      "label": "Overview",
+      "status": null,
+      "startLine": 36,
+      "endLine": 36,
+      "nodeSha256": "f22c77905a4ec2819ea52493ae4607c47fdb1d5547ebaac1439c9e6b66920841"
+    },
+    {
+      "section": "Start here",
+      "href": "/docs/quickstart-checklist",
+      "label": "Quickstart checklist",
+      "status": null,
+      "startLine": 37,
+      "endLine": 37,
+      "nodeSha256": "139d509b1429c5fb47e58dcaabb8ed3153af96f7efd4f6d9b33766c90a573453"
+    },
+    {
+      "section": "Start here",
+      "href": "/docs/getting-started",
+      "label": "Getting started",
+      "status": null,
+      "startLine": 38,
+      "endLine": 38,
+      "nodeSha256": "11f14ac96f11208041799f61eac6766755baef1bf9eaed6f188da45cce063f41"
+    },
+    {
+      "section": "Start here",
+      "href": "/docs/source-modes",
+      "label": "Source modes",
+      "status": null,
+      "startLine": 39,
+      "endLine": 39,
+      "nodeSha256": "124e2611aa3b0aacb25212e0d3427dcd5b8b4e82712ae14dade51bca50e23e0b"
+    },
+    {
+      "section": "Start here",
+      "href": "/docs/surfaces",
+      "label": "Product surfaces",
+      "status": null,
+      "startLine": 40,
+      "endLine": 40,
+      "nodeSha256": "e03d08613eae50beb2c4cedc97e591f36013ce5bd1c8ce3bdb1fbc5b51e1a34c"
+    },
+    {
+      "section": "Configure delivery",
+      "href": "/docs/aws-setup",
+      "label": "AWS setup",
+      "status": null,
+      "startLine": 46,
+      "endLine": 46,
+      "nodeSha256": "413ff3c413df4e5135b23d0542fbc7dc5becb3e464e0fb621f511c390257c77d"
+    },
+    {
+      "section": "Configure delivery",
+      "href": "/docs/azure-setup",
+      "label": "Azure setup",
+      "status": null,
+      "startLine": 47,
+      "endLine": 47,
+      "nodeSha256": "000f4e56a0357a5edd1d66990178c093a84882496a59de9fb426fa31a565d242"
+    },
+    {
+      "section": "Configure delivery",
+      "href": "/docs/gcp-setup",
+      "label": "GCP setup",
+      "status": null,
+      "startLine": 48,
+      "endLine": 48,
+      "nodeSha256": "3569cbbb95f87222e3986ec7ca650dcdb645a3336cb4b991509b9c13faf85d08"
+    },
+    {
+      "section": "Operate",
+      "href": "/docs/approval-workflow",
+      "label": "Approval workflow",
+      "status": null,
+      "startLine": 54,
+      "endLine": 54,
+      "nodeSha256": "9ddb80151203687b814836b53e9cf530c364066f96da73e18890295205f432e6"
+    },
+    {
+      "section": "Operate",
+      "href": "/docs/execution-plans",
+      "label": "Execution plans",
+      "status": null,
+      "startLine": 55,
+      "endLine": 55,
+      "nodeSha256": "ac54083454f62ed8dc8493300d996ed7d7b91917efab6bb22c2156f78591449c"
+    },
+    {
+      "section": "Operate",
+      "href": "/docs/rollback",
+      "label": "AWS ECS rollback",
+      "status": null,
+      "startLine": 56,
+      "endLine": 56,
+      "nodeSha256": "4cb364478e7476c3bc8e98fa0dac55db1de30f49c4eac3215eb0c0c6bf1d3093"
+    },
+    {
+      "section": "ReleaseOps",
+      "href": "/docs/releaseops",
+      "label": "ReleaseOps overview",
+      "status": null,
+      "startLine": 62,
+      "endLine": 62,
+      "nodeSha256": "a74d5fa9fd5cd6d058bc8c87bd401d5f509e10f119f481816fb52d11894bdc76"
+    },
+    {
+      "section": "ReleaseOps",
+      "href": "/docs/releaseops/connectors",
+      "label": "CI/CD connectors",
+      "status": null,
+      "startLine": 63,
+      "endLine": 63,
+      "nodeSha256": "cc7363d64c61d3d9b81418313b4832593fb14e1c1b5dfa2f108710ef7b241783"
+    },
+    {
+      "section": "ReleaseOps",
+      "href": "/docs/releaseops/readiness",
+      "label": "Readiness scoring",
+      "status": null,
+      "startLine": 64,
+      "endLine": 64,
+      "nodeSha256": "62b7a9a34eda40775c2beada15b2a80e5bbe925681eeb6364a06242a5b5fefdc"
+    },
+    {
+      "section": "Desktop",
+      "href": "/docs/desktop-install",
+      "label": "Install the desktop app",
+      "status": null,
+      "startLine": 70,
+      "endLine": 70,
+      "nodeSha256": "221f3bd3ccfb5799d5e07c02fd2fb86f0cc7ccf1cff3bff985fee41ca1ed5c29"
+    },
+    {
+      "section": "Desktop",
+      "href": "/docs/integration-setup",
+      "label": "Integration setup",
+      "status": null,
+      "startLine": 71,
+      "endLine": 71,
+      "nodeSha256": "eb6bb05e71dfd2913e250332fa78f0580edb71dfea6617c0b55d28b5ba7f0f1f"
+    },
+    {
+      "section": "Trust & security",
+      "href": "/docs/security-model",
+      "label": "Security model",
+      "status": null,
+      "startLine": 77,
+      "endLine": 77,
+      "nodeSha256": "5335401cf7a25a1f2e4f141ce1fc09c2dc43c57f5fdbdd8d97468b6c4b72492d"
+    },
+    {
+      "section": "Trust & security",
+      "href": "/docs/permissions-model",
+      "label": "Permissions model",
+      "status": null,
+      "startLine": 78,
+      "endLine": 78,
+      "nodeSha256": "77dbff248e8eacc188bba649266fbb4c86dffb0adf717cc125a21c0f0243f9dc"
+    },
+    {
+      "section": "Trust & security",
+      "href": "/docs/oauth-setup",
+      "label": "OAuth setup",
+      "status": null,
+      "startLine": 79,
+      "endLine": 79,
+      "nodeSha256": "690af404e99b7ceaaeb9a31baacc2796a1a4026d4c4206e4c534e7959e8d5d90"
+    },
+    {
+      "section": "Reference",
+      "href": "/docs/troubleshooting",
+      "label": "Troubleshooting",
+      "status": null,
+      "startLine": 85,
+      "endLine": 85,
+      "nodeSha256": "a30637b82c9ccf3953715637c016453b4f5f0b04721ee70c240313ebb96fb2d5"
+    },
+    {
+      "section": "Reference",
+      "href": "/docs/audit-logs",
+      "label": "Audit evidence",
+      "status": null,
+      "startLine": 86,
+      "endLine": 86,
+      "nodeSha256": "e55f569773317258345c86722eff067633ddbdbab10c2eb9ad7c02a59e8649e1"
+    },
+    {
+      "section": "Reference",
+      "href": "/docs/faq",
+      "label": "FAQ",
+      "status": null,
+      "startLine": 87,
+      "endLine": 87,
+      "nodeSha256": "464c209b815016a034ae2c1fd713a06386ff95540e1651b0c389340e420e1ecb"
+    },
+    {
+      "section": "Reference",
+      "href": "/docs/glossary",
+      "label": "Glossary",
+      "status": null,
+      "startLine": 88,
+      "endLine": 88,
+      "nodeSha256": "d058693e733ffd21defc23e5cd94fec0b7ce7d62f101fe4f9352a9ace2490a58"
+    }
+  ],
+  "landingLinks": [
+    {
+      "group": "Get started",
+      "href": "/docs/getting-started",
+      "label": "Start with Axiom",
+      "description": "Understand the setup sequence and prerequisites.",
+      "startLine": 14,
+      "endLine": 14,
+      "nodeSha256": "e8c3bca3138bd6a000d1f08ffc929cb4e3c3c51ed2d9e6024c59b58866a60d13"
+    },
+    {
+      "group": "Get started",
+      "href": "/docs/desktop-install",
+      "label": "Install the desktop app",
+      "description": "Check platform and installation guidance.",
+      "startLine": 15,
+      "endLine": 15,
+      "nodeSha256": "6640a5e1cf938c7364bcc7e2e43cafdcef00d1216f76600c453cb67270fd967d"
+    },
+    {
+      "group": "Get started",
+      "href": "/docs/quickstart-checklist",
+      "label": "Follow the quickstart checklist",
+      "description": "Separate installation from workflow readiness.",
+      "startLine": 16,
+      "endLine": 16,
+      "nodeSha256": "dc35172e2ccb4190e11e7ea2a9c577ceae0689c9de5e669d425b312cbb86263c"
+    },
+    {
+      "group": "Complete a task",
+      "href": "/docs/approval-workflow",
+      "label": "Understand approval and execution",
+      "description": "Check review and execution steps for your version.",
+      "startLine": 19,
+      "endLine": 19,
+      "nodeSha256": "54d6a766b2ef4d28fbb315e5e5591f14e26f8ef0148dc186333474f04e770b26"
+    },
+    {
+      "group": "Complete a task",
+      "href": "/docs/releaseops",
+      "label": "Explore ReleaseOps",
+      "description": "Inspect the release workflow and its boundaries.",
+      "startLine": 20,
+      "endLine": 20,
+      "nodeSha256": "adec68cac0dd590cf10a9a1e61707aacf3b1c93fe6437db379c4766946e51f5a"
+    },
+    {
+      "group": "Complete a task",
+      "href": "/docs/integration-setup",
+      "label": "Set up an integration",
+      "description": "Check connection-specific setup and permissions.",
+      "startLine": 21,
+      "endLine": 21,
+      "nodeSha256": "e4b1df644898b9e2196165cec14ed1691408257ed0941fac1dc43c39c11189e4"
+    },
+    {
+      "group": "Complete a task",
+      "href": "/docs/source-modes",
+      "label": "Choose a source mode",
+      "description": "Understand where repository context comes from.",
+      "startLine": 22,
+      "endLine": 22,
+      "nodeSha256": "754b3c7b514a279cb10efc636d3a6b5a35cb68091afce2b3106799c15b4ac742"
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/permissions-model",
+      "label": "Check the permissions model",
+      "description": "Understand roles and operation-specific access.",
+      "startLine": 25,
+      "endLine": 25,
+      "nodeSha256": "beee93571289767a66696d62279e2edddbff46568432f152c8d3ac48d7a2230a"
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/execution-plans",
+      "label": "Read about execution plans",
+      "description": "Distinguish a recorded plan from an authorized action.",
+      "startLine": 26,
+      "endLine": 26,
+      "nodeSha256": "b14a434d880454d92c476909e79315e49ca40f0a9d183c17d01a4dba379d5980"
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/surfaces",
+      "label": "Find the right product surface",
+      "description": "Compare where a workflow is presented.",
+      "startLine": 27,
+      "endLine": 27,
+      "nodeSha256": "6c34d07af773cb13acfde48f80d88068f137ec761863f2977de9d19ca4da0a4d"
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/glossary",
+      "label": "Look up a term",
+      "description": "Find the vocabulary used in the guides.",
+      "startLine": 28,
+      "endLine": 28,
+      "nodeSha256": "c6b8bfcc2431135cb82256f4fa9f1e6d1f500214b99d9568419686a280208624"
+    },
+    {
+      "group": "Look up a control",
+      "href": "/docs/audit-logs",
+      "label": "Inspect recorded activity",
+      "description": "Understand the scope of saved outcome records.",
+      "startLine": 29,
+      "endLine": 29,
+      "nodeSha256": "692af4451abb36808525dcc059e72d977a357218b4f798baef21300a8cc3fa80"
+    },
+    {
+      "group": "Resolve a problem",
+      "href": "/docs/troubleshooting",
+      "label": "Find troubleshooting guidance",
+      "description": "Start with the symptom and inspect existing records.",
+      "startLine": 32,
+      "endLine": 32,
+      "nodeSha256": "f97687df63c415840c86f87aee52f3f4e0cfcd816266ec7a4df25a8a3a1f9553"
+    },
+    {
+      "group": "Resolve a problem",
+      "href": "/docs/faq",
+      "label": "Read frequently asked questions",
+      "description": "Find answers about setup and product behavior.",
+      "startLine": 33,
+      "endLine": 33,
+      "nodeSha256": "498207502d5ddd280e5938bfc5fe4951819b7cfa820005c68764f9f03dfaabd3"
+    },
+    {
+      "group": "Resolve a problem",
+      "href": "/docs/releaseops/readiness",
+      "label": "Understand release readiness",
+      "description": "Check readiness signals and their limitations.",
+      "startLine": 34,
+      "endLine": 34,
+      "nodeSha256": "466bb9f980e4fa2ca39a275de534f09788fa8a7cda4138c813b5734ff9b09482"
+    }
+  ],
+  "pagination": [
+    {
+      "path": "app/docs/approval-workflow/page.tsx",
+      "startLine": 58,
+      "endLine": 58,
+      "nodeSha256": "ea44200495e341df7060ee96c6e5736d6afd90c97d11bd399bbd8b667d8ae6fc",
+      "prev": {
+        "href": "/docs/releaseops",
+        "label": "ReleaseOps overview"
+      },
+      "next": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      }
+    },
+    {
+      "path": "app/docs/audit-logs/page.tsx",
+      "startLine": 36,
+      "endLine": 36,
+      "nodeSha256": "e8a1c23b9efd791b734081b31a385e4c67bbce3fca5796c83c8b4d3b5c417d84",
+      "prev": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      },
+      "next": {
+        "href": "/docs/troubleshooting",
+        "label": "Troubleshooting"
+      }
+    },
+    {
+      "path": "app/docs/aws-setup/page.tsx",
+      "startLine": 49,
+      "endLine": 49,
+      "nodeSha256": "6ce6835e6c70feb1d07a9dcd8ccce92bab5fe61d5d7bed0e04d7b7ed18aaa9bc",
+      "prev": {
+        "href": "/docs/integration-setup",
+        "label": "Integration setup"
+      },
+      "next": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      }
+    },
+    {
+      "path": "app/docs/azure-setup/page.tsx",
+      "startLine": 74,
+      "endLine": 77,
+      "nodeSha256": "dd8d4b82d840f7c875eb7179485e4bcd959cf424a500176003c5a248e15473b5",
+      "prev": {
+        "href": "/docs/aws-setup",
+        "label": "AWS setup"
+      },
+      "next": {
+        "href": "/docs/gcp-setup",
+        "label": "GCP setup"
+      }
+    },
+    {
+      "path": "app/docs/desktop-install/page.tsx",
+      "startLine": 113,
+      "endLine": 116,
+      "nodeSha256": "3fd9a5bbe291cb16057ae1cc29a3ab7011838371afc8312be4669ca64574074a",
+      "prev": {
+        "href": "/docs/releaseops/readiness",
+        "label": "Readiness scoring"
+      },
+      "next": {
+        "href": "/docs/releaseops",
+        "label": "ReleaseOps overview"
+      }
+    },
+    {
+      "path": "app/docs/execution-plans/page.tsx",
+      "startLine": 52,
+      "endLine": 52,
+      "nodeSha256": "a0d8d24613662997bfcccf2d76e392ec4b72ad1edbf034a924720c4a8334df24",
+      "prev": {
+        "href": "/docs/permissions-model",
+        "label": "Permissions model"
+      },
+      "next": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      }
+    },
+    {
+      "path": "app/docs/faq/page.tsx",
+      "startLine": 174,
+      "endLine": 177,
+      "nodeSha256": "b777860394c2a90e83433830f3e2b4f277bb6896ddecfc016c98d609f9e5b53e",
+      "prev": {
+        "href": "/docs/troubleshooting",
+        "label": "Troubleshooting"
+      },
+      "next": {
+        "href": "/docs/glossary",
+        "label": "Glossary"
+      }
+    },
+    {
+      "path": "app/docs/gcp-setup/page.tsx",
+      "startLine": 68,
+      "endLine": 71,
+      "nodeSha256": "252618693823d24985d388253408858a0e1a54be6a8cf73d68189deeec852265",
+      "prev": {
+        "href": "/docs/azure-setup",
+        "label": "Azure setup"
+      },
+      "next": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      }
+    },
+    {
+      "path": "app/docs/getting-started/page.tsx",
+      "startLine": 139,
+      "endLine": 142,
+      "nodeSha256": "9c63d0af0002c2cb7508be688ba9dc2aa8988dd1d334cad192cfd91a2f7030c0",
+      "prev": {
+        "href": "/docs",
+        "label": "Documentation overview"
+      },
+      "next": {
+        "href": "/docs/desktop-install",
+        "label": "Desktop installation"
+      }
+    },
+    {
+      "path": "app/docs/glossary/page.tsx",
+      "startLine": 45,
+      "endLine": 47,
+      "nodeSha256": "d47279cd650fb86325cbc68ea08122c390c30f7b794aa8f6d2ce6b8b72c37f09",
+      "prev": {
+        "href": "/docs/faq",
+        "label": "FAQ"
+      },
+      "next": null
+    },
+    {
+      "path": "app/docs/integration-setup/page.tsx",
+      "startLine": 101,
+      "endLine": 104,
+      "nodeSha256": "42d7b480a92606620f01cd665212a83a873f1a9a2bb662f627be0b5fde319566",
+      "prev": {
+        "href": "/docs/desktop-architecture",
+        "label": "Desktop architecture"
+      },
+      "next": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      }
+    },
+    {
+      "path": "app/docs/oauth-setup/page.tsx",
+      "startLine": 146,
+      "endLine": 149,
+      "nodeSha256": "6e357c2e5a911179bd993b51e5bf57f5101cfbd8fa5cc6b0a5182e2dd083d97c",
+      "prev": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      },
+      "next": {
+        "href": "/docs/permissions-model",
+        "label": "Permissions model"
+      }
+    },
+    {
+      "path": "app/docs/permissions-model/page.tsx",
+      "startLine": 53,
+      "endLine": 53,
+      "nodeSha256": "d92b0275de29bef7c2c9cf9cf826e126d4e5da992017ac0d544dab552fa86a29",
+      "prev": {
+        "href": "/docs/security-model",
+        "label": "Security model"
+      },
+      "next": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      }
+    },
+    {
+      "path": "app/docs/releaseops/connectors/page.tsx",
+      "startLine": 99,
+      "endLine": 102,
+      "nodeSha256": "1be21bd980fcd0874ee7d4d4da97f8207b9919da3b7cf7bcc724ea8917c9a8cb",
+      "prev": {
+        "href": "/docs/releaseops",
+        "label": "ReleaseOps overview"
+      },
+      "next": {
+        "href": "/docs/releaseops/readiness",
+        "label": "Readiness scoring"
+      }
+    },
+    {
+      "path": "app/docs/releaseops/page.tsx",
+      "startLine": 70,
+      "endLine": 73,
+      "nodeSha256": "756e39fdbe673db7dfebafd3afe4a6ba400e4ef0d1d492cd758b16316c1af88d",
+      "prev": {
+        "href": "/docs/rollback",
+        "label": "Rollback strategy"
+      },
+      "next": {
+        "href": "/docs/releaseops/connectors",
+        "label": "CI/CD connectors"
+      }
+    },
+    {
+      "path": "app/docs/releaseops/readiness/page.tsx",
+      "startLine": 77,
+      "endLine": 80,
+      "nodeSha256": "7d955a512acc64f557f252cbac15458a8ac837ecaa674f552e78fef0a2968eb4",
+      "prev": {
+        "href": "/docs/releaseops/connectors",
+        "label": "CI/CD connectors"
+      },
+      "next": {
+        "href": "/docs/desktop-install",
+        "label": "Install the desktop app"
+      }
+    },
+    {
+      "path": "app/docs/rollback/page.tsx",
+      "startLine": 47,
+      "endLine": 47,
+      "nodeSha256": "74ad8ca88d2b4b2a979df4732d88157bb63cdfb929d2cfaed7339708e1346200",
+      "prev": {
+        "href": "/docs/approval-workflow",
+        "label": "Approval workflow"
+      },
+      "next": {
+        "href": "/docs/releaseops",
+        "label": "ReleaseOps overview"
+      }
+    },
+    {
+      "path": "app/docs/security-model/page.tsx",
+      "startLine": 56,
+      "endLine": 56,
+      "nodeSha256": "c3e36c37661aa5102a4f4be571bb0b2ac5fe50e1598d80f4f6f2ae42d2080a45",
+      "prev": {
+        "href": "/docs/aws-setup",
+        "label": "AWS setup"
+      },
+      "next": {
+        "href": "/docs/troubleshooting",
+        "label": "Troubleshooting"
+      }
+    },
+    {
+      "path": "app/docs/source-modes/page.tsx",
+      "startLine": 55,
+      "endLine": 55,
+      "nodeSha256": "535f3383eee02b49101b1a7f34cf37f4bb598b3817ff15987816cc89a20e2be4",
+      "prev": {
+        "href": "/docs/getting-started",
+        "label": "Getting started"
+      },
+      "next": {
+        "href": "/docs/permissions-model",
+        "label": "Permissions model"
+      }
+    },
+    {
+      "path": "app/docs/surfaces/page.tsx",
+      "startLine": 45,
+      "endLine": 45,
+      "nodeSha256": "8cd922fc361ca32169c1d77c4b6ea72e6bc5bfb40ff2c6087342bb3399e169fa",
+      "prev": {
+        "href": "/docs/execution-plans",
+        "label": "Execution plans"
+      },
+      "next": {
+        "href": "/docs/glossary",
+        "label": "Glossary"
+      }
+    }
+  ],
+  "feedback": [
+    {
+      "path": "app/docs/approval-workflow/page.tsx",
+      "startLine": 59,
+      "endLine": 59,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/aws-setup/page.tsx",
+      "startLine": 50,
+      "endLine": 50,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/azure-setup/page.tsx",
+      "startLine": 78,
+      "endLine": 78,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/desktop-install/page.tsx",
+      "startLine": 117,
+      "endLine": 117,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/faq/page.tsx",
+      "startLine": 178,
+      "endLine": 178,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/gcp-setup/page.tsx",
+      "startLine": 72,
+      "endLine": 72,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/getting-started/page.tsx",
+      "startLine": 143,
+      "endLine": 143,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/glossary/page.tsx",
+      "startLine": 48,
+      "endLine": 48,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/integration-setup/page.tsx",
+      "startLine": 105,
+      "endLine": 105,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/oauth-setup/page.tsx",
+      "startLine": 150,
+      "endLine": 150,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/page.tsx",
+      "startLine": 61,
+      "endLine": 61,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/permissions-model/page.tsx",
+      "startLine": 54,
+      "endLine": 54,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/quickstart-checklist/page.tsx",
+      "startLine": 154,
+      "endLine": 154,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/releaseops/connectors/page.tsx",
+      "startLine": 103,
+      "endLine": 103,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/releaseops/page.tsx",
+      "startLine": 74,
+      "endLine": 74,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/releaseops/readiness/page.tsx",
+      "startLine": 81,
+      "endLine": 81,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/rollback/page.tsx",
+      "startLine": 48,
+      "endLine": 48,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/security-model/page.tsx",
+      "startLine": 57,
+      "endLine": 57,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    },
+    {
+      "path": "app/docs/source-modes/page.tsx",
+      "startLine": 56,
+      "endLine": 56,
+      "nodeSha256": "12965d41d01998b2bb8f50b9c6b90456b2d0f1744175b99334977c01feb7b2d2"
+    }
+  ],
+  "pageSources": [
+    {
+      "path": "app/docs/approval-workflow/page.tsx",
+      "sha256": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16",
+      "route": "/app/docs/approval-workflow"
+    },
+    {
+      "path": "app/docs/architecture/page.tsx",
+      "sha256": "e89584e7dc7ad2b0b65b4f8e5814f120bdf36d82eda660832935e85196947640",
+      "route": "/app/docs/architecture"
+    },
+    {
+      "path": "app/docs/audit-logs/page.tsx",
+      "sha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945",
+      "route": "/app/docs/audit-logs"
+    },
+    {
+      "path": "app/docs/aws-setup/page.tsx",
+      "sha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be",
+      "route": "/app/docs/aws-setup"
+    },
+    {
+      "path": "app/docs/azure-setup/page.tsx",
+      "sha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01",
+      "route": "/app/docs/azure-setup"
+    },
+    {
+      "path": "app/docs/best-practices/page.tsx",
+      "sha256": "9100c65e1d837ccb82a06eb00957b4a6f62b017f3d7e68872cba6a894245f26f",
+      "route": "/app/docs/best-practices"
+    },
+    {
+      "path": "app/docs/desktop-architecture/page.tsx",
+      "sha256": "378c913c435c1c4cb397b937f3e7b28181fddb00759a5fc8236326e1c12738e3",
+      "route": "/app/docs/desktop-architecture"
+    },
+    {
+      "path": "app/docs/desktop-install/page.tsx",
+      "sha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c",
+      "route": "/app/docs/desktop-install"
+    },
+    {
+      "path": "app/docs/execution-plans/page.tsx",
+      "sha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a",
+      "route": "/app/docs/execution-plans"
+    },
+    {
+      "path": "app/docs/faq/page.tsx",
+      "sha256": "333d6185edf68082966fe41f71b89a60cfdc0ff43854e6459a5ca1b57524b999",
+      "route": "/app/docs/faq"
+    },
+    {
+      "path": "app/docs/gcp-setup/page.tsx",
+      "sha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba",
+      "route": "/app/docs/gcp-setup"
+    },
+    {
+      "path": "app/docs/getting-started/page.tsx",
+      "sha256": "73d5f64e12ad08fedcf8a05c0c5ded47bf799daa772f1bd0e72f8e19fd0e315e",
+      "route": "/app/docs/getting-started"
+    },
+    {
+      "path": "app/docs/glossary/page.tsx",
+      "sha256": "d6b7283b7bb71a7c36e932f30e2eed5c98a65581160db5ac3ed6c5d55d527d3f",
+      "route": "/app/docs/glossary"
+    },
+    {
+      "path": "app/docs/integration-setup/page.tsx",
+      "sha256": "f939343248aa38633f7ee1f8e4b13ae136b9a34bfbb74eef02686109df07269c",
+      "route": "/app/docs/integration-setup"
+    },
+    {
+      "path": "app/docs/oauth-setup/page.tsx",
+      "sha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820",
+      "route": "/app/docs/oauth-setup"
+    },
+    {
+      "path": "app/docs/page.tsx",
+      "sha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "route": "/app/docs"
+    },
+    {
+      "path": "app/docs/permissions-model/page.tsx",
+      "sha256": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c",
+      "route": "/app/docs/permissions-model"
+    },
+    {
+      "path": "app/docs/quickstart-checklist/page.tsx",
+      "sha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc",
+      "route": "/app/docs/quickstart-checklist"
+    },
+    {
+      "path": "app/docs/releaseops/connectors/page.tsx",
+      "sha256": "bb77feb3010780bcc416a307547d1c2dc5682781b806fcdbebc70765d2320104",
+      "route": "/app/docs/releaseops/connectors"
+    },
+    {
+      "path": "app/docs/releaseops/page.tsx",
+      "sha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38",
+      "route": "/app/docs/releaseops"
+    },
+    {
+      "path": "app/docs/releaseops/readiness/page.tsx",
+      "sha256": "0c34ac29fe6525f68df106f2fc305bd81bdb8a7b138aa312227327d875b10e3a",
+      "route": "/app/docs/releaseops/readiness"
+    },
+    {
+      "path": "app/docs/rollback/page.tsx",
+      "sha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140",
+      "route": "/app/docs/rollback"
+    },
+    {
+      "path": "app/docs/scanning/page.tsx",
+      "sha256": "6e83ba68eff9dad360fcd2b7f45ace937b72cda6e8fd5e505e2f81f8ecb96fd8",
+      "route": "/app/docs/scanning"
+    },
+    {
+      "path": "app/docs/security-model/page.tsx",
+      "sha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7",
+      "route": "/app/docs/security-model"
+    },
+    {
+      "path": "app/docs/source-modes/page.tsx",
+      "sha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456",
+      "route": "/app/docs/source-modes"
+    },
+    {
+      "path": "app/docs/surfaces/page.tsx",
+      "sha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f",
+      "route": "/app/docs/surfaces"
+    },
+    {
+      "path": "app/docs/terraform-export/page.tsx",
+      "sha256": "778e16e015dcf24fb22fb0735ed20736430bf102c537b9aa69749876048c00df",
+      "route": "/app/docs/terraform-export"
+    },
+    {
+      "path": "app/docs/troubleshooting/page.tsx",
+      "sha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0",
+      "route": "/app/docs/troubleshooting"
+    }
+  ],
+  "uncataloguedRoutes": [
+    "/app/docs/approval-workflow",
+    "/app/docs/architecture",
+    "/app/docs/audit-logs",
+    "/app/docs/aws-setup",
+    "/app/docs/azure-setup",
+    "/app/docs/best-practices",
+    "/app/docs/desktop-architecture",
+    "/app/docs/desktop-install",
+    "/app/docs/execution-plans",
+    "/app/docs/faq",
+    "/app/docs/gcp-setup",
+    "/app/docs/getting-started",
+    "/app/docs/glossary",
+    "/app/docs/integration-setup",
+    "/app/docs/oauth-setup",
+    "/app/docs",
+    "/app/docs/permissions-model",
+    "/app/docs/quickstart-checklist",
+    "/app/docs/releaseops/connectors",
+    "/app/docs/releaseops",
+    "/app/docs/releaseops/readiness",
+    "/app/docs/rollback",
+    "/app/docs/scanning",
+    "/app/docs/security-model",
+    "/app/docs/source-modes",
+    "/app/docs/surfaces",
+    "/app/docs/terraform-export",
+    "/app/docs/troubleshooting"
+  ],
+  "headingIndex": {
+    "path": "lib/docs/guide-heading-index.json",
+    "guideCount": 23,
+    "allRecordedSourceHashesMatch": true
+  },
+  "adjacencyCalls": 0
+}

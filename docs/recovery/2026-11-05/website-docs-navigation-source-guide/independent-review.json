@@ -1,0 +1,44 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR for finite unpublished website Docs navigation source guide",
+  "sourceRevision": "49c5d4b5de5d9efa03b06e544106404da8387f36",
+  "markdownSha256": "a9838a4d00d2c144c78e76ad5e43745462b67e5274906865f749c32f289d9cf2",
+  "ledgerSha256": "686b039fb26f99ab47a42dc730b188368639757b2a38b7a63efd05da64b92192",
+  "sourceKeys": 37,
+  "uniqueFiles": 36,
+  "ranges": 77,
+  "currentSourceAndRangeHashesIndependentlyMatched": true,
+  "reviewedCounts": {
+    "sharedDeclarations": 8,
+    "documentationFamilies": 8,
+    "sidebarEntries": 23,
+    "landingLinks": 15,
+    "paginationCallsites": 20,
+    "feedbackCallsites": 19,
+    "docsPageSources": 28,
+    "nonCatalogueRoutes": 5,
+    "getDocAdjacentCalls": 0
+  },
+  "contentReviewed": [
+    "local term substring AND matching and bounded catalogue search universe",
+    "clear focus, active pathname, optional disabled entry and result count semantics",
+    "disclosure, IME/Escape/navigation and separately reviewed breakpoint focus behavior",
+    "explicit caller pagination rather than unused adjacency helper",
+    "support link navigation not submission",
+    "literal heading-index generation/build gate distinct from live search"
+  ],
+  "metadata": {
+    "owner": "Axiom documentation workstream",
+    "sourceReviewDate": "2026-11-05",
+    "humanEditorialOwner": null,
+    "supportedReleaseAccepted": false
+  },
+  "historicalEvidence": "initial extractor app-prefix mistake and old draft preserved; corrected five uncatalogued routes used",
+  "limits": [
+    "source description only, no browser/AT/native/media/retrieval/editorial/publication acceptance",
+    "no body-control/globalnavigation/custompagination/whole-site or fullB4B5 coverage",
+    "not runtime help IDs, unique rendered instance count or authority"
+  ],
+  "productTestsRunByReviewer": false,
+  "providerBrowserCalls": false
+}
