@@ -205,3 +205,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November4 current Agent-repair desktop compilation
 ~~Exact475frontend and new ARM64 native debug embedding built/verified~~ ([evidence](../recovery/2026-11-04/desktop-connection-repairs-build/README.md)):80nativeGitinputs/sixembeddedassets verified; initialarchiveancestor and copiedSwiftpath failures retained, one concrete correctedofflinebuild passed. Original983app/pairedsessions untouched. Newbinary0600unsigned/unexecuted/unpackaged; signing/safehandoff/nativeUX and allinstaller/Governance gates remain open. No production/provider/DB/CI/spend change.
+
+### November4 current local repair preview packaged and signed
+~~Separate475preview package/signature/archive verified~~ ([evidence](../recovery/2026-11-04/desktop-connection-repairs-package/README.md)): exactexistingdeveloperleaf/runtime/strictdeep/team-ID checks, fourfilearchive CRC/hashes; original983unchanged. Newapp NOTLAUNCHED; saved-draft/oldpreviewclosure and actualnative/sessionacceptance pending. Same sharedidentity, separateReviewer preserved. No notarization/publicinstaller/deploy/provider/DB/CI/spend action or fullGovernance completion.

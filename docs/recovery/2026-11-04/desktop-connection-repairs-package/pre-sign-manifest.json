@@ -1,0 +1,22 @@
+{
+  "app": "/Users/samirahmed/Applications/Axiom Local Builds/47563280/Axiom Agent Local Preview.app",
+  "sourceHead": "4756328040ec60f86b1bd81e8ff3eeb2141a794b",
+  "unsignedSha256": "ff18d22e8041252bfd898eccc28d8c23dccf6e610d77a865c5e85f0a50ea178b",
+  "oldSignedBinarySha256": "74b4353e13892bf34f4417852baddf2104d1fcf9c1a8100431b6419c12bd4659",
+  "files": {
+    "Contents/Info.plist": "a611a9266bc12efa53c87eb74cc1fabf95e590c7455cd8459371bdf42007285c",
+    "Contents/MacOS/axiom-desktop": "ff18d22e8041252bfd898eccc28d8c23dccf6e610d77a865c5e85f0a50ea178b",
+    "Contents/Resources/icon.icns": "1d227b919c4bccbecbc60e6fb8891db148e9b3e97f54179aef6409c0bacd5f62"
+  },
+  "sameIdentifierSessionNamespace": true,
+  "attributeNames": {
+    ".": [],
+    "Contents": [],
+    "Contents/MacOS": [],
+    "Contents/Resources": [],
+    "Contents/Info.plist": [],
+    "Contents/MacOS/axiom-desktop": [],
+    "Contents/Resources/icon.icns": []
+  },
+  "launched": false
+}

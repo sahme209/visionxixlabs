@@ -1,0 +1,7 @@
+{
+  "error": "Python os.listxattr unavailable on this interpreter",
+  "stage": "after three byte-copies before attribute check/manifest/sign",
+  "signingStarted": false,
+  "correction": "fixed /usr/bin/xattr names-only, no values/removal",
+  "existingNewBundleVerifiedNotRecreated": true
+}

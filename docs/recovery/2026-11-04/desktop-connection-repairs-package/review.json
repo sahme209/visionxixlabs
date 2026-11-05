@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear",
+  "execution": "read-only no signing/tests/network/UI",
+  "scope": "byte-copy/signature/archive evidence; shared-session handoff remains gated"
+}
