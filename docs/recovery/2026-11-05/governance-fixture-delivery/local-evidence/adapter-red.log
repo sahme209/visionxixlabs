@@ -1,0 +1,41 @@
+EEE.....................
+======================================================================
+ERROR: test_bound_source_record_and_real_quarantine_copies (test_fixture_delivery_inputs.FixtureDeliveryInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py", line 30, in test_bound_source_record_and_real_quarantine_copies
+    x=self.x;r=x.record();self.assertEqual(r,f.verify_fixture_delivery_inputs(x.stage));x.emit();self.assertEqual(r,f.verify_fixture_delivery_inputs(x.stage,after_build=True));copies=f.prepare_fixture_materialization(x.stage,x.root);self.assertEqual(set(copies['resources']),{'producer','schema','binding','seed'});self.assertEqual(copies['toolNode']['source'],x.observation['runtimeNode']);self.assertTrue(all(Path(v['materializedPath']).stat().st_mode&0o777==0o600 for v in [*copies['resources'].values(),copies['toolNode']]))
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py", line 21, in record
+    def record(self):return f.record_fixture_delivery_inputs(self.stage,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/fixture_delivery_inputs.py", line 2, in record_fixture_delivery_inputs
+    def record_fixture_delivery_inputs(stage,packet_path):raise ValueError('fixture_delivery_not_implemented')
+ValueError: fixture_delivery_not_implemented
+
+======================================================================
+ERROR: test_changed_recipe_and_runtime_node_refuse (test_fixture_delivery_inputs.FixtureDeliveryInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py", line 32, in test_changed_recipe_and_runtime_node_refuse
+    x=self.x;x.record();x.seed.write_bytes(b'changed');self.assertRaises(ValueError,f.verify_fixture_delivery_inputs,x.stage)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py", line 21, in record
+    def record(self):return f.record_fixture_delivery_inputs(self.stage,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/fixture_delivery_inputs.py", line 2, in record_fixture_delivery_inputs
+    def record_fixture_delivery_inputs(stage,packet_path):raise ValueError('fixture_delivery_not_implemented')
+ValueError: fixture_delivery_not_implemented
+
+======================================================================
+ERROR: test_missing_or_late_preimport_banner_refuses (test_fixture_delivery_inputs.FixtureDeliveryInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py", line 34, in test_missing_or_late_preimport_banner_refuses
+    x=self.x;x.record();x.put(x.stage/'.next/server/__axiom_private_fixture__/fixture-producer.cjs',b'require("@prisma/client");\n'+f.preimport_banner());self.assertRaises(ValueError,lambda:f.verify_fixture_delivery_inputs(x.stage,after_build=True))
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py", line 21, in record
+    def record(self):return f.record_fixture_delivery_inputs(self.stage,self.packet)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/fixture_delivery_inputs.py", line 2, in record_fixture_delivery_inputs
+    def record_fixture_delivery_inputs(stage,packet_path):raise ValueError('fixture_delivery_not_implemented')
+ValueError: fixture_delivery_not_implemented
+
+----------------------------------------------------------------------
+Ran 24 tests in 1.502s
+
+FAILED (errors=3)

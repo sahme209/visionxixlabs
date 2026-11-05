@@ -362,6 +362,10 @@ def verify_build_archive(stage,repo,revision,phase='before_build'):
  has_legacy=legacy_receipt.exists()or legacy_receipt.is_symlink()
  if has_system and has_legacy:fail('mixed_native_profiles_refused')
  system_inputs=system_build_inputs(stage,phase)if has_system else None
+ from governance_local_issuer import fixture_delivery_inputs as fixture
+ has_fixture=(stage/fixture.RECEIPT).exists()or(stage/fixture.RECEIPT).is_symlink()
+ if has_fixture and not has_system:fail('fixture_requires_system_profile')
+ fixture_inputs=fixture.verify_fixture_delivery_inputs(stage,after_build=phase=='after_build')if has_fixture else None
  native_overlay=None if has_system else native_overlay_inputs(stage,phase)
  if system_inputs is not None and system_inputs['sourceRevision']!=revision:fail('system_input_source_revision_mismatch')
  if native_overlay is not None and native_overlay['sourceRevision']!=revision:fail('native_overlay_source_revision_mismatch')
@@ -369,7 +373,7 @@ def verify_build_archive(stage,repo,revision,phase='before_build'):
  with tarfile.open(fileobj=io.BytesIO(raw),mode='r:')as archive:
   for member in archive:
    name=rel(member.name.rstrip('/'));paths+=len(name)
-   if name in {'_axiom_system_build_inputs.json','_axiom_native_overlay.json','packages/verified-issuer-runtime/native/origin_guard.node','packages/verified-issuer-runtime/native/origin-bootstrap'}:fail('native_overlay_outputs_must_be_generated_prebuild')
+   if name in {'_axiom_fixture_delivery_inputs.json','_axiom_system_build_inputs.json','_axiom_native_overlay.json','packages/verified-issuer-runtime/native/origin_guard.node','packages/verified-issuer-runtime/native/origin-bootstrap'}:fail('native_overlay_outputs_must_be_generated_prebuild')
    if name in seen or name.casefold()in folded or len(seen)>=50000 or paths>32*1024*1024:fail('build_archive_duplicate_or_limit')
    if name.split('/')[0]in {'node_modules','.next'}:fail('reserved_build_archive_root')
    seen.add(name);folded.add(name.casefold());path=stage/name
@@ -404,13 +408,14 @@ def verify_build_archive(stage,repo,revision,phase='before_build'):
     verify_framework_declaration(stage);continue
    if native_overlay and relative in {'_axiom_native_overlay.json',*native_overlay['stageArtifacts']}:continue
    if system_inputs and relative in {'_axiom_system_build_inputs.json',*system_inputs['stageArtifacts']}:continue
+   if fixture_inputs and relative==fixture.RECEIPT:continue
    if relative not in seen:fail('extra_build_source_entry')
    if name in dirs and not path.is_symlink():kept.append(name)
   dirs[:]=kept
  return {'archiveSha256':sha(raw),'verifiedRegularFiles':regular,'verifiedSymlinks':links,'sourceBytes':total,
          'sourceObservationSha256':sha(json.dumps(sorted(observed),sort_keys=True,separators=(',',':')).encode()),
          **({'nativeOverlay':native_overlay}if native_overlay is not None else{}),
-         **({'systemBuildInputs':system_inputs}if system_inputs is not None else{})}
+         **({'systemBuildInputs':system_inputs}if system_inputs is not None else{}),**({'fixtureDeliveryInputs':fixture_inputs}if fixture_inputs is not None else{})}
 
 def prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node,phase='before_build'):
  stage=private_dir(stage);generation_run=private_dir(generation_run)
@@ -479,6 +484,9 @@ def verify_build_outputs(stage):
     if not target.is_file()and not target.is_dir():fail('next_trace_target_missing')
    metadata[trace.relative_to(stage).as_posix()]={'sha256':sha(body),'size':len(body)}
  if not traces:fail('next_trace_metadata_missing')
+ from governance_local_issuer import fixture_delivery_inputs as fixture
+ if(stage/fixture.RECEIPT).exists()or(stage/fixture.RECEIPT).is_symlink():
+  fixture.verify_fixture_delivery_inputs(stage,after_build=True);extra=_build_bytes(stage/fixture.HELPER,32*1024*1024);metadata[fixture.HELPER]={'sha256':sha(extra),'size':len(extra)}
  bootstrap=_build_bytes(stage/'.next/server/__axiom_private__/release-merge-bootstrap.cjs',32*1024*1024)
  metadata['.next/server/__axiom_private__/release-merge-bootstrap.cjs']={'sha256':sha(bootstrap),'size':len(bootstrap)}
  return {'requiredMetadata':metadata,'routeCount':len(routes),'traceCount':traces,'traceEntryCount':entries,
@@ -503,7 +511,9 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
  if overlay is not None and overlay['plannedBuildRun']!=str(owned):fail('native_overlay_build_run_mismatch')
  system_inputs=inputs.get('sourceArchive',{}).get('systemBuildInputs')
  if system_inputs is not None and (system_inputs['plannedBuildRun']!=str(owned) or system_inputs['buildNode']!=__import__('governance_local_issuer.system_build_inputs',fromlist=['binding']).binding(node)):fail('system_build_run_or_tool_mismatch')
+ fixture_selected=inputs.get('sourceArchive',{}).get('fixtureDeliveryInputs')is not None
  names=['attempt.json','result.json','node-version.log','contract.log','next-build.log','private-bootstrap-emission.log','tmp']
+ if fixture_selected:names.insert(-1,'fixture-producer-emission.log')
  if any((owned/name).exists()or(owned/name).is_symlink()for name in names):fail('fresh_build_logs_required')
  handles={}
  try:
@@ -514,7 +524,7 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
   env={'PATH':str(node.parent)+':/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','TZ':'UTC','TMPDIR':str(tmp),'XDG_CACHE_HOME':str(tmp),'NEXT_TELEMETRY_DISABLED':'1','NODE_ENV':'production',
        'DATABASE_URL':'postgresql://local_build:local_build@127.0.0.1:1/local_build','AUTH_SECRET':'isolated-local-build-not-a-live-credential-20261102','NEXTAUTH_SECRET':'isolated-local-build-not-a-live-credential-20261102',
        'CHECKPOINT_DISABLE':'1','PRISMA_GENERATE_SKIP_AUTOINSTALL':'true'}
-  profile=tool._generation_profile(stage,tmp,[owned/name for name in ['node-version.log','contract.log','next-build.log','private-bootstrap-emission.log']],protected,read_protected=[repo,cache,Path.home()/'.cache/prisma'])
+  profile=tool._generation_profile(stage,tmp,[owned/name for name in ['node-version.log','contract.log','next-build.log','private-bootstrap-emission.log']+(['fixture-producer-emission.log']if fixture_selected else[])],protected,read_protected=[repo,cache,Path.home()/'.cache/prisma'])
   prefix=['/usr/bin/sandbox-exec','-p',profile,str(node)]
   result={'format':'axiom.local-next-build-result/1','status':'unavailable','contractCheckStarted':False,'buildStarted':False,'buildOutputsVerified':False,'buildCompatibilityVerified':False,
           'processBounds':'original_process_group_only','postReapGroupStatus':'unqualified_not_signalled','descendantQuiescence':'unavailable','runtimeQualification':'unavailable','completeExecutableClosure':'unavailable','executingIssuerIdentity':'unavailable','activationQualification':'unavailable','executionAuthorized':False}
@@ -535,6 +545,7 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
    if prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node)!=inputs or tool.stable_file_hash(node)!=node_identity:fail('build_inputs_changed_before_compiler')
    result['buildStarted']=True;result['exit']=run(['node_modules/next/dist/bin/next','build','--webpack'],'next-build.log')
    run(['scripts/emit-private-release-bootstrap.cjs'],'private-bootstrap-emission.log')
+   if fixture_selected:run(['scripts/emit-synthetic-fixture-producer.cjs'],'fixture-producer-emission.log')
    outputs=verify_build_outputs(stage)
    outputs['frameworkGeneratedDeclaration']=verify_framework_declaration(stage)
    if prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node,phase='after_build')!=inputs or tool.stable_file_hash(node)!=node_identity:fail('build_inputs_changed_after_compiler')

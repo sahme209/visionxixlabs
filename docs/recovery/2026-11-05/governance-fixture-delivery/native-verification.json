@@ -1,0 +1,119 @@
+{
+  "format": "axiom.local-source-compile-mock-observation/1",
+  "basis": "Completed tool invocations in this agent turn; current source/output bytes reobserved without target execution. Not a compiler attestation or operational qualification.",
+  "workingDirectory": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+  "sourceBindings": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_producer.c",
+      "sha256": "0bae2456540400e90a665faf79714406a925a117893407904d3ec572cd79db85",
+      "size": 11018,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_producer_mock_test.c",
+      "sha256": "a87052e4b8e7956d8e66c8cc8f7acc4729e7cec434e5a91e732b3558a11ba824",
+      "size": 8269,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_frame.c",
+      "sha256": "bd43cc627eb233958becc878ff45ccf466660127c2282b2d5a66472147110e13",
+      "size": 931,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_frame.h",
+      "sha256": "53d92f409ae09346b354412b411180b8f668a7f29ceb26dfab4e9739ae9f6739",
+      "size": 574,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_root_binding.h",
+      "sha256": "3c987842b16731cd59954231ba9ff4349d776dc5c4664742c34a1e8973be726b",
+      "size": 738,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_config.h",
+      "sha256": "9a8edb2e43f044094bf00142893e1e4daa9c8760529167b20318ca615c08d09c",
+      "size": 1077,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_config.h",
+      "sha256": "4c34b00816e44092a6b8301a2d7202a2c49781e5dedd95dd3e1b753f8619d249",
+      "size": 1146,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_readiness.h",
+      "sha256": "ba4c44339004791144134afe38a62756453c1ffb189bbace5b8332faa4806474",
+      "size": 363,
+      "mode": 420
+    }
+  ],
+  "operationalObject": {
+    "argv": [
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-Ipackages/verified-issuer-runtime/native",
+      "-c",
+      "packages/verified-issuer-runtime/native/synthetic_fixture_producer.c",
+      "-o",
+      "/private/tmp/axiom-final-synthetic_fixture_producer-c.o"
+    ],
+    "observedExit": 0,
+    "output": {
+      "path": "/private/tmp/axiom-final-synthetic_fixture_producer-c.o",
+      "sha256": "5c3f98ec3c3de1e4aa9d01b4a83008b08187a7aa37afefd5f4480543c266ebe1",
+      "size": 16088,
+      "mode": 384
+    },
+    "executed": false
+  },
+  "mockCompilation": {
+    "argv": [
+      "clang",
+      "-std=c11",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-Ipackages/verified-issuer-runtime/native",
+      "packages/verified-issuer-runtime/native/synthetic_fixture_producer_mock_test.c",
+      "packages/verified-issuer-runtime/native/synthetic_fixture_frame.c",
+      "-o",
+      "/private/tmp/axiom-fixture-producer-mock"
+    ],
+    "observedExit": 0,
+    "output": {
+      "path": "/private/tmp/axiom-fixture-producer-mock",
+      "sha256": "96a77c647ce37710dfdf8cdb1733044610c4ba369abe11695bb76cedc7c8c8f0",
+      "size": 70472,
+      "mode": 493
+    }
+  },
+  "mockExecution": {
+    "argv": [
+      "/private/tmp/axiom-fixture-producer-mock"
+    ],
+    "observedExit": 0,
+    "stdoutBytes": 0,
+    "stderrBytes": 0,
+    "log": {
+      "path": "/private/tmp/axiom-fixture-shared-backing-green.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "mode": 420
+    },
+    "boundary": "Actual C producer body with every process/filesystem/Security/root-binding/randomness observation replaced by fake functions; only ordinary pure libc/hash/buffer logic executes."
+  },
+  "actualNativeApisInvoked": false,
+  "actualHelperExecuted": false,
+  "runtimeQualified": false,
+  "installationAuthorized": false
+}

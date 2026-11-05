@@ -157,7 +157,7 @@ def isolated_build_details(observation,build_run,stage,repo,cache,bound_dir,gene
     if 'nativeOverlay'in archive and 'systemBuildInputs'in archive:refuse('mixed_native_profiles_refused')
     if 'systemBuildInputs'in archive and archive['systemBuildInputs'].get('plannedBuildRun')!=str(build_run):refuse('system_completed_build_run_mismatch')
     details={'source':revision,'archiveSha256':archive['archiveSha256'],'verifiedRegularFiles':archive['verifiedRegularFiles'],
-             'exit':0,'nodeVersion':'v24.21.0','stage':str(stage),**({'nativeOverlay':archive['nativeOverlay']}if 'nativeOverlay'in archive else{}),**({'systemBuildInputs':archive['systemBuildInputs']}if 'systemBuildInputs'in archive else{})}
+             'exit':0,'nodeVersion':'v24.21.0','stage':str(stage),**({'nativeOverlay':archive['nativeOverlay']}if 'nativeOverlay'in archive else{}),**({'systemBuildInputs':archive['systemBuildInputs']}if 'systemBuildInputs'in archive else{}),**({'fixtureDeliveryInputs':archive['fixtureDeliveryInputs']}if 'fixtureDeliveryInputs'in archive else{})}
     return details,evidence
 
 def materialize_isolated(observation,build_run,stage,repo,cache,bound_dir,generation_run,node,destination,*,system_mode_map=None):
@@ -223,6 +223,13 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         recorded_hashes[str(node)]=system['runtimeNode']['sha256']
         recorded_hashes.update({str(stage/name):item['sha256']for name,item in system['stageArtifacts'].items()})
     system_modes={};companion_files={};companions_created=False
+    fixture_record=None;fixture_copies=None;fixture_created=False
+    from governance_local_issuer import fixture_delivery_inputs as fixture_adapter
+    if details.get('fixtureDeliveryInputs')is not None:
+        if system is None or profile!=ISOLATED_PROFILE:refuse('fixture_requires_isolated_system_profile')
+        fixture_record=fixture_adapter.verify_fixture_delivery_inputs(stage,after_build=True)
+        if fixture_record!=details['fixtureDeliveryInputs']:refuse('fixture_compiler_inputs_changed')
+    elif(stage/fixture_adapter.RECEIPT).exists()or(stage/fixture_adapter.RECEIPT).is_symlink():refuse('unpaired_fixture_delivery_inputs')
     copied_bindings = {}
     active_targets = set()
     total = 0
@@ -335,6 +342,9 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             _verify_companion_inventory(companion_root,companion_files)
             for target,modes in system_modes.items():
                 if stat.S_IMODE((destination/target).stat().st_mode)!=modes['proposedOutputMode']:refuse('system_output_mode_changed')
+        if fixture_record is not None:
+            if fixture_adapter.verify_fixture_delivery_inputs(stage,after_build=True)!=fixture_record:refuse('fixture_materialization_inputs_changed')
+            if fixture_copies is not None:fixture_adapter._copies(fixture_copies,parent)
         if native_overlay is not None and verify_overlay(stage,after_build=True)!=native_overlay:
             refuse('native_overlay_materialization_input_changed')
         relocated = {item['path']: item['packagedSha256'] for item in transformations}
@@ -359,6 +369,8 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
             for role,coordinate in SYSTEM_COMPANIONS.items():
                 companion_files[role]=_copy_companion(system['companionArtifacts'][role],companion_root/'Axiom Synthetic Custodian.app'/coordinate)
                 companion_files[role]['intendedInstalledCoordinate']=system['layout']['app']+'/'+coordinate
+        if fixture_record is not None:
+            fixture_copies=fixture_adapter.prepare_fixture_materialization(stage,parent);fixture_created=True
         # Resolve ORIGINAL trace paths against the ORIGINAL build, map only the
         # two allowed stage/dependency roots, and retain source+packaged hashes.
         trace_count=trace_bytes=trace_entries=trace_path_bytes=0
@@ -390,7 +402,7 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         native=collect_native_prerequisites(destination)
         companion_native=collect_native_prerequisites(companion_root)if system is not None else None
         verify_copy_bindings()
-        audit={"format":"axiom.local-issuer-materialization/2" if profile==ISOLATED_PROFILE else "axiom.local-issuer-materialization/1","source":details["source"],
+        audit={"format":"axiom.local-issuer-materialization/3" if fixture_record is not None else "axiom.local-issuer-materialization/2" if profile==ISOLATED_PROFILE else "axiom.local-issuer-materialization/1","source":details["source"],
                "buildReceiptSha256":receipt_sha,"copiedEntryCount":len(selected),
                "copiedFileBytes":total,"traceRelocations":transformations,"internalSymlinks":links,
                "included":"fixed Next runtime inputs, every traced support path, ALL dependency files, Node binary",
@@ -413,6 +425,7 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         if isolated_evidence is not None:
             audit['isolatedBuildEvidence']=isolated_evidence
             audit['packageProfile']=profile
+        if fixture_record is not None:audit['fixtureDeliveryInputs']=fixture_copies;audit['fixturePackageRoot']=str(destination)
         audit_bytes=canonical(audit)+b"\n"
         if len(audit_bytes)>64*1024**2:refuse("materialization_receipt_limit")
         parent_fd=os.open(destination.parent,os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
@@ -427,11 +440,13 @@ def _materialize(details,receipt_sha,node,destination,profile=PROFILE,isolated_e
         write_manifest(destination,provenance,details["nodeVersion"],profile=profile)
         verified=verify_package(destination)
         if system is not None:verify_copy_bindings()
-        return {**verified,"materializationReceipt":str(audit_path),
+        if fixture_record is not None:fixture_adapter.finish_fixture_materialization(audit_path,destination)
+        return {**verified,**({'fixtureDeliveryReceipt':str(parent/'fixture-delivery.json')}if fixture_record is not None else{}),"materializationReceipt":str(audit_path),
                 "sourceRevision":details["source"],**({"runtimeLaunchability":"unavailable","installationReady":False,"activationAllowed":False}if system is not None else{})}
     except BaseException:
         shutil.rmtree(destination)
         if companions_created:shutil.rmtree(companion_root)
+        if fixture_created:shutil.rmtree(parent/'fixture-delivery-inputs')
         raise
 
 def main():

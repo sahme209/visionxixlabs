@@ -4,6 +4,9 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const root = path.resolve(__dirname, '..');
+const packageRoot='/Volumes/Axiom Synthetic Issuer-c3b7bf334ce56a64575183b7a66e5109';
+const preimport="'use strict';\n{const observation=require("+JSON.stringify(packageRoot+'/node_modules/@axiom/verified-issuer-runtime/internal/verify-package.cjs')+").verifyPackageFiles("+JSON.stringify(packageRoot)+");if(!observation||observation.qualification!==\"package_file_set_verified\")throw Error(\"fixture_package_unavailable\");}\n";
+const builtin=new Set(require('node:module').builtinModules.flatMap(name=>[name,'node:'+name]));
 const webpack = require('next/dist/compiled/webpack/webpack').webpack;
 const output = path.join(root, '.next/server/__axiom_private_fixture__');
 const forbidden = /(?:^|\/)lib\/(?:db|security\/credentialVault|desktop\/desktopSession|desktop\/desktopToken)\.tsx?$/;
@@ -16,10 +19,12 @@ const compiler = webpack({
   module: { rules: [{ test: /\.tsx?$/, exclude: /node_modules/, use: path.join(__dirname, 'private-bootstrap-typescript-loader.cjs') }] },
   externalsPresets: { node: true },
   externals: [({ request }, done) => {
+    if(request==='@prisma/client')return done(null,'commonjs '+packageRoot+'/node_modules/@prisma/client');
+    if(request&&request!=='server-only'&&!request.startsWith('.')&&!path.isAbsolute(request)&&!request.startsWith('@/')&&!builtin.has(request))return done(Error('fixture_unmapped_external'));
     if (request && !request.startsWith('.') && !path.isAbsolute(request) && !request.startsWith('@/') && request !== 'server-only') return done(null, `commonjs ${request}`);
     done();
   }],
-  plugins: [{ apply(compilation) {
+  plugins: [new webpack.BannerPlugin({banner:preimport,raw:true,entryOnly:true}),{ apply(compilation) {
     compilation.hooks.normalModuleFactory.tap('PrivateBootstrapClosure', factory => {
       factory.hooks.afterResolve.tap('PrivateBootstrapClosure', data => {
         const file = data.createData?.resource?.split('?')[0];
@@ -36,5 +41,6 @@ compiler.run((error, stats) => compiler.close(closeError => {
     process.exitCode = 1;
     return;
   }
+  fs.chmodSync(path.join(output,'fixture-producer.cjs'),0o600);
   process.stdout.write('private_fixture_emitted_unqualified_business_channel_unmounted\n');
 }));

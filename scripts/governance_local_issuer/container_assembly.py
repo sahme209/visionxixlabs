@@ -63,13 +63,13 @@ def _main(prepbound,compilebound):
   current=binding(record['path']);_need(all(current[k]==record[k]for k in ('sha256','size','mode')),'main_original_source_changed')
  return main,r
 
-def _inputs_impl(packet_path):
+def _inputs_impl(packet_path,*,_input_format=INPUT_FORMAT,_materialization_format='axiom.local-issuer-materialization/2',_profile=cp.PROFILE,_mode_map=MODE_MAP):
  packet_binding=binding(packet_path);p=_json_bound(packet_binding)
  keys={'format','profile','generation','sourceRevision','packageRoot','packageDigest','packageManifest','materializationReceipt','containerPreparation','containerCompile','imageCompletion','modeMap'}
- _need(type(p)is dict and set(p)==keys and p['format']==INPUT_FORMAT and p['profile']==cp.PROFILE and p['generation']==prep.GENERATION and p['modeMap']==MODE_MAP,'fixed_container_assembly_profile_required')
+ _need(type(p)is dict and set(p)==keys and p['format']==_input_format and p['profile']==_profile and p['generation']==prep.GENERATION and p['modeMap']==_mode_map,'fixed_container_assembly_profile_required')
  root=prep._path(Path(p['packageRoot']));observed=manifest.verify_package(root);manifest_bound=_bound(p['packageManifest']);tree=manifest.strict_json((root/manifest.MANIFEST).read_bytes())
  _need(manifest_bound['path']==str(root/manifest.MANIFEST)and observed['packageDigest']==p['packageDigest']and tree['provenance']['sourceRevision']==p['sourceRevision'],'assembly_package_provenance_mismatch')
- mat=_json_bound(p['materializationReceipt']);_need(mat.get('format')=='axiom.local-issuer-materialization/2'and mat.get('source')==p['sourceRevision']and tree['provenance']['materializationReceiptSha256']==p['materializationReceipt']['sha256'],'assembly_materialization_mismatch')
+ mat=_json_bound(p['materializationReceipt']);_need(mat.get('format')==_materialization_format and mat.get('source')==p['sourceRevision']and tree['provenance']['materializationReceiptSha256']==p['materializationReceipt']['sha256'],'assembly_materialization_mismatch')
  _need(all(mat.get(k)is False for k in ('executionAuthorized','installationReady','activationAllowed')),'unqualified_materialization_required')
  files=mat['systemCompanions']['files'];_need(set(files)==set(materialize.SYSTEM_COMPANIONS)and mat['systemBuildInputs']['layout']==LAYOUT,'fixed_companion_graph_required')
  companion_root=Path(p['materializationReceipt']['path']).parent/'system-companions'

@@ -1,0 +1,11 @@
+✔ actual compiler config fixes Prisma external and refuses unknown nonbuiltin (2.158958ms)
+✔ actual raw banner verifies files before an application import, and stops on refusal (1.195333ms)
+✔ successful mocked compilation quarantines only new fixed helper output (0.455875ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 69.721875

@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_coherent_counterfeit_seed_is_not_approved_source (__main__.FixtureDeliveryInputsTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py", line 50, in test_coherent_counterfeit_seed_is_not_approved_source
+    x=self.x;x.seed.write_bytes(b'SELECT 999;');binding=json.loads(x.binding.read_text());binding['seedSha256']=system.binding(x.seed)['sha256'];x.js(x.binding,binding);packet=json.loads(x.packet.read_text());packet['resources']['seed']=system.binding(x.seed);packet['resources']['binding']=system.binding(x.binding);x.js(x.packet,packet);self.assertRaises(ValueError,x.record)
+AssertionError: ValueError not raised by record
+
+----------------------------------------------------------------------
+Ran 1 test in 0.094s
+
+FAILED (failures=1)

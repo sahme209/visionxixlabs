@@ -1,0 +1,141 @@
+{
+  "format": "axiom.fixture-delivery-local-verification/1",
+  "parentCommit": "4becd668d1166f2b3f6a5e90260e271ca6533528",
+  "sources": [
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_producer.c",
+      "sha256": "0bae2456540400e90a665faf79714406a925a117893407904d3ec572cd79db85",
+      "size": 11018
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_producer_mock_test.c",
+      "sha256": "a87052e4b8e7956d8e66c8cc8f7acc4729e7cec434e5a91e732b3558a11ba824",
+      "size": 8269
+    },
+    {
+      "path": "scripts/build-local-issuer-package-source.py",
+      "sha256": "17b6ec348695879bed27c6faaf825d2d56cfdb0ac44e5bf7921be7d5115e0838",
+      "size": 44756
+    },
+    {
+      "path": "scripts/emit-synthetic-fixture-producer.cjs",
+      "sha256": "a8aecc82eaf9dedcab738bde6049a11fcc815e8fcb24a3c609ead9fcd5c2cb5a",
+      "size": 3230
+    },
+    {
+      "path": "scripts/governance_local_issuer/container_assembly.py",
+      "sha256": "578dd0605735375b608be5fdb7312aa83fa49df90eaa8ef44af7a85d06510cb9",
+      "size": 18302
+    },
+    {
+      "path": "scripts/governance_local_issuer/materialize.py",
+      "sha256": "be2adb392869efca16f66a5ba5792d7d598f36cf32d6d9380dec4c6abd7cf58a",
+      "size": 34808
+    },
+    {
+      "path": "scripts/governance_local_issuer/system_preparation.py",
+      "sha256": "f7c0f74252b1092eb998c9620433e97b983784635a30a1bcc1cdce68bc4ac124",
+      "size": 16933
+    },
+    {
+      "path": "scripts/governance_local_issuer/fixture_container_assembly.py",
+      "sha256": "4c6aef445ddcc055753664fb900d3967d977388e6bb0a322465dadb1cd40acad",
+      "size": 8304
+    },
+    {
+      "path": "scripts/governance_local_issuer/fixture_container_preparation.py",
+      "sha256": "2c112dd1371b03afce6caead4bd977a158b72415a9682c7bcb52927e34808874",
+      "size": 3424
+    },
+    {
+      "path": "scripts/governance_local_issuer/fixture_delivery_inputs.py",
+      "sha256": "499530d2b79e53f7e9081997223ff62bdcd11dc817d32df7be4f3e8437408471",
+      "size": 14330
+    },
+    {
+      "path": "scripts/governance_local_issuer/fixture_final_seal.py",
+      "sha256": "aedf14044271b381cc0a8e8864033766184664a16dc4afb05172ff6078ea36b8",
+      "size": 14844
+    },
+    {
+      "path": "scripts/governance_local_issuer/tests/test_fixture_container.py",
+      "sha256": "09586d2473b19424e1521eaa795c4e652e2efb261e100940c31531619132eebd",
+      "size": 4107
+    },
+    {
+      "path": "scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py",
+      "sha256": "76468f93437ffc4ffe654c8bdbe36c3d00ef09377c691d75806880f0950ae846",
+      "size": 9185
+    },
+    {
+      "path": "scripts/governance_local_issuer/tests/test_fixture_final_seal.py",
+      "sha256": "69992ce97038829a7db7123acd146d29a69c1c77862d3c79db55a90a0607c6d9",
+      "size": 7430
+    },
+    {
+      "path": "scripts/governance_local_issuer/tests/test_fixture_profile_join.py",
+      "sha256": "7d3c43b0ae1ea38ad0d3aea492ff3d2d9e766423c331f80c38b8468d6dd09cc2",
+      "size": 3560
+    },
+    {
+      "path": "scripts/tests/test_fixture_emitter_profile.cjs",
+      "sha256": "8455bd203c4506db4441127c4c385fd62e6c81f679af774fb0da5ad187c64638",
+      "size": 2544
+    }
+  ],
+  "python": {
+    "exit": 0,
+    "cases": 25,
+    "log": {
+      "path": "docs/recovery/2026-11-05/governance-fixture-delivery/local-evidence/root-python-final.log",
+      "sha256": "32b9eba48ef179403ef3ced4ab317b2a743e41087a9d47fbdd03c953adc3ffb1",
+      "size": 3742
+    },
+    "scope": "actual Python validators/owned inert files; compiler/engine/native observations simulated as specified",
+    "argv": [
+      "python3",
+      "-m",
+      "unittest",
+      "-v",
+      "governance_local_issuer.tests.test_fixture_delivery_inputs.FixtureDeliveryInputsTests",
+      "governance_local_issuer.tests.test_fixture_profile_join.FixtureProfileJoinTests",
+      "governance_local_issuer.tests.test_fixture_container.FixtureContainerTests",
+      "governance_local_issuer.tests.test_fixture_final_seal.FixtureSealParserTests",
+      "governance_local_issuer.tests.test_fixture_final_seal.FixtureSealFlowTests",
+      "governance_local_issuer.tests.test_container_assembly.ContainerAssemblyTests.test_positive_real_copy_graph_preserves_exact_bytes_control_and_closed_gates"
+    ],
+    "environment": {
+      "PYTHONPATH": "scripts"
+    }
+  },
+  "emitter": {
+    "argv": [
+      "node",
+      "--test",
+      "scripts/tests/test_fixture_emitter_profile.cjs"
+    ],
+    "exit": 0,
+    "cases": 3,
+    "log": {
+      "path": "docs/recovery/2026-11-05/governance-fixture-delivery/local-evidence/root-emitter-final.log",
+      "sha256": "732339eee8d9783fb2914d0aaaedcc45549d4171ce2784f4d6bc71d6f0f0f1c2",
+      "size": 394
+    },
+    "scope": "actual emitter configuration/banner in VM with mocked webpack/filesystem"
+  },
+  "nativeEvidence": {
+    "path": "docs/recovery/2026-11-05/governance-fixture-delivery/native-verification.json",
+    "sha256": "ba31f94f0b5c2d9e1253eaf01c63bd1c4758931e885b2e8cf68f458f98df59d9",
+    "size": 4749
+  },
+  "independentReview": "review-constraints.md closing review PASS",
+  "masterWorktreeSha256": "fe8681a6f93e8184beabb1f6d980ae18ed3e6774d322943b39f3e1ca3f74c748",
+  "masterUserAdditionsPreserved": true,
+  "actualArtifactGeneration": false,
+  "nativeRuntimeQualified": false,
+  "actualSqlOrProviderAction": false,
+  "installationAuthorized": false,
+  "productionChanged": false,
+  "governanceComplete": false,
+  "afterVerificationEdit": "Removed trailing whitespace only from a test blank line; behavior unchanged, no repeat suite."
+}

@@ -18,7 +18,7 @@ ROLE_SOURCES={
  'owner':('origin_launch_owner.c','synthetic_fixture_readiness.c','owner_launch.c','owner_resume.c','owner_privilege_drop.c','owner_journal.c','owner_journal_native.c','owner_protocol.c','system_peer_binding.c','origin_process_identity.c','protected_resource_inventory.c'),
  'broker':('origin_broker.c','synthetic_fixture_readiness.c','synthetic_fixture_supplier_context.c','request_protocol.c','origin_owner_binding.c','system_peer_binding.c','owner_protocol.c','origin_runtime_protocol.c','origin_root_binding.m','origin_process_identity.c','protected_resource_inventory.c','origin_private_resource_supplier.m','origin_private_bootstrap.c','origin_private_bootstrap_writer.c','synthetic_resource_contract.c','cssm_policy_builder.c','cssm_policy_copy.c','cssm_policy_inspect.c'),
  'controller':('scripts/governance_local_issuer/origin_control.m',),
- 'maintenance':('synthetic_resource_maintenance_main.c','synthetic_fixture_readiness.c','synthetic_fixture_frame.c','synthetic_fixture_producer.c','synthetic_resource_provisioner.m','synthetic_resource_contract.c','cssm_policy_builder.c','cssm_policy_copy.c','cssm_policy_inspect.c','origin_process_identity.c','protected_resource_inventory.c'),
+ 'maintenance':('synthetic_resource_maintenance_main.c','origin_root_binding.m','synthetic_fixture_readiness.c','synthetic_fixture_frame.c','synthetic_fixture_producer.c','synthetic_resource_provisioner.m','synthetic_resource_contract.c','cssm_policy_builder.c','cssm_policy_copy.c','cssm_policy_inspect.c','origin_process_identity.c','protected_resource_inventory.c'),
  'bootstrap':('origin_bootstrap.c',),
  'guard':('origin_guard.c','request_protocol.c','origin_session.c','origin_process_identity.c','protected_resource_inventory.c'),
 }
