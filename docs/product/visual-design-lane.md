@@ -70,3 +70,17 @@ This lane owns ongoing visual consistency and review proposals across the produc
 ## First change shown locally
 
 Root opened `http://127.0.0.1:5349/local-preview/visual-change.html` in the visible in-app browser; the page imports actual `desktop/src/styles.css`. Before uses the explicitly labeled former Sky100 foreground; after uses the current class without an override. The screenshot at `/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/outputs/axiom-visual-change-01.png` was captured through the supported browser and embedded in chat before any next visual implementation. The fixture has no backend, sign-in, ticket data or action controls. Root-owned Vite session64430 serves loopback only. All browser-size/native/theme-state acceptance outside this isolated comparison remains open.
+
+## Change02 — one explanatory paragraph, applied and awaiting local showing
+
+The design lane has now inspected that saved screenshot using the local image viewer. The repaired heading is visibly distinct; the privacy explanation immediately below remains compressed at10px/16px, while the label uses12px and surrounding explanatory context is larger. This supports a narrow reading-hierarchy proposal for the shown block, not a whole-app typography conclusion or native-screen audit.
+
+**Agreed single change, now applied:** `desktop/src/views/DeploymentRequestsView.tsx:720`, only the paragraph beginning “This view lists only safe field categories”: replaced `text-[10px] leading-4` with `text-xs leading-5` (12px/20px). Retained `text-zinc-500`, wording, disclosures, revision data, handlers, layout containment and all authority/availability states. Timestamps, raw IDs, the neighboring execution ledger, Agent/Bot and Apps are unchanged. No new dependency or motion.
+
+Why this next: the just-shown local screenshot provides direct evidence of this particular paragraph's hierarchy, so the proposal no longer relies solely on guessing from source. It improves the legibility of a privacy limitation without adding a decorative asset, copying vendor UI, or obscuring meaning. The broader operational-note role remains a candidate requiring actual screen observations on the other surfaces.
+
+**Gate:** change02 is frozen pending root's local showing at `/local-preview/visual-change-02.html`. The separate inert comparison imports actual CSS, keeps both headings on the corrected Sky style, and compares the exact unchanged paragraph at10px/16px versus12px/20px. Static literal/inert-page checks passed; no rendering, build or test suite was run for change02. Preserve page01/screenshot, open signed-app sessions and drafts; no backend/provider/native call or relaunch. Root must show02 before any next visual change begins. Normal/narrow wrapping, native states and accessibility acceptance remain open beyond the isolated showing.
+
+### Change02 shown
+
+Root opened the separate `http://127.0.0.1:5349/local-preview/visual-change-02.html` and inspected/captured the before10px/16px and after12px/20px comparison with actual app CSS. Screenshot `/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/outputs/axiom-visual-change-02.png` was embedded in chat before any third visual change. Source review confirmed the product diff is exactly one className line; text, color and handlers are unchanged. This does not update the running signed native app or establish broader native/accessibility acceptance. No third visual change is implemented.

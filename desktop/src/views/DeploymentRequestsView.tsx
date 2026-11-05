@@ -717,7 +717,7 @@ export function DeploymentRequestsView() {
               {revisionHistory[request.id] && (
                 <div className="mt-3 rounded-lg border border-sky-500/15 bg-sky-500/5 px-3 py-2">
                   <p className="text-xs font-medium text-sky-100">Governed revision history</p>
-                  <p className="mt-1 text-[10px] leading-4 text-zinc-500">
+                  <p className="mt-1 text-xs leading-5 text-zinc-500">
                     This view lists only safe field categories. Contacts, URLs, workflow inputs, evidence references, and full member identities remain private.
                   </p>
                   <ol className="mt-3 space-y-2">
