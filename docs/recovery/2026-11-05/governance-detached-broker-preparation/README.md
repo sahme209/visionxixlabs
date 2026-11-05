@@ -15,3 +15,7 @@ Full Governance/System/custody/consumer/fleet/coverage acceptance and all21paren
 Actual fresh detached compile passed exit0/empty stderr, same original unsigned byte hash,0600/unrun. Complete original stage file closure verified; only declared detached output added. Source review passed; exact next signing review prepared but no key use authorized or performed.
 
 Independent read-only final review passed: all2875original staged inputs, exact compile argv/full detached output binding, emptyplist/receipt hashes and standalone/file-set signing guard packet agree. No codesign/Security/target/test/build operation repeated.
+
+## Actual separately approved detached signature
+
+~~One exact signing/strict verification/display sequence passed~~ (signing-observation/result.json). Everycommandexit0; actual display confirms standalone thin arm64, Info.plist not bound, no sealed resources, Runtime/FG5Team/exact broker identifier/empty entitlements. All2875original stage inputs and exact file set unchanged. New signed bytes `bc9dada02019204bd581f8441e977880c40902e154b5653b5e6f1ff128be43ed`,190656bytes,0600/unrun. Independent ordinary-file review passed without repeating commands. Approvalcall_TakF...consumed; no retry. The earlier unintended app-bundle seal remains preserved and is not accepted as final. Static success is not execution/custody/installation/Governance acceptance.

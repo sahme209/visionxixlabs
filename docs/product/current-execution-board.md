@@ -2,6 +2,10 @@
 
 Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
+## November5 standalone broker signature and bound guard — locally verified
+
+~~New exact detached broker signing/static sequence passed without bundle effects~~ ([evidence](../recovery/2026-11-05/governance-detached-broker-preparation/README.md)); independent review confirms original input/file-set closure and thin standalone display,0600/unrun. Approval consumed. ~~Actual guard-only build now binds that observed broker signature~~ ([evidence](../recovery/2026-11-05/governance-bound-guard-preparation/README.md)), compile0/empty stderr,0600/never loaded. No install/runtime/custody/Governance acceptance. Other role signatures, final assembly and actual qualification remain open; all21parents preserved.
+
 ## November5 detached broker correction — preparation only
 
 ~~Assembler now offers a broker-only detached phase outside app ancestry, restoring the approved leaf-before-app sealing order~~ ([evidence](../recovery/2026-11-05/governance-detached-broker-preparation/README.md)). New focused staging RED→GREEN and independent source review pass; fresh actual detached compile exits0/empty stderr, same unsigned bytes,0600/unrun, original input closure verified. Old unexpected bundle effect preserved. New exact signing packet requires standalone metadata and no extra files, and awaits a new key-use decision; no signing or runtime authority inferred. All21parents and installation/custody/consumer/coverage gates remain open.

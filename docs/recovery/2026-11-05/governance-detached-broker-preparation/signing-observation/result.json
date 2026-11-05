@@ -1,0 +1,73 @@
+{
+  "results": [
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--force",
+        "--sign",
+        "4C2E59F247CA275001586AE020A9269464529452",
+        "--identifier",
+        "com.visionxixlabs.axiom.synthetic.broker",
+        "--options",
+        "runtime",
+        "--entitlements",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/native-empty-entitlements.plist",
+        "--timestamp=none",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.03946987499999999,
+      "stdout_bytes": 0,
+      "stderr_bytes": 183
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--verbose=2",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.011451917000000034,
+      "stdout_bytes": 0,
+      "stderr_bytes": 359
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--entitlements",
+        ":-",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.01114179200000004,
+      "stdout_bytes": 184,
+      "stderr_bytes": 1277
+    }
+  ],
+  "profile_matches": true,
+  "standalone_display_matches": true,
+  "exact_file_set_unchanged": true,
+  "all_original_stage_inputs_unchanged": true,
+  "artifact_after": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker",
+    "sha256": "bc9dada02019204bd581f8441e977880c40902e154b5653b5e6f1ff128be43ed",
+    "size": 190656,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16832374,
+    "mtime_ns": 1793904940877578791,
+    "ctime_ns": 1793904940877655625
+  },
+  "entitlements_unchanged": true,
+  "broker_executed": false,
+  "installation_or_identity_qualified": false,
+  "retry_authorized": false
+}
