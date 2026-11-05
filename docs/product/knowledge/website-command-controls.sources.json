@@ -1,0 +1,325 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "sourceRevision": "0ab679a59df3018c962c51472c0f67a9cb074393",
+  "applicationRuntimeRevision": "266b3987d18ae68b2e34caa5a12ebfbe4aa3f087",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "genuineEditorialApproval": false,
+  "browserAssistiveTechnologyVerified": false,
+  "evidenceKeysAreRuntimeIds": false,
+  "sources": [
+    {
+      "key": "palette-commands",
+      "path": "components/CommandPalette.tsx",
+      "sha256": "cd59d8c7c282090a9316a863ca2e508bbc90345af22a2baf19f7536930457881",
+      "lineCount": 329,
+      "ranges": [
+        {
+          "start": 45,
+          "end": 79,
+          "sha256": "5978baee2377817deb5b9cadc686c77625d129d3c3d70a912298a8fad83d34f9"
+        }
+      ]
+    },
+    {
+      "key": "palette-search",
+      "path": "components/CommandPalette.tsx",
+      "sha256": "cd59d8c7c282090a9316a863ca2e508bbc90345af22a2baf19f7536930457881",
+      "lineCount": 329,
+      "ranges": [
+        {
+          "start": 81,
+          "end": 105,
+          "sha256": "3ba376ab355075063bab073020eb3372bcbb471812ca4dda6414f63bb6f1b3df"
+        },
+        {
+          "start": 145,
+          "end": 163,
+          "sha256": "f5a6df987c7e48dbc56fd0d7a3d35423f8f63ec96e07ced91e9889ceb18658db"
+        }
+      ]
+    },
+    {
+      "key": "palette-lifecycle",
+      "path": "components/CommandPalette.tsx",
+      "sha256": "cd59d8c7c282090a9316a863ca2e508bbc90345af22a2baf19f7536930457881",
+      "lineCount": 329,
+      "ranges": [
+        {
+          "start": 107,
+          "end": 143,
+          "sha256": "e87db52edeee2c8fac4eee8119874ac80ae7953ea29be75e37f2a1f0a0c672f4"
+        }
+      ]
+    },
+    {
+      "key": "palette-select",
+      "path": "components/CommandPalette.tsx",
+      "sha256": "cd59d8c7c282090a9316a863ca2e508bbc90345af22a2baf19f7536930457881",
+      "lineCount": 329,
+      "ranges": [
+        {
+          "start": 176,
+          "end": 204,
+          "sha256": "adec44d8f9a6d90f9221ff9ff20c7f7c04837b9e4dcc04fc93ea6462d6696ce4"
+        }
+      ]
+    },
+    {
+      "key": "palette-surface",
+      "path": "components/CommandPalette.tsx",
+      "sha256": "cd59d8c7c282090a9316a863ca2e508bbc90345af22a2baf19f7536930457881",
+      "lineCount": 329,
+      "ranges": [
+        {
+          "start": 207,
+          "end": 294,
+          "sha256": "29fb2b5b1624707d5c61657f3a968bf90f901ff14a36b9fc8437747b2b065fb3"
+        }
+      ]
+    },
+    {
+      "key": "palette-row",
+      "path": "components/CommandPalette.tsx",
+      "sha256": "cd59d8c7c282090a9316a863ca2e508bbc90345af22a2baf19f7536930457881",
+      "lineCount": 329,
+      "ranges": [
+        {
+          "start": 296,
+          "end": 329,
+          "sha256": "deaf441c0e77f8a9b4d9f2f3a35e647ec702a843cec0d630585e20a1572837e7"
+        }
+      ]
+    },
+    {
+      "key": "root-mount",
+      "path": "app/layout.tsx",
+      "sha256": "a548132fd3b9572c15a15bf7524ad64aa04ebe722447d2bb82baac8b5159a426",
+      "lineCount": 96,
+      "ranges": [
+        {
+          "start": 9,
+          "end": 13,
+          "sha256": "36cff17fb3a66a72cbce4a958b0b0463c84b5f8293881085abc6f71137c93e84"
+        },
+        {
+          "start": 73,
+          "end": 91,
+          "sha256": "a0bf3b1085ca38faeaf0f380aea98e6048fe21709c078babb1ff338a6c4e7b81"
+        }
+      ]
+    },
+    {
+      "key": "keyboard-evidence",
+      "path": "docs/recovery/2026-11-05/website-command-ime/README.md",
+      "sha256": "e5b7b7590c321249d562b8326761992d2b9a2cd057db9a305a08847d67dd1a67",
+      "lineCount": 7,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 7,
+          "sha256": "e5b7b7590c321249d562b8326761992d2b9a2cd057db9a305a08847d67dd1a67"
+        }
+      ]
+    },
+    {
+      "key": "preview-evidence",
+      "path": "docs/recovery/2026-11-05/current-interaction-web-preview/README.md",
+      "sha256": "053850454002d7fc5e73c74a241654a504e81bb92d4757aca89cd363a354f6dc",
+      "lineCount": 13,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 13,
+          "sha256": "053850454002d7fc5e73c74a241654a504e81bb92d4757aca89cd363a354f6dc"
+        }
+      ]
+    }
+  ],
+  "commandDefinitions": [
+    {
+      "id": "home",
+      "label": "Home",
+      "href": "/",
+      "category": "Product",
+      "external": false
+    },
+    {
+      "id": "axiom",
+      "label": "Axiom capabilities",
+      "href": "/product",
+      "category": "Product",
+      "external": false
+    },
+    {
+      "id": "releaseops",
+      "label": "Axiom workflow",
+      "href": "/product#workflow-overview",
+      "category": "Product",
+      "external": false
+    },
+    {
+      "id": "demo",
+      "label": "Try the sandbox",
+      "href": "/demo",
+      "category": "Product",
+      "external": false
+    },
+    {
+      "id": "operator",
+      "label": "Download Axiom Agent",
+      "href": "/download",
+      "category": "Product",
+      "external": false
+    },
+    {
+      "id": "plans",
+      "label": "Access and pricing",
+      "href": "/plans",
+      "category": "Product",
+      "external": false
+    },
+    {
+      "id": "integrations",
+      "label": "Integrations",
+      "href": "/integrations",
+      "category": "Product",
+      "external": false
+    },
+    {
+      "id": "download",
+      "label": "Product download",
+      "href": "/download",
+      "category": "Product",
+      "external": false
+    },
+    {
+      "id": "docs",
+      "label": "Documentation",
+      "href": "/docs",
+      "category": "Resources",
+      "external": false
+    },
+    {
+      "id": "blog",
+      "label": "Blog",
+      "href": "/blog",
+      "category": "Resources",
+      "external": false
+    },
+    {
+      "id": "changelog",
+      "label": "Changelog",
+      "href": "/changelog",
+      "category": "Resources",
+      "external": false
+    },
+    {
+      "id": "insights",
+      "label": "Insights",
+      "href": "/insights",
+      "category": "Resources",
+      "external": false
+    },
+    {
+      "id": "casestudies",
+      "label": "Case studies",
+      "href": "/case-studies",
+      "category": "Resources",
+      "external": false
+    },
+    {
+      "id": "design",
+      "label": "Design system",
+      "href": "/design",
+      "category": "Resources",
+      "external": false
+    },
+    {
+      "id": "manifesto",
+      "label": "Manifesto",
+      "href": "/manifesto",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "principles",
+      "label": "Design principles",
+      "href": "/principles",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "handbook",
+      "label": "Engineering handbook",
+      "href": "/handbook",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "team",
+      "label": "Team",
+      "href": "/team",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "trust",
+      "label": "Trust",
+      "href": "/trust",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "security",
+      "label": "Security",
+      "href": "/security",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "press",
+      "label": "Press & Media",
+      "href": "/press",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "contact",
+      "label": "Contact",
+      "href": "/contact",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "status",
+      "label": "System status",
+      "href": "/status",
+      "category": "Company",
+      "external": false
+    },
+    {
+      "id": "linkedin",
+      "label": "LinkedIn",
+      "href": "https://www.linkedin.com/company/vision-xix-labs/",
+      "category": "External",
+      "external": true
+    },
+    {
+      "id": "github",
+      "label": "GitHub \u00b7 Axiom repo",
+      "href": "https://github.com/sahme209/axiom-releases",
+      "category": "External",
+      "external": true
+    },
+    {
+      "id": "x",
+      "label": "X (Twitter)",
+      "href": "https://x.com/VisionXIXLabs",
+      "category": "External",
+      "external": true
+    }
+  ],
+  "limits": "finite source catalog and keyboard/outcome inventory; not all website controls or destination acceptance"
+}

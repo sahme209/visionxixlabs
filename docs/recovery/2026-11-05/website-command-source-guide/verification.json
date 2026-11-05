@@ -1,0 +1,12 @@
+{
+  "sourceRevision": "0ab679a59df3018c962c51472c0f67a9cb074393",
+  "sourceKeys": 9,
+  "inclusiveRangesChecked": 11,
+  "allSourceBytesMatchPinnedGit": true,
+  "currentLiteralCommandDefinitions": 26,
+  "uniqueDeclaredCommandIds": 26,
+  "extraction": "fixed current array and 26 manually inspected one-line literal records; no general future-syntax/control-inventory guarantee; no app import/eval",
+  "runtimeExecuted": false,
+  "externalUrlsFetched": false,
+  "customerEligible": false
+}
