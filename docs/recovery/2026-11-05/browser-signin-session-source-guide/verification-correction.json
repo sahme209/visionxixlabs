@@ -1,0 +1,6 @@
+{
+  "initialResult": "KeyError: sourceKeys",
+  "cause": "Copied verifier expected plural sourceKeys; this ledger uses singular sourceKey. All file/range checks preceded the family-stage failure.",
+  "correction": "Read actual singular family sourceKey; no source or guide behavior changed.",
+  "productDefect": false
+}

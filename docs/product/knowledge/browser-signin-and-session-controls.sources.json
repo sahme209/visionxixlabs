@@ -1,0 +1,473 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "sourceRevision": "c2012c71f2b12ad0c8c4b672aea174274de8492e",
+  "owner": "Axiom documentation workstream",
+  "author": "Codex draft",
+  "humanEditorialOwner": null,
+  "sourceReviewDate": "2026-11-05",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "genuineEditorialApproval": false,
+  "mediaAccepted": false,
+  "browserNativeAssistiveTechnologyAccepted": false,
+  "retrievalEvaluationExecuted": false,
+  "runtimeMetadataChanged": false,
+  "documentationIdsAreRuntimeIds": false,
+  "sources": [
+    {
+      "key": "signin-page",
+      "path": "app/auth/signin/page.tsx",
+      "sha256": "db3cc1f97a2c2c23e32c33004c3c08171d1970298edbd994dcfad44604ef47d3",
+      "lineCount": 7,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 7,
+          "sha256": "db3cc1f97a2c2c23e32c33004c3c08171d1970298edbd994dcfad44604ef47d3"
+        }
+      ]
+    },
+    {
+      "key": "signin-form",
+      "path": "app/auth/signin/AuthFormClient.tsx",
+      "sha256": "af6332f1eccb7511b32a835bd8ff770903d6327250ec43ade14c182d8d6a9376",
+      "lineCount": 321,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 321,
+          "sha256": "af6332f1eccb7511b32a835bd8ff770903d6327250ec43ade14c182d8d6a9376"
+        }
+      ]
+    },
+    {
+      "key": "canonical-page",
+      "path": "lib/auth/canonicalAuthPage.ts",
+      "sha256": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f",
+      "lineCount": 15,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 15,
+          "sha256": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f"
+        }
+      ]
+    },
+    {
+      "key": "canonical-origin",
+      "path": "lib/auth/canonicalAuthOrigin.ts",
+      "sha256": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b",
+      "lineCount": 37,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 37,
+          "sha256": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b"
+        }
+      ]
+    },
+    {
+      "key": "nextauth-route",
+      "path": "app/api/auth/[...nextauth]/route.ts",
+      "sha256": "89985549d497e6104dddb109aa16ff2112527dd98ed1eb2d1b3cc25e654675c4",
+      "lineCount": 45,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 45,
+          "sha256": "89985549d497e6104dddb109aa16ff2112527dd98ed1eb2d1b3cc25e654675c4"
+        }
+      ]
+    },
+    {
+      "key": "verification-recovery",
+      "path": "components/auth/VerificationRecovery.tsx",
+      "sha256": "0bd44c54be28b08589e653ea4377d59c28edb8a91d5687e0bae6e47d52b72a80",
+      "lineCount": 54,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 54,
+          "sha256": "0bd44c54be28b08589e653ea4377d59c28edb8a91d5687e0bae6e47d52b72a80"
+        }
+      ]
+    },
+    {
+      "key": "auth-success",
+      "path": "app/auth/success/page.tsx",
+      "sha256": "64ac8176def0e81127301c2d8813088b43ea1d6fa909ecdf2dcda75fd19002db",
+      "lineCount": 7,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 7,
+          "sha256": "64ac8176def0e81127301c2d8813088b43ea1d6fa909ecdf2dcda75fd19002db"
+        }
+      ]
+    },
+    {
+      "key": "connection-return",
+      "path": "lib/integrations/connectionReturnParams.ts",
+      "sha256": "addddeeae6ef4aabcef97d8c94338a63cc9f732325dfcce24e932ff5a11de2e0",
+      "lineCount": 16,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 16,
+          "sha256": "addddeeae6ef4aabcef97d8c94338a63cc9f732325dfcce24e932ff5a11de2e0"
+        }
+      ]
+    },
+    {
+      "key": "control-layout",
+      "path": "app/control/layout.tsx",
+      "sha256": "3722c05889a3ffd2d70471df6be00ee5f15984190001a18b82a52e47ab3381e9",
+      "lineCount": 25,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 25,
+          "sha256": "3722c05889a3ffd2d70471df6be00ee5f15984190001a18b82a52e47ab3381e9"
+        }
+      ]
+    },
+    {
+      "key": "current-context",
+      "path": "lib/auth/currentContext.ts",
+      "sha256": "8ad71ac9507376030ec947824abcabb455568407e513c1f530d008915b2da907",
+      "lineCount": 187,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 187,
+          "sha256": "8ad71ac9507376030ec947824abcabb455568407e513c1f530d008915b2da907"
+        }
+      ]
+    },
+    {
+      "key": "workspace-route",
+      "path": "app/api/account/workspace/route.ts",
+      "sha256": "16768b9ee50a429dec96da79dff28d78bcb94b639e60c54862fbb60d039d079c",
+      "lineCount": 42,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 42,
+          "sha256": "16768b9ee50a429dec96da79dff28d78bcb94b639e60c54862fbb60d039d079c"
+        }
+      ]
+    },
+    {
+      "key": "account-alias",
+      "path": "app/account/page.tsx",
+      "sha256": "39582a981ef706318d9fb55dafb427cf90a9cdef3734809c54e9162bd71ecfed",
+      "lineCount": 5,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 5,
+          "sha256": "39582a981ef706318d9fb55dafb427cf90a9cdef3734809c54e9162bd71ecfed"
+        }
+      ]
+    },
+    {
+      "key": "settings-page",
+      "path": "app/control/settings/page.tsx",
+      "sha256": "c0f4a2d99ddffd92a0f42778edb40bd78479a842ef9f386964f3d8efc64da2eb",
+      "lineCount": 20,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 20,
+          "sha256": "c0f4a2d99ddffd92a0f42778edb40bd78479a842ef9f386964f3d8efc64da2eb"
+        }
+      ]
+    },
+    {
+      "key": "tabs",
+      "path": "components/cockpit/SectionTabs.tsx",
+      "sha256": "2633257a47840bd5612d849acf53c0b7e52b04f26c23423b18e9d2ef2dcadded",
+      "lineCount": 16,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 16,
+          "sha256": "2633257a47840bd5612d849acf53c0b7e52b04f26c23423b18e9d2ef2dcadded"
+        }
+      ]
+    },
+    {
+      "key": "sessions-panel",
+      "path": "components/auth/DesktopSessionsPanel.tsx",
+      "sha256": "53c19585b2c083f0c5eb922f766a74e6dc025e7875511699ec37793ca0f94f0f",
+      "lineCount": 95,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 95,
+          "sha256": "53c19585b2c083f0c5eb922f766a74e6dc025e7875511699ec37793ca0f94f0f"
+        }
+      ]
+    },
+    {
+      "key": "confirm-dialog",
+      "path": "components/cockpit/ConfirmDialog.tsx",
+      "sha256": "abb7264d26b90b2de5082d28235ce4e3f2c1fda51a242991dc9274a2ad13afbe",
+      "lineCount": 29,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 29,
+          "sha256": "abb7264d26b90b2de5082d28235ce4e3f2c1fda51a242991dc9274a2ad13afbe"
+        }
+      ]
+    },
+    {
+      "key": "session-route",
+      "path": "app/api/desktop/session/route.ts",
+      "sha256": "f70dde9529908cfbf398868bc49da759acf8354e3b7484abfd69c0fd5f7f41b7",
+      "lineCount": 125,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 125,
+          "sha256": "f70dde9529908cfbf398868bc49da759acf8354e3b7484abfd69c0fd5f7f41b7"
+        }
+      ]
+    },
+    {
+      "key": "auth-credentials",
+      "path": "lib/auth.ts",
+      "sha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91",
+      "lineCount": 340,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 24,
+          "end": 74,
+          "sha256": "756cdde1fe8d5e7bce861b3a0ead6dba5e3a19db9c9ebca7ad723a32b66d8455"
+        }
+      ]
+    },
+    {
+      "key": "auth-session",
+      "path": "lib/auth.ts",
+      "sha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91",
+      "lineCount": 340,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 146,
+          "end": 160,
+          "sha256": "1d229ff734b81555efd73a50b0beecf91b2fd066ae1c8a3c0363042bc96e5c9b"
+        },
+        {
+          "start": 288,
+          "end": 311,
+          "sha256": "8dc9b541cdd2d9b986889a8d11282cc6a788771d53dbb9c27c9056f499a2a22b"
+        }
+      ]
+    },
+    {
+      "key": "browser-shell",
+      "path": "components/cockpit/CockpitShell.tsx",
+      "sha256": "750f4b2fcd7f832e23acf68e5516d93ced1d47b6393b9ce1ff18b92e36fbc182",
+      "lineCount": 56,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 30,
+          "end": 56,
+          "sha256": "1965e5d8c8fc703863697c3488012073ee35dc044c3f4d104a2b385ad90dd286"
+        }
+      ]
+    },
+    {
+      "key": "session-service",
+      "path": "lib/desktop/privateDesktopSession.ts",
+      "sha256": "e3b615227850fb406c6d6795013fc101cf4b2adfb9d297700533a178a473a07a",
+      "lineCount": 121,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 49,
+          "end": 65,
+          "sha256": "2cd61700db51624763a5f7c5e33d3881351df3133abed15e4f01c095f0d49d4c"
+        },
+        {
+          "start": 107,
+          "end": 121,
+          "sha256": "f69c6c4643a9aa1e553574d9ba65cca1dcdd539c10cb75ef8e81fafa35b487ab"
+        }
+      ]
+    },
+    {
+      "key": "session-composition",
+      "path": "lib/desktop/desktopSession.ts",
+      "sha256": "d23ff184bb8a1797315236b3d5a1d82309e42bccc0c8d8a6b587eaf37b74bd7e",
+      "lineCount": 131,
+      "currentCheckoutBytesMatchPinned": true,
+      "ranges": [
+        {
+          "start": 110,
+          "end": 130,
+          "sha256": "2f4ab9ba81aad3f498032a19d2190b65ebbd33eedb4d5c1e9b07d84875e8c0fd"
+        }
+      ]
+    }
+  ],
+  "controlFamilies": [
+    {
+      "id": "browser.signin.home",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.email",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.password",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.visibility",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.credentials",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.google",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.github",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.cognito",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.create",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.agent-setup",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.signin.download",
+      "sourceKey": "signin-form",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.workspace-select",
+      "sourceKey": "browser-shell",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.workspace-switch",
+      "sourceKey": "browser-shell",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.signout-wide",
+      "sourceKey": "browser-shell",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.signout-narrow",
+      "sourceKey": "browser-shell",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.settings-tabs",
+      "sourceKey": "tabs",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.device-review",
+      "sourceKey": "sessions-panel",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.dialog-close",
+      "sourceKey": "confirm-dialog",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.dialog-cancel",
+      "sourceKey": "confirm-dialog",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    },
+    {
+      "id": "browser.session.dialog-confirm",
+      "sourceKey": "confirm-dialog",
+      "runtimeId": false,
+      "kind": "documentation control family; repeated provider/tab/device instances are not individual identities"
+    }
+  ],
+  "qualification": {
+    "documentationFamilies": 20,
+    "historicalSourceRevision": "af6e51bbd170a84349bc1a466f9f253866c5b80b",
+    "requalificationChangedSourceFiles": [
+      "app/auth/signin/AuthFormClient.tsx"
+    ],
+    "sharedMountedFormFlightGuardObservedInSource": true,
+    "backendOrCrossTabSerializationQualified": false,
+    "currentSourceRequalificationRequired": false,
+    "currentDifferentFiles": [],
+    "liveAuthenticationOrSessionAcceptance": false
+  },
+  "scope": "Finite browser sign-in/canonical callback boundary; ordinary workspace recovery + browser sign-out; Settings tab/device revocation. Existing signup/email/pairing/native guides remain separate; no full auth/SSO/backend/credential security acceptance.",
+  "authorization": "Existing master B4 source documentation only; no sign-in/sign-out/token/provider/browser/DB/native operation, source repair, publication or tests performed"
+}
