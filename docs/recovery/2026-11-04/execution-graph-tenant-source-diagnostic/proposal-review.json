@@ -1,0 +1,7 @@
+{
+  "reviewer": "adapter_probe_review",
+  "decision": "appropriate first local containment, not completed tenant-bound discovery",
+  "importantTestCorrection": "actual scanner must remain in regression chain; correction applied and stronger RED2 recorded",
+  "rootFinalReview": "actual retained test exercises routes, builder, aggregators, scanner and readiness with synthetic external transport; no runtime edit",
+  "permission": "new exact local containment approval requested; no approval inferred"
+}

@@ -1,0 +1,52 @@
+{
+  "kind": "unfixed local tenant-isolation diagnostic RED",
+  "head": "0f87c2f5956f3ec8d6a286da541513f0815f5eae",
+  "failed": 2,
+  "passed": 0,
+  "selectedFiles": 1,
+  "failure": "GET and POST each expose synthetic server-org private repository diagnostic to both unrelated tenants",
+  "actualChain": [
+    "route",
+    "executionGraphBuilder",
+    "getCommandCenterState",
+    "getReleaseOpsState",
+    "computeReleaseReadiness"
+  ],
+  "mockedBoundaries": [
+    "currentContext",
+    "fixed config/features/provider mode",
+    "external GitHub live collector",
+    "unrelated validation/planning signals"
+  ],
+  "runtimeEdited": false,
+  "network": "kernel denied",
+  "realProviderOrDatabaseCalls": false,
+  "productionExposureObserved": false,
+  "fixApprovedOrImplemented": false,
+  "sources": [
+    {
+      "path": "app/api/agent/execution-graph/__tests__/tenant-source-regression.test.ts",
+      "sha256": "433bc24d5704fb9e8a235956e97a92aebdf8b22daace7ae08d093b4d3485c3f3"
+    },
+    {
+      "path": "app/api/agent/execution-graph/route.ts",
+      "sha256": "dbaea897a8b8394a11abc7eb9504ef097321fd42481b99f784a8131530bb49ee"
+    },
+    {
+      "path": "lib/agent/executionGraphBuilder.ts",
+      "sha256": "c7dff0c228ffb183c90df531ea5156829b78cebb1a1c7a39bb0ed72fd334ebd9"
+    },
+    {
+      "path": "lib/platform/getCommandCenterState.ts",
+      "sha256": "5d9d3b2d2d005adbf48e6ba1428e9910ff530aef8a6c0b74efbd84be4f0e53b9"
+    },
+    {
+      "path": "lib/releaseops/getReleaseOpsState.ts",
+      "sha256": "bb11fe4498c550ae7f76684f2dd1415052484f59fd097e8b23679059805b547e"
+    },
+    {
+      "path": "lib/releaseops/releaseReadiness.ts",
+      "sha256": "0dc0f3f55666d11677c9ba28b91afbcd918abbcf23847fcb24247aba103e7fda"
+    }
+  ]
+}

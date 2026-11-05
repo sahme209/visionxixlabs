@@ -1,0 +1,8 @@
+# Execution graph tenant-source diagnosis — UNFIXED
+
+Actual route/builder/state/readiness composition reproduced a conditional server-global GitHub source disclosure to two synthetic authenticated tenants. Initial diagnostic controls established both global collector calls, successful responses and current tenant labels before the privacy invariant failed. The frozen initial test is preserved losslessly. The retained regression now expresses only the desired isolation contract, not insecure current behavior; a fresh bounded run also fails both GET/POST cases.
+
+External live collector, auth/config and unrelated deterministic signals are mocked; aggregators/readiness/graph/routes are real. No real GitHub/database/provider/credential operation, customer exposure test, runtime repair, build or deployment occurred. Tests are intentionally RED and must not be reported as a passing suite. Source hashes and exact outputs are retained. The reviewed next step is [local containment proposal](local-containment-proposal.md), followed by separately completed tenant-bound live discovery; no full Governance/security claim.
+
+## Stronger final reproduction with real scanner
+The retained regression now also uses the actual runLiveGithubSync scanner. Only its external GitHub client/fetch boundary is substituted with fixed synthetic responses, along with auth/config and unrelated deterministic signals. Both GET/POST cases still fail: private server-repository diagnostics appear for both synthetic tenants. The retained tests require no global client construction or provider read, so a future shared-scanner containment will be exercised rather than mocked away. Exact final run/source hash is in real-scanner-result.json. No runtime repair is implemented.

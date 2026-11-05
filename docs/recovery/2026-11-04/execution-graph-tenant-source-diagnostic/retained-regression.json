@@ -1,0 +1,9 @@
+{
+  "source": "app/api/agent/execution-graph/__tests__/tenant-source-regression.test.ts",
+  "sha256": "05a4396d1643618eab2638a2b2d5c31780129d1dae695e7521f7eb5ac00f4dd8",
+  "tests": 2,
+  "result": "both fail desired isolation; runtime UNFIXED",
+  "initialControls": "frozen separately; current regression does not require insecure behavior",
+  "actualScanner": true,
+  "mockBoundary": "external GitHub client/provider transport, auth/config and unrelated static signals"
+}
