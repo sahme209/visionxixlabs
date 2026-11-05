@@ -1,0 +1,14 @@
+# Current support article metadata observation
+
+Source: c6769a088fe6acbf8f3319904ba97d452cee2838. This is an ordinary-file metadata observation, not a retrieval evaluation or full bundle/customer eligibility assessment.
+
+1. ~~Enumerate the current articles directory nonrecursively and deterministically.~~37 `.json` revisions, each regular/non-symlink and at most1MiB; fixed inventory cap64. Strict parser and existing `publicMetadataEligible(article,{audience:'public'})` were imported from the unchanged actual core.
+2. ~~Evaluate the existing metadata predicate over each exact article.~~ All37 returnfalse; all37 records are draft/internal/source-only. Record each full-file SHA/size/version/revision and ordered inventory digest. This does not prove semantic quality, full schema/source/media validity or complete customer eligibility.
+3. ~~Verify each article digest is unchanged after inspection.~~ Report inventory digest is `1c5e55fdfc740411c460ffcf9805b7c350065cdfb3b78911483110bbf9c285bf`; actual core digest is recorded separately. No article, core, trust flag, catalog or schema was modified.
+4. ~~Exclude restricted subprocess evaluation.~~ The one Node invocation installed throwing guards for spawn/spawnSync/exec/execSync/execFile/execFileSync/fork before importing the core. Zero guarded child-process attempts occurred. No sandbox-exec, bounded reader, selected pipeline tests or evaluator was invoked. This ordinary-file inspection is not proof of process/network containment or snapshot immutability.
+5. Open: preserve the historical failed24-record selected invocation and nested sandbox diagnostic; this new observation does not repair or supersede either. A containment-preserving evaluation harness still needs its reviewed design and any required execution permission before another restricted run.
+6. Open: genuine editorial authority, authenticated/version/currentness binding, authentic media, actual retrieval and customer acceptance. Metadata refusal alone does not complete B4/B5 or any master parent.
+
+The actual command used a Node heredoc with the unchanged core's strictJSON/predicate and ordinary file hashes. It wrote only `metadata-observation.json`. Its first `sourceRevision` value captured the literal `.git/HEAD` branch reference; an ordinary `git rev-parse HEAD` observation confirmed the exact source revision, then the report was corrected while retaining the original value as `sourceHeadFile`. No historical failure receipt was changed. No tests, build, OS Security API, network, database, provider, customer content, AI or production operation occurred.
+
+Independent source/saved-evidence review matched all37 paths/sizes/hashes, core digest and compact ordered inventory digest, and confirmed the predicate explains each false result. No important correction; reviewer performed ordinary reads only, no evaluator or child execution.

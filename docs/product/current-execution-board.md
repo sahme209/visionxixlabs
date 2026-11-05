@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the [current-source qualification audit](../recovery/2026-11-05/governance-next-qualification-audit.md) shows current signed artifacts still cannot handle a business request if installed. Resolve the connected native custody → authenticated request channel → actual compiled consumer path through a reviewed local design; do not repeat packaging or blindly install still-refusing artifacts. Production resource-owner/writer cutover and full A2/A9 are distinct gates.
 
+## Current support metadata — bounded new observation
+
+~~All37 current article revisions inspected through the unchanged public metadata predicate~~ ([evidence](../recovery/2026-11-05/support-current-metadata-inspection/README.md)):37draft/internal/source-only records refuse, exact file/core/inventory hashes retained and independently checked. Zero guarded child-process attempts; no sandbox reader/evaluator/retrieval run. Historical failed24-record pipeline evidence remains failed; this proves only current metadata refusal, not complete bundle/customer eligibility or B5 acceptance. The containment-preserving harness and genuine editorial/media/version authority remain open.
+
 ## Cockpit guidance and implementation preparation
 
 ~~Internal source-bound cockpit discovery guidance completed~~ ([guide](knowledge/cockpit-integration-discovery-source-supplement.md)); five current hashes/four links/two no-prefetch targets pass finite root assertions and independent source review. No customer/media/browser acceptance. ~~Private-handler numbered implementation plan prepared~~ ([plan](../superpowers/plans/2026-11-05-private-governance-handler-composition.md)); review corrected normal token length to110bytes, preserves whole4096-byte envelope and all existing authority refusals. Local implementation decision remains pending; no test/runtime/provider operation. [Evidence](../recovery/2026-11-05/cockpit-guidance-and-handler-plan/README.md).
