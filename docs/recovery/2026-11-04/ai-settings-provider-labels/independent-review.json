@@ -1,0 +1,7 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "no important findings",
+  "scope": "actual page diff/test/evidence; no execution by reviewer",
+  "counts": "2 rendered cases plus11source-contract controls, not13rendered cases",
+  "boundary": "type-only import erases at runtime; handlers/auth/policy/health/inference unchanged"
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/ai-provider-labels-bixvtk4q/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "--project",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/ai-provider-labels-bixvtk4q/types.json"
+  ],
+  "exitCode": 0,
+  "stopReason": null,
+  "elapsedSeconds": 0.6,
+  "processReaped": true,
+  "outputBytes": 0,
+  "outputBase64": "",
+  "testSha256": "73544e9635871fd5cb47b80dbb620d17dd11949c3f9336536049ee50f83a6a17"
+}

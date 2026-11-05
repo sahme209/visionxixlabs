@@ -1,0 +1,12 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ app/dashboard/ai-settings/__tests__/providerLabels.test.tsx (2 tests) 57ms
+ ✓ app/dashboard/ai-settings/__tests__/aiSettingsToggle.test.ts (11 tests) 2ms
+
+ Test Files  2 passed (2)
+      Tests  13 passed (13)
+   Start at  04:06:36
+   Duration  485ms (transform 23ms, setup 0ms, import 83ms, tests 59ms, environment 173ms)
+

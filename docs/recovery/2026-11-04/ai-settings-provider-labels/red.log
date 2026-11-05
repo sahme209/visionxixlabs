@@ -1,0 +1,593 @@
+Both esbuild and oxc options were set. oxc options will be used and esbuild options will be ignored. The following esbuild options were set: `{ jsx: 'automatic' }`
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ app/dashboard/ai-settings/__tests__/aiSettingsToggle.test.ts (11 tests) 2ms
+ ❯ app/dashboard/ai-settings/__tests__/providerLabels.test.tsx (2 tests | 2 failed) 2027ms
+   × names vercel_gateway in its active summary, provider card and accessible toggle without dispatch 1017ms
+   × names xai in its active summary, provider card and accessible toggle without dispatch 1009ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/dashboard/ai-settings/__tests__/providerLabels.test.tsx > names vercel_gateway in its active summary, provider card and accessible toggle without dispatch
+TestingLibraryElementError: Unable to find role="switch" and name "Turn off AI Gateway"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-2 mb-3 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3.5 w-3.5 text-zinc-300"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-[10px] font-semibold uppercase tracking-widest text-zinc-300"[39m
+            [36m>[39m
+              [0mAI providers[0m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3 w-3 "[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0mRefresh[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3"[39m
+        [36m>[39m
+          [0mAI with [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-gradient"[39m
+          [36m>[39m
+            [0mgoverned routes.[0m
+          [36m</span>[39m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-[15px] text-zinc-400 max-w-2xl leading-relaxed"[39m
+        [36m>[39m
+          [0mThe service exposes only configured provider families. Workspace policy controls the approved routes and fallback order; when those routes are unavailable, Axiom returns an honest error instead of a simulated answer. Credentials and provider billing accounts remain server-only.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-2xl border border-zinc-500/[0.18] bg-zinc-500/[0.04] p-5 mb-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start justify-between gap-4 flex-wrap mb-1"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-widest text-zinc-300"[39m
+          [36m>[39m
+            [0mActive[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-[11px] font-mono text-zinc-400"[39m
+            [36m>[39m
+              [0mAI features[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33maria-checked[39m=[32m"true"[39m
+              [33maria-label[39m=[32m"Turn AI off for this workspace"[39m
+              [33mclass[39m=[32m"relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 bg-emerald-500/80"[39m
+              [33mrole[39m=[32m"switch"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform translate-x-6"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-3 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[16px] font-semibold text-white"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5"[39m
+          [36m>[39m
+            [0mmodel: [0m
+            [0mvendor/model[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-4 pt-4 border-t border-white/[0.06]"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2"[39m
+          [36m>[39m
+            [0mPer-provider[0m
+          [36m</p>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"space-y-2"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<button[39m
+              ...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-2 mb-3 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3.5 w-3.5 text-zinc-300"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-[10px] font-semibold uppercase tracking-widest text-zinc-300"[39m
+            [36m>[39m
+              [0mAI providers[0m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3 w-3 "[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0mRefresh[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3"[39m
+        [36m>[39m
+          [0mAI with [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-gradient"[39m
+          [36m>[39m
+            [0mgoverned routes.[0m
+          [36m</span>[39m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-[15px] text-zinc-400 max-w-2xl leading-relaxed"[39m
+        [36m>[39m
+          [0mThe service exposes only configured provider families. Workspace policy controls the approved routes and fallback order; when those routes are unavailable, Axiom returns an honest error instead of a simulated answer. Credentials and provider billing accounts remain server-only.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-2xl border border-zinc-500/[0.18] bg-zinc-500/[0.04] p-5 mb-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start justify-between gap-4 flex-wrap mb-1"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-widest text-zinc-300"[39m
+          [36m>[39m
+            [0mActive[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-[11px] font-mono text-zinc-400"[39m
+            [36m>[39m
+              [0mAI features[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33maria-checked[39m=[32m"true"[39m
+              [33maria-label[39m=[32m"Turn AI off for this workspace"[39m
+              [33mclass[39m=[32m"relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 bg-emerald-500/80"[39m
+              [33mrole[39m=[32m"switch"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform translate-x-6"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-3 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[16px] font-semibold text-white"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5"[39m
+          [36m>[39m
+            [0mmodel: [0m
+            [0mvendor/model[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-4 pt-4 border-t border-white/[0.06]"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2"[39m
+          [36m>[39m
+            [0mPer-provider[0m
+          [36m</p>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"space-y-2"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<button[39m
+              ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ app/dashboard/ai-settings/__tests__/providerLabels.test.tsx:18:23
+     16|   vi.stubGlobal('fetch', fetcher);
+     17|   render(createElement(AISettingsPage));
+     18|   expect(await screen.findByRole('switch', { name: `Turn off ${label}`…
+       |                       ^
+     19|   expect(screen.getAllByText(label)).toHaveLength(3);
+     20|   expect(screen.queryByRole('switch', { name: /undefined/ })).toBeNull…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  app/dashboard/ai-settings/__tests__/providerLabels.test.tsx > names xai in its active summary, provider card and accessible toggle without dispatch
+TestingLibraryElementError: Unable to find role="switch" and name "Turn off xAI Grok"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-2 mb-3 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3.5 w-3.5 text-zinc-300"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-[10px] font-semibold uppercase tracking-widest text-zinc-300"[39m
+            [36m>[39m
+              [0mAI providers[0m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3 w-3 "[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0mRefresh[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3"[39m
+        [36m>[39m
+          [0mAI with [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-gradient"[39m
+          [36m>[39m
+            [0mgoverned routes.[0m
+          [36m</span>[39m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-[15px] text-zinc-400 max-w-2xl leading-relaxed"[39m
+        [36m>[39m
+          [0mThe service exposes only configured provider families. Workspace policy controls the approved routes and fallback order; when those routes are unavailable, Axiom returns an honest error instead of a simulated answer. Credentials and provider billing accounts remain server-only.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-2xl border border-zinc-500/[0.18] bg-zinc-500/[0.04] p-5 mb-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start justify-between gap-4 flex-wrap mb-1"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-widest text-zinc-300"[39m
+          [36m>[39m
+            [0mActive[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-[11px] font-mono text-zinc-400"[39m
+            [36m>[39m
+              [0mAI features[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33maria-checked[39m=[32m"true"[39m
+              [33maria-label[39m=[32m"Turn AI off for this workspace"[39m
+              [33mclass[39m=[32m"relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 bg-emerald-500/80"[39m
+              [33mrole[39m=[32m"switch"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform translate-x-6"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-3 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[16px] font-semibold text-white"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5"[39m
+          [36m>[39m
+            [0mmodel: [0m
+            [0mvendor/model[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-4 pt-4 border-t border-white/[0.06]"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2"[39m
+          [36m>[39m
+            [0mPer-provider[0m
+          [36m</p>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"space-y-2"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<button[39m
+              ...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-2 mb-3 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3.5 w-3.5 text-zinc-300"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-[10px] font-semibold uppercase tracking-widest text-zinc-300"[39m
+            [36m>[39m
+              [0mAI providers[0m
+            [36m</span>[39m
+          [36m</span>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"[39m
+          [36m>[39m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-3 w-3 "[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+            [0mRefresh[0m
+          [36m</button>[39m
+        [36m</div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3"[39m
+        [36m>[39m
+          [0mAI with [0m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-gradient"[39m
+          [36m>[39m
+            [0mgoverned routes.[0m
+          [36m</span>[39m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"text-[15px] text-zinc-400 max-w-2xl leading-relaxed"[39m
+        [36m>[39m
+          [0mThe service exposes only configured provider families. Workspace policy controls the approved routes and fallback order; when those routes are unavailable, Axiom returns an honest error instead of a simulated answer. Credentials and provider billing accounts remain server-only.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"rounded-2xl border border-zinc-500/[0.18] bg-zinc-500/[0.04] p-5 mb-6"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-start justify-between gap-4 flex-wrap mb-1"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-widest text-zinc-300"[39m
+          [36m>[39m
+            [0mActive[0m
+          [36m</p>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex items-center gap-2"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33mclass[39m=[32m"text-[11px] font-mono text-zinc-400"[39m
+            [36m>[39m
+              [0mAI features[0m
+            [36m</span>[39m
+            [36m<button[39m
+              [33maria-checked[39m=[32m"true"[39m
+              [33maria-label[39m=[32m"Turn AI off for this workspace"[39m
+              [33mclass[39m=[32m"relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 bg-emerald-500/80"[39m
+              [33mrole[39m=[32m"switch"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33mclass[39m=[32m"inline-block h-4.5 w-4.5 transform rounded-full bg-white transition-transform translate-x-6"[39m
+              [36m/>[39m
+            [36m</button>[39m
+          [36m</div>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"flex items-center gap-3 flex-wrap"[39m
+        [36m>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[16px] font-semibold text-white"[39m
+          [36m/>[39m
+          [36m<span[39m
+            [33mclass[39m=[32m"text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5"[39m
+          [36m>[39m
+            [0mmodel: [0m
+            [0mvendor/model[0m
+          [36m</span>[39m
+        [36m</div>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-4 pt-4 border-t border-white/[0.06]"[39m
+        [36m>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2"[39m
+          [36m>[39m
+            [0mPer-provider[0m
+          [36m</p>[39m
+          [36m<ul[39m
+            [33mclass[39m=[32m"space-y-2"[39m
+          [36m>[39m
+            [36m<li[39m
+              [33mclass[39m=[32m"flex items-center gap-2"[39m
+            [36m>[39m
+              [36m<button[39m
+              ...
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ app/dashboard/ai-settings/__tests__/providerLabels.test.tsx:18:23
+     16|   vi.stubGlobal('fetch', fetcher);
+     17|   render(createElement(AISettingsPage));
+     18|   expect(await screen.findByRole('switch', { name: `Turn off ${label}`…
+       |                       ^
+     19|   expect(screen.getAllByText(label)).toHaveLength(3);
+     20|   expect(screen.queryByRole('switch', { name: /undefined/ })).toBeNull…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 11 passed (13)
+   Start at  04:06:21
+   Duration  2.70s (transform 22ms, setup 0ms, import 177ms, tests 2.03s, environment 368ms)
+

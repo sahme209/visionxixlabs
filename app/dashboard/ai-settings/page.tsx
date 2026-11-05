@@ -14,6 +14,7 @@
  */
 
 import { useCallback, useEffect, useState } from "react";
+import type { AIProviderName } from "@/lib/ai/AIProvider";
 import {
   SparklesIcon, ArrowPathIcon, CheckCircleIcon, XCircleIcon,
   BoltIcon, PlayIcon,
@@ -24,9 +25,7 @@ interface AiPolicyAdminResp {
   availableProviders: ProviderName[];
 }
 
-type ProviderName =
-  | "openai" | "anthropic" | "github_models" | "ollama" | "lm_studio" | "groq" | "hugging_face"
-  | "openrouter" | "gemini" | "cloudflare" | "mock";
+type ProviderName = AIProviderName;
 
 interface RegisteredModel { id: string; label: string; tier: string; family: string; freeNote: string }
 interface ProviderRow {
@@ -48,6 +47,7 @@ interface GenerateResp {
 }
 
 const LABEL: Record<ProviderName, string> = {
+  vercel_gateway: "AI Gateway", xai: "xAI Grok",
   openai: "OpenAI GPT", anthropic: "Anthropic Claude",
   github_models: "GitHub Models", ollama: "Ollama (local)", lm_studio: "LM Studio (local)",
   groq: "Groq", hugging_face: "Hugging Face", openrouter: "OpenRouter",

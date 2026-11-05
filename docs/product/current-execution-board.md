@@ -276,3 +276,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### AI health funding gap — reproduced, not repaired
 [Actual synthetic health composition](../recovery/2026-11-04/health-inference-admission-diagnostic/README.md) confirms GET/POST dispatch an unattributed probe without reservation in the traced chain and discard metering. Desired regression RED1; five characterization/auth/policy controls PASS. Actual route/manager/provider/policy retained, external auth/SDK/database synthetic; no real inference/bill. A [non-billable configuration diagnostics design](../recovery/2026-11-04/health-inference-admission-diagnostic/local-diagnostics-proposal.md) proposes truthful configured/not-tested state and coordinated consumer changes, requiring validation-first approval before runtime changes. Full funding/admission/financial/Governance acceptance remains open. No provider/deploy/DB/schema/native or paid operation.
+
+
+### AI settings provider-label repair — local only
+~~Current Gateway/xAI labels and accessible switch names repaired~~ ([evidence](../recovery/2026-11-04/ai-settings-provider-labels/README.md)): renderedRED2/11existing controls→GREEN13, scopedtypes, exactwholefile reconstruction and independent review pass. Canonical type-only provider union now makes the label map exhaustive. No handler/auth/health/inference change; pending health redesign remains separate. No browser/native/build/deployment acceptance. All21parents and existing previews remain preserved.

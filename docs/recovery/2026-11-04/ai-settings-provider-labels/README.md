@@ -1,0 +1,7 @@
+# AI settings provider names — local repair verified
+
+The actual page omitted both `vercel_gateway` and `xai` from its duplicated provider union and label map. Synthetic real-component rendering reproduced blank active/provider labels and a toggle named “Turn off undefined.” Two new rendered assertions failed; eleven existing source-contract controls passed. The local repair imports only the canonical provider **type** and adds “AI Gateway” / “xAI Grok” labels. The label record is now exhaustive over the canonical provider type.
+
+The same focused selection passes13checks: two actual rendered cases and eleven existing source-contract checks. Both new cases require the active summary, card and toggle to be named, and require exactly the two existing metadata fetches, with no generation, health call or policy write. Scoped TypeScript passes for the changed page/test and transitive imports. Existing oxc/esbuild configuration warning remains recorded; this is not a build/browser/AT or native acceptance claim. Independent source/test review found no important issue.
+
+Removing only the reviewed type import/alias change and two labels reconstructs the entire Git201 page byte-for-byte. All handlers, request bodies, auth, policy, health and inference behavior remain unchanged. The separate health diagnostics redesign remains pending approval. No AI/provider/database call, new dependency, build/restart, deployment, publication or spending occurred. Existing website/native previews remain older and unchanged.

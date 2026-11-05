@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/ai-provider-labels-bixvtk4q/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--no-experimental-webstorage",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/ai-provider-labels-bixvtk4q/vitest.config.mjs",
+    "--configLoader",
+    "native"
+  ],
+  "exitCode": 0,
+  "stopReason": null,
+  "elapsedSeconds": 0.654,
+  "processReaped": true,
+  "outputBytes": 587,
+  "outputBase64": "Qm90aCBlc2J1aWxkIGFuZCBveGMgb3B0aW9ucyB3ZXJlIHNldC4gb3hjIG9wdGlvbnMgd2lsbCBiZSB1c2VkIGFuZCBlc2J1aWxkIG9wdGlvbnMgd2lsbCBiZSBpZ25vcmVkLiBUaGUgZm9sbG93aW5nIGVzYnVpbGQgb3B0aW9ucyB3ZXJlIHNldDogYHsganN4OiAnYXV0b21hdGljJyB9YAoKIFJVTiAgdjQuMS4xMSAvVXNlcnMvc2FtaXJhaG1lZC9Eb2N1bWVudHMvQ29kZXgvMjAyNi0xMC0yOS9heGlvbS10aWNrZXQtaW5zdGFsbC1jb21wbGV0aW9uCgog4pyTIGFwcC9kYXNoYm9hcmQvYWktc2V0dGluZ3MvX190ZXN0c19fL3Byb3ZpZGVyTGFiZWxzLnRlc3QudHN4ICgyIHRlc3RzKSA1N21zCiDinJMgYXBwL2Rhc2hib2FyZC9haS1zZXR0aW5ncy9fX3Rlc3RzX18vYWlTZXR0aW5nc1RvZ2dsZS50ZXN0LnRzICgxMSB0ZXN0cykgMm1zCgogVGVzdCBGaWxlcyAgMiBwYXNzZWQgKDIpCiAgICAgIFRlc3RzICAxMyBwYXNzZWQgKDEzKQogICBTdGFydCBhdCAgMDQ6MDY6MzYKICAgRHVyYXRpb24gIDQ4NW1zICh0cmFuc2Zvcm0gMjNtcywgc2V0dXAgMG1zLCBpbXBvcnQgODNtcywgdGVzdHMgNTltcywgZW52aXJvbm1lbnQgMTczbXMpCgo=",
+  "testSha256": "73544e9635871fd5cb47b80dbb620d17dd11949c3f9336536049ee50f83a6a17"
+}
