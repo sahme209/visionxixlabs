@@ -1,0 +1,71 @@
+{
+  "approval": "call_9kJ652lpQksQjoCNOUE3pKXg",
+  "scope": "inert local preparation only",
+  "directory": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile",
+  "files": {
+    "node-review-copy": {
+      "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+      "size": 122129232,
+      "mode": "0o600",
+      "uid": 501,
+      "dev": 16777232,
+      "ino": 16693048,
+      "mtime_ns": 1793893884597656937,
+      "ctime_ns": 1793893884597656937
+    },
+    "minimal-jit.entitlements.plist": {
+      "sha256": "958648f799e436860b51eaf55ec8f92d2c62da17001e23d96bc05ffc748f2a2a",
+      "size": 241,
+      "mode": "0o600",
+      "uid": 501,
+      "dev": 16777232,
+      "ino": 16693049,
+      "mtime_ns": 1793893884644453593,
+      "ctime_ns": 1793893884644453593
+    },
+    "compatibility-smoke.cjs": {
+      "sha256": "69f15112f8ca625342c8d952030a37f64bc4ce98be92652ee028e057b1e93052",
+      "size": 356,
+      "mode": "0o600",
+      "uid": 501,
+      "dev": 16777232,
+      "ino": 16693050,
+      "mtime_ns": 1793893884644643551,
+      "ctime_ns": 1793893884644643551
+    },
+    "NODE-LICENSE": {
+      "sha256": "5888dbb9a1d2b18f2c3e6c5f6af1b39de658372b402a0577b002777f14c62ace",
+      "size": 157609,
+      "mode": "0o600",
+      "uid": 501,
+      "dev": 16777232,
+      "ino": 16693051,
+      "mtime_ns": 1793893884646822011,
+      "ctime_ns": 1793893884646822011
+    }
+  },
+  "original_before": {
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+    "size": 122129232,
+    "mode": "0o755",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 859815,
+    "mtime_ns": 1788824242000000000,
+    "ctime_ns": 1793319854477493638
+  },
+  "original_after": {
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+    "size": 122129232,
+    "mode": "0o755",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 859815,
+    "mtime_ns": 1788824242000000000,
+    "ctime_ns": 1793319854477493638
+  },
+  "signed": false,
+  "executed": false,
+  "qualified": false,
+  "license_present": true
+}

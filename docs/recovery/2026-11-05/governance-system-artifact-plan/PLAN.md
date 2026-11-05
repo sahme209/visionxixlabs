@@ -43,8 +43,8 @@ The [claim disposition](STARTUP-CLAIM-DISPOSITION.md) distinguishes a source-sup
 
 The previous desktop signing receipt records Developer ID Application `Vision XIX Labs LLC (FG5N98FE6W)` and public leaf SHA1 `4C2E59F247CA275001586AE020A9269464529452`. This is only a historical candidate identity reference, not proof of current key availability, certificate validity, acceptable custodian requirements or new signing authority. No certificate/private-key enumeration, extraction or signing occurred in this audit.
 
-## Next actual missing observation
+## Node observation resolved; next profile decision
 
-The exact pinned Node file exists and was bound by ordinary filesystem reads. Its signing/runtime/entitlement metadata remains unresolved. The two-artifact display approval excluded Node and is consumed. A separate [single Node display review](NODE-METADATA-REVIEW.md) is concrete and narrowly bounded; no Node execution, key use or third read under old permission is allowed.
+The exact approved Node display completed once; [raw evidence and limits](node-observation/README.md) replace the earlier missing-observation gate. Six true exceptions prevent accepting this input as-is. The [minimal-JIT candidate](NODE-PROFILE-CANDIDATE.md) proposes a separate copy, with no automatic broadening or original mutation. Preparation/signing/execution remain separately gated; no additional operation is authorized here.
 
-After that observation, reconcile a role-specific candidate policy and this assembly plan for implementation review. **Exact pre-main dependency/load/host enforcement remains UNKNOWN.** Neither the build graph, dependency inventory, library validation, a public signer name nor a metadata observation may replace it. Preserve rejection if no supported mechanism and actual qualification can satisfy the whole boundary. Actual System-Keychain/principal/enforcement/custody, same-artifact executing consumer, fleet/legacy/mutation coverage and native governance reviews/enrollment remain mandatory. All21parents stay open.
+Exact pre-main dependency/load/host enforcement remains UNKNOWN. The candidate cannot resolve persistent consumption, qualify custody or authorize issuer/enrollment activation. All21parents remain open.
