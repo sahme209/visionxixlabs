@@ -104,3 +104,8 @@ Base HEAD at capture: `1cc97a0837501cd95af9114993f4598148a4951c` plus exact work
 | `app/layout.tsx` | `eb6105697871b6f1a25d6562633a989f8ababec820510823c12de9d2a44a0a82` |
 | `app/globals.css` | `684c012b9a58fbc38cc3cd7a2c98af2eb31c7acf28584f1ce7e7cc996abb3dfb` |
 
+
+
+## Proposed deployment-origin identity foundation — November 5
+
+The [deployment-origin authority contract](deployment-origin-authority-contract.md) now specifies a proposed shared native/API/browser identity boundary, credential isolation and recovery requirements. Its finite source map distinguishes fixed product transports from saved configuration and preserves current behavior. D1–D4 trust/protocol/migration/offline-authority decisions remain open before implementation; it does not establish on-prem, air-gap, issuer or deployment acceptance.

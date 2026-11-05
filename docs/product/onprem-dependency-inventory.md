@@ -31,3 +31,8 @@ This is the A9 architecture inventory, not an offline-support, security or insta
 ## Remaining verification
 
 This inventory does not enumerate every network call, webhook/email path, telemetry/library default or deployment lifecycle. Before A9 acceptance, perform an owned full-process egress/dependency exercise covering startup, sign-in/recovery, discovery, approval, execution, evidence, export and updates. Resolve every observed dependency through a reviewed local authority/adapter or explicit unsupported feature. No on-prem migration, endpoint relaxation, infrastructure purchase, schema operation or provider run is approved here.
+
+
+## Proposed deployment-origin identity foundation — November 5
+
+The [deployment-origin authority contract](deployment-origin-authority-contract.md) now specifies a proposed shared native/API/browser identity boundary, credential isolation and recovery requirements. Its finite source map distinguishes fixed product transports from saved configuration and preserves current behavior. D1–D4 trust/protocol/migration/offline-authority decisions remain open before implementation; it does not establish on-prem, air-gap, issuer or deployment acceptance.

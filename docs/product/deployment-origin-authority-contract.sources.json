@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "status": "proposed-contract-not-implemented",
+  "sourceRevision": "54393d2df2283793f5635296218320cdbec86b6f",
+  "masterWorkingTreeSha256": "6d54e83fdf2d31f3860ef5245087364b8a79b09a74cc5374c475c87aef2791b3",
+  "masterUserEditPreserved": true,
+  "implementationApproved": false,
+  "runtimeAccepted": false,
+  "productionAccepted": false,
+  "customerEligible": false,
+  "sources": [
+    {
+      "key": "native-buffered",
+      "path": "desktop/src-tauri/src/http.rs",
+      "sha256": "f9731fe0266be2eaf110b0d8b26334849aa1bd56c64fcbe8f5995578eab59f90",
+      "lineCount": 363,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 113,
+          "sha256": "4933499426b012d4216189a4d8422b00b88bf0a4053b888c1e094ba6d5d1f488"
+        }
+      ]
+    },
+    {
+      "key": "native-stream",
+      "path": "desktop/src-tauri/src/http.rs",
+      "sha256": "f9731fe0266be2eaf110b0d8b26334849aa1bd56c64fcbe8f5995578eab59f90",
+      "lineCount": 363,
+      "ranges": [
+        {
+          "start": 130,
+          "end": 165,
+          "sha256": "b6db6c616fa8d5c0e3b8b70eac8e76a729abf0a45558802c08951ebc028979d0"
+        },
+        {
+          "start": 217,
+          "end": 264,
+          "sha256": "3f3b69f61a312ccad3fd5610cf418175ba6a25a11436fa740aeb70581984cacc"
+        }
+      ]
+    },
+    {
+      "key": "saved-endpoint",
+      "path": "desktop/src-tauri/src/config.rs",
+      "sha256": "fe00e5c0bba8fb47c50a87694999a705521940c427f75cfefc580151e731673a",
+      "lineCount": 251,
+      "ranges": [
+        {
+          "start": 174,
+          "end": 215,
+          "sha256": "2843abfa1ac630db4010f2000ab4c862ff2cb5d277f676fbe1e6244320622bac"
+        }
+      ]
+    },
+    {
+      "key": "native-command-registration",
+      "path": "desktop/src-tauri/src/main.rs",
+      "sha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf",
+      "lineCount": 176,
+      "ranges": [
+        {
+          "start": 97,
+          "end": 101,
+          "sha256": "755c4a135ea4e1e381a4b99a74621978410bdbe21f9ab1fcbfc93639da38a042"
+        }
+      ]
+    },
+    {
+      "key": "bridge-install",
+      "path": "desktop/src/main.tsx",
+      "sha256": "10b26cd6b2ce8663fc858188546d7dc079ccce62726e2c9c3c3ce72c2abe98a4",
+      "lineCount": 15,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 14,
+          "sha256": "4743ced0426323957fe4c6a98838ccdc1604377711dd4f7e046691cccaa5c173"
+        }
+      ]
+    },
+    {
+      "key": "startup-gate",
+      "path": "desktop/src/DesktopStartupGate.tsx",
+      "sha256": "287027d9a6cfd277191f2d9154c9c1b7e11feb8c3fd560a321ae8dd449fee697",
+      "lineCount": 30,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 30,
+          "sha256": "287027d9a6cfd277191f2d9154c9c1b7e11feb8c3fd560a321ae8dd449fee697"
+        }
+      ]
+    },
+    {
+      "key": "webview-transport",
+      "path": "desktop/src/lib/desktopTransport.ts",
+      "sha256": "bc4ea496e5c404f24eaebae6a9cbacf15a85bc91168d275e88a63a3ceec193b6",
+      "lineCount": 182,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 30,
+          "sha256": "26112bcfc8b949c2f6ca782262057d1ec59e40f96212999accc7396768b5078e"
+        },
+        {
+          "start": 130,
+          "end": 182,
+          "sha256": "c619229160d74e938246c6c95dc9322a33f8620062ca15f19f236c20b21e6aa6"
+        }
+      ]
+    },
+    {
+      "key": "client-context",
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1",
+      "lineCount": 2200,
+      "ranges": [
+        {
+          "start": 63,
+          "end": 80,
+          "sha256": "9c464884082c512fce0330503c3a21dc8b2200ac8cf52b5a2d1604a9ffb6a492"
+        },
+        {
+          "start": 474,
+          "end": 495,
+          "sha256": "a4eff76c242aa96dd5a6d36df65ab30253e4c629c2f956e6543abc0e7d7a79b0"
+        },
+        {
+          "start": 643,
+          "end": 674,
+          "sha256": "2ea90c0954f6038cb0da99b3befe0d4f88e8d0e40130b17622b1c35c7993a51d"
+        }
+      ]
+    },
+    {
+      "key": "pairing",
+      "path": "desktop/src/lib/desktopPairing.ts",
+      "sha256": "9ad3be89fbd502548c8ba3c0f89819f761bebb236b49f93c305a9cbacd429776",
+      "lineCount": 166,
+      "ranges": [
+        {
+          "start": 9,
+          "end": 27,
+          "sha256": "3036c05305fd3d765565ff6e291f54f1188124f63aeed07f3607aab05bf81e20"
+        },
+        {
+          "start": 62,
+          "end": 90,
+          "sha256": "0bec42426b6122475b245e9846b31e824a0c380b0d1e0fcd2c4659ea0d3d179f"
+        },
+        {
+          "start": 94,
+          "end": 143,
+          "sha256": "edf708b14aa0cf5c1a1f525bbde32baeb6388c0ada73b7460163c054b9684919"
+        }
+      ]
+    },
+    {
+      "key": "selected-credential",
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229",
+      "lineCount": 150,
+      "ranges": [
+        {
+          "start": 8,
+          "end": 46,
+          "sha256": "762d7791a5b65ac05fba9f570d02adee65577483d4b5c2ff8e55c1f504c87bc4"
+        },
+        {
+          "start": 63,
+          "end": 86,
+          "sha256": "3fcede0a13cb4830e5fb67760984f5d1c8b3654f8407269c0f1847cc1aa66342"
+        },
+        {
+          "start": 129,
+          "end": 150,
+          "sha256": "f592b0d91374f657a979927ee108ef803457a0e804cca31e5bb4a9009ea7ea80"
+        }
+      ]
+    },
+    {
+      "key": "paired-session-meta",
+      "path": "desktop/src/lib/authSession.ts",
+      "sha256": "057a1e2aace64bae20bccf653a74381229ba75c34e218d8d6366cadd9a628079",
+      "lineCount": 70,
+      "ranges": [
+        {
+          "start": 16,
+          "end": 47,
+          "sha256": "b622c2b1169ff1e3741aa9f35c72676700fe6d9f246764f1803fe62e802f0cd2"
+        }
+      ]
+    },
+    {
+      "key": "secret-storage",
+      "path": "desktop/src/lib/secureStorage.ts",
+      "sha256": "05172821df0bc57f30213072de58eda9854ec26ae28fba6c2f81f1d5c13d59f8",
+      "lineCount": 42,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 42,
+          "sha256": "05172821df0bc57f30213072de58eda9854ec26ae28fba6c2f81f1d5c13d59f8"
+        }
+      ]
+    },
+    {
+      "key": "native-owner-proof",
+      "path": "desktop/src-tauri/src/computer_input_authority.rs",
+      "sha256": "7e934e50a327b7054e6603b89ab1435b8b8cd4f6874ae1ed55757dfc68798319",
+      "lineCount": 91,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 14,
+          "sha256": "5f7a211489d4f1949bf2532d31b8c8730f6a6c2f564f673af3832166e63aa663"
+        },
+        {
+          "start": 15,
+          "end": 27,
+          "sha256": "d663d60cfa113d296277e51be2a452dc8a7047c92fc7db8cf26208247c0a1b3e"
+        },
+        {
+          "start": 28,
+          "end": 70,
+          "sha256": "dc9548752630a2745fe6f7fc33c84155b80848a4e3dff2837acce586170145e6"
+        }
+      ]
+    },
+    {
+      "key": "canonical-auth-origin",
+      "path": "lib/auth/canonicalAuthOrigin.ts",
+      "sha256": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b",
+      "lineCount": 37,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 37,
+          "sha256": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b"
+        }
+      ]
+    },
+    {
+      "key": "canonical-auth-page",
+      "path": "lib/auth/canonicalAuthPage.ts",
+      "sha256": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f",
+      "lineCount": 15,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 15,
+          "sha256": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f"
+        }
+      ]
+    },
+    {
+      "key": "browser-origin-check",
+      "path": "lib/auth/requestOrigin.ts",
+      "sha256": "3f017a62ba6717b63a751b459e76f1c6460a0c63dfcf0336ea41a9ba573d49fa",
+      "lineCount": 10,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 10,
+          "sha256": "3f017a62ba6717b63a751b459e76f1c6460a0c63dfcf0336ea41a9ba573d49fa"
+        }
+      ]
+    },
+    {
+      "key": "desktop-token",
+      "path": "lib/desktop/desktopToken.ts",
+      "sha256": "c9b585984a37960b768e53685b15539f8158e560a9a27351220b09d689174092",
+      "lineCount": 52,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 52,
+          "sha256": "c9b585984a37960b768e53685b15539f8158e560a9a27351220b09d689174092"
+        }
+      ]
+    },
+    {
+      "key": "private-token-codec",
+      "path": "lib/desktop/privateDesktopToken.ts",
+      "sha256": "09e32fe5ff30d96da301d991de59f0eb9c2235d4b9c8a840fc6d8ecc5a8104ba",
+      "lineCount": 63,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 63,
+          "sha256": "09e32fe5ff30d96da301d991de59f0eb9c2235d4b9c8a840fc6d8ecc5a8104ba"
+        }
+      ]
+    },
+    {
+      "key": "server-session-composition",
+      "path": "lib/desktop/resolveRequestDesktopSession.ts",
+      "sha256": "0c7f0681020e153fb61e6cb78443e4ea6620c88b68d6901b04f15e5d9c4438be",
+      "lineCount": 130,
+      "ranges": [
+        {
+          "start": 62,
+          "end": 76,
+          "sha256": "8c4e5da7e0eeefa1ffa936a37936fb5298a788ae38090c761e563386a02152bc"
+        },
+        {
+          "start": 125,
+          "end": 130,
+          "sha256": "f78ce8dc83b52643c65ab7b09d3da8525cc0f9fe7e11fac6a8f314fb2e195741"
+        }
+      ]
+    },
+    {
+      "key": "server-session-core",
+      "path": "lib/desktop/desktopSessionResolverCore.ts",
+      "sha256": "e5e2d8bfb719aba3dbb30846f314fd5ee11c1550fe0a3402d1d5e5ba1b7d15b5",
+      "lineCount": 173,
+      "ranges": [
+        {
+          "start": 64,
+          "end": 99,
+          "sha256": "f9c99031f90cfc4b6e2cc02b6e5f711a9cae2da2e6b85a5e4f428d05e4bebd41"
+        },
+        {
+          "start": 106,
+          "end": 163,
+          "sha256": "48e394733388c90c2f1102e9e255ed903f79f997fe0516d0e86d9d1e61b7e79d"
+        }
+      ]
+    }
+  ],
+  "scope": "selected native/frontend/pairing/session/auth source paths only, not full transport/egress/control coverage",
+  "authorization": "A9 parallel architecture foundations in existingmaster; no runtime migration, newtrust/enrollment/provider/credential operation"
+}
