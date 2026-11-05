@@ -1,0 +1,51 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-04/compiled-public-assistant-smoke/smoke.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--no-experimental-webstorage",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-04/compiled-public-assistant-smoke/smoke.mjs"
+  ],
+  "inputSha256": {
+    "smoke.mjs": "b84b5dfb01611d1c97f1663ee353b51a502abae1e5c9700ef6e4ee31316d1703",
+    "smoke.sb": "d9a8bea93dac8e0bc3ab87c5d845ae03899f1e87b2f6e2498b3ca99a2fc961bc",
+    "input-pins.json": "86a9ac5c3ed5ad5ead8b1a5d17dd55b4ee9d204f2f3f3c338a7809a08362fce7"
+  },
+  "exitCode": 0,
+  "stopReason": null,
+  "elapsedSeconds": 0.225,
+  "outputBytes": 574,
+  "processReaped": true,
+  "processBounds": "owned child process group only; descendant quiescence unqualified",
+  "report": {
+    "scope": "compiled userland POST ordinary isolated test, not Next HTTP server or native issuer qualification",
+    "sourceRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+    "records": [
+      {
+        "label": "valid",
+        "status": 503,
+        "code": "ai.public_admission_unavailable"
+      },
+      {
+        "label": "malformed",
+        "status": 503,
+        "code": "ai.public_admission_unavailable"
+      },
+      {
+        "label": "claims",
+        "status": 503,
+        "code": "ai.public_admission_unavailable"
+      }
+    ],
+    "rateLimit": {
+      "initialRefusals": 10,
+      "eleventhStatus": 429
+    },
+    "network": "kernel denied",
+    "credentials": "absent",
+    "runtimeQualification": "unavailable",
+    "executionAuthorized": false
+  },
+  "success": true
+}

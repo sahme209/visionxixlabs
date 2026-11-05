@@ -1,0 +1,11 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important inconsistencies after controller correction",
+  "actualCompiledCalls": 14,
+  "childExit": 0,
+  "outputBytes": 574,
+  "base64MatchesDecodedReport": true,
+  "scope": "direct compiled userland POST only; no HTTP server, SDK-spy no-attempt claim, identity/custody/descendant/Governance qualification",
+  "reviewerRepeatedExecution": false,
+  "controllerSha256": "b1513eabdc1570cfd6a0e5d025d68c6ba06373efb107ebb0f7c5964b334c3737"
+}

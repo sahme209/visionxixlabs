@@ -263,3 +263,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Exact security-containment production-web batch
 ~~Frozen201source ordinary compile/productiontypes/303staticpages/outputverification passed~~ ([evidence](../recovery/2026-11-04/security-containment-web-build/README.md)):9059regular archiveinputs and exactoutputs retained. Three verified-issuer dynamicdependency warnings/fouroptionalcachemisses preserved; issuer/runtime/activation/completeclosure/descendantqualification remain unavailable. No deployment/provider/DB/AI/CI/native restart or updatedpreview. This verifies the local batch, not fullGovernance or rollout acceptance; all21parents/userplan scope preserved.
+
+### Compiled public assistant refusal smoke
+~~Actual compiled source201 userland POST returns the expected refusal and rate limit~~ ([evidence](../recovery/2026-11-04/compiled-public-assistant-smoke/README.md)): 14 direct invocations passed in one network/write-denied child, without an HTTP server or source mocks. Three pure controller checks also passed after correcting a false-positive result edge case. This is not browser/provider, custody/issuer, complete-closure or Governance acceptance. Current previews/native session and all21parents remain preserved.

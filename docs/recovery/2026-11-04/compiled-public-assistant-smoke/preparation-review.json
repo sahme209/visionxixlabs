@@ -1,0 +1,21 @@
+{
+  "preparedOnly": true,
+  "compiledModuleLoaded": false,
+  "testExecuted": false,
+  "sourceRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "files": {
+    "smoke.mjs": "b84b5dfb01611d1c97f1663ee353b51a502abae1e5c9700ef6e4ee31316d1703",
+    "input-pins.json": "86a9ac5c3ed5ad5ead8b1a5d17dd55b4ee9d204f2f3f3c338a7809a08362fce7",
+    "smoke.sb": "d9a8bea93dac8e0bc3ab87c5d845ae03899f1e87b2f6e2498b3ca99a2fc961bc"
+  },
+  "sourceEvidence": {
+    "compiledEntry": "export module408314 routeModule uses userland thunk module390178; module390178 POST contains IP limiter then unconditional typed503",
+    "nextModule": "next16.4.2 app-route/module.js lines120-131 getter assertLoaded and ensureUserland waitUntilLoaded"
+  },
+  "limitations": [
+    "direct compiled userland POST; does not run Next HTTP handler/server",
+    "pins bounded direct chunks; not complete executable closure",
+    "kernel denial prevents external I/O but no spy claims for attempted transport",
+    "no runtime/issuer/custody/activation qualification"
+  ]
+}

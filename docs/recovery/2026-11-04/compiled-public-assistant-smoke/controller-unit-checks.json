@@ -1,0 +1,8 @@
+{
+  "command": "PYTHONDONTWRITEBYTECODE=1 python3 docs/recovery/2026-11-04/compiled-public-assistant-smoke/test_controller.py",
+  "observedExitCode": 0,
+  "tests": 3,
+  "scope": "pure controller validation and no-launch import; no compiled child",
+  "reviewCorrection": "empty/falsy JSON report acceptance removed; strict expected unqualified report required",
+  "repeated": false
+}

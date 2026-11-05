@@ -1,0 +1,11 @@
+# Compiled public-assistant unavailable behavior - ordinary local smoke PASS
+
+One bounded child loaded the actual source201 compiled public-assistant route and its inspected Next userland interface, using the stage NextRequest. There were no source mocks, network listener or HTTP server. The script verified its fixed direct input hashes before import; those observations are not authenticated loaded-code identity or complete transitive closure.
+
+Fourteen direct compiled POST invocations passed: valid, malformed and arbitrary tenant/credit/admission-claim requests returned the exact503/code/message; one fresh synthetic IP then received ten503responses and the original429on request eleven. This is compiled-function response evidence, not Next HTTP routing, middleware, browser or real-provider acceptance. The child had an explicit minimal no-credential environment and kernel denial of all networking and filesystem writes. No real AI/database/provider call or deployment occurred; absence of transport attempts was not independently instrumented or asserted.
+
+The one actual child exited0in0.225seconds with574outputbytes and was reaped. Its owned process group was bounded20seconds and256KiB plus one detection byte, with no retry. Raw bytes are retained in base64 with a readable preview. Descendant quiescence remains unqualified. Existing previews and the signed desktop session were untouched.
+
+Before execution, review found that an empty JSON object could satisfy the original controller's success check. The original controller is preserved. The corrected controller has an import-safe main guard and strict complete-report validation; three pure checks passed for falsy/wrong JSON, incorrect/qualified outcomes and the valid unqualified report. Independent pre/post-execution review passed; no checks were repeated by the reviewer.
+
+Governed executing issuer/runtime/custody/activation qualification remains unavailable and executionAuthorized:false. This smoke does not complete Governance, funded public assistance, universal AI admission or the master plan. No new privileged helper, Keychain, service registration, source change, schema/flag/credential/grant, spending, app restart or installer publication was performed. Pending genuine approvals and all21master parents remain open.

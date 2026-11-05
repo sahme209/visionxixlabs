@@ -1,0 +1,82 @@
+{
+  "sourceRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "scope": "fixed Node, compiled entry, webpack runtime, thirteen declared route chunks and inspected Next request/module source; NOT full transitive attestation",
+  "files": [
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/app/api/visionxix-ai-chat/route.js",
+      "sha256": "0ff73b94efeb34963616778f5a50021c135cc18f8d872b4f35ccb28637dfc4b8"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/webpack-runtime.js",
+      "sha256": "5304284890ba1963d4ea1ff29b6788d2453a884e6dcd15c1443f2485415d5d41"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/92970.js",
+      "sha256": "3917f8783a8e084c746fa278e65f90618fbaa58ba591c0e9ae5495afe07f4a13"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/45592.js",
+      "sha256": "22c2a9d05d6cef49d78922d875370f1f602ad82ee0656c2c82208b52c180f8f6"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/50292.js",
+      "sha256": "1b57c1ce71505fbc153d78b27f29c8d5c74434dfe848eab405e6c39ec6784513"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/98969.js",
+      "sha256": "ff0e377e4476d3e4d7b8085ed47e58da0a3c15de07f770d11a3f7f63209d7537"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/88398.js",
+      "sha256": "e15d89512aca3835e7bc5ea77f20144df0fccf0d352158627113db6584a53b53"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/38350.js",
+      "sha256": "ab4a7b73d422cdee9b702070e1efdafcad62c1391ca56f64adeab5684622b363"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/22217.js",
+      "sha256": "f2e42e7287e15457b997e03afca1cd5c9e3a0b07deecad3dc6948980e6be6ce6"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/5164.js",
+      "sha256": "9c68107828a1856b4972c6b6a5d42c2b10facd82483453adf23f52a7186b775b"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/96280.js",
+      "sha256": "ccf1d45f5b7b7c21caa7bbb3c5f2b79ba0803e6b5cab2fdab236b643b7c101a7"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/16332.js",
+      "sha256": "da04e1f9e868c2f5b20c22d5e5eef06a7fb8fff85986a2121d424a8dca51cb0f"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/95584.js",
+      "sha256": "09dcb04a01c2fa03a1167a5fcba1f7ae3d50594ab8d5bb53412a05758d4e7dec"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/27320.js",
+      "sha256": "04182c627f1f8eff2ff90d061d8a12923c4f2810c4b75f2b6082e5f470fd19d9"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/chunks/44948.js",
+      "sha256": "ccede438fdefdd1815b2e4663bd2f5938ffc8bf260994e8bd2f27f120a8aa345"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/node_modules/next/dist/server/web/spec-extension/request.js",
+      "sha256": "2490a352d271fb39e1fccce06ee6887999dffa7909ccfd5ca0cc8bab8008065b"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/node_modules/next/dist/server/route-modules/app-route/module.js",
+      "sha256": "9f9ae9defd45e773888c948e844d7a401ca79ff5c09f14211c4abd9b725e3b1b"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/node_modules/next/package.json",
+      "sha256": "e84ada0a68191fed192392bfb8ee35ad4ed8e7439f645a40dd48cf139588ddc5"
+    },
+    {
+      "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b"
+    }
+  ]
+}
