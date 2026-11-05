@@ -1,0 +1,158 @@
+{
+  "approval": "call_q0tV3lWa1iYDD0HVEWrjm535",
+  "toolSourceRevision": "a6c0cffa88f140afa9628901b9f36a0219455861",
+  "toolSession": 23171,
+  "toolExit": 0,
+  "records": [
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/claimed.json",
+      "saved": "run/claimed.json",
+      "sha256": "db7c92625550126eeb94b6b02b74be87712e3d8b9b0ce8e354ad642957982021",
+      "bytes": 212
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/baseline.json",
+      "saved": "run/baseline.json",
+      "sha256": "48bbe293d91ce31cd83121df3b32cd1a3808e88a52d592602b74c4d5c36b6e74",
+      "bytes": 5342
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/main-before.bin",
+      "saved": "run/main-before.bin",
+      "sha256": "b3a4f59e49b2f8a172a9071a16fbcb6c0b829f8eb2cbe53c7ca6d426dbe155d8",
+      "bytes": 16856
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/postseal.json",
+      "saved": "run/postseal.json",
+      "sha256": "9bb7d936286d98ce1f841ebd58a72d8de3c275f064cd83c77902823e9143dbb3",
+      "bytes": 6172
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/result.json",
+      "saved": "run/result.json",
+      "sha256": "b541dd25695fc957025dc58c07a6b062dfb5018f2cf2a3dbad3341f7d981a241",
+      "bytes": 854
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/sign-attempt.json",
+      "saved": "run/sign-attempt.json",
+      "sha256": "27d03bff9c2e093f4403e332714f5b4dc1681d0222219fd9efd64a35351ecbc3",
+      "bytes": 710
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/sign-command.json",
+      "saved": "run/sign-command.json",
+      "sha256": "9eb7d258c263557790109362f901a25d5e025bed5f7215ebea91e1619874d6b0",
+      "bytes": 1621
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/sign-stdout.log",
+      "saved": "run/sign-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/sign-stderr.log",
+      "saved": "run/sign-stderr.log",
+      "sha256": "987979f3f6fbdde965e53d9ecc38fd365912ac55d808cf75078a97cf9dfb9735",
+      "bytes": 200
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/verify-attempt.json",
+      "saved": "run/verify-attempt.json",
+      "sha256": "04600d3dd5e7eef494a1a5b83b6204d9a4d323db49bb03affaecddf20f1f311d",
+      "bytes": 404
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/verify-command.json",
+      "saved": "run/verify-command.json",
+      "sha256": "c2005e6cd9f61fdaea531a0dc353239ff0f1f60b43f6afebd3c62b236e27712b",
+      "bytes": 1320
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/verify-stdout.log",
+      "saved": "run/verify-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/verify-stderr.log",
+      "saved": "run/verify-stderr.log",
+      "sha256": "80b1e4eedc918025446d4d5fb5010ac1d0c933ad0a0b82b81c9784203bfbc358",
+      "bytes": 2157
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/display-attempt.json",
+      "saved": "run/display-attempt.json",
+      "sha256": "317ab1bb5636755e0dc126e8a048815933412afd372fc0e7301ef7394247460d",
+      "bytes": 417
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/display-command.json",
+      "saved": "run/display-command.json",
+      "sha256": "e5d740c733e231f71b9a04b4f17c1e0fe4b48446bd623bcca967b93b714686fe",
+      "bytes": 1337
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/display-stdout.log",
+      "saved": "run/display-stdout.log",
+      "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+      "bytes": 184
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d/display-stderr.log",
+      "saved": "run/display-stderr.log",
+      "sha256": "fa6da9920942aa726ff08077de2637f217aebd5368ebcd8466896b960102ce89",
+      "bytes": 1377
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-controller-792e817d/claimed.json",
+      "saved": "controller/claimed.json",
+      "sha256": "f9e1f86342b6bb30acd4c312bc877b41bf877493f52d08e16dd0de84a3022821",
+      "bytes": 156
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-controller-792e817d/process.json",
+      "saved": "controller/process.json",
+      "sha256": "e3f2e3917aaeeb944065a3c2490a036ec85a963c3431013bbcc8fc0e801619eb",
+      "bytes": 130
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-controller-792e817d/stdout.log",
+      "saved": "controller/stdout.log",
+      "sha256": "359327fb9408691c1b4fa95bea2f82a4f8fbf51ff6b7491a17a189d681de33c8",
+      "bytes": 59
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-controller-792e817d/stderr.log",
+      "saved": "controller/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-controller-792e817d/result.json",
+      "saved": "controller/result.json",
+      "sha256": "cfc795dee438d6aa5926292647919094a7dd00aa6ee695a1473fa7aa108fc0fa",
+      "bytes": 340
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembled/Axiom Synthetic Custodian.app/Contents/MacOS/AxiomSyntheticContainerMain",
+      "saved": "main-after.bin",
+      "sha256": "073cd513af5a2e8fed000607514e33da1d5b216424e202b367ede632f9c1d224",
+      "bytes": 35472
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembled/Axiom Synthetic Custodian.app/Contents/_CodeSignature/CodeResources",
+      "saved": "CodeResources.plist",
+      "sha256": "4ef486e47a5bb7d555dd82e4f95feab8c3ed7621e689703748924ffa1b33e01e",
+      "bytes": 4467
+    }
+  ],
+  "fullImageRehashByEvidenceCollector": false,
+  "executionAuthorized": false,
+  "installationReady": false,
+  "runtimeIdentityQualified": false,
+  "activationAllowed": false,
+  "retryAuthorized": false
+}

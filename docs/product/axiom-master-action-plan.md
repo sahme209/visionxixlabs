@@ -1,5 +1,13 @@
 # Axiom master action plan
 
+## November 5 delivery target — full scope preserved
+
+The user set **November 23, 2026 as the readiness target**, ahead of the **November 24, 2026 target date** (America/New_York). Every A1–A9, B1–B6 and C1–C6 requirement remains in the master scope; no item is silently removed, replaced, marked complete or deferred to make the date appear achievable.
+
+This is a planning target, not a verified completion forecast or new production/spending/security authority. Future C implementation still needs its reviewed authorization. Track all 21 parents and their acceptance evidence against the target; identify external/human dependencies early and report material deadline risk before the final week. No incomplete or simulated result becomes acceptance because of the deadline.
+
+The dated dependency/risk assessment is maintained in [November 23 readiness assessment](november-23-readiness-assessment.md), with the [execution board](current-execution-board.md) remaining the concise current view. Prioritize actual Governance/custody/consumer/enforcement, native ticket and customer journeys, then integrated release/website/docs acceptance; carry independent work in parallel and preserve the existing Windows deferral and genuine approval gates until explicitly resolved.
+
 ## November4 current Governance qualification artifact status
 
 The four temporary artifacts bound by the previously reviewed909packet are now missing, as established by [existence-only assessment](../recovery/2026-11-04/governance-qualification-artifact-loss/assessment.json). The old experiment remains recorded as unexecuted and cannot proceed from its historical bindings. No controller/helper was invoked, recreated or rebound. The [persistent local preparation recovery design](../recovery/2026-11-04/governance-persistent-qualification-recovery-proposal.md) is independently reviewed and awaits user approval before implementation; any later exact Security API experiment remains separately gated. Canonical issuer, custody/fleet/coverage/enrollment and all A1–A9/B1–B6 completion requirements remain open. C1–C6 remain planned and unauthorized. Earlier preparation checkpoints below are historical, not authority to run missing or regenerated files.

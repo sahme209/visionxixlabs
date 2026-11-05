@@ -1,0 +1,31 @@
+Executable=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembled/Axiom Synthetic Custodian.app/Contents/MacOS/AxiomSyntheticContainerMain
+Identifier=com.visionxixlabs.axiom.synthetic.custodian
+Format=app bundle with Mach-O thin (arm64)
+CodeDirectory v=20500 size=439 flags=0x10000(runtime) hashes=2+7 location=embedded
+VersionPlatform=1
+VersionMin=851968
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=748fcacb72d82ff9274487283447adfb1926e95e
+CandidateCDHashFull sha256=748fcacb72d82ff9274487283447adfb1926e95e11d701c62ea38a758392b30d
+Hash choices=sha256
+CMSDigest=748fcacb72d82ff9274487283447adfb1926e95e11d701c62ea38a758392b30d
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=16384
+Executable Segment flags=0x1
+Page size=16384
+CDHash=748fcacb72d82ff9274487283447adfb1926e95e
+Signature size=4680
+Authority=Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Signed Time=Nov 5, 2026 at 16:39:37
+Info.plist entries=5
+TeamIdentifier=FG5N98FE6W
+Runtime Version=26.5.0
+Sealed Resources version=2 rules=13 files=6
+Internal requirements count=1 size=204
+warning: Specifying ':' in the path is deprecated and will not work in a future release
+Total signatures=1
+Chosen signature=1

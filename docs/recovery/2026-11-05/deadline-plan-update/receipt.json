@@ -1,0 +1,13 @@
+{
+  "readinessTarget": "2026-11-23",
+  "targetDate": "2026-11-24",
+  "timezone": "America/New_York",
+  "beforeSha256": "7ce16009c2080bcf872819556d161a13adce8846c608de89d5d10a5a1fd21ccf",
+  "afterSha256": "fe8681a6f93e8184beabb1f6d980ae18ed3e6774d322943b39f3e1ca3f74c748",
+  "backup": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/master-before-deadline-20261105-164520.md",
+  "originalContentPreservedByteForByte": true,
+  "indexContainsOnlyNewDeadlineAddition": true,
+  "previousUserEditsStaged": false,
+  "scopeDropped": false,
+  "newProductionAuthorityGranted": false
+}
