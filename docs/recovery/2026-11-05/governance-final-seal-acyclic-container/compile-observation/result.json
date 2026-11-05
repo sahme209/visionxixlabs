@@ -1,0 +1,49 @@
+{
+  "sourceRevision": "3e487f561b8219070c4bdceaee488dbb21a6f042",
+  "stage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-container-main-v2-3e487f56/stage",
+  "preparationSha256": "5b6dc4715c568e5951a3079ac607e3c20f66947afae50745ae9803cb2df49980",
+  "argv": [
+    "/usr/bin/xcrun",
+    "clang",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-mmacosx-version-min=13.0",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-container-main-v2-3e487f56/stage/source/container_main.c",
+    "-o",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-container-main-v2-3e487f56/stage/leaves/AxiomSyntheticContainerMain"
+  ],
+  "compilerExit": 0,
+  "state": "completed",
+  "elapsedSeconds": 0.0385685,
+  "stdoutBytes": 0,
+  "stderrBytes": 0,
+  "targetExecuted": false,
+  "companySigningKeyUsed": false,
+  "appAssembled": false,
+  "installationReady": false,
+  "activationAllowed": false,
+  "runtimeIdentityQualified": false,
+  "compilerSDKAuthenticity": "unavailable",
+  "compilerDescendantQuiescence": "unqualified",
+  "artifact": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-container-main-v2-3e487f56/stage/leaves/AxiomSyntheticContainerMain",
+    "sha256": "b3a4f59e49b2f8a172a9071a16fbcb6c0b829f8eb2cbe53c7ca6d426dbe155d8",
+    "size": 16856,
+    "mode": "0o600",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 16883526,
+    "mtime_ns": 1793907712132163877,
+    "ctime_ns": 1793907712132163877
+  },
+  "headerObservation": {
+    "magic": "0xfeedfacf",
+    "cpuType": "0x100000c",
+    "cpuSubtype": 0,
+    "fileType": 2
+  },
+  "originalInputClosureUnchanged": true,
+  "onlyDeclaredOutputAdded": true
+}

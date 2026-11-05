@@ -1,0 +1,19 @@
+{
+  "approval": "call_JTk51lvoRfOo1Oo2e21DEbgF",
+  "scope": "one local compilation, no target execution",
+  "sourceRevision": "3e487f561b8219070c4bdceaee488dbb21a6f042",
+  "preparationSha256": "5b6dc4715c568e5951a3079ac607e3c20f66947afae50745ae9803cb2df49980",
+  "argv": [
+    "/usr/bin/xcrun",
+    "clang",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-mmacosx-version-min=13.0",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-container-main-v2-3e487f56/stage/source/container_main.c",
+    "-o",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-container-main-v2-3e487f56/stage/leaves/AxiomSyntheticContainerMain"
+  ],
+  "retry": false
+}

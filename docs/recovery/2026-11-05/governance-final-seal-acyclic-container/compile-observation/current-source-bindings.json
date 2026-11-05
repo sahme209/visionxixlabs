@@ -1,0 +1,22 @@
+{
+  "scripts/governance_local_issuer/container_main.c": {
+    "sha256": "2b69d9fa99f0a12509878305aca4386c334cbab31115406a2a2546b45fa1cdc0",
+    "size": 106
+  },
+  "scripts/governance_local_issuer/container_preparation.py": {
+    "sha256": "6fd39f068931c785f6ed8f5ff0ea7666ed048f44a63995ab0aaa325073e8eec3",
+    "size": 9173
+  },
+  "scripts/governance_local_issuer/tests/test_container_preparation.py": {
+    "sha256": "54e607ebdfb1010f9bd8ef928fbd5aa65fd60c1301905b832f0624689d0bcec2",
+    "size": 5217
+  },
+  "packages/verified-issuer-runtime/native/origin_root_binding.m": {
+    "sha256": "a74167becb5225348ff6c14bba01e17b93d857c81a5d00a50fccae88cb44b252",
+    "size": 8874
+  },
+  "scripts/governance_local_issuer/system_preparation.py": {
+    "sha256": "1cdf90d0b9ad38bc8849d567036db8a83ce26cd0f0c74b2fe5ba5a30024e141e",
+    "size": 15253
+  }
+}
