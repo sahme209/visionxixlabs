@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the [current-source qualification audit](../recovery/2026-11-05/governance-next-qualification-audit.md) shows current signed artifacts still cannot handle a business request if installed. Resolve the connected native custody → authenticated request channel → actual compiled consumer path through a reviewed local design; do not repeat packaging or blindly install still-refusing artifacts. Production resource-owner/writer cutover and full A2/A9 are distinct gates.
 
+## Connected runtime source packet — independent design review complete
+
+~~Exact native ingress/private fixture contracts and joined review completed~~ ([local decision packet](../recovery/2026-11-05/governance-connected-runtime-next/IMPLEMENTATION-REVIEW.md)). Two concrete design gaps corrected: bootstrap admin-database/HBA access and fresh request-id broker cancellation arbitration. Local source/compile/pure-mock implementation is review-ready and awaits the changed-boundary decision. No source implementation or actual OS/SQL/resource action under this packet; operational qualification remains separately unready. Four-agent team preserved original native identity, genuine action/fleet authority and all21parents.
+
 ## Connected runtime — four-agent design workstream
 
 ~~Identity/material/finite SAME-consumer matrix sections prepared and first joined source review completed~~ ([packet](../recovery/2026-11-05/governance-connected-runtime-next/README.md)). No internal contradiction found; exact authenticated ingress/request lifetime and isolated fixture-administration contract remain In Progress with three specialists plus root coordination. No new implementation/operational permission, native/DB/build/provider action or acceptance inferred. The existing private-handler source unit below remains verified without repeated tests.
