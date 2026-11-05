@@ -1,0 +1,182 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only",
+  "sourceRevision": "df9d58abeaf8ef56829571b30a6d6d8e6f6fcd76",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "genuineEditorialApproval": false,
+  "browserAssistiveTechnologyVerified": false,
+  "evidenceKeysAreRuntimeIds": false,
+  "sources": [
+    {
+      "key": "page-entry",
+      "path": "app/(marketing)/contact/page.tsx",
+      "sha256": "0839c1483337e12d962a538fdce153c4abddf0bc2af2b2c0f3e96e0ef03f14a6",
+      "lineCount": 19,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 19,
+          "sha256": "0839c1483337e12d962a538fdce153c4abddf0bc2af2b2c0f3e96e0ef03f14a6"
+        }
+      ]
+    },
+    {
+      "key": "form-state",
+      "path": "app/(marketing)/contact/ContactClient.tsx",
+      "sha256": "f22d58f5aee7094511f9a03785c7416f230f93e0237a5640fd9151b5830d9ca1",
+      "lineCount": 306,
+      "ranges": [
+        {
+          "start": 15,
+          "end": 57,
+          "sha256": "10cfbafafb00e2b6ff65ba99011acca076e12237bd033a530fcde9122b77d0e3"
+        }
+      ]
+    },
+    {
+      "key": "form-submit",
+      "path": "app/(marketing)/contact/ContactClient.tsx",
+      "sha256": "f22d58f5aee7094511f9a03785c7416f230f93e0237a5640fd9151b5830d9ca1",
+      "lineCount": 306,
+      "ranges": [
+        {
+          "start": 59,
+          "end": 92,
+          "sha256": "329ab0870074587f6c5768cfaab75fb58fe30ad8379894fac89971151bfea232"
+        }
+      ]
+    },
+    {
+      "key": "form-outcome",
+      "path": "app/(marketing)/contact/ContactClient.tsx",
+      "sha256": "f22d58f5aee7094511f9a03785c7416f230f93e0237a5640fd9151b5830d9ca1",
+      "lineCount": 306,
+      "ranges": [
+        {
+          "start": 118,
+          "end": 162,
+          "sha256": "ebf330cf9d1d35de9683381fed51f61c05a8739991f2f41c902806c89ebe574c"
+        }
+      ]
+    },
+    {
+      "key": "form-controls",
+      "path": "app/(marketing)/contact/ContactClient.tsx",
+      "sha256": "f22d58f5aee7094511f9a03785c7416f230f93e0237a5640fd9151b5830d9ca1",
+      "lineCount": 306,
+      "ranges": [
+        {
+          "start": 164,
+          "end": 263,
+          "sha256": "d8bd62da929fbb7622c5ca22c4783ed65b32b4af277f490f55b40a5ac855e9d7"
+        }
+      ]
+    },
+    {
+      "key": "contact-entry",
+      "path": "app/api/contact/route.ts",
+      "sha256": "ece1b7ac0fca19294edf0b2ec01901bf7343cc2d34fdb049e780b5d50efc780e",
+      "lineCount": 215,
+      "ranges": [
+        {
+          "start": 14,
+          "end": 92,
+          "sha256": "10ce2459f4f1ee9b28ffeb02900419aeab2c526b6759036f40ffb172819b915f"
+        }
+      ]
+    },
+    {
+      "key": "contact-storage",
+      "path": "app/api/contact/route.ts",
+      "sha256": "ece1b7ac0fca19294edf0b2ec01901bf7343cc2d34fdb049e780b5d50efc780e",
+      "lineCount": 215,
+      "ranges": [
+        {
+          "start": 92,
+          "end": 136,
+          "sha256": "3964f79d7653f5f6e65f4f725f852e7ff0548de019c5f3441298af9810c4bc45"
+        }
+      ]
+    },
+    {
+      "key": "contact-mail",
+      "path": "app/api/contact/route.ts",
+      "sha256": "ece1b7ac0fca19294edf0b2ec01901bf7343cc2d34fdb049e780b5d50efc780e",
+      "lineCount": 215,
+      "ranges": [
+        {
+          "start": 138,
+          "end": 215,
+          "sha256": "ca92fd50c9a99aa7fc9e6681db0ce912f17e6d3c2e227f87c47c90c2c70d0af2"
+        }
+      ]
+    },
+    {
+      "key": "rate-limit",
+      "path": "lib/rateLimit.ts",
+      "sha256": "2163af8ff0ea888f7bf201130d49668455e91b121d1b0783aebf484946ae42a2",
+      "lineCount": 18,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 18,
+          "sha256": "2163af8ff0ea888f7bf201130d49668455e91b121d1b0783aebf484946ae42a2"
+        }
+      ]
+    },
+    {
+      "key": "redaction-shim",
+      "path": "lib/security/secretRedaction.ts",
+      "sha256": "a223c389f750230d0bd4c58a3cc05f9ff71457f73cf79082b6dc90ccedea04b4",
+      "lineCount": 11,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 11,
+          "sha256": "a223c389f750230d0bd4c58a3cc05f9ff71457f73cf79082b6dc90ccedea04b4"
+        }
+      ]
+    },
+    {
+      "key": "redaction-limits",
+      "path": "lib/security/redaction.ts",
+      "sha256": "92c9c1005590e631163bba9a523b58f589d50ca4c04f142ce498d8f52dbe0766",
+      "lineCount": 151,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 20,
+          "sha256": "e1caaca3a7a64b0cc0efce352b88ec74eb82425a6f23c4eb14cfcadc737aa3d8"
+        }
+      ]
+    },
+    {
+      "key": "worker-boundary",
+      "path": "app/api/agents/run/route.ts",
+      "sha256": "a9320198db4ce8a5f272549309a94236f0502016eebd347b8d98b23039742a36",
+      "lineCount": 145,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 98,
+          "sha256": "96be33e2c9dfa456ab95430d7b5d684e27131f2fba72434254c05a4c2a3083be"
+        }
+      ]
+    },
+    {
+      "key": "local-evidence",
+      "path": "docs/recovery/2026-11-05/contact-recording-confirmation/README.md",
+      "sha256": "873b0b17866a71ad4e88986e981b02673cd4d9bf0fcab6c3930d07fbd81a2afe",
+      "lineCount": 7,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 7,
+          "sha256": "873b0b17866a71ad4e88986e981b02673cd4d9bf0fcab6c3930d07fbd81a2afe"
+        }
+      ]
+    }
+  ],
+  "limits": "finite contact client/handler and worker-entry source inventory only; no real requests, media, customer or retrieval qualification"
+}

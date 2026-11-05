@@ -1,0 +1,7 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "method": "actual source/guide/sidecar/index review only, no runtime or provider actions",
+  "verified": "finite controls, query, confirmed vs unconfirmed recording, internal-email vs inbox/ack, partial persistence and source-only qualification limits",
+  "customerEligible": false
+}

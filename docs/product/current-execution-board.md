@@ -334,3 +334,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Contact recording confirmation — local truthful outcome repair
 ~~Unconfirmed200responses no longer clear the message or claim durable acceptance~~ ([evidence](../recovery/2026-11-05/contact-recording-confirmation/README.md)): actualclientRED3/4controls→GREEN7withsynthetictransport; scopedtypes pass after preservedTS2688configurationfailure. Existingemailstatus/reference/entitlement distinctions remain. VitestforkEPERMteardownwarnings retained; laterprocessinventory foundnovitestworker, notfullquiescencequalification. Exactclientbaseline reconstruction/independentreview clear; server/persistence/email/worker unchanged. No realformsubmission/DB/provider/build/deploy/spend; currentpreviewolder0c9. All21parents/pendingdecisions remainopen.
+
+
+### Website contact documentation — internal finite source guide
+~~Contact fields/topic/send/success/outcome/recovery source flow documented~~ ([guide](knowledge/website-contact-controls.md),[evidence](../recovery/2026-11-05/contact-controls-source-guide/README.md)):13sourcekeys/ranges matchpinneddf9Gitbytes. Recording/internal-email-request/actualresolution distinguished; sourceobservednontransactional lead/jobpartialfailure and noidempotency remainopen. Initialrange-countauthoringfailure corrected/retained; no runtime/POST/email/DB/provider execution. Customer/editorial/media/retrieval/keyboard/browser qualification false; not fullB4/B5/allcontrolcoverage or completeGovernance.

@@ -37,6 +37,7 @@
 | Inspect the execution-limit prototype | [Limits preview](governance-execution-limits.md) | Internal DEV preview; not completed or enabled Governance. |
 | Open native Documentation and web guides | [Native Documentation controls](native-documentation-controls.md) | Journey buttons navigate; web links do not verify the installed version, remote content or operation outcomes. |
 | Bypass the website header with a keyboard | [Skip control source guide](../../recovery/2026-11-03/marketing-keyboard-bypass/internal-source-guide.md) | Local focus change only; actual browser and assistive-technology acceptance remain pending. |
+| Contact support from the website | [Contact controls](website-contact-controls.md) | Recording, internal-email status and actual resolution are separate; preserve unconfirmed submissions, never infer no effects from an error. |
 | Explore the scripted website tour | [Tour controls](website-scripted-tour-controls.md) | Sample context, playback and decisions change local presentation only; not authentic execution footage or approval. |
 | Understand the website workflow figure | [Workflow illustration](website-workflow-visual.md) | Conceptual illustration, not authentic execution footage. |
 

@@ -1,0 +1,9 @@
+{
+  "sourceRevision": "df9d58abeaf8ef56829571b30a6d6d8e6f6fcd76",
+  "sourceKeys": 13,
+  "allFilesMatchPinnedGitBytes": true,
+  "inclusiveRangesChecked": 13,
+  "runtimeExecuted": false,
+  "customerEligible": false,
+  "initialAuthoringFailure": "range end19 exceeded 18-line rate-limit file; corrected to actual18, shim11 and evidence7 before successful binding; no runtime operation"
+}
