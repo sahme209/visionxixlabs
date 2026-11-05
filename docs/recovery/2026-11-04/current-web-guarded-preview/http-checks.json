@@ -1,0 +1,157 @@
+{
+  "sourceRevision": "74b435675590b2385817950fb88f725436ecb1d8",
+  "rows": [
+    {
+      "path": "/product",
+      "status": 200,
+      "bytes": 84253
+    },
+    {
+      "path": "/integrations",
+      "status": 200,
+      "bytes": 77845
+    },
+    {
+      "path": "/demo",
+      "status": 200,
+      "bytes": 78891
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "bytes": 117265
+    },
+    {
+      "path": "/__axiom_preview",
+      "status": 200,
+      "bytes": 620
+    },
+    {
+      "asset": "/_next/static/chunks/1018-a830ec35d7e8e0f3.js",
+      "status": 200,
+      "sha256": "6e765375c887aa5dd40fe3c77a06305c210558acc48f3d8f785f1983088d07cc"
+    },
+    {
+      "asset": "/_next/static/chunks/37882-b9dc7f2fb9b2a293.js",
+      "status": 200,
+      "sha256": "b78a2a0ac5a9a13341e6ed4df15d672a3bb23f28bbf945c175df34c87c086946"
+    },
+    {
+      "asset": "/_next/static/chunks/38437-ab43c492a711661a.js",
+      "status": 200,
+      "sha256": "e98c9bf352b5dadec83a45b1d4a2581f6d1435091995e4c44bbaca1eb0f2832c"
+    },
+    {
+      "asset": "/_next/static/chunks/42191-b07d1292cdea35fa.js",
+      "status": 200,
+      "sha256": "6afe1d7ad8120a59f85961585909658b7028d36a07b47e0152e8b81ae191f56a"
+    },
+    {
+      "asset": "/_next/static/chunks/45155-434fcc427ea881f5.js",
+      "status": 200,
+      "sha256": "49456ef21b098919894141bcf111689a96836efc97ce637ff3687bf0e345e573"
+    },
+    {
+      "asset": "/_next/static/chunks/4bd1b696-9ce25231cbb0ecf2.js",
+      "status": 200,
+      "sha256": "07d3845ca7b65cf8c140e8d42130573f6e53327c18a2d9178bf3d4c27d46dad8"
+    },
+    {
+      "asset": "/_next/static/chunks/93197-59c54cbbe39d027f.js",
+      "status": 200,
+      "sha256": "261bbd4ef0f23517cfa5c1d15adf18532a1c10ac6a83630decad8dcfaa82c97b"
+    },
+    {
+      "asset": "/_next/static/chunks/93794-7c5eb5b4643d7857.js",
+      "status": 200,
+      "sha256": "57657be1240b28db88b6bec0e614c7fe900f6335a14d715f1b2950f676bac6d9"
+    },
+    {
+      "asset": "/_next/static/chunks/98500-202fb27570ee6051.js",
+      "status": 200,
+      "sha256": "89482c98536997f67c9a6fc6322391963effbdaf429888d0b1cc9d3472f34bc4"
+    },
+    {
+      "asset": "/_next/static/chunks/app/demo/page-7c1c6e740e1ca40c.js",
+      "status": 200,
+      "sha256": "17d742d7dd26edea1624843e1a85105757d5dda1efb91ddd7b289a0028f6c6a0"
+    },
+    {
+      "asset": "/_next/static/chunks/app/docs/layout-bfc75e88b287e55d.js",
+      "status": 200,
+      "sha256": "0dd5b121a4f6733a19ffc49dd6d3f49fdf2dcc1a29e52b78c4da2080d19201bb"
+    },
+    {
+      "asset": "/_next/static/chunks/app/docs/page-91d1d2742bf7d43d.js",
+      "status": 200,
+      "sha256": "517f4a68efcf39373f32b884cfcc44bd1ccd2d9f7a6c60528b54ad70ee3d1f6a"
+    },
+    {
+      "asset": "/_next/static/chunks/app/integrations/page-14c3441af8f71e3f.js",
+      "status": 200,
+      "sha256": "bf147605f640918b6ff734095ae4ec705aaa668b0bc7388e59b3f928db722781"
+    },
+    {
+      "asset": "/_next/static/chunks/app/layout-7c11c2eb475fa950.js",
+      "status": 200,
+      "sha256": "1cf4835dff4a8983a9596ec3730d21bf25cfcbb064b813589ef3ae35fd4490dd"
+    },
+    {
+      "asset": "/_next/static/chunks/app/product/page-a0de4a7a9536cd6f.js",
+      "status": 200,
+      "sha256": "7afa83f6d72870c209dbb3f4ebcda33aa1acce0458b68eec72331209916035f6"
+    },
+    {
+      "asset": "/_next/static/chunks/main-app-88f83644b88c13c7.js",
+      "status": 200,
+      "sha256": "c207893daf7bbe7bc4a67da57298a5e96ce700294b63343f143ef76ba18818da"
+    },
+    {
+      "asset": "/_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "status": 200,
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "asset": "/_next/static/chunks/webpack-69f14800859f0b85.js",
+      "status": 200,
+      "sha256": "e52ca52a44397d90c7f5d3341852bdcbda59fe566ed572736c34eb2fd00dd161"
+    },
+    {
+      "asset": "/_next/static/css/882965afda8961b6.css",
+      "status": 200,
+      "sha256": "5740ec34fa69e9e9c4a27e93869e4c37a74800fb9e89de2205c8e0931e9dac91"
+    },
+    {
+      "asset": "/_next/static/css/fd496917896bbbdc.css",
+      "status": 200,
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e"
+    },
+    {
+      "path": "/api/auth/session",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/account",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/auth/signin",
+      "method": "GET",
+      "status": 403
+    },
+    {
+      "path": "/product",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "path": "/docs?_rsc=private",
+      "method": "GET",
+      "status": 403
+    }
+  ],
+  "checks": 30,
+  "limits": "Local HTTP/asset/refusal evidence only; no browser, visual, AT, performance, provider, DB, AI or deployment acceptance."
+}

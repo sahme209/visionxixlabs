@@ -1,0 +1,8 @@
+{
+  "reviewer": "adapter_probe_review",
+  "finding": "clear/no important findings",
+  "method": "source and receipt review only; no tests/server calls/network/UI/edits",
+  "httpRows": 30,
+  "manifestHashesIndependentlyMatched": 20,
+  "scope": "local HTTP/assets/refusals only; browser/AT/visual/performance/provider/DB/Governance acceptance remains open"
+}

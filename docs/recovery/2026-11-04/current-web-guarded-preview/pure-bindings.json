@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-74b43567-5260/preparation.sb",
+    "/usr/bin/python3",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-74b43567-5260/test_preview_bindings.py"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "processReaped": true,
+  "seconds": 0.397,
+  "output": "test_actual_launcher_pins_assets_runtime_metadata_and_cache_without_exec (__main__.PreparedSourceBindings) ... ok\ntest_actual_new_build_manifest_and_source_identity (__main__.PreparedSourceBindings) ... ok\ntest_authority_headers_and_methods_still_cannot_reach_backend (__main__.PreparedSourceBindings) ... ok\ntest_fixed_ports_and_only_existing_exact_cache_permission (__main__.PreparedSourceBindings) ... ok\ntest_new_manifest_targets_do_not_open_private_or_unknown_paths (__main__.PreparedSourceBindings) ... ok\n\n----------------------------------------------------------------------\nRan 5 tests in 0.181s\n\nOK\n"
+}

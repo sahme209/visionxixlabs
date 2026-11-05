@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-74b43567-5260/preparation.sb",
+    "/usr/bin/python3",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-74b43567-5260/prepare-runtime.py"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "processReaped": true,
+  "seconds": 0.351,
+  "output": "{\"manifestSha256\": \"634e6f201bba0f3cc3469c5ee35bddaddf4c1bd308391566b7734e1ddc986a22\", \"publicAssets\": 45, \"root\": \"/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-74b43567-5260\", \"sourceRevision\": \"74b435675590b2385817950fb88f725436ecb1d8\", \"staticAssets\": 1150, \"status\": \"prepared-not-started\"}\n"
+}

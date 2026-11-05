@@ -1,0 +1,54 @@
+{
+  "status": "prepared-not-started",
+  "sourceRevision": "74b435675590b2385817950fb88f725436ecb1d8",
+  "ownedRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-74b43567-5260",
+  "ports": {
+    "proxy": 5260,
+    "backend": 5261
+  },
+  "listenerObservation": "No listeners returned by lsof before preparation; no bind attempted",
+  "artifacts": [
+    {
+      "path": "prepare-runtime.py",
+      "sha256": "352fc79b8aafca0b15e447c832a9790275f3f58f52ca7896fb6a88727a842d13",
+      "onlyReviewedLiteralSubstitutions": true
+    },
+    {
+      "path": "launch_preview.py",
+      "sha256": "85e9511509ee831a3e54c6a91c7ffed01909f63372dabade1f44da647d89983b",
+      "onlyReviewedLiteralSubstitutions": true
+    },
+    {
+      "path": "preview_proxy.py",
+      "sha256": "0ecb4016edabc021ccf9d7fa4e66b0d04714239d1da5030724f365092c103c38",
+      "onlyReviewedLiteralSubstitutions": true
+    },
+    {
+      "path": "backend.sb",
+      "sha256": "cd45c009c1a1d3d89f88ada16eaed476d643a16949cf9cd0516819db0470d002",
+      "onlyReviewedLiteralSubstitutions": true
+    },
+    {
+      "path": "proxy.sb",
+      "sha256": "bcdef02bd6f5410d3fb4af4401a6757d65b07ff972ad6615871e2a89a5cb6d4b",
+      "onlyReviewedLiteralSubstitutions": true
+    },
+    {
+      "path": "test_preview_bindings.py",
+      "sha256": "41b22b1fb5011dcbee734fed3716a35af7e6f5c3af71c9003de16b02b0222e58",
+      "onlyReviewedLiteralSubstitutions": true
+    }
+  ],
+  "assetManifestSha256": "634e6f201bba0f3cc3469c5ee35bddaddf4c1bd308391566b7734e1ddc986a22",
+  "publicAssets": 45,
+  "nextStaticAssets": 1150,
+  "pureBindingTests": 5,
+  "preparationExit": 0,
+  "pureTestsExit": 0,
+  "network": "kernel denied during preparer/tests",
+  "writes": "owned preview root only during preparer/tests; evidence copied separately",
+  "serversStarted": false,
+  "browserOrHttpChecks": false,
+  "boardMasterChanged": false,
+  "limits": "Fixed existing public allowlist unchanged. No provider/DB/AI/credentials/deploy/issuer/native action; import/preparer tests start no servers."
+}

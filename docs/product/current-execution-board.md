@@ -239,3 +239,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November 4 — exact current website quality build
 ~~Exact74source ordinary Next compile, production-web types and303static pages verified~~ ([evidence](../recovery/2026-11-04/current-web-quality-build/README.md)). 8928sourcefiles/outputmetadata verified; staticDocs23links/currentpage and hashed heading-search clientasset checked. Independent review passed. No preview/server/browser/deploy/CI/DB/provider operation; runtime/issuer/compatibility/completeclosure/descendant quiescence qualification remain unavailable. Current475native untouched; all21parents/Governance decision preserved.
+
+### Current74 guarded local website presentation
+~~Source-bound current website preview and HTTP assets/refusals verified~~ ([evidence](../recovery/2026-11-04/current-web-guarded-preview/README.md)): new [Product](http://127.0.0.1:5260/product)/[Docs](http://127.0.0.1:5260/docs), five pure binding checks plus30actual HTTP checks including20manifest asset hashes. Accounts/actions blocked, synthetic environment/kernel network bounds preserved. Actual browser/AT/responsive/performance acceptance remains open; no deployment or Governance qualification. Current475native session preserved.

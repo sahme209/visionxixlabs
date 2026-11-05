@@ -1,0 +1,13 @@
+{
+  "sixExactLiteralTransformationsAndOwnedCopies": true,
+  "servers": {
+    "backend": 99194,
+    "proxy": 69081
+  },
+  "httpChecks": 30,
+  "assetsHashMatched": 20,
+  "browserAcceptance": false,
+  "governanceQualification": false,
+  "productionDeployment": false,
+  "existingNativeSession": "preserved"
+}

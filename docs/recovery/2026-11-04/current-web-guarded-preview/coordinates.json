@@ -1,0 +1,12 @@
+{
+  "root": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-74b43567-5260",
+  "build": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-web-quality-build-74b43567-bc69yvow",
+  "sourceRevision": "74b435675590b2385817950fb88f725436ecb1d8",
+  "ports": [
+    5260,
+    5261
+  ],
+  "listenerCheck": "lsof returned no listeners; no bind attempted",
+  "preparedOnly": true,
+  "serversStarted": false
+}
