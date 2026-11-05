@@ -2,6 +2,10 @@
 
 Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
+## November5 owned storage-support observation — actual acknowledgments passed
+
+~~One separately approved non-root probe observed file and directory F_FULLFSYNC success and successful closes~~ ([actual evidence](../recovery/2026-11-05/governance-trusted-owner-local/directory-barrier-preparation/observation/README.md)). Target restored0600; fixed fixture/history preserved, no retry. This resolves syscall-form support on that fixture, not crash durability, privileged installation/custody/identity or full Governance. All21parents remain open.
+
 ## November5 connected trusted owner source — local preparation verified
 
 ~~Native owner entry, root-only journal adapter, private owner binding and broker/supplier integration are implemented and independently reviewed~~ ([bounded evidence](../recovery/2026-11-05/governance-trusted-owner-local/README.md)). Focused pure/fully stubbed tests and connected native links pass; initial deprecated-declaration/missing-Foundation failures preserved/qualified. Review fixes cover ACLs, initialized state, privilege/drop ordering, deadline freshness, sticky denial and unknown reaping. Owner/broker operational artifacts0600 never run; activation literal0. Actual root/storage/service/auth/consumer/custody/fleet/coverage/native Governance acceptance remains open; all21parents stay open. No deployment/provider/credential action.

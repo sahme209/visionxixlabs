@@ -1,0 +1,5 @@
+# Actual approved storage-support observation
+
+User explicitly approved the pending exact test. The one bound probe invocation exited0 in0.129seconds: F_FULLFSYNC on the owned file returned0; F_FULLFSYNC on its owned directory returned0; both close calls returned0. Raw159-byte stdout and zero-byte stderr retained. Binary bytes/inode unchanged and mode restored0600; actual ctime transitions are in result.json. Two fixed fixture files are retained with hashes/modes in fixture-bindings.json. No retry is authorized; existing attempt marker refuses another invocation.
+
+This establishes successful acknowledgments for these exact syscall forms on this fixture/device16777232. It does not test power failure, root path permissions, System-Keychain custody, installed service/account behavior, runtime identity, actual private consumer or Governance. No privileged/ACL/flags/account/service/Security/credential/network/provider/deployment/spending operation was performed. Earlier preparation bindings remain historical; post-run ctime must be used for any read-only inspection, never to revive this consumed test.

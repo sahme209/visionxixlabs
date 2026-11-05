@@ -1,0 +1,46 @@
+{
+  "before": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier/barrier-probe",
+    "sha256": "35953e017227f0b347d98dbe0c5cb584e13e625b9c78cd3b21841b62589f8308",
+    "size": 33904,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16714491,
+    "mtime_ns": 1793899425147950686,
+    "ctime_ns": 1793899425150058940
+  },
+  "argv": [
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier/barrier-probe"
+  ],
+  "state": "completed",
+  "active": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier/barrier-probe",
+    "sha256": "35953e017227f0b347d98dbe0c5cb584e13e625b9c78cd3b21841b62589f8308",
+    "size": 33904,
+    "uid": 501,
+    "mode": "0o700",
+    "dev": 16777232,
+    "ino": 16714491,
+    "mtime_ns": 1793899425147950686,
+    "ctime_ns": 1793899592984682025
+  },
+  "exit_code": 0,
+  "after": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier/barrier-probe",
+    "sha256": "35953e017227f0b347d98dbe0c5cb584e13e625b9c78cd3b21841b62589f8308",
+    "size": 33904,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16714491,
+    "mtime_ns": 1793899425147950686,
+    "ctime_ns": 1793899593113905472
+  },
+  "mode_restored": true,
+  "elapsed_seconds": 0.12938204199999997,
+  "stdout_bytes": 159,
+  "stderr_bytes": 0,
+  "runtime_or_durability_qualified": false,
+  "retry_authorized": false
+}

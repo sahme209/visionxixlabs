@@ -1,0 +1,16 @@
+{
+  "probe-attempt.v1": {
+    "size": 1,
+    "sha256": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16721223
+  },
+  "probe-data.v1": {
+    "size": 31,
+    "sha256": "5d76fe92eeb5bcabb3301ca484633889bbfea3062964d5e837c294a65bb59e01",
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16721224
+  }
+}
