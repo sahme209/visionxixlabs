@@ -242,3 +242,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Current74 guarded local website presentation
 ~~Source-bound current website preview and HTTP assets/refusals verified~~ ([evidence](../recovery/2026-11-04/current-web-guarded-preview/README.md)): new [Product](http://127.0.0.1:5260/product)/[Docs](http://127.0.0.1:5260/docs), five pure binding checks plus30actual HTTP checks including20manifest asset hashes. Accounts/actions blocked, synthetic environment/kernel network bounds preserved. Actual browser/AT/responsive/performance acceptance remains open; no deployment or Governance qualification. Current475native session preserved.
+
+### Terraform internal exception diagnostic privacy
+~~Five route diagnostics and apply audit exception payload no longer copy Error.message~~ ([evidence](../recovery/2026-11-04/terraform-internal-diagnostic-privacy/README.md)): actualmockedhandlersRED6disclosures/17controls→GREEN23; wholefile reconstruction and independent review pass. Fixed route codes preserve public responses/audit structure/correlation and authority guards. Shared logger fallback/output previews/fullsecurity/native/production acceptance remain open; current74web/current475native untouched.

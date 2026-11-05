@@ -49,8 +49,8 @@ export async function POST(req: NextRequest) {
       approval: "unavailable",
       executionEnabled: false,
     }, { status: 403 });
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "Plan failed";
+  } catch {
+    const msg = "terraform_plan_failed";
     console.error("[terraform/plan]", msg);
     return NextResponse.json({ error: "Terraform plan request could not be completed." }, { status: 500 });
   }

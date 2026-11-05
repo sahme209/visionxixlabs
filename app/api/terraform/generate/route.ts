@@ -59,8 +59,8 @@ export async function POST(req: NextRequest) {
       jobId: generated.jobId,
       files: Object.keys(generated.files),
     });
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "Generation failed";
+  } catch {
+    const msg = "terraform_generation_failed";
     console.error("[terraform/generate]", msg);
     return NextResponse.json({ error: "Terraform generation could not be completed." }, { status: 500 });
   }

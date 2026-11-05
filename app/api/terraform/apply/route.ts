@@ -83,8 +83,8 @@ export async function POST(req: NextRequest) {
       status: applyResult.success ? "succeeded" : "failed",
       correlationId,
     });
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "Apply failed";
+  } catch {
+    const msg = "terraform_apply_failed";
     console.error(`[${correlationId}] [terraform/apply]`, msg);
     await logAudit({
       leadId: result.leadId,

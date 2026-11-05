@@ -35,8 +35,8 @@ export async function GET(
 
     const status = await getJobStatus(id);
     return NextResponse.json({ success: true, job: status });
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "Failed to fetch job";
+  } catch {
+    const msg = "terraform_job_status_failed";
     console.error("[terraform/jobs]", msg);
     return NextResponse.json({ error: "Terraform job status could not be loaded." }, { status: 500 });
   }

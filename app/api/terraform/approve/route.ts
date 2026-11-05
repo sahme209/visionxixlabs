@@ -69,8 +69,8 @@ export async function POST(req: NextRequest) {
       approval: "unavailable",
       executionEnabled: false,
     }, { status: 403 });
-  } catch (e) {
-    const msg = e instanceof Error ? e.message : "Approval failed";
+  } catch {
+    const msg = "terraform_approval_failed";
     console.error("[terraform/approve]", msg);
     return NextResponse.json({ error: "Terraform approval request could not be completed." }, { status: 500 });
   }
