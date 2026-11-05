@@ -1,0 +1,14 @@
+{
+  "approval": "call_zm8q4jC1CkVDX5AGd44zYxUp",
+  "scope": "design only",
+  "files": {
+    "packages/verified-issuer-runtime/native/origin_broker.c": "21200e4f821d3fbeda2a48e196c6ef4c60c83aefa26cb6a9a5f44edc3fdf5489",
+    "packages/verified-issuer-runtime/native/synthetic_resource_contract.h": "ec5fd7e35fe6eddfca537729d132bb1dbdc72af0e6e586d70ab0bf79cd007b87",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/xpc/connection.h": "fee99c719a44ff57f5f3bd9e3e2d2b5518d093a476c0df9d4fbcc6a358750d51",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/unistd.h": "8d535079658f063bcef358ef4c1c1b52b8e88dacfc22cbf4db0f6bf8abe40637",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man2/setuid.2": "286ea23bd81caddfd4be5c958ded1b176a3456ed6ff9c3bb4467ca6b15dac424",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man2/setgroups.2": "3da13666d370712641d76b0c4aad5fac33ef24990940bd997d6f6e06bed03f7f"
+  },
+  "implemented": false,
+  "qualified": false
+}

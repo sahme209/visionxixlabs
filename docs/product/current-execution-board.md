@@ -2,6 +2,10 @@
 
 Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
+## November5 approved trusted launch-owner specification — source review complete
+
+~~Root/non-root actors, distinct persistent/live states, privileged-bootstrap topology, privilege-drop candidate and pre-resource/current-owner binding are specified~~ ([specification](../recovery/2026-11-05/governance-system-artifact-plan/TRUSTED-LAUNCH-OWNER-SPEC.md),[independent review](../recovery/2026-11-05/governance-system-artifact-plan/LAUNCH-OWNER-SPEC-REVIEW.md)). Review corrected an extra sender-identity requirement to preserve the original trusted-native SELF model; no stronger kernel guarantee is claimed. Actual auth/storage/privilege/cleanup qualification remains open. Design-only approval consumed in source specification; connected local implementation requires its separate review, no root/service/code action yet. All21parents remain open.
+
 ## November5 startup-consumption design audit — durability gap retained
 
 ~~Actual authentication→claim→package-binding→suspended-spawn source ordering reconciled~~ ([candidate/review disposition](../recovery/2026-11-05/governance-system-artifact-plan/APPEND-CONSUMPTION-CANDIDATE.md)). Same-UID writable-state shortcut remains rejected. Independent review identified that an uncertain write/power-loss outcome returning an empty record cannot prove no prior attempt; append-only metadata/pure tests cannot close that original requirement. Candidate is not implementation-ready; no flags/ACL/root/service/native operations or new positive activation branch. All21parents remain open.
