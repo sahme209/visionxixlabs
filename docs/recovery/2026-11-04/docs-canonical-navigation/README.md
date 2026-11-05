@@ -1,3 +1,7 @@
+## Current classification correction
+
+The earlier24-authored-guide claim below included /docs/architecture, an additional legacy redirect to /docs/releaseops. Actual authored content count is23. [Current correction and evidence](../docs-heading-search/README.md) preserve the old URL and remove only the duplicate navigation entry. Earlier counts/tests are historical; their authored-content classification is superseded.
+
 # Canonical guide navigation — local source
 
 Five existing authored guide routes were missing from navigation and its title filter: Source modes, Product surfaces, Execution plans, OAuth setup and Audit evidence. They now appear in relevant existing groups. All19prior destinations, handler/filter/current-page behavior and content/availability claims remain unchanged. Four legacy redirect aliases remain excluded instead of duplicated.

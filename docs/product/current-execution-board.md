@@ -211,3 +211,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November4 signed475 native handoff accepted — bounded
 ~~Exactnew475app launched after user saved/quit oldpreview; savedworkspaceaccess/Home restored~~ ([native evidence](../recovery/2026-11-04/desktop-connection-repairs-package/native-handoff-observation.json)). Runningpath/signeddiskhash match; screenshot emittedchatonly/no credentialprompt. SameMac startup only, not cleaninstall/providerhealth/nativefaultinjection/Governance/publicinstaller. Reviewer untouched; preserve current475session.
+
+### November4 public task-heading search — local only
+~~Authored summaries/headings searchable across23canonical public guides~~ ([evidence](../recovery/2026-11-04/docs-heading-search/README.md)):14rendered+3extractor/freshness checks/scopedtypes/finalreview pass. ASTliteralextraction only/no codeeval/privatecontent/AI/answers. Corrected prior24-authoredclassification: Architecture is fifthlegacyredirect, URLretained/duplicatenavremoved. Existing23contentroutes unique; sourcehashindex/manualcheck, noautomaticbuildhook/fullbody or browser/AT/publication acceptance. Current475native untouched. All21parents/Governance decision preserved.

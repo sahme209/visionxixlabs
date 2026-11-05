@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import headingIndex from "@/lib/docs/guide-heading-index.json";
 import { useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -35,7 +36,6 @@ export const DOC_SECTIONS: DocSection[] = [
       { href: "/docs", label: "Overview", icon: BookOpenIcon },
       { href: "/docs/quickstart-checklist", label: "Quickstart checklist", icon: RocketLaunchIcon },
       { href: "/docs/getting-started", label: "Getting started", icon: RocketLaunchIcon },
-      { href: "/docs/architecture", label: "Architecture overview", icon: MapIcon },
       { href: "/docs/source-modes", label: "Source modes", icon: BookOpenIcon },
       { href: "/docs/surfaces", label: "Product surfaces", icon: MapIcon },
     ],
@@ -95,12 +95,14 @@ export function DocsSidebar() {
   const [query, setQuery] = useState("");
   const field = useRef<HTMLInputElement>(null);
   const prefix = useId();
-  const normalizedQuery = query.trim().toLocaleLowerCase();
+  const terms = query.trim().toLowerCase().split(/\s+/u).filter(Boolean);
   const sections = DOC_SECTIONS.map(section => ({
     ...section,
-    items: section.items.filter(item => !normalizedQuery
-      || section.title.toLocaleLowerCase().includes(normalizedQuery)
-      || item.label.toLocaleLowerCase().includes(normalizedQuery)),
+    items: section.items.filter(item => {
+      const headings = headingIndex.guides.find(guide => guide.href === item.href)?.fields ?? [];
+      const text = [section.title, item.label, ...headings].join(" ").toLowerCase();
+      return terms.every(term => text.includes(term));
+    }),
   })).filter(section => section.items.length > 0);
   const resultCount = sections.reduce((count, section) => count + section.items.length, 0);
 
@@ -108,13 +110,13 @@ export function DocsSidebar() {
     <nav aria-label="Documentation navigation" className="space-y-6">
       <div className="space-y-2 px-3">
         <label htmlFor={`${prefix}-query`} className="block text-sm font-medium text-zinc-200">Find a guide</label>
-        <p id={`${prefix}-scope`} className="text-xs leading-5 text-zinc-400">Filters guide titles and section names in this navigation. It does not search article text or provide answers.</p>
+        <p id={`${prefix}-scope`} className="text-xs leading-5 text-zinc-400">Filters guide titles, section names, summaries and headings. It does not search full article text or provide answers.</p>
         <input ref={field} id={`${prefix}-query`} type="search" value={query}
           aria-describedby={`${prefix}-scope`} aria-controls={`${prefix}-results`}
-          onChange={event => setQuery(event.target.value)} placeholder="Guide title or section"
+          onChange={event => setQuery(event.target.value)} placeholder="Task, heading or guide title"
           className="min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300" />
         {query && <button type="button" onClick={() => { setQuery(""); field.current?.focus(); }} className="min-h-11 rounded-lg px-2 text-xs text-zinc-300 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">Clear guide filter</button>}
-        <p role="status" aria-live="polite" aria-atomic="true" className="text-xs leading-5 text-zinc-400">{resultCount ? `${resultCount} ${resultCount === 1 ? "guide" : "guides"} shown` : "No guide titles or sections match."}</p>
+        <p role="status" aria-live="polite" aria-atomic="true" className="text-xs leading-5 text-zinc-400">{resultCount ? `${resultCount} ${resultCount === 1 ? "guide" : "guides"} shown` : "No guides match."}</p>
       </div>
       <div id={`${prefix}-results`} className="space-y-6">
       {sections.map((section) => (

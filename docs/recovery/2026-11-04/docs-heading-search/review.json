@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear, no important findings",
+  "scope": "public AST extraction/23source records/local search/tests/alias correction",
+  "execution": "read-only no reruns/network/UI"
+}

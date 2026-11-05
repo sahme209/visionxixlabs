@@ -1,0 +1,7 @@
+{
+  "scripts/generate-docs-heading-index.cjs": "9d481bdd8a7aef0b4970ce99ae97c10dec18c60e37897d0ef906eae7a1b483c3",
+  "scripts/tests/test_docs_heading_index.cjs": "9300802445fce28e10f2e7675137bf9dc4251864a6d4bf7b4d4304a2098cafa7",
+  "lib/docs/guide-heading-index.json": "d2e232775d3c28b1fb64fc9eb4a7e8c7b2b73a6a6650499506eb612d9d25369f",
+  "components/docs/DocsSidebar.tsx": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+  "app/docs/__tests__/guide-navigation-search.test.ts": "cec5224a6cfe007efc783371961b27562149dbdc5e73c44308d381ab7a41e4bd"
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)(deny file-write*)",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--test",
+    "scripts/tests/test_docs_heading_index.cjs"
+  ],
+  "exitCode": 0,
+  "stdout": "\u2714 only literal public heading attributes in the default return are extracted (3.286708ms)\n\u2714 malformed, non-fixed return and oversized source refuse (0.70725ms)\n\u2714 all fixed public navigation records and source hashes match checked-in index (14.053625ms)\n\u2139 tests 3\n\u2139 suites 0\n\u2139 pass 3\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 111.465708\n",
+  "stderr": ""
+}

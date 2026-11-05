@@ -1,0 +1,10 @@
+{
+  "guides": 23,
+  "indexedLiteralFields": 164,
+  "indexBytes": 14251,
+  "sourceBound": true,
+  "checkCommand": "node scripts/generate-docs-heading-index.cjs --check",
+  "generationCommand": "node scripts/generate-docs-heading-index.cjs",
+  "publicScope": "fixed public navigation summaries/headings only",
+  "automaticBuildHookAdded": false
+}

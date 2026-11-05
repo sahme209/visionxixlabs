@@ -1,0 +1,4 @@
+{
+  "format": "lossless-text-log",
+  "text": "\n RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion\n\n \u2713 app/docs/__tests__/guide-navigation-search.test.ts (14 tests) 167ms\n\n Test Files  1 passed (1)\n      Tests  14 passed (14)\n   Start at  01:47:50\n   Duration  558ms (transform 28ms, setup 0ms, import 97ms, tests 167ms, environment 178ms)\n\n"
+}

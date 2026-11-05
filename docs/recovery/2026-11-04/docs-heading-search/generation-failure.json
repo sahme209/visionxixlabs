@@ -1,0 +1,8 @@
+{
+  "error": "fixed public return required",
+  "source": "app/docs/architecture/page.tsx",
+  "actualCause": "existing navigation entry is a fifth legacy redirect to /docs/releaseops, not authored content",
+  "firstGreenAttempt": "module import failure, zero tests; no pass claimed",
+  "correction": "old URL retained, redundant navigation entry removed; canonical ReleaseOps link retained",
+  "earlierCountCorrection": "23 authored pages; prior24 count included this redirect"
+}

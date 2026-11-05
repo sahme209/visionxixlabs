@@ -1,0 +1,13 @@
+# Public guide heading and summary search — local only
+
+The existing public navigation now matches every whitespace-separated query word, case-insensitively, against guide titles, section names and literal authored summaries/headings. It returns ordinary guide links; selected-route styling, clear-to-field focus and mobile Escape/route closure are retained. It adds no AI answer, endpoint, analytics, storage persistence or private support-catalog lookup. Existing NextLink navigation is unchanged; no real-browser/network acceptance is claimed.
+
+Existing TypeScript AST parsing was reused without a dependency install. The generator reads fixed public DOC_SECTIONS routes and extracts only literal DocHeader title/summary and DocSection/Callout title attributes from the default function's single return. It evaluates no page code/imports, ignores ordinary body prose/comments/other functions/unreturned JSX/arbitrary expressions, bounds input/fields, and binds source hashes. Generate with `node scripts/generate-docs-heading-index.cjs`; check with `--check`. No automatic build hook was added. The pure source-freshness test compares current generated records to the committed index; future source changes require deliberate regeneration and review.
+
+Initial rendered3heading failures/10passes reproduced the gap. Generation then refused Architecture's redirect; first-green suite had zero tests because the index was absent. After fixing the route list, broader-search expectations required correction (legitimate multi-guide matches and explicit wording). Those failures remain preserved. Final14rendered checks,3extractor/freshness checks, scoped test/transitive-component types and independent read-only review pass. No fullbuild/browser/AT/performance/publication or B4/B5/Governance completion.
+
+## Correction to previous route classification
+
+Architecture overview is a fifth legacy redirect to ReleaseOps. Earlier documentation called24listed destinations authored guides; that classification was wrong:23authored pages plus this alias were listed. The alias URL remains unchanged and works as before, while its duplicate navigation entry is removed in favor of existing canonical ReleaseOps. Five explicit redirect aliases are now excluded by the independent page inventory. All23authored guides are uniquely linked. Previous test runs/counts remain historical; their broader authored-content claim is superseded here.
+
+Current475signed desktop app and existing website previews are untouched; this website source is unshipped. Full body/error/version/availability search, real browser accessibility, approved support retrieval and genuine enterprise/governance acceptance remain open.
