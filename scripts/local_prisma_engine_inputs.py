@@ -192,35 +192,43 @@ def _generation_profile(stage,tmp,logs,protected,read_protected=()):
  for directory in read_protected:rules.append('(deny file-read* (subpath '+_sandbox_string(directory)+'))')
  return ''.join(rules)
 def _run_generation_child(command,stage,environment,log,timeout,file_size_limit=128*1024*1024,creation_mask=None):
- # Bounds the original process group only; detached groups may survive.
+ # Group signals are permitted only while the exact direct child is unreaped.
+ # After reaping, numeric group IDs are not ownership proofs; never probe them.
  # No complete descendant/quiescence or untrusted-code containment claim.
  import signal,time,resource
+ if signal.getsignal(signal.SIGCHLD)!=signal.SIG_DFL:fail('generation_exclusive_child_reaper_required')
  def limits():
   resource.setrlimit(resource.RLIMIT_FSIZE,(file_size_limit,file_size_limit))
   if creation_mask is not None:os.umask(creation_mask)
  process=subprocess.Popen(command,cwd=stage,env=environment,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,preexec_fn=limits)
- reason=None;deadline=time.monotonic()+timeout
+ reason=None;deadline=time.monotonic()+timeout;kill_attempted=False
+ def kill_owned_once():
+  nonlocal kill_attempted
+  if process.returncode is not None or kill_attempted:return
+  kill_attempted=True
+  try:os.killpg(process.pid,signal.SIGKILL)
+  except ProcessLookupError:pass
  try:
   while process.poll()is None:
    if time.monotonic()>=deadline:reason='generation_parent_wall_timeout';break
    if os.fstat(log.fileno()).st_size>64*1024*1024:reason='generation_output_limit';break
    time.sleep(min(0.025,max(0,deadline-time.monotonic())))
   if reason:
-   try:os.killpg(process.pid,signal.SIGKILL)
-   except ProcessLookupError:pass
-   process.wait()
+   kill_owned_once()
+   try:process.wait(timeout=5)
+   except subprocess.TimeoutExpired:return process.returncode,'generation_original_child_cleanup_unknown'
   else:
-   process.wait()
-   try:os.killpg(process.pid,0)
-   except ProcessLookupError:pass
-   else:
-    os.killpg(process.pid,signal.SIGKILL);reason='original_process_group_members_remained'
+   process.wait(timeout=5)
+   # Normal exit is only a compiler-exit observation. Original-group survival
+   # and descendant quiescence remain unavailable after this child is reaped.
   if os.fstat(log.fileno()).st_size>64*1024*1024:reason='generation_output_limit'
   return process.returncode,reason
  except BaseException:
-  try:os.killpg(process.pid,signal.SIGKILL)
-  except ProcessLookupError:pass
-  process.wait();raise
+  if process.returncode is None:
+   kill_owned_once()
+   try:process.wait(timeout=5)
+   except subprocess.TimeoutExpired:raise RuntimeError('generation_original_child_cleanup_unknown')from None
+  raise
 
 def _schema_bytes(path):
  path=Path(path);before=path.lstat();fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
@@ -280,7 +288,7 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
    handles[name]=os.fdopen(fd,'wb')
   tmp=owned_run/'tmp';tmp.mkdir(mode=0o700)
   attempt={'format':'axiom.local-generation-attempt/1','sourceRevision':revision,'node':node_identity,'preparation':plan,
-           'status':'reserved_before_launch','processBounds':'original_process_group_only','descendantQuiescence':'unavailable','upstreamAuthenticity':'unavailable','executingIssuerIdentity':'unavailable','executionAuthorized':False}
+           'status':'reserved_before_launch','processBounds':'original_process_group_only','postReapGroupStatus':'unqualified_not_signalled','descendantQuiescence':'unavailable','upstreamAuthenticity':'unavailable','executingIssuerIdentity':'unavailable','executionAuthorized':False}
   handles['attempt.json'].write((json.dumps(attempt,sort_keys=True)+'\n').encode());handles['attempt.json'].flush();os.fsync(handles['attempt.json'].fileno())
   environment={'PATH':str(node.parent)+':/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','TZ':'UTC','TMPDIR':str(tmp),'XDG_CACHE_HOME':str(tmp),
                'CHECKPOINT_DISABLE':'1','PRISMA_HIDE_UPDATE_MESSAGE':'1','PRISMA_GENERATE_SKIP_AUTOINSTALL':'true','NEXT_TELEMETRY_DISABLED':'1',
@@ -288,7 +296,7 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
   profile=_generation_profile(stage,tmp,[owned_run/name for name in ['generation.log','node-version.log','format-archive.log','format-emitted.log']],protected)
   prefix=['/usr/bin/sandbox-exec','-p',profile,str(node)]
   result={'format':'axiom.local-generation-result/1','status':'unavailable','archiveFormatStarted':False,'emittedFormatStarted':False,'generationStarted':False,'generatedOutputsVerified':False,'generationCompatibilityVerified':False,
-          'processBounds':'original_process_group_only','descendantQuiescence':'unavailable','runtimeQualification':'unavailable',
+          'processBounds':'original_process_group_only','postReapGroupStatus':'unqualified_not_signalled','descendantQuiescence':'unavailable','runtimeQualification':'unavailable',
           'upstreamAuthenticity':'unavailable','engineCommitAuthenticity':'unavailable','runtimeClosure':'unavailable',
           'executingIssuerIdentity':'unavailable','activationQualification':'unavailable','executionAuthorized':False,'buildStarted':False}
   def remaining(cap=None):

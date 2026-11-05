@@ -509,7 +509,7 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
  try:
   for name in names[:-1]:handles[name]=os.fdopen(os.open(owned/name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600),'wb')
   tmp=owned/'tmp';tmp.mkdir(mode=0o700)
-  attempt={'format':'axiom.local-next-build-attempt/1','status':'reserved_before_launch','inputs':inputs,'node':node_identity,'processBounds':'original_process_group_only','descendantQuiescence':'unavailable','executionAuthorized':False}
+  attempt={'format':'axiom.local-next-build-attempt/1','status':'reserved_before_launch','inputs':inputs,'node':node_identity,'processBounds':'original_process_group_only','postReapGroupStatus':'unqualified_not_signalled','descendantQuiescence':'unavailable','executionAuthorized':False}
   handles['attempt.json'].write((json.dumps(attempt,sort_keys=True)+'\n').encode());handles['attempt.json'].flush();os.fsync(handles['attempt.json'].fileno())
   env={'PATH':str(node.parent)+':/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','TZ':'UTC','TMPDIR':str(tmp),'XDG_CACHE_HOME':str(tmp),'NEXT_TELEMETRY_DISABLED':'1','NODE_ENV':'production',
        'DATABASE_URL':'postgresql://local_build:local_build@127.0.0.1:1/local_build','AUTH_SECRET':'isolated-local-build-not-a-live-credential-20261102','NEXTAUTH_SECRET':'isolated-local-build-not-a-live-credential-20261102',
@@ -517,7 +517,7 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
   profile=tool._generation_profile(stage,tmp,[owned/name for name in ['node-version.log','contract.log','next-build.log','private-bootstrap-emission.log']],protected,read_protected=[repo,cache,Path.home()/'.cache/prisma'])
   prefix=['/usr/bin/sandbox-exec','-p',profile,str(node)]
   result={'format':'axiom.local-next-build-result/1','status':'unavailable','contractCheckStarted':False,'buildStarted':False,'buildOutputsVerified':False,'buildCompatibilityVerified':False,
-          'processBounds':'original_process_group_only','descendantQuiescence':'unavailable','runtimeQualification':'unavailable','completeExecutableClosure':'unavailable','executingIssuerIdentity':'unavailable','activationQualification':'unavailable','executionAuthorized':False}
+          'processBounds':'original_process_group_only','postReapGroupStatus':'unqualified_not_signalled','descendantQuiescence':'unavailable','runtimeQualification':'unavailable','completeExecutableClosure':'unavailable','executingIssuerIdentity':'unavailable','activationQualification':'unavailable','executionAuthorized':False}
   def remaining(cap=None):
    left=deadline-time.monotonic()
    if left<=0:fail('build_parent_wall_timeout')

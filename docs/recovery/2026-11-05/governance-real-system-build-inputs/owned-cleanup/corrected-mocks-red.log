@@ -1,0 +1,41 @@
+FFF.
+======================================================================
+FAIL: test_error_after_reap_never_signals_numeric_group (__main__.OwnedCleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/tests/test_local_generation_owned_cleanup.py", line 31, in test_error_after_reap_never_signals_numeric_group
+    kill.assert_not_called()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 868, in assert_not_called
+    raise AssertionError(msg)
+AssertionError: Expected 'killpg' to not have been called. Called 3 times.
+Calls: [call(424242, 0),
+ call(424242, <Signals.SIGKILL: 9>),
+ call(424242, <Signals.SIGKILL: 9>)].
+
+======================================================================
+FAIL: test_nondefault_reaping_refuses_before_spawn (__main__.OwnedCleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/tests/test_local_generation_owned_cleanup.py", line 37, in test_nondefault_reaping_refuses_before_spawn
+    with self.assertRaises(RuntimeError):e._run_generation_child(['inert'],Path('/private/tmp'),{},self.file,1)
+AssertionError: RuntimeError not raised
+
+======================================================================
+FAIL: test_reaped_success_never_probes_or_signals_numeric_group (__main__.OwnedCleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/tests/test_local_generation_owned_cleanup.py", line 26, in test_reaped_success_never_probes_or_signals_numeric_group
+    self.assertEqual(result,(0,None));self.assertEqual(calls,[])
+AssertionError: Tuples differ: (0, 'original_process_group_members_remained') != (0, None)
+
+First differing element 1:
+'original_process_group_members_remained'
+None
+
+- (0, 'original_process_group_members_remained')
++ (0, None)
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.004s
+
+FAILED (failures=3)
