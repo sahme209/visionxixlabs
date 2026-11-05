@@ -1,0 +1,45 @@
+{
+  "state": "prepared-not-authorized",
+  "input_receipt_sha256": "ca01fc575799087a20b673b6100166097b2027b4eed05072e79c2a2fd2ae53ab",
+  "target": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy",
+  "entitlements": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/minimal-jit.entitlements.plist",
+  "historical_identity_sha1": "4C2E59F247CA275001586AE020A9269464529452",
+  "commands": [
+    [
+      "/usr/bin/codesign",
+      "--force",
+      "--sign",
+      "4C2E59F247CA275001586AE020A9269464529452",
+      "--identifier",
+      "com.visionxixlabs.axiom.synthetic-node",
+      "--options",
+      "runtime",
+      "--entitlements",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/minimal-jit.entitlements.plist",
+      "--timestamp=none",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy"
+    ],
+    [
+      "/usr/bin/codesign",
+      "--verify",
+      "--strict",
+      "--verbose=2",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy"
+    ],
+    [
+      "/usr/bin/codesign",
+      "--display",
+      "--verbose=4",
+      "--entitlements",
+      ":-",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy"
+    ]
+  ],
+  "per_command_seconds": 10,
+  "per_command_combined_output_bytes": 65536,
+  "retry": false,
+  "node_execution": false,
+  "mode_change": false,
+  "network_timestamp": false,
+  "new_key_grant": false
+}
