@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/agent-precommit-b5m457tk/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "-p",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/agent-precommit-b5m457tk/docs-navigation-types.json"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "processReaped": true,
+  "output": "",
+  "scope": "one changed public docs test and transitive components; no root/fullbuild claim"
+}

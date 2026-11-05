@@ -1,0 +1,14 @@
+{
+  "onlyCompilerOptionsAdded": {
+    "typeRoots": [
+      "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@types"
+    ],
+    "types": [
+      "node"
+    ]
+  },
+  "newDependencies": 0,
+  "sourceChanged": false,
+  "priorTimeoutCause": "not established",
+  "currentQualification": "scoped TypeScript exit0"
+}

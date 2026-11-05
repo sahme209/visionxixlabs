@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/agent-precommit-b5m457tk/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "-p",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/agent-precommit-b5m457tk/docs-navigation-types.json",
+    "--traceResolution"
+  ],
+  "exitCode": 2,
+  "timedOut": false,
+  "seconds": 6.44,
+  "processReaped": true,
+  "traceBytes": 1579642,
+  "tail": "Directory '/Users/samirahmed/node_modules' does not exist, skipping all lookups in it.\nDirectory '/Users/node_modules' does not exist, skipping all lookups in it.\nDirectory '/node_modules' does not exist, skipping all lookups in it.\n======== Module name '@typescript/lib-esnext/sharedmemory' was not resolved. ========\nFile '/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/lib/package.json' does not exist according to earlier cached lookups.\nFile '/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/package.json' exists according to earlier cached lookups.\napp/docs/__tests__/guide-navigation-search.test.ts(7,16): error TS2307: Cannot find module 'node:fs' or its corresponding type declarations.\napp/docs/__tests__/guide-navigation-search.test.ts(8,18): error TS2307: Cannot find module 'node:path' or its corresponding type declarations.\napp/docs/__tests__/guide-navigation-search.test.ts(67,30): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.\napp/docs/__tests__/guide-navigation-search.test.ts(68,64): error TS7006: Parameter 'file' implicitly has an 'any' type.\napp/docs/__tests__/guide-navigation-search.test.ts(69,27): error TS7006: Parameter 'file' implicitly has an 'any' type.\napp/docs/__tests__/guide-navigation-search.test.ts(69,93): error TS7006: Parameter 'route' implicitly has an 'any' type.",
+  "rawOwnedLog": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/agent-precommit-b5m457tk/docs-types-trace.log"
+}

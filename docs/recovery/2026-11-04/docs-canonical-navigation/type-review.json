@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear",
+  "scope": "external scoped config existing Node declarations; preserved timeout/errors; bounded success",
+  "execution": "read-only no reruns"
+}

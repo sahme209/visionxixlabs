@@ -199,3 +199,6 @@ Existing native Documentation page inspected through AX and screenshot without i
 
 ### November4 canonical public guide navigation — partial verification
 Five omitted authored guides added; actual rendered page-inventory/titlelookup RED6fail4pass→GREEN10, independent source review clear. [Evidence](../recovery/2026-11-04/docs-canonical-navigation/README.md). All24authored routes uniquely linked, four redirect aliases excluded, existing19destinations unchanged. Scopedtypes TIMEDOUT45s/no retry/notpassed; build/browser/currentpreview and richer search remain open. This local source is not production/customer documentation acceptance. All21parents preserved.
+
+### November4 canonical navigation scoped types qualified
+~~Changed docs test/transitive components scopedtypes now pass~~ after bounded trace exposed missing Node types in external config. [Correction](../recovery/2026-11-04/docs-canonical-navigation/tsconfig.corrected.json) explicitly references existing installed declarations; no install/source/runtime change. Original45s timeout and failed trace retained; timing cause not inferred. Current10rendered checks were not repeated. Browser/build/AT/production and richer search remain open.

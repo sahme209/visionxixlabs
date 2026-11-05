@@ -5,3 +5,7 @@ Five existing authored guide routes were missing from navigation and its title f
 Independent filesystem coverage plus five real rendered lookup cases failed6/passed4 before the change; all10now pass. Coverage compares all24authored page paths against unique rendered links; the four excluded aliases are checked as redirect source. Existing count expectations changed19→24. Independent read-only review clear.
 
 Scoped TypeScript exceeded45seconds, was terminated by Python subprocess.run and its shell handle is terminal. No pass or cause inferred, no retry. This type gate remains open. No production build/browser/AT/responsive/current preview publication claim. No article body/error/version/availability search, editorial/customer support approval, provider/AI/DB/credential/deploy operation. Existing native983 and web preview unchanged.
+
+## Subsequent scoped-type qualification
+
+A separately bounded10second trace completed with type errors: the external scoped config did not discover Node declarations for node:fs/node:path/process in the new test. This establishes a configuration error; the cause of the earlier45second timing remains unproven. Existing installed Node type files were observed, without installation. The corrected scoped config explicitly sets the repository's existing @types root and node type library; one run passed exit0. Runtime/test/component bytes stayed unchanged, no broader suite/build claim. Original timeout and failed diagnostic remain preserved.
