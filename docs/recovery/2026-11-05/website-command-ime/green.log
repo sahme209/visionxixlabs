@@ -1,0 +1,10 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ components/__tests__/CommandPalette.ime.test.ts (13 tests) 126ms
+
+ Test Files  1 passed (1)
+      Tests  13 passed (13)
+   Start at  05:21:43
+   Duration  454ms (transform 20ms, setup 0ms, import 85ms, tests 126ms, environment 195ms)
+

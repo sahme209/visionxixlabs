@@ -1,0 +1,7 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important findings",
+  "method": "actual two-line diff/test/evidence review; no rerun or UI actions",
+  "scope": "composition keys left to input method at global and input handlers; ordinary shortcuts and account hiding retained",
+  "limits": "jsdom/synthetic router, not actual browser/OSIME/native/AT or Governance qualification"
+}

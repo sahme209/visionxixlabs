@@ -115,6 +115,7 @@ export function CommandPalette() {
   // Global ⌘K / Ctrl+K listener
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (e.isComposing || e.keyCode === 229) return;
       const isMac = navigator.platform.toLowerCase().includes("mac");
       const cmdKey = isMac ? e.metaKey : e.ctrlKey;
       if (cmdKey && e.key.toLowerCase() === "k") {
@@ -183,6 +184,7 @@ export function CommandPalette() {
 
   // ↑↓ Enter handling on the input
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.nativeEvent.isComposing || e.nativeEvent.keyCode === 229) return;
     if (e.key === "ArrowDown") {
       e.preventDefault();
       setActiveIdx((i) => Math.min(results.length - 1, i + 1));

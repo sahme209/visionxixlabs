@@ -1,0 +1,1521 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ components/__tests__/CommandPalette.ime.test.ts (13 tests | 10 failed) 128ms
+   × preserves native composition Enter for the input method 49ms
+   × preserves native composition Escape for the input method 8ms
+   × preserves native composition ArrowDown for the input method 12ms
+   × preserves native composition ArrowUp for the input method 7ms
+   × does not toggle the palette for native composition shortcut 9ms
+   × preserves legacy IME229 Enter for the input method 6ms
+   × preserves legacy IME229 Escape for the input method 5ms
+   × preserves legacy IME229 ArrowDown for the input method 6ms
+   × preserves legacy IME229 ArrowUp for the input method 6ms
+   × does not toggle the palette for legacy IME229 shortcut 7ms
+   ✓ keeps ordinary arrow and Enter navigation to the current Product destination 7ms
+   ✓ keeps ordinary Escape dismissal 4ms
+   ✓ does not expose the palette on an account route 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > preserves native composition Enter for the input method
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > preserves native composition Escape for the input method
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > preserves legacy IME229 Enter for the input method
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > preserves legacy IME229 Escape for the input method
+AssertionError: expected null not to be null
+ ❯ components/__tests__/CommandPalette.ime.test.ts:20:69
+     18|   const event=new KeyboardEvent('keydown',{key,...variant,bubbles:true…
+     19|   fireEvent(input,event);
+     20|   expect(screen.queryByRole('dialog',{name:'Command palette'})).not.to…
+       |                                                                     ^
+     21|   expect(input.value).toBe('Axiom capabilities');
+     22|   expect(document.activeElement).toBe(input);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > preserves native composition ArrowDown for the input method
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > preserves native composition ArrowUp for the input method
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > preserves legacy IME229 ArrowDown for the input method
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > preserves legacy IME229 ArrowUp for the input method
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ components/__tests__/CommandPalette.ime.test.ts:23:34
+     21|   expect(input.value).toBe('Axiom capabilities');
+     22|   expect(document.activeElement).toBe(input);
+     23|   expect(event.defaultPrevented).toBe(false);
+       |                                  ^
+     24|   expect(state.push).not.toHaveBeenCalled();
+     25|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > does not toggle the palette for native composition shortcut
+ FAIL  components/__tests__/CommandPalette.ime.test.ts > does not toggle the palette for legacy IME229 shortcut
+AssertionError: expected <div role="dialog" …(3)>…(2)</div> to be null
+
+- Expected:
+null
+
++ Received:
+<div
+  aria-label="Command palette"
+  aria-modal="true"
+  class="fixed inset-0 z-[200] flex items-start justify-center pt-[12vh] px-4"
+  role="dialog"
+>
+  <button
+    aria-label="Close command palette"
+    class="absolute inset-0 bg-black/55 backdrop-blur-sm"
+    type="button"
+  />
+  <div
+    class="surface-frost relative w-full max-w-xl rounded-2xl overflow-hidden shadow-[0_40px_100px_-30px_rgba(0,0,0,0.6)]"
+  >
+    <div
+      class="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06]"
+    >
+      <svg
+        aria-hidden="true"
+        class="h-4 w-4 text-brand-coral/85"
+        data-slot="icon"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.5"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <input
+        autocomplete="off"
+        class="flex-1 bg-transparent text-[14.5px] text-white placeholder:text-zinc-500 outline-none border-0 focus:ring-0"
+        placeholder="Search the site… type, then ↵"
+        spellcheck="false"
+        type="text"
+        value=""
+      />
+      <span
+        class="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 border border-white/[0.10] rounded px-1.5 py-0.5 tabular-nums"
+      >
+        26
+         / 
+        26
+      </span>
+      <kbd
+        class="text-[10px] font-mono text-zinc-500 border border-white/[0.10] rounded px-1.5 py-0.5"
+      >
+        ESC
+      </kbd>
+    </div>
+    <div
+      class="max-h-[55vh] overflow-y-auto py-2"
+    >
+      <div
+        class="mb-2"
+      >
+        <p
+          class="mono-label px-4 py-1.5 text-[9.5px] text-zinc-500"
+        >
+          Product
+        </p>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors bg-brand-coral/[0.08] text-white"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-brand-coral"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-white"
+            >
+              Home
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              The landing page
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-brand-coral"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Axiom capabilities
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Verified product capability inventory
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Axiom workflow
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Deployment intake through audit history
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Try the sandbox
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Fictional sample data; no production execution
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Download Axiom Agent
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Install the application
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Access and pricing
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Contact-based production access
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m6.75 7.5 3 2.25-3 2.25m4.5 0h3m-9 8.25h13.5A2.25 2.25 0 0 0 21 18V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v12a2.25 2.25 0 0 0 2.25 2.25Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Integrations
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Every connector we ship
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M2.25 15a4.5 4.5 0 0 0 4.5 4.5H18a3.75 3.75 0 0 0 1.332-7.257 3 3 0 0 0-3.758-3.848 5.25 5.25 0 0 0-10.233 2.33A4.502 4.502 0 0 0 2.25 15Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Product download
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Axiom Agent is delivered as an installed application
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="mb-2"
+      >
+        <p
+          class="mono-label px-4 py-1.5 text-[9.5px] text-zinc-500"
+        >
+          Resources
+        </p>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Documentation
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Self-serve guides for the platform
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Blog
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Product notes + deep dives
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Changelog
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Phase-by-phase shipping log
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Insights
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Field notes from production
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Case studies
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Representative engagements
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Design system
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Tokens, materials, primitives
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="mb-2"
+      >
+        <p
+          class="mono-label px-4 py-1.5 text-[9.5px] text-zinc-500"
+        >
+          Company
+        </p>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Manifesto
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Seven things we believe
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Design principles
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              How we make visual decisions
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Engineering handbook
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              How we build it
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456ZM16.894 20.567 16.5 21.75l-.394-1.183a2.25 2.25 0 0 0-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 0 0 1.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 0 0 1.423 1.423l1.183.394-1.183.394a2.25 2.25 0 0 0-1.423 1.423Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Team
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              How a small team ships carefully
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Trust
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Safety contract
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Security
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Trust center
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Press & Media
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              Contact
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              One operator, one form
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              System status
+            </p>
+            <p
+              class="text-[11.5px] text-zinc-500 truncate"
+            >
+              Live uptime
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+      <div
+        class="mb-2"
+      >
+        <p
+          class="mono-label px-4 py-1.5 text-[9.5px] text-zinc-500"
+        >
+          External
+        </p>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              LinkedIn
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              GitHub · Axiom repo
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+        <button
+          class="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors text-zinc-300 hover:bg-white/[0.03]"
+          type="button"
+        >
+          <svg
+            aria-hidden="true"
+            class="h-4 w-4 shrink-0 text-zinc-400"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <div
+            class="flex-1 min-w-0"
+          >
+            <p
+              class="text-[13.5px] font-medium truncate text-zinc-100"
+            >
+              X (Twitter)
+            </p>
+          </div>
+          <svg
+            aria-hidden="true"
+            class="h-3.5 w-3.5 shrink-0 text-zinc-600"
+            data-slot="icon"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="m4.5 19.5 15-15m0 0H8.25m11.25 0v11.25"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div
+      class="flex items-center justify-between gap-3 px-4 py-2 border-t border-white/[0.06] text-[10px] font-mono text-zinc-500"
+    >
+      <div
+        class="flex items-center gap-2"
+      >
+        <kbd
+          class="border border-white/[0.10] rounded px-1.5 py-0.5"
+        >
+          ↑
+        </kbd>
+        <kbd
+          class="border border-white/[0.10] rounded px-1.5 py-0.5"
+        >
+          ↓
+        </kbd>
+        <span>
+          move
+        </span>
+        <kbd
+          class="border border-white/[0.10] rounded px-1.5 py-0.5 ml-2"
+        >
+          ↵
+        </kbd>
+        <span>
+          open
+        </span>
+      </div>
+      <span>
+        ⌘K from anywhere
+      </span>
+    </div>
+  </div>
+</div>
+
+ ❯ components/__tests__/CommandPalette.ime.test.ts:30:65
+     28|   const event=new KeyboardEvent('keydown',{key:'k',ctrlKey:true,metaKe…
+     29|   fireEvent(window,event);
+     30|   expect(screen.queryByRole('dialog',{name:'Command palette'})).toBeNu…
+       |                                                                 ^
+     31|   expect(event.defaultPrevented).toBe(false);
+     32|  });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  10 failed | 3 passed (13)
+   Start at  05:21:26
+   Duration  468ms (transform 21ms, setup 0ms, import 113ms, tests 128ms, environment 179ms)
+

@@ -1,0 +1,8 @@
+{
+  "baseline": "6c73d07e2afc164b08f7edc4c33b37e4d0a7229e",
+  "runtimeFile": "components/CommandPalette.tsx",
+  "sha256": "cd59d8c7c282090a9316a863ca2e508bbc90345af22a2baf19f7536930457881",
+  "wholeBaselineReconstructedByRemovingTwoGuards": true,
+  "authorityChanged": false,
+  "noBrowserOrNativeQualification": true
+}

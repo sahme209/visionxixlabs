@@ -1,0 +1,17 @@
+{
+  "extends": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@types"
+    ]
+  },
+  "include": [
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/components/CommandPalette.tsx",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/components/__tests__/CommandPalette.ime.test.ts"
+  ],
+  "exclude": []
+}

@@ -338,3 +338,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Website contact documentation — internal finite source guide
 ~~Contact fields/topic/send/success/outcome/recovery source flow documented~~ ([guide](knowledge/website-contact-controls.md),[evidence](../recovery/2026-11-05/contact-controls-source-guide/README.md)):13sourcekeys/ranges matchpinneddf9Gitbytes. Recording/internal-email-request/actualresolution distinguished; sourceobservednontransactional lead/jobpartialfailure and noidempotency remainopen. Initialrange-countauthoringfailure corrected/retained; no runtime/POST/email/DB/provider execution. Customer/editorial/media/retrieval/keyboard/browser qualification false; not fullB4/B5/allcontrolcoverage or completeGovernance.
+
+
+### Website command-palette composition — local keyboard repair
+~~IME composition no longer toggles/dismisses/navigates the command palette or consumes candidate-navigation keys~~ ([evidence](../recovery/2026-11-05/website-command-ime/README.md)): actualcomponentRED10/3controls→GREEN13/scopedtypes/review pass; exactlytwoearlyreturns reconstructwholepriorfile. Threadpool boundednetworkdeniedchild exits/reaped withoutpriorforkwarnings; no repeatcontacttests. Query/focus/default/nonnavigation and ordinaryarrowsEnter/Escape/accountvisibility verifiedinDOMonly; realbrowser/OSIME/AT/native/build/deploy acceptancepending. Currentpreviewolder0c9; all21parents/pendingGovernance decisions preserved.

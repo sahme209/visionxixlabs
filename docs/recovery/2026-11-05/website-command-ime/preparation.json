@@ -1,0 +1,7 @@
+{
+  "ownedDirectory": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/website-command-ime-jb7ss6hp",
+  "scope": "actual website command palette, synthetic router only; no page navigation/network",
+  "limitSeconds": 45,
+  "outputLimitBytes": 1048576,
+  "pool": "threads to avoid sandbox fork signal/teardown failures seen in preceding contact unit"
+}

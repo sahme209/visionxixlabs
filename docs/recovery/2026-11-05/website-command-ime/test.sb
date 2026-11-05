@@ -1,0 +1,8 @@
+(version 1)
+(deny default)
+(allow process*)
+(allow sysctl-read)
+(allow file-read*)
+(allow mach-lookup)
+(allow file-write* (subpath "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/website-command-ime-jb7ss6hp"))
+(deny network*)
