@@ -1,0 +1,34 @@
+{
+  "observedAt": "2026-11-05T00:45:12.338190+00:00",
+  "method": "existence-only; no controller or helper invocation",
+  "previousPacketSha256": "909cbd489d59046afe88e7e397de0d6e7b01fc0cd15471fd526e6178d46c91df",
+  "boundArtifacts": [
+    {
+      "path": "/private/tmp/axiom-cssm-policy-artifacts/qualification-helper",
+      "exists": false
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-policy-artifacts/qualification-manifest.json",
+      "exists": false
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-qualification-preparation-5fb1/packages/verified-issuer-runtime/native/cssm_policy_watchdog.py",
+      "exists": false
+    },
+    {
+      "path": "/private/tmp/axiom-cssm-policy-artifacts/pure-test",
+      "exists": false
+    }
+  ],
+  "trackedSources": {
+    "packages/verified-issuer-runtime/native/cssm_policy_builder.c": "73b9b9e8683414608fd7ab2545d6a7342270ed6cf6e73627376d5d1989110f0a",
+    "packages/verified-issuer-runtime/native/cssm_policy_watchdog.py": "6c4ca38130b23351eca4419a38ed77caa1f091a564439217bb3c01946b8afc83",
+    "packages/verified-issuer-runtime/native/cssm_policy_qualification.c": "087fbe77b01d74997c892abd3c2337ffec8cfcfae634b22eb840ee170a791855",
+    "packages/verified-issuer-runtime/native/cssm_policy_copy_test.c": "5be2a4dc5eba9d14607f08d92c6995933a64ae897bcc9ce23fc5a8375d9fb691",
+    "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/in-memory-policy-qualification-execution-instruction.md": "5a1d227ec2864d2bfd6f1bec8294d37de3e2e41fe9c98e49bce945358c3aab85"
+  },
+  "previousExperimentExecuted": false,
+  "rebindOrRecreationPerformed": false,
+  "newPreparationAuthorized": false,
+  "newExecutionAuthorized": false
+}

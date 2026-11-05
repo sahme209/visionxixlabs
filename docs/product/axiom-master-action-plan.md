@@ -1,5 +1,9 @@
 # Axiom master action plan
 
+## November4 current Governance qualification artifact status
+
+The four temporary artifacts bound by the previously reviewed909packet are now missing, as established by [existence-only assessment](../recovery/2026-11-04/governance-qualification-artifact-loss/assessment.json). The old experiment remains recorded as unexecuted and cannot proceed from its historical bindings. No controller/helper was invoked, recreated or rebound. The [persistent local preparation recovery design](../recovery/2026-11-04/governance-persistent-qualification-recovery-proposal.md) is independently reviewed and awaits user approval before implementation; any later exact Security API experiment remains separately gated. Canonical issuer, custody/fleet/coverage/enrollment and all A1–A9/B1–B6 completion requirements remain open. C1–C6 remain planned and unauthorized. Earlier preparation checkpoints below are historical, not authority to run missing or regenerated files.
+
 Updated November 4, 2026. Two coordinated workstreams. The user explicitly resumed after plan finalization; authorized local execution is active. Existing authorized local work and evidence are preserved. This document and the persistent goal are the working target; add future requests here rather than losing them in chat. Latest local-source recovery: [November2 guide](../recovery/2026-11-02/README.md); the October29 baseline remains preserved.
 
 [Compact current execution board](current-execution-board.md) summarizes all15parents and their gates; every detailed requirement below remains binding.
