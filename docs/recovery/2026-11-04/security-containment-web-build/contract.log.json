@@ -1,0 +1,4 @@
+{
+  "encoding": "utf-8",
+  "text": "Vercel build contract verified: web/desktop type boundaries explicit, type checks enforced, proxy convention current, no migration side effects, and 39 cloud SDK packages externalized.\n"
+}

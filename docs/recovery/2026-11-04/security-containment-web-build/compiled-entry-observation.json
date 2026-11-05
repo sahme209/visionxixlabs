@@ -1,0 +1,16 @@
+[
+  {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/app/api/visionxix-ai-chat/route.js",
+    "sha256": "0ff73b94efeb34963616778f5a50021c135cc18f8d872b4f35ccb28637dfc4b8",
+    "expectedCode": "ai.public_admission_unavailable",
+    "codeInEntryBytes": true,
+    "scope": "compiled entry bytes only, not runtime execution"
+  },
+  {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage/.next/server/app/api/terraform/generate/route.js",
+    "sha256": "2136b6e0301c16622d7ec9c78433fd08c8d2a7eafab1a95d3ee0c5f81fef2401",
+    "expectedCode": "terraform_generation_failed",
+    "codeInEntryBytes": true,
+    "scope": "compiled entry bytes only, not runtime execution"
+  }
+]

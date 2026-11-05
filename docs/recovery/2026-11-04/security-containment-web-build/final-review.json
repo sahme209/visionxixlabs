@@ -1,0 +1,8 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "clear/no important inconsistencies",
+  "observed": "9059archiveinputs; compile37s; productiontypes25s;303staticpages; outputverificationtrue; exit0",
+  "warnings": "3dynamicdependencies/4optionalcachemisses retained; no completeclosure claim",
+  "strictQualifications": "issuer/runtime/activation/descendantqualification unavailable, executionAuthorizedfalse",
+  "reviewerRepeatedBuildsTestsNetworkUI": false
+}

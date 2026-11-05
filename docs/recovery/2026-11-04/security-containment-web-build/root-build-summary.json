@@ -1,0 +1,33 @@
+{
+  "sourceRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "archiveSha256": "7af51ff067945d88f66494806909e7af2586b163acbd92adf7002b17e19042af",
+  "archiveBytes": 97095680,
+  "verifiedRegularFiles": 9059,
+  "buildDriverSession": 5887,
+  "driverTerminalExit": 0,
+  "idleAwake": "caffeinate utility mode ended with terminal build command, no screen-lock bypass",
+  "compileSeconds": 37.0,
+  "productionTypesSeconds": 25.0,
+  "staticPages": 303,
+  "requiredOutputsVerified": true,
+  "routeCount": 1104,
+  "traceCount": 1108,
+  "traceEntryCount": 288380,
+  "warnings": {
+    "count": 3,
+    "module": "packages/verified-issuer-runtime/index.cjs",
+    "preservedLog": "next-build.log.json"
+  },
+  "strictQualifications": {
+    "buildCompatibilityVerified": false,
+    "completeExecutableClosure": "unavailable",
+    "executingIssuerIdentity": "unavailable",
+    "runtimeQualification": "unavailable",
+    "activationQualification": "unavailable",
+    "descendantQuiescence": "unavailable",
+    "processBounds": "original_process_group_only",
+    "executionAuthorized": false
+  },
+  "noPreviewOrNativeRestart": true,
+  "noDeploymentOrRealProviderDBAI": true
+}

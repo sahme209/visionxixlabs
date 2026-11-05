@@ -260,3 +260,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Approved local public assistant admission containment
 ~~Anonymous legacy assistant refuses before unreserved inference~~ ([evidence](../recovery/2026-11-04/public-assistant-admission-containment/README.md)): fixed503/code afterexistingIP limit, beforebody/knowledge/SDK/DB. RED6fail/1control->GREEN7actual-composition cases/scopedtypes/whole-source reconstruction/independentreview pass. Canonical admittedappAI unchanged; no guessedidentity/subsidy/pricing. Earlierdiagnostic is locallycontained, productionunchanged. Fullfundedpublicassistance/universaladmission/commercialaudit/A7/B5/Governance remainunfinished.
+
+### Exact security-containment production-web batch
+~~Frozen201source ordinary compile/productiontypes/303staticpages/outputverification passed~~ ([evidence](../recovery/2026-11-04/security-containment-web-build/README.md)):9059regular archiveinputs and exactoutputs retained. Three verified-issuer dynamicdependency warnings/fouroptionalcachemisses preserved; issuer/runtime/activation/completeclosure/descendantqualification remain unavailable. No deployment/provider/DB/AI/CI/native restart or updatedpreview. This verifies the local batch, not fullGovernance or rollout acceptance; all21parents/userplan scope preserved.
