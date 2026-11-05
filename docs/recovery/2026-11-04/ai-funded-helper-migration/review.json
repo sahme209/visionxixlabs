@@ -1,0 +1,12 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "no blocking design gap",
+  "scope": "complete local single-engineerQ&A fundedverticalslice and fullfamilybacklog",
+  "requiredBeforeCode": "explicit validation-first approval",
+  "limits": [
+    "newlocalintentdefinition only, existingfundingledger remainsauthoritative",
+    "default real-runtime unavailable/qualification and activation separate",
+    "otherfamilies/realprices/productionDDL/A2custody/fleet remainopen"
+  ],
+  "rootClarifications": "bounded/redacted question only; no completePIIclaim; default real-runtime unavailable until specific qualification/activation"
+}

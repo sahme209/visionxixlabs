@@ -1,0 +1,50 @@
+{
+  "sourceRevision": "829b8d93",
+  "inspectedFiles": [
+    {
+      "path": "app/api/workforce/[id]/ask/route.ts",
+      "sha256": "c234cef724f18d53d431d43fe4bb7282b6201bcdad5ff576ee130e44125ef562"
+    },
+    {
+      "path": "app/dashboard/workforce/[id]/ask/page.tsx",
+      "sha256": "040efda7bd8f4cd4a2a96fee228a81716c2a43507444f2b3cab1771fca0f20b1"
+    },
+    {
+      "path": "lib/workforce/engineerAsk.ts",
+      "sha256": "3556284a682b0a0a0f503e818bdb897a26a1e82e7756e81cad0afe0c92eec0e6"
+    },
+    {
+      "path": "lib/releaseops/instrumentedAiFetcher.ts",
+      "sha256": "ae256805c2196f74be02cf13f67502c9e2b206085a40691e1cee452320bdb544"
+    },
+    {
+      "path": "lib/auth/currentContext.ts",
+      "sha256": "8ad71ac9507376030ec947824abcabb455568407e513c1f530d008915b2da907"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "0fa0c2c83968ce333bd1ebedff09ed05d487ad9f8da522ee5d9b9d6d93534d79"
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "94a1f91be7b4863e9f1baa8d4821921bf63a97192897cca0a0a27c4d7e50d978"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "caa33541753d3629424e7bb5302f634ffa89eb2186c9e1d6581c29b8eeaf2ceb"
+    },
+    {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "sha256": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce"
+    },
+    {
+      "path": "lib/ai/AIProvider.ts",
+      "sha256": "1494950f3a82c66e8425d21305e541554e91f7f67d276af8ae93f32923b3f67c"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031"
+    }
+  ],
+  "qualification": "proposal source context; not implementation or execution authority"
+}
