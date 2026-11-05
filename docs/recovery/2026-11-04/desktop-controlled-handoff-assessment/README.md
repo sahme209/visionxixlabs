@@ -1,0 +1,9 @@
+# Current desktop handoff result
+
+Read-only process observation found PID67657 at `/Users/samirahmed/Applications/Axiom Local Builds/d3742ea2/Axiom Agent Local Preview.app/Contents/MacOS/axiom-desktop`. This supersedes older567-path assumptions for current process presence. It establishes neither foreground view, current sign-in, unsaved drafts nor current credential availability.
+
+`git diff d3742ea2 91651299 -- desktop/src-tauri/src/secure.rs desktop/src-tauri/src/main.rs desktop/src/lib/vault.ts desktop/src-tauri/tauri.conf.json` returned no changes for those selected paths; vault.ts does not exist, so its absence is not vault qualification. Actual secure.rs still uses the configured identifier as credential service and can migrate then delete legacy plaintext values on read. main.rs still installs single-instance handoff that focuses the existing main window. Same compiled identifier therefore does not create isolated simultaneous acceptance. The prior d374 delivery receipt describes historical saved-session restoration only.
+
+Available tool discovery exposed no general supported native screenshot/window-control tool; the screen-context tool is voice-only and is not used in this text conversation. Remote Desktop Commander is terminal/file access, not evidence of safe UI/draft controls. No alternate browser/native injection or user-session termination was attempted. Blind launch may hand off to the old instance, while forced quit may lose work; neither proves current signed artifact acceptance.
+
+Disposition: signed current archive remains preserved and unlaunched; active process untouched. Native UI/current-session acceptance is open until a supported controlled handoff can establish current unsaved-work safety. This does not block unrelated authorized source work or change production authority.

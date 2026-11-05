@@ -1,0 +1,67 @@
+{
+  "sources": [
+    {
+      "path": "node_modules/@ai-sdk/gateway/dist/index.js",
+      "sha256": "f159a5c36adbd879c03db1969aac513edcd61d052fc8e02755ab6ddafd62c2d8",
+      "matchesEarlierAdapterReceipt": true
+    },
+    {
+      "path": "node_modules/@ai-sdk/gateway/package.json",
+      "sha256": "2e2b5f03a8ea6e6b759da55016d065145c5187102ff9e01cf775549c1eee2475",
+      "matchesEarlierAdapterReceipt": true
+    },
+    {
+      "path": "node_modules/ai/package.json",
+      "sha256": "796dcc1650df74fe462bca6d555c34ba2a55cf81827783b3080ceff9c51d63c8",
+      "matchesEarlierAdapterReceipt": true
+    },
+    {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "sha256": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce",
+      "matchesEarlierAdapterReceipt": false
+    },
+    {
+      "path": "node_modules/@ai-sdk/gateway/dist/index.mjs",
+      "sha256": "fce80da236e673492a230cc536cf5cc7b8b80734079c7ffda26e46b5293ab837",
+      "matchesEarlierAdapterReceipt": true
+    },
+    {
+      "path": "node_modules/ai/dist/index.mjs",
+      "sha256": "3eb2d9050d1f21fb714dc86d40419598fab34a598aedda1c97f6659d1d33a816",
+      "matchesEarlierAdapterReceipt": true
+    },
+    {
+      "path": "lib/ai/codingRequestQuote.ts",
+      "sha256": "368b1b67adf0e3eb17c8332298821fc0439d2720707f81981037cee60712ab40",
+      "matchesEarlierAdapterReceipt": null
+    },
+    {
+      "path": "lib/ai/__tests__/codingDispatchInstalledSdk.test.ts",
+      "sha256": "f67320d66395494be698e75f29784d0e7fcf8ce33af08a16099c84f15b4af6ed",
+      "matchesEarlierAdapterReceipt": null
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+      "matchesEarlierAdapterReceipt": null
+    },
+    {
+      "path": "docs/recovery/2026-11-04/coding-request-quotes-local/installed-sdk.log",
+      "sha256": "e036f22c8442df4cc42a98ebd8fb9d36e2482309e8bd7ffa65d6a47ed9eef558",
+      "matchesEarlierAdapterReceipt": null
+    }
+  ],
+  "installedVersions": {
+    "node_modules/@ai-sdk/gateway/package.json": "3.0.201",
+    "node_modules/ai/package.json": "6.0.291"
+  },
+  "existingEvidenceReused": true,
+  "testsRerun": false,
+  "networkCalls": 0,
+  "productionQualification": false,
+  "currentCodingCommit": "0253588bb8cc1867ab8a4d6b0e5ea9cfe31bc8d9",
+  "currentProviderAndInstalledSdkTestMatchCodingCommit": {
+    "lib/ai/providers/VercelGatewayProvider.ts": true,
+    "lib/ai/__tests__/codingDispatchInstalledSdk.test.ts": true
+  }
+}
