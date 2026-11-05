@@ -1,0 +1,9 @@
+{
+  "frozenSourceRevision": "836a2f60543c9d5c71b08c40917c216d22c8a67b",
+  "currentTrackedApplicationAndScriptsDiff": "",
+  "applicationSourceMatchesFrozenRevision": true,
+  "masterWorkingSha256": "7ce16009c2080bcf872819556d161a13adce8846c608de89d5d10a5a1fd21ccf",
+  "unstagedMasterIncludedInGitArchive": false,
+  "userMasterRecoveryPatchPreserved": "docs/recovery/2026-11-05/master-first-user-journey-reconciliation/user-master-recovery-patch.json",
+  "scope": "Git tracked app/lib/desktop/packages/components/scripts; not node_modules full transitive runtime attestation"
+}

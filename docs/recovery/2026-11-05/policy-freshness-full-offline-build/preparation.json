@@ -1,0 +1,18 @@
+{
+  "sourceRevision": "836a2f60543c9d5c71b08c40917c216d22c8a67b",
+  "driverSha256": "1195b754f5d65a2ebd0fac91669d43db36c5a5bbb654eb620ed00faf0363a212",
+  "changesFromPriorDriver": [
+    "exact frozen revision",
+    "owned output prefix"
+  ],
+  "helpersUnchangedFromVerified266Source": {
+    "scripts/build-local-issuer-package-source.py": "c099c90b95778062873ed4b17546d84c915f707fdaa4c5399b4938e5f31cb2a1",
+    "scripts/local_prisma_engine_inputs.py": "6def73deece943de43643b385d83321abdbfcdd17c59eb48f84eeb647293fb2f"
+  },
+  "purpose": "ordinary offline Next production compilation/type/static-page/output validation",
+  "ordinaryBuildOnly": true,
+  "previewStarted": false,
+  "serviceOrNativeHelperInvoked": false,
+  "productionChanged": false,
+  "executionAuthorized": false
+}

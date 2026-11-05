@@ -1,0 +1,75 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR for ordinary offline production build output observation only",
+  "sourceRevision": "836a2f60543c9d5c71b08c40917c216d22c8a67b",
+  "toolSession": 18977,
+  "terminalExitCode": 0,
+  "sourceArchive": {
+    "sha256": "31efd1c58aeb2c32e4affc75ee8d3793f6cc4153ab1ad20849be527381619a60",
+    "bytes": 103864320,
+    "regularFiles": 9575
+  },
+  "evidenceReviewed": [
+    "actual preparation and optional cache misses",
+    "local engine binding and generated canonical schema/output receipt",
+    "build input archive/installed compiler/generation/type profile bindings",
+    "build result and terminal summary",
+    "lossless next build log with verified saved hash",
+    "selected actual required output hashes/sizes"
+  ],
+  "selectedOutputChecks": [
+    {
+      "name": ".next/BUILD_ID",
+      "hashMatches": true,
+      "sizeMatches": true
+    },
+    {
+      "name": ".next/required-server-files.json",
+      "hashMatches": true,
+      "sizeMatches": true
+    },
+    {
+      "name": ".next/server/app-paths-manifest.json",
+      "hashMatches": true,
+      "sizeMatches": true
+    },
+    {
+      "name": ".next/server/__axiom_private__/release-merge-bootstrap.cjs",
+      "hashMatches": true,
+      "sizeMatches": true
+    }
+  ],
+  "observed": {
+    "compileSeconds": 36.6,
+    "typeSeconds": 25.1,
+    "staticPages": 303,
+    "routeCount": 1104,
+    "traceCount": 1108,
+    "traceEntryCount": 288380,
+    "buildOutputsVerified": true
+  },
+  "retainedWarnings": {
+    "criticalDependency": 3,
+    "source": "packages/verified-issuer-runtime/index.cjs dynamic dependency expression",
+    "optionalCacheMisses": [
+      "node_modules/@emnapi/core",
+      "node_modules/@emnapi/wasi-threads",
+      "node_modules/@napi-rs/wasm-runtime",
+      "node_modules/@tybys/wasm-util"
+    ]
+  },
+  "limits": {
+    "buildCompatibilityVerified": false,
+    "runtimeQualification": "unavailable",
+    "completeExecutableClosure": "unavailable",
+    "executingIssuerIdentity": "unavailable",
+    "activationQualification": "unavailable",
+    "descendantQuiescence": "unavailable",
+    "processBounds": "original_process_group_only",
+    "executionAuthorized": false,
+    "previewStarted": false,
+    "productionChanged": false
+  },
+  "reviewerExecutedBuildOrTests": false,
+  "reviewerProviderNativeHttpCalls": false
+}

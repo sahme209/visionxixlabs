@@ -1,0 +1,20 @@
+{
+  "reviewer": "agent_reliability_review",
+  "recordedBy": "root from actual review message",
+  "decision": "CLEAR for ordinary offline build",
+  "sourceRevision": "836a2f60543c9d5c71b08c40917c216d22c8a67b",
+  "checked": [
+    "exact two driver replacements from prior reviewed266 driver",
+    "same fixed helper hashes",
+    "cached npm with ignore-scripts and kernel network denial",
+    "isolated archive/stage and private Prisma generation",
+    "sanitized synthetic build environment",
+    "Next compile/types/static/output verification",
+    "no preview/service/native/Keychain/provider/production action"
+  ],
+  "executionByReviewer": false,
+  "remainingLimits": [
+    "original process-group bounds only",
+    "no complete descendant closure/custody/issuer/runtime/activation qualification"
+  ]
+}
