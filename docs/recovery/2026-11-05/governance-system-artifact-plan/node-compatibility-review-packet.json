@@ -1,0 +1,45 @@
+{
+  "state": "prepared-not-authorized",
+  "signed_copy": {
+    "sha256": "1aa6f6936040d80d6f9c1bb75ba4af97ce596af514ab7f0157a77f461abce134",
+    "size": 121418704,
+    "mode": "0o600",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 16697314,
+    "mtime_ns": 1793894053891056440,
+    "ctime_ns": 1793894053891133148
+  },
+  "script": {
+    "sha256": "69f15112f8ca625342c8d952030a37f64bc4ce98be92652ee028e057b1e93052",
+    "size": 356,
+    "mode": "0o600",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 16693050,
+    "mtime_ns": 1793893884644643551,
+    "ctime_ns": 1793893884644643551
+  },
+  "argv": [
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/compatibility-smoke.cjs"
+  ],
+  "cwd": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile",
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C",
+    "TZ": "UTC"
+  },
+  "stdin": "closed",
+  "seconds": 10,
+  "combined_output_bytes": 65536,
+  "attempts": 1,
+  "retries": 0,
+  "temporary_copy_mode": "0o700",
+  "restore_copy_mode": "0o600",
+  "expected_stdout": "bounded arithmetic compatibility only\n",
+  "expected_exit": 0,
+  "private_resources": false,
+  "addon_load_test": false,
+  "jit_optimization_proven": false
+}
