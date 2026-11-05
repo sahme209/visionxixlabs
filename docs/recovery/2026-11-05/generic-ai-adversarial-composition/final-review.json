@@ -1,0 +1,7 @@
+{
+  "reviewer": "agent_reliability_review",
+  "result": "clear/no important findings",
+  "method": "actual results/receipt/source assertion/types/base64cleanup review; no reviewer execution",
+  "verified": "3non-skipped realPG cases, sourceafterhash unchanged, oneconcurrent dispatch/link; zeroSDKaftercontrolledrevocation/expiry, ownedserver stopped",
+  "limits": "finiteobservedschedules; predicatevsSerializable refusal not distinguished; no trueauth/qualifiedprice/provider/settlement/Gov proof"
+}

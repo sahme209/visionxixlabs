@@ -1,0 +1,37 @@
+{
+  "baselineRunner": "scripts/run-generic-ai-composition-postgres.py",
+  "baselineSha256": "2de97040b21938aba5b28ed7a7998a7e98daff91eea89f22e6634745eda10dc3",
+  "newSha256": "cd173b9e98ee8202abe34aa3fc6383fa59caa4b12aa52ae4c7cfb192a4eeb26d",
+  "literalTransforms": [
+    [
+      "durableComposition.pg.test.ts",
+      "durableAdversarial.pg.test.ts"
+    ],
+    [
+      "generic_ai_fixture",
+      "generic_ai_adversarial_fixture"
+    ],
+    [
+      "axiom-generic-ai-pg-",
+      "axiom-generic-ai-adversarial-pg-"
+    ],
+    [
+      "55492",
+      "55493"
+    ],
+    [
+      "'generic-durable'",
+      "'generic-adversarial'"
+    ],
+    [
+      "expected=2",
+      "expected=3"
+    ],
+    [
+      "both_non_skipped_journeys_required",
+      "three_non_skipped_journeys_required"
+    ]
+  ],
+  "exactReconstruction": true,
+  "runnerExecuted": false
+}

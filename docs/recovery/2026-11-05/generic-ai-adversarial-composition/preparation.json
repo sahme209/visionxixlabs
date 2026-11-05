@@ -1,0 +1,6 @@
+{
+  "packetSha256": "ea205bdfd17f52f0b343e58f7022258c8c5ef4e09c1bfafd93e10e5becfb1e11",
+  "test": "app/api/ai/generate/__tests__/durableAdversarial.pg.test.ts",
+  "execute": false,
+  "cases": "generic-adversarial"
+}

@@ -1,0 +1,16 @@
+{
+  "packetSha256": "ea205bdfd17f52f0b343e58f7022258c8c5ef4e09c1bfafd93e10e5becfb1e11",
+  "tests": 3,
+  "selection": "generic-adversarial",
+  "excludedCases": 0,
+  "provider": "simulated",
+  "root": "/private/tmp/axiom-generic-ai-adversarial-pg-23q67sf7",
+  "schemaSha256": "94f3ae6f95cee496b0178a437b9130015f411dd0182a8582ce8aa32ce73bac54",
+  "engineSha256": {
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@prisma/engines/libquery_engine-darwin-arm64.dylib.node": "e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@prisma/engines/schema-engine-darwin-arm64": "57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a"
+  },
+  "productionChanged": false,
+  "directSourceHashAfter": "ea205bdfd17f52f0b343e58f7022258c8c5ef4e09c1bfafd93e10e5becfb1e11",
+  "sourceBindingScope": "19 direct reviewed application/test/SDK files only, not complete transitive attestation"
+}

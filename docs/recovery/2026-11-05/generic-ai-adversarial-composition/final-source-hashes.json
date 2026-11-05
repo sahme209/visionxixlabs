@@ -1,0 +1,4 @@
+{
+  "scripts/run-generic-ai-adversarial-postgres.py": "cd173b9e98ee8202abe34aa3fc6383fa59caa4b12aa52ae4c7cfb192a4eeb26d",
+  "app/api/ai/generate/__tests__/durableAdversarial.pg.test.ts": "62aba91a617cbf0de5d672c752b9f34d51a16731f4df13814d60af81f69649cd"
+}
