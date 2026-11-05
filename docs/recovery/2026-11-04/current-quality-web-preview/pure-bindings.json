@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-0c9d0e40-5262/preparation.sb",
+    "/usr/bin/python3",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-0c9d0e40-5262/test_preview_bindings.py"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.447,
+  "stdoutBase64": "",
+  "stderrBase64": "dGVzdF9hY3R1YWxfbGF1bmNoZXJfcGluc19hc3NldHNfcnVudGltZV9tZXRhZGF0YV9hbmRfY2FjaGVfd2l0aG91dF9leGVjIChfX21haW5fXy5QcmVwYXJlZFNvdXJjZUJpbmRpbmdzKSAuLi4gb2sKdGVzdF9hY3R1YWxfbmV3X2J1aWxkX21hbmlmZXN0X2FuZF9zb3VyY2VfaWRlbnRpdHkgKF9fbWFpbl9fLlByZXBhcmVkU291cmNlQmluZGluZ3MpIC4uLiBvawp0ZXN0X2F1dGhvcml0eV9oZWFkZXJzX2FuZF9tZXRob2RzX3N0aWxsX2Nhbm5vdF9yZWFjaF9iYWNrZW5kIChfX21haW5fXy5QcmVwYXJlZFNvdXJjZUJpbmRpbmdzKSAuLi4gb2sKdGVzdF9maXhlZF9wb3J0c19hbmRfb25seV9leGlzdGluZ19leGFjdF9jYWNoZV9wZXJtaXNzaW9uIChfX21haW5fXy5QcmVwYXJlZFNvdXJjZUJpbmRpbmdzKSAuLi4gb2sKdGVzdF9uZXdfbWFuaWZlc3RfdGFyZ2V0c19kb19ub3Rfb3Blbl9wcml2YXRlX29yX3Vua25vd25fcGF0aHMgKF9fbWFpbl9fLlByZXBhcmVkU291cmNlQmluZGluZ3MpIC4uLiBvawoKLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQpSYW4gNSB0ZXN0cyBpbiAwLjIwNXMKCk9LCg==",
+  "processReaped": true
+}

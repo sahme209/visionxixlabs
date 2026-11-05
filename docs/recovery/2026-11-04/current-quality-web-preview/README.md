@@ -1,0 +1,11 @@
+# Current quality guarded website preview
+
+Verified source0c9 is available at [Product](http://127.0.0.1:5262/product), [Docs](http://127.0.0.1:5262/docs) and the [labeled preview wrapper](http://127.0.0.1:5262/__axiom_preview). It reuses the successful current-quality build; no rebuild or deployment occurred. Older website and native sessions were preserved.
+
+Seven guard artifacts match the earlier reviewed implementation with only fixed source/root/build/port/manifest substitutions. The new manifest binds45public assets and1150static assets. Five pure source/binding/profile/cache checks pass. Backend outbound access is denied, its only writable runtime directory is the exact owned image cache, and the proxy permits only fixed loopback/public manifest GETs. Credentials are omitted; backend configuration is synthetic. APIs, account/auth/private paths, non-GET actions and unsupported query requests stay blocked. This does not establish protected issuer custody or complete executable closure.
+
+Thirty actual bounded HTTP checks pass: five public pages, twenty current-manifest asset hashes, and five private/action/query refusals. The delivered DocsContents client chunk matches its current-build hash and contains composition-guard markers. This is delivery evidence, not execution of IME behavior in a real browser. The request script has an overall45second deadline,5second connection bound and32MiB per-body limit; it never follows redirects or accesses external hosts.
+
+Independent preparation/final binding/HTTP review found no important issue. Browser rendering, responsive/IME/AT/performance and full customer acceptance remain open; no disabled-browser workaround was used. Forms/sign-in/backend actions are intentionally unavailable in this presentation. No provider/customer database/paidAI/CI/schema/grant/credential/publication or production operation occurred.
+
+At handoff the actual live tool handles are backend84385 and proxy35968, both re-polled as running. Reconcile those same handles before later action; observation timeouts are not a reason to restart. All21master parents and the pending A2 preparation/health/funded-helper decisions remain open. The ServiceNow writtenUNKNOWN note and every real database backup remain untouched.

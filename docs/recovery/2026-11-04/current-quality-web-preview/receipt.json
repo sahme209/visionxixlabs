@@ -1,0 +1,13 @@
+{
+  "sourceRevision": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "backendToolSession": 84385,
+  "proxyToolSession": 35968,
+  "bothHandlesConfirmedRunningAtHandoff": true,
+  "publicOrigin": "http://127.0.0.1:5262",
+  "pureBindingChecks": 5,
+  "httpChecks": 30,
+  "previewOnly": true,
+  "productionChanged": false,
+  "browserAcceptance": false,
+  "governanceQualified": false
+}

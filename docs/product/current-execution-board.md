@@ -318,3 +318,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Exact current quality web integration — ordinary local build
 ~~Exact0c9source compiled, production-web types/303staticpages/output checks passed~~ ([evidence](../recovery/2026-11-04/current-quality-web-batch/README.md)):9255regular inputs/archive100597760bytes/SHA895114ac...; primary71847terminal0. Three dynamicdependencywarnings/fouroptionalcachemisses preserved. Strictcompatibilityfalse, issuer/runtime/closure/activation/quiescenceunavailable/executionAuthorizedfalse remain. No new preview/native/deploy, actualbrowser/customer/Gov acceptance or paid operation. Existing source-focused tests not repeated; all21parents/pending decisions and usermasteredit preserved.
+
+
+### Current source local website presentation — guarded HTTP acceptance
+~~Source0c9 Product/Docs presentation and guard/asset delivery verified~~ ([preview evidence](../recovery/2026-11-04/current-quality-web-preview/README.md)): [Product](http://127.0.0.1:5262/product)/[Docs](http://127.0.0.1:5262/docs), five purebinding checks and30actual HTTP checks (5pages/20exactasset hashes/5refusals). Same guard logic with fixed source/root/port/manifest updates; backend84385/proxy35968 confirmedlive. No rebuild/deploy/native restart or browser workaround; actualbrowser/IME/AT/performance/Gov/customer acceptance remains open. Accounts/actions blocked, syntheticenv and narrow cache scope retained. All21parents and pending decisions preserved.

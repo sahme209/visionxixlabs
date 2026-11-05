@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-0c9d0e40-5262/preparation.sb",
+    "/usr/bin/python3",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-0c9d0e40-5262/prepare-runtime.py"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 0.357,
+  "stdoutBase64": "eyJtYW5pZmVzdFNoYTI1NiI6ICI0ZmI0ODNiMThhOTg1NzhiNjZiYjI4OTlmM2I3ODVjNmFjNTAxYmU5YjFmYzAzMTk3ODRjMmM4ZGU1ZWM5NmVmIiwgInB1YmxpY0Fzc2V0cyI6IDQ1LCAicm9vdCI6ICIvVXNlcnMvc2FtaXJhaG1lZC9MaWJyYXJ5L0FwcGxpY2F0aW9uIFN1cHBvcnQvVmlzaW9uIFhJWCBMYWJzL0F4aW9tIExvY2FsIFdlYnNpdGUgUHJldmlld3Mvc291cmNlLTBjOWQwZTQwLTUyNjIiLCAic291cmNlUmV2aXNpb24iOiAiMGM5ZDBlNDA3MjA1NmY1NmMyOGQ5NWJmNTM5MjVhZmM0MjljY2FmMiIsICJzdGF0aWNBc3NldHMiOiAxMTUwLCAic3RhdHVzIjogInByZXBhcmVkLW5vdC1zdGFydGVkIn0K",
+  "stderrBase64": "",
+  "processReaped": true
+}

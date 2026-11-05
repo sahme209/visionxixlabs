@@ -1,0 +1,12 @@
+{
+  "root": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-0c9d0e40-5262",
+  "build": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-quality-build-0c9d0e40-ya3nsqus",
+  "ports": [
+    5262,
+    5263
+  ],
+  "listenerCheck": "lsof returned no listeners; no bind attempted",
+  "cacheCreated": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-quality-build-0c9d0e40-ya3nsqus/stage/.next/cache/images",
+  "preparedOnly": true,
+  "serversStarted": false
+}
