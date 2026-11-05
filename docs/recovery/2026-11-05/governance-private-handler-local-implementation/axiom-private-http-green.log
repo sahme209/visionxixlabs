@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts (4 tests | 1 failed) 46ms
+   × execution handler resolves actual private session and looks only in its private tenant store 23ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts > execution handler resolves actual private session and looks only in its private tenant store
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts:33:83
+     31|  const f=setup();try{
+     32|  const response=await f.composition.handleExecution(f.request('provide…
+     33|  expect(response.status).toBe(200);expect((await response.json()).data…
+       |                                                                                   ^
+     34|  expect(f.find).toHaveBeenCalledWith({where:{id:planId,organizationId:…
+     35|  expect(f.transaction).not.toHaveBeenCalled();expect(f.credential).not…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 5 passed (6)
+   Start at  17:38:32
+   Duration  470ms (transform 430ms, setup 0ms, import 667ms, tests 71ms, environment 0ms)
+

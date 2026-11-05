@@ -1,0 +1,54 @@
+{
+  "baseRevision": "362bdd311d7891d8ffbcd0b5e396b1d820f2f938",
+  "approval": "call_0vNsfk0olOPDTEnFubLd93hk[0]: Approve local private-handler implementation",
+  "files": [
+    {
+      "path": "lib/desktop/releaseProviderMergeExecutionHttp.ts",
+      "sha256": "1c4d20bdec0ef852b054eb44449a8ba3a69cb59a9445edc81fb11e954111e8e2"
+    },
+    {
+      "path": "lib/desktop/releaseProviderMergeOperationHttp.ts",
+      "sha256": "855e7e2e988ceeccb08bd78a0e1dde173c760387bd70efeaace28be2c6daecb7"
+    },
+    {
+      "path": "lib/desktop/releaseProviderMergeExecutionHttpCore.ts",
+      "sha256": "3cd6694041163ee703f87474d9781f97355ac96c4d5a8a8ce66229555d9f5216"
+    },
+    {
+      "path": "lib/desktop/releaseProviderMergeOperationHttpCore.ts",
+      "sha256": "e62bc94f8874d1226be85bf3b1d50e0dc5db74d70738b3717f6f45cfccf3c4d7"
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeComposition.ts",
+      "sha256": "b491c0121ecefc1f286234f0085f1fe13fb7cad240524fdc56436ef2c323d715"
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeRequestData.ts",
+      "sha256": "7d3344fef37d8e77e4f10e9435f5151f15f1e771b8d811679292134f81313b1a"
+    },
+    {
+      "path": "lib/desktop/__tests__/privateReleaseMergeComposition.test.ts",
+      "sha256": "ca9af5796cc26fc675457a0f3b38589883f4973027c5f1bdddd7971a23641ea1"
+    },
+    {
+      "path": "lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts",
+      "sha256": "f543ac7cd638b55fa12ff89375d80164b530898f49668b7438ec140751beead2"
+    },
+    {
+      "path": "lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts",
+      "sha256": "9948adcda783949e63ce59eed1eca91b6557e60f8ee15d87c864015b56452c3f"
+    },
+    {
+      "path": "lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts",
+      "sha256": "20da00db63adc45eeadda7be9703dd08c75ac5b45af74b36a365cffa1981b86a"
+    }
+  ],
+  "focusedTests": 64,
+  "focusedTestFiles": 6,
+  "scopedTypes": "passed using matching package+lock materialized cached dependencies",
+  "actualDatabaseJourney": false,
+  "nativeIngressMounted": false,
+  "issuerEnabled": false,
+  "productionChanged": false,
+  "finalVerification": "63-test six-file batch passed; one additional header-safe-space RED/GREEN regression; final affected two-file35-test batch and scoped types passed"
+}

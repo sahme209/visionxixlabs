@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the [current-source qualification audit](../recovery/2026-11-05/governance-next-qualification-audit.md) shows current signed artifacts still cannot handle a business request if installed. Resolve the connected native custody → authenticated request channel → actual compiled consumer path through a reviewed local design; do not repeat packaging or blindly install still-refusing artifacts. Production resource-owner/writer cutover and full A2/A9 are distinct gates.
 
+## Private-handler composition — approved source implementation verified
+
+~~Existing HTTP cores/private-instance graph and strict unmounted six-operation adapter implemented~~ ([numbered evidence](../recovery/2026-11-05/governance-private-handler-local-implementation/README.md)). User local approval recorded;64distinct focused tests/6files and scoped types pass, independent source review clear. Current private sessions/rows/provider boundaries simulated; no actual DB/native/provider acceptance. Legacy bodies preserved, expected actor binding retained, no global private-resource fallback; response/abort/deadline/custom-token regressions fixed. Pending-approval statements below are historical for this unit. Canonical startup/issuer/flags unchanged; native material/ingress/custody/SAME-consumer/fleet/fullA2 remain open.
+
 ## Canonical identity sequencing — unnecessary prerequisite removed
 
 ~~Original integrated design compared against current closed source~~ ([adjudication](../recovery/2026-11-05/governance-canonical-identity-source-alignment.md)): live identity is privately established by actual protected canonical/native startup and revalidated on each read; SAME-consumer tests prove it, rather than provide a prior receipt granting identity. An inferred receipt-before-identity dependency is rejected. Current positive branch/material supply/handler/custody/fleet implementation and qualification remain open; no source gate or permission changed. Continue the selected design, without inventing a second identity mechanism.

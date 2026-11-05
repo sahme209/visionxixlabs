@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "plugins": []
+  },
+  "include": [
+    "../../next-env.d.ts",
+    "../../lib/desktop/privateReleaseMergeComposition.ts",
+    "../../lib/desktop/privateReleaseMergeRequestData.ts",
+    "../../lib/desktop/releaseProviderMergeExecutionHttp.ts",
+    "../../lib/desktop/releaseProviderMergeOperationHttp.ts",
+    "../../lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts",
+    "../../lib/desktop/__tests__/privateReleaseMergeComposition.test.ts",
+    "../../lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts",
+    "../../lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts"
+  ],
+  "exclude": [
+    "../../node_modules",
+    "../../desktop"
+  ]
+}

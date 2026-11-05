@@ -1,0 +1,25 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts (29 tests | 1 failed | 28 skipped) 3ms
+     × preserves header-safe spaces in custom session IDs without changing the actual codec 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts > private fixed request data > preserves header-safe spaces in custom session IDs without changing the actual codec
+Error: private_request_data_unavailable
+ ❯ Object.dispatch lib/desktop/privateReleaseMergeRequestData.ts:31:16
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts:14:229
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 28 skipped (29)
+   Start at  17:43:48
+   Duration  148ms (transform 20ms, setup 0ms, import 62ms, tests 3ms, environment 0ms)
+

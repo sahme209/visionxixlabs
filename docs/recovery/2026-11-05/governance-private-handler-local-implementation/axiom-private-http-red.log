@@ -1,0 +1,53 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts (4 tests | 4 failed) 54ms
+   × execution handler resolves actual private session and looks only in its private tenant store 30ms
+   × history handler stays private and cannot mint or dispatch 8ms
+   × API keys cannot reach either private handler store 8ms
+   × removed membership refuses before plan access in both private handlers 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts > execution handler resolves actual private session and looks only in its private tenant store
+TypeError: f.composition.handleExecution is not a function
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts:28:37
+     26| it('execution handler resolves actual private session and looks only i…
+     27|  const f=setup();try{
+     28|  const response=await f.composition.handleExecution(f.request('provide…
+       |                                     ^
+     29|  expect(response.status).toBe(409);expect(f.session).toHaveBeenCalled(…
+     30|  expect(f.find).toHaveBeenCalledWith({where:{id:planId,organizationId:…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts > history handler stays private and cannot mint or dispatch
+TypeError: f.composition.handleOperation is not a function
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts:35:57
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts > API keys cannot reach either private handler store
+TypeError: f.composition.handleExecution is not a function
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts:38:50
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts > removed membership refuses before plan access in both private handlers
+TypeError: f.composition.handleExecution is not a function
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts:41:87
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  17:35:29
+   Duration  597ms (transform 272ms, setup 0ms, import 436ms, tests 54ms, environment 0ms)
+

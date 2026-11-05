@@ -1,0 +1,106 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts (6 tests | 6 failed) 10ms
+   × imports and uses both cores without loading shared resources or legacy coordinator 8ms
+   × keeps current paired-session options, derived coordinator scope and private headers 1ms
+   × retains method/schema/version refusals and unavailable-adapter mutation refusal 0ms
+   × keeps independent identity, rate and source binding refusals 0ms
+   × keeps history read/recovery independent of coordinator and provider construction 0ms
+   × rechecks current session before returning a read result 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts > imports and uses both cores without loading shared resources or legacy coordinator
+AssertionError: expected 501 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 501
+
+ ❯ lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts:22:227
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts > keeps current paired-session options, derived coordinator scope and private headers
+AssertionError: expected null to be 'private, no-store' // Object.is equality
+
+- Expected:
+"private, no-store"
+
++ Received:
+null
+
+ ❯ lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts:23:252
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts > retains method/schema/version refusals and unavailable-adapter mutation refusal
+AssertionError: expected 501 to be 405 // Object.is equality
+
+- Expected
++ Received
+
+- 405
++ 501
+
+ ❯ lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts:24:202
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts > keeps independent identity, rate and source binding refusals
+AssertionError: expected 501 to be 429 // Object.is equality
+
+- Expected
++ Received
+
+- 429
++ 501
+
+ ❯ lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts:25:227
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+ FAIL  lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts > keeps history read/recovery independent of coordinator and provider construction
+AssertionError: expected 501 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 501
+
+ ❯ lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts:26:205
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/6]⎯
+
+ FAIL  lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts > rechecks current session before returning a read result
+AssertionError: expected 501 to be 401 // Object.is equality
+
+- Expected
++ Received
+
+- 401
++ 501
+
+ ❯ lib/desktop/__tests__/releaseProviderMergeHttpCores.test.ts:27:267
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed (6)
+   Start at  17:37:55
+   Duration  159ms (transform 20ms, setup 0ms, import 57ms, tests 10ms, environment 0ms)
+

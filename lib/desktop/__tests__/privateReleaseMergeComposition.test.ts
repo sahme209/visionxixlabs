@@ -36,7 +36,7 @@ it("refuses API keys without reading the supplied database or exposing resource 
   const transport = vi.fn();
   try {
     const composition = createPrivateReleaseMergeComposition({ client, vault: createPrivateCredentialVault(new Uint8Array(32).fill(8)), sessionSigningKey: new Uint8Array(32).fill(7), billing: { kind: "legacy" }, fetch: transport as typeof fetch, now: Date.now, enabled: () => true, governanceEnabled: () => true });
-    expect(Object.keys(composition)).toEqual(["forRequest"]);
+    expect(Object.keys(composition)).toEqual(["forRequest", "handleExecution", "handleOperation"]);
     const request = new NextRequest("https://example.invalid/private-merge", { headers: { authorization: "Bearer vxlk_owned" } });
     await expect(composition.forRequest(request).run("release_merge_provider_" + "a".repeat(64))).rejects.toThrow();
     expect(session).not.toHaveBeenCalled();

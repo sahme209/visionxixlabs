@@ -1,6 +1,9 @@
 import "server-only";
 import type { PrismaClient } from "@prisma/client";
 import type { NextRequest } from "next/server";
+import { consumeToken } from "@/lib/api/rateLimiter";
+import { createReleaseProviderMergeExecutionHttp } from "./releaseProviderMergeExecutionHttpCore";
+import { createReleaseProviderMergeOperationHttp } from "./releaseProviderMergeOperationHttpCore";
 import type { createPrivateCredentialVault } from "@/lib/security/privateCredentialVault";
 import { createPrivateReleaseOperationPlanRepo } from "@/lib/security/privateReleaseOperationPlanRepo";
 import { createPrivatePlatformGithubAppConfiguration } from "@/lib/connectors/github/privatePlatformGithubAppConfiguration";
@@ -43,8 +46,7 @@ export function createPrivateReleaseMergeComposition(resources: PrivateReleaseMe
     configuration: createPrivatePlatformGithubAppConfiguration({ repo: client, vault }),
     fetch: transport, now,
   });
-  return Object.freeze({
-    forRequest(request: NextRequest) {
+  function forRequest(request: NextRequest, expectedIdentity?: {id: string; userId: string; organizationId: string}) {
       return createReleaseProviderMergeCoordinatorCore(repo, request, {
         fetch: transport, now,
         useScopedInstallationTokens: true,
@@ -57,7 +59,19 @@ export function createPrivateReleaseMergeComposition(resources: PrivateReleaseMe
           if (suppliedRepo !== repo) throw Error("private_merge_repository_changed");
           return createPrivateGovernanceMergeRequestService(req, repo, scope, isEnabled, { resolveSession, githubAuth, fetch: transport, now });
         },
-      });
+      }, expectedIdentity);
+  }
+  const handleExecution = createReleaseProviderMergeExecutionHttp({
+    repo, resolveSession, consumeToken,
+    createCoordinator: (suppliedRepo, request, _ports, expectedIdentity) => {
+      if (suppliedRepo !== repo) throw Error("private_merge_repository_changed");
+      return forRequest(request, expectedIdentity);
     },
+  });
+  const handleOperation = createReleaseProviderMergeOperationHttp({repo, resolveSession, consumeToken});
+  return Object.freeze({
+    forRequest: (request: NextRequest) => forRequest(request),
+    handleExecution,
+    handleOperation,
   });
 }

@@ -1,0 +1,37 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts (5 tests | 1 failed) 75ms
+   × HTTP preparation preserves the actual canonical issuer refusal before claim or credential 16ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts > HTTP preparation preserves the actual canonical issuer refusal before claim or credential
+AssertionError: expected "$transaction" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st $transaction call:
+
+    Array [
+      [Function anonymous],
+      undefined,
+    ]
+
+
+Number of calls: 1
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeHttpComposition.test.ts:53:62
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 6 passed (7)
+   Start at  17:39:14
+   Duration  556ms (transform 491ms, setup 0ms, import 768ms, tests 116ms, environment 0ms)
+

@@ -1,0 +1,38 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts (27 tests | 2 failed | 25 skipped) 5ms
+     × bounds read_execution response lifetime 4ms
+     × bounds read_operation response lifetime 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts > private fixed request data > bounds read_execution response lifetime
+AssertionError: expected "timeout" to be called with arguments: [ 25000 ]
+
+Number of calls: 0
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts:19:502
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts > private fixed request data > bounds read_operation response lifetime
+AssertionError: expected "timeout" to be called with arguments: [ 10000 ]
+
+Number of calls: 0
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts:19:502
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 25 skipped (27)
+   Start at  17:38:28
+   Duration  155ms (transform 20ms, setup 0ms, import 64ms, tests 5ms, environment 0ms)
+

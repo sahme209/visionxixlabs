@@ -1,0 +1,25 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts (24 tests | 1 failed | 23 skipped) 4ms
+     × preserves dotted custom IDs minted by the actual private codec 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts > private fixed request data > preserves dotted custom IDs minted by the actual private codec
+Error: private_request_data_unavailable
+ ❯ Object.dispatch lib/desktop/privateReleaseMergeRequestData.ts:31:16
+
+ ❯ lib/desktop/__tests__/privateReleaseMergeRequestData.test.ts:13:207
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 23 skipped (24)
+   Start at  17:37:35
+   Duration  153ms (transform 20ms, setup 0ms, import 64ms, tests 4ms, environment 0ms)
+
