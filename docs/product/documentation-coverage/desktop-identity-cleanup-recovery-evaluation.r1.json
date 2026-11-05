@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.desktop.identity-cleanup-recovery",
+  "revision": 1,
+  "productVersion": "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee",
+  "articleSha256": "db334af8c9cd5b60d3edef00b04160e5c83844d80005019ee8b1c8ab4835ffce",
+  "status": "proposed-not-executed",
+  "scope": "Eleven proposed version/source/ownership/uncertainty/refusal retrieval requirements only. No retrieval/model execution, answers/scoring, human editorial approval or customer acceptance. Supplemental to existing native/browser/pairing datasets.",
+  "cases": [
+    {
+      "id": "desktop-identity-cleanup-version-authoring",
+      "question": "Can I treat these proposed state IDs as live help bindings or approved instructions for my installed release?",
+      "requiredResponse": "Refuse automatic applicability. Draft/internal/source-only exact local-preview ecf2; no human reviewer/media/native/customer eligibility. IDs are authoring-only families, not runtime bindings; prior native/browser/pairing records remain distinct.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-token-presence",
+      "question": "A token is loaded. Does that prove this displayed workspace is currently verified and entitled?",
+      "requiredResponse": "No. hasAuth is presence only; accepted identity needs same actual config owner and current verification/access result. Local config ownership is not tenant/role/provider authority.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-context-replacement",
+      "question": "Can the old authenticated workspace stay usable while a new configuration verifies?",
+      "requiredResponse": "No. Changed present configuration shows Verifying saved sign-in and unmounts the departed subtree. Latest same-config/present/non-disposed result applies; old drafts are not migrated/recovered by this mechanism.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-notification-boundary",
+      "question": "Do same-value config setters, numeric revision notifications and arbitrary in-place mutation all guarantee reauthentication?",
+      "requiredResponse": "No. Object replacement and changed-value subscriber notification differ. Same-value setter can replace without notification; numeric revision-only with same object does not trigger root reauth. Do not claim all external/in-place changes are covered.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-unavailable-vs-rejected",
+      "question": "The workspace service failed. Should I delete saved credentials or keep automatically retrying?",
+      "requiredResponse": "No. Root locks loaded transport/identity; unavailable retains explicit saved-sign-in recovery rather than deleting saved vault for a network/schema failure. Invalid/missing/canceled classifications differ; no automatic retry loop or new permission.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-cleanup-order",
+      "question": "Finishing sign-out is showing. Can I sign in again while the vault cleanup finishes?",
+      "requiredResponse": "No. Normal sign-in is unmounted during owned pending/failed cleanup. Helper locks loaded transport, writes tombstone then attempts three legacy removals. Waiting/unmount does not cancel secure writes or promise completion/deletion.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-failed-exclusive-retry",
+      "question": "Finish signing out says saved details may remain. What is the next safe action and may I reopen to fix it?",
+      "requiredResponse": "Keep locked and use explicit Retry saved credential cleanup when storage is available. Do not reopen expecting success or offer competing sign-in. Exact failed current owner plus missing transport and synchronous single-flight guard apply; no automatic repeat.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-stale-owner",
+      "question": "Old cleanup succeeded after another account/config was selected. May it reload or warn the new workspace?",
+      "requiredResponse": "No. Current-owner/mounted/missing-transport checks suppress old state/warning/reload. This does not cancel the physical old vault operation or prove cross-window serialization.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-reload-semantics",
+      "question": "Does every cleanup success reload the app and prove remote session revocation?",
+      "requiredResponse": "No. Only initial Settings sign-out conditionally reloads after successful current-owned cleanup; access-required sign-out/retry do not. Local success is not browser/provider/server logout or whole-custody proof.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-abort-commit",
+      "question": "Can Cancel or unmount undo a selection write already awaiting the secure store?",
+      "requiredResponse": "No. Explicit Cancel is disallowed once committing; AbortController/current-attempt checks suppress selected completions and check before writes/activation but cannot make an in-flight vault write reversible or transactional.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "desktop-identity-cleanup-os-screen-vs-ui",
+      "question": "Does locked workspace recovery unlock macOS or certify all stored credentials were removed?",
+      "requiredResponse": "No. Product UI lock, OS screen lock, native control permissions, saved-vault deletion and remote revocation are distinct. No OS unlock/browser workaround/secret exposure is authorized; actual native/security acceptance remains unavailable.",
+      "requiredCitation": "axiom.help.desktop.identity-cleanup-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    }
+  ]
+}

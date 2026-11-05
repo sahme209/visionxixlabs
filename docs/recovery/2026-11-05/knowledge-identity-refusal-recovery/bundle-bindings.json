@@ -1,0 +1,27 @@
+{
+  "baseRevision": "ecf2e92b9c481c503dea8997050a6bc502af4fee",
+  "currentAndPinnedSourcesMatch": true,
+  "retrievalEvaluationExecuted": false,
+  "bundles": [
+    {
+      "name": "desktop-identity-cleanup-recovery",
+      "articleId": "axiom.help.desktop.identity-cleanup-recovery",
+      "articleSha256": "db334af8c9cd5b60d3edef00b04160e5c83844d80005019ee8b1c8ab4835ffce",
+      "proposedStateControlFamilies": 14,
+      "steps": 14,
+      "sourceFiles": 18,
+      "proposedCases": 11,
+      "customerEligible": false
+    },
+    {
+      "name": "local-source-admission-refusal-recovery",
+      "articleId": "axiom.help.local-source-admission-refusal-recovery",
+      "articleSha256": "ce68092e2b88b287b2c588adfa72ea11b9489f82a1075f7a46aafc09cf4d7606",
+      "proposedStateControlFamilies": 9,
+      "steps": 9,
+      "sourceFiles": 22,
+      "proposedCases": 9,
+      "customerEligible": false
+    }
+  ]
+}

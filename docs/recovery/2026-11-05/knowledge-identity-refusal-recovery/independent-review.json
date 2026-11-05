@@ -1,0 +1,20 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR within finite semantic scope",
+  "filesReviewed": [
+    "docs/product/documentation-coverage/articles/desktop-identity-cleanup-recovery.r1.json",
+    "docs/product/documentation-coverage/articles/local-source-admission-refusal-recovery.r1.json",
+    "docs/product/documentation-coverage/desktop-identity-cleanup-recovery-evaluation.r1.json",
+    "docs/product/documentation-coverage/local-source-admission-refusal-recovery-evaluation.r1.json"
+  ],
+  "reviewed": [
+    "current-owner exclusive cleanup pending/failure/retry/success and tombstone-first ordering",
+    "no OSunlock/remote revocation/physical-write cancellation/crosswindow guarantee",
+    "selected15source-key freshness and single contextual AI-route drift disclosed",
+    "original two typed refusal sources unchanged",
+    "logical current model/policy checks vs allAI/pricing/physical cancellation",
+    "internal draft/localpreview/nullhumanreview/media[]/proposedonlycases"
+  ],
+  "genuineHumanEditorialApproval": false,
+  "runtimeRetrievalOrProviderActions": false
+}

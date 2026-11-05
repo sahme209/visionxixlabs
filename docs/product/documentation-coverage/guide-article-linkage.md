@@ -54,4 +54,13 @@ These are newly added draft links, not an assertion that every guide is mapped o
 
 [Batch evidence](../../recovery/2026-11-05/knowledge-intake-support-download/README.md) verifies source/schema/article-case integrity and expected customer refusal. No retrieval/ingestion or new public/runtime acceptance is inferred, and missing guide mappings remain unfinished.
 
+## November 5 identity-cleanup and refusal recovery supplements
+
+| Source context | New internal draft | Acceptance still required |
+| --- | --- | --- |
+| [Desktop identity/sign-out context](../knowledge/authenticated-ui-context.md) | [desktop-identity-cleanup-recovery.r1.json](articles/desktop-identity-cleanup-recovery.r1.json) | Current-owner native/vault/session behavior, genuine editorial/media/installed-version and retrieval/customer acceptance. Older native/browser/pairing drafts remain separate. |
+| [Historical local source refusals](../knowledge/local-source-refusals.md) with explicit current contextual route review | [local-source-admission-refusal-recovery.r1.json](articles/local-source-admission-refusal-recovery.r1.json) | Current supported-version/provider/source/runtime/editorial/media/retrieval qualification; old contextual hash is not silently rebound and no refusal override is authorized. |
+
+[Batch evidence](../../recovery/2026-11-05/knowledge-identity-refusal-recovery/README.md) records the one contextual hash drift, current-source bindings, integrity checks and customer refusal. No retrieval/ingestion or new live acceptance follows.
+
 Do not mutate historical bindings to make this table green. Review source drift, append a new revision where needed, preserve unaccepted states, and validate only newly changed bundles. Proposed evaluation prose is not executed retrieval; no API/model/ingestion pipeline is created by this table.

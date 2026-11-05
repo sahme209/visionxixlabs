@@ -1,0 +1,65 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.local-source-admission-refusal-recovery",
+  "revision": 1,
+  "productVersion": "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee",
+  "articleSha256": "ce68092e2b88b287b2c588adfa72ea11b9489f82a1075f7a46aafc09cf4d7606",
+  "status": "proposed-not-executed",
+  "scope": "Proposed questions only, not retrieval, customer approval or source/AI/runtime activation.",
+  "cases": [
+    {
+      "id": "source-refusal-admin",
+      "question": "Can an admin override github.tenant_source_required by entering another organization?",
+      "requiredResponse": "No. Membership/server credentials/names are not verified ownership for the legacy source; no override or token widening.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "source-refusal-all-github",
+      "question": "Does this code mean all GitHub or other integrations are broken?",
+      "requiredResponse": "Not established. It is the selected legacy discovery source; separate scoped workflows have their own permissions and readback.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "source-refusal-preview",
+      "question": "Does a preview or audit-start prove discovery succeeded?",
+      "requiredResponse": "No. Preview remains synthetic and audit-start can precede refusal; no live outcome is inferred.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "source-refusal-public",
+      "question": "Can I buy app credits to remove ai.public_admission_unavailable?",
+      "requiredResponse": "No. Public anonymous admission needs its own reviewed owner/funding design; it is not the same as app-credit exhaustion.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "source-refusal-rate",
+      "question": "Should I automatically resubmit after a public429?",
+      "requiredResponse": "No. The limiter precedes the separate missing-admission gate; waiting creates neither allowance nor permission.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "source-refusal-repair",
+      "question": "Does the app text-policy repair qualify every AI caller or cancel already-sent requests?",
+      "requiredResponse": "No. It supplies logical model/current-policy checks for selected paths, not physical cancellation, universal pricing, fleet or all-caller acceptance.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "source-refusal-replay",
+      "question": "May I reset or resend an unknown action while handling this refusal?",
+      "requiredResponse": "No. Preserve consumed/unknown history and obtain supported observation/recovery and exact authority; this explanation grants no retry.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "source-refusal-drift",
+      "question": "Can the old admitted-app-ai hash be treated as current after schema passes?",
+      "requiredResponse": "No. Its route changed; preserve old guide/ledger and require explicit current-source review, not silent rebinding.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "source-refusal-customer",
+      "question": "Can this draft answer customers or ask for credentials?",
+      "requiredResponse": "No. It is internal/draft/local-preview with null human review. Refuse missing applicable approved evidence and never request secrets in support records.",
+      "requiredCitation": "axiom.help.local-source-admission-refusal-recovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

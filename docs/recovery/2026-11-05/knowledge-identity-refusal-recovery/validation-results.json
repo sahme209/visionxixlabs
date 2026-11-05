@@ -1,0 +1,96 @@
+{
+  "kind": "integrity-not-retrieval",
+  "retrievalEvaluationExecuted": false,
+  "results": [
+    {
+      "name": "desktop-identity-cleanup-recovery",
+      "customer": false,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-identity-refusal-t_7xz9po/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/desktop-identity-cleanup-recovery.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/desktop-identity-cleanup-recovery-evaluation.r1.json",
+        "--version",
+        "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee"
+      ],
+      "exitCode": 0,
+      "stdoutBase64": "ewogICJ2YWxpZCI6IHRydWUsCiAgImFydGljbGVJZCI6ICJheGlvbS5oZWxwLmRlc2t0b3AuaWRlbnRpdHktY2xlYW51cC1yZWNvdmVyeSIsCiAgInJldmlzaW9uIjogMSwKICAicHJvZHVjdFZlcnNpb24iOiAibG9jYWwtc291cmNlLXByZXZpZXc6ZWNmMmU5MmI5YzQ4MWM1MDNkZWE4OTk3MDUwYTZiYzUwMmFmNGZlZSIsCiAgInNvdXJjZUZpbGVzIjogMTgsCiAgImV2YWx1YXRpb25DYXNlcyI6IDExLAogICJjdXN0b21lckVsaWdpYmxlIjogZmFsc2UsCiAgImN1c3RvbWVyQmxvY2tlcnMiOiBbCiAgICAiYXJ0aWNsZV9ub3RfYXBwcm92ZWQiLAogICAgImFydGljbGVfbm90X3B1YmxpYyIsCiAgICAibG9jYWxfcHJldmlld19ub3Rfc2hpcHBlZCIKICBdLAogICJldmFsdWF0aW9uU3RhdHVzIjogInByb3Bvc2VkLW5vdC1leGVjdXRlZCIKfQo=",
+      "stderrBase64": ""
+    },
+    {
+      "name": "desktop-identity-cleanup-recovery",
+      "customer": true,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-identity-refusal-t_7xz9po/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/desktop-identity-cleanup-recovery.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/desktop-identity-cleanup-recovery-evaluation.r1.json",
+        "--version",
+        "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdoutBase64": "",
+      "stderrBase64": "U3VwcG9ydCBrbm93bGVkZ2UgdmFsaWRhdGlvbiBmYWlsZWQ6IGN1c3RvbWVyIHJldHJpZXZhbCBpbmVsaWdpYmxlOiBhcnRpY2xlX25vdF9hcHByb3ZlZCwgYXJ0aWNsZV9ub3RfcHVibGljLCBsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkCg=="
+    },
+    {
+      "name": "local-source-admission-refusal-recovery",
+      "customer": false,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-identity-refusal-t_7xz9po/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/local-source-admission-refusal-recovery.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/local-source-admission-refusal-recovery-evaluation.r1.json",
+        "--version",
+        "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee"
+      ],
+      "exitCode": 0,
+      "stdoutBase64": "ewogICJ2YWxpZCI6IHRydWUsCiAgImFydGljbGVJZCI6ICJheGlvbS5oZWxwLmxvY2FsLXNvdXJjZS1hZG1pc3Npb24tcmVmdXNhbC1yZWNvdmVyeSIsCiAgInJldmlzaW9uIjogMSwKICAicHJvZHVjdFZlcnNpb24iOiAibG9jYWwtc291cmNlLXByZXZpZXc6ZWNmMmU5MmI5YzQ4MWM1MDNkZWE4OTk3MDUwYTZiYzUwMmFmNGZlZSIsCiAgInNvdXJjZUZpbGVzIjogMjIsCiAgImV2YWx1YXRpb25DYXNlcyI6IDksCiAgImN1c3RvbWVyRWxpZ2libGUiOiBmYWxzZSwKICAiY3VzdG9tZXJCbG9ja2VycyI6IFsKICAgICJhcnRpY2xlX25vdF9hcHByb3ZlZCIsCiAgICAiYXJ0aWNsZV9ub3RfcHVibGljIiwKICAgICJsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkIgogIF0sCiAgImV2YWx1YXRpb25TdGF0dXMiOiAicHJvcG9zZWQtbm90LWV4ZWN1dGVkIgp9Cg==",
+      "stderrBase64": ""
+    },
+    {
+      "name": "local-source-admission-refusal-recovery",
+      "customer": true,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-identity-refusal-t_7xz9po/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/local-source-admission-refusal-recovery.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/local-source-admission-refusal-recovery-evaluation.r1.json",
+        "--version",
+        "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdoutBase64": "",
+      "stderrBase64": "U3VwcG9ydCBrbm93bGVkZ2UgdmFsaWRhdGlvbiBmYWlsZWQ6IGN1c3RvbWVyIHJldHJpZXZhbCBpbmVsaWdpYmxlOiBhcnRpY2xlX25vdF9hcHByb3ZlZCwgYXJ0aWNsZV9ub3RfcHVibGljLCBsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkCg=="
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "historicalGuideRevision": "82c378d1924ac9c8bc03516b8a73208e41721680",
+  "currentSourceRevision": "ecf2e92b9c481c503dea8997050a6bc502af4fee",
+  "scope": "Only the15recorded source keys, not the complete program or every AI caller",
+  "sources": [
+    {
+      "key": "github-refusal",
+      "path": "lib/connectors/github/legacyGithubSourceBoundary.ts",
+      "historicalSha256": "b194c4eb09c2490545fea4a53317276ca6db15618d5e6bea7bcf58f805cb18d7",
+      "currentSha256": "b194c4eb09c2490545fea4a53317276ca6db15618d5e6bea7bcf58f805cb18d7",
+      "unchanged": true
+    },
+    {
+      "key": "github-scanner-gate",
+      "path": "lib/connectors/github/githubLiveScanner.ts",
+      "historicalSha256": "6ccad6e2e61425277db81fbe14dea46805ffbdcb88018c2185ee22a5c9b582de",
+      "currentSha256": "6ccad6e2e61425277db81fbe14dea46805ffbdcb88018c2185ee22a5c9b582de",
+      "unchanged": true
+    },
+    {
+      "key": "github-state-propagation",
+      "path": "lib/releaseops/getReleaseOpsState.ts",
+      "historicalSha256": "d8ac7ab7b414b52124de5731d41c4df08fc207c912da7a3664fb2e4c63a8442a",
+      "currentSha256": "d8ac7ab7b414b52124de5731d41c4df08fc207c912da7a3664fb2e4c63a8442a",
+      "unchanged": true
+    },
+    {
+      "key": "graph-route",
+      "path": "app/api/agent/execution-graph/route.ts",
+      "historicalSha256": "dbaea897a8b8394a11abc7eb9504ef097321fd42481b99f784a8131530bb49ee",
+      "currentSha256": "dbaea897a8b8394a11abc7eb9504ef097321fd42481b99f784a8131530bb49ee",
+      "unchanged": true
+    },
+    {
+      "key": "github-sync-route",
+      "path": "app/api/github/sync/route.ts",
+      "historicalSha256": "10b259c2c0bdcf5076a2b3feb4306a2d6e681dbac4c33c672726e9bf2648192d",
+      "currentSha256": "10b259c2c0bdcf5076a2b3feb4306a2d6e681dbac4c33c672726e9bf2648192d",
+      "unchanged": true
+    },
+    {
+      "key": "releaseops-state-route",
+      "path": "app/api/releaseops/state/route.ts",
+      "historicalSha256": "98f8edd72aec08613285b27ac1fca93ee2b79743c3a73473f325f7b9ec6d085a",
+      "currentSha256": "98f8edd72aec08613285b27ac1fca93ee2b79743c3a73473f325f7b9ec6d085a",
+      "unchanged": true
+    },
+    {
+      "key": "releaseops-scan-route",
+      "path": "app/api/releaseops/scan/route.ts",
+      "historicalSha256": "efd84122786ac9e83669ae853f1dfa4f70c458d5cb6abc0d78895ef0a889f825",
+      "currentSha256": "efd84122786ac9e83669ae853f1dfa4f70c458d5cb6abc0d78895ef0a889f825",
+      "unchanged": true
+    },
+    {
+      "key": "public-assistant-guard",
+      "path": "app/api/visionxix-ai-chat/route.ts",
+      "historicalSha256": "3d2af75e1c28481926937feed44f7c9c105b7fc6a7cbe451407d7905f1194d21",
+      "currentSha256": "3d2af75e1c28481926937feed44f7c9c105b7fc6a7cbe451407d7905f1194d21",
+      "unchanged": true
+    },
+    {
+      "key": "admitted-app-ai",
+      "path": "app/api/ai/generate/route.ts",
+      "historicalSha256": "030f73f18e9f945a4bd84172aa1a9cefe3970119703ee7955bbcc40d7293cc55",
+      "currentSha256": "88b186fa00db6df7cd15156fd4bfdf41543cd821db85c62bb303385fd753c21d",
+      "unchanged": false
+    },
+    {
+      "key": "scoped-github-resolver",
+      "path": "lib/connectors/github/resolveTenantScopedToken.ts",
+      "historicalSha256": "ba21315843824d1a6df32313428deca253c30120c1881d3ad8bc32fe7f8ff314",
+      "currentSha256": "ba21315843824d1a6df32313428deca253c30120c1881d3ad8bc32fe7f8ff314",
+      "unchanged": true
+    },
+    {
+      "key": "github-local-evidence",
+      "path": "docs/recovery/2026-11-04/legacy-github-source-containment/README.md",
+      "historicalSha256": "80d6f2a86de7c085bc495b42831de1f5611627cd0fcdd0ae8a37372aad790fb0",
+      "currentSha256": "80d6f2a86de7c085bc495b42831de1f5611627cd0fcdd0ae8a37372aad790fb0",
+      "unchanged": true
+    },
+    {
+      "key": "assistant-local-evidence",
+      "path": "docs/recovery/2026-11-04/public-assistant-admission-containment/README.md",
+      "historicalSha256": "80454b87f4e8e7473ed13237f81f86e929e3d6fa642a4d759924470a3625ebad",
+      "currentSha256": "80454b87f4e8e7473ed13237f81f86e929e3d6fa642a4d759924470a3625ebad",
+      "unchanged": true
+    },
+    {
+      "key": "compiled-refusal-evidence",
+      "path": "docs/recovery/2026-11-04/compiled-public-assistant-smoke/result.json",
+      "historicalSha256": "1cc37010650178569854b10a44c1912fd6cfa286837c9036f9e4e29d3ec385c9",
+      "currentSha256": "1cc37010650178569854b10a44c1912fd6cfa286837c9036f9e4e29d3ec385c9",
+      "unchanged": true
+    },
+    {
+      "key": "ordinary-build-evidence",
+      "path": "docs/recovery/2026-11-04/security-containment-web-build/terminal-summary.json",
+      "historicalSha256": "08ffec6daf4c514d6fb44f86b88d840f0fe44bfbeb36b0afeef647d156105525",
+      "currentSha256": "08ffec6daf4c514d6fb44f86b88d840f0fe44bfbeb36b0afeef647d156105525",
+      "unchanged": true
+    },
+    {
+      "key": "error-http-status",
+      "path": "lib/errors/axiomErrors.ts",
+      "historicalSha256": "db701a4d3456f5d2c61444f20137888137f450ba67c2f0cce01d83b3edc19c22",
+      "currentSha256": "db701a4d3456f5d2c61444f20137888137f450ba67c2f0cce01d83b3edc19c22",
+      "unchanged": true
+    }
+  ],
+  "routeChange": "One admitAIText call adds server-resolved Gateway model/default policy requirement; actual helper policy freshness changed separately in the approved repair.",
+  "historicalGuideAndLedgerRewritten": false,
+  "reviewer": "knowledge_browser_auth",
+  "currentSemantics": "The two original typed refusal sources remain unchanged. Selected app text admission pins concrete Gateway model/current policy at claim and before supported dispatch; logical checks do not cancel sent requests, establish pricing or qualify fleet-wide AI.",
+  "runtimeTestsOrProviderActions": false,
+  "customerEligible": false
+}

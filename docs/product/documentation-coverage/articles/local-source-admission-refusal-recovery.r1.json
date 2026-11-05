@@ -1,0 +1,215 @@
+{
+  "schema": 1,
+  "id": "axiom.help.local-source-admission-refusal-recovery",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Understand source/admission refusals without resetting access or replaying work",
+  "productVersion": "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee",
+  "screenIds": [
+    "proposed.axiom.screen.source-admission-unavailable"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.refusal-recovery.identify",
+    "proposed.axiom.control.refusal-recovery.tenant-source",
+    "proposed.axiom.control.refusal-recovery.preview",
+    "proposed.axiom.control.refusal-recovery.public-admission",
+    "proposed.axiom.control.refusal-recovery.rate-limit",
+    "proposed.axiom.control.refusal-recovery.app-text",
+    "proposed.axiom.control.refusal-recovery.unknown",
+    "proposed.axiom.control.refusal-recovery.handoff",
+    "proposed.axiom.control.refusal-recovery.freshness"
+  ],
+  "goal": "Classify local source/admission refusals and preserve safe context without suggesting unapproved retries or security workarounds.",
+  "prerequisites": [
+    "Internal source-only local preview, not an installed or production inspection. Codes are not asserted to appear in current public v0.1.21 or any uninspected session.",
+    "Supplemental to the historical local-source-refusals guide. Fourteen of its15recorded keys remain unchanged; the admitted-app-ai contextual route changed after the approved policy-freshness repair. Its old hash is not current integrity proof.",
+    "No UI-control inventory is established here. Proposed IDs label documentation state/recovery families, not actual buttons, stable mounted help metadata or permission keys."
+  ],
+  "permissions": [
+    "Being authenticated, admin or connected is not a substitute for verified tenant/repository source authority or funded AI admission. A public or private route has its own current checks.",
+    "No reconnect, new consent, tenant/header fabrication, environment flag, provider switch, credit purchase, secret disclosure or automatic retry is authorized by these explanations.",
+    "Genuine independent human decisions, one-attempt limits and unknown effects remain mandatory in supported workflows. Documentation cannot approve or replay them."
+  ],
+  "steps": [
+    {
+      "instruction": "refusal-recovery.identify: Record the exact safe code/status, feature and version without resubmitting a request.",
+      "effect": "recover",
+      "expectedState": "These are source-specific refusal states, not proof of a failed deployment or that every connector is broken. Use only an existing safe correlation/reference if actually supplied; never invent one."
+    },
+    {
+      "instruction": "refusal-recovery.tenant-source: If the inspected local workflow reports github.tenant_source_required (412), preserve the context and use only an independently supported scoped workflow.",
+      "effect": "recover",
+      "expectedState": "The legacy ambient GitHub source lacks verified workspace ownership. Signed-in/admin identity, a server credential, another organization name or a source label cannot supply that missing binding."
+    },
+    {
+      "instruction": "refusal-recovery.preview: Keep synthetic preview or disabled observations separate from successful live discovery.",
+      "effect": "read",
+      "expectedState": "A preview is not restored authority or tenant isolation proof. Audit-start entries can precede refusal and do not prove a provider scan occurred."
+    },
+    {
+      "instruction": "refusal-recovery.public-admission: If the local website assistant reports ai.public_admission_unavailable (503), use available documentation/help rather than repeatedly submitting.",
+      "effect": "recover",
+      "expectedState": "This anonymous route lacks a verified usage owner/allowance/admission; its fixed gate precedes body/configuration/prompt/inference processing in the inspected source."
+    },
+    {
+      "instruction": "refusal-recovery.rate-limit: Distinguish an earlier anonymous HTTP429 from the missing-admission503.",
+      "effect": "recover",
+      "expectedState": "The existing IP limiter runs first. Waiting does not create funding or permission, and no automatic retry/fallback is authorized."
+    },
+    {
+      "instruction": "refusal-recovery.app-text: Treat the authenticated app text route as a separate workflow with its own current policy, scope, request and budget checks.",
+      "effect": "read",
+      "expectedState": "The later approved repair supplies server-pinned Gateway model policy to admission; shared-row policy checks occur at durable claim and immediately before supported dispatch. This does not restore anonymous assistance or certify all AI paths."
+    },
+    {
+      "instruction": "refusal-recovery.unknown: Preserve unknown or consumed action history while seeking support.",
+      "effect": "recover",
+      "expectedState": "Neither refusal provides permission to reset consent, widen a token, swap accounts, change settings, resend an action or infer that no earlier effect occurred."
+    },
+    {
+      "instruction": "refusal-recovery.handoff: Use the supported help route with a safe minimal version/code description.",
+      "effect": "read",
+      "expectedState": "Do not disclose credentials, private prompts, repository screenshots or customer data. This article sends no message and promises no support resolution or current destination health."
+    },
+    {
+      "instruction": "refusal-recovery.freshness: Before relying on this description, match the exact supported version and source evidence; escalate when absent.",
+      "effect": "recover",
+      "expectedState": "The historical guide ledger has one stale contextual AI-handler hash. It remains history; the new article binds the current route/helpers explicitly. No source hash or schema pass grants customer eligibility or execution authority."
+    }
+  ],
+  "expectedOutcome": "Understand which missing boundary the exact local code describes and retain minimal safe evidence for a supported next step; no restored discovery, funded inference or operational success is inferred.",
+  "limitations": [
+    "The original GitHub ambient-source gate and anonymous assistant gate are unchanged by this authoring. The changed app handler adds textPolicy to admitAIText; current helper semantics come from separately pinned current source, not blindly rebinding the old ledger.",
+    "Logical current-policy checks and one-use model binding do not cancel an already sent SDK request, prove atomic physical-wire revocation, qualify every direct/extraction/quoted caller or establish full issuer/custody/fleet coverage.",
+    "Usage/SDK/write/preparation uncertainty can retain held capacity. No automatic refund, retry, second-provider dispatch or useful qualified price/quote is established.",
+    "Existing local synthetic/compiled-negative and database evidence has its own source scope; no source inspection here is a real HTTP/provider/AI/production/native test.",
+    "Exact mounted screens, current connection health, true customer account access, authentic media, human editorial approval and customer/retrieval acceptance remain open."
+  ],
+  "recovery": [
+    "Record exact code/version and an existing safe reference when available. Preserve the originating task/action and use qualified supported help, not a guessed identifier or new account.",
+    "Do not buy credits or change models expecting the anonymous gate to lift. Missing public funding design differs from authenticated workspace credit exhaustion.",
+    "Do not interpret this selected GitHub discovery refusal as failure of all GitHub installation/repository operations or unrelated integrations. Every separate workflow still needs current permission/readback.",
+    "If source/version/approved guidance is missing or drifted, refuse/escalate. Historical records must remain intact until explicit re-review; never automatically rewrite source hashes or extend expired approvals."
+  ],
+  "searchTerms": [
+    "github.tenant_source_required",
+    "ai.public_admission_unavailable",
+    "HTTP412",
+    "HTTP503",
+    "HTTP429",
+    "legacy discovery unavailable",
+    "public assistant allowance",
+    "tenant source not verified",
+    "policy freshness",
+    "no automatic retry",
+    "source hash drift"
+  ],
+  "sources": [
+    {
+      "path": "app/api/agent/execution-graph/route.ts",
+      "sha256": "dbaea897a8b8394a11abc7eb9504ef097321fd42481b99f784a8131530bb49ee"
+    },
+    {
+      "path": "app/api/ai/generate/route.ts",
+      "sha256": "88b186fa00db6df7cd15156fd4bfdf41543cd821db85c62bb303385fd753c21d"
+    },
+    {
+      "path": "app/api/github/sync/route.ts",
+      "sha256": "10b259c2c0bdcf5076a2b3feb4306a2d6e681dbac4c33c672726e9bf2648192d"
+    },
+    {
+      "path": "app/api/releaseops/scan/route.ts",
+      "sha256": "efd84122786ac9e83669ae853f1dfa4f70c458d5cb6abc0d78895ef0a889f825"
+    },
+    {
+      "path": "app/api/releaseops/state/route.ts",
+      "sha256": "98f8edd72aec08613285b27ac1fca93ee2b79743c3a73473f325f7b9ec6d085a"
+    },
+    {
+      "path": "app/api/visionxix-ai-chat/route.ts",
+      "sha256": "3d2af75e1c28481926937feed44f7c9c105b7fc6a7cbe451407d7905f1194d21"
+    },
+    {
+      "path": "docs/product/knowledge/local-source-refusals.md",
+      "sha256": "885008665c84e0948cc244f46a30d115fbc221f86efb664dc1e5f61e6dda57fd"
+    },
+    {
+      "path": "docs/product/knowledge/local-source-refusals.sources.json",
+      "sha256": "3ff5ce4982fe53dff779b18439d3e60294ab573f2ad9b21de269d9e20a07d679"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/compiled-public-assistant-smoke/result.json",
+      "sha256": "1cc37010650178569854b10a44c1912fd6cfa286837c9036f9e4e29d3ec385c9"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/legacy-github-source-containment/README.md",
+      "sha256": "80d6f2a86de7c085bc495b42831de1f5611627cd0fcdd0ae8a37372aad790fb0"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/public-assistant-admission-containment/README.md",
+      "sha256": "80454b87f4e8e7473ed13237f81f86e929e3d6fa642a4d759924470a3625ebad"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/security-containment-web-build/terminal-summary.json",
+      "sha256": "08ffec6daf4c514d6fb44f86b88d840f0fe44bfbeb36b0afeef647d156105525"
+    },
+    {
+      "path": "docs/recovery/2026-11-05/ai-policy-freshness-repair/README.md",
+      "sha256": "1c3e07cba25cd0ef1ef070b9379440f00acb6ff9ae7765318e707b985cbcf667"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "d35b424781c8ea415c1294f8a68fcbb48ae842906112165f29b9d3b4287a97b4"
+    },
+    {
+      "path": "lib/ai/effectiveGatewayModel.ts",
+      "sha256": "0d5e98ffb64197ae34546bfe81f7835f2468f9da7a737b0ccd5470c63ff11f3e"
+    },
+    {
+      "path": "lib/ai/textAdmissionPolicy.ts",
+      "sha256": "6aa3daf8c9ff6120abce64381807493933df980a7c89a2f83d54978de508a2b2"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "8480a12435cd52052fec3b340a0809e56864293d84921c93d169f5850db0879d"
+    },
+    {
+      "path": "lib/connectors/github/githubLiveScanner.ts",
+      "sha256": "6ccad6e2e61425277db81fbe14dea46805ffbdcb88018c2185ee22a5c9b582de"
+    },
+    {
+      "path": "lib/connectors/github/legacyGithubSourceBoundary.ts",
+      "sha256": "b194c4eb09c2490545fea4a53317276ca6db15618d5e6bea7bcf58f805cb18d7"
+    },
+    {
+      "path": "lib/connectors/github/resolveTenantScopedToken.ts",
+      "sha256": "ba21315843824d1a6df32313428deca253c30120c1881d3ad8bc32fe7f8ff314"
+    },
+    {
+      "path": "lib/errors/axiomErrors.ts",
+      "sha256": "db701a4d3456f5d2c61444f20137888137f450ba67c2f0cce01d83b3edc19c22"
+    },
+    {
+      "path": "lib/releaseops/getReleaseOpsState.ts",
+      "sha256": "d8ac7ab7b414b52124de5731d41c4df08fc207c912da7a3664fb2e4c63a8442a"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/local-source-refusals.md",
+      "docs/product/knowledge/local-source-refusals.sources.json",
+      "docs/recovery/2026-11-05/knowledge-identity-refusal-recovery/source-freshness.json",
+      "docs/recovery/2026-11-05/ai-policy-freshness-repair/README.md"
+    ],
+    "verifiedVersion": "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee",
+    "verifiedAt": "2026-11-05T13:32:25Z"
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

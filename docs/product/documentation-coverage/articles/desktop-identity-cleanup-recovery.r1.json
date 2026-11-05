@@ -1,0 +1,237 @@
+{
+  "schema": 1,
+  "id": "axiom.help.desktop.identity-cleanup-recovery",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Verified desktop identity ownership and exclusive sign-out cleanup recovery",
+  "productVersion": "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee",
+  "screenIds": [
+    "proposed.axiom.screen.desktop.identity-recovery"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.desktop.identity.credential-presence",
+    "proposed.axiom.control.desktop.identity.verifying-state",
+    "proposed.axiom.control.desktop.identity.verified-owned-state",
+    "proposed.axiom.control.desktop.identity.access-required-state",
+    "proposed.axiom.control.desktop.identity.unavailable-recovery",
+    "proposed.axiom.control.desktop.identity.invalid-rejected-state",
+    "proposed.axiom.control.desktop.identity.settings-logout",
+    "proposed.axiom.control.desktop.identity.access-other-account",
+    "proposed.axiom.control.desktop.identity.cleanup-pending",
+    "proposed.axiom.control.desktop.identity.cleanup-failed",
+    "proposed.axiom.control.desktop.identity.cleanup-retry",
+    "proposed.axiom.control.desktop.identity.cleanup-success",
+    "proposed.axiom.control.desktop.identity.replaced-owner",
+    "proposed.axiom.control.desktop.identity.precommit-cancel"
+  ],
+  "goal": "Explain the accepted-identity/current-configuration boundary and the complete same-root pending/failed/retry/success cleanup workflow without mistaking credential presence, a locked UI, cancellation or stale-callback refusal for vault deletion, provider logout or execution authority.",
+  "prerequisites": [
+    "Internal source-only supplemental draft. Customer/publication/genuine editorial/media/native/browser/AT/retrieval acceptance are false; verifiedAt is a source-review clock, not a fresh account/service observation.",
+    "Applies to the actual App-mounted desktop root and its delegated Settings/access-required sign-out callbacks. Existing native sign-in, browser pairing and browser-session records retain their distinct scopes, source versions and acceptance gates.",
+    "Inspect the intended current desktop account/workspace/configuration. No token, API key, saved credential or live provider/session was read for this article.",
+    "Secure storage may be unavailable or leave uncertain persistence outcomes. Preserve the warning and use explicit supported recovery instead of editing credentials, retry loops, opening another identity as a bypass or assuming a successful local result."
+  ],
+  "permissions": [
+    "All proposed IDs are authoring-only state/control-family labels, not installed help IDs, unique DOM instances, native permits, session proof, independent approval or role grants.",
+    "The configuration-object owner is local UI ownership, not a tenant authorization token or a comparison of every nested configuration field. Actual membership/access and provider actions retain their separate current server checks.",
+    "Sign-out cleanup changes local transport/selection/legacy credential storage. It is not remote session revocation, browser or upstream provider logout, OS screen unlock, Accessibility sharing approval or cancellation of previously dispatched work.",
+    "Existing helpers and verification coordinator remain the authority sources; this article does not introduce a credential mode, bypass, new retry authority or cross-process serialization."
+  ],
+  "steps": [
+    {
+      "instruction": "Inspect the current desktop identity state without treating a loaded token as a verified account. Proposed documentation family: desktop.identity.credential-presence.",
+      "effect": "read",
+      "expectedState": "hasAuth means a loaded transport token is present, not valid identity, membership or entitlement. Accepted identity is separately bound to the exact current desktopClient configuration object."
+    },
+    {
+      "instruction": "When Verifying saved sign-in appears, wait for the current owned verification result rather than operating in the departed workspace. Proposed documentation family: desktop.identity.verifying-state.",
+      "effect": "read",
+      "expectedState": "A replacement present configuration unmounts the departed authenticated/access-required subtree and runs the existing coordinator. Current focus also requests verification. Only the latest same-config/present/non-disposed result may apply; missing credentials take the missing path without a request."
+    },
+    {
+      "instruction": "After verified identity appears, check the actual intended current workspace and access state before continuing a supported workflow. Proposed documentation family: desktop.identity.verified-owned-state.",
+      "effect": "read",
+      "expectedState": "Authenticated/access-required content needs exact accepted configuration ownership and a present credential. Explicit verified sign-in/access-granted callbacks invalidate older coordinator work and bind current configuration; verification is not independent approval or provider permission."
+    },
+    {
+      "instruction": "Distinguish verified identity with access required from invalid credentials; use the separate existing access workflow or choose another account deliberately. Proposed documentation family: desktop.identity.access-required-state.",
+      "effect": "read",
+      "expectedState": "A verified identity can have access.allowed false and render the access-required view. This article neither grants entitlement nor changes billing/access policy; Use another account delegates to the root cleanup operation."
+    },
+    {
+      "instruction": "For unavailable verification, use the existing saved-sign-in recovery option only as an explicit user action when ordinary sign-in is available. Proposed documentation family: desktop.identity.unavailable-recovery.",
+      "effect": "recover",
+      "expectedState": "Unexpected verify errors become fixed unavailable classification. Root locks loaded transport/identity and retains canRetrySavedSignIn for unavailable; it does not erase saved vault values solely because of network/schema failure or automatically loop recovery. Saved recovery rereads selected credential, verifies candidate and rechecks generation/config/revision/selection before activation."
+    },
+    {
+      "instruction": "For rejected identity or missing credentials, follow the displayed normal sign-in path; do not infer secure-store deletion from the locked UI. Proposed documentation family: desktop.identity.invalid-rejected-state.",
+      "effect": "recover",
+      "expectedState": "Rejection clears loaded transport identity; invalid versus unavailable classification differs. Canceled results are ignored rather than treated as rejection. Missing credentials clear accepted identity without a verification request. Existing native sign-in guidance owns the subsequent sign-in controls."
+    },
+    {
+      "instruction": "In the mounted Settings workflow, review Log out? and confirm Log out only when intending local device sign-out; cancel if not intended. Proposed documentation family: desktop.identity.settings-logout.",
+      "effect": "execute",
+      "expectedState": "App passes Settings a root sign-out callback. It uses the existing helper and owns outcomes after Settings unmounts. This path retains reload-on-success only if the captured locked owner is still current. It does not cancel externally running workflows."
+    },
+    {
+      "instruction": "Choose Use another account in the mounted access-required view when intending to leave that local credential selection. Proposed documentation family: desktop.identity.access-other-account.",
+      "effect": "execute",
+      "expectedState": "App delegates to the same root helper, with reload false. Child fallback handlers exist for other mounts but are not the delegated App workflow described here. No provider logout, remote revocation or new account authority follows."
+    },
+    {
+      "instruction": "While Finishing sign-out is displayed, allow that owned cleanup to settle; do not assume a canceled vault operation or try a competing ordinary sign-in. Proposed documentation family: desktop.identity.cleanup-pending.",
+      "effect": "read",
+      "expectedState": "Root synchronously guards mounted/config/current flight, invokes the helper and captures its now-locked config before awaiting. Normal sign-in is unmounted during pending cleanup. The helper immediately clears loaded transport, writes a signed-out selection tombstone, then attempts all three legacy key removals; a pending write has no UI cancellation/deadline guarantee."
+    },
+    {
+      "instruction": "If Finish signing out reports that cleanup was incomplete, keep the workspace locked and review the saved-details warning before reopening the app. Proposed documentation family: desktop.identity.cleanup-failed.",
+      "effect": "recover",
+      "expectedState": "Failed tombstone write may leave selection; failed legacy removal may leave older values. The failure screen offers Retry saved credential cleanup only, with ordinary sign-in unmounted in this root workflow. Locked UI is not proof saved credentials were removed."
+    },
+    {
+      "instruction": "When secure storage is available, deliberately choose Retry saved credential cleanup for the exact failed current owner. Proposed documentation family: desktop.identity.cleanup-retry.",
+      "effect": "recover",
+      "expectedState": "Retry requires current failed configuration and missing transport. A synchronous single-flight guard refuses burst repeats; helper runs again and the screen returns to Finishing sign-out. There is no automatic retry, new credential restore or alternate sign-in bypass on this screen."
+    },
+    {
+      "instruction": "After owned cleanup succeeds, return through the restored normal sign-in path appropriate to the current root context. Proposed documentation family: desktop.identity.cleanup-success.",
+      "effect": "read",
+      "expectedState": "The failed state clears and ordinary sign-in becomes available. Initial Settings sign-out may reload while its captured locked owner remains current; access-required sign-out and cleanup retry do not perform that reload. Success does not revoke a provider/server session or prove every possible saved copy disappeared."
+    },
+    {
+      "instruction": "If account/configuration changes during an old cleanup or verification attempt, review the new configuration independently rather than relying on an old callback. Proposed documentation family: desktop.identity.replaced-owner.",
+      "effect": "read",
+      "expectedState": "App checks actual current configuration synchronously, including before React processes notifications. Old result cannot apply state/warning/reload to a replacement owner; retry also requires missing transport. Ignoring stale callbacks does not cancel the prior physical secure-store operation or establish cross-window/process transactions."
+    },
+    {
+      "instruction": "During the separately documented native sign-in flow, use its explicit Cancel only before the committing phase; do not interpret navigation/unmount as reversal of secure storage. Proposed documentation family: desktop.identity.precommit-cancel.",
+      "effect": "recover",
+      "expectedState": "The sign-in component owns an AbortController and checks the current attempt before onSignedIn; unmount aborts/clears it. Explicit cancellation refuses once committing. Helpers check abort before selection write and again before activation, but an awaited secure write is not rolled back by an AbortSignal. Normal sign-in is excluded during pending/failed root cleanup."
+    }
+  ],
+  "expectedOutcome": "Readers distinguish verification/missing/rejected/unavailable/access-required states and follow the current root-exclusive cleanup sequence: pending locks normal sign-in, failure preserves truthful warning with explicit current-owner retry, and only successful current cleanup restores ordinary sign-in. Replacement owners verify independently. Source descriptions do not prove real vault/native/provider behavior.",
+  "limitations": [
+    "Supplemental to existing native sign-in, browser pairing and browser-session drafts; supersedes none. Fourteen authoring state/control families are not a finite interactive-declaration count or all desktop authentication controls.",
+    "setSession/setApiBase replace the config object; changed token/base values notify context subscribers. Same-value setters still replace the object without themselves notifying; numeric revision-only notification with the same config does not trigger root reauthentication. Arbitrary in-place changes/external writers are not comprehensively qualified.",
+    "Coordinator accepts only latest request/same config/present credential/non-disposed state. This is not a server tenant/role check, an executing issuer/custody proof or genuine current identity acceptance.",
+    "Helper order is in-process lock, signed-out tombstone write, then three legacy-key removal attempts. Failure before tombstone completion can preserve old selection; legacy cleanup failure can leave older values. Neither case proves safe reopen or automatic completion.",
+    "Only current App root excludes normal sign-in from pending/failed cleanup and uses the synchronous guard. It does not serialize other windows/processes or external vault writers, cancel already submitted native writes or resolve unknown persistence outcomes.",
+    "Settings sign-out reload is conditional on successful still-owned cleanup; access-required sign-out and retry do not reload. Old callbacks cannot reload/apply warning into a changed owner, but prior physical operations can still complete.",
+    "Sign-in AbortController/current-attempt/committing-phase checks do not make a vault write transactional, reversible or proof of server/provider logout. Saved-selection reread catches selected changes but is not full cross-window concurrency qualification.",
+    "Historical local tests used real App/helper/coordinator portions with mocked client/service/secure-storage and child fixtures. They do not qualify actual Settings/sign-in whole UI, real vault deletion, native sessions, server security, authentic account/provider or browser/AT behavior.",
+    "This draft neither unlocks the operating-system screen nor grants browser/native control access. A workspace locked by cleanup is a product UI state, not proof the Mac is unlocked or that credentials were erased."
+  ],
+  "recovery": [
+    "Unavailable verification: retain saved-sign-in recovery distinction without deleting saved vault solely for service/schema failure; attempt only explicit supported recovery under the current selection, no automatic loop. Invalid/missing identity follows the ordinary sign-in path only when cleanup is not holding it.",
+    "Failed cleanup warning says saved sign-in details may remain. Keep the workspace locked; when secure storage is available, use Retry saved credential cleanup rather than closing/reopening expecting success or competing with ordinary sign-in.",
+    "Burst duplicate/old retry handlers refuse unless App is mounted, exact expected config remains current and missing-transport precondition holds. Do not bypass refusal through another account/window or assume old failure/success changed the new workspace.",
+    "For an unconfirmed vault operation, preserve original outcome uncertainty; UI cancellation, owner replacement and ignored results cannot prove cancellation or roll back secure writes. No manual credential/SQL deletion or automatic replay is prescribed.",
+    "Review separately observed server/native/session state before any consequential action; neither a verified UI label nor successful local cleanup is independent review, execution permission, provider revocation or complete Governance/customer acceptance."
+  ],
+  "searchTerms": [
+    "Verifying saved sign-in",
+    "Finishing sign-out",
+    "Finish signing out",
+    "Retry saved credential cleanup",
+    "saved sign-in unavailable",
+    "accepted identity",
+    "configuration ownership",
+    "Settings Log out",
+    "Use another account",
+    "signed-out tombstone",
+    "unknown secure storage cleanup",
+    "native sign-in cancellation"
+  ],
+  "sources": [
+    {
+      "path": "docs/product/knowledge/authenticated-ui-context.md",
+      "sha256": "23158a430a5a429731569ee5eab3fd66a36e61773fdb6512794924fa7def95d4"
+    },
+    {
+      "path": "docs/product/knowledge/authenticated-ui-context.sources.json",
+      "sha256": "d8bb370b85a4910c348cff62cd926938617dffe1dd524e53a05774f240240d35"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348"
+    },
+    {
+      "path": "desktop/src/views/SettingsView.tsx",
+      "sha256": "3d2659e96e8da8fe6be530033b8dddf144de92978e2afd81b7e253287a3d0d70"
+    },
+    {
+      "path": "desktop/src/views/DesktopAccessRequiredView.tsx",
+      "sha256": "877d4936a5a6d47f141529ff62f921078e8ce09526bf4713b245db0dca7e38ce"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1"
+    },
+    {
+      "path": "desktop/src/lib/credentialVerificationCoordinator.ts",
+      "sha256": "686b23af528b7c56875ed41f46ef920279ca193f9ebc58749ea3ebc80995ac30"
+    },
+    {
+      "path": "desktop/src/lib/activeDesktopCredential.ts",
+      "sha256": "fb8740c2b34e09d470634a737a3e335ca780e66f2a5aca978062400ac4240229"
+    },
+    {
+      "path": "desktop/src/views/DesktopSignInView.tsx",
+      "sha256": "6d4b57d890407fbd768d45e718f8a7903b0d666e34e1918d626e12b669aeaba0"
+    },
+    {
+      "path": "lib/desktop/__tests__/authenticatedUiContext.test.ts",
+      "sha256": "3f81e3245304927f8f8704731ef25cddde509a5fffdcf4d3c536c95c3e7aedbc"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/root-final-receipt.json",
+      "sha256": "4aa74f531365d9932f9bf6783675ed18dc3f14265a0e245f206f228f6666751a"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/README.md",
+      "sha256": "d5dbbb4ce0aed8aaadaee611a55036c49634ef1600b5e8e279025388cb31996a"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/exclusive-recovery-red.log.json",
+      "sha256": "87c367e25fec3f9d6a11f695032d65d942328a010f46a545a30545cd663f82c0"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/final-copy-aligned-green.log.json",
+      "sha256": "f3c108996a72120aace398745028c8d23ceb3039e9e0ff8c7eb99c3ffa624a91"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/exclusive-recovery-compat.log.json",
+      "sha256": "8dc48b348825aa1718ecaf2240d2f62944ec9429189ed2a9c148f6c198e679e5"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/exclusive-recovery-types-receipt.json",
+      "sha256": "43210bbbbaff09daa644cb46a960eb3865f722ce90cb89ad851624ac26d966d0"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/independent-review.md",
+      "sha256": "7dd3d01508dba5f0fd3a0a4bc11e9af186ca9148baa4876135d38d85a91a4afd"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/authenticated-ui-context/EXECUTION-PACKET.md",
+      "sha256": "3e3d5ffca404fb6466d190ba12cdbd8e7ff24e8ffbf9890831b166515e66665a"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/authenticated-ui-context.md",
+      "docs/product/knowledge/authenticated-ui-context.sources.json",
+      "docs/recovery/2026-11-04/authenticated-ui-context/root-final-receipt.json",
+      "docs/recovery/2026-11-04/authenticated-ui-context/independent-review.md"
+    ],
+    "verifiedVersion": "local-source-preview:ecf2e92b9c481c503dea8997050a6bc502af4fee",
+    "verifiedAt": "2026-11-05T13:32:25Z"
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}
