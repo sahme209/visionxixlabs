@@ -1,0 +1,55 @@
+{
+  "state": "completed",
+  "argv": [
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/compatibility-smoke.cjs"
+  ],
+  "original_before": {
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+    "size": 122129232,
+    "mode": "0o755",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 859815,
+    "mtime_ns": 1788824242000000000,
+    "ctime_ns": 1793319854477493638
+  },
+  "executable_binding": {
+    "sha256": "1aa6f6936040d80d6f9c1bb75ba4af97ce596af514ab7f0157a77f461abce134",
+    "size": 121418704,
+    "mode": "0o700",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 16697314,
+    "mtime_ns": 1793894053891056440,
+    "ctime_ns": 1793895015341576433
+  },
+  "exit_code": 0,
+  "copy_after": {
+    "sha256": "1aa6f6936040d80d6f9c1bb75ba4af97ce596af514ab7f0157a77f461abce134",
+    "size": 121418704,
+    "mode": "0o600",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 16697314,
+    "mtime_ns": 1793894053891056440,
+    "ctime_ns": 1793895016274408969
+  },
+  "mode_restored": true,
+  "original_after": {
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+    "size": 122129232,
+    "mode": "0o755",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 859815,
+    "mtime_ns": 1788824242000000000,
+    "ctime_ns": 1793319854477493638
+  },
+  "original_unchanged": true,
+  "elapsed_seconds": 1.029729125,
+  "stdout_bytes": 38,
+  "stderr_bytes": 0,
+  "compatibility_pass": true,
+  "full_governance_qualified": false
+}

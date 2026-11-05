@@ -2,6 +2,10 @@
 
 Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
+## November5 minimal-JIT Node compatibility — bounded actual pass
+
+~~One exact approved invocation completed with expected arithmetic output, exit0~~ ([evidence](../recovery/2026-11-05/governance-system-artifact-plan/node-compatibility-observation/README.md)). Copy restored0600; signed bytes and original unchanged. Actual version/platform assertion passed. No private resource/addon was supplied; this is not JIT optimization or custody/pre-main/fleet/fullGovernance acceptance. One-run authority consumed; no retry. All21parents remain open.
+
 ## November5 exact Node review-copy signing — static checks passed
 
 ~~Separately approved copy signing, strict verification and display completed once~~ ([evidence](../recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/README.md)). Exact minimal-JIT profile matches; original unchanged, signed copy0600 and never executed. New post-sign hash is bound separately; no reuse of historical preparation metadata. Runtime/addon/pre-main/custody/no-replay/coverage/activation remain unqualified; all21parents remain open. Signing authorization consumed; no retry or Node execution.
