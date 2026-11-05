@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the [current-source qualification audit](../recovery/2026-11-05/governance-next-qualification-audit.md) shows current signed artifacts still cannot handle a business request if installed. Resolve the connected native custody → authenticated request channel → actual compiled consumer path through a reviewed local design; do not repeat packaging or blindly install still-refusing artifacts. Production resource-owner/writer cutover and full A2/A9 are distinct gates.
 
+## Canonical identity sequencing — unnecessary prerequisite removed
+
+~~Original integrated design compared against current closed source~~ ([adjudication](../recovery/2026-11-05/governance-canonical-identity-source-alignment.md)): live identity is privately established by actual protected canonical/native startup and revalidated on each read; SAME-consumer tests prove it, rather than provide a prior receipt granting identity. An inferred receipt-before-identity dependency is rejected. Current positive branch/material supply/handler/custody/fleet implementation and qualification remain open; no source gate or permission changed. Continue the selected design, without inventing a second identity mechanism.
+
 ## Current support metadata — bounded new observation
 
 ~~All37 current article revisions inspected through the unchanged public metadata predicate~~ ([evidence](../recovery/2026-11-05/support-current-metadata-inspection/README.md)):37draft/internal/source-only records refuse, exact file/core/inventory hashes retained and independently checked. Zero guarded child-process attempts; no sandbox reader/evaluator/retrieval run. Historical failed24-record pipeline evidence remains failed; this proves only current metadata refusal, not complete bundle/customer eligibility or B5 acceptance. The containment-preserving harness and genuine editorial/media/version authority remain open.

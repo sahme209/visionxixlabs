@@ -21,3 +21,7 @@ Reuse and connect the existing architecture rather than create a new executor. T
 ## Independent source review
 
 The independent qualification reviewer checked the actual provisioner, both HTTP adapters, private composition/bootstrap, canonical main and existing channel proposal. No important correction was found. This was source/design review only: no tests, OS/Security/Keychain/provider operation or target execution. Four generated plan views are current and `git diff --check` passes.
+
+## Identity sequencing correction — November5
+
+The [source-alignment adjudication](governance-canonical-identity-source-alignment.md) supersedes any inference here that the original positive identity mechanism is architecturally undefined or requires a successful test receipt before live identity may exist. The original canonical/native design already defines live lexical identity and fresh assertions; tests qualify that implementation rather than grant authority. Current closed source, private material supply, custody/handler integration, actual same-consumer matrix, operational permissions and full coverage remain genuinely open. This does not expand the pending private-handler implementation scope to canonical startup or positive issuer code.

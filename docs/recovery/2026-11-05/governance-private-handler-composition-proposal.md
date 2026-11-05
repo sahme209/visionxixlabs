@@ -38,3 +38,7 @@ Requested scope is local source, pure/mocked tests and already authorized isolat
 ## Independent design review
 
 Qualification reviewer checked the actual handler bodies, private composition and prior channel contract. No important correction. Approval-ready for the stated local source/pure/mocked scope; actual database-test authority remains conditional on the existing explicit grant. No target execution or tests performed by this review.
+
+## Identity sequencing correction — November5
+
+The [source-alignment adjudication](governance-canonical-identity-source-alignment.md) supersedes any inference here that the original positive identity mechanism is architecturally undefined or requires a successful test receipt before live identity may exist. The original canonical/native design already defines live lexical identity and fresh assertions; tests qualify that implementation rather than grant authority. Current closed source, private material supply, custody/handler integration, actual same-consumer matrix, operational permissions and full coverage remain genuinely open. This does not expand the pending private-handler implementation scope to canonical startup or positive issuer code.
