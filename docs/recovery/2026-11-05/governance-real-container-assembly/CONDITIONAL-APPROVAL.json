@@ -1,0 +1,9 @@
+{
+  "approval": "call_nAel7PPZG3HBVPUfSg43CdAx",
+  "approvedDesignSha256": "673b491c2b7b0121d88053014963caa9d8560b317bf683ae113b7b7dd8e2e89b",
+  "scope": "prepare/test/review/freeze fixed image-create/read-only mount/package-verify/owned-detach/v2-assemble executor, then one run only if gates pass",
+  "maxWallSeconds": 1800,
+  "automaticRetryAuthorized": false,
+  "signingRuntimeInstallCredentialsProviderDatabaseDeploySpendAuthorized": false,
+  "runStarted": false
+}

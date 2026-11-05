@@ -21,9 +21,15 @@ class ContainerAssemblyTests(unittest.TestCase):
   repo=self.root/'repo';repo.mkdir(mode=0o700);self.put(repo/cp.SOURCE,cp.MAIN_SOURCE);self.put(repo/cp.SEALED_CONTROL_SOURCE,b'static int sealed_control(void){return 0;}\nvoid fixture(void){if(!sealed_control())return;}')
   self.prepstage=self.root/'main-stage';r=cp.prepare_container(repo,self.prepstage);self.prep=self.prepstage/cp.RECEIPT;self.main=self.put(Path(r['compileRecipe']['output']),b'FIXTURE COMPILED MAIN')
   self.compile=self.js(self.root/'main-compile.json',{'sourceRevision':'d'*40,'stage':str(self.prepstage),'preparationSha256':a.binding(self.prep)['sha256'],'argv':r['compileRecipe']['argv'],'compilerExit':0,'state':'completed','targetExecuted':False,'companySigningKeyUsed':False,'appAssembled':False,'installationReady':False,'activationAllowed':False,'runtimeIdentityQualified':False,'originalInputClosureUnchanged':True,'onlyDeclaredOutputAdded':True,'artifact':a.binding(self.main)})
-  self.image=self.put(self.root/'completed-fixture-image.dmg',b'SYNTHETIC IMAGE BYTES; NO IMAGE TOOL')
+  self.image=self.put(self.root/'image/issuer-package.dmg',b'SYNTHETIC IMAGE BYTES; NO IMAGE TOOL')
   self.imageoperation=self.js(self.root/'image-operation.json',{'format':'axiom.recorded-package-image-operation/1','argv':a._image_argv(self.package,self.image),'state':'completed','exit':0,'sourcePackage':str(self.package),'sourceRevision':self.revision,'packageDigest':digest,'manifestSha256':a.binding(self.package/manifest.MANIFEST)['sha256'],'image':a.binding(self.image)})
   self.imageproof=self.js(self.root/'image-completion.json',{'format':'axiom.package-image-completion/1','sourcePackage':str(self.package),'sourceRevision':self.revision,'packageDigest':digest,'manifestSha256':a.binding(self.package/manifest.MANIFEST)['sha256'],'image':a.binding(self.image),'operationRecord':a.binding(self.imageoperation),'imageCreated':True,'executionAuthorized':False})
+  from governance_local_issuer import image_inspection as inspection
+  root_patch=patch.object(inspection,'RUN_ROOT',self.root);root_patch.start();self.addCleanup(root_patch.stop)
+  identity={'stDev':7,'stIno':11,'readOnly':True};package_info={'sourcePackage':str(self.package),'sourceRevision':self.revision,'packageDigest':digest,'manifestSha256':a.binding(self.package/manifest.MANIFEST)['sha256']}
+  def command(argv,seconds):return {'argv':argv,'state':'completed','exit':0,'stdout':plistlib.dumps({'system-entities':[{'dev-entry':'/dev/disk9s1','mount-point':str(self.root/'mount')}]})if 'attach'in argv else b'','stderr':b'','cleanup':'reaped_original_child'}
+  with patch.object(inspection,'_namespace_restored',return_value=True),patch.object(inspection,'_run',side_effect=command),patch.object(inspection,'_mount_identity',return_value=identity),patch.object(inspection,'_content',return_value={'qualification':'package_file_set_verified',**{k:package_info[k]for k in ('sourceRevision','packageDigest','manifestSha256')}}):proof=inspection.inspect_image(a.binding(self.image),package_info)
+  image_completion=json.loads(self.imageproof.read_text());image_completion['mountedObservation']=a.binding(proof);self.js(self.imageproof,image_completion)
   self.packet=self.js(self.root/'packet.json',{'format':a.INPUT_FORMAT,'profile':cp.PROFILE,'generation':cp.old.GENERATION,'sourceRevision':self.revision,'packageRoot':str(self.package),'packageDigest':digest,'packageManifest':a.binding(self.package/manifest.MANIFEST),'materializationReceipt':a.binding(self.mat),'containerPreparation':a.binding(self.prep),'containerCompile':a.binding(self.compile),'imageCompletion':a.binding(self.imageproof),'modeMap':a.MODE_MAP})
   self.destination=self.root/'assembly'
  def put(self,path,data,mode=0o600):
@@ -44,6 +50,9 @@ class ContainerAssemblyTests(unittest.TestCase):
   self.assertTrue(r['sealedControlRequired']);self.assertEqual(r['signTimeEdges'],cp.EDGES)
   for k in ('executionAuthorized','installationReady','activationAllowed','identityQualified','finalSealQualified'):self.assertFalse(r[k])
   for p,data in before.items():self.assertEqual(p.read_bytes(),data)
+ def test_missing_mounted_content_observation_refuses(self):
+  p=json.loads(self.imageproof.read_text());p.pop('mountedObservation');self.js(self.imageproof,p);self.packet_change('imageCompletion',a.binding(self.imageproof))
+  with self.assertRaises(ValueError):self.assemble()
  def test_missing_image_proof_refuses_before_destination(self):
   self.packet_change('imageCompletion',None)
   with self.assertRaises(ValueError):self.assemble()

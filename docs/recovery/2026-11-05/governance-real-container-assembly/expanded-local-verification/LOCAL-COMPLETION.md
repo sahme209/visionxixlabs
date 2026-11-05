@@ -1,0 +1,11 @@
+# Expanded executor local preparation complete — no actual run
+
+Conditional approval call_nAel7PPZG3HBVPUfSg43CdAx; final approved design SHA673b491c…e2e89b. New image_inspection.py, mounted-proof requirement in container_assembly.py, updated inert driver/controller/input freeze and synthetic fixtures are prepared. Independent source review reported no important remaining finding. One combined focused selection passed34tests (18inspection,16assembly); raw log is expanded-inspection-assembly-final.log. No tests ran a real child, signal, hdiutil, mount, statvfs, target, real package scan or real assembly.
+
+Initial failclosed-stub tests produced the feature RED, followed by positive mocked inspection. Missing mounted-proof assembly, after-detach image mutation, missing namespace restoration and unchanged-original-namespace ownership each have focused genuine RED/GREEN evidence. Additional runner/namespace regression checks use process/signal/statvfs mocks and owned temporary data. No retrospective TDD claim is made for review checks added after existing fixes.
+
+Known ownership is distinct from read-only/content policy. A known changed mount failing policy is detached once only while identity/image currentness matches. Unknown attach/ownership loss has no speculative cleanup. Successful detach needs namespace readback; unknown may leave a mount and preserves that warning. Proof verification joins command/log/file-set and image/package records; ordinary observations are not cryptographic or runtime authority.
+
+Driver cheap main/companion preflight precedes image creation; actual output verify_assembly precedes success. Umask0077 protects directory traversal before fresh controller/run/inspection/assembly directories; image child uses0177. Initializer and all local helper inputs are frozen before import.
+
+ROOT alone performs the actual one-shot run after checking final frozen bindings. This agent performed source preparation, AST parsing, pure/mock tests and ordinary nonsecret source/receipt reads only. No actual image/app/mode/mount, key/API, service/root/account/provider/database/deployment action occurred; no commit/master-plan/board edits. Final signature, actual protected runtime/root, custody and full Governance remain unavailable.

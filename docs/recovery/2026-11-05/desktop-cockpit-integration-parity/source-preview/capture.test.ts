@@ -1,0 +1,20 @@
+import {expect,it,vi} from 'vitest';
+import {createElement,type ReactNode} from 'react';
+import {renderToStaticMarkup} from 'react-dom/server';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+vi.mock('@/lib/auth/currentContext',()=>({currentContext:async()=>({isAuthenticated:true,organizationId:'synthetic-workspace',userId:'synthetic-owner',email:'source-preview@example.invalid',roles:['owner']})}));
+vi.mock('@/lib/auth/platformAdmin',()=>({isAdminOrOwner:()=>true}));
+vi.mock('next/link',()=>({default:(p:{href:string;children:ReactNode})=>createElement('a',{href:p.href},p.children)}));
+vi.mock('@/components/auth/JiraSetupCard',()=>({JiraSetupCard:()=>null}));
+vi.mock('@/components/auth/IntegrationConnectionAction',()=>({IntegrationConnectionAction:()=>null}));
+vi.mock('@/components/cockpit/ProviderLogo',()=>({ProviderLogo:()=>null}));
+vi.mock('@/lib/integrations/collaborationOAuthReadiness',()=>({isCollaborationOAuthConfigured:()=>false}));
+vi.mock('@/lib/db',()=>({prisma:{gitHubInstallation:{findFirst:async()=>null},tenantIntegrationConnection:{findMany:async()=>[]},connectorSetupSession:{findMany:async()=>[]}}}));
+import Integrations from '../../app/control/integrations/page';
+it('captures one synthetic static rendering of actual source without routes or actions',async()=>{
+ const markup=renderToStaticMarkup(await Integrations());expect(markup).toContain('Open Outlook settings');expect(markup).toContain('Open ServiceNow settings');
+ const html='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Axiom local source preview</title></head><body><aside role="note">Local source preview — synthetic workspace; no connection or account actions</aside><main>'+markup+'</main></body></html>';
+ const path="/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-cockpit-source-preview-67fw5q4g/preview.html";writeFileSync(path,html,{flag:'wx',mode:0o600});
+ const sha=(x:string|Buffer)=>createHash('sha256').update(x).digest('hex');writeFileSync(path+'.json',JSON.stringify({format:'axiom.static-source-preview/1',htmlPath:path,htmlSha256:sha(html),sourcePath:'app/control/integrations/page.tsx',sourceSha256:sha(readFileSync('app/control/integrations/page.tsx')),syntheticWorkspace:true,realRouteVisited:false,providerOrDatabaseAccess:false,interactiveControlsMockedOut:true,serverStarted:false,browserOpened:false},null,2)+'\n',{flag:'wx',mode:0o600});
+});

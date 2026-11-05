@@ -1,0 +1,101 @@
+EE.EEEEEE
+======================================================================
+ERROR: test_ambiguous_or_nonzero_attach_never_speculatively_detaches (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 30, in test_ambiguous_or_nonzero_attach_never_speculatively_detaches
+    with self.assertRaises(i.InspectionStopped)as cm:self.inspect()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 20, in inspect
+    def inspect(self):return i.inspect_image(a.binding(self.image),self.package)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py", line 10, in inspect_image
+    def inspect_image(*args):raise ValueError('not implemented')
+ValueError: not implemented
+
+======================================================================
+ERROR: test_detach_timeout_retains_possible_mount_and_no_retry (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 54, in test_detach_timeout_retains_possible_mount_and_no_retry
+    with self.assertRaises(i.InspectionStopped)as cm:self.inspect()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 20, in inspect
+    def inspect(self):return i.inspect_image(a.binding(self.image),self.package)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py", line 10, in inspect_image
+    def inspect_image(*args):raise ValueError('not implemented')
+ValueError: not implemented
+
+======================================================================
+ERROR: test_digest_mismatch_detaches_owned_mount_but_never_succeeds (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 42, in test_digest_mismatch_detaches_owned_mount_but_never_succeeds
+    with self.assertRaises(i.InspectionStopped)as cm:self.inspect()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 20, in inspect
+    def inspect(self):return i.inspect_image(a.binding(self.image),self.package)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py", line 10, in inspect_image
+    def inspect_image(*args):raise ValueError('not implemented')
+ValueError: not implemented
+
+======================================================================
+ERROR: test_image_mutation_before_detach_preserves_unknown_without_speculation (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 59, in test_image_mutation_before_detach_preserves_unknown_without_speculation
+    with self.assertRaises(i.InspectionStopped)as cm:self.inspect()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 20, in inspect
+    def inspect(self):return i.inspect_image(a.binding(self.image),self.package)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py", line 10, in inspect_image
+    def inspect_image(*args):raise ValueError('not implemented')
+ValueError: not implemented
+
+======================================================================
+ERROR: test_nonreadonly_mount_stops_without_claimed_cleanup (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 38, in test_nonreadonly_mount_stops_without_claimed_cleanup
+    with self.assertRaises(i.InspectionStopped)as cm:self.inspect()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 20, in inspect
+    def inspect(self):return i.inspect_image(a.binding(self.image),self.package)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py", line 10, in inspect_image
+    def inspect_image(*args):raise ValueError('not implemented')
+ValueError: not implemented
+
+======================================================================
+ERROR: test_nonzero_attach_never_detaches (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 34, in test_nonzero_attach_never_detaches
+    with self.assertRaises(i.InspectionStopped)as cm:self.inspect()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 20, in inspect
+    def inspect(self):return i.inspect_image(a.binding(self.image),self.package)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py", line 10, in inspect_image
+    def inspect_image(*args):raise ValueError('not implemented')
+ValueError: not implemented
+
+======================================================================
+ERROR: test_ownership_loss_never_detaches_replacement (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 46, in test_ownership_loss_never_detaches_replacement
+    with self.assertRaises(i.InspectionStopped)as cm:self.inspect()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 20, in inspect
+    def inspect(self):return i.inspect_image(a.binding(self.image),self.package)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py", line 10, in inspect_image
+    def inspect_image(*args):raise ValueError('not implemented')
+ValueError: not implemented
+
+======================================================================
+ERROR: test_positive_exit_zero_single_readonly_mount_verified_and_detached_once (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 22, in test_positive_exit_zero_single_readonly_mount_verified_and_detached_once
+    proof=self.inspect();self.assertEqual([x[1]for x in self.calls],['attach','detach']);self.assertEqual(self.calls[-1],['/usr/bin/hdiutil','detach','/dev/disk9s1'])
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 20, in inspect
+    def inspect(self):return i.inspect_image(a.binding(self.image),self.package)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py", line 10, in inspect_image
+    def inspect_image(*args):raise ValueError('not implemented')
+ValueError: not implemented
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.006s
+
+FAILED (errors=8)

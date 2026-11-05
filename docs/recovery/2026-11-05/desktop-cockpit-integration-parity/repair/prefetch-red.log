@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ app/control/integrations/__tests__/presentation.test.ts (5 tests | 1 failed) 96ms
+   × discovers existing Outlook and ServiceNow settings without inventing connection health 54ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/control/integrations/__tests__/presentation.test.ts > discovers existing Outlook and ServiceNow settings without inventing connection health
+AssertionError: expected undefined to be false // Object.is equality
+
+- Expected:
+false
+
++ Received:
+undefined
+
+ ❯ app/control/integrations/__tests__/presentation.test.ts:35:165
+     33|   expect(row.textContent).not.toMatch(/\bconnected\b|\bactive\b|\bvali…
+     34|  }
+     35|  for(const href of ['/account/integrations/outlook','/account/integrat…
+       |                                                                                                                                                                     ^
+     36|  expect(io.connections).toHaveBeenCalledTimes(1);
+     37|  expect(io.connections.mock.calls[0][0].where.provider.in).toEqual(['s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  15:47:04
+   Duration  425ms (transform 24ms, setup 0ms, import 90ms, tests 96ms, environment 195ms)
+

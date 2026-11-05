@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_image_mutation_after_successful_detach_never_returns_success_proof (test_image_inspection.ImageInspectionTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image_inspection.py", line 63, in test_image_mutation_after_successful_detach_never_returns_success_proof
+    with self.assertRaises(i.InspectionStopped)as cm:self.inspect()
+AssertionError: InspectionStopped not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+FAILED (failures=1)

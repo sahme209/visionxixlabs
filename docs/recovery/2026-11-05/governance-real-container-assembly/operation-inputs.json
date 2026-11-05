@@ -1,0 +1,134 @@
+{
+  "assemblyDestination": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembled",
+  "baseImplementationRevision": "558f12f16afc9c70dd3421f2c2429c39347f3871",
+  "conditionalApproval": "call_nAel7PPZG3HBVPUfSg43CdAx",
+  "containerCompile": {
+    "mode": 420,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-final-seal-acyclic-container/compile-observation/result.json",
+    "sha256": "2c9bbbfed9d638a17bd928b994a2af48ca22383530babcd4b63ab21b97e652b5",
+    "size": 1834
+  },
+  "containerMain": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-container-main-v2-3e487f56/stage/leaves/AxiomSyntheticContainerMain",
+    "sha256": "b3a4f59e49b2f8a172a9071a16fbcb6c0b829f8eb2cbe53c7ca6d426dbe155d8",
+    "size": 16856
+  },
+  "containerPreparation": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-container-main-v2-3e487f56/stage/container-preparation-v2.json",
+    "sha256": "5b6dc4715c568e5951a3079ac607e3c20f66947afae50745ae9803cb2df49980",
+    "size": 9435
+  },
+  "controllerOutputBytes": 1048576,
+  "controllerSeconds": 1800,
+  "currentFreeBytes": null,
+  "detachSeconds": 60,
+  "executionAuthorized": false,
+  "executionObservation": {
+    "mode": 420,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-real-system-build-inputs/execution-observation.json",
+    "sha256": "d737b0a11117433d9434fd46d8be813e4c7ddbc930781b562a4461c1643f9a2d",
+    "size": 1372
+  },
+  "expandedExecutorPrepared": true,
+  "expandedImplementation": "frozen helper byte hashes; not runtime identity",
+  "format": "axiom.real-container-operation-inputs/1",
+  "freeSpaceObservation": "pending_one_ordinary_filesystem_preflight_in_approved_run",
+  "helpers": {
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/__init__.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/__init__.py",
+      "sha256": "89b16b5e62a7f03009da2b7b09d865d8cbc6d6cf60629b203420c91b100b2878",
+      "size": 76
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_assembly.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_assembly.py",
+      "sha256": "8783276ab05b0ef92ccdbab6c85051874dd9516da9f1d907f7711999e5aee373",
+      "size": 18185
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_preparation.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_preparation.py",
+      "sha256": "6fd39f068931c785f6ed8f5ff0ea7666ed048f44a63995ab0aaa325073e8eec3",
+      "size": 9173
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py",
+      "sha256": "da6b8cc485a4ffb9c4d2e5660a5a51677ff89d1fff97090f603a691179bdcc00",
+      "size": 11016
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/manifest.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/manifest.py",
+      "sha256": "19304f8c9e9fbe8620cf6b484fd599b6f7fc3611d55eea3339a45030f0f5e5e0",
+      "size": 18081
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/materialize.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/materialize.py",
+      "sha256": "438416de2e4b54f6a88479f229c46f7678fc66d066ae354f9088e522ab1b1a54",
+      "size": 33139
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/native_linkage.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/native_linkage.py",
+      "sha256": "027a0f78c0341112fee376a828aeec5e62cbbdd2c9445873b7ed997af9be7490",
+      "size": 11644
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py",
+      "sha256": "54a5552179f2aef7f15fbb1eb646b61b1febd7922852faec1a6a83edf435d980",
+      "size": 20171
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py",
+      "sha256": "1cdf90d0b9ad38bc8849d567036db8a83ce26cd0f0c74b2fe5ba5a30024e141e",
+      "size": 15253
+    }
+  },
+  "imageArgv": [
+    "/usr/bin/hdiutil",
+    "create",
+    "-srcfolder",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-0b0e8b48/materialized/package",
+    "-volname",
+    "Axiom Synthetic Issuer-c3b7bf334ce56a64575183b7a66e5109",
+    "-format",
+    "UDRO",
+    "-fs",
+    "HFS+",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/image/issuer-package.dmg"
+  ],
+  "imageMaximumBytes": 4906287104,
+  "imagePath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/image/issuer-package.dmg",
+  "imageSeconds": 600,
+  "inspectionOutputBytes": 262144,
+  "installationReady": false,
+  "labParent": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab",
+  "materializationReceipt": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-0b0e8b48/materialized/materialization.json",
+    "sha256": "4ebf8083b052592dbc740d3574e14003a040ccbbc8778fa432c9a6f823c4cb82",
+    "size": 379643
+  },
+  "minimumFreeBytes": 10349445120,
+  "mountPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/mount",
+  "mountSeconds": 90,
+  "packageDigest": "2e5f4ee2a874e9bcc9fa19fdc57e5c6956108a6dd529b87a6c122fc36221aace",
+  "packageManifest": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-0b0e8b48/materialized/package/_axiom_local_issuer_manifest.json",
+    "sha256": "dffbb2580c16e2fafb3d10be9e3a384fcbe7f6a0d6776d7b2bb1c69308980b41",
+    "size": 17957326
+  },
+  "packageRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-0b0e8b48/materialized/package",
+  "packageSourceRevision": "0b0e8b48aa3469c1146bc2db38cdce4b2dc1a43d",
+  "recordedPackageBytes": 3709521252,
+  "retryAuthorized": false,
+  "runRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1"
+}

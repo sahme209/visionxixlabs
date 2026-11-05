@@ -1,0 +1,11 @@
+{
+  "files": {
+    "app/control/integrations/page.tsx": "1ea0560a0a8615730490b594ca0f12f6402445e4d04e5a49785bd6bb35e0239c",
+    "app/control/integrations/__tests__/presentation.test.ts": "a5383d10b71d2077e7165a5361210a6ba24169bc529c888cbc38333c96058748"
+  },
+  "scope": "localpresentationonly",
+  "liveProviderRead": false,
+  "realDatabaseRead": false,
+  "oauthStarted": false,
+  "deployed": false
+}

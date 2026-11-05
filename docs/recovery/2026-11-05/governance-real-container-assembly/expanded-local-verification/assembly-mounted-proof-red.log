@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_missing_mounted_content_observation_refuses (test_container_assembly.ContainerAssemblyTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_assembly.py", line 55, in test_missing_mounted_content_observation_refuses
+    with self.assertRaises(ValueError):self.assemble()
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.024s
+
+FAILED (failures=1)

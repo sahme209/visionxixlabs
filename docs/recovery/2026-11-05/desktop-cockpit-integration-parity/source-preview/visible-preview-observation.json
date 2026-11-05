@@ -1,0 +1,69 @@
+{
+  "kind": "actual source JSX rendered with synthetic owner and empty workspace; not live authenticated acceptance",
+  "url": "http://127.0.0.1:53778/",
+  "serverSession": 78243,
+  "expiresSeconds": 1200,
+  "browserTab": "iab 2",
+  "visuallyObserved": [
+    "synthetic-workspace banner",
+    "Outlook heading and settings link",
+    "ServiceNow heading and settings link",
+    "no health badge on new entries"
+  ],
+  "httpChecks": [
+    {
+      "method": "GET",
+      "path": "/",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/styles.css",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "path": "/account/integrations/outlook",
+      "status": 403
+    },
+    {
+      "method": "POST",
+      "path": "/",
+      "status": 405
+    },
+    {
+      "method": "GET",
+      "path": "/?private=1",
+      "status": 403
+    }
+  ],
+  "files": [
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-cockpit-source-preview-67fw5q4g/preview.html",
+      "sha256": "0618fd33675b7b435916c03b2e793d1d76a2470c94e22d30b5980f98d766ce30",
+      "bytes": 14310
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-cockpit-source-preview-67fw5q4g/styled.html",
+      "sha256": "f52b99e8c8d73d14ad5360877acc136f0d4e572e20eeb79dbaf0a60f57800033",
+      "bytes": 14654
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-cockpit-source-preview-67fw5q4g/styles.css",
+      "sha256": "5740ec34fa69e9e9c4a27e93869e4c37a74800fb9e89de2205c8e0931e9dac91",
+      "bytes": 211120
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-cockpit-source-preview-67fw5q4g/serve-static.py",
+      "sha256": "a9a8ebc93a45988993aa08ff6dbd8dec5a566b07c7f025d89fc64a57fabcf8b9",
+      "bytes": 1530
+    },
+    {
+      "path": "docs/recovery/2026-11-05/desktop-cockpit-integration-parity/source-preview/preview.jpg",
+      "sha256": "3707d178b74d9abe9a22d02d4cb7e6e847eb74d0405412c64d9cc9929477a22f",
+      "bytes": 42960
+    }
+  ],
+  "providerDatabaseOrAccountActionsPerformed": false,
+  "productionActivated": false
+}

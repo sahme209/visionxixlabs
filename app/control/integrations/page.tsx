@@ -1,5 +1,6 @@
 import {isCollaborationOAuthConfigured} from "@/lib/integrations/collaborationOAuthReadiness";
 import Link from "next/link";
+import { Mail, Ticket } from "lucide-react";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { ProviderLogo } from "@/components/cockpit/ProviderLogo";
@@ -57,7 +58,7 @@ function IntegrationRow({ icon, name, description, status, details, action }: {
   icon: ReactNode;
   name: string;
   description: string;
-  status: string;
+  status?: string;
   details?: string;
   action?: ReactNode;
 }) {
@@ -65,7 +66,7 @@ function IntegrationRow({ icon, name, description, status, details, action }: {
     <article className="relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5">
       <span aria-hidden className="grid h-8 w-8 shrink-0 place-items-center text-zinc-300">{icon}</span>
       <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2 pr-6"><h2 className="text-[13px] font-medium text-zinc-100">{name}</h2>{status !== "not_connected" && <StatusBadge value={status} />}</div>
+        <div className="flex flex-wrap items-center gap-2 pr-6"><h2 className="text-[13px] font-medium text-zinc-100">{name}</h2>{status && status !== "not_connected" && <StatusBadge value={status} />}</div>
         <p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p>
         {details && <details className="absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"><summary aria-label={`Details & scopes for ${name}`} className="cursor-pointer list-none rounded px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden">⋯</summary><p className="absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl">{details}</p></details>}
       </div>
@@ -146,6 +147,8 @@ export default async function ControlIntegrationsPage() {
             return <IntegrationRow key={connection.provider} icon={ICONS[connection.provider]} name={names[connection.provider]} status={connection.visibleStatus} description={descriptions[connection.provider]} details={`${connection.scopes.length ? `Granted scopes: ${connection.scopes.join(", ")}` : "No granted scopes recorded"} · ${formatTime(connection.lastValidatedAt)}`} action={canManage ? <IntegrationConnectionAction provider={connection.provider} configured={isCollaborationOAuthConfigured(connection.provider)} label={names[connection.provider]} connected={Boolean(connection.storedStatus && connection.storedStatus !== "revoked")} suspended={connection.storedStatus === "suspended"} /> : undefined} />;
           })}
           <JiraSetupCard key={jiraScopeKey} scopeKey={jiraScopeKey} canManage={!unavailable && canManage && Boolean(context.userId)} />
+          <IntegrationRow icon={<Mail className="h-5 w-5" />} name="Outlook" description="Mailbox and calendar context for the consenting user. Manage sign-in in settings; current connection status is not shown here. Email actions need their own exact review." action={canManage ? <Link prefetch={false} href="/account/integrations/outlook" className="inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-200">Open Outlook settings</Link> : undefined} />
+          <IntegrationRow icon={<Ticket className="h-5 w-5" />} name="ServiceNow" description="Change-ticket setup and read access. Connection status is checked in settings; ticket changes keep their own native lifecycle and independent approvals." action={canManage ? <Link prefetch={false} href="/account/integrations/servicenow" className="inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-200">Open ServiceNow settings</Link> : undefined} />
         </div>
       </section>
 

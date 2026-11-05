@@ -1,0 +1,20 @@
+{
+  "files": {
+    "operation-inputs.json": "64171ac34aa43b8eefb5062cdc55eee7c5fd20c77ec6a28541d2ddb75d09f722",
+    "prepared-assembly-driver.py": "29a86f70e4451dbf7c612c3f5e84783409642ede2ee7fe8c6382cfa3d87a0feb",
+    "prepared-assembly-controller.py": "d56d0f977ea3c66e1f4cdcba7e60cfdc9494ea236ff5e6fd9094afa79c4f913a"
+  },
+  "conditionalApproval": "call_nAel7PPZG3HBVPUfSg43CdAx",
+  "syntaxParsedOnly": true,
+  "expandedMountExecutorImplemented": true,
+  "focusedTestsPassed": 34,
+  "controllerOrDriverExecuted": false,
+  "imageOrAppOperationPerformed": false,
+  "executionAuthorized": false,
+  "reviewDocuments": {
+    "EXECUTION-REVIEW.md": "066852867106bdd775518b9d58948a2b9fba5ff077bf2d11ad2e1d75c11352ca",
+    "EXPANDED-MOUNT-DESIGN.md": "673b491c2b7b0121d88053014963caa9d8560b317bf683ae113b7b7dd8e2e89b"
+  },
+  "independentSourceReview": "no important remaining findings",
+  "rootOwnsActualRun": true
+}

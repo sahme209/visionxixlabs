@@ -1,0 +1,1558 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ app/control/integrations/__tests__/presentation.test.ts (5 tests | 3 failed) 139ms
+   × discovers existing Outlook and ServiceNow settings without inventing connection health 74ms
+   × keeps new setup controls unavailable to a read-only viewer while showing provider purpose 23ms
+   × keeps admin settings navigation independent of unavailable aggregate records without showing cached health 25ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/control/integrations/__tests__/presentation.test.ts > discovers existing Outlook and ServiceNow settings without inventing connection health
+TestingLibraryElementError: Unable to find an accessible element with the role "link" and name "Open Outlook settings"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "Integrations":
+  [36m<h1[39m
+    [33mclass[39m=[32m"text-3xl font-semibold tracking-[-0.045em] sm:text-4xl"[39m
+  [36m/>[39m
+
+  Name "Source control":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"source-control-heading"[39m
+  [36m/>[39m
+
+  Name "GitHub":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Collaboration and work management":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"collaboration-heading"[39m
+  [36m/>[39m
+
+  Name "Slack":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Microsoft Teams":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Linear":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Documentation & developer tools":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"documentation-heading"[39m
+  [36m/>[39m
+
+  Name "Microsoft Learn MCP":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Orchestration":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"automation-heading"[39m
+  [36m/>[39m
+
+  Name "Apache Airflow":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Cloud authorization":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"cloud-heading"[39m
+  [36m/>[39m
+
+  Name "AWS":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Azure":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Google Cloud":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Source control":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"source-control-heading"[39m
+    [33mclass[39m=[32m"mt-7"[39m
+  [36m/>[39m
+
+  Name "Collaboration and work management":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"collaboration-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Documentation & developer tools":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"documentation-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Orchestration":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"automation-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Cloud authorization":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"cloud-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Open tools →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-200"[39m
+    [33mhref[39m=[32m"/control/mcp"[39m
+  [36m/>[39m
+
+  Name "Open Airflow →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/[0.1] px-3.5 text-xs font-medium text-zinc-300 hover:bg-white/[0.05]"[39m
+    [33mhref[39m=[32m"/control/airflow"[39m
+  [36m/>[39m
+
+  Name "Connect in Agent →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-300 hover:bg-white/5"[39m
+    [33mhref[39m=[32m"/control/desktop"[39m
+  [36m/>[39m
+
+  Name "Connect in Agent →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-300 hover:bg-white/5"[39m
+    [33mhref[39m=[32m"/control/desktop"[39m
+  [36m/>[39m
+
+  Name "Connect in Agent →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-300 hover:bg-white/5"[39m
+    [33mhref[39m=[32m"/control/desktop"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full min-w-0"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col justify-between gap-4 sm:flex-row sm:items-end"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-semibold tracking-[-0.045em] sm:text-4xl"[39m
+          [36m>[39m
+            [0mIntegrations[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400"[39m
+          [36m>[39m
+            [0mConnect source control, collaboration tools, and cloud services to your workspace.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-zinc-600"[39m
+        [36m>[39m
+          [0mAdministrator controls[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"source-control-heading"[39m
+        [33mclass[39m=[32m"mt-7"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+          [33mid[39m=[32m"source-control-heading"[39m
+        [36m>[39m
+          [0mSource control[0m
+        [36m</h2>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid gap-4 md:grid-cols-2 2xl:grid-cols-3"[39m
+        [36m>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"grid h-8 w-8 shrink-0 place-items-center text-zinc-300"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2 pr-6"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+                [36m>[39m
+                  [0mGitHub[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+              [36m>[39m
+                [0mRepository context, reviewed code changes, and release workflows.[0m
+              [36m</p>[39m
+              [36m<details[39m
+                [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [36m<summary[39m
+                  [33maria-label[39m=[32m"Details & scopes for GitHub"[39m
+                  [33mclass[39m=[32m"cursor-pointer list-none rounded px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden"[39m
+                [36m>[39m
+                  [0m⋯[0m
+                [36m</summary>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+                [36m>[39m
+                  [0mNo GitHub App installation recorded.[0m
+                [36m</p>[39m
+              [36m</details>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"col-start-2 self-end justify-self-end"[39m
+            [36m/>[39m
+          [36m</article>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"collaboration-heading"[39m
+        [33mclass[39m=[32m"mt-8"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+          [33mid[39m=[32m"collaboration-heading"[39m
+        [36m>[39m
+          [0mCollaboration and work management[0m
+        [36m</h2>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid gap-4 md:grid-cols-2 2xl:grid-cols-3"[39m
+        [36m>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"grid h-8 w-8 shrink-0 place-items-center text-zinc-300"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2 pr-6"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+                [36m>[39m
+                  [0mSlack[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+              [36m>[39m
+                [0mGoverned release notifications for your workspace.[0m
+              [36m</p>[39m
+              [36m<details[39m
+                [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [36m<summary[39m
+                  [33maria-label[39m=[32m"Details & scopes for Slack"[39m
+                  [33mclass[39m=[32m"cursor-pointer list-none rounded px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden"[39m
+                [36m>[39m
+                  [0m⋯[0m
+                [36m</summary>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+                [36m>[39m
+                  [0mNo granted scopes recorded · Never validated[0m
+                [36m</p>[39m
+              [36m</details>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"col-start-2 self-end justify-self-end"[39m
+            [36m/>[39m
+          [36m</article>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"grid h-8 w-8 shrink-0 place-items-center text-zinc-300"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/control/integrations/__tests__/presentation.test.ts:26:16
+     24|  io.context.mockResolvedValue({isAuthenticated:true,organizationId:'or…
+     25|  render(await Integrations());
+     26|  expect(screen.getByRole('link',{name:'Open Outlook settings'}).getAtt…
+       |                ^
+     27|  expect(screen.getByRole('link',{name:'Open ServiceNow settings'}).get…
+     28|  for(const name of ['Outlook','ServiceNow']){
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  app/control/integrations/__tests__/presentation.test.ts > keeps new setup controls unavailable to a read-only viewer while showing provider purpose
+TestingLibraryElementError: Unable to find an accessible element with the role "heading" and name "Outlook"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "Integrations":
+  [36m<h1[39m
+    [33mclass[39m=[32m"text-3xl font-semibold tracking-[-0.045em] sm:text-4xl"[39m
+  [36m/>[39m
+
+  Name "Source control":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"source-control-heading"[39m
+  [36m/>[39m
+
+  Name "GitHub":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Collaboration and work management":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"collaboration-heading"[39m
+  [36m/>[39m
+
+  Name "Slack":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Microsoft Teams":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Linear":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Documentation & developer tools":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"documentation-heading"[39m
+  [36m/>[39m
+
+  Name "Microsoft Learn MCP":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Orchestration":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"automation-heading"[39m
+  [36m/>[39m
+
+  Name "Apache Airflow":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Cloud authorization":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"cloud-heading"[39m
+  [36m/>[39m
+
+  Name "AWS":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Azure":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Google Cloud":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Source control":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"source-control-heading"[39m
+    [33mclass[39m=[32m"mt-7"[39m
+  [36m/>[39m
+
+  Name "Collaboration and work management":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"collaboration-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Documentation & developer tools":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"documentation-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Orchestration":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"automation-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Cloud authorization":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"cloud-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Open tools →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-200"[39m
+    [33mhref[39m=[32m"/control/mcp"[39m
+  [36m/>[39m
+
+  Name "Open Airflow →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/[0.1] px-3.5 text-xs font-medium text-zinc-300 hover:bg-white/[0.05]"[39m
+    [33mhref[39m=[32m"/control/airflow"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full min-w-0"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col justify-between gap-4 sm:flex-row sm:items-end"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-semibold tracking-[-0.045em] sm:text-4xl"[39m
+          [36m>[39m
+            [0mIntegrations[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400"[39m
+          [36m>[39m
+            [0mConnect source control, collaboration tools, and cloud services to your workspace.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-zinc-600"[39m
+        [36m>[39m
+          [0mRead-only access[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"source-control-heading"[39m
+        [33mclass[39m=[32m"mt-7"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+          [33mid[39m=[32m"source-control-heading"[39m
+        [36m>[39m
+          [0mSource control[0m
+        [36m</h2>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid gap-4 md:grid-cols-2 2xl:grid-cols-3"[39m
+        [36m>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"grid h-8 w-8 shrink-0 place-items-center text-zinc-300"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2 pr-6"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+                [36m>[39m
+                  [0mGitHub[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+              [36m>[39m
+                [0mRepository context, reviewed code changes, and release workflows.[0m
+              [36m</p>[39m
+              [36m<details[39m
+                [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [36m<summary[39m
+                  [33maria-label[39m=[32m"Details & scopes for GitHub"[39m
+                  [33mclass[39m=[32m"cursor-pointer list-none rounded px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden"[39m
+                [36m>[39m
+                  [0m⋯[0m
+                [36m</summary>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+                [36m>[39m
+                  [0mNo GitHub App installation recorded.[0m
+                [36m</p>[39m
+              [36m</details>[39m
+            [36m</div>[39m
+          [36m</article>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"collaboration-heading"[39m
+        [33mclass[39m=[32m"mt-8"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+          [33mid[39m=[32m"collaboration-heading"[39m
+        [36m>[39m
+          [0mCollaboration and work management[0m
+        [36m</h2>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid gap-4 md:grid-cols-2 2xl:grid-cols-3"[39m
+        [36m>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"grid h-8 w-8 shrink-0 place-items-center text-zinc-300"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2 pr-6"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+                [36m>[39m
+                  [0mSlack[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+              [36m>[39m
+                [0mGoverned release notifications for your workspace.[0m
+              [36m</p>[39m
+              [36m<details[39m
+                [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [36m<summary[39m
+                  [33maria-label[39m=[32m"Details & scopes for Slack"[39m
+                  [33mclass[39m=[32m"cursor-pointer list-none rounded px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden"[39m
+                [36m>[39m
+                  [0m⋯[0m
+                [36m</summary>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+                [36m>[39m
+                  [0mNo granted scopes recorded · Never validated[0m
+                [36m</p>[39m
+              [36m</details>[39m
+            [36m</div>[39m
+          [36m</article>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"grid h-8 w-8 shrink-0 place-items-center text-zinc-300"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2 pr-6"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+      ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/control/integrations/__tests__/presentation.test.ts:39:16
+     37| it('keeps new setup controls unavailable to a read-only viewer while s…
+     38|  render(await Integrations());
+     39|  expect(screen.getByRole('heading',{name:'Outlook',exact:true})).toBeT…
+       |                ^
+     40|  expect(screen.getByRole('heading',{name:'ServiceNow',exact:true})).to…
+     41|  expect(screen.queryByRole('link',{name:'Open Outlook settings'})).toB…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  app/control/integrations/__tests__/presentation.test.ts > keeps admin settings navigation independent of unavailable aggregate records without showing cached health
+TestingLibraryElementError: Unable to find an accessible element with the role "link" and name "Open Outlook settings"
+
+Here are the accessible roles:
+
+  heading:
+
+  Name "Integrations":
+  [36m<h1[39m
+    [33mclass[39m=[32m"text-3xl font-semibold tracking-[-0.045em] sm:text-4xl"[39m
+  [36m/>[39m
+
+  Name "Source control":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"source-control-heading"[39m
+  [36m/>[39m
+
+  Name "GitHub":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Collaboration and work management":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"collaboration-heading"[39m
+  [36m/>[39m
+
+  Name "Slack":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Microsoft Teams":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Linear":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Documentation & developer tools":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"documentation-heading"[39m
+  [36m/>[39m
+
+  Name "Microsoft Learn MCP":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Orchestration":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"automation-heading"[39m
+  [36m/>[39m
+
+  Name "Apache Airflow":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Cloud authorization":
+  [36m<h2[39m
+    [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+    [33mid[39m=[32m"cloud-heading"[39m
+  [36m/>[39m
+
+  Name "AWS":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Azure":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  Name "Google Cloud":
+  [36m<h2[39m
+    [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  paragraph:
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<p[39m
+    [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  alert:
+
+  Name "":
+  [36m<div[39m
+    [33mclass[39m=[32m"mt-8 border-y border-white/[0.08] py-5 text-sm text-zinc-400"[39m
+    [33mrole[39m=[32m"alert"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  region:
+
+  Name "Source control":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"source-control-heading"[39m
+    [33mclass[39m=[32m"mt-7"[39m
+  [36m/>[39m
+
+  Name "Collaboration and work management":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"collaboration-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Documentation & developer tools":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"documentation-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Orchestration":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"automation-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  Name "Cloud authorization":
+  [36m<section[39m
+    [33maria-labelledby[39m=[32m"cloud-heading"[39m
+    [33mclass[39m=[32m"mt-8"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  article:
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<article[39m
+    [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  group:
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  Name "":
+  [36m<details[39m
+    [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+  link:
+
+  Name "Open tools →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-200"[39m
+    [33mhref[39m=[32m"/control/mcp"[39m
+  [36m/>[39m
+
+  Name "Open Airflow →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/[0.1] px-3.5 text-xs font-medium text-zinc-300 hover:bg-white/[0.05]"[39m
+    [33mhref[39m=[32m"/control/airflow"[39m
+  [36m/>[39m
+
+  Name "Connect in Agent →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-300 hover:bg-white/5"[39m
+    [33mhref[39m=[32m"/control/desktop"[39m
+  [36m/>[39m
+
+  Name "Connect in Agent →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-300 hover:bg-white/5"[39m
+    [33mhref[39m=[32m"/control/desktop"[39m
+  [36m/>[39m
+
+  Name "Connect in Agent →":
+  [36m<a[39m
+    [33mclass[39m=[32m"inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs text-zinc-300 hover:bg-white/5"[39m
+    [33mhref[39m=[32m"/control/desktop"[39m
+  [36m/>[39m
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"w-full min-w-0"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"flex flex-col justify-between gap-4 sm:flex-row sm:items-end"[39m
+      [36m>[39m
+        [36m<div>[39m
+          [36m<h1[39m
+            [33mclass[39m=[32m"text-3xl font-semibold tracking-[-0.045em] sm:text-4xl"[39m
+          [36m>[39m
+            [0mIntegrations[0m
+          [36m</h1>[39m
+          [36m<p[39m
+            [33mclass[39m=[32m"mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400"[39m
+          [36m>[39m
+            [0mConnect source control, collaboration tools, and cloud services to your workspace.[0m
+          [36m</p>[39m
+        [36m</div>[39m
+        [36m<span[39m
+          [33mclass[39m=[32m"text-xs text-zinc-600"[39m
+        [36m>[39m
+          [0mAdministrator controls[0m
+        [36m</span>[39m
+      [36m</div>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"mt-8 border-y border-white/[0.08] py-5 text-sm text-zinc-400"[39m
+        [33mrole[39m=[32m"alert"[39m
+      [36m>[39m
+        [0mConnection records are temporarily unavailable. No cached state is being shown.[0m
+      [36m</div>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"source-control-heading"[39m
+        [33mclass[39m=[32m"mt-7"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+          [33mid[39m=[32m"source-control-heading"[39m
+        [36m>[39m
+          [0mSource control[0m
+        [36m</h2>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid gap-4 md:grid-cols-2 2xl:grid-cols-3"[39m
+        [36m>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"grid h-8 w-8 shrink-0 place-items-center text-zinc-300"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2 pr-6"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+                [36m>[39m
+                  [0mGitHub[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+              [36m>[39m
+                [0mRepository context, reviewed code changes, and release workflows.[0m
+              [36m</p>[39m
+              [36m<details[39m
+                [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [36m<summary[39m
+                  [33maria-label[39m=[32m"Details & scopes for GitHub"[39m
+                  [33mclass[39m=[32m"cursor-pointer list-none rounded px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden"[39m
+                [36m>[39m
+                  [0m⋯[0m
+                [36m</summary>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+                [36m>[39m
+                  [0mNo GitHub App installation recorded.[0m
+                [36m</p>[39m
+              [36m</details>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"col-start-2 self-end justify-self-end"[39m
+            [36m/>[39m
+          [36m</article>[39m
+        [36m</div>[39m
+      [36m</section>[39m
+      [36m<section[39m
+        [33maria-labelledby[39m=[32m"collaboration-heading"[39m
+        [33mclass[39m=[32m"mt-8"[39m
+      [36m>[39m
+        [36m<h2[39m
+          [33mclass[39m=[32m"mb-3 text-[13px] font-medium text-zinc-100"[39m
+          [33mid[39m=[32m"collaboration-heading"[39m
+        [36m>[39m
+          [0mCollaboration and work management[0m
+        [36m</h2>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"grid gap-4 md:grid-cols-2 2xl:grid-cols-3"[39m
+        [36m>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+            [36m<span[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"grid h-8 w-8 shrink-0 place-items-center text-zinc-300"[39m
+            [36m/>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"min-w-0 flex-1"[39m
+            [36m>[39m
+              [36m<div[39m
+                [33mclass[39m=[32m"flex flex-wrap items-center gap-2 pr-6"[39m
+              [36m>[39m
+                [36m<h2[39m
+                  [33mclass[39m=[32m"text-[13px] font-medium text-zinc-100"[39m
+                [36m>[39m
+                  [0mSlack[0m
+                [36m</h2>[39m
+              [36m</div>[39m
+              [36m<p[39m
+                [33mclass[39m=[32m"mt-1 text-xs leading-5 text-zinc-500"[39m
+              [36m>[39m
+                [0mGoverned release notifications for your workspace.[0m
+              [36m</p>[39m
+              [36m<details[39m
+                [33mclass[39m=[32m"absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"[39m
+              [36m>[39m
+                [36m<summary[39m
+                  [33maria-label[39m=[32m"Details & scopes for Slack"[39m
+                  [33mclass[39m=[32m"cursor-pointer list-none rounded px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden"[39m
+                [36m>[39m
+                  [0m⋯[0m
+                [36m</summary>[39m
+                [36m<p[39m
+                  [33mclass[39m=[32m"absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl"[39m
+                [36m>[39m
+                  [0mNo granted scopes recorded · Never validated[0m
+                [36m</p>[39m
+              [36m</details>[39m
+            [36m</div>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"col-start-2 self-end justify-self-end"[39m
+            [36m/>[39m
+          [36m</article>[39m
+          [36m<article[39m
+            [33mclass[39m=[32m"relative grid min-h-[118px] min-w-0 grid-cols-[32px_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-2xl bg-[#111111] p-3.5"[39m
+          [36m>[39m
+   ...
+ ❯ Object.getElementError node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ app/control/integrations/__tests__/presentation.test.ts:51:16
+     49|  render(await Integrations());
+     50|  expect(screen.getByRole('alert').textContent).toContain('Connection r…
+     51|  expect(screen.getByRole('link',{name:'Open Outlook settings'}).getAtt…
+       |                ^
+     52|  expect(screen.getByRole('link',{name:'Open ServiceNow settings'}).get…
+     53|  for(const name of ['Outlook','ServiceNow'])expect(screen.getByRole('h…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 2 passed (5)
+   Start at  15:45:43
+   Duration  769ms (transform 25ms, setup 0ms, import 141ms, tests 139ms, environment 431ms)
+

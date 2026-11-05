@@ -1,0 +1,13 @@
+{
+  "files": {
+    "scripts/governance_local_issuer/image_inspection.py": "da6b8cc485a4ffb9c4d2e5660a5a51677ff89d1fff97090f603a691179bdcc00",
+    "scripts/governance_local_issuer/tests/test_image_inspection.py": "440725465fbe54ff0c857d3a5baa3b1c128796fa951457a6c4c5106465441b31",
+    "scripts/governance_local_issuer/container_assembly.py": "8783276ab05b0ef92ccdbab6c85051874dd9516da9f1d907f7711999e5aee373",
+    "scripts/governance_local_issuer/tests/test_container_assembly.py": "468fa59fbe39bff1ff366032e3aed0af7861d609292d68672b6c3e2d5709bc80"
+  },
+  "focusedTestsPassed": 34,
+  "independentSourceReview": "no important remaining findings",
+  "actualImageMountOrAssemblyPerformed": false,
+  "actualControllerOrDriverExecuted": false,
+  "executionAuthorized": false
+}

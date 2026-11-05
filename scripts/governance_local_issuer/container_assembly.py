@@ -87,6 +87,8 @@ def _inputs_impl(packet_path):
  operation=_json_bound(image.get('operationRecord'))
  _need(operation.get('format')=='axiom.recorded-package-image-operation/1'and operation.get('argv')==_image_argv(root,Path(imagebound['path']))and operation.get('state')=='completed'and type(operation.get('exit'))is int and operation['exit']==0,'recorded_image_operation_required')
  _need(all(operation.get(k)==image.get(k)for k in ('sourcePackage','sourceRevision','packageDigest','manifestSha256','image')),'image_operation_provenance_mismatch')
+ from .image_inspection import verify_recorded_inspection
+ verify_recorded_inspection(image.get('mountedObservation'),imagebound,{'sourcePackage':str(root),'sourceRevision':p['sourceRevision'],'packageDigest':p['packageDigest'],'manifestSha256':manifest_bound['sha256']})
  return {'packet':p,'packetBinding':packet_binding,'materialization':mat,'companions':companions,'main':main,'mainPreparation':mainprep,'image':imagebound,'manifest':manifest_bound}
 
 def _inputs(packet_path):

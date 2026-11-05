@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ app/control/integrations/__tests__/presentation.test.ts (5 tests | 1 failed | 4 skipped) 59ms
+   × discovers existing Outlook and ServiceNow settings without inventing connection health 59ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/control/integrations/__tests__/presentation.test.ts > discovers existing Outlook and ServiceNow settings without inventing connection health
+AssertionError: expected 'OutlookMailbox and calendar context f…' to match /current connection status is not sho…/i
+
+- Expected:
+/current connection status is not shown here/i
+
++ Received:
+"OutlookMailbox and calendar context for the consenting user. Connection status is checked in settings; email actions need their own exact review.Open Outlook settings"
+
+ ❯ app/control/integrations/__tests__/presentation.test.ts:32:27
+     30|  for(const name of ['Outlook','ServiceNow']){
+     31|   const row=screen.getByRole('heading',{name,exact:true}).closest('art…
+     32|   expect(row.textContent).toMatch(name==='Outlook'?/current connection…
+       |                           ^
+     33|   expect(row.textContent).not.toMatch(/\bconnected\b|\bactive\b|\bvali…
+     34|  }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 skipped (5)
+   Start at  15:48:37
+   Duration  384ms (transform 24ms, setup 0ms, import 89ms, tests 59ms, environment 192ms)
+

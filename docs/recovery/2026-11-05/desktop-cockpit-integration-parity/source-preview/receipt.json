@@ -1,0 +1,15 @@
+{
+  "format": "axiom.static-source-preview/1",
+  "htmlPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-cockpit-source-preview-67fw5q4g/preview.html",
+  "htmlSha256": "0618fd33675b7b435916c03b2e793d1d76a2470c94e22d30b5980f98d766ce30",
+  "sourcePath": "app/control/integrations/page.tsx",
+  "sourceSha256": "1ea0560a0a8615730490b594ca0f12f6402445e4d04e5a49785bd6bb35e0239c",
+  "syntheticWorkspace": true,
+  "realRouteVisited": false,
+  "providerOrDatabaseAccess": false,
+  "interactiveControlsMockedOut": true,
+  "serverStarted": false,
+  "browserOpened": false,
+  "captureFixtureSha256": "65599cd4c36be54836afead83988e95d892b292a1547dc3724d8f9dcdbb0ef43",
+  "captureConfigSha256": "cc8674278b5ff5370612217fae14f09cee1f16f0595304ad8525f7bc261a151f"
+}
