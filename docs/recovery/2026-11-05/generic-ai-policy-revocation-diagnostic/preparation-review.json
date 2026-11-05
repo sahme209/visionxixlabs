@@ -1,0 +1,7 @@
+{
+  "reviewer": "agent_reliability_review",
+  "result": "clear/no important findings",
+  "method": "actual runner/test/claim ordering and safe witness review; no reviewer execution",
+  "scope": "one fresh desired-refusal diagnostic, preserve RED on disabled-policy SDKattempt; setupfailure separate",
+  "limits": "synthetic session/provider, not liveproduction or Governance acceptance"
+}

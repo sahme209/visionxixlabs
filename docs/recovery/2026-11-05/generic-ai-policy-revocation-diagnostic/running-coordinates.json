@@ -1,0 +1,11 @@
+{
+  "primaryToolSession": 39032,
+  "status": "terminal-desired-regression-RED",
+  "packetSha256": "0e37eeda0319b48cdbb3dd4ddb3fab2c221d479588d248f1c81274bc973c92dc",
+  "expected": "desired-refusal regression may be RED; no runtimefix",
+  "productionChanged": false,
+  "realProvider": false,
+  "primaryExitCode": 1,
+  "ownedRoot": "/private/tmp/axiom-generic-ai-policy-pg-v2p9sj2y",
+  "ownedServerStopped": true
+}

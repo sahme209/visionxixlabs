@@ -1,0 +1,37 @@
+{
+  "baselineRunner": "scripts/run-generic-ai-composition-postgres.py",
+  "baselineSha256": "2de97040b21938aba5b28ed7a7998a7e98daff91eea89f22e6634745eda10dc3",
+  "newSha256": "72b1c92222ea808178a43d144ac7baa1eb3c4e0f808691e1c5a4378786df9ae2",
+  "literalTransforms": [
+    [
+      "durableComposition.pg.test.ts",
+      "policyRevocation.pg.test.ts"
+    ],
+    [
+      "generic_ai_fixture",
+      "generic_ai_policy_fixture"
+    ],
+    [
+      "axiom-generic-ai-pg-",
+      "axiom-generic-ai-policy-pg-"
+    ],
+    [
+      "55492",
+      "55494"
+    ],
+    [
+      "'generic-durable'",
+      "'generic-policy-revocation'"
+    ],
+    [
+      "expected=2",
+      "expected=1"
+    ],
+    [
+      "both_non_skipped_journeys_required",
+      "one_non_skipped_journey_required"
+    ]
+  ],
+  "exactReconstruction": true,
+  "executed": false
+}

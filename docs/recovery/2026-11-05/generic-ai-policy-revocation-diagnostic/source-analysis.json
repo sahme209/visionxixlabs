@@ -1,0 +1,39 @@
+{
+  "baseline": "37ee5931cc4484d335c1fec0e39a6c7d010239f1",
+  "files": [
+    {
+      "path": "app/api/ai/generate/route.ts",
+      "sha256": "030f73f18e9f945a4bd84172aa1a9cefe3970119703ee7955bbcc40d7293cc55"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "0fa0c2c83968ce333bd1ebedff09ed05d487ad9f8da522ee5d9b9d6d93534d79"
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "sha256": "94a1f91be7b4863e9f1baa8d4821921bf63a97192897cca0a0a27c4d7e50d978"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "caa33541753d3629424e7bb5302f634ffa89eb2186c9e1d6581c29b8eeaf2ceb"
+    },
+    {
+      "path": "lib/ai/workspaceProviderPolicy.ts",
+      "sha256": "82760fee3ab68a628e1c84e32b52820c3266908955a35662bec7bb92dc8c2cc3"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeProposeRealExecutor.ts",
+      "sha256": "8d31d7678f3b7a2fb78b115b90327bb7e4825e7076121e7c0028040c3b828d9e"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031"
+    }
+  ],
+  "productionAdmitAITextCallers": [
+    "app/api/ai/generate/route.ts",
+    "lib/workforce/pipelines/codeProposeRealExecutor.ts"
+  ],
+  "finding": "generic route initial stored policy resolved before awaited financial/member claim; tested legacy claim checks member/expiry but not current provider policy; manager consumes prior options/capability before SDK",
+  "limits": "selected source graph and actual local witness only, not full transitive/fleet/provider or otherfamily acceptance"
+}

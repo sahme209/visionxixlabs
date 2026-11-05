@@ -1,0 +1,15 @@
+{
+  "primaryToolSession": 39032,
+  "primaryToolExit": 1,
+  "ownedRoot": "/private/tmp/axiom-generic-ai-policy-pg-v2p9sj2y",
+  "testsPassed": 0,
+  "testsFailed": 1,
+  "testsSkipped": 0,
+  "result": "desired invariant violated; unfixed local source defect",
+  "setupFailure": false,
+  "ownedServerStopped": true,
+  "directPacketAfter": "0e37eeda0319b48cdbb3dd4ddb3fab2c221d479588d248f1c81274bc973c92dc",
+  "realProviderOrCustomerDatabase": false,
+  "applicationChanged": false,
+  "productionChanged": false
+}

@@ -1,0 +1,17 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)(deny file-write*)",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "--project",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/generic-ai-policy-revocation-diagnostic/types.json"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 1.371,
+  "stdoutBase64": "",
+  "stderrBase64": "",
+  "processReaped": true,
+  "scope": "newdiagnostic/transitives/verifiedmatching266generatedclient; no app/DB execution"
+}

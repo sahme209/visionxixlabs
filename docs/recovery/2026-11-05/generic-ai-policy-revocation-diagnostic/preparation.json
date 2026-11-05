@@ -1,0 +1,6 @@
+{
+  "packetSha256": "0e37eeda0319b48cdbb3dd4ddb3fab2c221d479588d248f1c81274bc973c92dc",
+  "test": "app/api/ai/generate/__tests__/policyRevocation.pg.test.ts",
+  "execute": false,
+  "cases": "generic-policy-revocation"
+}

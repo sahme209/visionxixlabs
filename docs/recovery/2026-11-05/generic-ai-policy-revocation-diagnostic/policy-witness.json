@@ -1,0 +1,18 @@
+{
+  "scope": "synthetic owned local fixture; no real provider, session or customer database",
+  "postStatus": 200,
+  "fetchCount": 1,
+  "currentPolicyEnabled": false,
+  "transportTimePolicyEnabled": false,
+  "memberStillAccepted": true,
+  "holds": [
+    {
+      "status": "pending_settlement",
+      "reservedCents": 1000,
+      "usageLinked": true
+    }
+  ],
+  "usageCount": 1,
+  "setupFailure": null,
+  "routeRejected": false
+}
