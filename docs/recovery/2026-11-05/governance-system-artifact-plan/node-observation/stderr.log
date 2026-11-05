@@ -1,0 +1,31 @@
+Executable=/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node
+Identifier=node
+Format=Mach-O thin (arm64)
+CodeDirectory v=20500 size=946928 flags=0x10000(runtime) hashes=29581+7 location=embedded
+VersionPlatform=1
+VersionMin=853248
+VersionSDK=983040
+Hash type=sha256 size=32
+CandidateCDHash sha256=5ed136930e24600bc311d02bac70262c96895054
+CandidateCDHashFull sha256=5ed136930e24600bc311d02bac70262c96895054687f7c400677f26837949d32
+Hash choices=sha256
+CMSDigest=5ed136930e24600bc311d02bac70262c96895054687f7c400677f26837949d32
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=91422720
+Executable Segment flags=0x1
+Page size=4096
+CDHash=5ed136930e24600bc311d02bac70262c96895054
+Signature size=8984
+Authority=Developer ID Application: Node.js Foundation (HX7739G8FX)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=Sep 7, 2026 at 19:37:22
+Info.plist=not bound
+TeamIdentifier=HX7739G8FX
+Runtime Version=15.0.0
+Sealed Resources=none
+Internal requirements count=1 size=164
+warning: Specifying ':' in the path is deprecated and will not work in a future release
+Total signatures=1
+Chosen signature=1

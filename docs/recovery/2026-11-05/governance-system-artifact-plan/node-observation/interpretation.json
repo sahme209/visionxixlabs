@@ -1,0 +1,16 @@
+{
+  "display_only": true,
+  "entitlements": {
+    "com.apple.security.cs.allow-dyld-environment-variables": true,
+    "com.apple.security.cs.allow-jit": true,
+    "com.apple.security.cs.allow-unsigned-executable-memory": true,
+    "com.apple.security.cs.disable-executable-page-protection": true,
+    "com.apple.security.cs.disable-library-validation": true,
+    "com.apple.security.get-task-allow": true
+  },
+  "runtime_flag_displayed": true,
+  "qualified_private_consumer": false,
+  "signature_validity_tested": false,
+  "original_unchanged": true,
+  "next_design_candidate": "Separate review copy with allow-jit only; compatibility and protection unqualified; no signing or execution authorized."
+}

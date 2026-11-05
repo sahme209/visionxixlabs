@@ -1,0 +1,48 @@
+{
+  "approval": {
+    "approval": "call_oMFqnVXcE0MvrNsFytqc4K6D",
+    "decision": "Approve one exact Node metadata read",
+    "claimed_at": "2026-11-05T15:38:56.740270+00:00",
+    "maximum_displays": 1,
+    "retries": 0
+  },
+  "argv": [
+    "/usr/bin/codesign",
+    "--display",
+    "--verbose=4",
+    "--entitlements",
+    ":-",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node"
+  ],
+  "before": {
+    "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "uid": 501,
+    "mode": "0o755",
+    "dev": 16777232,
+    "ino": 859815,
+    "size": 122129232,
+    "mtime_ns": 1788824242000000000,
+    "ctime_ns": 1793319854477493638,
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b"
+  },
+  "after": {
+    "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "uid": 501,
+    "mode": "0o755",
+    "dev": 16777232,
+    "ino": 859815,
+    "size": 122129232,
+    "mtime_ns": 1788824242000000000,
+    "ctime_ns": 1793319854477493638,
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b"
+  },
+  "state": "display-completed",
+  "exit_code": 0,
+  "elapsed_seconds": 0.06403275,
+  "stdout_bytes": 568,
+  "stderr_bytes": 1147,
+  "node_executed": false,
+  "signing_or_validation_performed": false,
+  "attempt_consumed": true,
+  "retry_authorized": false
+}
