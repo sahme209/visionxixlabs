@@ -41,6 +41,7 @@ def _provenance(role,item,result,commands,preparations,build_node):
  _need(expected==[x.get('argv')for x in commands],'saved_signing_commands_mismatch')
  _need(all(isinstance(x,list)and x and x[-1]==item['artifact']['path']for x in expected),'signed_command_target_mismatch')
  if role=='node':
+  _need(sign.get('target')==item['artifact']['path'],'explicit_node_signing_target_required')
   _need(set(proof)=={'signingPacket'} and result.get('original_unchanged')is True,'node_original_preservation_required')
   current=binding(build_node)
   for key in ('original_before','original_after'):
@@ -135,7 +136,12 @@ def _observe(stage,repo,revision,run,build_node,packet_path,after_build=False):
   _need(set(item)=={'identifier','artifact','resultReceipt','displayStdout','displayStderr','provenance','rawLogs'} and item['identifier']==ROLE_IDENTIFIERS[role],'fixed_role_identifier_required')
   data=_bound(item['artifact']);_need(int(str(item['artifact']['mode']),8)==0o600 if isinstance(item['artifact']['mode'],str) else item['artifact']['mode']==0o600,'quarantined_role_mode_required')
   r=_json_bound(item['resultReceipt']);actual=r.get('artifact_after',r.get('copy_after'))
-  _need(_same_artifact(actual,item['artifact']),'saved_role_artifact_mismatch')
+  if role=='node'and 'artifact_after'not in r and isinstance(actual,dict)and 'path'not in actual:
+   node_sign=_json_bound(item['provenance']['signingPacket'])
+   _need(node_sign.get('target')==item['artifact']['path'],'explicit_node_signing_target_required')
+   mode=actual.get('mode');mode=int(mode,8)if isinstance(mode,str)else mode
+   _need(all(actual.get(k)==item['artifact'][k]for k in ('sha256','size'))and mode==0o600,'saved_node_copy_mismatch')
+  else:_need(_same_artifact(actual,item['artifact']),'saved_role_artifact_mismatch')
   commands=r.get('results',r.get('actualCommandsCompleted'));_need(isinstance(commands,list) and len(commands)==3 and all(x.get('state')=='completed' and type(x.get('exit',x.get('exit_code')))is int and x.get('exit',x.get('exit_code'))==0 for x in commands),'saved_static_sequence_required')
   if role!='guard':_need(r.get('profile_matches',r.get('profile_matches_candidate'))is True,'saved_profile_required')
   rawlogs=item['rawLogs'];_need(isinstance(rawlogs,list)and len(rawlogs)==3,'three_raw_command_log_pairs_required')

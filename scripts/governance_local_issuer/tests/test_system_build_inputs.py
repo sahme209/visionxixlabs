@@ -102,6 +102,16 @@ class SystemBuildInputsTests(unittest.TestCase):
   r=json.loads(self.preparation.read_text());r['sourceInputs'].pop(prep.ROLE_SOURCE_PATHS[0]);self.preparation.write_text(json.dumps(r))
   p=json.loads(self.packet.read_text());p['preparationReceipts']=[s.binding(self.preparation)];self.packet.write_text(json.dumps(p))
   with self.assertRaises(ValueError):self.record()
+ def test_actual_node_copy_after_without_path_joins_explicit_sign_target(self):
+  p=self.root/'node-result';r=json.loads(p.read_text());r['copy_after']=r.pop('artifact_after');r['copy_after'].pop('path');p.write_text(json.dumps(r))
+  packet=json.loads(self.packet.read_text());packet['roles']['node']['resultReceipt']=s.binding(p);self.packet.write_text(json.dumps(packet))
+  self.assertEqual(self.record()['runtimeNode']['path'],str(self.root/'node'))
+  self.assertNotIn('path',json.loads(p.read_text())['copy_after'])
+ def test_pathless_node_copy_cannot_infer_missing_sign_target(self):
+  p=self.root/'node-result';r=json.loads(p.read_text());r['copy_after']=r.pop('artifact_after');r['copy_after'].pop('path');p.write_text(json.dumps(r))
+  sign=self.root/'node-signing-packet';v=json.loads(sign.read_text());v.pop('target');sign.write_text(json.dumps(v))
+  packet=json.loads(self.packet.read_text());packet['roles']['node']['resultReceipt']=s.binding(p);packet['roles']['node']['provenance']['signingPacket']=s.binding(sign);self.packet.write_text(json.dumps(packet))
+  with self.assertRaisesRegex(ValueError,'explicit_node_signing_target_required'):self.record()
  def test_node_entitlement_integer_one_is_not_boolean_true(self):
   import plistlib
   out=self.root/'node-stdout';out.write_bytes(plistlib.dumps({'com.apple.security.cs.allow-jit':1}))

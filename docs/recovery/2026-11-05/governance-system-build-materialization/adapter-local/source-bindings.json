@@ -1,8 +1,8 @@
 {
   "files": {
-    "scripts/governance_local_issuer/system_build_inputs.py": "c4feaf6cc22321235c6d65934bee7bc7251507ad7006f723c30f8123371bbd2b",
+    "scripts/governance_local_issuer/system_build_inputs.py": "54a5552179f2aef7f15fbb1eb646b61b1febd7922852faec1a6a83edf435d980",
     "scripts/build-local-issuer-package-source.py": "ab4d34507637aba6fa4152a024233cd991cf066a2dd258778cb818269ac315c2",
-    "scripts/governance_local_issuer/tests/test_system_build_inputs.py": "cde2ce7a5e9ed36cb8221a6d063bea4213ebb5560e1ca6f4fb8b5da67b0f07cd",
+    "scripts/governance_local_issuer/tests/test_system_build_inputs.py": "dbe666e604b34b5c72254fa4d5c41285e5dba664393ed77e949ba6c351d5f4fd",
     "scripts/governance_local_issuer/tests/test_sourcebuilder_system_inputs.py": "92988fef22341851986233c9ceab40cb409b7b6d06fbccf79841bcc7109d3c5d"
   },
   "executionAuthorized": false
