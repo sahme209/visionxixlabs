@@ -1,0 +1,30 @@
+{
+  "method": "fixed local dscl metadata queries and lstat only; no password/authentication fields",
+  "user_record": {
+    "name": "_axiomissuer_synthetic",
+    "exit": 56,
+    "output": "<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)\n"
+  },
+  "group_record": {
+    "name": "_axiomissuer_synthetic",
+    "exit": 56,
+    "output": "<dscl_cmd> DS Error: -14136 (eDSRecordNotFound)\n"
+  },
+  "prospectiveUID49999": {
+    "exit": 0,
+    "matching_records": 0
+  },
+  "prospectiveGID49999": {
+    "exit": 0,
+    "matching_records": 0
+  },
+  "generation_root_exists": false,
+  "app_exists": false,
+  "launch_journal_exists": false,
+  "bootstrap_journal_exists": false,
+  "bootstrap_locators_exist": false,
+  "owner_daemon_plist_exists": false,
+  "ids_reserved": false,
+  "account_created": false,
+  "permission_to_install": false
+}

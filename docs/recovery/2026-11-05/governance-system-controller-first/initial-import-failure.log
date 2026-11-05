@@ -1,0 +1,1 @@
+Initial Python namespace import stopped before staging/artifact creation: ModuleNotFoundError: No module named 'scripts.governance_local_issuer'. Subsequent preparation loaded the exact reviewed module file via importlib; no failed/old stage was repaired.

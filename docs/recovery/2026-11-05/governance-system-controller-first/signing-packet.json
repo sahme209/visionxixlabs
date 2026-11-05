@@ -1,0 +1,65 @@
+{
+  "state": "prepared-not-authorized",
+  "artifact": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/stage/assembly/Axiom Synthetic Custodian.app/Contents/MacOS/AxiomIssuerController",
+    "sha256": "ef5db3756b3d9203ea2f62e92ddc3f8c96c2e1d456beb515279495b7c73bab74",
+    "size": 36232,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16762707,
+    "mtime_ns": 1793903658909068775,
+    "ctime_ns": 1793903658912925778
+  },
+  "entitlements": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/native-empty-entitlements.plist",
+    "sha256": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c",
+    "size": 181,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16763311,
+    "mtime_ns": 1793903784388905848,
+    "ctime_ns": 1793903784388905848
+  },
+  "compile_receipt_sha256": "b566f5a25218050d48be429a0d695df25c6de4a14dd6142c7f3b69a1f8680815",
+  "stage_input_manifest_sha256": "33377cdd913d3fa2facd87a13267d0e0bb93c7c16f0be2616315ed1e4fb02448",
+  "postcompile_file_set_verified": true,
+  "commands": [
+    [
+      "/usr/bin/codesign",
+      "--force",
+      "--sign",
+      "4C2E59F247CA275001586AE020A9269464529452",
+      "--identifier",
+      "com.visionxixlabs.axiom.synthetic.controller",
+      "--options",
+      "runtime",
+      "--entitlements",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/native-empty-entitlements.plist",
+      "--timestamp=none",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/stage/assembly/Axiom Synthetic Custodian.app/Contents/MacOS/AxiomIssuerController"
+    ],
+    [
+      "/usr/bin/codesign",
+      "--verify",
+      "--strict",
+      "--verbose=2",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/stage/assembly/Axiom Synthetic Custodian.app/Contents/MacOS/AxiomIssuerController"
+    ],
+    [
+      "/usr/bin/codesign",
+      "--display",
+      "--verbose=4",
+      "--entitlements",
+      ":-",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/stage/assembly/Axiom Synthetic Custodian.app/Contents/MacOS/AxiomIssuerController"
+    ]
+  ],
+  "per_command_seconds": 10,
+  "per_command_output_bytes": 65536,
+  "attempts": 1,
+  "retries": 0,
+  "controller_execution": false,
+  "root_installation": false
+}

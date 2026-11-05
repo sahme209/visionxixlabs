@@ -1,0 +1,5 @@
+# Real controller-first preparation
+
+Current native source remains6018e44c. Reconciled missing local synthetic account/group and generation with fixed metadata-only queries. Prospective UID/GID49999 remains unreserved; no account/service/root change. A fresh real preparation froze55source files/2810cached headers and2875stage files, then one declared controller compilation passed. Output0600/unexecuted; signing remains pending. Initial namespace import failure happened before staging and was resolved by binding the actual generator file.
+
+Source/staging manifests and artifact hashes are in the private batch referenced by compile-result.json; signing-packet.json binds the exact next target/commands. No old stage or consumed probe was rerun. This proves actual source/header/payload staging and compilation, not installed principal, mounted private consumer, compiler trust, runtime identity, custody or full Governance. Existing master requirements and operational/spending gates remain open.
