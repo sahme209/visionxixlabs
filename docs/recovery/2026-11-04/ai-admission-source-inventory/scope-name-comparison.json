@@ -1,0 +1,10 @@
+{
+  "workingRoots": 2936,
+  "stageRoots": 2936,
+  "sameNames": true,
+  "listSha256": "4425051946c97d1056c0a28742cc0c595b85a2a56de0c2e52c63ef9f44c21284",
+  "workingOnly": [],
+  "stageOnly": [],
+  "method": "same installed TypeScript directory enumerator and exclusions over both roots; no program or app module execution",
+  "observedExitCode": 0
+}

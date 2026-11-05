@@ -1,0 +1,21 @@
+{
+  "preparedOnly": true,
+  "executed": false,
+  "scriptSha256": "8b2b7ecae083f70ab38a5b569d89e49fa6cda67b3467db5544bc93ff560d7742",
+  "sourceRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "exactRootLiteralOnly": true,
+  "allAlgorithmOptionsQueriesFiltersPhasesUnchanged": true,
+  "sourceTrees": {
+    "app": {
+      "201f5e77e70ba261e57958247f77a0fe23567824": "faf6ddc368ad32c3378c1b6700155ccc52e321b8",
+      "HEAD": "faf6ddc368ad32c3378c1b6700155ccc52e321b8"
+    },
+    "lib": {
+      "201f5e77e70ba261e57958247f77a0fe23567824": "945eac8a4e59d566205b44eb50cc7eeedc3f381c",
+      "HEAD": "945eac8a4e59d566205b44eb50cc7eeedc3f381c"
+    }
+  },
+  "stageFilesComparedToGitBlobs": 4540,
+  "contextDifference": "Fixed completed201buildstage uses its generated Prisma client/dependencies; no inference of original timeout cause; identical app/lib source does not establish equivalent dependent type context or semantic pass",
+  "priorFailuresPreserved": true
+}

@@ -1,0 +1,20 @@
+{
+  "preparedOnly": true,
+  "executed": false,
+  "scriptSha256": "11bcc274686bdd5bd6fe060676fc23dacedb58cebf845c5ad342444941c423f0",
+  "review": "source-only inspection; fixed installed compiler import, no application/runtime imports, no writes or fetches in script",
+  "resolvedOrigins": [
+    "lib/ai/AIProviderManager.ts",
+    "lib/ai/AIProvider.ts",
+    "lib/ai/orchestrator.ts",
+    "lib/ai/providers/VercelGatewayProvider.ts",
+    "node_modules/ai/**/index.d.ts"
+  ],
+  "claimLimit": "lexical signature/source inventory only, not runtime authority, full completeness, semantic type pass or budget acceptance",
+  "sdkDeclarationMatch": "canonical realpath equality to fixed installed ai/dist/index.d.ts",
+  "aggregateUnknownCounts": [
+    "totalCallExpressionCount",
+    "staticallyUnnameableCallCount",
+    "unresolvedOutsideKeywordBucketCount"
+  ]
+}

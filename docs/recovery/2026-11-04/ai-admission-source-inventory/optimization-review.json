@@ -1,0 +1,18 @@
+{
+  "preparedOnly": true,
+  "executed": false,
+  "originalScriptSha256": "11bcc274686bdd5bd6fe060676fc23dacedb58cebf845c5ad342444941c423f0",
+  "scriptSha256": "fa597e7418f48943743525ff3b44141ccd05b42ef22ffe15d349578763687f45",
+  "semanticPreservation": "Unused broad tsconfig root-file enumeration is replaced with the same explicit files:roots/include:[]/exclude:[] to avoid empty-input diagnostics; explicit sorted app/lib roots still feed createProgram. All parsed.options and extends resolution remain in parseJsonConfigFileContent. parsed.fileNames is never consumed. Call traversal, signature queries, declarations, root filters and JSON result fields unchanged. Phase timing goes stderr only.",
+  "phaseMarkers": [
+    "roots",
+    "config",
+    "program",
+    "checker",
+    "every100files",
+    "calls-complete"
+  ],
+  "originalFailure": "45-second timeout/exit-9/zero-output; no counts or success inferred",
+  "nextRun": "not executed; parent reviews then separately runs bounded analysis with split streams",
+  "causeQualification": "Unnecessary broad enumeration is source-observed; actual timeout phase/cause remains unmeasured until bounded phase evidence."
+}

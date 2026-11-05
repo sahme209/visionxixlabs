@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-04/compiled-public-assistant-smoke/smoke.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--max-old-space-size=3072",
+    "--no-experimental-webstorage",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-04/ai-admission-source-inventory/inventory-stage.cjs"
+  ],
+  "scriptSha256": "8b2b7ecae083f70ab38a5b569d89e49fa6cda67b3467db5544bc93ff560d7742",
+  "exitCode": -6,
+  "stopReason": null,
+  "elapsedSeconds": 15.107,
+  "stdoutBytes": 0,
+  "stderrBytes": 7651,
+  "processReaped": true,
+  "success": false,
+  "scope": "same app/lib source and all declaration queries; no app imports/inference/provider/DB/emit"
+}

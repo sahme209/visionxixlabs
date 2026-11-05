@@ -1,0 +1,4 @@
+{
+  "format": "lossless unified diff",
+  "diff": "--- working-root-optimized-fa597\n+++ verified201stage\n@@ -3,7 +3,7 @@\n const fs = require('node:fs');\n const path = require('node:path');\n const crypto = require('node:crypto');\n-const ROOT = '/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion';\n+const ROOT = '/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage';\n const ts = require(path.join(ROOT, 'node_modules/typescript/lib/typescript.js'));\n const digest = bytes => crypto.createHash('sha256').update(bytes).digest('hex');\n const relative = file => path.relative(ROOT, file).split(path.sep).join('/');\n"
+}

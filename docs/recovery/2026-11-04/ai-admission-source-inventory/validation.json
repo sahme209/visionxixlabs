@@ -1,0 +1,12 @@
+{
+  "rootFiles": 2936,
+  "resolvedSites": 69,
+  "resolvedCallerFiles": 47,
+  "allCallerAndDeclarationHashesMatchAnalyzedStage": true,
+  "allSourceLinesExist": true,
+  "directToolInputHashesMatch": true,
+  "classificationCountsMatch": true,
+  "inputScopeNamesMatchWorkingTree": true,
+  "sourceRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "qualification": "source inventory only; not semantic type/admission/runtime/financial coverage"
+}

@@ -1,0 +1,75 @@
+# Resolved selected-declaration call sites
+
+Source201 snapshot; mechanically resolved declarations only. Caller authority, runtime reachability, reservations and actual costs require separate review. A request can traverse several rows; counts are not requests, tokens or spend.
+
+| Source | Method | Enclosing function | Declaration class |
+|---|---|---|---|
+| `app/api/admin/agi-smoke-test/route.ts:136` | `generateText` | `aiSitrep` | `manager-normal-or-health-method` |
+| `app/api/admin/anthropic-test/route.ts:25` | `generateText` | `GET` | `manager-normal-or-health-method` |
+| `app/api/ai/generate/route.ts:141` | `generateTextWithAdmission` | `handlePost` | `manager-admitted-method` |
+| `app/api/ai/health/route.ts:33` | `healthCheckAll` | `POST` | `manager-normal-or-health-method` |
+| `app/api/chat/route.ts:86` | `orchestrateChat` | `POST` | `orchestrator-wrapper` |
+| `app/api/visionxix-ai-chat/route.ts:85` | `orchestrateChat` | `POST` | `orchestrator-wrapper` |
+| `lib/agents/aiWorkflowTranslator.ts:106` | `extractStructuredData` | `translateWorkflowIntent` | `manager-normal-or-health-method` |
+| `lib/agents/axiomAssistantAgent.ts:225` | `generate` | `runAxiomAssistantAgent` | `orchestrator-wrapper` |
+| `lib/agents/contactResolutionAgent.ts:120` | `generate` | `runContactResolutionAgent` | `orchestrator-wrapper` |
+| `lib/ai/AIProviderManager.ts:140` | `generateText` | `<anonymous-arrow>` | `provider-interface-method` |
+| `lib/ai/AIProviderManager.ts:150` | `summarize` | `<anonymous-arrow>` | `provider-interface-method` |
+| `lib/ai/AIProviderManager.ts:160` | `classify` | `<anonymous-arrow>` | `provider-interface-method` |
+| `lib/ai/AIProviderManager.ts:174` | `extractStructuredData` | `<anonymous-arrow>` | `provider-interface-method` |
+| `lib/ai/AIProviderManager.ts:236` | `generateTextOnce` | `<anonymous-arrow>` | `gateway-provider-direct` |
+| `lib/ai/AIProviderManager.ts:257` | `streamTextOnce` | `streamTextWithAdmission` | `gateway-provider-direct` |
+| `lib/ai/AIProviderManager.ts:286` | `generateStructuredTextOnce` | `<anonymous-arrow>` | `gateway-provider-direct` |
+| `lib/ai/AIProviderManager.ts:321` | `streamTextOnce` | `extractStructuredDataStreamingWithAdmission` | `gateway-provider-direct` |
+| `lib/ai/AIProviderManager.ts:359` | `streamText` | `streamText` | `provider-interface-method` |
+| `lib/ai/AIProviderManager.ts:384` | `healthCheck` | `healthCheckAll` | `provider-interface-method` |
+| `lib/ai/aiExplainer.ts:54` | `generateText` | `explainSubject` | `manager-normal-or-health-method` |
+| `lib/ai/directProviderCall.ts:40` | `generateText` | `callProvider` | `manager-normal-or-health-method` |
+| `lib/ai/orchestrator.ts:125` | `generateText` | `generate` | `manager-normal-or-health-method` |
+| `lib/ai/orchestrator.ts:175` | `generate` | `orchestrateGenerate` | `orchestrator-wrapper` |
+| `lib/ai/orchestrator.ts:192` | `generate` | `orchestrateChat` | `orchestrator-wrapper` |
+| `lib/ai/provider.ts:34` | `generateText` | `generateCompletion` | `manager-normal-or-health-method` |
+| `lib/ai/providers/VercelGatewayProvider.ts:89` | `generateTextWithRetries` | `generateText` | `gateway-provider-direct` |
+| `lib/ai/providers/VercelGatewayProvider.ts:114` | `generateText` | `generateTextWithRetries` | `external-ai-sdk` |
+| `lib/ai/providers/VercelGatewayProvider.ts:175` | `generateText` | `streamText` | `gateway-provider-direct` |
+| `lib/ai/providers/VercelGatewayProvider.ts:219` | `streamText` | `streamTextOnce` | `external-ai-sdk` |
+| `lib/ai/providers/VercelGatewayProvider.ts:278` | `generateText` | `summarize` | `gateway-provider-direct` |
+| `lib/ai/providers/VercelGatewayProvider.ts:282` | `generateText` | `classify` | `gateway-provider-direct` |
+| `lib/ai/providers/VercelGatewayProvider.ts:294` | `generateText` | `extractStructuredData` | `gateway-provider-direct` |
+| `lib/ai/providers/VercelGatewayProvider.ts:311` | `generateTextWithRetries` | `generateTextOnce` | `gateway-provider-direct` |
+| `lib/ai/providers/VercelGatewayProvider.ts:318` | `generateTextOnce` | `generateStructuredTextOnce` | `gateway-provider-direct` |
+| `lib/ai/providers/VercelGatewayProvider.ts:329` | `generateText` | `healthCheck` | `gateway-provider-direct` |
+| `lib/aiWebsiteStarter.ts:35` | `orchestrateGenerate` | `generateAIStarterPackage` | `orchestrator-wrapper` |
+| `lib/aiWebsiteStarter.ts:86` | `orchestrateGenerate` | `generateAIStarterPackageWithChanges` | `orchestrator-wrapper` |
+| `lib/approvals/aiApprovalPacketNarrator.ts:71` | `generateText` | `narrateApprovalPacket` | `manager-normal-or-health-method` |
+| `lib/automation/playbooks/costIdleResources.ts:51` | `orchestrateGenerate` | `planCostIdleResources` | `orchestrator-wrapper` |
+| `lib/autonomy/aiRationaleNarrator.ts:68` | `generateText` | `narrateRationale` | `manager-normal-or-health-method` |
+| `lib/axiom/agentRuntime/governedAiCall.ts:137` | `extractStructuredDataStreamingWithAdmission` | `<anonymous-arrow>` | `manager-admitted-method` |
+| `lib/axiom/agentRuntime/governedAiCall.ts:138` | `extractStructuredDataWithAdmission` | `<anonymous-arrow>` | `manager-admitted-method` |
+| `lib/axiom/environmentSummaryGenerator.ts:96` | `generate` | `generateEnvironmentSummary` | `orchestrator-wrapper` |
+| `lib/axiom/strategicBrief.ts:173` | `orchestrateGenerate` | `generateStrategicBrief` | `orchestrator-wrapper` |
+| `lib/cicd/aiCodeReviewPrioritizer.ts:89` | `extractStructuredData` | `prioritizeReviewFindings` | `manager-normal-or-health-method` |
+| `lib/cicd/aiPrDescriptionWriter.ts:71` | `generateText` | `writePrDescription` | `manager-normal-or-health-method` |
+| `lib/cloud/aiResourceTagger.ts:96` | `extractStructuredData` | `suggestResourceTags` | `manager-normal-or-health-method` |
+| `lib/cloudOperator/generate.ts:149` | `orchestrateGenerate` | `generateOperatorEngineOutput` | `orchestrator-wrapper` |
+| `lib/cloudStudio/generate.ts:48` | `orchestrateGenerate` | `generateCloudStudioOutput` | `orchestrator-wrapper` |
+| `lib/flags/aiFeatureFlagAnalyst.ts:80` | `extractStructuredData` | `analyzeFeatureFlags` | `manager-normal-or-health-method` |
+| `lib/growth/contentPlanner.ts:72` | `generateText` | `planContent` | `manager-normal-or-health-method` |
+| `lib/growth/hallucinationCheck.ts:66` | `generateText` | `checkHallucination` | `manager-normal-or-health-method` |
+| `lib/growth/imageGenerator.ts:87` | `generateImage` | `generateBrandImage` | `external-ai-sdk` |
+| `lib/help/aiComplianceQa.ts:77` | `extractStructuredData` | `answerComplianceQuestion` | `manager-normal-or-health-method` |
+| `lib/help/aiHelpReranker.ts:66` | `extractStructuredData` | `rerankHelpCandidates` | `manager-normal-or-health-method` |
+| `lib/incidents/aiPostmortemDrafter.ts:80` | `generateText` | `draftPostmortem` | `manager-normal-or-health-method` |
+| `lib/incidents/aiRootCauseSuggester.ts:86` | `extractStructuredData` | `suggestRootCauses` | `manager-normal-or-health-method` |
+| `lib/insights/aiNextBestActionAdvisor.ts:102` | `extractStructuredData` | `adviseNextActions` | `manager-normal-or-health-method` |
+| `lib/insights/tenantInsightsSynthesizer.ts:117` | `generateText` | `synthesizeInsights` | `manager-normal-or-health-method` |
+| `lib/leads/aiWebsiteStarter.ts:96` | `orchestrateGenerate` | `generateWebsiteStarterPackage` | `orchestrator-wrapper` |
+| `lib/multicloud/architectureAnalyzer.ts:303` | `generate` | `generateAIRecommendation` | `orchestrator-wrapper` |
+| `lib/notifications/aiIncidentSummarizer.ts:63` | `generateText` | `summarizeIncident` | `manager-normal-or-health-method` |
+| `lib/releaseops/aiReleaseNoteGenerator.ts:55` | `extractStructuredData` | `generateReleaseNotes` | `manager-normal-or-health-method` |
+| `lib/releaseops/aiRollbackNarrator.ts:55` | `generateText` | `narrateRollbackDecision` | `manager-normal-or-health-method` |
+| `lib/releaseops/instrumentedAiFetcher.ts:143` | `generateText` | `<anonymous-arrow>` | `manager-normal-or-health-method` |
+| `lib/runbooks/aiRunbookRecommender.ts:60` | `extractStructuredData` | `recommendRunbook` | `manager-normal-or-health-method` |
+| `lib/securityScanner/aiPlaybookGenerator.ts:70` | `extractStructuredData` | `generateSecurityPlaybook` | `manager-normal-or-health-method` |
+| `lib/securityScanner/aiRiskClassifier.ts:68` | `extractStructuredData` | `classifyRisk` | `manager-normal-or-health-method` |
+| `lib/workforce/pipelines/codeProposeRealExecutor.ts:214` | `generateTextWithAdmission` | `generateAttempt` | `manager-admitted-method` |
