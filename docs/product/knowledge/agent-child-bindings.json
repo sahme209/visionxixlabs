@@ -3,13 +3,13 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "41bf7dc4e33066d5eaea3d577f37da3702cf4f12",
+  "baselineCommit": "18284bd29aad7b663a5ccc908932f3202655632b",
   "declarations": 19,
   "countMethod": "Every intrinsic button/input/select/textarea/summary/a declaration in eight complete files, including local helper functions and Markdown render callbacks. Select options belong to the parent select; forms and display nodes are not independent controls.",
   "files": [
     {
       "source": "desktop/src/components/ConversationRename.tsx",
-      "baselineSha256": "319f2858fb313910afaeca253ee3209c1e6f026f07265090d3a1d0c035f34c35",
+      "baselineSha256": "abec6a2957871b4c3e44296606c82535ddaabab6fbb62d445007e8d47290fa8b",
       "declarations": 5,
       "tagCounts": {
         "button": 4,
@@ -233,5 +233,13 @@
       "anchor": "<button type=\"button\" aria-expanded={expanded} aria-controls={contentId} onClick={() => setExpanded(current => !current)} className={`flex w-full items-center gap-2 text-left focus-visible:outline foc",
       "nodeSha256": "7e79fb10f12e18cba9e01ea52d5cfa56117c519431d00cd0a2a4a50a9d193258"
     }
-  ]
+  ],
+  "baselineDerivation": "Actual Git source at baselineCommit with only existing static data-help-id annotations removed; reviewed non-metadata connection guards retained.",
+  "requalification": {
+    "priorBaselineCommit": "41bf7dc4e33066d5eaea3d577f37da3702cf4f12",
+    "changedSource": "desktop/src/components/ConversationRename.tsx",
+    "priorNonMetadataSha256": "319f2858fb313910afaeca253ee3209c1e6f026f07265090d3a1d0c035f34c35",
+    "evidence": "docs/recovery/2026-11-04/agent-binding-requalification",
+    "controlIdsPurposesTagsNodeDigestsUnchanged": true
+  }
 }

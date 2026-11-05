@@ -1,0 +1,18 @@
+[
+  {
+    "source": "desktop/src/views/AgentChatView.tsx",
+    "oldGitBaseline": "a9e6359dd68e499360ade5b26684d0fdfbbb46e2",
+    "currentGitSource": "18284bd29aad7b663a5ccc908932f3202655632b",
+    "removingOnlyReviewedGuardsAndMetadataRestoresOldWholeGitSource": true,
+    "oldSha256": "0b7543ba31d29e31cdb05cd82e27b41d5add7cb20e2379909b5247026ae396e7",
+    "currentNonMetadataSha256": "b5732ae366b71507ddff2a2cb7c659c27ac23daa78f81ee3b10bb8d936b1458c"
+  },
+  {
+    "source": "desktop/src/components/ConversationRename.tsx",
+    "oldGitBaseline": "41bf7dc4e33066d5eaea3d577f37da3702cf4f12",
+    "currentGitSource": "18284bd29aad7b663a5ccc908932f3202655632b",
+    "removingOnlyReviewedGuardsAndMetadataRestoresOldWholeGitSource": true,
+    "oldSha256": "319f2858fb313910afaeca253ee3209c1e6f026f07265090d3a1d0c035f34c35",
+    "currentNonMetadataSha256": "abec6a2957871b4c3e44296606c82535ddaabab6fbb62d445007e8d47290fa8b"
+  }
+]

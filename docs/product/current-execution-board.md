@@ -193,3 +193,6 @@ Existing native Documentation page inspected through AX and screenshot without i
 
 ### November4 Rename connection ownership repair
 ~~Retained title Save/Refresh refuse replacement config before mutation/callback/transport~~: two actual renderedRED→ten componentGREEN including prior recovery/IME cases, desktoptypes and independentreview pass. [Evidence](../recovery/2026-11-04/agent-rename-precommit/README.md). Current983app unchanged; no real server/native/credential/provider acceptance. Version-bound source guides stay historical; changed bindings need explicit requalification. All21parents and pending Governance decision remain open.
+
+### November4 current Agent source-map requalification
+~~46main+19child control bindings requalified to actual182Git source~~: two expected stale-baseline failures/eight passes became current10/0/0; all65control records unchanged. [Evidence](../recovery/2026-11-04/agent-binding-requalification/README.md). Removing only reviewed guards plus existing metadata reconstructs exact oldGit bytes. Fifteen source records verified; tests/registry pins unchanged; historical prose separated and finalreview clear. No runtime/customer/native983/retrieval acceptance or fullregistered-suite claim. All21parents and pending Governance decision preserved.

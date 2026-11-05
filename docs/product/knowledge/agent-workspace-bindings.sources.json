@@ -2,16 +2,16 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "a9e6359dd68e499360ade5b26684d0fdfbbb46e2",
+  "baselineCommit": "18284bd29aad7b663a5ccc908932f3202655632b",
   "bindingScope": "46 intrinsic interactive JSX declarations authored in AgentChatSession only; explicit child-component exclusions retained",
   "sources": [
     {
       "path": "desktop/src/views/AgentChatView.tsx",
-      "sha256": "53bdefa6f6ee43e4d6244c86fb146a14cd1fb839cd6f4e919a0df6bbc2434e47"
+      "sha256": "aa33b1486d2d1d0b8663545ea75850d038bd1b963ef58385934a3f9bb8993f3f"
     },
     {
       "path": "docs/product/knowledge/agent-workspace-bindings.json",
-      "sha256": "d84adb60208eea31c7fccd185ae3cd4f71f30954be4d40ff653f69ff8934a61e"
+      "sha256": "17ad46d1b197044fd07aeb770b0e9abf4d555ed651a5120a15336efa9f8cc7f9"
     },
     {
       "path": "docs/product/knowledge/agent-workspace-bindings.test.cjs",
@@ -19,8 +19,10 @@
     },
     {
       "path": "docs/product/knowledge/agent-workspace-bindings.md",
-      "sha256": "8047a9a7277a40005797df6e5a526a266c3e786e5dbb53bfa898a7ed38ff13f7"
+      "sha256": "ad9511328d9bcd580cd16f7db5cee4c2733b12c0548080cfc9818b875be22a29"
     }
   ],
-  "validation": "5 focused AST tests pass under sandbox-exec network denial and bounded writes; stripping all 46 inserted attributes independently equals Git baseline bytes. No native or customer acceptance."
+  "validation": "Exact two-family AST run:10passed/0failed/0skipped after two expected stale-baseline failures; all original control IDs/purposes/tags/node digests preserved. Current non-metadata baseline derived from actual Git18284bd2; source reconstruction removes only reviewed guards to restore historical Git bytes. No native/customer/retrieval acceptance.",
+  "baselineDerivation": "Actual Git source at baselineCommit with only existing static data-help-id annotations removed; reviewed non-metadata connection guards retained.",
+  "requalificationEvidence": "docs/recovery/2026-11-04/agent-binding-requalification"
 }

@@ -1,0 +1,5 @@
+# Current Agent control-source requalification
+
+The prior unchanged AST families failed exactly their two whole-file baseline checks; the remaining eight checks passed. Actual Git18284bd2 source, after stripping existing static help attributes, differs from each original Git baseline only by the five Agent connection guards or Rename render capture/entry guard. Root removal reconstructs both complete historical Git files exactly. All46main and19child control records (IDs, purposes, tags, original JSX node digests) remain byte-equivalent data. Tests and registry pins are unchanged.
+
+Current inventories explicitly describe the non-metadata baseline derived from current Git source. Source manifests bind current source, inventory, unchanged tests and supplemented guides. Two current AST families pass10/0/0 under kernel network/all-write denial. No full registered-family rerun is claimed; unrelated passing suites were not repeated. No runtime metadata/code changes, customer eligibility, native983 delivery, editorial/media/retrieval acceptance or Governance completion. Old revisions remain historical in Git.

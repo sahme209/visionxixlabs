@@ -2,12 +2,12 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "41bf7dc4e33066d5eaea3d577f37da3702cf4f12",
+  "baselineCommit": "18284bd29aad7b663a5ccc908932f3202655632b",
   "bindingScope": "19 intrinsic interactive declarations in eight whole files; main AgentChatView and imported component internals excluded",
   "sources": [
     {
       "path": "desktop/src/components/ConversationRename.tsx",
-      "sha256": "a7bea0ea6654a8f6e6fc636cc8aa54dd7701671dc9b01f99d94c61221596f0fd"
+      "sha256": "5cabcd52ad209551cecd1acdd248809ef40c3b0a3c1196071d24cddb57073549"
     },
     {
       "path": "desktop/src/components/AgentModelSelector.tsx",
@@ -39,7 +39,7 @@
     },
     {
       "path": "docs/product/knowledge/agent-child-bindings.json",
-      "sha256": "8df06ddd4a858338aba5b0bb088ac95032c6d9d94aacf7fa9769ae187dcda878"
+      "sha256": "d1602f8205e35b1caa18e27dc70f6d5b39d69596ea77983f37239c20c126f46b"
     },
     {
       "path": "docs/product/knowledge/agent-child-bindings.test.cjs",
@@ -47,8 +47,10 @@
     },
     {
       "path": "docs/product/knowledge/agent-child-bindings.md",
-      "sha256": "90a4b778c6d13e7330ae7f99087ef34d48e44a73e72664efd2ed600838a0e33c"
+      "sha256": "1d47aa6b46e756f34f2249fa0c2b35301675b76084932624c1242d6594acea94"
     }
   ],
-  "validation": "5 AST tests pass with kernel network denial, scrubbed environment and private-only writes; stripping 19 attributes independently equals eight Git baseline files. Main view unchanged. No native/customer acceptance."
+  "validation": "Exact two-family AST run:10passed/0failed/0skipped after two expected stale-baseline failures; all original control IDs/purposes/tags/node digests preserved. Current non-metadata baseline derived from actual Git18284bd2; source reconstruction removes only reviewed guards to restore historical Git bytes. No native/customer/retrieval acceptance.",
+  "baselineDerivation": "Actual Git source at baselineCommit with only existing static data-help-id annotations removed; reviewed non-metadata connection guards retained.",
+  "requalificationEvidence": "docs/recovery/2026-11-04/agent-binding-requalification"
 }

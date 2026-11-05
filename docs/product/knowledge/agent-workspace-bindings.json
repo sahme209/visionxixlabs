@@ -3,9 +3,9 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "a9e6359dd68e499360ade5b26684d0fdfbbb46e2",
+  "baselineCommit": "18284bd29aad7b663a5ccc908932f3202655632b",
   "source": "desktop/src/views/AgentChatView.tsx",
-  "baselineSha256": "0b7543ba31d29e31cdb05cd82e27b41d5add7cb20e2379909b5247026ae396e7",
+  "baselineSha256": "b5732ae366b71507ddff2a2cb7c659c27ac23daa78f81ee3b10bb8d936b1458c",
   "scopeFunction": "AgentChatSession",
   "declarations": 46,
   "tagCounts": {
@@ -442,5 +442,13 @@
       "anchor": "<input autoFocus aria-label=\"Repository file path\" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder=\"src/path/to/file.ts\" className=\"w-full rounde",
       "nodeSha256": "39cdb9d16ecf8d4d3e3427dab078385fd44838e25d2c4748fbb2d587442a6d41"
     }
-  ]
+  ],
+  "baselineDerivation": "Actual Git source at baselineCommit with only existing static data-help-id annotations removed; reviewed non-metadata connection guards retained.",
+  "requalification": {
+    "priorBaselineCommit": "a9e6359dd68e499360ade5b26684d0fdfbbb46e2",
+    "changedSource": "desktop/src/views/AgentChatView.tsx",
+    "priorNonMetadataSha256": "0b7543ba31d29e31cdb05cd82e27b41d5add7cb20e2379909b5247026ae396e7",
+    "evidence": "docs/recovery/2026-11-04/agent-binding-requalification",
+    "controlIdsPurposesTagsNodeDigestsUnchanged": true
+  }
 }
