@@ -32,7 +32,7 @@ export function DocsContents() {
   }, [pathname]);
 
   return (
-    <aside onKeyDown={event => { if (event.key === "Escape" && open) { event.preventDefault(); event.stopPropagation(); close(); } }} className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]">
+    <aside onKeyDown={event => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Escape" && open) { event.preventDefault(); event.stopPropagation(); close(); } }} className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]">
       <button ref={button} type="button" aria-expanded={open} aria-controls="docs-contents-panel"
         onClick={() => setOpen(value => !value)}
         className="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden">

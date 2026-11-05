@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/docs-contents-ime-yowo4605/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "--project",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/docs-contents-ime-yowo4605/types.json"
+  ],
+  "exitCode": 0,
+  "stopReason": null,
+  "elapsedSeconds": 0.442,
+  "processReaped": true,
+  "outputBytes": 0,
+  "outputBase64": "",
+  "testSha256": "d60f7225a6954673207b3f7783d8fb5b0066748afe12b4eace27a95e0a07e9e0"
+}

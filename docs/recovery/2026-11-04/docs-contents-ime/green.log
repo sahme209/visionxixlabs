@@ -1,0 +1,11 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ app/docs/__tests__/contents-ime.test.ts (2 tests) 69ms
+ ✓ app/docs/__tests__/contents-disclosure.test.ts (6 tests) 134ms
+
+ Test Files  2 passed (2)
+      Tests  8 passed (8)
+   Start at  04:44:28
+   Duration  885ms (transform 30ms, setup 0ms, import 168ms, tests 203ms, environment 348ms)
+

@@ -1,0 +1,9 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "no important findings",
+  "scope": "one guard/source diff, two realrenderedIME cases and six compatibilitycases",
+  "limitations": [
+    "syntheticDOM, not OSIME/browser/AT",
+    "no authority/routing/search/provider changes"
+  ]
+}

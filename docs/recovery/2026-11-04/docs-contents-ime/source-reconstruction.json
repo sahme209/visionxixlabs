@@ -1,0 +1,6 @@
+{
+  "baseline": "59fc3d2e:components/docs/DocsContents.tsx",
+  "baselineSha256": "a3903deaf3e06a8a2b5171d629dd181406c79c28bb52f696cdafed002b7f843b",
+  "currentSha256": "55df001a67112462bc33a817412078ce712d56c268cdcd7f64cfc4b5120db3bc",
+  "wholePriorFileRestoredAfterRemovingOnlyCompositionGuard": true
+}

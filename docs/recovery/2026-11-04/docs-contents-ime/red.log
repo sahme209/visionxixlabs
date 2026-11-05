@@ -1,0 +1,33 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ app/docs/__tests__/contents-disclosure.test.ts (6 tests) 133ms
+ ❯ app/docs/__tests__/contents-ime.test.ts (2 tests | 2 failed) 72ms
+   × leaves 'native composition' Escape with the input method, then handles an ordinary Escape 59ms
+   × leaves 'legacy IME key code' Escape with the input method, then handles an ordinary Escape 12ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/docs/__tests__/contents-ime.test.ts > leaves 'native composition' Escape with the input method, then handles an ordinary Escape
+ FAIL  app/docs/__tests__/contents-ime.test.ts > leaves 'legacy IME key code' Escape with the input method, then handles an ordinary Escape
+AssertionError: expected 'false' to be 'true' // Object.is equality
+
+Expected: "true"
+Received: "false"
+
+ ❯ app/docs/__tests__/contents-ime.test.ts:21:48
+     19|   const composingEscape = new KeyboardEvent('keydown', { key: 'Escape'…
+     20|   fireEvent(field, composingEscape);
+     21|   expect(button.getAttribute('aria-expanded')).toBe('true');
+       |                                                ^
+     22|   expect(document.activeElement).toBe(field);
+     23|   expect((field as HTMLInputElement).value).toBe('Getting');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  2 failed | 6 passed (8)
+   Start at  04:44:17
+   Duration  840ms (transform 29ms, setup 0ms, import 177ms, tests 205ms, environment 357ms)
+

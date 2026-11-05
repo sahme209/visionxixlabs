@@ -310,3 +310,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Funded-helper complete local flow — reviewed proposal, not implemented
 ~~Coherent all-family migration frontier and first single-engineerQ&A vertical design reviewed~~ ([proposal](../recovery/2026-11-04/ai-funded-helper-migration/PROPOSAL.md)): form/HTTP/stable session actor/durable nonfinancial intent/currentpolicy/existing reservation/one-use exact request dispatch/SDK abort/usage/result/recovery. Local intent schema would not duplicate balances or grant funding. Real-runtime dispatch stays unavailable pending qualification; no other caller activated. New authority, purpose, availability and local schema boundaries require explicit approval before code/tests. No feature, schema, experiment, provider or production completion; all21parents and separate A2/health decisions preserved.
+
+
+### Docs contents IME Escape — local keyboard repair
+~~Composing Escape no longer closes the narrow Docs contents panel~~ ([evidence](../recovery/2026-11-04/docs-contents-ime/README.md)): nativecomposition/229 cases RED2/6existingcontrols→GREEN8, scopedtypes, wholefile reconstruction and independentreview pass. Open/focus/filter/default preservation and laterordinaryEscape verified in renderedDOM. Not realOSIME/browser/AT/build/deploy acceptance. No routing/financial/authority or provider changes, older previews preserved; all21parents and pending decisions remain open.
