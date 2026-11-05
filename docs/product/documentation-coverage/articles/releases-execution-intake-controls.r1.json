@@ -1,0 +1,278 @@
+{
+  "schema": 1,
+  "id": "axiom.help.releases.execution-intake-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Releases Execution intake: exact workflow fields, manual inputs and observed batch dependencies",
+  "productVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+  "screenIds": [
+    "proposed.axiom.screen.releases.execution-intake"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.execution-intake.workflow.find",
+    "proposed.axiom.control.execution-intake.workflow.select",
+    "proposed.axiom.control.execution-intake.definition.read",
+    "proposed.axiom.control.execution-intake.definition.defaults",
+    "proposed.axiom.control.execution-intake.definition.string",
+    "proposed.axiom.control.execution-intake.definition.number",
+    "proposed.axiom.control.execution-intake.definition.boolean",
+    "proposed.axiom.control.execution-intake.definition.choice",
+    "proposed.axiom.control.execution-intake.definition.environment",
+    "proposed.axiom.control.execution-intake.definition.remove-undeclared",
+    "proposed.axiom.control.execution-intake.manual.add",
+    "proposed.axiom.control.execution-intake.manual.name",
+    "proposed.axiom.control.execution-intake.manual.value",
+    "proposed.axiom.control.execution-intake.manual.remove",
+    "proposed.axiom.control.execution-intake.manual.advanced",
+    "proposed.axiom.control.execution-intake.manual.json",
+    "proposed.axiom.control.execution-intake.batch.connection",
+    "proposed.axiom.control.execution-intake.batch.dag",
+    "proposed.axiom.control.execution-intake.batch.find",
+    "proposed.axiom.control.execution-intake.batch.select",
+    "proposed.axiom.control.execution-intake.batch.use",
+    "proposed.axiom.control.execution-intake.batch.remove"
+  ],
+  "goal": "Guide the finite four imported Execution intake panels while preserving the distinction between source discovery, local draft edits, exact observed dependency selection, final request saving and separately authorized release execution.",
+  "prerequisites": [
+    "Internal source-only local-preview supplemental draft; no customer/publication/genuine editorial/media/native/browser/AT or executed retrieval acceptance. The verification clock records source review, not provider observation freshness.",
+    "Use the new/revised Releases intake Execution step and intended current desktop account/workspace. Existing 29 direct-control and 52 named-field mappings plus intake r1/r2 records retain their separate scopes and are not superseded.",
+    "Workflow discovery requires exactly one explicit HTTPS github.com repository URL without credentials/port/query/fragment, nonblank effective ref and a supported YAML path for field reading. The host rule does not distinguish public/private repository visibility; it is not a repository-access grant.",
+    "The trimmed workflow-source ref is used when nonblank, otherwise the trimmed source branch. Restored source evidence must match repository/ref/path/blob and current desktop config/revision; matching is not a new read or timestamp renewal.",
+    "Batch inspection needs an existing current Airflow connection and intended DAG. Do not reconnect, grant privileges, start or rerun a DAG merely to enable this intake panel."
+  ],
+  "permissions": [
+    "These proposed control IDs label source documentation families, not actual runtime help identifiers, unique rendered targets, credentials or authority. Nineteen interactive declarations produce22documented families because five typed variants share two declarations.",
+    "Selected GitHub GET routes require desktop pipeline:read and disallow API keys; selected Airflow GET routes additionally require workspace:read. Local enabled controls do not establish current server membership, provider connection or permissions.",
+    "Metadata GET handlers can resolve a scoped token under an existing tenant connection without exposing it or granting a new permission; no token issuance or provider read was performed for this article.",
+    "File listing, field observation, local review, a saved intake or completed batch does not grant independent approval, deployment readiness, source immutability or execution permission. Actual request saves and later governed execution have separate server boundaries."
+  ],
+  "steps": [
+    {
+      "instruction": "In Execution, review the recorded repository and ref, then choose Find workflows. Documentation family: execution-intake.workflow.find.",
+      "effect": "read",
+      "expectedState": "Deliberately lists workflow files for the recorded repository/ref. While reading, says **Finding workflows…**. Disabled without a valid local target or during its owned read. Failure retains the recorded workflow; restore access/source and deliberately read again. No automatic retry or dispatch."
+    },
+    {
+      "instruction": "Choose a returned Repository workflow file, keeping the exact intended source/ref. Documentation family: execution-intake.workflow.select.",
+      "effect": "local-preference",
+      "expectedState": "Choose a returned file; the parent updates the recorded workflow path. Placeholder selection does not clear the recorded path. Appears after validated listing. Empty list and a recorded path absent from the list are distinct messages. The latter is retained, not replaced. A listing is accepted only with at most 200 entries, unique valid filenames, matching paths and 40-character lowercase blob SHAs; it does not establish dispatch support."
+    },
+    {
+      "instruction": "Repair manual-input issues first, then deliberately choose Read workflow fields for the selected exact path. Documentation family: execution-intake.definition.read.",
+      "effect": "read",
+      "expectedState": "Reads the exact recorded repository/ref/path; on success displays the observed blob prefix and declared inputs and records the source observation with the parent. Disabled without a readable target, while reading or while the manual editor reports an issue. Loading blocks intake advancement. Failure retains manual values. Repair JSON/name issues before attempting this read."
+    },
+    {
+      "instruction": "Review declared defaults and choose Apply missing defaults only when missing-key values are intended. Documentation family: execution-intake.definition.defaults.",
+      "effect": "local-preference",
+      "expectedState": "Adds a declared default only when that input key is absent. Existing recorded keys/values are preserved. Appears with a verified definition and string-valued input object. It does not overwrite a present empty-string key, fetch environments or prove provider acceptance. Review resulting values before saving."
+    },
+    {
+      "instruction": "Enter the declared string field text or clear it when omitting that key is intended. Documentation family: execution-intake.definition.string.",
+      "effect": "local-preference",
+      "expectedState": "Enter the workflow's recorded text value. Empty text removes that key from the recorded object. Required marker follows metadata. A required field is locally missing only when empty and no declared default exists. Provider validation is separate."
+    },
+    {
+      "instruction": "Repair the declared numeric field using a finite supported number; review the string value that will be recorded. Documentation family: execution-intake.definition.number.",
+      "effect": "local-preference",
+      "expectedState": "Enter a finite number; recorded values remain strings. Invalid existing numeric text is shown in a text input so it can be repaired. Accepts the component's finite JSON-style numeric grammar, including fractions/exponents; it does not establish a provider's range or integer requirements. Correct the reported field before continuing."
+    },
+    {
+      "instruction": "Choose true, false or Not specified for the declared boolean field. Documentation family: execution-intake.definition.boolean.",
+      "effect": "local-preference",
+      "expectedState": "Choose **true**, **false** or **Not specified**. Only the two literal values pass local nonempty boolean validation. Not specified removes the key; required/default rules then apply."
+    },
+    {
+      "instruction": "Choose a declared option or Not specified; do not invent an unsupported value. Documentation family: execution-intake.definition.choice.",
+      "effect": "local-preference",
+      "expectedState": "Choose a declared option or **Not specified**. A nonempty value outside current options blocks advancement. Selecting an allowed value replaces it; Not specified removes it. No arbitrary option is added."
+    },
+    {
+      "instruction": "Enter the exact repository environment name without assuming this field enumerates or verifies environments. Documentation family: execution-intake.definition.environment.",
+      "effect": "local-preference",
+      "expectedState": "Record the exact repository environment name. This panel does not load environment choices or verify their existence/protection. It is a text field, not an environment browser."
+    },
+    {
+      "instruction": "Use Remove beside a recorded undeclared input after reviewing which key is being discarded. Documentation family: execution-intake.definition.remove-undeclared.",
+      "effect": "local-preference",
+      "expectedState": "Deletes that recorded key without modifying declared fields. Appears for keys absent from the observed definition. Any undeclared key blocks advancement; removing it is a local draft change, not a provider mutation."
+    },
+    {
+      "instruction": "Without a usable declared-field view, choose Add input to prepare a new local name/value row. Documentation family: execution-intake.manual.add.",
+      "effect": "local-preference",
+      "expectedState": "Adds a blank local row for a workflow input. Disabled for malformed/non-string-valued JSON. A new blank name creates an issue; no new object is emitted until all row names are valid. Repair the JSON first if disabled."
+    },
+    {
+      "instruction": "Give every manual row a unique nonblank name without leading or trailing spaces. Documentation family: execution-intake.manual.name.",
+      "effect": "local-preference",
+      "expectedState": "Names the corresponding input row. Every name must be nonblank, have no leading/trailing spaces and be unique. Invalid row edits remain local while the last valid parent object is retained; advancement is blocked by the issue."
+    },
+    {
+      "instruction": "Record a text value for the named manual input; review the workflow requirements separately. Documentation family: execution-intake.manual.value.",
+      "effect": "local-preference",
+      "expectedState": "Records the row's text value. Manual values are strings, including empty text. This lane does not discover declared types/defaults or check required provider fields."
+    },
+    {
+      "instruction": "Remove an unwanted local manual row, then resolve any remaining row-name issues. Documentation family: execution-intake.manual.remove.",
+      "effect": "local-preference",
+      "expectedState": "Removes that local name/value row. Remaining invalid rows still block emission. Removing a draft row does not delete anything in GitHub."
+    },
+    {
+      "instruction": "Expand Advanced JSON to inspect or repair the recorded raw object; collapse when appropriate. Documentation family: execution-intake.manual.advanced.",
+      "effect": "local-preference",
+      "expectedState": "Expands/collapses the raw editor, with `aria-expanded` state. Initial invalid input or externally supplied invalid content opens the editor automatically. It is not a separate saved version or approval."
+    },
+    {
+      "instruction": "Edit Advanced workflow inputs JSON into a non-null, non-array object containing only string values. Documentation family: execution-intake.manual.json.",
+      "effect": "local-preference",
+      "expectedState": "Edits the parent draft immediately, then reparses it into rows when possible. Must be a non-array, non-null JSON object containing only string values. Invalid text remains available for repair; existing parent text is not silently discarded. Duplicate object keys follow ordinary JSON parsing and are not a separate duplicate-key detection guarantee."
+    },
+    {
+      "instruction": "Choose Read Airflow connection to inspect the current workspace connection before selecting dependencies. Documentation family: execution-intake.batch.connection.",
+      "effect": "read",
+      "expectedState": "Reads current workspace connection metadata. Successful read records its ID/revision and clears displayed runs/current candidate selection. Disabled during the owned read. Missing/disconnected/invalid metadata clears the active connection and reports unavailable. It does not clear already recorded dependency rows. Re-read deliberately after restoring access."
+    },
+    {
+      "instruction": "Enter the intended Batch DAG identifier; changing it clears the candidate selection. Documentation family: execution-intake.batch.dag.",
+      "effect": "local-preference",
+      "expectedState": "Enter the DAG identifier to inspect. Changing text clears the candidate selection. Disabled during an owned read. Read requests trim the DAG value. This is not a DAG creation or discovery control."
+    },
+    {
+      "instruction": "Choose Find batch runs only with an active read connection and nonblank intended DAG. Documentation family: execution-intake.batch.find.",
+      "effect": "read",
+      "expectedState": "Reads observed runs for that DAG from the active connection. Requires a verified local connection and nonblank DAG; disabled while busy. Duplicate run IDs, wrong DAG or schema-invalid identities/dates clear observations and report verification failure. A thrown read reports an error; previous observations may remain, so an error is not a freshness confirmation."
+    },
+    {
+      "instruction": "Choose an Exact batch run from the returned observations, distinguishing the candidate from recorded dependency rows. Documentation family: execution-intake.batch.select.",
+      "effect": "local-preference",
+      "expectedState": "Choose one displayed run ID; options also display observed state. Rendered after an observation for the current key, disabled while busy. An empty returned list leaves only the placeholder. No local success-state filter is applied; state text is not approval."
+    },
+    {
+      "instruction": "Choose Use selected batch only for the exact intended same-connection DAG/run/logical-date tuple. Documentation family: execution-intake.batch.use.",
+      "effect": "local-preference",
+      "expectedState": "Appends the exact DAG/run/logical-date tuple to the recorded dependency. Requires selected run, same connection, no duplicate tuple and fewer than 25 recorded runs; busy also disables the button. The handler additionally refuses a missing logical date. Same-connection rows are retained."
+    },
+    {
+      "instruction": "Remove the exact recorded batch dependency row when it is no longer intended; inspect changed-connection rows before choosing replacements. Documentation family: execution-intake.batch.remove.",
+      "effect": "local-preference",
+      "expectedState": "Removes that exact DAG/run tuple; removing the last row clears the dependency. A local draft edit only. This button has no panel-level busy disable, although the enclosing save fieldset can disable it. It does not cancel an Airflow run."
+    }
+  ],
+  "expectedOutcome": "The reader can prepare exact recorded workflow input values and observed Airflow dependency tuples, resolve local validation issues and understand the parent save boundary. Final Continue checks child issues/step requirements; submit rechecks child issues, all intake steps, string-valued JSON and window instants, then creates a workspace request or revises its existing ID/version. It does not dispatch a workflow or approve a release.",
+  "limitations": [
+    "Supplemental finite scope only: four imported panels and their selected parent/read-route/schema boundaries. Not all Releases controls, provider setup, workflow YAML semantics, backend admission, customer documentation or complete B4/B5/Governance. No previous article or historical mapping is rebound.",
+    "Catalogue accepts at most200entries with unique valid filenames, matching workflow paths and40-character lowercase blob SHAs. Listing is not workflow_dispatch support; missing recorded path/empty list are distinct and do not silently overwrite the recorded path.",
+    "Field-read source identity checks repository/ref/path/blob. It does not independently validate every metadata property or make a prior observation permanently current. No-input definition is an explicit state.",
+    "The route response cap200000bytes is separate from YAML parser100000UTF-8-source-byte cap; parser supports strict YAML1.2/unique keys/no aliases, at most25fields/100choice options and2000JavaScript string-code-unit descriptions/options/defaults. Unsupported structures and expression-shaped defaults refuse. These representation units are not interchangeable.",
+    "Manual rows emit a replacement parent object only when every name is nonblank, trimmed and unique. Advanced JSON emits raw parent text immediately before parse feedback; invalid text is preserved. Ordinary JSON parsing is not duplicate-object-key detection.",
+    "Apply missing defaults uses absent-key semantics and never overwrites a present empty-string key. Required fields with declared defaults can be locally omitted without that operation auto-applying the default. Typed clear removes the key; environment text does not enumerate or verify repository environments.",
+    "Batch dependencies use exact connection ID/revision and unique DAG/run/logical-date tuples, bounded IDs/valid timestamp strings and at most25rows. Displayed run state is not filtered to success and is not release approval or freshness proof.",
+    "Context/config/revision/target guards ignore selected stale responses, not physical provider cancellation or full quiescence. Some status/candidate display can persist across configuration changes; the catalogue does not establish the definition reader unmount-cleanup invariant.",
+    "Final save includes input strings and optional matching source observation/dependency. It does not renew evidence, grant backend admission or promise unsaved-draft recovery across context changes. No native/browser/accessibility/media/provider or deployed-release acceptance is established."
+  ],
+  "recovery": [
+    "If discovery/read fails, preserve the recorded path and manually captured values. Repair invalid JSON/name issues before Read workflow fields becomes available; restore supported access/current target and deliberately read again rather than assume a grant or automatic retry.",
+    "For empty/no-match catalogue, distinguish no files from a recorded file absent at that source; selection placeholder does not clear the saved path. A new valid source requires its own current observation, not reuse of mismatching blob metadata.",
+    "For invalid manual rows, retain/correct the local draft; the parent may still contain the last valid object while the issue blocks advancement. For invalid Advanced JSON, repair the emitted raw text itself rather than assuming it was discarded.",
+    "For undeclared/invalid typed fields, deliberately remove the offending key or choose an allowed value. Treat absence/default/empty-string distinctions explicitly; do not claim defaults were written unless the resulting object actually records them.",
+    "Re-reading a connection clears observed runs/candidate selection, not already recorded dependencies. Changed/unmatched connections require reviewing/removing old selections; do not silently rebind their IDs or rerun a batch.",
+    "Invalid run identity/duplicate/wrong-DAG responses clear observations; a thrown read can retain earlier observations with an error. Error or retained rows are not fresh evidence. Changing DAG hides prior runs but retains recorded dependencies until removed.",
+    "The original mounted config/revision owns the parent save: duplicate submission/edit updates refuse while saving, the intake is disabled and obsolete completions do not own a new context. Leaving does not cancel a submitted save. For unconfirmed save, inspect original saved requests before submitting again; no automatic resend or fabricated completion."
+  ],
+  "searchTerms": [
+    "Find workflows",
+    "Repository workflow",
+    "Read workflow fields",
+    "Apply missing defaults",
+    "Advanced JSON",
+    "undeclared input",
+    "Batch DAG",
+    "Read Airflow connection",
+    "Exact batch run",
+    "Use selected batch",
+    "connection revision",
+    "unknown intake save"
+  ],
+  "sources": [
+    {
+      "path": "docs/product/knowledge/releases-execution-intake-controls.md",
+      "sha256": "d17efbcb8941aa4adc7b4d8fc0b811838cd09f9e158b7ae282efbf4dfe9d9b17"
+    },
+    {
+      "path": "docs/product/knowledge/releases-execution-intake-controls.sources.json",
+      "sha256": "43c65bcbc11cd0afd53bed7b3f6e30a6feaa401f32a92b4d3048d4a531c5cab6"
+    },
+    {
+      "path": "desktop/src/components/WorkflowCatalogue.tsx",
+      "sha256": "d71cb1f2ebe171596092b811babcd94d78004a41af73a2c8e136d8342ef2e196"
+    },
+    {
+      "path": "desktop/src/components/WorkflowDefinitionInputs.tsx",
+      "sha256": "38f48423fcccec7f3b9a001daf8019685716af74f5dc5eb93c6a65fe65a3c29f"
+    },
+    {
+      "path": "desktop/src/components/WorkflowInputsEditor.tsx",
+      "sha256": "ecc6c66c7be63edb881aba3e0f99980b491e859515577840508d22caa5606195"
+    },
+    {
+      "path": "desktop/src/components/ReleaseBatchSelection.tsx",
+      "sha256": "7b9b2617ddc3ea2cbeffe0e9bdfdf36c8a27b8a9ed76fcd619abf1815781d243"
+    },
+    {
+      "path": "desktop/src/lib/workflowReadSource.ts",
+      "sha256": "10190e72611520650ad7e6906dce9726364fa93258393d8a403252bf7ca0e35d"
+    },
+    {
+      "path": "desktop/src/views/DeploymentRequestsView.tsx",
+      "sha256": "a134ccff500c6950c713d2b17ed3e86e03fb9b040f1d9fa10643907c69da5c2b"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1"
+    },
+    {
+      "path": "lib/connectors/github/workflowDispatchInputDto.ts",
+      "sha256": "73060c0a76dd20dcf638096912a987eaaaac531b3cde77f3578fb5008c852e0c"
+    },
+    {
+      "path": "lib/integrations/airflow/releaseDependencySchema.ts",
+      "sha256": "a9edd02a51353e3661931e187c3eedc8a89ab84290db3a8c0354a4b489dbda88"
+    },
+    {
+      "path": "app/api/desktop/github/workflows/route.ts",
+      "sha256": "83d08bf98fd055430b80be4f53861f9d86008e9cd06a553db437940996c1a2b5"
+    },
+    {
+      "path": "app/api/desktop/github/workflow-inputs/route.ts",
+      "sha256": "3b6ff1eddbf8f7c12c26d3bf605e3153e3357586bdd2edab52a2a1d90e83ad6b"
+    },
+    {
+      "path": "lib/connectors/github/workflowDispatchInputs.ts",
+      "sha256": "64eaa9279f7a04c60392668e43406413e79da7d80ac1569e8fba6f5dd64c0d6b"
+    },
+    {
+      "path": "app/api/desktop/airflow/connection/route.ts",
+      "sha256": "6f6960b0a88c3a6d4bbfa56b7b6a61f8b4eac28b273bfeb834148a1c51c13cbd"
+    },
+    {
+      "path": "app/api/desktop/airflow/dags/[dagId]/runs/route.ts",
+      "sha256": "db69b3d581a1aaa09ba8d986730b08df5ce4acda55a9170bbef243c7c80f74fd"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/releases-execution-intake-controls.md",
+      "docs/product/knowledge/releases-execution-intake-controls.sources.json"
+    ],
+    "verifiedVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+    "verifiedAt": "2026-11-05T13:22:42Z"
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

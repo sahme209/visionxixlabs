@@ -1,0 +1,40 @@
+{
+  "baseRevision": "093243e00e159ff660b848388b701b16c138d9ac",
+  "currentAndPinnedSourcesMatch": true,
+  "retrievalEvaluationExecuted": false,
+  "bundles": [
+    {
+      "name": "releases-execution-intake-controls",
+      "articleId": "axiom.help.releases.execution-intake-controls",
+      "articleSha256": "4784c2283c75c71fb2f3316904b708916959a14de862a35cea0aff89ad315e37",
+      "proposedControlFamilies": 22,
+      "steps": 22,
+      "sourceFiles": 16,
+      "proposedCases": 10,
+      "customerEligible": false,
+      "guideTableOrLedgerIdsMatch": true
+    },
+    {
+      "name": "website-command-contact-controls",
+      "articleId": "axiom.help.website-command-contact-controls",
+      "articleSha256": "71e05857fc10550edc3e88e95e6c9b4189482b239447e3ffdae97efd757de1cb",
+      "proposedControlFamilies": 14,
+      "steps": 9,
+      "sourceFiles": 16,
+      "proposedCases": 12,
+      "customerEligible": false,
+      "guideTableOrLedgerIdsMatch": true
+    },
+    {
+      "name": "website-download-availability-controls",
+      "articleId": "axiom.help.website.download-availability-controls",
+      "articleSha256": "e538650e073254063f95e06a0172baeae7cd29b8db6839f7bad7349c513c74a1",
+      "proposedControlFamilies": 13,
+      "steps": 13,
+      "sourceFiles": 14,
+      "proposedCases": 11,
+      "customerEligible": false,
+      "guideTableOrLedgerIdsMatch": "13proposedfamilies:11downloadtablegroups+2fallbacklinks;notruntimeIDs"
+    }
+  ]
+}

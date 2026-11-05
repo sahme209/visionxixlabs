@@ -44,4 +44,14 @@ Indexed guide paths: 27. Stored article revisions: 25, including history. Custom
 
 These are newly added draft links, not an assertion that every guide is mapped or customer eligible. Exact source hashes and proposed-case bindings passed integrity checks; the customer mode refused all three. No retrieval or ingestion was executed. [Batch evidence](../../recovery/2026-11-05/knowledge-current-workflows/README.md).
 
+## November 5 intake, command/contact and download supplements
+
+| Source guide | New internal draft | Acceptance still required |
+| --- | --- | --- |
+| [Imported Releases Execution controls](../knowledge/releases-execution-intake-controls.md) | [releases-execution-intake-controls.r1.json](articles/releases-execution-intake-controls.r1.json) | Actual supported native/version/media/editorial/retrieval acceptance; original29/52/intake records remain separate. |
+| [Website command palette](../knowledge/website-command-controls.md), [Contact recording](../knowledge/website-contact-controls.md) | [website-command-contact-controls.r1.json](articles/website-command-contact-controls.r1.json) | Real browser/keyboard/AT/contact recording/email/resolution and genuine editorial/customer/retrieval qualification. |
+| [Website download controls](../knowledge/website-download-controls.md) | [website-download-availability-controls.r1.json](articles/website-download-availability-controls.r1.json) | Exact public version/bytes/signatures, trusted installer/clean-host/session evidence, supported-version/media/editorial/retrieval acceptance. |
+
+[Batch evidence](../../recovery/2026-11-05/knowledge-intake-support-download/README.md) verifies source/schema/article-case integrity and expected customer refusal. No retrieval/ingestion or new public/runtime acceptance is inferred, and missing guide mappings remain unfinished.
+
 Do not mutate historical bindings to make this table green. Review source drift, append a new revision where needed, preserve unaccepted states, and validate only newly changed bundles. Proposed evaluation prose is not executed retrieval; no API/model/ingestion pipeline is created by this table.

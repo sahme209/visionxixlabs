@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.releases.execution-intake-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+  "articleSha256": "4784c2283c75c71fb2f3316904b708916959a14de862a35cea0aff89ad315e37",
+  "status": "proposed-not-executed",
+  "scope": "Ten proposed version/source/uncertainty/refusal retrieval requirements; no model answers, retrieval execution, scoring or customer eligibility. Exact article-byte binding; old intake/mapping datasets remain unchanged.",
+  "cases": [
+    {
+      "id": "releases-execution-intake-version-scope",
+      "question": "Can this article qualify my installed release or replace the existing52-field intake article?",
+      "requiredResponse": "Refuse customer applicability without genuine approval and exact version/source evidence. It is draft/internal/source-only local-preview093243; proposed IDs are not runtime bindings; supplemental22families do not supersede52field r1/r2 or29/52maps.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-listing-authority",
+      "question": "Find workflows returned a file. Can I run it now or assume the missing old filename was overwritten?",
+      "requiredResponse": "No. Listing is source metadata, not dispatch support or authority. Empty/missing-recorded-file states preserve the recorded path; placeholder selection does not clear it.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-defaults-empty",
+      "question": "Does Apply missing defaults replace an explicit empty value or automatically record every required default?",
+      "requiredResponse": "No. Only absent keys get defaults; present empty-string keys stay. A required field with a declared default can be locally omitted without auto-recording; typed clearing deletes the key.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-manual-emission",
+      "question": "I added an invalid empty-name row. Did it overwrite my last valid JSON, and does Advanced JSON behave the same?",
+      "requiredResponse": "No. Invalid manual-name rows remain local and block emission/advancement while parent retains the last valid object. Advanced JSON emits raw text immediately, including invalid text that must be repaired.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-typed-environment",
+      "question": "Can I invent a choice, use a nonfinite numeric value or treat the environment field as a verified environment list?",
+      "requiredResponse": "No. Respect declared choice/boolean/finite numeric validation, remove undeclared keys and required/default rules. Environment is exact-name text with no enumeration/existence/protection proof.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-caps",
+      "question": "Does the200000-byte field-route bound mean the YAML parser accepts200000characters or every GitHub workflow feature?",
+      "requiredResponse": "No. Distinguish200000responsebytes from100000UTF8sourcebytes,25fields,100choice options and2000JavaScript code-unit text bounds. Finite strict parser/structure/expression refusals are not full YAML/provider semantics.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-batch-identity",
+      "question": "Does a displayed successful batch approve the release, and can the changed connection adopt my old runs?",
+      "requiredResponse": "No. Observation state is not readiness/approval. Dependencies bind exact connectionrevision/DAG/run/logicaldate, unique25maximum; changed/unmatched connection requires explicit review/removal and never silent rebind or rerun.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-retained-read-error",
+      "question": "Batch run reading threw an error but rows remain. Are those current confirmed observations?",
+      "requiredResponse": "No. A thrown read can retain old observations with error; invalid returned identity clears observations. Read errors/retained UI are not fresh evidence. Restore supported current context before a deliberate read.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-context-save",
+      "question": "Can changing workspace cancel an intake save, and should I immediately submit a replacement if its response was lost?",
+      "requiredResponse": "No. Owner checks ignore obsolete results but do not cancel submitted work. Check original saved requests before resubmission; preserve unknown state, no automatic retry or unsaved-draft recovery guarantee.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "releases-execution-intake-read-permission",
+      "question": "Can a visible Read fields button, stored blob SHA or source-only verification clock grant access or renew evidence?",
+      "requiredResponse": "No. Local enablement/hash/timestamp is not current server authority, provider grant or freshness renewal. Respect pairedpipeline:read/noAPIkey and Airflowworkspace:read server gates; do not reconnect/changeprivilege to bypass refusal.",
+      "requiredCitation": "axiom.help.releases.execution-intake-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    }
+  ]
+}

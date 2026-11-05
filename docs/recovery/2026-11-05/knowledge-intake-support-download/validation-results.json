@@ -1,0 +1,141 @@
+{
+  "kind": "integrity-not-retrieval",
+  "retrievalEvaluationExecuted": false,
+  "results": [
+    {
+      "name": "releases-execution-intake-controls",
+      "customer": false,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-intake-support-download-8j_pr73b/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/releases-execution-intake-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/releases-execution-intake-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac"
+      ],
+      "exitCode": 0,
+      "stdoutBase64": "ewogICJ2YWxpZCI6IHRydWUsCiAgImFydGljbGVJZCI6ICJheGlvbS5oZWxwLnJlbGVhc2VzLmV4ZWN1dGlvbi1pbnRha2UtY29udHJvbHMiLAogICJyZXZpc2lvbiI6IDEsCiAgInByb2R1Y3RWZXJzaW9uIjogImxvY2FsLXNvdXJjZS1wcmV2aWV3OjA5MzI0M2UwMGUxNTlmZjY2MGI4NDgzODhiNzAxYjE2YzEzOGQ5YWMiLAogICJzb3VyY2VGaWxlcyI6IDE2LAogICJldmFsdWF0aW9uQ2FzZXMiOiAxMCwKICAiY3VzdG9tZXJFbGlnaWJsZSI6IGZhbHNlLAogICJjdXN0b21lckJsb2NrZXJzIjogWwogICAgImFydGljbGVfbm90X2FwcHJvdmVkIiwKICAgICJhcnRpY2xlX25vdF9wdWJsaWMiLAogICAgImxvY2FsX3ByZXZpZXdfbm90X3NoaXBwZWQiCiAgXSwKICAiZXZhbHVhdGlvblN0YXR1cyI6ICJwcm9wb3NlZC1ub3QtZXhlY3V0ZWQiCn0K",
+      "stderrBase64": ""
+    },
+    {
+      "name": "releases-execution-intake-controls",
+      "customer": true,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-intake-support-download-8j_pr73b/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/releases-execution-intake-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/releases-execution-intake-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdoutBase64": "",
+      "stderrBase64": "U3VwcG9ydCBrbm93bGVkZ2UgdmFsaWRhdGlvbiBmYWlsZWQ6IGN1c3RvbWVyIHJldHJpZXZhbCBpbmVsaWdpYmxlOiBhcnRpY2xlX25vdF9hcHByb3ZlZCwgYXJ0aWNsZV9ub3RfcHVibGljLCBsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkCg=="
+    },
+    {
+      "name": "website-command-contact-controls",
+      "customer": false,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-intake-support-download-8j_pr73b/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/website-command-contact-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/website-command-contact-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac"
+      ],
+      "exitCode": 0,
+      "stdoutBase64": "ewogICJ2YWxpZCI6IHRydWUsCiAgImFydGljbGVJZCI6ICJheGlvbS5oZWxwLndlYnNpdGUtY29tbWFuZC1jb250YWN0LWNvbnRyb2xzIiwKICAicmV2aXNpb24iOiAxLAogICJwcm9kdWN0VmVyc2lvbiI6ICJsb2NhbC1zb3VyY2UtcHJldmlldzowOTMyNDNlMDBlMTU5ZmY2NjBiODQ4Mzg4YjcwMWIxNmMxMzhkOWFjIiwKICAic291cmNlRmlsZXMiOiAxNiwKICAiZXZhbHVhdGlvbkNhc2VzIjogMTIsCiAgImN1c3RvbWVyRWxpZ2libGUiOiBmYWxzZSwKICAiY3VzdG9tZXJCbG9ja2VycyI6IFsKICAgICJhcnRpY2xlX25vdF9hcHByb3ZlZCIsCiAgICAiYXJ0aWNsZV9ub3RfcHVibGljIiwKICAgICJsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkIgogIF0sCiAgImV2YWx1YXRpb25TdGF0dXMiOiAicHJvcG9zZWQtbm90LWV4ZWN1dGVkIgp9Cg==",
+      "stderrBase64": ""
+    },
+    {
+      "name": "website-command-contact-controls",
+      "customer": true,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-intake-support-download-8j_pr73b/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/website-command-contact-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/website-command-contact-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdoutBase64": "",
+      "stderrBase64": "U3VwcG9ydCBrbm93bGVkZ2UgdmFsaWRhdGlvbiBmYWlsZWQ6IGN1c3RvbWVyIHJldHJpZXZhbCBpbmVsaWdpYmxlOiBhcnRpY2xlX25vdF9hcHByb3ZlZCwgYXJ0aWNsZV9ub3RfcHVibGljLCBsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkCg=="
+    },
+    {
+      "name": "website-download-availability-controls",
+      "customer": false,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-intake-support-download-8j_pr73b/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/website-download-availability-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/website-download-availability-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac"
+      ],
+      "exitCode": 0,
+      "stdoutBase64": "ewogICJ2YWxpZCI6IHRydWUsCiAgImFydGljbGVJZCI6ICJheGlvbS5oZWxwLndlYnNpdGUuZG93bmxvYWQtYXZhaWxhYmlsaXR5LWNvbnRyb2xzIiwKICAicmV2aXNpb24iOiAxLAogICJwcm9kdWN0VmVyc2lvbiI6ICJsb2NhbC1zb3VyY2UtcHJldmlldzowOTMyNDNlMDBlMTU5ZmY2NjBiODQ4Mzg4YjcwMWIxNmMxMzhkOWFjIiwKICAic291cmNlRmlsZXMiOiAxNCwKICAiZXZhbHVhdGlvbkNhc2VzIjogMTEsCiAgImN1c3RvbWVyRWxpZ2libGUiOiBmYWxzZSwKICAiY3VzdG9tZXJCbG9ja2VycyI6IFsKICAgICJhcnRpY2xlX25vdF9hcHByb3ZlZCIsCiAgICAiYXJ0aWNsZV9ub3RfcHVibGljIiwKICAgICJsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkIgogIF0sCiAgImV2YWx1YXRpb25TdGF0dXMiOiAicHJvcG9zZWQtbm90LWV4ZWN1dGVkIgp9Cg==",
+      "stderrBase64": ""
+    },
+    {
+      "name": "website-download-availability-controls",
+      "customer": true,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-intake-support-download-8j_pr73b/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/website-download-availability-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/website-download-availability-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdoutBase64": "",
+      "stderrBase64": "U3VwcG9ydCBrbm93bGVkZ2UgdmFsaWRhdGlvbiBmYWlsZWQ6IGN1c3RvbWVyIHJldHJpZXZhbCBpbmVsaWdpYmxlOiBhcnRpY2xlX25vdF9hcHByb3ZlZCwgYXJ0aWNsZV9ub3RfcHVibGljLCBsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkCg=="
+    }
+  ]
+}

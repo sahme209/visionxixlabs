@@ -1,0 +1,206 @@
+{
+  "schema": 1,
+  "id": "axiom.help.website-command-contact-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Find a website destination and interpret contact-request outcomes",
+  "productVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+  "screenIds": [
+    "proposed.axiom.screen.website.commands",
+    "proposed.axiom.screen.website.contact"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.website.commands.toggle",
+    "proposed.axiom.control.website.commands.search",
+    "proposed.axiom.control.website.commands.move",
+    "proposed.axiom.control.website.commands.open",
+    "proposed.axiom.control.website.commands.close",
+    "proposed.axiom.control.website.commands.composition",
+    "proposed.axiom.control.website.contact.name",
+    "proposed.axiom.control.website.contact.email",
+    "proposed.axiom.control.website.contact.topic",
+    "proposed.axiom.control.website.contact.message",
+    "proposed.axiom.control.website.contact.send",
+    "proposed.axiom.control.website.contact.mail",
+    "proposed.axiom.control.website.contact.product",
+    "proposed.axiom.control.website.contact.plans"
+  ],
+  "goal": "Find a declared website destination using local command search, or prepare a contact question and interpret recording and delivery outcomes without inventing authority or retrying uncertain requests. Supplemental internal draft for exact local source only.",
+  "prerequisites": [
+    "Match the exact local-source-preview version and pinned source hashes. Historical guide and ledger revision fields remain historical; current bytes are pinned at this record’s base.",
+    "Use a public route where the palette can render. A source-listed route or external destination is not guaranteed available in a guarded preview or real deployment.",
+    "For contact, have a question left after documentation or in-product recovery, an intended reply address and a message without passwords, tokens, cloud secrets or customer data. There is no attachment upload.",
+    "This record supplements existing website navigation/teaching drafts without replacing them; it does not inventory all header/footer/mobile controls or every destination."
+  ],
+  "permissions": [
+    "All fourteen proposed control-family labels and proposed screen labels are documentation labels, not installed runtime bindings or permission grants. Command catalog IDs identify source declarations rather than unique DOM controls.",
+    "Internal routing and external-window navigation do not authorize provider/API operations, sign-in, protected access, production actions or integration use. Labels/hints cannot certify security, uptime, pricing or release status.",
+    "Contact topic/source and production-access query context are labels, not entitlement or provider authority. Opening contact starts neither a ticket nor AI.",
+    "Source-only authoring is not genuine human editorial approval. This draft authorizes no publication, contact submission, email, worker invocation, provider action or database operation."
+  ],
+  "steps": [
+    {
+      "instruction": "On a public website route, use ordinary Cmd+K on Mac or Ctrl+K elsewhere to toggle the command palette.",
+      "effect": "local-preference",
+      "expectedState": "The platform-string-based shortcut toggles local overlay state. No palette is rendered on paths beginning /control, /account or /auth; hiding is not authorization. Opening schedules input focus after 30 milliseconds."
+    },
+    {
+      "instruction": "Type a destination term in Search the site… type, then ↵. Try demo, pricing, handbook or status when there are no matches.",
+      "effect": "local-preference",
+      "expectedState": "Filtering is local over label, hint, category and keywords, ignoring case; substring matches rank ahead of ordered-character matches. Empty query groups Product, Resources, Company and External. No AI or search endpoint receives this query through the component."
+    },
+    {
+      "instruction": "Use ordinary Up/Down or pointer hover to choose a result; use ordinary Enter or click its row to open it. Leave composing shortcuts, Enter, Escape and arrows to the input method.",
+      "effect": "read",
+      "expectedState": "Input and global handlers return early on native composing or legacy keyCode229 without consuming the event. Ordinary selection closes the overlay, then uses router.push internally or window.open with noopener/noreferrer externally. The destination may still require authentication, be unavailable or fail."
+    },
+    {
+      "instruction": "Use ordinary Escape, the Close command palette backdrop button, or the shortcut to close the palette.",
+      "effect": "local-preference",
+      "expectedState": "Closing resets query and highlighted index. Query is not a durable draft. Prior-trigger focus restoration, complete focus containment and actual browser/OSIME/AT behavior are not accepted."
+    },
+    {
+      "instruction": "For a product, account, download, security or press/partner question left after self-service recovery, open /contact. Enter Name and Work email, choose the reason, then describe the step, expected result and error in What went wrong?.",
+      "effect": "local-preference",
+      "expectedState": "Name and email are required with maximum 240 characters; message is required with maximum 8000. Topic defaults to Product question and can be Download help, Security, Support or Press / partners. Exact topic=axiom-production-access prepopulates the product message; it grants no entitlement. Hidden Website honeypot is not a normal customer field."
+    },
+    {
+      "instruction": "Before a deliberate Send →, keep sensitive information out and preserve a private copy if needed. Choose Send once and read the resulting outcome.",
+      "effect": "execute",
+      "expectedState": "Client checks trimmed required fields and POSTs /api/contact once per handler invocation. Sending… disables the button while submitting; no server-wide deduplication or exactly-once guarantee follows. This article describes the control and does not authorize an authoring-time submission."
+    },
+    {
+      "instruction": "Treat recording as confirmed only when the client receives accepted:true and a nonempty string referenceId. Keep the displayed reference and read email status separately.",
+      "effect": "read",
+      "expectedState": "Confirmed recording displays the reference and sent, failed or not configured email status. It is not a response-time promise, support entitlement, human review, inbox receipt or completed resolution. Review capabilities opens /product and See plans opens /plans; neither navigation purchases access."
+    },
+    {
+      "instruction": "If HTTP 200 lacks acceptance or a valid reference, or if an error/lost response occurs, keep a private copy and contact support before sending again.",
+      "effect": "recover",
+      "expectedState": "The error path preserves the message in volatile component state and gives unconfirmed-recording guidance; reload, closing or navigation may lose it. Failure does not prove no server record/email exists. No automatic resend occurs."
+    },
+    {
+      "instruction": "When using the support email link as a recovery route, open your mail handler and separately decide whether to send your message.",
+      "effect": "read",
+      "expectedState": "Opening mail does not prove a message was sent or received. Do not duplicate a confirmed recorded request just because its email status failed or is not configured."
+    }
+  ],
+  "expectedOutcome": "The source-described local palette and contact outcomes are understandable. Only accepted:true plus a nonempty reference confirms the client’s recording acknowledgement; email delivery and eventual resolution remain distinct and no actual request was performed.",
+  "limitations": [
+    "Catalog contains 26 current definitions, not 26 unique pages: both download definitions point to /download. Result count is filtered definitions over catalog size, not integration availability, capacity or health. External declarations were not opened or fetched.",
+    "Search is local UI state, not AI assistance or a durable saved query. Arrow navigation is bounded; no wrapping or screen-reader announcement acceptance is promised.",
+    "Existing evidence describes 13 synthetic rendered keyboard cases and guarded HTTP delivery/build markers. Those artifacts do not prove actual client execution, live destinations, focus, OSIME, AT, mobile or approved media; no new tests/build/browser/HTTP run was performed for this article.",
+    "Contact form labels/live regions and browser field types exist, but Work email does not establish company ownership or enterprise identity; actual keyboard/mobile/AT acceptance remains pending. Hidden honeypot yields neutral HTTP200 accepted:false without creating a lead when populated.",
+    "Contact limiter runs before reading the body: existing in-process ten-per-sixty-second sliding window keyed by selected IP header/fallback is not distributed abuse protection. A rate-limit response is not instruction to bypass it.",
+    "Server trims/caps fields and validates email; ordinary contact requires a message. Legacy free-review/cloud-health defaults are not extra customer controls here. Message pattern redaction before escaping/storage is not complete PII removal or universal secret detection; never rely on it to submit secrets.",
+    "Lead creation and pending CONTACT_RESOLUTION job creation are separate nontransactional creates in this handler, with no idempotency key. Later failure may return 500 after a lead exists; partial storage/job outcomes and duplicate requests remain unqualified.",
+    "delivery:sent reflects the internal email request’s successful HTTP response, not inbox delivery. Customer acknowledgement is attempted separately and does not determine delivery; missing mail configuration can still yield confirmed recording.",
+    "Queued contact job and accepted response do not establish worker execution, AI funding/admission, truthful agent resolution or human review. Worker retry, financial/provider authority, privacy/retention and real storage/recovery remain open.",
+    "Draft/internal/media empty/reviewer and reviewedAt null; supplied actual-clock verifiedAt records source author review only. No customer, media, browser/native/AT, retrieval, security or genuine human editorial acceptance is asserted."
+  ],
+  "recovery": [
+    "For no search matches, try suggested terms or close and reopen; keep unrelated application task/action history intact. Palette opening does not execute, retry or reconcile that work.",
+    "For unavailable or protected destination, use its normal access/recovery flow; do not treat palette visibility or source catalog membership as permission to bypass restrictions. Guarded preview blocks private/API/form/auth and unsupported requests.",
+    "For unconfirmed recording, errors or lost responses, preserve the volatile message privately before navigation and ask support before a deliberate retry; no automatic rerequest or exactly-once promise.",
+    "For confirmed reference with failed/not-configured email, keep the reference; email status alone does not justify a duplicate request.",
+    "For rate limiting, wait and follow ordinary recovery; do not change IP/source/honeypot values to evade the limit.",
+    "For mismatched product version, missing/changed pinned sources or unknown controls, abstain from unsupported instructions and request matching reviewed evidence."
+  ],
+  "searchTerms": [
+    "command palette",
+    "Cmd K",
+    "Ctrl K",
+    "local search",
+    "composition IME",
+    "contact request",
+    "accepted referenceId",
+    "unconfirmed HTTP 200",
+    "email delivery status",
+    "volatile message",
+    "duplicate request"
+  ],
+  "sources": [
+    {
+      "path": "docs/product/knowledge/website-command-controls.md",
+      "sha256": "23ec67c13dc92643240b0065104d63deef76b614b1fe4797ceb32b6ccb8c125c"
+    },
+    {
+      "path": "docs/product/knowledge/website-command-controls.sources.json",
+      "sha256": "e9f4be2fd7e73ffdff5421ba7744f6e5b88b6d5b2144aa94a90937ce1359cd0a"
+    },
+    {
+      "path": "components/CommandPalette.tsx",
+      "sha256": "cd59d8c7c282090a9316a863ca2e508bbc90345af22a2baf19f7536930457881"
+    },
+    {
+      "path": "app/layout.tsx",
+      "sha256": "a548132fd3b9572c15a15bf7524ad64aa04ebe722447d2bb82baac8b5159a426"
+    },
+    {
+      "path": "docs/recovery/2026-11-05/website-command-ime/README.md",
+      "sha256": "e5b7b7590c321249d562b8326761992d2b9a2cd057db9a305a08847d67dd1a67"
+    },
+    {
+      "path": "docs/recovery/2026-11-05/current-interaction-web-preview/README.md",
+      "sha256": "053850454002d7fc5e73c74a241654a504e81bb92d4757aca89cd363a354f6dc"
+    },
+    {
+      "path": "docs/product/knowledge/website-contact-controls.md",
+      "sha256": "5712a92027bcba35cbff17b752d7e44b898b583e6343f757649a92bdc592e74f"
+    },
+    {
+      "path": "docs/product/knowledge/website-contact-controls.sources.json",
+      "sha256": "7d5b8ae5d514921c7980614bda80a10dfe994531c83743cfb9250790201e037e"
+    },
+    {
+      "path": "app/(marketing)/contact/page.tsx",
+      "sha256": "0839c1483337e12d962a538fdce153c4abddf0bc2af2b2c0f3e96e0ef03f14a6"
+    },
+    {
+      "path": "app/(marketing)/contact/ContactClient.tsx",
+      "sha256": "f22d58f5aee7094511f9a03785c7416f230f93e0237a5640fd9151b5830d9ca1"
+    },
+    {
+      "path": "app/api/contact/route.ts",
+      "sha256": "ece1b7ac0fca19294edf0b2ec01901bf7343cc2d34fdb049e780b5d50efc780e"
+    },
+    {
+      "path": "lib/rateLimit.ts",
+      "sha256": "2163af8ff0ea888f7bf201130d49668455e91b121d1b0783aebf484946ae42a2"
+    },
+    {
+      "path": "lib/security/secretRedaction.ts",
+      "sha256": "a223c389f750230d0bd4c58a3cc05f9ff71457f73cf79082b6dc90ccedea04b4"
+    },
+    {
+      "path": "lib/security/redaction.ts",
+      "sha256": "92c9c1005590e631163bba9a523b58f589d50ca4c04f142ce498d8f52dbe0766"
+    },
+    {
+      "path": "app/api/agents/run/route.ts",
+      "sha256": "a9320198db4ce8a5f272549309a94236f0502016eebd347b8d98b23039742a36"
+    },
+    {
+      "path": "docs/recovery/2026-11-05/contact-recording-confirmation/README.md",
+      "sha256": "873b0b17866a71ad4e88986e981b02673cd4d9bf0fcab6c3930d07fbd81a2afe"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/website-command-controls.md",
+      "docs/product/knowledge/website-command-controls.sources.json",
+      "docs/product/knowledge/website-contact-controls.md",
+      "docs/product/knowledge/website-contact-controls.sources.json"
+    ],
+    "verifiedVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+    "verifiedAt": "2026-11-05T13:22:42Z"
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

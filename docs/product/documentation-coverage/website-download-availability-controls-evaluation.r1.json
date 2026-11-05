@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.website.download-availability-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+  "articleSha256": "e538650e073254063f95e06a0172baeae7cd29b8db6839f7bad7349c513c74a1",
+  "status": "proposed-not-executed",
+  "scope": "Proposed questions for internal source draft, not executed retrieval or installer/provider/customer acceptance.",
+  "cases": [
+    {
+      "id": "download-architecture",
+      "question": "Can MacIntel in the browser choose my installer safely?",
+      "requiredResponse": "No. The page leaves Mac architecture explicit; use the actual machine architecture, not browser text.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-size",
+      "question": "Why does the downloaded size differ from the number I saw?",
+      "requiredResponse": "Compare exact selected filename/platform/version and per-asset decimal download units. Installed size differs; size alone does not prove feature completeness or current asset validity.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-readiness",
+      "question": "Does a ready download label prove installation and sign-in work?",
+      "requiredResponse": "No. Storage accessibility and metadata differ from installation, entitlement and complete session/runtime acceptance.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-stale",
+      "question": "Does every direct installer click recheck current readiness?",
+      "requiredResponse": "No. A ready snapshot can supply direct URL; later direct click does not re-enter the resolver gate.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-signing",
+      "question": "Does signed:true or a detached .asc prove safe trusted Windows installation?",
+      "requiredResponse": "No. These are metadata/available material, not independent bytes/certificate/reputation/clean-host verification; do not bypass organization controls.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-linux",
+      "question": "Is every Linux link definitely an AppImage?",
+      "requiredResponse": "No. Builder preferences can fall back to deb/rpm; inspect the actual filename without assuming execution permission.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-missing",
+      "question": "Should I guess a download URL if the asset is absent?",
+      "requiredResponse": "No. Use explicit resolver/fallback, retain the platform/version evidence and seek supported help; no guessed binary or promised date.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-fallback",
+      "question": "Does Return to downloads resume the old transfer?",
+      "requiredResponse": "No. It navigates for a new availability check. Runtime recovery is storage-only, and fallback does not inspect platform-specific hardware.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-mail",
+      "question": "Did Contact support on the availability page send a ticket?",
+      "requiredResponse": "No. It opens a mailto handler; sending/receipt/resolution are separate.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-version",
+      "question": "Can historical v0.1.21 acceptance approve the newer local build?",
+      "requiredResponse": "No. Exact public version/artifact/hash/signing and clean-host evidence are separately required; local drafts are not published releases.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "download-eligibility",
+      "question": "Can this draft be used for customer answers after integrity passes?",
+      "requiredResponse": "No. It remains internal/draft/local-preview with null human review/no media. Refuse unsupported version or changed source rather than silently rebinding.",
+      "requiredCitation": "axiom.help.website.download-availability-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

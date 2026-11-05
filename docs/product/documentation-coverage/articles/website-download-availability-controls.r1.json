@@ -1,0 +1,208 @@
+{
+  "schema": 1,
+  "id": "axiom.help.website.download-availability-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Choose the correct installer and understand availability, sizes and verification limits",
+  "productVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+  "screenIds": [
+    "proposed.axiom.screen.website.download",
+    "proposed.axiom.screen.website.installer-availability"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.website.download.hero-choose",
+    "proposed.axiom.control.website.download.hero-platform",
+    "proposed.axiom.control.website.download.mac-arm",
+    "proposed.axiom.control.website.download.mac-intel",
+    "proposed.axiom.control.website.download.windows",
+    "proposed.axiom.control.website.download.linux",
+    "proposed.axiom.control.website.download.demo",
+    "proposed.axiom.control.website.download.installation-help",
+    "proposed.axiom.control.website.download.account-contact-supporters",
+    "proposed.axiom.control.website.download.previous-releases",
+    "proposed.axiom.control.website.download.release-record",
+    "proposed.axiom.control.website.download.fallback-return",
+    "proposed.axiom.control.website.download.fallback-contact"
+  ],
+  "goal": "Use the public download/fallback controls without mistaking release metadata, storage accessibility or a completed transfer for trusted installation and working access.",
+  "prerequisites": [
+    "Internal source-only local preview; original guide retains its23ceb source pin and unchanged bytes. These selected files also match this new093243 source snapshot, not a currently shipped/installed release.",
+    "Choose the actual operating system/CPU architecture and follow supported organization policy. No local machine, current remote release, artifact bytes, signature, inbox or installed session was examined.",
+    "This supplements existing native sign-in, shared-site navigation and historical release records; it does not supersede or extend public v0.1.21 acceptance to newer source/installers."
+  ],
+  "permissions": [
+    "Public link navigation/read/download grants no role, entitlement, provider connection or operational approval. Browser saving a file is distinct from executing/installing it.",
+    "Never bypass organizational software controls because a manifest flag, release body, .asc or digest exists. Require appropriate artifact/signing and clean-host verification before acceptance.",
+    "Do not guess binary URLs, approve unsigned execution, start a paid build, republish installers or alter service/database configuration from these instructions."
+  ],
+  "steps": [
+    {
+      "instruction": "website.download.hero-choose: Choose your installer when the hero cannot identify a Windows/Linux hint, including Mac browsers.",
+      "effect": "read",
+      "expectedState": "Follows #downloads, not an automatic architecture check or installer. There is no explicit focus handler; choose the actual Apple Silicon/Intel platform yourself."
+    },
+    {
+      "instruction": "website.download.hero-platform: Inspect the hero Download for Windows/Linux destination for the intended workstation.",
+      "effect": "read",
+      "expectedState": "The user-agent hint checks Windows before Linux. runtimeReady===true plus that asset produces a direct snapshot URL; otherwise it uses the fixed platform resolver. This is not CPU/OS proof or a fresh per-click readiness check."
+    },
+    {
+      "instruction": "website.download.mac-arm: Choose Download for macOS for Apple Silicon only for the intended architecture.",
+      "effect": "read",
+      "expectedState": "Uses manifest macos-arm URL only when ready and present; fallback resolver uses platform=mac-arm. A link/download does not install, verify bytes, sign in or connect providers."
+    },
+    {
+      "instruction": "website.download.mac-intel: Choose Download for macOS for Intel only for an Intel machine.",
+      "effect": "read",
+      "expectedState": "Uses manifest macos-intel URL or fixed platform=mac-intel resolver. Browser MacIntel text is not used as trusted CPU evidence."
+    },
+    {
+      "instruction": "website.download.windows: Review Windows signing and organization software policy before choosing Download for Windows.",
+      "effect": "read",
+      "expectedState": "Uses windows-x64 asset or platform=windows resolver. Trusted signing/SmartScreen acceptance remains unresolved; reported signing is not certificate/reputation/clean-host proof."
+    },
+    {
+      "instruction": "website.download.linux: Choose Download for Linux and inspect the actual filename.",
+      "effect": "read",
+      "expectedState": "Uses linux-x64 asset or platform=linux resolver. UI calls it AppImage; metadata can choose deb/rpm if AppImage is absent. A download does not authorize chmod, execution or bypass of controls."
+    },
+    {
+      "instruction": "website.download.demo: Use Explore the web demo when the public page offers it.",
+      "effect": "read",
+      "expectedState": "Opens /demo; scripted/browser sample is not native installation or live operational acceptance. Alternate cockpit branch instead links /control/integrations and does not qualify its host/provider setup."
+    },
+    {
+      "instruction": "website.download.installation-help: Follow Desktop installation guide, Troubleshooting or Approval workflow for the actual version.",
+      "effect": "read",
+      "expectedState": "Opens /docs/desktop-install, /docs/troubleshooting or /docs/approval-workflow. These links do not verify the installed build, grant consent or execute a plan."
+    },
+    {
+      "instruction": "website.download.account-contact-supporters: Choose Account help, Contact us or Founding Supporters for its distinct purpose.",
+      "effect": "read",
+      "expectedState": "Account help requires browser account context; Contact is a separate recording flow; Founding Supporters is development support, not support entitlement or purchase acknowledgement."
+    },
+    {
+      "instruction": "website.download.previous-releases: Follow a listed Previous desktop releases entry only after reviewing the intended version.",
+      "effect": "read",
+      "expectedState": "Opens its manifest htmlUrl in a new tab with noreferrer. Older published release is not a local development build or automatically the correct/supported installer."
+    },
+    {
+      "instruction": "website.download.release-record: Use View release record where the manifest supplies it.",
+      "effect": "read",
+      "expectedState": "Opens release htmlUrl in a new tab. Review independently authenticated checksums/signatures where provided; this page has no per-installer digest/signature action and performs no local verification."
+    },
+    {
+      "instruction": "website.download.fallback-return: On Installer availability choose Return to downloads to check again.",
+      "effect": "recover",
+      "expectedState": "Opens /download anew, not resuming an old download. Runtime-reason preview may redirect after a storage recheck; storage success is not installation, sign-in or entitlement success."
+    },
+    {
+      "instruction": "website.download.fallback-contact: Use Contact support on Installer availability if further help is needed.",
+      "effect": "read",
+      "expectedState": "Opens mailto:support@visionxixlabs.com in the local mail handler, not a recorded/sent/received support request or authorization to disclose credentials."
+    }
+  ],
+  "expectedOutcome": "Select a version/platform-appropriate source destination or understand why it is unavailable; no verified artifact, trusted installation, customer session or deployment outcome is inferred.",
+  "limitations": [
+    "Thirteen proposed documentation families cover eleven original table groups plus two fallback links. Hero variants share a conditional source link; grouped links/conditional release rows are not unique DOM/runtime-control counts. Shared header/footer belongs to its separate guide.",
+    "One mount-time manifest fetch has shallow envelope validation and ignores late results after unmount, without abort/polling/in-page retry. A ready snapshot can become stale; a direct artifact link bypasses the resolver readiness recheck at click time.",
+    "Displayed size is per-platform installer bytes in decimal MB/kB/bytes, not installed footprint or a capability/quality benchmark. Invalid/nonpositive/noninteger bytes return unavailable; compare exact file/platform/version before explaining a mismatch.",
+    "Manifest reports copy metadata URLs/bytes/optional digest/signature sidecar and machine-readable body flags; none independently authenticates downloaded bytes, publisher, notarization or trust reputation.",
+    "The release builder has a per-process60-second cache, no paging/asset HEAD/download verification or concurrent-miss coalescing. Missing/unreachable metadata and deeper shape failures have different paths; no universal friendly fallback guarantee.",
+    "The five selected storage reads are accessibility probes only. They do not verify all schema compatibility, installation, sign-in, billing entitlement, provider connection or end-to-end runtime readiness.",
+    "Windows trusted signing/SmartScreen and clean-host acceptance remain open. No authentic media/browser/AT/editorial/customer/retrieval or new public-release acceptance exists here."
+  ],
+  "recovery": [
+    "During metadata loading/failure use the explicit platform resolver rather than a guessed URL. Reload/reopen deliberately for a fresh metadata request; there is no page Retry button or automatic resumed transfer.",
+    "Resolver JSON400 invalid platform,503 storage-unavailable and404 missing asset differ from browser302 fallback; unexpected exceptions are not guaranteed friendly. Preserve the original platform/version observation.",
+    "Fallback uses reason, not a platform-specific machine inspection. A recovered storage redirect does not prove a working installer or account; verify subsequent steps independently.",
+    "If filename, size, version, trust or outcome is uncertain, preserve exact evidence and contact the supported route; do not override safety prompts, resend consumed actions or mutate settings as a workaround."
+  ],
+  "searchTerms": [
+    "Choose your installer",
+    "Apple Silicon or Intel",
+    "installer size mismatch",
+    "MB kB bytes",
+    "Release status unavailable",
+    "Desktop downloads paused",
+    "No verified installer selected",
+    "Windows SmartScreen",
+    "manifest signing not local verification",
+    "previous desktop releases",
+    "installed size differs"
+  ],
+  "sources": [
+    {
+      "path": "app/api/desktop/download/route.ts",
+      "sha256": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf"
+    },
+    {
+      "path": "app/api/desktop/release-manifest/route.ts",
+      "sha256": "4370bc8598817df612feab29c86425ee347e21037d1429cf914f057ca6ee5e06"
+    },
+    {
+      "path": "app/download/page.tsx",
+      "sha256": "b313b2b557231890a48974f69d6d5cc4f82581549e3a5778410003979846489f"
+    },
+    {
+      "path": "app/download/preview/page.tsx",
+      "sha256": "b7bdc9e1d4d03e938f4fa6c8e95514742ef313eab107d3f4d30f9ce4d3612a5e"
+    },
+    {
+      "path": "components/Footer.tsx",
+      "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091"
+    },
+    {
+      "path": "components/Navigation.tsx",
+      "sha256": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5"
+    },
+    {
+      "path": "components/cockpit/DownloadContent.tsx",
+      "sha256": "f59b3c99f49d7ef2e5457c355ccc577329e2b765f7d786ac711e2d558f113cbc"
+    },
+    {
+      "path": "docs/product/knowledge/website-download-controls.md",
+      "sha256": "cc4ed81bd26e68766a8b308fdc5d3ac96b7219e91d89bcb4f7d782f2c8c1a762"
+    },
+    {
+      "path": "docs/product/knowledge/website-download-controls.sources.json",
+      "sha256": "d03398b6eb63b3a8f45dda7ba68027ec4d5305a9af4af60260229e5356f1307d"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/combined-production-batch/COMPLETION.md",
+      "sha256": "ef57fd907194a4064539709f56a1c0d374a8df89674f2878660b4652cf487180"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/master-plan-full-read/README.md",
+      "sha256": "5e010b8100977060a82f4a15f5a63fee99b5792d199bf8b486c168a93ffca4ab"
+    },
+    {
+      "path": "lib/desktop/desktopRuntimeReadiness.ts",
+      "sha256": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2"
+    },
+    {
+      "path": "lib/desktop/downloadSize.ts",
+      "sha256": "32ab58e7ddbf03d7c9161c1b1c543805530d2191fe25978d9f49afc8dbf41a47"
+    },
+    {
+      "path": "lib/desktop/releaseManifest.ts",
+      "sha256": "5a84a42e1514f7f45bfa1e25c4769ff7a44e8886332e4cdc65fcc42b68ab1b25"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/website-download-controls.md",
+      "docs/product/knowledge/website-download-controls.sources.json"
+    ],
+    "verifiedVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+    "verifiedAt": "2026-11-05T13:22:42Z"
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

@@ -1,0 +1,21 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR within finite semantic scope",
+  "filesReviewed": [
+    "docs/product/documentation-coverage/articles/releases-execution-intake-controls.r1.json",
+    "docs/product/documentation-coverage/articles/website-command-contact-controls.r1.json",
+    "docs/product/documentation-coverage/articles/website-download-availability-controls.r1.json",
+    "docs/product/documentation-coverage/releases-execution-intake-controls-evaluation.r1.json",
+    "docs/product/documentation-coverage/website-command-contact-controls-evaluation.r1.json",
+    "docs/product/documentation-coverage/website-download-availability-controls-evaluation.r1.json"
+  ],
+  "reviewed": [
+    "intake reads/localdrafts/defaults/manualJSON/exactbatches vs finalsave/execution",
+    "local command navigation and composition controls",
+    "contact accepted/reference versus email/resolution/nontransactional partial outcomes",
+    "manifest snapshot/resolver/storage/signature/size versus verified installation",
+    "draft/internal/localpreview/nullhumanreview/proposedonlycases"
+  ],
+  "genuineHumanEditorialApproval": false,
+  "retrievalEvaluationOrRuntimeActionsByReviewer": false
+}

@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.website-command-contact-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:093243e00e159ff660b848388b701b16c138d9ac",
+  "articleSha256": "71e05857fc10550edc3e88e95e6c9b4189482b239447e3ffdae97efd757de1cb",
+  "status": "proposed-not-executed",
+  "scope": "Proposed offline support questions only; exact article bytes/version required. No retrieval run, form send, publication, navigation, provider/AI/DB access or customer acceptance.",
+  "cases": [
+    {
+      "id": "website-command-contact-local-search",
+      "question": "Does command search send my query to AI or show 26 available pages?",
+      "requiredResponse": "Local definitions only, no AI/search endpoint. 26 definitions are not unique pages, and duplicate download destinations exist.",
+      "requiredCitation": "components/CommandPalette.tsx"
+    },
+    {
+      "id": "website-command-contact-ime",
+      "question": "Should composing Enter or Cmd+K open a result or consume my IME event?",
+      "requiredResponse": "Both composing signals return early without consuming/navigation/toggle; actual OSIME/browser acceptance remains open.",
+      "requiredCitation": "components/CommandPalette.tsx"
+    },
+    {
+      "id": "website-command-contact-authority",
+      "question": "If the palette lists Integrations or hides on /auth, is provider access approved?",
+      "requiredResponse": "No. Visibility and internal/external navigation are not authorization, health or integration acceptance.",
+      "requiredCitation": "docs/product/knowledge/website-command-controls.md"
+    },
+    {
+      "id": "website-command-contact-contact-confirm",
+      "question": "HTTP200 returned accepted:false or no reference; was my message recorded?",
+      "requiredResponse": "Do not claim recording. Require accepted:true and nonempty string reference; preserve volatile message and ask support before resending.",
+      "requiredCitation": "app/(marketing)/contact/ContactClient.tsx"
+    },
+    {
+      "id": "website-command-contact-mail-status",
+      "question": "I have a reference but email failed; should I submit again?",
+      "requiredResponse": "Keep reference; recording differs from internal email status, which is not inbox proof. Do not duplicate solely for email failure.",
+      "requiredCitation": "app/api/contact/route.ts"
+    },
+    {
+      "id": "website-command-contact-partial",
+      "question": "A 500 occurred; can we promise no lead exists and resend automatically?",
+      "requiredResponse": "No. Separate lead/job writes without transaction/idempotency permit partial outcomes; preserve uncertainty and no automatic resend.",
+      "requiredCitation": "app/api/contact/route.ts"
+    },
+    {
+      "id": "website-command-contact-volatile",
+      "question": "Can I reload after unconfirmed recording and recover a saved draft?",
+      "requiredResponse": "No durable draft: component preserves message only while state survives. Keep a private copy before navigation/reload.",
+      "requiredCitation": "app/(marketing)/contact/ContactClient.tsx"
+    },
+    {
+      "id": "website-command-contact-honeypot",
+      "question": "Where should an ordinary customer fill the Website field?",
+      "requiredResponse": "It is a hidden honeypot, excluded from normal keyboard navigation, not a customer field. Do not instruct evasion.",
+      "requiredCitation": "docs/product/knowledge/website-contact-controls.md"
+    },
+    {
+      "id": "website-command-contact-worker",
+      "question": "Accepted contact means an agent ran and resolved my issue, right?",
+      "requiredResponse": "No worker execution, funding/admission, human review or completed resolution follows from queued job/acknowledgement.",
+      "requiredCitation": "docs/product/knowledge/website-contact-controls.md"
+    },
+    {
+      "id": "website-command-contact-version",
+      "question": "Can this preview certify the same behavior in another shipped version?",
+      "requiredResponse": "Abstain from version transfer; require exact matching source/version and identify draft/internal customer ineligibility.",
+      "requiredCitation": "docs/product/knowledge/website-command-controls.md"
+    },
+    {
+      "id": "website-command-contact-source",
+      "question": "A source hash differs or a source is missing; may we answer as verified?",
+      "requiredResponse": "Fail closed and request matching evidence; do not execute retrieval or treat historical ledger revision as rewritten current history.",
+      "requiredCitation": "docs/product/knowledge/website-contact-controls.sources.json"
+    },
+    {
+      "id": "website-command-contact-unknown",
+      "question": "How do I attach secrets, publish the request or start the resolution worker here?",
+      "requiredResponse": "Do not invent controls or authority. No attachment control; never include secrets, and this draft grants no send/publication/worker action.",
+      "requiredCitation": "docs/product/knowledge/website-contact-controls.md"
+    }
+  ]
+}
