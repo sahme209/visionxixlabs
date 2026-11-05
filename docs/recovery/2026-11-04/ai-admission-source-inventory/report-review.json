@@ -1,0 +1,11 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "no material claim errors",
+  "scope": "human-readable README, resolved calls and caller review queue",
+  "observations": [
+    "counts and scope match retained data",
+    "closed-guard public assistant lexical call remains distinguished",
+    "image generation requires separate pricing",
+    "WithAdmission names are not acceptance evidence"
+  ]
+}

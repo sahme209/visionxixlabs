@@ -1,0 +1,7 @@
+{
+  "ownedDirectory": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/health-admission-h64tdxt9",
+  "sourceRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "testSha256": "61ac4fa376db2f18b789635d29da403325c0e2b5fc7d16eb400ed25c691a282e",
+  "scope": "actual route/manager/provider/policy composition; only external auth/database/SDK mocked; no runtime correction",
+  "expected": "one desired-contract failure, five characterization/authority controls"
+}

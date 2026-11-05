@@ -1,0 +1,33 @@
+{
+  "runtimeRevision": "201f5e77e70ba261e57958247f77a0fe23567824",
+  "files": [
+    {
+      "path": "app/api/ai/health/route.ts",
+      "sha256": "8a4eda4f73f7b8ab5d0fa4c4c361d38bf9a6330d65a9282af72f957d53ae7ec8"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "caa33541753d3629424e7bb5302f634ffa89eb2186c9e1d6581c29b8eeaf2ceb"
+    },
+    {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "sha256": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce"
+    },
+    {
+      "path": "lib/ai/workspaceProviderPolicy.ts",
+      "sha256": "82760fee3ab68a628e1c84e32b52820c3266908955a35662bec7bb92dc8c2cc3"
+    },
+    {
+      "path": "app/dashboard/ai-settings/page.tsx",
+      "sha256": "48069aeec4d53b1c46fe343ee5dc98d9b8fbabf0c9bcbc28988dbe6f4f85d1d7"
+    },
+    {
+      "path": "lib/ai/AIProvider.ts",
+      "sha256": "1494950f3a82c66e8425d21305e541554e91f7f67d276af8ae93f32923b3f67c"
+    },
+    {
+      "path": "lib/ai/effectiveGatewayModel.ts",
+      "sha256": "0d5e98ffb64197ae34546bfe81f7835f2468f9da7a737b0ccd5470c63ff11f3e"
+    }
+  ]
+}

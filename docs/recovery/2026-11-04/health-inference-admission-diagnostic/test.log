@@ -1,0 +1,67 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ app/api/ai/health/__tests__/admission-diagnostic.test.ts (6 tests | 1 failed) 8ms
+     ✓ GET currently reaches inference without attribution or accounting (characterization) 5ms
+     ✓ POST currently reaches inference without attribution or accounting (characterization) 1ms
+     × does not infer a paid health allowance from provider approval alone (desired contract, intentionally RED) 2ms
+     ✓ preserves authentication refusal before policy and SDK 0ms
+     ✓ preserves unavailable-policy refusal before SDK 0ms
+     ✓ keeps a workspace without an opt-in policy disabled 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/api/ai/health/__tests__/admission-diagnostic.test.ts > health inference admission diagnosis — synthetic external ports > does not infer a paid health allowance from provider approval alone (desired contract, intentionally RED)
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "abortSignal": AbortSignal {
+          Symbol(kEvents): undefined,
+          Symbol(events.maxEventTargetListeners): 0,
+          Symbol(events.maxEventTargetListenersWarned): false,
+          Symbol(kHandlers): undefined,
+          Symbol(kAborted): false,
+          Symbol(kReason): undefined,
+          Symbol(kComposite): false,
+          Symbol(kTimeout): true,
+        },
+        "maxOutputTokens": 8,
+        "model": "anthropic/claude-sonnet-5",
+        "prompt": "Reply with OK.",
+        "providerOptions": Object {
+          "gateway": Object {
+            "tags": Array [
+              "product:axiom-agent",
+              "request:unattributed",
+            ],
+            "user": undefined,
+          },
+        },
+        "temperature": 0,
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ app/api/ai/health/__tests__/admission-diagnostic.test.ts:41:27
+     39|   it('does not infer a paid health allowance from provider approval al…
+     40|     await POST(request('POST'));
+     41|     expect(ports.sdk).not.toHaveBeenCalled();
+       |                           ^
+     42|   });
+     43|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  04:02:16
+   Duration  267ms (transform 133ms, setup 0ms, import 201ms, tests 8ms, environment 0ms)
+
