@@ -21,6 +21,10 @@ Reconciled November4,2026. Each linked receipt identifies its exact source versi
 |15|[ ] A5 Windows/Store — In Progress, deferred|<!-- evidence: local-only,planned -->Company/identity and unsigned preparation preserved.|Real Store certification/signing and clean Windows install/sign-in/session/update receipts. No clean host; website MSI/SmartScreen warning unresolved.|
 
 
+## Early customer adoption and AI usage — new B2/A7/B6 design requirement, not a launch
+
+[Binding master-plan section](axiom-master-action-plan.md#early-customer-adoption-ai-usage-and-monetization--november-4-research-decision-design-only). Proposed direction: free-to-explore supported functionality, optional prepaid AI credits and guided enterprise evaluation, with transparent costs and no unverified product promises. **Status: research/design only; no price, markup, credit purchase, provider billing, customer offer or rollout approved.** Compare 1.5x/2x and alternatives only after actual AI SDK/Gateway/direct/BYOK route audit, true total-cost and tenant-metering verification, design-partner feedback, and explicit commercial decision. Preserve A2 priority, A7 canonical quote gates, B2 truthful marketing, B6 acceptance and C4 future finance. Next evidence: current-source architecture/cost inventory; model-by-model cost/rate and failure/fallback matrix; unit economics and conversion interviews; versioned billing/credit/idempotency/limit design; local simulated UX and acceptance. No payments, installs, production writes, price changes or website publication.
+
 ## Future Workstream C — preserved, not implemented
 
 The user added C1–C6 to the master plan. Existing A1–A9/B1–B6 priorities and evidence remain intact. C1–C6 are **Planned / not authorized for implementation**. Substantial work follows core Governance, verified documentation and release commitments, with separate authorization. No new access, integrations, financial actions, messages, spending or deployment authority is granted.
@@ -232,3 +236,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November 4 — Governance critical path revalidated
 [Current source audit](../recovery/2026-11-04/governance-critical-path-current-audit/README.md) and independent review confirm the disabled supplier, unavailable issuer, closed business channel, absent coverage assertion and activation refusal. Existing authoring/recovery work is already implemented. No substantive authorized core step was established that bypasses the pending preparation decision; no additional UI/fence is substituted. This is not global blockage or A2 completion. All21parents remain open; current475app preserved.
+
+### November 4 — exact current website quality build
+~~Exact74source ordinary Next compile, production-web types and303static pages verified~~ ([evidence](../recovery/2026-11-04/current-web-quality-build/README.md)). 8928sourcefiles/outputmetadata verified; staticDocs23links/currentpage and hashed heading-search clientasset checked. Independent review passed. No preview/server/browser/deploy/CI/DB/provider operation; runtime/issuer/compatibility/completeclosure/descendant quiescence qualification remain unavailable. Current475native untouched; all21parents/Governance decision preserved.

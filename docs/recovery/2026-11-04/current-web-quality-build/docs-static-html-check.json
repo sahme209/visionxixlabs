@@ -1,0 +1,32 @@
+{
+  "renderedNavigationHrefs": [
+    "/docs",
+    "/docs/quickstart-checklist",
+    "/docs/getting-started",
+    "/docs/source-modes",
+    "/docs/surfaces",
+    "/docs/aws-setup",
+    "/docs/azure-setup",
+    "/docs/gcp-setup",
+    "/docs/approval-workflow",
+    "/docs/execution-plans",
+    "/docs/rollback",
+    "/docs/releaseops",
+    "/docs/releaseops/connectors",
+    "/docs/releaseops/readiness",
+    "/docs/desktop-install",
+    "/docs/integration-setup",
+    "/docs/security-model",
+    "/docs/permissions-model",
+    "/docs/oauth-setup",
+    "/docs/troubleshooting",
+    "/docs/audit-logs",
+    "/docs/faq",
+    "/docs/glossary"
+  ],
+  "currentPage": [
+    "/docs"
+  ],
+  "matchesAll23IndexedSourceRoutesInOrder": true,
+  "browserOrATExecution": false
+}

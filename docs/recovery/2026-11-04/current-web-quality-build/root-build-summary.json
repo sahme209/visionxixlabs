@@ -1,0 +1,24 @@
+{
+  "sourceRevision": "74b435675590b2385817950fb88f725436ecb1d8",
+  "inputSourceFilesVerified": 8928,
+  "inputSourceArchiveSha256": "843b94d19226e7a3db539f2f6d22a16b748c68d7e28b8ab5bbf10b038c4dc9df",
+  "ordinaryNextCompileAndProductionTypesPassed": true,
+  "staticPagesGenerated": 303,
+  "outputMetadataVerified": true,
+  "routeCount": 1104,
+  "traceCount": 1108,
+  "docsHtmlSha256": "9abe6cae492ec80ba314723146af8063084bf6a93fd5dcf73085e12b08101dba",
+  "clientHeadingSearchChunks": [
+    {
+      "relativePath": ".next/static/chunks/app/docs/layout-bfc75e88b287e55d.js",
+      "bytes": 26964,
+      "sha256": "0dd5b121a4f6733a19ffc49dd6d3f49fdf2dcc1a29e52b78c4da2080d19201bb"
+    }
+  ],
+  "sourceBoundPublicGuides": 23,
+  "governanceExecutingIssuer": "unavailable",
+  "executionAuthorized": false,
+  "previewStarted": false,
+  "browserAccepted": false,
+  "idleAwakeAssertion": "owned66351 finished after build27354 exited"
+}

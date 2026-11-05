@@ -1,0 +1,6 @@
+{
+  "format": "lossless-text-log",
+  "rawOwnedPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-web-quality-build-74b43567-bc69yvow/build-run/contract.log",
+  "sha256": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+  "text": "Vercel build contract verified: web/desktop type boundaries explicit, type checks enforced, proxy convention current, no migration side effects, and 39 cloud SDK packages externalized.\n"
+}

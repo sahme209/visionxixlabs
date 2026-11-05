@@ -1,0 +1,7 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear",
+  "scope": "exact source/ordinary build/output/static docs artifacts only",
+  "execution": "read-only no reruns/network/UI",
+  "runtimeAndGovernanceQualification": "unavailable"
+}
