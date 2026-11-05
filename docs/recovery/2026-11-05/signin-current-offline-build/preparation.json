@@ -1,0 +1,24 @@
+{
+  "sourceRevision": "999658d67487985e45e1354b0b2a5b41103bfe65",
+  "onlyDriverChanges": [
+    "exact source revision",
+    "owned output prefix"
+  ],
+  "helperBindings": [
+    {
+      "path": "scripts/build-local-issuer-package-source.py",
+      "sha256": "c099c90b95778062873ed4b17546d84c915f707fdaa4c5399b4938e5f31cb2a1",
+      "matchesPreviousSuccessfulBuildSource": true
+    },
+    {
+      "path": "scripts/local_prisma_engine_inputs.py",
+      "sha256": "6def73deece943de43643b385d83321abdbfcdd17c59eb48f84eeb647293fb2f",
+      "matchesPreviousSuccessfulBuildSource": true
+    }
+  ],
+  "network": false,
+  "realEnvironmentOrCredentials": false,
+  "previewOrNativeLaunch": false,
+  "issuerActivation": false,
+  "sourceChangeRequiringIntegration": "app/auth/signin/AuthFormClient.tsx"
+}

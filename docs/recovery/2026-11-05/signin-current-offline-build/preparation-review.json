@@ -1,0 +1,12 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR for one ordinary offline build",
+  "driverSha256": "6e579ace32741da551045dcbe618e5cf2573d7d4cb708e7e69accac2dec664c9",
+  "onlyChanges": [
+    "exact pinned source revision",
+    "owned output prefix"
+  ],
+  "helpersMatchPriorReviewedBuild": true,
+  "issuerActivation": false,
+  "executionByReviewer": false
+}

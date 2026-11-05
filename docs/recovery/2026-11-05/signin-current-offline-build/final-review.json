@@ -1,0 +1,85 @@
+{
+  "decision": "CLEAR",
+  "scope": "Ordinary offline full build output verification only",
+  "sourceRevision": "999658d67487985e45e1354b0b2a5b41103bfe65",
+  "owned": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-signin-current-build-999658d6-kyr6nbqq",
+  "toolSession": 13609,
+  "terminalExitCode": 0,
+  "verifiedRegularInputs": 9690,
+  "archive": {
+    "bytes": 105666560,
+    "sha256": "67d3b1a4ece648e8bd9e52a69a783dc3edefc1b84f93ddcb5017012a885d84ee"
+  },
+  "generationExit": 0,
+  "generationOutputsVerified": true,
+  "canonicalSchemaBytesMatch": true,
+  "compileSeconds": 36,
+  "typeSeconds": 24.8,
+  "staticPages": 303,
+  "requiredOutputMetadataVerified": 1112,
+  "losslessLogs": [
+    {
+      "file": "contract.log.json",
+      "hashMatches": true,
+      "bytesMatch": true
+    },
+    {
+      "file": "next-build.log.json",
+      "hashMatches": true,
+      "bytesMatch": true
+    },
+    {
+      "file": "node-version.log.json",
+      "hashMatches": true,
+      "bytesMatch": true
+    },
+    {
+      "file": "private-bootstrap-emission.log.json",
+      "hashMatches": true,
+      "bytesMatch": true
+    }
+  ],
+  "warnings": {
+    "count": 3,
+    "source": "packages/verified-issuer-runtime/index.cjs dynamic dependency expressions",
+    "retained": true
+  },
+  "optionalCacheMisses": [
+    {
+      "location": "node_modules/@emnapi/core",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@emnapi/wasi-threads",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@napi-rs/wasm-runtime",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@tybys/wasm-util",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    }
+  ],
+  "sourceReceiptEmptyApplicationScriptDiff": true,
+  "qualification": {
+    "activationQualification": "unavailable",
+    "buildCompatibilityVerified": false,
+    "completeExecutableClosure": "unavailable",
+    "descendantQuiescence": "unavailable",
+    "executingIssuerIdentity": "unavailable",
+    "executionAuthorized": false,
+    "processBounds": "original_process_group_only",
+    "runtimeQualification": "unavailable"
+  },
+  "limits": [
+    "Build outputs observed; no browser/native/customer/provider or runtime acceptance",
+    "Issuer identity, complete closure, activation and descendant quiescence remain unavailable",
+    "No rerun/build/tests/HTTP/provider/service actions by reviewer"
+  ]
+}

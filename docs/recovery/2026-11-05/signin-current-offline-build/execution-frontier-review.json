@@ -1,0 +1,125 @@
+{
+  "reviewer": "agent_execution_coordinator",
+  "masterSha256": "7ce16009c2080bcf872819556d161a13adce8846c608de89d5d10a5a1fd21ccf",
+  "boardSha256BeforeBuildMilestone": "dc4262d408191c976e53909cc80f661df2400e8845ca9afcbe05927f16a1340a",
+  "parents": [
+    {
+      "id": "A2",
+      "row": "|1|[ ] A2 Governance \u2014 In Progress|<!-- evidence: local-only,simulated,disabled -->Selected real-store/simulated-provider admission journeys, private composition and runtime preparation; current saved-head/fixed-target policy replacement locally verified (30 backend checks,1 actual PG journey with simulated authority,15 new UI/22 compatibility checks/types/build); core issuer gate remains closed.|Old909 preparation is unavailable: all four bound temporary artifacts are missing. Review the [persistent local preparation design](../recovery/2026-11-04/governance-persistent-qualification-recovery-proposal.md) first; then a fresh exact experiment decision, genuine custody, same-artifact consumer, complete mutation/fleet coverage, native enrollment and separately authorized live activation. The canonical local Governance issuer remains unavailable.|",
+      "complete": false
+    },
+    {
+      "id": "A3",
+      "row": "|2|[ ] A3 ServiceNow \u2014 In Progress|<!-- evidence: implemented,live-accepted -->Exact note presence established; original unknown attempt preserved. Separate Jira link/closure accepted historically.|Genuine fresh independent observation/policy decisions, native Normal/New lifecycle and exact authorized closure/readback. Never resend the written unknown note.|",
+      "complete": false
+    },
+    {
+      "id": "A4",
+      "row": "|3|[ ] A4 App usability \u2014 In Progress|<!-- evidence: implemented,local-only,simulated -->Historical local polish; exact TextEdit test; recent Agent recovery/keyboard regression repair and [saved-title IME correction](../recovery/2026-11-04/agent-history-ime/README.md) (5 rendered checks/scoped types/source review; not native accepted) and [nested rename/menu IME repair](../recovery/2026-11-04/agent-rename-ime/README.md) (14rendered checks/scoped types/review), plus same-form signup mutual-exclusion repair (five mocked component checks, scoped types, independent review).|~~Full intake context isolation repaired~~ ([evidence](../recovery/2026-11-04/release-intake-context/README.md)): reproduced8failures\u219228focused passes, desktop types and independent review; old saves cannot close/refresh new-context forms. ~~Whole Releases context boundary and stale-callback guards repaired~~ ([evidence](../recovery/2026-11-04/releases-context-boundary/README.md)):12new cases/40overlapping compatibility cases/types/source review pass; no transport cancellation claim. ~~Accepted desktop identity/sign-out UI bound to current configuration~~ ([evidence](../recovery/2026-11-04/authenticated-ui-context/README.md)):16exact-copy focused cases,51separate compatibility cases/types before literal-only wording update and corrected independent review. Failed/pending cleanup excludes sign-in; manual retry is explicit. No real vault/native/server qualification. ~~Current desktop frontend compiled with project Vite6.4.2~~ ([isolated compile](../recovery/2026-11-04/desktop-auth-frontend-build/README.md)): six hashed files/two local index references; no native launch/signing or performance acceptance. ~~Current native debug embedding compiled offline~~ ([evidence](../recovery/2026-11-04/desktop-auth-native-build/README.md)): newARM64binary/hash, native inputs and six frontend dependencies checked; retained0600data only, not signed/installed/launched. ~~Unlaunched local preview archive prepared~~ ([static review](../recovery/2026-11-04/desktop-auth-unlaunched-bundle/README.md)): current plist/icon/executable CRC/hashes/modes verified; no signing, launch or session-restoration acceptance. Current native walkthrough across every named surface, keyboard/AT/light-dark/session acceptance. Preserve paired sessions.|",
+      "complete": false
+    },
+    {
+      "id": "A7",
+      "row": "|4|[ ] A7 Security/AI efficiency \u2014 In Progress|<!-- evidence: implemented,local-only,simulated,disabled,live-accepted -->~~Atomic coding run/workspace ledger~~ reviewed and production schema/backend batch accepted. ~~Pending-cost telemetry clarity~~ locally repaired (40 mocked handler/pure checks/types; not deployed). [Local review](../recovery/2026-11-04/last-credit-local-batch/REVIEW.md).|Useful small request quotes: local implementation is now explicitly approved; exact mechanism/ledger/finalSDK source and23localPG journeys (including four composed SDK/usage cases) are verified with synthetic authority; real pricing/estimator/billable qualification stays open. [Evidence](../recovery/2026-11-04/coding-request-quotes-local/PROGRESS.md). The saved-response [strict observational endpoint parser](../recovery/2026-11-04/coding-endpoint-candidate/README.md) now passes40focused checks/moduletypes/source review; it normalizes regional rates but preserves nonzero feature-fee exclusions and never grants quote eligibility. Canonical eligibility remains unavailable. Existing metadata streaming cap repaired (71focused checks/caller types/review); four separately approved [documentation reads](../recovery/2026-11-04/coding-fee-documentation/FINDINGS.md) consumed without approving a fee-contract change. Full tenant/session/tool/secret/supply-chain assessment, recovery and quality-adjusted cost evidence remain. Governance activation is separate; no absolute security/savings claims.|",
+      "complete": false
+    },
+    {
+      "id": "B1",
+      "row": "|5|[ ] B1 Six-reference research \u2014 In Progress|<!-- evidence: local-only,planned -->Partial visible Cursor research preserved.|Complete public relevant journeys for Cursor, ChatGPT, Claude, Codex, Harness.io and Grok. Work browser is disabled; no alternate-browser bypass.|",
+      "complete": false
+    },
+    {
+      "id": "B2",
+      "row": "|6|[ ] B2 Original website \u2014 In Progress|<!-- evidence: local-only,simulated,planned -->Original source-built conceptual explainer/demo and canonical branding; task-explicit Product hero now leads with its existing workflow map. Exact local build/5DOMchecks/16asset HTTPmatches pass; [new local preview5234](http://127.0.0.1:5234/product). Browser/visual acceptance remains open.|Complete original visual system, purposeful assets, responsive/reduced-motion/performance/browser acceptance and reviewed tool/license choices. Newly detected Prompt Motion research is retained under B2 (not visited/adopted); original Axiom pipeline/review/audit/rollback motion concepts, provenance/license review and B6 validation remain required. Do not copy reference assets. New GetLayers requirement is preserved: [four official text pages](../recovery/2026-11-04/getlayers-reference-reconciliation/FINDINGS.md) reviewed; actual visual pilot/license clearance/B6 acceptance remain open. No MCP, account, import or purchase.|",
+      "complete": false
+    },
+    {
+      "id": "B4",
+      "row": "|7|[ ] B4 Visual documentation \u2014 In Progress|<!-- evidence: local-only,planned -->~~Registered source-map checker~~ explicitly requalified Releases29/52 to unchanged current view0c69 and Settings69 to auth runtime91651299, preserving original IDs/purposes/nodes; one final eight-file invocation passed39checks; [current evidence](../recovery/2026-11-04/settings-auth-requalification/README.md);10runner preflight/process tests. Existing29IDs/nodes and52IDs/purposes/nodes preserved; [requalification evidence](../recovery/2026-11-04/release-intake-context-requalification/README.md). [Current evidence](../recovery/2026-11-04/release-intake-fields/README.md). Finite editor/Agent/Settings/Bot/Releases families plus52named intake source-callsite records are documented. These scopes overlap and are not a coverage total. Generic/runtime/imported fields, authentic media/editorial/customer/retrieval acceptance remain open. New [download-controls source guide](knowledge/website-download-controls.md) pins12files/22ranges and distinguishes snapshot links from resolver/readback/installer acceptance.|Trace every supported control/state to stable reviewed IDs, supported-version evidence, authentic media and genuine editorial acceptance. Source coverage is not visual acceptance.|",
+      "complete": false
+    },
+    {
+      "id": "B5",
+      "row": "|8|[ ] B5 Support knowledge \u2014 In Progress|<!-- evidence: local-only,simulated,disabled -->Existing offline schema/retrieval foundation;29stored article revisions including history, all customer-ineligible. Historical intake r2 integrity passed against pinned4f31 plus exact later documentation, with expected customer refusal; every stored record remains an internal draft. Historical r1 bytes remain unchanged. Added [52-field intake r2](../recovery/2026-11-04/release-intake-knowledge-r2/README.md):56steps/19proposed cases,10portable pinned sources; r1 and frozen24 inputs unchanged. No retrieval evaluation executed.|Complete structured coverage, authentic/cited supported-release content, genuine editorial authority, ingestion/update workflow and required retrieval/uncertainty evaluations. Proposed cases are not executed evaluations. The expanded-data selected check failed its synthetic control and stopped before proving 24-record coverage; [failure evidence](../recovery/2026-11-04/support-expanded-evaluation-failure/report.md) is preserved. A subsequent synthetic diagnostic showed nested sandbox policy-application refusal; the corrected runner awaits specific approval, and no successful rerun is claimed.|",
+      "complete": false
+    },
+    {
+      "id": "B3",
+      "row": "|9|[ ] B3 Authentic media \u2014 In Progress|<!-- evidence: local-only,planned -->Historical safe captures remain distinct from conceptual/scripted demos.|Authorized real source/version-bound recordings, accessible captions/transcripts/posters and privacy review. Live protected decisions must be personal human decisions.|",
+      "complete": false
+    },
+    {
+      "id": "B6",
+      "row": "|10|[ ] B6 Website delivery \u2014 In Progress|<!-- evidence: implemented,local-only,simulated,live-accepted -->~~One full-source website/backend production batch accepted~~ ([receipt](../recovery/2026-11-04/combined-production-batch/COMPLETION.md)):READYdpl_9M9w/source d3,7971storedsource hashes exact; local/remote production types/builds,8livepublic pages/3canonicalicons/app401 pass. Browser/AT acceptance unproven. Exact current-page navigation semantics locally repaired with4DOM checks; not deployed.|Actual browser/AT/responsive/motion/performance/link acceptance, authentic media integration and specific new deployment authorization. Local installer storage-check wording corrected with five mocked/rendered checks and scoped types; the published batch includes that copy and glossary correction; browser/AT acceptance remains open.|",
+      "complete": false
+    },
+    {
+      "id": "A1",
+      "row": "|11|[ ] A1 Release \u2014 In Progress|<!-- evidence: implemented,live-accepted,planned -->Immutablev0.1.21 publication/public-download acceptance preserved; private progress backups verified.|Reconcilev0.1.22 artifacts, signing, settled budget and a newly authorized build if required; genuine protected publication approval. No further paid CI currently authorized.|",
+      "complete": false
+    },
+    {
+      "id": "A9",
+      "row": "|12|[ ] A9 Orchestrator/on-prem \u2014 In Progress, foundations|<!-- evidence: local-only,planned -->Source dependency inventory, engine contract design and proposed [deployment-origin authority contract](deployment-origin-authority-contract.md), bound to 19 inspected source files. No runtime migration.|Reviewed runtime adapter migration (Airflow/Temporal/custom), complete customer-controlled dependencies and genuine disconnected governed deployment/upgrade/restore evidence after core enforcement.|",
+      "complete": false
+    },
+    {
+      "id": "A6",
+      "row": "|13|[ ] A6 Outlook/GitLab \u2014 In Progress|<!-- evidence: implemented,local-only,live-accepted,planned -->Historical Outlook read-only acceptance; local discoverability and source docs.|Ship reviewed Outlook changes under authorization; approve/implement/test safe GitLab connector and separate account-linking/sign-in design. No provider is connected by a catalog label.|",
+      "complete": false
+    },
+    {
+      "id": "A8",
+      "row": "|14|[ ] A8 Ecosystem \u2014 In Progress, largely unimplemented|<!-- evidence: local-only,planned -->Full provider/Batches/observability backlog retained in master/remaining-work.|Customer-prioritized provider designs, least privilege, isolated tests and separately authorized live acceptance per integration. No new grants/purchases assumed.|",
+      "complete": false
+    },
+    {
+      "id": "A5",
+      "row": "|15|[ ] A5 Windows/Store \u2014 In Progress, deferred|<!-- evidence: local-only,planned -->Company/identity and unsigned preparation preserved.|Real Store certification/signing and clean Windows install/sign-in/session/update receipts. No clean host; website MSI/SmartScreen warning unresolved.|",
+      "complete": false
+    },
+    {
+      "id": "C1",
+      "row": "|16|[ ] C1 Private founder command center|<!-- evidence: planned -->Future. Separate founder-only control plane; deny-default phishing-resistant access, least privilege, reauthentication, tenant isolation, auditing and tested break-glass recovery; no hard-coded single-person identity.|",
+      "complete": false
+    },
+    {
+      "id": "C2",
+      "row": "|17|[ ] C2 Support intake and AI resolution|<!-- evidence: planned -->Future. Version-bound B4/B5 knowledge, authorized intake/triage/SLA/history and cited local assistance; low-risk automation only by explicit allowlist/authorization/outcome/undo, with genuine human escalation and reopen paths.|",
+      "complete": false
+    },
+    {
+      "id": "C3",
+      "row": "|18|[ ] C3 Incident and governed production assistance|<!-- evidence: planned -->Future. Evidence/timeline/ownership/communications/postmortems first; later exact-scope/current-authority/policy/independent-approval/rollback/attempt/audit/verified-observation gates. Unknown remains unknown; no unrestricted self-healing.|",
+      "complete": false
+    },
+    {
+      "id": "C4",
+      "row": "|19|[ ] C4 Finance and company operations|<!-- evidence: planned -->Future. Founder-only source-reconciled actuals/estimates/pending/freshness/currency, budgets/unit economics/renewals/reports; no banking credentials, money movement, refunds, price/purchase/billing changes without separate approval.|",
+      "complete": false
+    },
+    {
+      "id": "C5",
+      "row": "|20|[ ] C5 AI operations and improvement|<!-- evidence: planned -->Future. Defined sourced cohort/tenant metrics and safety/quality/cost evaluations; evidence-backed accept/defer/reject recommendations, traceable work, red-team/rollback/kill switches; no vanity automation-success claims.|",
+      "complete": false
+    },
+    {
+      "id": "C6",
+      "row": "|21|[ ] C6 Architecture, phases and acceptance|<!-- evidence: planned -->Future. Separate customer support, founder finance and production planes; retention/privacy/export/deletion/backup/restore/custody/on-prem specification. Phase0\u2192human foundation\u2192supervisedAI\u2192boundedautomation; genuine E2E/isolation/financial/incident/accessibility/audit/recovery/security acceptance required.|",
+      "complete": false
+    }
+  ],
+  "decision": "Finish/review the selected offline integration build; do not substitute more peripheral work for blocked core acceptance.",
+  "gates": {
+    "A2": "Separate persistent preparation approval, same-artifact custody/consumer, fleet and operational qualification remain required.",
+    "A3": "Genuine fresh human decisions and native lifecycle/closure; unknown written note cannot be resent.",
+    "A4_B1_B3_B6": "Actual browser/native/accessibility/media acceptance requires supported access; no workaround.",
+    "A7": "Health/funded-helper decisions remain pending; quotes lack trusted pricing/billable bounds/actual executor qualification.",
+    "A6_A8_A9": "Connector scope/design and migration/provisioning decisions remain unapproved/unqualified.",
+    "A1_A5": "Release/signing/build authority, Store and clean-host acceptance gates remain.",
+    "B4_B5": "Further source drafting possible; editorial, supported-version, retrieval and customer acceptance are not established.",
+    "C1_C6": "Future planned, not authorized for implementation."
+  },
+  "noNewImplementationAuthority": true,
+  "fullGoalComplete": false
+}
