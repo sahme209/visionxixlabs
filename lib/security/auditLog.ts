@@ -23,7 +23,7 @@ export async function logAudit(params: AuditParams): Promise<void> {
         metadata: (params.metadata as object) ?? undefined,
       },
     });
-  } catch (e) {
-    console.error("[audit] log failed:", e);
+  } catch {
+    console.error("[audit] log failed:", "audit_write_failed");
   }
 }

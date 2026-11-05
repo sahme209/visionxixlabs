@@ -245,3 +245,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Terraform internal exception diagnostic privacy
 ~~Five route diagnostics and apply audit exception payload no longer copy Error.message~~ ([evidence](../recovery/2026-11-04/terraform-internal-diagnostic-privacy/README.md)): actualmockedhandlersRED6disclosures/17controls→GREEN23; wholefile reconstruction and independent review pass. Fixed route codes preserve public responses/audit structure/correlation and authority guards. Shared logger fallback/output previews/fullsecurity/native/production acceptance remain open; current74web/current475native untouched.
+
+### Shared audit failure diagnostic privacy
+~~Actual best-effort audit helper no longer logs raw database exception objects~~ ([evidence](../recovery/2026-11-04/shared-audit-error-privacy/README.md)): RED2privacy failures/2controls→GREEN4; actualhelper with onlyexternalDBport mocked, wholefile restoration verified. Successpayload/defaults/swallowedfailure/no-retry behavior preserved. Caller-providedmetadata, auditintegrity/fullsecurity/live acceptance remain open. Native475AX/screenshot observation timed out; inventory running, no restart or visual claim.

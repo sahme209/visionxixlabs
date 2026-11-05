@@ -1,0 +1,5 @@
+{
+  "path": "lib/security/auditLog.ts",
+  "sha256": "5f04f890439c957aa47ee10cae5f30e64ed6f051e0126de616c58bd374fb2eaf",
+  "wholePriorFileRestoredByOnlyDiagnosticPayloadAndUnusedCatchBindingReversion": true
+}

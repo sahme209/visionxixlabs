@@ -1,0 +1,11 @@
+{
+  "existingApp": "signed475 preview",
+  "observations": [
+    "getApp exactpath timeoutReached",
+    "existinghandle getAXState timeoutReached",
+    "getState inventory app isRunning true",
+    "existinghandle screenshot timeoutReached"
+  ],
+  "actions": "no UI input, restart, quit, unlock or browser workaround",
+  "newVisualAcceptance": false
+}
