@@ -1,0 +1,58 @@
+{
+  "sourceHead": "26658f300ede97f6d60fbbd3c0a94e2c07ba3bca",
+  "masterSha256": "9318d0e64ded150b0c58c8bf9d2cd298702431630e801342389fa87d118bc64e",
+  "sourceObservations": [
+    {
+      "source": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+      "sha256": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca",
+      "line": 13,
+      "observedLiteral": "return 0;",
+      "meaning": "Supplier operational gate is disabled; installation evidence is required."
+    },
+    {
+      "source": "packages/verified-issuer-runtime/index.cjs",
+      "sha256": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4",
+      "line": 10,
+      "observedLiteral": "reason: 'sealed_launch_not_implemented'",
+      "meaning": "Executing issuer identity remains unavailable."
+    },
+    {
+      "source": "packages/verified-issuer-runtime/index.cjs",
+      "sha256": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4",
+      "line": 97,
+      "observedLiteral": "verified_issuer_private_business_channel_unavailable",
+      "meaning": "Private initialization closes resources without exposing a business channel."
+    },
+    {
+      "source": "lib/desktop/privateReleaseMergeBootstrap.ts",
+      "sha256": "ba74b3a38c57124b6b391f5adf11cfd542082ac77620cabfe80b07d1399aeff9",
+      "line": 8,
+      "observedLiteral": "const disabled = () => false;",
+      "meaning": "Private preparation supplies disabled flags and only close capability."
+    },
+    {
+      "source": "lib/governance/intelligence/requestServiceCore.ts",
+      "sha256": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d",
+      "line": 68,
+      "observedLiteral": "// Deliberately no verifyCoverage port.",
+      "meaning": "Current request composition does not assert executor coverage."
+    },
+    {
+      "source": "lib/governance/intelligence/requestServiceCore.ts",
+      "sha256": "53956d7f152672aa25a6a9dfe5a035e2d417fc6056eeeda1c7d5177db214e38d",
+      "line": 163,
+      "observedLiteral": "async activate(){enabled();throw Error('governance_execution_coverage_unavailable')}",
+      "meaning": "Activation refuses unavailable coverage."
+    },
+    {
+      "source": "lib/governance/intelligence/revisionStore.ts",
+      "sha256": "2a2180c78ec88a96347786baf2f5d2ab5adbf1abc64e7327ad54687e30eb7525",
+      "line": 38,
+      "observedLiteral": "if(!ports.verifyCoverage||await ports.verifyCoverage(tx,s,x.b)!==true)deny();",
+      "meaning": "Revision activation requires actual verified coverage."
+    }
+  ],
+  "executedModules": false,
+  "testsRun": false,
+  "conclusionScope": "No substantive independently authorized implementation frontier established in this inspected critical chain; not a global impossibility proof."
+}

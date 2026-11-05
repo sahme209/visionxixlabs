@@ -229,3 +229,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November 4 — remaining Terraform exception privacy
 ~~Plan, approval, apply and status failures use fixed public error messages~~ ([evidence](../recovery/2026-11-04/terraform-route-error-privacy/README.md)). Five actual mocked-handler disclosure failures became17focusedpasses; ownership/auth and three legacy refusals remain enforced in tests. Four literal changes only, whole Git baselines reconstructed; internal audit/logging and correlation unchanged. No real Terraform/DB/provider/rootbuild/production acceptance; internal privacy/audit-failure handling remain open. All21parents and current475app preserved.
+
+### November 4 — Governance critical path revalidated
+[Current source audit](../recovery/2026-11-04/governance-critical-path-current-audit/README.md) and independent review confirm the disabled supplier, unavailable issuer, closed business channel, absent coverage assertion and activation refusal. Existing authoring/recovery work is already implemented. No substantive authorized core step was established that bypasses the pending preparation decision; no additional UI/fence is substituted. This is not global blockage or A2 completion. All21parents remain open; current475app preserved.
