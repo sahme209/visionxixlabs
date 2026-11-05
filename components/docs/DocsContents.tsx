@@ -12,6 +12,28 @@ export function DocsContents() {
   const button = useRef<HTMLButtonElement>(null);
   const panel = useRef<HTMLDivElement>(null);
   const previousPath = useRef(pathname);
+  const expanded = useRef(open);
+  expanded.current = open;
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const changed = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        // The narrow disclosure disappears on desktop; keep its keyboard
+        // owner in the now-visible navigation without changing the filter.
+        if (document.activeElement === button.current) panel.current?.querySelector<HTMLInputElement>('input[type="search"]')?.focus();
+      } else if (!expanded.current && panel.current?.contains(document.activeElement)) {
+        // A collapsed desktop panel becomes hidden when narrowing.
+        button.current?.focus();
+      }
+    };
+    if (typeof media.addEventListener === "function") {
+      media.addEventListener("change", changed);
+      return () => media.removeEventListener("change", changed);
+    }
+    media.addListener?.(changed);
+    return () => media.removeListener?.(changed);
+  }, []);
 
   function restoreNarrowFocus() {
     if (!window.matchMedia("(min-width: 1024px)").matches && panel.current?.contains(document.activeElement)) button.current?.focus();

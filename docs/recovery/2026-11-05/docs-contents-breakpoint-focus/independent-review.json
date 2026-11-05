@@ -1,0 +1,22 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR for bounded local breakpoint focus repair",
+  "paths": [
+    "components/docs/DocsContents.tsx",
+    "app/docs/__tests__/contents-resize-focus.test.ts"
+  ],
+  "reviewedBehavior": [
+    "wide to narrow collapsed panel transfers only contained focus to visible disclosure",
+    "narrow disclosure focus transfers to visible guide search on wide",
+    "outside focus preserved; open/filter state unchanged",
+    "modern and legacy matchMedia listener cleanup"
+  ],
+  "regressionScope": "four actual-component synthetic media-change cases; existing disclosure and IME compatibility evidence reviewed separately",
+  "limitations": [
+    "source/jsdom focus evidence only; no browser/native/assistive-technology acceptance",
+    "no universal resize or platform behavior claim"
+  ],
+  "productTestsRunByReviewer": false,
+  "buildBrowserProviderCalls": false,
+  "runtimeAuthorityChanged": false
+}

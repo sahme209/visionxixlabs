@@ -1,0 +1,9 @@
+{
+  "baselineRevision": "2cb0baed04d574bb56e9bc42cd1c6bb7df599899",
+  "currentSourceSha256": {
+    "components/docs/DocsContents.tsx": "9bf4930205a7c2ddff2194255816f7d26cedadd55b65198c8ae0ef8442c17d8b",
+    "app/docs/__tests__/contents-resize-focus.test.ts": "21c888ab80b15528c781b0af056998c4fe7d8606160e4c306bd258d78368c4f7"
+  },
+  "scope": "local responsive focus only; no access/action boundary change",
+  "browserOrAssistiveTechnologyAccepted": false
+}
