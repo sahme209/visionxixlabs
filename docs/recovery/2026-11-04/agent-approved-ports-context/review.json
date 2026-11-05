@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear",
+  "scope": "three predispatch context checks; false uncertainty only zero-call; ten rendered cases",
+  "execution": "read-only no reruns"
+}

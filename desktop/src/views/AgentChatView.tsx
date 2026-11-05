@@ -1254,7 +1254,17 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             {streamingDraft && <p className="mt-3 whitespace-pre-wrap break-words text-sm text-zinc-300">{streamingDraft}</p>}
             <p className="mt-2 text-[11px] text-zinc-500">Draft text does not approve or execute changes. Completed work remains recorded if you stop.</p>
           </div>}
-          <AgentApprovedActions key={`approved-${conversationId}`} actions={approvedActions} read={(proposalId,signal) => desktopClient.readAgentActionExecution(proposalId,signal)} eligibility={(proposalId,signal) => desktopClient.readAgentActionEligibility(proposalId,signal)} mutate={(input,signal) => desktopClient.mutateAgentActionExecution(input,signal)} />
+          <AgentApprovedActions key={`approved-${conversationId}`} actions={approvedActions}
+            read={(proposalId,signal) => transportContext === desktopClient.config
+              ? desktopClient.readAgentActionExecution(proposalId,signal)
+              : Promise.resolve({ok:false as const,error:"The connection changed. Reopen this conversation with its original account before checking saved action history."})}
+            eligibility={(proposalId,signal) => transportContext === desktopClient.config
+              ? desktopClient.readAgentActionEligibility(proposalId,signal)
+              : Promise.resolve({ok:false as const,error:"The connection changed. No readiness request was sent. Reopen this conversation with its original account."})}
+            mutate={(input,signal) => transportContext === desktopClient.config
+              ? desktopClient.mutateAgentActionExecution(input,signal)
+              : Promise.resolve({ok:false as const,outcomeUnconfirmed:false,error:"The connection changed. No action request was sent. Reopen this conversation with its original account."})}
+          />
           <AgentGithubReceipts key={`github-${conversationId}`} actions={githubActions} />
           <AgentRestartReceipts key={conversationId} conversationId={conversationId} actions={restartActions} />
           {evidenceActions.length > 0 && <EvidencePanel actions={evidenceActions.slice(-8)} />}

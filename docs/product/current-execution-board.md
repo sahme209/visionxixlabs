@@ -217,3 +217,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November4 public search index build gate
 ~~Existing prebuildcontract now refuses missing/stale/tampered headingindex without rewriting~~ ([evidence](../recovery/2026-11-04/docs-heading-build-gate/README.md)): actualRED3fail2pass→GREEN5; canonicalreadonlycontractcheckPASS/independentreviewclear. Wholeoldcontract reconstructed after removingonlyaddedimport/block; migration/type/proxy/SDKguards unchanged. NoNext/Prisma build, CI/deploy/customerauthority or fullB4/Gov acceptance. Prior manual-onlycheckpoint historical; current475app preserved.
+
+### November4 saved Agent action-port context repair
+~~Outcome/readiness/prepare/execute/cancel ports refuse stale renderedconnection before request~~ ([evidence](../recovery/2026-11-04/agent-approved-ports-context/README.md)): actualRED5fail5pass→GREEN10/desktoptypes/reviewclear. Three callbackguards only; nonsentfailure confinedzero-callbranch, inflightunknown/noresend unchanged. Current475app untouched/unshipped; mainAgentwholefilebindingrequirescurrentGit requalification. No server/native/provider/human/Gov acceptance inferred; all21parents preserved.
