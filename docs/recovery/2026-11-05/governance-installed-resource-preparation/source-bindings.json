@@ -1,0 +1,61 @@
+{
+  "source_revision": "e1fed6d8551967b25918b9c1df21ea6184a57be3",
+  "files": [
+    {
+      "key": "builder",
+      "path": "packages/verified-issuer-runtime/native/cssm_policy_builder.c",
+      "sha256": "0de1a9e667dfefd11ec76af41fb4937d5e44aba14586d9d80f97f431f56eb856",
+      "line_ranges": [
+        [
+          1,
+          25
+        ]
+      ]
+    },
+    {
+      "key": "broker",
+      "path": "packages/verified-issuer-runtime/native/origin_broker.c",
+      "sha256": "a5c3d95977343243a435913cf67abbb8fd1600d5c829eb8cd08a562427f6d9e3",
+      "line_ranges": [
+        [
+          212,
+          219
+        ]
+      ]
+    },
+    {
+      "key": "supplier",
+      "path": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+      "sha256": "835623732903557d04ad978349b6c1eaa067f567b3386466a04c21f958011fca",
+      "line_ranges": [
+        [
+          8,
+          47
+        ]
+      ]
+    },
+    {
+      "key": "installation-design",
+      "path": "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/synthetic-custodian-installation-policy-spec.md",
+      "sha256": "a2c1cbc14290825d87519380c13d7d51dd1650b561a87b92bd220249837709ab",
+      "line_ranges": [
+        [
+          1,
+          77
+        ]
+      ]
+    },
+    {
+      "key": "composed-boundary",
+      "path": "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/composed-custodian-boundary-decision.md",
+      "sha256": "e31ab1265c58ff6a62dcb19c53b6b88d3ec1a5409ebce40f612dbfe321805214",
+      "line_ranges": [
+        [
+          1,
+          33
+        ]
+      ]
+    }
+  ],
+  "scope": "source-only; no installation or effective-policy proof"
+}

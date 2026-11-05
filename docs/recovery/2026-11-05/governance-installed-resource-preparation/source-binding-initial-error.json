@@ -1,0 +1,10 @@
+{
+  "error": "AssertionError",
+  "path": "docs/recovery/2026-11-03/compiled-consumer-authority-bridge/composed-custodian-boundary-decision.md",
+  "attempted_range": [
+    1,
+    37
+  ],
+  "actual_lines": 33,
+  "effect": "source-only range authoring error; no runtime or OS action"
+}

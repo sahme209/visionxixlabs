@@ -1,0 +1,9 @@
+# Connected installed-resource preparation — design reviewed, not implemented
+
+1. ~~Reconcile the next actual source gaps after the consumed successful in-memory experiment.~~ Canonical builder/broker executable layouts differ; closed supplier still uses unscoped service/account discovery, unlike the selected exact-reference installation design.
+2. ~~Specify the connected local unit~~ in PROPOSAL.md: shared fixed installed identity, actual three-Add transaction preparation, exact locator wire format, durable-intent state-machine contract and corresponding reference-bound supplier source. All positive operational/canonical gates remain unavailable.
+3. ~~Bind and independently review the source/design.~~ Five pinned/current source hashes and ranges match. Initial33-vs37line authoring error is preserved and corrected. Independent review resolved locator/journal specification gaps and found no remaining local-approval blocker; numeric phases/reasons/sequence now fixed explicitly.
+4. **Pending explicit local implementation approval.** Earlier approvals cover design specification, constructor preparation and one consumed in-memory experiment; none covers this new dormant provisioning/reference-reader source boundary.
+5. **Still pending separately:** real privileged installation, principal/Keychain identity, pre-main integrity and effective OS enforcement/custody qualification, same-artifact issuer/consumer, fleet/coverage/native enrollment/live acceptance. All21parents stay open. Source observations are not live defects or proof of leaked credentials; current supplier is closed.
+
+No runtime code, compile/test run, Security/Keychain call, resource creation, service/signing/install, credential/provider/database/network/deploy or spending action in this unit. No original blocked experiment or consumed attempt recreated. The preserved master user edits and native sessions are unchanged.
