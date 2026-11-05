@@ -42,3 +42,12 @@ it('ordinary Escape closes nested rename and menu and restores summary focus',()
  expect(event.defaultPrevented).toBe(true);expect(screen.queryByRole('form',{name:'Rename conversation'})).toBeNull();expect(details.open).toBe(false);expect(document.activeElement).toBe(view.container.querySelector('summary'));
  expect(m.rename).not.toHaveBeenCalled();expect(m.read).not.toHaveBeenCalled();
 });
+
+for(const write of [true,false]) it(`precommit replaced context refuses title ${write?"save":"refresh"}`,()=>{
+ const saved=vi.fn(),busy=vi.fn();render(createElement(ConversationRename,{id:'one',title:'Old',onRenamed:saved,onBusyChange:busy}));
+ fireEvent.click(screen.getByRole('button',{name:'Rename chat'}));const input=screen.getByRole('textbox',{name:'Conversation title'});
+ fireEvent.change(input,{target:{value:'Preserve exact draft'}});m.context={};
+ fireEvent.click(screen.getByRole('button',{name:write?'Save title':'Refresh title'}));
+ expect(m.rename).not.toHaveBeenCalled();expect(m.read).not.toHaveBeenCalled();expect(saved).not.toHaveBeenCalled();expect(busy).not.toHaveBeenCalled();
+ expect(input).toHaveProperty('value','Preserve exact draft');
+});

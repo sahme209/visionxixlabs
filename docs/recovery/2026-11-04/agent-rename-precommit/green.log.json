@@ -1,0 +1,4 @@
+{
+  "format": "lossless-text-log",
+  "text": "\n RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion\n\n \u2713 lib/desktop/__tests__/conversationRename.test.ts (10 tests) 99ms\n\n Test Files  1 passed (1)\n      Tests  10 passed (10)\n   Start at  01:20:02\n   Duration  379ms (transform 20ms, setup 0ms, import 53ms, tests 99ms, environment 176ms)\n\n"
+}

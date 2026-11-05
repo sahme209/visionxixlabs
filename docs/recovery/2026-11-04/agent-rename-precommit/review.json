@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear; no important findings",
+  "scope": "render-context entry guard and two stale tests; existing recovery/IME source preserved",
+  "execution": "read-only, no reruns"
+}

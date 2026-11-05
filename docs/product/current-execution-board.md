@@ -190,3 +190,6 @@ Existing native Documentation page inspected through AX and screenshot without i
 
 ### November4 Agent conversation-control ownership repair
 ~~Retained New chat/open-chat refuse replaced config before mutation/request~~: renderedRED2fail2pass→GREEN4pass (prior6 deliberately unselected), desktoptypes/source review pass. [Evidence](../recovery/2026-11-04/agent-conversation-precommit/README.md). Current983app unchanged; no server/native/provider acceptance. Separate rename Save/Refresh candidate remains to reproduce; not an exhaustive handler fix. All21parents and pending Governance decision preserved.
+
+### November4 Rename connection ownership repair
+~~Retained title Save/Refresh refuse replacement config before mutation/callback/transport~~: two actual renderedRED→ten componentGREEN including prior recovery/IME cases, desktoptypes and independentreview pass. [Evidence](../recovery/2026-11-04/agent-rename-precommit/README.md). Current983app unchanged; no real server/native/credential/provider acceptance. Version-bound source guides stay historical; changed bindings need explicit requalification. All21parents and pending Governance decision remain open.

@@ -6,7 +6,9 @@ export function ConversationRename({id, title, disabled = false, onRenamed, onBu
   const mounted = useRef(false), pending = useRef(false), expected = useRef(title);
   useEffect(() => {mounted.current = true; return () => {mounted.current = false;};}, []);
   useEffect(() => {if (!editing) {expected.current = title; setDraft(title ?? "");}}, [title, editing]);
+  const renderContext = desktopClient.config;
   async function run(write: boolean) {
+    if (renderContext !== desktopClient.config) return;
     if (disabled || pending.current || (write && (!verified || !draft.trim()))) return;
     const context = desktopClient.config, intended = draft.trim();
     const owns = () => mounted.current && context === desktopClient.config;
