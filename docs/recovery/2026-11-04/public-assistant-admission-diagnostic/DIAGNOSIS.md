@@ -1,0 +1,9 @@
+# Public assistant admission diagnostic
+
+One bounded diagnostic run: **1 desired isolation assertion failed; 2 existing refusal controls passed**. Runtime source was not changed. The RED case traverses actual public POST, orchestrator, provider manager, fallback handler and Gateway provider. Only the external `ai` SDK functions and Prisma logging port are mocked. The successful SDK result and metering identifier are synthetic.
+
+Observed result: HTTP 200 with synthetic response, exactly one mocked SDK generation, concrete model `anthropic/claude-sonnet-5`, output cap 1536, `gateway.user` absent, and zero mocked Prisma transactions. The desired assertion requires zero SDK dispatch without attributed admission; it fails on actual current source. This demonstrates a local composition path that reaches the SDK without tenant attribution/reservation. It does not prove a production request occurred or any real upstream spend. Invocation logging remains actual code with mocked persistence; invocation metadata is not a financial reservation.
+
+The real process-local IP limiter still refuses after ten allowed checks (429), and missing configured key returns 503; both avoid SDK dispatch. These controls do not establish workspace financial admission.
+
+Execution used scrubbed environment, explicit fake key/model, a kernel network-denial sandbox and owned-only write allowances, with a 45-second group-cleanup bound. Actual exit was 1 (expected diagnostic RED), no timeout. The recorded process was reaped. The outer evidence wrapper exits normally after preserving the child status; `red.json` is authoritative for child exit. No runtime fix, provider/AI/network/DB/UI call, grant, activation or deployment occurred. The test is intentionally RED and needs parent review before commit or a separately approved repair.

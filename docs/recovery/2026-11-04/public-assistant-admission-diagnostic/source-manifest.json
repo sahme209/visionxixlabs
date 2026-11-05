@@ -1,0 +1,41 @@
+{
+  "scope": "direct inspected/tested source files, not full transitive attestation",
+  "files": [
+    {
+      "path": "app/api/visionxix-ai-chat/__tests__/admission-regression.test.ts",
+      "sha256": "0ae665427a5bef7cbc3e3768108b2855b6018335597b3d57cc50efecb8b79924"
+    },
+    {
+      "path": "app/api/visionxix-ai-chat/route.ts",
+      "sha256": "073ac829969b427f3990f6a6fc870192afa8c005dd6bb291086944c68ea57f09"
+    },
+    {
+      "path": "lib/ai/orchestrator.ts",
+      "sha256": "289333872bfa934ef59edd089f8ccb3f2e15ef9e3fd7ff8461c98bfe69d74bc5"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "caa33541753d3629424e7bb5302f634ffa89eb2186c9e1d6581c29b8eeaf2ceb"
+    },
+    {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "sha256": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce"
+    },
+    {
+      "path": "lib/ai/AIFallbackHandler.ts",
+      "sha256": "afdeab0e8088c83c0c05425a378333ae4348dfb8173f2f379867d78ad742e922"
+    },
+    {
+      "path": "lib/ai/instrumentation.ts",
+      "sha256": "2b66bbc7d2d515f7d0d96de9289c2443b568f33495f23dfb1929b23eb37a6be2"
+    },
+    {
+      "path": "lib/ai/effectiveGatewayModel.ts",
+      "sha256": "0d5e98ffb64197ae34546bfe81f7835f2468f9da7a737b0ccd5470c63ff11f3e"
+    },
+    {
+      "path": "lib/rateLimit.ts",
+      "sha256": "2163af8ff0ea888f7bf201130d49668455e91b121d1b0783aebf484946ae42a2"
+    }
+  ]
+}
