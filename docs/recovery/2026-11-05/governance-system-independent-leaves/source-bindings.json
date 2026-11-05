@@ -1,0 +1,9 @@
+{
+  "files": {
+    "scripts/governance_local_issuer/system_preparation.py": "f8d7fc48c38a066b0baf0cd28efacc920f5450a6bbcbc4faa25401e57e1247c4",
+    "scripts/governance_local_issuer/tests/test_system_preparation.py": "914c497fa07cb4189903a48449446fba8a0160c8b50462ac1c31ba5874036ade"
+  },
+  "scope": "approved local preparation; Python/owned-tempfixture test only",
+  "nativeTargetsExecuted": false,
+  "actualStagePrepared": false
+}

@@ -1,0 +1,13 @@
+{
+  "stage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-independent-leaves-6018e44c/stage",
+  "manifestSha256": "a37e2b92fa4e4fdada77dde3df16e6d350380261c611291512ffe1c85002a61f",
+  "originalManifestFilesVerified": 2875,
+  "onlyAddedFiles": [
+    "assembly/Axiom Synthetic Custodian.app/Contents/Helpers/AxiomSyntheticLaunchOwner",
+    "assembly/Axiom Synthetic Custodian.app/Contents/Helpers/AxiomSyntheticProvisioner",
+    "payload/__axiom_runtime__/origin-bootstrap"
+  ],
+  "oldControllerStageTouched": false,
+  "installationReady": false,
+  "operationalTargetsExecuted": false
+}

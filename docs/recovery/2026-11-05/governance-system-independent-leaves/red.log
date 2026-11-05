@@ -1,0 +1,20 @@
+F
+======================================================================
+FAIL: test_independent_leaves_need_no_future_code_requirements (governance_local_issuer.tests.test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 110, in test_independent_leaves_need_no_future_code_requirements
+    try:r=s.prepare_system(self.repo,self.stage,self.config,phase='independent-leaves')
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: unsupported_preparation_phase
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 111, in test_independent_leaves_need_no_future_code_requirements
+    except s.SystemPreparationUnavailable as error:self.fail('independent leaves must prepare without future hashes: '+str(error))
+AssertionError: independent leaves must prepare without future hashes: unsupported_preparation_phase
+
+----------------------------------------------------------------------
+Ran 1 test in 0.006s
+
+FAILED (failures=1)

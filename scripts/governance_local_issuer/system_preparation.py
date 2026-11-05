@@ -56,7 +56,7 @@ def _snapshot(path,limit=MAX_FILE):
  data=b''.join(chunks)
  return data,{'sha256':hashlib.sha256(data).hexdigest(),'size':len(data),'mode':stat.S_IMODE(before.st_mode),'dev':before.st_dev,'ino':before.st_ino,'mtimeNs':before.st_mtime_ns,'ctimeNs':before.st_ctime_ns}
 def _config(c,phase):
- if phase not in ('complete','native-leaves','controller-first'):_refuse('unsupported_preparation_phase')
+ if phase not in ('complete','native-leaves','controller-first','independent-leaves'):_refuse('unsupported_preparation_phase')
  keys={'format','generation','principal','lifetimeNs','nativeProfile','systemProfile','team','node','requirements'}
  if not isinstance(c,dict) or set(c)!=keys or c['format']!='axiom.system-preparation-config/1' or c['generation']!=GENERATION:_refuse('exact_system_config_required')
  p=c['principal']
@@ -66,7 +66,7 @@ def _config(c,phase):
  n=c['node'];q=c['requirements']
  if not isinstance(n,dict) or set(n)!={'path','sha256','headers'} or not re.fullmatch('[a-f0-9]{64}',str(n['sha256'])):_refuse('bound_node_required')
  required={'node','controller','brokerForGuard'} if phase=='complete' else ({'node','controller'} if phase=='native-leaves' else set())
- if phase=='controller-first'and q!={}:_refuse('controller_first_has_no_code_requirements')
+ if phase in ('controller-first','independent-leaves')and q!={}:_refuse('independent_phase_has_no_code_requirements')
  if not isinstance(q,dict) or not required<=set(q) or not set(q)<={'node','controller','brokerForGuard'} or any(not isinstance(v,str) or not re.fullmatch('cdhash H"[a-f0-9]{40}"',v) for v in q.values()):_refuse('exact_leaf_requirements_required')
  return c
 def _inputs(repo,config):
@@ -109,7 +109,7 @@ def _write(path,data):
  if stat.S_IMODE(path.stat().st_mode)!=0o600:_refuse('private_output_required')
 def _header(c,phase):
  values={'AX_OWNER_PROFILE':2,'AX_OWNER_FIXED_UID':c['principal']['uid'],'AX_OWNER_FIXED_GID':c['principal']['gid'],'AX_OWNER_MAX_LIFETIME_NS':str(c['lifetimeNs'])+'ULL','AXIOM_ISSUER_PACKAGE_ROOT':PACKAGE_ROOT,'AXIOM_ISSUER_IMAGE_BACKING':APP+'/Contents/Resources/issuer-package.dmg','AXIOM_ISSUER_CONTROL_APP':APP,'AXIOM_ISSUER_ORIGIN_SERVICE':BROKER_SERVICE}
- if phase!='controller-first':
+ if phase in ('complete','native-leaves'):
   values['AXIOM_ISSUER_NODE_REQUIREMENT']=c['requirements']['node']
   values['AXIOM_ISSUER_CONTROLLER_REQUIREMENT']=c['requirements']['controller']
  if phase=='complete':values['AXIOM_ISSUER_BROKER_REQUIREMENT']=c['requirements']['brokerForGuard']
@@ -126,6 +126,7 @@ def _recipes(stage,phase):
  for role,files in ROLE_SOURCES.items():
   if phase=='native-leaves'and role=='guard':continue
   if phase=='controller-first'and role!='controller':continue
+  if phase=='independent-leaves'and role not in ('owner','maintenance','bootstrap'):continue
   src=[stage/'source'/(x if role=='controller'else NATIVE+x)for x in files]
   flags=[]if role=='bootstrap'else['-framework','CoreFoundation','-framework','Security']
   if role in ('broker','controller','maintenance'):flags+=['-framework','Foundation']
@@ -165,6 +166,7 @@ def prepare_system(repo,stage,config,*,phase='complete'):
  result={'format':'axiom.system-preparation/1','preparationPhase':phase,'generation':GENERATION,'config':c,'sourceInputs':{k:v[1]for k,v in source.items()},'nodeInput':node[1],'headerInputs':{k:v[1]for k,v in headers.items()},'intendedInstallation':{'root':ROOT,'app':APP,'owner':OWNER_PATH,'packageRoot':PACKAGE_ROOT,'image':APP+'/Contents/Resources/issuer-package.dmg','ownerService':OWNER_SERVICE,'requiredRootOwnership':True},'staging':str(stage),'compileRecipes':recipes,'files':manifest,'unresolved':['actual_installation_and_runtime_qualification_missing','broker_service_topology_unqualified','compiled_consumer_materialization_missing','signing_and_resource_custody_unqualified'],'executionAuthorized':False,'installationReady':False,'activationAllowed':False,'configurationAuthority':'unverified declarations only'}
  if phase=='native-leaves':result['unresolved'].append('guard_requires_actual_signed_broker')
  if phase=='controller-first':result['unresolved'].extend(['native_leaves_require_actual_node_and_controller','guard_requires_actual_signed_broker'])
+ if phase=='independent-leaves':result['unresolved'].append('controller_broker_guard_requirements_pending')
  _write(stage/RECEIPT,(json.dumps(result,sort_keys=True,indent=2)+'\n').encode())
  return result
 def verify_preparation(stage):

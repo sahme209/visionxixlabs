@@ -1,0 +1,9 @@
+# Broker preparation bound to actual signed prerequisites
+
+~~Fresh actual source/header/payload stage and broker-only compilation completed~~. The native-leaves phase uses the exact CDHash values parsed from the already saved successful Node and controller displays; no new metadata/Security operation occurred. The controller current byte hash and0600 mode were checked before staging. Configuration remains prospective, not installed authority.
+
+Fifty-five current source files and2810 cached headers were frozen. Only the broker recipe ran, once, exit0/empty stderr. Owner/maintenance/bootstrap/controller recipes were not repeated. All original manifest inputs were rehashed after compilation and the only added file was the declared broker output; original preparation receipt stays immutable. Result.json binds argv, saved-display hashes and actual broker byte/stat binding. Broker SHA256 `dab32033aab6bf0e78e2ffdef31cad254beee4d4f4061f3649ccf21345c1c247`,172944bytes,0600, never run or signed with the company key.
+
+Remaining: exact broker signing decision, guard materialization, actual System topology/principal/resource installation, custody, compiled consumer and execution/enrollment qualification. InstallationReady/activationAllowed remain false. No account, service, root, Keychain, provider, database, deployment or spending operation. All21 master-plan parents remain open.
+
+Independent read-only review passed: both saved display hashes/CDHashes, header/config,2875 original staged inputs,55 current source files, exact broker argv and live full output binding match. No API/build/test was repeated by review.

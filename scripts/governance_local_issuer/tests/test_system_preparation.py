@@ -105,4 +105,16 @@ class SystemPreparationTests(unittest.TestCase):
   self.assertTrue(s.verify_preparation(self.stage))
   (module/'internal/verify-package.cjs').write_bytes(b'CHANGED MODULE')
   self.assertRaises(s.SystemPreparationUnavailable,s.verify_preparation,self.stage)
+ def test_independent_leaves_need_no_future_code_requirements(self):
+  self.config['requirements']={}
+  try:r=s.prepare_system(self.repo,self.stage,self.config,phase='independent-leaves')
+  except s.SystemPreparationUnavailable as error:self.fail('independent leaves must prepare without future hashes: '+str(error))
+  self.assertEqual([x['role']for x in r['compileRecipes']],['owner','maintenance','bootstrap'])
+  config=(self.stage/'config/system-preparation.h').read_text()
+  self.assertNotIn('AXIOM_ISSUER_NODE_REQUIREMENT',config)
+  self.assertNotIn('AXIOM_ISSUER_CONTROLLER_REQUIREMENT',config)
+  self.assertNotIn('AXIOM_ISSUER_BROKER_REQUIREMENT',config)
+  self.assertIn('controller_broker_guard_requirements_pending',r['unresolved'])
+  self.assertFalse(r['installationReady']);self.assertFalse(r['executionAuthorized']);self.assertFalse(r['activationAllowed'])
+  self.assertTrue(s.verify_preparation(self.stage))
 if __name__=='__main__':unittest.main()
