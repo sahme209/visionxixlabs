@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "assignedScope": "new/open guards and four cases",
+  "result": "clear",
+  "separateCandidate": "ConversationRename.run requires rendered-context reproduction; not fixed"
+}

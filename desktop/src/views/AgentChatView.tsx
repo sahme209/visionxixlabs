@@ -743,6 +743,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   }
 
   async function openConversation(id: string, reload = false) {
+    if (transportContext !== desktopClient.config) return;
     // A newer selection supersedes an in-flight read; the epoch below rejects late results.
     if (renamingBusy || sending || (reload && loadingConversation) || (!reload && id === conversationId && !loadingConversation)) return;
     if (!reload && !rememberCurrentDraft()) return;
@@ -842,6 +843,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   }, [active]);
 
   async function newConversation() {
+    if (transportContext !== desktopClient.config) return;
     if (renamingBusy || sending || loadingConversation || !rememberCurrentDraft()) return;
     setQueuePaused(true);
     const generation = ++conversationEpoch.current, context = desktopClient.config;

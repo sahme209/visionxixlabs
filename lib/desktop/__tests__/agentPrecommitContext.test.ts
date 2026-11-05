@@ -79,3 +79,25 @@ for(const approve of [true,false]) it(`still records same-context ${approve?"app
  fireEvent.click(button); await waitFor(()=>expect(approve?m.client.approveAgentAction:m.client.rejectAgentAction).toHaveBeenCalledTimes(1));
  expect(approve?m.client.rejectAgentAction:m.client.approveAgentAction).not.toHaveBeenCalled();
 });
+
+for (const changed of [true,false]) it(`conversation control new chat ${changed?"refuses stale context":"works in same context"}`, async()=>{
+ m.client.createAgentConversation.mockResolvedValue({ok:true,data:{id:"new-conversation",title:null,createdAt:summary.createdAt}});
+ render(createElement(AgentChatView));const input=await screen.findByRole("textbox",{name:"Agent request"});
+ await waitFor(()=>expect((screen.getByRole("button",{name:"New chat"}) as HTMLButtonElement).disabled).toBe(false));
+ fireEvent.change(input,{target:{value:"Retained conversation draft"}});
+ if(changed)m.replaceSilently({sessionToken:"replacement-context"});
+ fireEvent.click(screen.getByRole("button",{name:"New chat"}));
+ if(changed){expect(m.client.createAgentConversation).not.toHaveBeenCalled();expect((input as HTMLTextAreaElement).value).toBe("Retained conversation draft");}
+ else await waitFor(()=>expect(m.client.createAgentConversation).toHaveBeenCalledTimes(1));
+});
+for (const changed of [true,false]) it(`conversation control open chat ${changed?"refuses stale context":"works in same context"}`, async()=>{
+ const other={...summary,id:"conversation-2",title:"Other saved chat"};
+ m.client.listAgentConversations.mockResolvedValue({ok:true,data:{conversations:[summary,other]}});
+ render(createElement(AgentChatView));await screen.findByRole("textbox",{name:"Agent request"});
+ await waitFor(()=>expect((screen.getByRole("combobox",{name:"Agent conversation"}) as HTMLSelectElement).value).toBe(summary.id));
+ m.client.getAgentConversation.mockClear();m.client.getAgentConversation.mockResolvedValue({ok:true,data:{...other,turns:[],actions:[]}});
+ if(changed)m.replaceSilently({sessionToken:"replacement-context"});
+ fireEvent.change(screen.getByRole("combobox",{name:"Agent conversation"}),{target:{value:other.id}});
+ if(changed)expect(m.client.getAgentConversation).not.toHaveBeenCalled();
+ else await waitFor(()=>expect(m.client.getAgentConversation).toHaveBeenCalledWith(other.id));
+});

@@ -1,0 +1,4 @@
+{
+  "text": "\n RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion\n\n \u2713 lib/desktop/__tests__/agentPrecommitContext.test.ts (10 tests | 6 skipped) 132ms\n\n Test Files  1 passed (1)\n      Tests  4 passed | 6 skipped (10)\n   Start at  01:18:24\n   Duration  557ms (transform 96ms, setup 0ms, import 198ms, tests 132ms, environment 177ms)\n\n",
+  "format": "lossless-text-log"
+}

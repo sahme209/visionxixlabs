@@ -187,3 +187,6 @@ Existing native Documentation page inspected through AX and screenshot without i
 
 ### November4 Agent precommit connection ownership repair
 ~~Retained Send/approval/rejection handlers refuse replacement client configuration before notification~~: actual rendered3RED→6GREEN (three same-context controls), desktop types and independent review pass. [Evidence](../recovery/2026-11-04/agent-precommit-context/README.md). Three entry guards only; draft retained and no stale mocked outbound calls. No real server/provider/native acceptance, running983 unchanged, no production activation or full Governance claim. All21parents preserved.
+
+### November4 Agent conversation-control ownership repair
+~~Retained New chat/open-chat refuse replaced config before mutation/request~~: renderedRED2fail2pass→GREEN4pass (prior6 deliberately unselected), desktoptypes/source review pass. [Evidence](../recovery/2026-11-04/agent-conversation-precommit/README.md). Current983app unchanged; no server/native/provider acceptance. Separate rename Save/Refresh candidate remains to reproduce; not an exhaustive handler fix. All21parents and pending Governance decision preserved.
