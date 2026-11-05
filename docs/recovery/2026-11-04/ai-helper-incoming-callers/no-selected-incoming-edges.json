@@ -1,0 +1,89 @@
+{
+  "qualification": "no resolved direct incoming call in selected app/lib non-test roots; NOT unused/unreachable/safe",
+  "targets": [
+    {
+      "path": "lib/ai/aiExplainer.ts",
+      "function": "explainSubject"
+    },
+    {
+      "path": "lib/ai/directProviderCall.ts",
+      "function": "callProvider"
+    },
+    {
+      "path": "lib/ai/provider.ts",
+      "function": "generateCompletion"
+    },
+    {
+      "path": "lib/approvals/aiApprovalPacketNarrator.ts",
+      "function": "narrateApprovalPacket"
+    },
+    {
+      "path": "lib/automation/playbooks/costIdleResources.ts",
+      "function": "planCostIdleResources"
+    },
+    {
+      "path": "lib/autonomy/aiRationaleNarrator.ts",
+      "function": "narrateRationale"
+    },
+    {
+      "path": "lib/cicd/aiCodeReviewPrioritizer.ts",
+      "function": "prioritizeReviewFindings"
+    },
+    {
+      "path": "lib/cicd/aiPrDescriptionWriter.ts",
+      "function": "writePrDescription"
+    },
+    {
+      "path": "lib/cloud/aiResourceTagger.ts",
+      "function": "suggestResourceTags"
+    },
+    {
+      "path": "lib/flags/aiFeatureFlagAnalyst.ts",
+      "function": "analyzeFeatureFlags"
+    },
+    {
+      "path": "lib/help/aiComplianceQa.ts",
+      "function": "answerComplianceQuestion"
+    },
+    {
+      "path": "lib/help/aiHelpReranker.ts",
+      "function": "rerankHelpCandidates"
+    },
+    {
+      "path": "lib/incidents/aiPostmortemDrafter.ts",
+      "function": "draftPostmortem"
+    },
+    {
+      "path": "lib/incidents/aiRootCauseSuggester.ts",
+      "function": "suggestRootCauses"
+    },
+    {
+      "path": "lib/insights/aiNextBestActionAdvisor.ts",
+      "function": "adviseNextActions"
+    },
+    {
+      "path": "lib/notifications/aiIncidentSummarizer.ts",
+      "function": "summarizeIncident"
+    },
+    {
+      "path": "lib/releaseops/aiReleaseNoteGenerator.ts",
+      "function": "generateReleaseNotes"
+    },
+    {
+      "path": "lib/releaseops/aiRollbackNarrator.ts",
+      "function": "narrateRollbackDecision"
+    },
+    {
+      "path": "lib/runbooks/aiRunbookRecommender.ts",
+      "function": "recommendRunbook"
+    },
+    {
+      "path": "lib/securityScanner/aiPlaybookGenerator.ts",
+      "function": "generateSecurityPlaybook"
+    },
+    {
+      "path": "lib/securityScanner/aiRiskClassifier.ts",
+      "function": "classifyRisk"
+    }
+  ]
+}

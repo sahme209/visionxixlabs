@@ -1,0 +1,8 @@
+{
+  "sourceStage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-security-containment-build-201f5e77-emidm655/stage",
+  "scriptSha256": "15e24fac3176f82c620a6acdc9af61041ca5bf831d95506e985a65bee6e9b228",
+  "targetsSha256": "14b9e45914b4cbd60bb0a19851ceb92f912e7a22f03caa0b686f723154f422ed",
+  "targetFunctionCount": 33,
+  "targetSourceFileCount": 32,
+  "scope": "new immediate declaration-resolved incoming edges only in same selected app/lib source universe; no full transitive/funding qualification"
+}

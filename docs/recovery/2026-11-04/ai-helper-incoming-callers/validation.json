@@ -1,0 +1,11 @@
+{
+  "selectedRoots": 2936,
+  "immediateEdges": 16,
+  "distinctCallerFiles": 11,
+  "representedHelperTargets": 12,
+  "totalHelperTargets": 33,
+  "targetsWithNoSelectedEdges": 21,
+  "allReturnedCallerAndDeclarationHashesMatchCurrentSource": true,
+  "scope": "current returned direct bytes only; old201stage program and dependencies; no semantic/ownership/runtime/financial coverage qualification",
+  "all32TargetSourceFilesMatchCurrentSourceAndStage": true
+}

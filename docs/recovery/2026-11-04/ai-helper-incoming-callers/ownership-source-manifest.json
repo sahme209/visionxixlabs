@@ -1,0 +1,77 @@
+{
+  "scope": "inspected direct source files only; not complete process/caller closure",
+  "files": [
+    {
+      "path": "app/api/agents/run/route.ts",
+      "sha256": "a9320198db4ce8a5f272549309a94236f0502016eebd347b8d98b23039742a36"
+    },
+    {
+      "path": "app/api/cloud-operator/chat/route.ts",
+      "sha256": "b7492b291bfb7fa5d686701b92065b280becb7e2254de0a807c7f3ea60b33b19"
+    },
+    {
+      "path": "app/api/cloud-operator/strategic-brief/route.ts",
+      "sha256": "f8e9b6c640af9b90f1eee5f02879d5623e846d361a564fc20dc13453e63897b7"
+    },
+    {
+      "path": "app/api/cloud-studio/trigger/route.ts",
+      "sha256": "88ec5dd48c2773dad4bc0bc0dd7526ebf29d962e07f9fb8a92acb1e1ccaac428"
+    },
+    {
+      "path": "app/api/admin/growth/drafts/route.ts",
+      "sha256": "ffe050619f4f219721b54e5cf8384f8cac4dd87ac8ae73a5013acbd7881dd999"
+    },
+    {
+      "path": "app/admin/growth/content/page.tsx",
+      "sha256": "59b3304ee05cf1d8591777da637b6540808fabf4421c64a89a018ad589b9ae1b"
+    },
+    {
+      "path": "app/admin/layout.tsx",
+      "sha256": "36e94ef92a5f29e819725eb4bf1ae99deb46d4b0188b2d364f2894567f91b668"
+    },
+    {
+      "path": "app/api/cron/linkedin-daily-drafts/route.ts",
+      "sha256": "c9c123b46dac1cc770a7ad7c2c79b42f68926b2ace597036aad110a45f8d16ff"
+    },
+    {
+      "path": "lib/cloudOperator/triggerCore.ts",
+      "sha256": "e3a002b7e4ed32b438a505f6cbf56a94ceff2500be8506809e16a8dce15e54a2"
+    },
+    {
+      "path": "lib/cloudOperator/updateEnvironmentAfterDiscovery.ts",
+      "sha256": "4f03d04f210bfed25b4483175ec9d6be146498943672fe1acaa6c395cbb01433"
+    },
+    {
+      "path": "lib/multicloud/architectureAnalyzer.ts",
+      "sha256": "c9ddbd937cd36ec9a9b59b31d8945bb0e0a8295b5e956f7ef600a78d4dd44ce1"
+    },
+    {
+      "path": "lib/websiteStarter/engine.ts",
+      "sha256": "616c4f31c485e147c95696627315483b8850d83202d4f4e0662e15dc90e413a2"
+    },
+    {
+      "path": "lib/axiom/environmentSummaryGenerator.ts",
+      "sha256": "614ed8df394d09008ed35ec71a954d74c92a5152350db17c72435ce5f4f57452"
+    },
+    {
+      "path": "lib/agents/contactResolutionAgent.ts",
+      "sha256": "b8b5fa50aaadb9d708b088c84cde143880a19f3216472a06305ec91ae9dd785c"
+    },
+    {
+      "path": "lib/agents/axiomAssistantAgent.ts",
+      "sha256": "200d9f4e8f37c2949c0ae0f4fe0f334e1b86119cefb19c6609f3650ac5997c2b"
+    },
+    {
+      "path": "lib/axiom/strategicBrief.ts",
+      "sha256": "ec517c494881c7847c44be64af4caa846b9a6aa1c41271a8174fc9bbc94c3010"
+    },
+    {
+      "path": "lib/cloudStudio/generate.ts",
+      "sha256": "637e00dd1adaa0d3ecb0555f877c9c0f3bd45b1c460b331bb870d5e3df11b20f"
+    },
+    {
+      "path": "lib/async/engineRunner.ts",
+      "sha256": "053709b12842582d410440267f6fc4b07ec761fb1318d236fec3fe7736cd880a"
+    }
+  ]
+}

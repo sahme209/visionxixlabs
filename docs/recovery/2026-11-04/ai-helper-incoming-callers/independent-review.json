@@ -1,0 +1,12 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "no material findings",
+  "scope": "prepared new declaration query, source route-family audit and final reports/results",
+  "actualResults": "16edges/11callerfiles/12of33targets;21withoutselectededge, notdeadcode",
+  "limits": [
+    "fullprogram/dependencycontext201",
+    "current direct hashes separately verified",
+    "no semantic/financial/runtime acceptance",
+    "no execution by reviewer"
+  ]
+}

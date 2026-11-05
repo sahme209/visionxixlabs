@@ -1,0 +1,134 @@
+[
+  {
+    "path": "lib/agents/axiomAssistantAgent.ts",
+    "function": "runAxiomAssistantAgent"
+  },
+  {
+    "path": "lib/agents/contactResolutionAgent.ts",
+    "function": "runContactResolutionAgent"
+  },
+  {
+    "path": "lib/ai/aiExplainer.ts",
+    "function": "explainSubject"
+  },
+  {
+    "path": "lib/ai/directProviderCall.ts",
+    "function": "callProvider"
+  },
+  {
+    "path": "lib/ai/provider.ts",
+    "function": "generateCompletion"
+  },
+  {
+    "path": "lib/aiWebsiteStarter.ts",
+    "function": "generateAIStarterPackage"
+  },
+  {
+    "path": "lib/aiWebsiteStarter.ts",
+    "function": "generateAIStarterPackageWithChanges"
+  },
+  {
+    "path": "lib/approvals/aiApprovalPacketNarrator.ts",
+    "function": "narrateApprovalPacket"
+  },
+  {
+    "path": "lib/automation/playbooks/costIdleResources.ts",
+    "function": "planCostIdleResources"
+  },
+  {
+    "path": "lib/autonomy/aiRationaleNarrator.ts",
+    "function": "narrateRationale"
+  },
+  {
+    "path": "lib/axiom/environmentSummaryGenerator.ts",
+    "function": "generateEnvironmentSummary"
+  },
+  {
+    "path": "lib/axiom/strategicBrief.ts",
+    "function": "generateStrategicBrief"
+  },
+  {
+    "path": "lib/cicd/aiCodeReviewPrioritizer.ts",
+    "function": "prioritizeReviewFindings"
+  },
+  {
+    "path": "lib/cicd/aiPrDescriptionWriter.ts",
+    "function": "writePrDescription"
+  },
+  {
+    "path": "lib/cloud/aiResourceTagger.ts",
+    "function": "suggestResourceTags"
+  },
+  {
+    "path": "lib/cloudOperator/generate.ts",
+    "function": "generateOperatorEngineOutput"
+  },
+  {
+    "path": "lib/cloudStudio/generate.ts",
+    "function": "generateCloudStudioOutput"
+  },
+  {
+    "path": "lib/flags/aiFeatureFlagAnalyst.ts",
+    "function": "analyzeFeatureFlags"
+  },
+  {
+    "path": "lib/growth/contentPlanner.ts",
+    "function": "planContent"
+  },
+  {
+    "path": "lib/growth/hallucinationCheck.ts",
+    "function": "checkHallucination"
+  },
+  {
+    "path": "lib/help/aiComplianceQa.ts",
+    "function": "answerComplianceQuestion"
+  },
+  {
+    "path": "lib/help/aiHelpReranker.ts",
+    "function": "rerankHelpCandidates"
+  },
+  {
+    "path": "lib/incidents/aiPostmortemDrafter.ts",
+    "function": "draftPostmortem"
+  },
+  {
+    "path": "lib/incidents/aiRootCauseSuggester.ts",
+    "function": "suggestRootCauses"
+  },
+  {
+    "path": "lib/insights/aiNextBestActionAdvisor.ts",
+    "function": "adviseNextActions"
+  },
+  {
+    "path": "lib/leads/aiWebsiteStarter.ts",
+    "function": "generateWebsiteStarterPackage"
+  },
+  {
+    "path": "lib/multicloud/architectureAnalyzer.ts",
+    "function": "generateAIRecommendation"
+  },
+  {
+    "path": "lib/notifications/aiIncidentSummarizer.ts",
+    "function": "summarizeIncident"
+  },
+  {
+    "path": "lib/releaseops/aiReleaseNoteGenerator.ts",
+    "function": "generateReleaseNotes"
+  },
+  {
+    "path": "lib/releaseops/aiRollbackNarrator.ts",
+    "function": "narrateRollbackDecision"
+  },
+  {
+    "path": "lib/runbooks/aiRunbookRecommender.ts",
+    "function": "recommendRunbook"
+  },
+  {
+    "path": "lib/securityScanner/aiPlaybookGenerator.ts",
+    "function": "generateSecurityPlaybook"
+  },
+  {
+    "path": "lib/securityScanner/aiRiskClassifier.ts",
+    "function": "classifyRisk"
+  }
+]

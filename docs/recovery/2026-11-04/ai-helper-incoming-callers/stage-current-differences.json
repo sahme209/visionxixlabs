@@ -1,0 +1,18 @@
+{
+  "stageRevision": "201f5e77",
+  "currentRevision": "78bd0176",
+  "selectedFilesCompared": 2936,
+  "differences": [
+    {
+      "path": "app/dashboard/ai-settings/page.tsx",
+      "stageSha256": "48069aeec4d53b1c46fe343ee5dc98d9b8fbabf0c9bcbc28988dbe6f4f85d1d7",
+      "currentSha256": "76da760c36bc4e98957591225241995c9800271b88a473768528b9201156f52d"
+    },
+    {
+      "path": "lib/releaseops/instrumentedAiFetcher.ts",
+      "stageSha256": "d158d05b7c988470ba3f34fe43a84d2fb74255ab88bed95c2b4cdcbdcbe57bcb",
+      "currentSha256": "ae256805c2196f74be02cf13f67502c9e2b206085a40691e1cee452320bdb544"
+    }
+  ],
+  "limits": "stage analysis is not current whole-source analysis; current returned callers/declarations require separate hash comparison"
+}
