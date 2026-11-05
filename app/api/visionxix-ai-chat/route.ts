@@ -6,6 +6,15 @@ import { checkRateLimit } from "@/lib/rateLimit";
 
 export const runtime = "nodejs";
 
+class PublicAssistantAdmissionUnavailableError extends Error {}
+
+// Anonymous traffic has no verified usage owner, allowance or admission.
+// Do not replace this with a caller identity, environment switch or guessed
+// tenant. Restoring funded public assistance requires its reviewed policy.
+function requirePublicAssistantAdmission(): void {
+  throw new PublicAssistantAdmissionUnavailableError();
+}
+
 function buildSystemPrompt(): string {
   const knowledge = getVisionXIXKnowledgeContext();
   return `You are the Vision XIX Labs Site Assistant — a knowledgeable cloud & AI engineer representing Vision XIX Labs.
@@ -43,6 +52,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     );
   }
   try {
+    requirePublicAssistantAdmission();
     if ((!process.env.AI_GATEWAY_API_KEY?.trim() && !process.env.VERCEL_OIDC_TOKEN?.trim()) || !process.env.AI_GATEWAY_MODEL?.trim()) {
       console.error("[VisionXIX AI Chat] Vercel AI Gateway is not configured.");
       return NextResponse.json(
@@ -82,6 +92,12 @@ export async function POST(req: NextRequest): Promise<Response> {
 
     return NextResponse.json({ message: text });
   } catch (e) {
+    if (e instanceof PublicAssistantAdmissionUnavailableError) {
+      return NextResponse.json({
+        error: "Public AI assistance is unavailable while its usage allowance is unverified. Browse the documentation for help.",
+        code: "ai.public_admission_unavailable",
+      }, { status: 503 });
+    }
     const err = e as Error & { status?: number; code?: string };
     console.error("[VisionXIX AI Chat]", err?.message ?? String(e));
 

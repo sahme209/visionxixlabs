@@ -1,0 +1,14 @@
+{
+  "userAnswer": "Approve local containment and tests",
+  "questionId": "call_YY88vwwz4mikULi3sctYdAcW",
+  "baseRevision": "640cb19c2925b826df69a20788e041d1e453fd0c",
+  "scope": "route-only local containment and isolated tests",
+  "excluded": [
+    "deployment",
+    "real AI/provider/customer call",
+    "pricing/identity/funding authority",
+    "DB/schema/flags",
+    "credentials/grants",
+    "spending"
+  ]
+}

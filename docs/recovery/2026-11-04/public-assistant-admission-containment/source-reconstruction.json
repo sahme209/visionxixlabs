@@ -1,0 +1,6 @@
+{
+  "path": "app/api/visionxix-ai-chat/route.ts",
+  "sha256": "3d2af75e1c28481926937feed44f7c9c105b7fc6a7cbe451407d7905f1194d21",
+  "wholePriorSourceRestoredByRemovingOnlyPrivateGuardDefinitionInvocationAndTypedRefusalBranch": true,
+  "canonicalAdmittedRouteUnchanged": true
+}
