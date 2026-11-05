@@ -1,0 +1,41 @@
+{
+  "qualification": "direct files only, not complete executable closure",
+  "files": [
+    {
+      "path": "app/api/ai/generate/route.ts",
+      "sha256": "030f73f18e9f945a4bd84172aa1a9cefe3970119703ee7955bbcc40d7293cc55"
+    },
+    {
+      "path": "app/api/ai/generate/__tests__/installedSdkComposition.test.ts",
+      "sha256": "2f2f52b7919493df0d08c4f072192c81c82b41aea1120f2133af40fd72cc6562"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "caa33541753d3629424e7bb5302f634ffa89eb2186c9e1d6581c29b8eeaf2ceb"
+    },
+    {
+      "path": "lib/ai/workspaceProviderPolicy.ts",
+      "sha256": "82760fee3ab68a628e1c84e32b52820c3266908955a35662bec7bb92dc8c2cc3"
+    },
+    {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "sha256": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "0fa0c2c83968ce333bd1ebedff09ed05d487ad9f8da522ee5d9b9d6d93534d79"
+    },
+    {
+      "path": "lib/billing/recordAIUsageEvent.ts",
+      "sha256": "a70f6c3969a90a0af967f6e991495799bd4dbba0562740d1d53a9edb6b12549a"
+    },
+    {
+      "path": "node_modules/ai/dist/index.js",
+      "sha256": "f87a295be79e47b07fb80001524ec6eb5a06dbc492a017d59a5cb104a5e94d3e"
+    },
+    {
+      "path": "node_modules/@ai-sdk/gateway/dist/index.js",
+      "sha256": "f159a5c36adbd879c03db1969aac513edcd61d052fc8e02755ab6ddafd62c2d8"
+    }
+  ]
+}

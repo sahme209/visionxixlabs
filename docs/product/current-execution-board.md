@@ -280,3 +280,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### AI settings provider-label repair — local only
 ~~Current Gateway/xAI labels and accessible switch names repaired~~ ([evidence](../recovery/2026-11-04/ai-settings-provider-labels/README.md)): renderedRED2/11existing controls→GREEN13, scopedtypes, exactwholefile reconstruction and independent review pass. Canonical type-only provider union now makes the label map exhaustive. No handler/auth/health/inference change; pending health redesign remains separate. No browser/native/build/deployment acceptance. All21parents and existing previews remain preserved.
+
+
+### Generic AI installed-SDK request composition — local validation
+~~Actual generic handler/admission/installed SDK/usage producer joined in five new synthetic integration cases~~ ([evidence](../recovery/2026-11-04/generic-ai-installed-sdk-composition/README.md)): trusted attribution, reserve/claim/transport/write/link ordering, no retry/release on network or usage failure, reusedhold/missingkey refusal. Initial test-only400vs422 error retained; corrected5PASS and scopedtypesPASS. External auth/credit/reservation/DB/fetch remain synthetic, not real-store financial/concurrency/provider qualification. No runtime change/deploy/paid call; pending A2 preparation and health design decisions unchanged. All21parents open.

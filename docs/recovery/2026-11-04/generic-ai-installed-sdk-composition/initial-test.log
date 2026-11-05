@@ -1,0 +1,37 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ app/api/ai/generate/__tests__/installedSdkComposition.test.ts (5 tests | 1 failed) 15ms
+   ✓ joins actual route/admission/installed SDK/usage code with trusted attribution and ordered one-attempt dispatch 10ms
+   ✓ does not retry the installed SDK transport or release a claimed hold on a network failure 1ms
+   ✓ retains claimed uncertainty if the actual usage producer cannot persist the returned envelope 1ms
+   ✓ refuses a reused reservation before the real manager/SDK transport 0ms
+   × refuses a missing request key before any reservation or SDK transport 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/api/ai/generate/__tests__/installedSdkComposition.test.ts > refuses a missing request key before any reservation or SDK transport
+AssertionError: expected 400 to be 422 // Object.is equality
+
+- Expected
++ Received
+
+- 422
++ 400
+
+ ❯ app/api/ai/generate/__tests__/installedSdkComposition.test.ts:81:27
+     79| it('refuses a missing request key before any reservation or SDK transp…
+     80|   const response = await POST(request(''));
+     81|   expect(response.status).toBe(422); expect((await response.json()).er…
+       |                           ^
+     82|   expect(p.reserve).not.toHaveBeenCalled(); expect(p.fetcher).not.toHa…
+     83| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  04:09:58
+   Duration  311ms (transform 114ms, setup 0ms, import 219ms, tests 15ms, environment 0ms)
+

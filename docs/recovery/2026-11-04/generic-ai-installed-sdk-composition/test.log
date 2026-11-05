@@ -1,0 +1,10 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ app/api/ai/generate/__tests__/installedSdkComposition.test.ts (5 tests) 13ms
+
+ Test Files  1 passed (1)
+      Tests  5 passed (5)
+   Start at  04:10:15
+   Duration  289ms (transform 116ms, setup 0ms, import 198ms, tests 13ms, environment 0ms)
+

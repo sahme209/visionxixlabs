@@ -1,0 +1,1 @@
+(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/generic-ai-sdk-ii4ilymf") (literal "/dev/null"))
