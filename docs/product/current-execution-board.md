@@ -208,3 +208,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November4 current local repair preview packaged and signed
 ~~Separate475preview package/signature/archive verified~~ ([evidence](../recovery/2026-11-04/desktop-connection-repairs-package/README.md)): exactexistingdeveloperleaf/runtime/strictdeep/team-ID checks, fourfilearchive CRC/hashes; original983unchanged. Newapp NOTLAUNCHED; saved-draft/oldpreviewclosure and actualnative/sessionacceptance pending. Same sharedidentity, separateReviewer preserved. No notarization/publicinstaller/deploy/provider/DB/CI/spend action or fullGovernance completion.
+
+### November4 signed475 native handoff accepted — bounded
+~~Exactnew475app launched after user saved/quit oldpreview; savedworkspaceaccess/Home restored~~ ([native evidence](../recovery/2026-11-04/desktop-connection-repairs-package/native-handoff-observation.json)). Runningpath/signeddiskhash match; screenshot emittedchatonly/no credentialprompt. SameMac startup only, not cleaninstall/providerhealth/nativefaultinjection/Governance/publicinstaller. Reviewer untouched; preserve current475session.

@@ -1,0 +1,28 @@
+{
+  "userReady": "explicit saved/quit confirmation for signed475handoff",
+  "oldPreviewClosed": "CUA inventory confirmed sameidentifier previews notrunning before launch",
+  "reviewer": "inventory notrunning; untouched",
+  "launchedExactApp": "/Users/samirahmed/Applications/Axiom Local Builds/47563280/Axiom Agent Local Preview.app",
+  "actualProcess": {
+    "pid": 21169,
+    "executable": "/Users/samirahmed/Applications/Axiom Local Builds/47563280/Axiom Agent Local Preview.app/Contents/MacOS/axiom-desktop"
+  },
+  "diskSignedBinaryHashMatchesManifest": true,
+  "startupObserved": [
+    "VERIFYING SAVED SIGN-IN",
+    "Home Axiom welcome",
+    "Workspace connected",
+    "Workspace access active"
+  ],
+  "workspace": "ws_a7044aa14eb24174",
+  "namedUserIdentityInspected": false,
+  "unexpectedCredentialOrPermissionPromptObserved": false,
+  "screenshot": "emitted directly in chat, no local screenshot artifact",
+  "noFurtherUIActions": true,
+  "limits": [
+    "sameMac savedsession only, not cleaninstall",
+    "no provider/AI/action/independentreview execution",
+    "no native credentialtransition fault injection",
+    "no notarization/Gatekeeper/fullaccessibility/Governance qualification"
+  ]
+}

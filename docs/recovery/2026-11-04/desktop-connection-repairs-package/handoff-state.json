@@ -1,10 +1,10 @@
 {
-  "currentApp": "983 local preview",
-  "actualCurrentView": "Documentation",
+  "currentApp": "475 local preview",
+  "actualCurrentView": "Home",
   "workspaceAccess": "active",
-  "new475AppLaunched": false,
-  "oldPreviewQuit": false,
-  "draftsSaved": "not established",
+  "new475AppLaunched": true,
+  "oldPreviewQuit": "user completed and inventory confirmed",
+  "draftsSaved": "user confirmed before handoff",
   "separateReviewerPreserved": true,
-  "next": "save drafts and close old preview; do not launch duplicate shared identity"
+  "next": "preserve current user session; native current-source journeys remain separately open"
 }
