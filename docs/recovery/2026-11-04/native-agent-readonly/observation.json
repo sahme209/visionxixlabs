@@ -1,0 +1,27 @@
+{
+  "app": "current signed983 preview",
+  "navigation": "Documentation -> Agent -> Documentation; final heading confirmed",
+  "observed": [
+    "saved conversation restored with historical messages",
+    "empty request field and disabled Send",
+    "Enter/Shift+Enter instruction visible",
+    "Inspect selected; Engineer and DeepOps available with explanatory AX help",
+    "model control initially Checking workspace models, later enabled Claude Sonnet 5.5",
+    "saved transcript includes tool-policy refusal and insufficient-credit hold guidance"
+  ],
+  "notEstablished": [
+    "current integration or financial state: transcript is historical",
+    "successful inference or execution",
+    "keyboard submission/IME/accessibility",
+    "editor or terminal behavior",
+    "all-theme or responsive acceptance"
+  ],
+  "noActions": [
+    "no request text entered",
+    "no Send or model/mode change",
+    "no file/terminal/review/approval control used",
+    "no explicit provider refresh or discovery"
+  ],
+  "screenshot": "CUA emitted in chat only; no local image file retained",
+  "preserved": "existing saved conversation, empty composer, session; Documentation view restored"
+}

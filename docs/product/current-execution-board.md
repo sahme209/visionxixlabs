@@ -181,3 +181,6 @@ Existing native Documentation page inspected through AX and screenshot without i
 
 ### November4 current support metadata refusal
 ~~Actual metadata gate refuses all29current draft revisions~~ under kernel network/all-write denial; two synthetic function controls pass and per-article reread hashes unchanged. [Evidence](../recovery/2026-11-04/support-current-metadata-gate/README.md). This is not the failed expanded byte-pipeline rerun, extraction/citation/evaluation/customer acceptance, or B5 completion. Existing reader restrictions and pending runner/Governance decisions unchanged.
+
+### November4 current Agent native rendering
+~~Current signed983 Agent saved conversation/composer/mode guidance observed~~; model loading settled to enabled named model, empty Send disabled and keyboard instruction visible. [Evidence](../recovery/2026-11-04/native-agent-readonly/README.md). No request, mode/model/file/terminal/approval action; historical refusal messages are not current policy/balance proof. Documentation restored. Execution/IME/AT/fullA4 and Governance remain open.
