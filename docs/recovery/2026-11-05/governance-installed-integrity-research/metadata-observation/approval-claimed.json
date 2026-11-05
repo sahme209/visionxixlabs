@@ -1,0 +1,8 @@
+{
+  "approval": "call_lNv5JdcMlQQREsVZlHHL6C2g",
+  "decision": "Approve two exact metadata reads",
+  "source_commit": "281ff9a9d6088b5a0e4d77f30b2ecc046deb92a3",
+  "batch_claimed_at": "2026-11-05T15:06:48.714305+00:00",
+  "maximum_displays": 2,
+  "retries": 0
+}

@@ -1,0 +1,30 @@
+{
+  "scope": "Static display only; not signature validation or running enforcement",
+  "observations": [
+    {
+      "role": "maintenance",
+      "displayed_code_directory_flags": "0x20002",
+      "displayed_flag_names": "adhoc,linker-signed",
+      "runtime_flag_observed": false,
+      "displayed_signature": "adhoc",
+      "displayed_team_identifier": "not set",
+      "entitlements_document_emitted": false,
+      "signature_validation_performed": false,
+      "target_loaded_or_executed": false
+    },
+    {
+      "role": "custodian-broker",
+      "displayed_code_directory_flags": "0x20002",
+      "displayed_flag_names": "adhoc,linker-signed",
+      "runtime_flag_observed": false,
+      "displayed_signature": "adhoc",
+      "displayed_team_identifier": "not set",
+      "entitlements_document_emitted": false,
+      "signature_validation_performed": false,
+      "target_loaded_or_executed": false
+    }
+  ],
+  "proposed_installed_profile_satisfied": false,
+  "qualification_conferred": false,
+  "authority_consumed": true
+}

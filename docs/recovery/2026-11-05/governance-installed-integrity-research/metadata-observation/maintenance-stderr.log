@@ -1,0 +1,24 @@
+Executable=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/maintenance-never-loaded.bundle
+Identifier=maintenance-never-loaded.bundle
+Format=Mach-O thin (arm64)
+CodeDirectory v=20400 size=696 flags=0x20002(adhoc,linker-signed) hashes=18+0 location=embedded
+VersionPlatform=1
+VersionMin=1705216
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=9ed3b2841b61a4653e1c754efd7d7a51b8060cd1
+CandidateCDHashFull sha256=9ed3b2841b61a4653e1c754efd7d7a51b8060cd10ea70155d85d5aac24f71871
+Hash choices=sha256
+CMSDigest=9ed3b2841b61a4653e1c754efd7d7a51b8060cd10ea70155d85d5aac24f71871
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=19292
+Executable Segment flags=0x0
+Page size=4096
+CDHash=9ed3b2841b61a4653e1c754efd7d7a51b8060cd1
+Signature=adhoc
+Info.plist=not bound
+TeamIdentifier=not set
+Sealed Resources=none
+Internal requirements=none
+warning: Specifying ':' in the path is deprecated and will not work in a future release

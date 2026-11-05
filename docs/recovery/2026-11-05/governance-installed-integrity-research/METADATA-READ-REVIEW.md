@@ -1,3 +1,7 @@
+# Historical review — the two displays were subsequently authorized and consumed
+
+Current result: [observations and limits](metadata-observation/README.md). The original request below is preserved; its unapproved status is historical and cannot authorize another invocation.
+
 # Two exact display-only artifact reads — requires approval
 
 The four public Apple documentation reads do not authorize Security-framework-backed local inspection. This asks a new, concrete read-only exception, **not** signing, signature validation, a native experiment or an installation.

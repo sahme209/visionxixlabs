@@ -2,7 +2,7 @@
 
 The public-read approval was granted and consumed. [Findings](FINDINGS.md), [proposed custodian profile](CUSTODIAN-PROFILE-PROPOSAL.md) and [role/evidence plan](ROLE-EVIDENCE-PLAN.md) now distinguish platform guarantees from unresolved exact dependency/process enforcement. No implementation, signing or operational qualification followed from reading documentation.
 
-**Next concrete decision:** the independently reviewed [two display-only metadata reads](METADATA-READ-REVIEW.md) require a new scoped approval, because public-text permission excluded local Security-backed operations. Current native source remains5d276967 and both integration images remain0600/unexecuted. [Independent review](REVIEW.md). All21masterparents remain open.
+**Subsequent authorized observation:** the [two display-only metadata reads](metadata-observation/README.md) completed once under their separate approval. Both isolated images show ad-hoc/linker signatures without the intended Runtime flag; neither qualifies the proposed installed profile. Actual immutable signed-role preparation and pre-main enforcement remain required. Current native source remains5d276967 and both integration images remain0600/unexecuted. [Independent review](REVIEW.md). All21masterparents remain open.
 
 The original scope below is preserved as history, not a statement that those approved reads are still pending.
 

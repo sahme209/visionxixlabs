@@ -1,0 +1,24 @@
+Executable=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run
+Identifier=broker-never-run
+Format=Mach-O thin (arm64)
+CodeDirectory v=20400 size=841 flags=0x20002(adhoc,linker-signed) hashes=23+0 location=embedded
+VersionPlatform=1
+VersionMin=1705216
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=dadcbb18b267b5511549c9dc246ae18af8865a93
+CandidateCDHashFull sha256=dadcbb18b267b5511549c9dc246ae18af8865a9358b8b1b3d5cd1a9dfb1d2f0d
+Hash choices=sha256
+CMSDigest=dadcbb18b267b5511549c9dc246ae18af8865a9358b8b1b3d5cd1a9dfb1d2f0d
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=36012
+Executable Segment flags=0x1
+Page size=4096
+CDHash=dadcbb18b267b5511549c9dc246ae18af8865a93
+Signature=adhoc
+Info.plist=not bound
+TeamIdentifier=not set
+Sealed Resources=none
+Internal requirements=none
+warning: Specifying ':' in the path is deprecated and will not work in a future release

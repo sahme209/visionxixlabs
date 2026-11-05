@@ -1,0 +1,94 @@
+{
+  "approval": {
+    "approval": "call_lNv5JdcMlQQREsVZlHHL6C2g",
+    "decision": "Approve two exact metadata reads",
+    "source_commit": "281ff9a9d6088b5a0e4d77f30b2ecc046deb92a3",
+    "batch_claimed_at": "2026-11-05T15:06:48.714305+00:00",
+    "maximum_displays": 2,
+    "retries": 0
+  },
+  "results": [
+    {
+      "role": "maintenance",
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--entitlements",
+        ":-",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/maintenance-never-loaded.bundle"
+      ],
+      "before": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/maintenance-never-loaded.bundle",
+        "uid": 501,
+        "dev": 16777232,
+        "ino": 16646384,
+        "mode": "0o600",
+        "size": 73568,
+        "mtime_ns": 1793888859849717381,
+        "ctime_ns": 1793888859852396238,
+        "sha256": "54b21cbd41c533d8ee986d828e9a805f50f140f118dbd9f7b9b5430396dbd86b"
+      },
+      "after": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/maintenance-never-loaded.bundle",
+        "uid": 501,
+        "dev": 16777232,
+        "ino": 16646384,
+        "mode": "0o600",
+        "size": 73568,
+        "mtime_ns": 1793888859849717381,
+        "ctime_ns": 1793888859852396238,
+        "sha256": "54b21cbd41c533d8ee986d828e9a805f50f140f118dbd9f7b9b5430396dbd86b"
+      },
+      "exit_code": 0,
+      "state": "display-completed",
+      "elapsed_seconds": 0.010320375,
+      "stdout_bytes": 0,
+      "stderr_bytes": 1015,
+      "target_loaded_or_executed": false,
+      "signature_validation_performed": false
+    },
+    {
+      "role": "custodian-broker",
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--entitlements",
+        ":-",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run"
+      ],
+      "before": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run",
+        "uid": 501,
+        "dev": 16777232,
+        "ino": 16650613,
+        "mode": "0o600",
+        "size": 93456,
+        "mtime_ns": 1793888979068364466,
+        "ctime_ns": 1793888979071646717,
+        "sha256": "b3431a8ed92c1681bb3c148c234c4676eb4096621e767a4276effe16da434c5d"
+      },
+      "after": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run",
+        "uid": 501,
+        "dev": 16777232,
+        "ino": 16650613,
+        "mode": "0o600",
+        "size": 93456,
+        "mtime_ns": 1793888979068364466,
+        "ctime_ns": 1793888979071646717,
+        "sha256": "b3431a8ed92c1681bb3c148c234c4676eb4096621e767a4276effe16da434c5d"
+      },
+      "exit_code": 0,
+      "state": "display-completed",
+      "elapsed_seconds": 0.0064955410000000005,
+      "stdout_bytes": 0,
+      "stderr_bytes": 984,
+      "target_loaded_or_executed": false,
+      "signature_validation_performed": false
+    }
+  ],
+  "batch_consumed": true,
+  "retry_authorized": false
+}
