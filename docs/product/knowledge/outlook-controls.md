@@ -62,3 +62,7 @@ The manifest binds actual navigation/view mounts, card/panel, desktop transports
 ## November4 local calendar draft-lock supplement
 
 The original source bindings above remain historical and are not silently requalified. A later [two-field local repair](../../recovery/2026-11-04/outlook-event-draft-lock/README.md) makes calendar Start/End follow the other draft fields: they lock while saving or while its result is uncertain. Reloading without finding the original pending draft keeps them locked; confirmed readback restores editing. This is local source/component evidence only, not a shipped/native/provider acceptance or customer-approved article revision. No automatic replacement or resend is added.
+
+## November4 local-time validation supplement
+
+A later [local conversion repair](../../recovery/2026-11-04/outlook-exact-local-time/README.md) refuses nonexistent or normalized-invalid local times instead of silently shifting the draft. Valid UTC/seconds/milliseconds remain preserved. Fall-back overlaps retain the existing Date choice; no disambiguation is claimed. Original source pins remain historical. Local component evidence, including the interrupted ephemeral-config custody gap, is not shipped/native/provider or customer-editorial acceptance.

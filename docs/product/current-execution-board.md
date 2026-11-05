@@ -151,3 +151,6 @@ Current running process is the d374local preview; no new signed preview was laun
 
 ### November4 Outlook calendar draft consistency
 ~~Start/end pending-or-uncertain editing lock~~ repaired with exactly2disabled attributes; actualRED2→GREEN2, relevant compatibility3total(includesnew2), desktoptypes and independentreview pass. [Evidence](../recovery/2026-11-04/outlook-event-draft-lock/README.md). UTCpayload/oneoriginalsave/readbackholds preserved. Source only—not embedded in the currentopen916app, deployed, native or provider accepted. No permissions/approval/transport change.
+
+### November4 Outlook nonexistent local-time repair
+~~Silent spring-gap normalization refused~~: actualrenderedRED2fail/1pass→GREEN3; final19focusedtotal(16newfile+3prior), desktoptypes and independentreview pass. [Evidence and custody limitation](../recovery/2026-11-04/outlook-exact-local-time/README.md). ValidUTC/precision retained; fall-back overlap not disambiguated. Interruptedtemporarytestdir/config/profile missing; durablelogs/results retained, no reconstructed-original or rerun claim. Sourceonly/notembedded/notdeployed. NewCUAformerapp pathinvalid/noAxiomprocessnow observed; no fallback/relaunch/session claim.

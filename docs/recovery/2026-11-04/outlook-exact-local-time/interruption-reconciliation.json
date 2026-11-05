@@ -1,0 +1,10 @@
+{
+  "sourceAndTestsCommit": "98326226da3cc4805555c8c00069c3c65e720030",
+  "ephemeralTestDirectoryExists": false,
+  "completedLogsRetained": true,
+  "originalConfigAndProfileRetained": false,
+  "reconstructedOriginalEvidence": false,
+  "testsRerunAfterInterruption": false,
+  "nativeTemporaryPathResolved": false,
+  "nativeRelaunchAttempted": false
+}
