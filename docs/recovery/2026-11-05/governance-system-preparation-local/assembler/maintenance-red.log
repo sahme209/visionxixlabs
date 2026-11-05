@@ -1,0 +1,1 @@
+Assertion failed: (ax_maintenance_entry(1,argv)==69), function main, file maintenance_closed_test.c, line 6.

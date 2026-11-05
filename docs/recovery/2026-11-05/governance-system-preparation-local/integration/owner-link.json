@@ -1,0 +1,50 @@
+{
+  "argv": [
+    "/usr/bin/clang",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-deprecated-declarations",
+    "-fblocks",
+    "-mmacosx-version-min=13.0",
+    "packages/verified-issuer-runtime/native/origin_launch_owner.c",
+    "packages/verified-issuer-runtime/native/owner_launch.c",
+    "packages/verified-issuer-runtime/native/owner_resume.c",
+    "packages/verified-issuer-runtime/native/owner_privilege_drop.c",
+    "packages/verified-issuer-runtime/native/owner_journal.c",
+    "packages/verified-issuer-runtime/native/owner_journal_native.c",
+    "packages/verified-issuer-runtime/native/owner_protocol.c",
+    "packages/verified-issuer-runtime/native/system_peer_binding.c",
+    "packages/verified-issuer-runtime/native/origin_process_identity.c",
+    "packages/verified-issuer-runtime/native/protected_resource_inventory.c",
+    "-framework",
+    "Security",
+    "-framework",
+    "CoreFoundation",
+    "-framework",
+    "Foundation",
+    "-o",
+    "work/system-preparation-source/owner-never-run"
+  ],
+  "exit": 0,
+  "source_hashes": {
+    "origin_launch_owner.c": "5d3257372c9c1237a639893661bdb4fa80821c15c0b0004317d758d3de4e6f93",
+    "owner_launch.c": "660397d14d8f53b8b9587c83cb5ab23aed50a9905601a86a13ae931640641119",
+    "owner_resume.c": "777c8e47116a62c0d56292f1829ac4e84ebaa08380e8f7e35304e424abdc42f8",
+    "owner_privilege_drop.c": "fdc076ad22152c2bb4cc80428704903304ba2f78bdb2da564f7bdc04462739c2",
+    "owner_journal.c": "ab8055bf5e9023bd61c4b29f0f41c1a917d354ba838d21eb532c5a383d3a32c6",
+    "owner_journal_native.c": "5b7d8d85be2eccb138902c42e092bccd38a413e863adf14f31a3db0b8e227e12",
+    "owner_protocol.c": "3ec882e1742b3e3d046770babd60aab4c127117779980546227d471cfe44ed5f",
+    "system_peer_binding.c": "8da6ff4a7f11d2a815527a33c09b84487f25d823cfba01f5b9fdfa5eabe1b918",
+    "origin_process_identity.c": "004193879c5af000873199fef26336457e7251da2b21611d91d7af8dec4ea78a",
+    "protected_resource_inventory.c": "b257135d421cf1ba69fb33ee347970dbdd978d1e43c56c3197018e969614ee4d"
+  },
+  "operational_binary_executed": false,
+  "artifact": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/system-preparation-source/owner-never-run",
+    "sha256": "d25d8c3ae03e4ab19dcd418868dd576f65dd3f5ac3747337f5d70da0412db0a3",
+    "size": 58528,
+    "mode": "0o600"
+  }
+}

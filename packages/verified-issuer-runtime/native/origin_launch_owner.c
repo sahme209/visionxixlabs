@@ -6,6 +6,8 @@
 #include "owner_journal_native.h"
 #include "owner_protocol.h"
 #include "owner_privilege_drop.h"
+#include "owner_resume.h"
+#include "system_peer_binding.h"
 #include "origin_process_identity.h"
 #include <xpc/xpc.h>
 #include <Security/Security.h>
@@ -28,6 +30,9 @@ typedef struct {xpc_connection_t connection;int ended;} OwnerPeer;
 static AxOwnerLaunch launch;
 static AxOwnerSlot slot;
 static dispatch_queue_t queue;
+static xpc_connection_t listener;
+static AxSystemPeer broker_peer;
+static AxOwnerResume resume_state;
 static uint64_t lifetime;
 static unsigned peers;
 static int ending;
@@ -51,11 +56,12 @@ static int protected_file(const char*path,int directory){
 }
 static int fixed_environment(void*context){
  (void)context;
- if(!AX_OWNER_OPERATIONAL||getuid()!=0||geteuid()!=0||!AX_OWNER_FIXED_UID||!AX_OWNER_FIXED_GID||!AX_OWNER_REQUIREMENT[0]||!AX_OWNER_BROKER_REQUIREMENT[0]||!AX_OWNER_MAX_LIFETIME_NS||!SecCodeCreateWithXPCMessage)return 0;
+ if(!AX_OWNER_OPERATIONAL||getuid()!=0||geteuid()!=0||!AX_OWNER_FIXED_UID||!AX_OWNER_FIXED_GID||AX_OWNER_PROFILE!=AX_OWNER_PROFILE_SYSTEM||!AX_OWNER_MAX_LIFETIME_NS||!SecCodeCreateWithXPCMessage)return 0;
  char running[PATH_MAX],canonical[PATH_MAX];uint32_t n=sizeof(running);struct stat own;
  if(_NSGetExecutablePath(running,&n)||!realpath(running,canonical)||strcmp(canonical,AX_OWNER_PATH)||!protected_file(AX_OWNER_PATH,0)||!protected_file(AX_SYNTH_BROKER,0)||!protected_file(AX_SYNTH_ROOT,1)||stat(AX_OWNER_PATH,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&fixed_environment,&own))return 0;
  /* No inherited capabilities beyond standard descriptors. Fail instead of
   * guessing which inherited writable handles may safely reach the child. */
+ for(int fd=0;fd<3;fd++)if(fcntl(fd,F_GETFD)<0)return 0;
  struct rlimit limits;if(getrlimit(RLIMIT_NOFILE,&limits)||limits.rlim_cur>65536)return 0;
  for(int fd=3;fd<(int)limits.rlim_cur;fd++){errno=0;if(fcntl(fd,F_GETFD)>=0||errno!=EBADF)return 0;}
  thread_act_array_t threads=NULL;mach_msg_type_number_t count=0;
@@ -66,7 +72,11 @@ static int fixed_environment(void*context){
 }
 static int clear_groups(void*p){(void)p;return setgroups(0,NULL)==0;}
 static int prepare_io(void*p){
- (void)p;int fd=open("/dev/null",O_RDWR|O_CLOEXEC|O_NOFOLLOW);if(fd<0)return 0;
+ AxOwnerNativeJournal*n=p;
+ if(!n||n->fd<3||n->dirfd<3||n->fd==n->dirfd)return 0;
+ /* Close inherited root-write capabilities BEFORE non-root stop/exec. */
+ if(close(n->fd)||close(n->dirfd))return 0;n->fd=n->dirfd=-1;
+ int fd=open("/dev/null",O_RDWR|O_CLOEXEC|O_NOFOLLOW);if(fd<0)return 0;
  struct stat s;int ok=fstat(fd,&s)==0&&S_ISCHR(s.st_mode);
  for(int i=0;ok&&i<3;i++)if(dup2(fd,i)!=i||fcntl(i,F_SETFD,0))ok=0;
  if(fd>2&&close(fd))ok=0;return ok;
@@ -80,8 +90,11 @@ static pid_t spawn_fixed(void*p){
  pid_t child=fork();if(child!=0)return child;
  /* No dispatch/Security/threaded-runtime initialization has occurred in the
   * parent. Actual pre-fork/runtime safety still requires OS qualification. */
- AxOwnerDropOps drop={NULL,prepare_io,clear_groups,drop_gid,drop_uid,verify_ids};
+ AxOwnerDropOps drop={p,prepare_io,clear_groups,drop_gid,drop_uid,verify_ids};
  if(!ax_owner_drop_privileges(&drop,AX_OWNER_FIXED_UID,AX_OWNER_FIXED_GID))_exit(77);
+ /* Parent derives peer identity only AFTER fork while this child waits.
+  * An untrusted same-UID SIGCONT can cause refusal/DoS, never owner binding. */
+ if(kill(getpid(),SIGSTOP))_exit(79);
  char*argv[]={AX_SYNTH_BROKER,NULL};char*env[]={"PATH=/usr/bin:/bin","LANG=C","LC_ALL=C","TZ=UTC",NULL};
  /* Journal/parent descriptors were created CLOEXEC. No caller env/argv. */
  execve(AX_SYNTH_BROKER,argv,env);_exit(78);
@@ -105,13 +118,14 @@ static int kill_and_reap(void*p,pid_t child){
 }
 static int message_matches(xpc_object_t message){
  SecCodeRef code=NULL;SecRequirementRef req=NULL;
- CFStringRef text=CFStringCreateWithCString(NULL,AX_OWNER_BROKER_REQUIREMENT,kCFStringEncodingUTF8);if(!text)return 0;
+ const char*expected=ax_system_peer_requirement(&broker_peer);if(!expected)return 0;
+ CFStringRef text=CFStringCreateWithCString(NULL,expected,kCFStringEncodingUTF8);if(!text)return 0;
  OSStatus status=SecRequirementCreateWithString(text,kSecCSDefaultFlags,&req);CFRelease(text);if(status!=errSecSuccess||!req)return 0;
  status=SecCodeCreateWithXPCMessage(message,kSecCSDefaultFlags,&code);
  int ok=status==errSecSuccess&&code&&SecCodeCheckValidity(code,kSecCSDefaultFlags,req)==errSecSuccess;
- if(code)CFRelease(code);CFRelease(req);return ok;
+ if(code)CFRelease(code);CFRelease(req);return ok&&ax_system_peer_current(&broker_peer);
 }
-static void stop_owner(void){if(ending)return;ending=1;ax_owner_slot_revoke(&slot);ax_owner_launch_stop(&launch);_exit(launch.cleanup_unknown?79:0);}
+static void stop_owner(void){if(ending)return;ending=1;ax_owner_slot_revoke(&slot);ax_system_peer_revoke(&broker_peer);ax_owner_launch_stop(&launch);_exit(launch.cleanup_unknown?79:0);}
 static void reply(xpc_object_t message,const char*status){
  xpc_object_t r=xpc_dictionary_create_reply(message);if(!r)return;
  xpc_dictionary_set_string(r,"status",status);xpc_dictionary_set_int64(r,"child",slot.child);
@@ -135,28 +149,53 @@ static void handle(OwnerPeer*p,xpc_object_t message){
  else{ok=ax_owner_slot_live(&slot,1,alive,now,(uintptr_t)p,g,c,b,xpc_dictionary_get_uint64(message,"sequence"));status="owner_current";}
  reply(message,ok?status:"refused");if(slot.phase==AX_OWNER_REVOKED)stop_owner();
 }
-int main(int argc,char**argv){
- (void)argv;if(argc!=1||!AX_OWNER_OPERATIONAL)return 69;
- AxOwnerNativeJournal native={0};AxOwnerJournalOps journal;
- if(!ax_owner_native_journal_ops(&native,&journal))return 70;
- AxOwnerLaunchOps effects={NULL,fixed_environment,spawn_fixed,child_alive,kill_and_reap};
- uint64_t start=now_ns();if(start==UINT64_MAX||!fixed_generation()||!ax_owner_slot_reserve(&slot,start,generation))return 70;
- if(!AX_OWNER_MAX_LIFETIME_NS||start>UINT64_MAX-AX_OWNER_MAX_LIFETIME_NS)return 73;
- lifetime=start+AX_OWNER_MAX_LIFETIME_NS;
- if(!ax_owner_launch_start(&launch,&effects,&journal))return 71;
- if(!ax_owner_slot_child(&slot,launch.child,launch.journal.phase==AX_OWNER_JOURNAL_CREATED,now_ns())){ax_owner_launch_stop(&launch);return 72;}
- queue=dispatch_queue_create("axiom.synthetic.launch-owner",DISPATCH_QUEUE_SERIAL);if(!queue){ax_owner_launch_stop(&launch);return 74;}
- xpc_connection_t listener=xpc_connection_create_mach_service(AX_OWNER_SERVICE,queue,XPC_CONNECTION_MACH_SERVICE_LISTENER);
- if(!listener||xpc_connection_set_peer_code_signing_requirement(listener,AX_OWNER_BROKER_REQUIREMENT)){ax_owner_launch_stop(&launch);return 75;}
+static uint64_t resume_now(void*p){(void)p;return now_ns();}
+static int owned_stopped(void*p,pid_t child){
+ (void)p;if(child!=launch.child||!launch.active)return 0;
+ for(;;){
+  uint64_t n=now_ns();if(n==UINT64_MAX||n>=slot.deadline||n>=lifetime||!child_alive(NULL,child))return 0;
+  siginfo_t info;memset(&info,0,sizeof(info));
+  if(waitid(P_PID,(id_t)child,&info,WSTOPPED|WNOHANG|WNOWAIT))return 0;
+  if(info.si_pid==child)return info.si_code==CLD_STOPPED&&info.si_status==SIGSTOP;
+  struct timespec pause={0,1000000};if(nanosleep(&pause,NULL)&&errno!=EINTR)return 0;
+ }
+}
+static int select_peer(void*p){(void)p;return ax_system_peer_prepare(&broker_peer,AX_SYSTEM_PEER_BROKER);}
+static int peer_current(void*p){(void)p;return ax_system_peer_current(&broker_peer);}
+static int resume_child(void*p,pid_t child){(void)p;return child==launch.child&&launch.active&&child_alive(NULL,child)&&kill(child,SIGCONT)==0;}
+static int configure_listener(void*p){
+ (void)p;
+ queue=dispatch_queue_create("axiom.synthetic.launch-owner",DISPATCH_QUEUE_SERIAL);if(!queue)return 0;
+ listener=xpc_connection_create_mach_service(AX_OWNER_SERVICE,queue,XPC_CONNECTION_MACH_SERVICE_LISTENER);
+ const char*expected=ax_system_peer_requirement(&broker_peer);if(!expected||!listener||xpc_connection_set_peer_code_signing_requirement(listener,expected))return 0;
  xpc_connection_set_event_handler(listener,^(xpc_object_t peer){
   if(xpc_get_type(peer)!=XPC_TYPE_CONNECTION)return;
   if(ending||peers>=32){xpc_connection_set_event_handler(peer,^(xpc_object_t e){(void)e;});xpc_connection_activate(peer);xpc_connection_cancel(peer);return;}
   OwnerPeer*p=calloc(1,sizeof(*p));if(!p){xpc_connection_set_event_handler(peer,^(xpc_object_t e){(void)e;});xpc_connection_activate(peer);xpc_connection_cancel(peer);return;}
   p->connection=xpc_retain(peer);peers++;xpc_connection_set_context(peer,p);xpc_connection_set_finalizer_f(peer,free);
-  int configured=xpc_connection_set_peer_code_signing_requirement(peer,AX_OWNER_BROKER_REQUIREMENT)==0;
+  int configured=xpc_connection_set_peer_code_signing_requirement(peer,broker_peer.requirement)==0;
   xpc_connection_set_event_handler(peer,^(xpc_object_t event){if(p->ended)return;if(xpc_get_type(event)==XPC_TYPE_DICTIONARY){handle(p,event);return;}p->ended=1;if(peers)peers--;if(slot.peer==(uintptr_t)p)stop_owner();xpc_connection_cancel(p->connection);xpc_release(p->connection);});
   xpc_connection_activate(peer);if(!configured)xpc_connection_cancel(peer);
- });xpc_connection_activate(listener);
+ });return 1;
+
+}
+
+int main(int argc,char**argv){
+ (void)argv;if(argc!=1||!AX_OWNER_OPERATIONAL)return 69;
+ AxOwnerNativeJournal native={0};AxOwnerJournalOps journal;
+ if(!ax_owner_native_journal_ops(&native,&journal))return 70;
+ AxOwnerLaunchOps effects={&native,fixed_environment,spawn_fixed,child_alive,kill_and_reap};
+ uint64_t start=now_ns();if(start==UINT64_MAX||!fixed_generation()||!ax_owner_slot_reserve(&slot,start,generation))return 70;
+ if(!AX_OWNER_MAX_LIFETIME_NS||start>UINT64_MAX-AX_OWNER_MAX_LIFETIME_NS)return 73;
+ lifetime=start+AX_OWNER_MAX_LIFETIME_NS;
+ if(!ax_owner_launch_start(&launch,&effects,&journal))return 71;
+ if(!ax_owner_slot_child(&slot,launch.child,launch.journal.phase==AX_OWNER_JOURNAL_CREATED,now_ns())){ax_owner_launch_stop(&launch);return 72;}
+ AxOwnerResumeOps resume_ops={NULL,resume_now,owned_stopped,select_peer,configure_listener,peer_current,resume_child};
+ uint64_t resume_deadline=slot.deadline<lifetime?slot.deadline:lifetime;
+ if(!ax_owner_resume_once(&resume_state,&resume_ops,launch.child,resume_deadline)){
+  if(resume_state.effect_unknown)launch.cleanup_unknown=1;stop_owner();return 80;
+ }
+ xpc_connection_activate(listener);
  signal(SIGTERM,SIG_IGN);signal(SIGINT,SIG_IGN);
  dispatch_source_t term=dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL,SIGTERM,0,queue),interrupt=dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL,SIGINT,0,queue);
  if(!term||!interrupt)stop_owner();dispatch_source_set_event_handler(term,^{stop_owner();});dispatch_source_set_event_handler(interrupt,^{stop_owner();});dispatch_resume(term);dispatch_resume(interrupt);

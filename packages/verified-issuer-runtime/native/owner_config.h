@@ -1,6 +1,12 @@
 #ifndef AXIOM_OWNER_CONFIG_H
 #define AXIOM_OWNER_CONFIG_H
 #include "synthetic_resource_contract.h"
+#define AX_OWNER_PROFILE_UNSELECTED 0
+#define AX_OWNER_PROFILE_LEGACY 1
+#define AX_OWNER_PROFILE_SYSTEM 2
+#ifndef AX_OWNER_PROFILE
+#define AX_OWNER_PROFILE AX_OWNER_PROFILE_UNSELECTED
+#endif
 /* Closed during local source preparation. No build definition may activate it. */
 #define AX_OWNER_OPERATIONAL 0
 #define AX_OWNER_SERVICE "com.visionxixlabs.axiom.synthetic.launch-owner." AX_SYNTH_GENERATION

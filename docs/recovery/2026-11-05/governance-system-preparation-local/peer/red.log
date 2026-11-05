@@ -1,0 +1,1 @@
+Assertion failed: (ax_system_peer_prepare(&p,AX_SYSTEM_PEER_OWNER)), function main, file system_peer_binding_test.c, line 34.

@@ -1,0 +1,53 @@
+FFFF.FF
+======================================================================
+FAIL: test_actual_stage_contains_fixed_plist_source_copy_and_closed_recipes (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 24, in test_actual_stage_contains_fixed_plist_source_copy_and_closed_recipes
+    self.assertTrue((app/'Contents/Info.plist').is_file())
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_changed_node_and_symlink_source_refuse_without_stage (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 47, in test_changed_node_and_symlink_source_refuse_without_stage
+    self.node.write_bytes(b'CHANGED');self.assertRaises(s.SystemPreparationUnavailable,s.prepare_system,self.repo,self.stage,self.config);self.assertFalse(self.stage.exists())
+AssertionError: SystemPreparationUnavailable not raised by prepare_system
+
+======================================================================
+FAIL: test_current_staging_verification_detects_mutation (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 54, in test_current_staging_verification_detects_mutation
+    r=s.prepare_system(self.repo,self.stage,self.config);self.assertTrue(s.verify_preparation(self.stage))
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_existing_stage_is_immutable_and_never_cleaned (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 45, in test_existing_stage_is_immutable_and_never_cleaned
+    self.stage.mkdir(mode=0o700);(self.stage/'prior').write_bytes(b'KEEP');self.assertRaises(s.SystemPreparationUnavailable,s.prepare_system,self.repo,self.stage,self.config);self.assertEqual((self.stage/'prior').read_bytes(),b'KEEP')
+AssertionError: SystemPreparationUnavailable not raised by prepare_system
+
+======================================================================
+FAIL: test_missing_principal_refuses_before_creating_stage (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 40, in test_missing_principal_refuses_before_creating_stage
+    del self.config['principal'];self.assertRaises(s.SystemPreparationUnavailable,s.prepare_system,self.repo,self.stage,self.config);self.assertFalse(self.stage.exists())
+AssertionError: SystemPreparationUnavailable not raised by prepare_system
+
+======================================================================
+FAIL: test_root_principal_and_unknown_profile_refuse (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 43, in test_root_principal_and_unknown_profile_refuse
+    c=dict(self.config);c[field]=value;self.assertRaises(s.SystemPreparationUnavailable,s.prepare_system,self.repo,self.stage,c);self.assertFalse(self.stage.exists())
+AssertionError: SystemPreparationUnavailable not raised by prepare_system
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.011s
+
+FAILED (failures=6)

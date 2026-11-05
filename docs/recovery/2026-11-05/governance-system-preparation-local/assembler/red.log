@@ -1,0 +1,35 @@
+E.E.E..
+======================================================================
+ERROR: test_actual_stage_contains_fixed_plist_source_copy_and_closed_recipes (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 22, in test_actual_stage_contains_fixed_plist_source_copy_and_closed_recipes
+    before=hashlib.sha256(self.node.read_bytes()).hexdigest();r=s.prepare_system(self.repo,self.stage,self.config)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 11, in prepare_system
+    def prepare_system(repo,stage,config):raise SystemPreparationUnavailable('not_implemented')
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: not_implemented
+
+======================================================================
+ERROR: test_current_staging_verification_detects_mutation (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 54, in test_current_staging_verification_detects_mutation
+    r=s.prepare_system(self.repo,self.stage,self.config);self.assertTrue(s.verify_preparation(self.stage))
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 11, in prepare_system
+    def prepare_system(repo,stage,config):raise SystemPreparationUnavailable('not_implemented')
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: not_implemented
+
+======================================================================
+ERROR: test_legacy_stage_and_native_overlay_are_not_touched (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 52, in test_legacy_stage_and_native_overlay_are_not_touched
+    s.prepare_system(self.repo,self.stage,self.config);self.assertEqual(f.read_bytes(),b'consumed');self.assertEqual(oldmod.read_bytes(),b'OLD MODULE')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 11, in prepare_system
+    def prepare_system(repo,stage,config):raise SystemPreparationUnavailable('not_implemented')
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: not_implemented
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.010s
+
+FAILED (errors=3)

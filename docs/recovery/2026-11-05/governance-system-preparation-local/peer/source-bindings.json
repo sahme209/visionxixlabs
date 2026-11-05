@@ -1,0 +1,16 @@
+{
+  "scope": "localSystemsourcepreparationonly",
+  "files": {
+    "packages/verified-issuer-runtime/native/system_peer_binding.h": "1479c92d005b26794bfe5448230432f2fb039c8926a79f4e8b8de006f763ba88",
+    "packages/verified-issuer-runtime/native/system_peer_binding.c": "8da6ff4a7f11d2a815527a33c09b84487f25d823cfba01f5b9fdfa5eabe1b918",
+    "packages/verified-issuer-runtime/native/origin_owner_binding.c": "4c3281a414f4be8022babfc435ee7930bedc4bd0458b95dc00cf0ece0488e77a",
+    "packages/verified-issuer-runtime/native/owner_config.h": "95dfb4394b325bdf3693d4c5739516a86b0c0f9c3ddf55d989b7e774cf926a57",
+    "packages/verified-issuer-runtime/native/origin_broker.c": "edd4ebabe9444e1ce73a8c43d64128b4a0d9790626560cf609e1c0238fb69efa",
+    "packages/verified-issuer-runtime/native/tests/system_peer_binding_test.c": "70557b2db58e608d8d31d32e43a5c382d3c55f98ea2443418bff5023071cac94",
+    "packages/verified-issuer-runtime/native/tests/test_system_broker_profile.py": "82ee20517efe26b210c1dd62485a02c1e1940420c431d58f0fdeaab7dba94ddc",
+    "packages/verified-issuer-runtime/native/tests/owner_binding_validation_test.c": "58dbd9760d194ecff93506850d26dbb79fba1df36603376371aa21763da87452",
+    "packages/verified-issuer-runtime/native/tests/test_owner_broker_integration.py": "2de59bbca19ef6555034d0d88b0476515bba962bb322a2105698c9b9cfa06204"
+  },
+  "operational_calls": false,
+  "qualified": false
+}

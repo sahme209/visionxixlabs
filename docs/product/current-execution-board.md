@@ -2,6 +2,10 @@
 
 Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
+## November5 acyclic System source/assembly preparation — locally verified
+
+~~Protected installed-peer exact-hash selection, stopped-child/post-fork ordering, explicit System claim routing, standalone maintenance and separate phased assembler are implemented and independently reviewed~~ ([bounded evidence](../recovery/2026-11-05/governance-system-preparation-local/README.md)). Focused pure/fully stubbed tests and native owner/broker/maintenance links pass; actual stage tests use synthetic Node/principal declarations. No role signing, target launch, installation or positive runtime acceptance. Operational and readiness gates remain false; actual System/private-consumer/custody/fleet/enforcement/native workflow gates and all21parents remain open. Historical source/evidence and exact written ServiceNow unknown history preserved.
+
 ## November5 owned storage-support observation — actual acknowledgments passed
 
 ~~One separately approved non-root probe observed file and directory F_FULLFSYNC success and successful closes~~ ([actual evidence](../recovery/2026-11-05/governance-trusted-owner-local/directory-barrier-preparation/observation/README.md)). Target restored0600; fixed fixture/history preserved, no retry. This resolves syscall-form support on that fixture, not crash durability, privileged installation/custody/identity or full Governance. All21parents remain open.

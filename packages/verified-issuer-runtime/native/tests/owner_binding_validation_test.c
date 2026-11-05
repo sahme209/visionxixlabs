@@ -2,7 +2,16 @@
  * dependency below is inert; no Security/XPC/clock/process API is called. */
 #include <assert.h>
 #include <stdio.h>
+#define ax_system_peer_current fake_system_peer_current
+#define ax_system_peer_prepare fake_system_peer_prepare
+#define ax_system_peer_requirement fake_system_peer_requirement
+#define ax_system_peer_revoke fake_system_peer_revoke
 #include "../origin_owner_binding.c"
+static int fake_peer_current=1,fake_peer_change=0;
+int fake_system_peer_current(AxSystemPeer*p){(void)p;return fake_peer_current;}
+int fake_system_peer_prepare(AxSystemPeer*p,int role){(void)p;return role==AX_SYSTEM_PEER_OWNER&&fake_peer_current;}
+const char*fake_system_peer_requirement(AxSystemPeer*p){(void)p;return fake_peer_current?"cdhash H\"0102030405060708090a0b0c0d0e0f1011121314\"":NULL;}
+void fake_system_peer_revoke(AxSystemPeer*p){(void)p;fake_peer_current=0;}
 static uint64_t fake_now=1;static int fake_auth=1,fake_delay=0;static size_t fake_count=6,ng=16,nc=32,nb=32;
 static int fake_childtype=1,fake_seqtype=1;static int64_t fake_child=37;static uint64_t fake_seq;
 static const char*fake_status="owner_pending";static unsigned char gen[16]={1},challenge[32]={2},owner_nonce[32]={3};
@@ -21,8 +30,8 @@ CFStringRef CFStringCreateWithCString(CFAllocatorRef a,const char*s,CFStringEnco
 void CFRelease(CFTypeRef x){(void)x;}
 OSStatus SecRequirementCreateWithString(CFStringRef s,SecCSFlags f,SecRequirementRef*r){(void)s;(void)f;*r=(SecRequirementRef)(uintptr_t)1;return errSecSuccess;}
 OSStatus SecCodeCreateWithXPCMessage(xpc_object_t x,SecCSFlags f,SecCodeRef*r){(void)x;(void)f;*r=(SecCodeRef)(uintptr_t)1;return errSecSuccess;}
-OSStatus SecCodeCheckValidity(SecCodeRef r,SecCSFlags f,SecRequirementRef q){(void)r;(void)f;(void)q;if(fake_delay)fake_now=100;return fake_auth?errSecSuccess:errSecCSUnsigned;}
-static void reset(void){memset(&client,0,sizeof(client));atomic_store(&revoked,0);fake_now=1;fake_auth=1;fake_delay=0;fake_count=6;ng=16;nc=32;nb=32;fake_childtype=fake_seqtype=1;fake_child=37;fake_seq=0;fake_status="owner_pending";memset(gen,0,16);gen[0]=1;memset(challenge,0,32);challenge[0]=2;memset(owner_nonce,0,32);owner_nonce[0]=3;response_deadline=100;assert(ax_owner_client_prepare(&client,37,gen,challenge));}
+OSStatus SecCodeCheckValidity(SecCodeRef r,SecCSFlags f,SecRequirementRef q){(void)r;(void)f;(void)q;if(fake_delay)fake_now=100;if(fake_peer_change)fake_peer_current=0;return fake_auth?errSecSuccess:errSecCSUnsigned;}
+static void reset(void){fake_peer_current=1;fake_peer_change=0;memset(&client,0,sizeof(client));atomic_store(&revoked,0);fake_now=1;fake_auth=1;fake_delay=0;fake_count=6;ng=16;nc=32;nb=32;fake_childtype=fake_seqtype=1;fake_child=37;fake_seq=0;fake_status="owner_pending";memset(gen,0,16);gen[0]=1;memset(challenge,0,32);challenge[0]=2;memset(owner_nonce,0,32);owner_nonce[0]=3;response_deadline=100;assert(ax_owner_client_prepare(&client,37,gen,challenge));}
 int main(void){xpc_object_t r=(xpc_object_t)&reply_value;
  reset();assert(validate(r,"owner_pending",0));assert(client.phase==AX_OWNER_PENDING);fake_status="owner_authenticated";assert(validate(r,"owner_authenticated",1));assert(client.phase==AX_OWNER_AUTHENTICATED);uint64_t seq;assert(ax_owner_client_next(&client,&seq));fake_seq=seq;fake_status="owner_current";assert(validate(r,"owner_current",2));assert(client.sequence==1);
  reset();fake_child=38;assert(!validate(r,"owner_pending",0));
@@ -40,5 +49,7 @@ int main(void){xpc_object_t r=(xpc_object_t)&reply_value;
  reset();fake_delay=1;assert(!validate(r,"owner_pending",0));
  reset();fake_now=100;assert(!validate(r,"owner_pending",0));
  reset();atomic_store(&revoked,1);assert(!validate(r,"owner_pending",0));
- puts("actual native owner response validator: 16 cases passed with inert platform mocks");return 0;
+ reset();fake_peer_current=0;assert(!validate(r,"owner_pending",0));
+ reset();fake_peer_change=1;assert(!validate(r,"owner_pending",0));
+ puts("actual native owner response validator: 18 cases passed with inert platform mocks");return 0;
 }

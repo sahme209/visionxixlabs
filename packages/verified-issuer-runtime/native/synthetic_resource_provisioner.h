@@ -3,7 +3,8 @@
 #include "synthetic_resource_contract.h"
 #include "cssm_policy_prepared.h"
 /* Dormant maintenance composition only: not linked into any runtime target.
- * No main, command line, environment selection, registration, or launch. Trusted
+ * A separate closed standalone main is prepared; this module itself accepts no
+ * command line, environment selection, registration, or launch. Trusted
  * installer input custody and pre-main installation identity remain unresolved. */
 AxSyntheticProvisionResult ax_synthetic_native_provision(void);
 #endif

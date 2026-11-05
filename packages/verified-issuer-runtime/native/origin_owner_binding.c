@@ -4,6 +4,7 @@
 #include "origin_owner_binding.h"
 #include "owner_protocol.h"
 #include "owner_config.h"
+#include "system_peer_binding.h"
 #include <xpc/xpc.h>
 #include <Security/Security.h>
 #include <dispatch/dispatch.h>
@@ -21,6 +22,7 @@ static atomic_int attempted,revoked;
 static _Atomic(uintptr_t) connection_ref;
 static dispatch_queue_t callback_queue;
 static AxOwnerClient client;
+static AxSystemPeer expected_owner={.fd=-1};
 /* Accessed only while lock is held; binds late signature validation to the
  * same individual request, not a new timeout after receiving bytes. */
 static uint64_t response_deadline;
@@ -28,10 +30,11 @@ typedef struct {atomic_uint refs;atomic_int cancelled;dispatch_semaphore_t ready
 static uint64_t now_ns(void){struct timespec t;if(clock_gettime(CLOCK_MONOTONIC,&t)||t.tv_sec<0||t.tv_nsec<0)return UINT64_MAX;return(uint64_t)t.tv_sec*1000000000ULL+(uint64_t)t.tv_nsec;}
 static void reply_release(Reply*r){if(atomic_fetch_sub(&r->refs,1)==1){if(r->value)xpc_release(r->value);dispatch_release(r->ready);free(r);}}
 static int message_matches(xpc_object_t message){
- if(!SecCodeCreateWithXPCMessage||!message||xpc_get_type(message)!=XPC_TYPE_DICTIONARY||!AX_OWNER_REQUIREMENT[0])return 0;
- SecCodeRef code=NULL;SecRequirementRef req=NULL;CFStringRef text=CFStringCreateWithCString(NULL,AX_OWNER_REQUIREMENT,kCFStringEncodingUTF8);if(!text)return 0;
+ if(!SecCodeCreateWithXPCMessage||!message||xpc_get_type(message)!=XPC_TYPE_DICTIONARY||!ax_system_peer_current(&expected_owner))return 0;
+ const char*expectation=ax_system_peer_requirement(&expected_owner);if(!expectation)return 0;
+ SecCodeRef code=NULL;SecRequirementRef req=NULL;CFStringRef text=CFStringCreateWithCString(NULL,expectation,kCFStringEncodingUTF8);if(!text)return 0;
  OSStatus status=SecRequirementCreateWithString(text,kSecCSDefaultFlags,&req);CFRelease(text);if(status!=errSecSuccess||!req)return 0;
- status=SecCodeCreateWithXPCMessage(message,kSecCSDefaultFlags,&code);int ok=status==errSecSuccess&&code&&SecCodeCheckValidity(code,kSecCSDefaultFlags,req)==errSecSuccess;if(code)CFRelease(code);CFRelease(req);return ok;
+ status=SecCodeCreateWithXPCMessage(message,kSecCSDefaultFlags,&code);int ok=status==errSecSuccess&&code&&SecCodeCheckValidity(code,kSecCSDefaultFlags,req)==errSecSuccess&&ax_system_peer_current(&expected_owner);if(code)CFRelease(code);CFRelease(req);return ok;
 }
 void axiom_owner_binding_revoke(void){atomic_store(&revoked,1);xpc_connection_t c=(xpc_connection_t)atomic_load(&connection_ref);if(c)xpc_connection_cancel(c);}
 static xpc_object_t exchange(xpc_object_t request){
@@ -65,22 +68,24 @@ static int validate(xpc_object_t r,const char*status,int stage){
 int axiom_owner_binding_startup(void){
  if(atomic_exchange(&attempted,1))return 0;
  /* No platform/credential call before these closed source-preparation checks. */
- if(!AX_OWNER_OPERATIONAL||!AX_OWNER_REQUIREMENT[0]||!AX_OWNER_BROKER_REQUIREMENT[0]||AX_OWNER_FIXED_UID==0||AX_OWNER_FIXED_GID==0||AX_OWNER_MAX_LIFETIME_NS==0||atomic_load(&revoked))return 0;
+ if(!AX_OWNER_OPERATIONAL||AX_OWNER_PROFILE!=AX_OWNER_PROFILE_SYSTEM||AX_OWNER_FIXED_UID==0||AX_OWNER_FIXED_GID==0||AX_OWNER_MAX_LIFETIME_NS==0||atomic_load(&revoked))return 0;
  if(pthread_mutex_trylock(&lock)){axiom_owner_binding_revoke();return 0;}int ok=0;unsigned char g[16],challenge[32];
  if(getuid()!=AX_OWNER_FIXED_UID||geteuid()!=AX_OWNER_FIXED_UID||getgid()!=AX_OWNER_FIXED_GID||getegid()!=AX_OWNER_FIXED_GID||!generation(g))goto done;
+ if(!ax_system_peer_prepare(&expected_owner,AX_SYSTEM_PEER_OWNER))goto done;
+ const char*expectation=ax_system_peer_requirement(&expected_owner);if(!expectation)goto done;
  arc4random_buf(challenge,sizeof(challenge));if(!ax_owner_client_prepare(&client,getpid(),g,challenge))goto done;
  callback_queue=dispatch_queue_create("axiom.issuer.owner.reply",DISPATCH_QUEUE_SERIAL);if(!callback_queue)goto done;
  xpc_connection_t c=xpc_connection_create_mach_service(AX_OWNER_SERVICE,callback_queue,XPC_CONNECTION_MACH_SERVICE_PRIVILEGED);if(!c)goto done;atomic_store(&connection_ref,(uintptr_t)c);
- if(xpc_connection_set_peer_code_signing_requirement(c,AX_OWNER_REQUIREMENT))goto done;
+ if(xpc_connection_set_peer_code_signing_requirement(c,expectation))goto done;
  xpc_connection_set_event_handler(c,^(xpc_object_t event){(void)event;axiom_owner_binding_revoke();});xpc_connection_activate(c);
  xpc_object_t q=request("begin",0),r=q?exchange(q):NULL;if(q)xpc_release(q);if(!validate(r,"owner_pending",0)){if(r)xpc_release(r);goto done;}xpc_release(r);
  q=request("ack",0);r=q?exchange(q):NULL;if(q)xpc_release(q);if(!validate(r,"owner_authenticated",1)){if(r)xpc_release(r);goto done;}xpc_release(r);ok=!atomic_load(&revoked);
- done:if(!ok){ax_owner_client_revoke(&client);axiom_owner_binding_revoke();}pthread_mutex_unlock(&lock);return ok;
+ done:if(!ok){ax_owner_client_revoke(&client);ax_system_peer_revoke(&expected_owner);axiom_owner_binding_revoke();}pthread_mutex_unlock(&lock);return ok;
 }
 int axiom_owner_binding_current(void){
  if(!AX_OWNER_OPERATIONAL||atomic_load(&revoked)||!atomic_load(&attempted))return 0;
  if(pthread_mutex_trylock(&lock)){axiom_owner_binding_revoke();return 0;}int ok=0;uint64_t seq;
  if(!ax_owner_client_next(&client,&seq))goto done;
  xpc_object_t q=request("live",seq),r=q?exchange(q):NULL;if(q)xpc_release(q);ok=validate(r,"owner_current",2)&&!atomic_load(&revoked);if(r)xpc_release(r);
- done:if(!ok){ax_owner_client_revoke(&client);axiom_owner_binding_revoke();}pthread_mutex_unlock(&lock);return ok;
+ done:if(!ok){ax_owner_client_revoke(&client);ax_system_peer_revoke(&expected_owner);axiom_owner_binding_revoke();}pthread_mutex_unlock(&lock);return ok;
 }

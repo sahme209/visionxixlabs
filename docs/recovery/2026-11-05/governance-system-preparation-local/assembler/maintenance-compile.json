@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "/usr/bin/clang",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-deprecated-declarations",
+    "-fblocks",
+    "-mmacosx-version-min=13.0",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_maintenance_main.c",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_provisioner.m",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_contract.c",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/cssm_policy_builder.c",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/cssm_policy_copy.c",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/cssm_policy_inspect.c",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_process_identity.c",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/protected_resource_inventory.c",
+    "-framework",
+    "Foundation",
+    "-framework",
+    "Security",
+    "-framework",
+    "CoreFoundation",
+    "-o",
+    "/private/tmp/axiom-maintenance-compile-dtfzu303/maintenance-never-run"
+  ],
+  "exit": 0,
+  "sourceSha256": {
+    "synthetic_resource_maintenance_main.c": "3bf0b259251599c5b757906e89716d8ab3aba4cb6a4604e13092a24759a5184e",
+    "synthetic_resource_provisioner.m": "889f345d200da2bad960ce4ae3af7b8298d28cfc98f3db88c565f8af1a6c7a62",
+    "synthetic_resource_contract.c": "f2a6ab833c2ddcd1068149a780bf5ebeb7b9556b3bb8afeed0dc7e6c77663e50",
+    "cssm_policy_builder.c": "3fbff40c76a0312720e35be1f85bbec5300202c4b28c87495fcfbe6dd602be40",
+    "cssm_policy_copy.c": "e3bd87182c7f1c07e845618d46c6e6f0192a9591b0eb887bee753b59fd568dde",
+    "cssm_policy_inspect.c": "bd4489741875db3522090ce54d741706eaedb4547c14cf246ed8f99c0b674ee9",
+    "origin_process_identity.c": "004193879c5af000873199fef26336457e7251da2b21611d91d7af8dec4ea78a",
+    "protected_resource_inventory.c": "b257135d421cf1ba69fb33ee347970dbdd978d1e43c56c3197018e969614ee4d"
+  },
+  "executed": false,
+  "artifact": {
+    "path": "/private/tmp/axiom-maintenance-compile-dtfzu303/maintenance-never-run",
+    "sha256": "9d51ec581498c118d7c5578a1631cd12b57bd531ff9d39fe5260a2a337c163ab",
+    "mode": "0o600"
+  }
+}

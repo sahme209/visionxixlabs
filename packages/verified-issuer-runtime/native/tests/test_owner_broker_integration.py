@@ -12,7 +12,7 @@ class OwnerOrdering(unittest.TestCase):
   for name in ['work_current','delivery_current']:
    start=source.index('static int '+name+'(')
    body=source[start:source.index('\n}',start)+2] if name=='delivery_current' else source[start:source.index('\n',start)]
-   self.assertIn('axiom_owner_binding_current()',body)
+   self.assertIn('owner_profile_current()',body)
  def test_supplier_read_revalidates_owner_before_and_after(self):
   source=(ROOT/'origin_broker.c').read_text()
   start=source.index('AxiomPrivateMaterial material;')

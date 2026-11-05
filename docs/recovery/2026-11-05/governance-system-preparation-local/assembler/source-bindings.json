@@ -1,0 +1,11 @@
+{
+  "sourceSha256": {
+    "scripts/governance_local_issuer/system_preparation.py": "064061d4e8631d1f2c864bcb4abc84a5bdfcce68e98fc2afc7d7f88d53a9b52a",
+    "scripts/governance_local_issuer/tests/test_system_preparation.py": "8be88beb08c31785ea1aa5ad0ef981ae365c0b8f9d4a515c97af151de291fcda",
+    "packages/verified-issuer-runtime/native/synthetic_resource_maintenance_main.c": "5967602038e3a2094c76cd598b1108d54581c37d05b2894e1e449b407eab7231",
+    "packages/verified-issuer-runtime/native/tests/maintenance_closed_test.c": "578c3e775fdc9e62d0367bca470c22c57a1095ab6be589b6d30018d7ff08e959",
+    "packages/verified-issuer-runtime/native/synthetic_resource_provisioner.h": "1b6ddb78c835ec970887a00596cbe2976413c22d88a3eaea6ecae157434334bb"
+  },
+  "executionAuthorized": false,
+  "nativeOperationalTargetsExecuted": false
+}

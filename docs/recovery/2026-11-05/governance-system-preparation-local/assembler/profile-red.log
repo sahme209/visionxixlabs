@@ -1,0 +1,13 @@
+F......
+======================================================================
+FAIL: test_actual_stage_contains_fixed_plist_source_copy_and_closed_recipes (test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 34, in test_actual_stage_contains_fixed_plist_source_copy_and_closed_recipes
+    config=(self.stage/'config/system-preparation.h').read_text();self.assertIn('AX_OWNER_PROFILE 2',config);self.assertNotIn('AX_OWNER_OPERATIONAL 1',config)
+AssertionError: 'AX_OWNER_PROFILE 2' not found in '/* Preparation data only. Existing owner/supplier operational gates stay OFF. */\n#define AX_OWNER_SYSTEM_PROFILE 1\n#define AX_OWNER_FIXED_UID 503\n#define AX_OWNER_FIXED_GID 503\n#define AX_OWNER_MAX_LIFETIME_NS 60000000000ULL\n#define AXIOM_ISSUER_PACKAGE_ROOT "/Volumes/Axiom Synthetic Issuer-c3b7bf334ce56a64575183b7a66e5109"\n#define AXIOM_ISSUER_IMAGE_BACKING "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/Axiom Synthetic Custodian.app/Contents/Resources/issuer-package.dmg"\n#define AXIOM_ISSUER_CONTROL_APP "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/Axiom Synthetic Custodian.app"\n#define AXIOM_ISSUER_ORIGIN_SERVICE "com.visionxixlabs.axiom.synthetic.bootstrap.c3b7bf334ce56a64575183b7a66e5109"\n#define AXIOM_ISSUER_NODE_REQUIREMENT "cdhash H\\"1111111111111111111111111111111111111111\\""\n#define AXIOM_ISSUER_CONTROLLER_REQUIREMENT "cdhash H\\"2222222222222222222222222222222222222222\\""\n#define AXIOM_ISSUER_BROKER_REQUIREMENT "cdhash H\\"3333333333333333333333333333333333333333\\""\n'
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.080s
+
+FAILED (failures=1)

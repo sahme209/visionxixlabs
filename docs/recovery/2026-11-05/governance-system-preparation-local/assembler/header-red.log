@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_header_mutation_during_copy_is_rejected (governance_local_issuer.tests.test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 63, in test_header_mutation_during_copy_is_rejected
+    self.assertRaises(s.SystemPreparationUnavailable,s.prepare_system,self.repo,self.stage,self.config)
+AssertionError: SystemPreparationUnavailable not raised by prepare_system
+
+----------------------------------------------------------------------
+Ran 1 test in 0.019s
+
+FAILED (failures=1)

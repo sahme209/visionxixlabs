@@ -1,0 +1,19 @@
+E
+======================================================================
+ERROR: test_controller_first_needs_no_future_code_requirement (governance_local_issuer.tests.test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 88, in test_controller_first_needs_no_future_code_requirement
+    r=s.prepare_system(self.repo,self.stage,self.config,phase='controller-first')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 131, in prepare_system
+    c=json.loads(json.dumps(_config(config,phase),sort_keys=True));repo=_path(repo);stage=_path(stage)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 59, in _config
+    if phase not in ('complete','native-leaves'):_refuse('unsupported_preparation_phase')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 30, in _refuse
+    def _refuse(reason):raise SystemPreparationUnavailable(reason)
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: unsupported_preparation_phase
+
+----------------------------------------------------------------------
+Ran 1 test in 0.006s
+
+FAILED (errors=1)

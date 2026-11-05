@@ -1,0 +1,20 @@
+F
+======================================================================
+FAIL: test_controller_first_needs_no_future_code_requirement (governance_local_issuer.tests.test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 88, in test_controller_first_needs_no_future_code_requirement
+    try:r=s.prepare_system(self.repo,self.stage,self.config,phase='controller-first')
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: unsupported_preparation_phase
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 89, in test_controller_first_needs_no_future_code_requirement
+    except s.SystemPreparationUnavailable as error:self.fail('controller-first must prepare without future hashes: '+str(error))
+AssertionError: controller-first must prepare without future hashes: unsupported_preparation_phase
+
+----------------------------------------------------------------------
+Ran 1 test in 0.005s
+
+FAILED (failures=1)

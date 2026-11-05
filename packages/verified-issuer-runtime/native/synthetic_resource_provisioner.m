@@ -25,7 +25,8 @@ static int protected_directory(void){
  char path[]=AX_SYNTH_ROOT;char *save=NULL,*part=strtok_r(path,"/",&save);
  while(part){int next=openat(fd,part,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);close(fd);fd=next;if(fd<0||!safe_stat(fd,1,0755)){if(fd>=0)close(fd);return -1;}part=strtok_r(NULL,"/",&save);}return fd;
 }
-static int sync_fd(int fd){return fsync(fd)==0;}
+/* No fsync-only fallback: actual platform persistence qualification remains separate. */
+static int sync_fd(int fd){return fcntl(fd,F_FULLFSYNC,0)==0;}
 static int write_all(int fd,const unsigned char *p,size_t n){while(n){ssize_t w=write(fd,p,n);if(w<0&&errno==EINTR)continue;if(w<=0)return 0;p+=w;n-=(size_t)w;}return 1;}
 static int journal_write(void *v,const unsigned char record[32]){Native*n=v;return write_all(n->journal,record,32)&&sync_fd(n->journal)&&sync_fd(n->dir);}
 static int publish(void *v,const AxSyntheticLocators *locators){

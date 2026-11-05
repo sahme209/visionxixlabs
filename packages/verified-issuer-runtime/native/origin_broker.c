@@ -9,6 +9,7 @@
 #include "origin_process_identity.h"
 #include "origin_private_bootstrap.h"
 #include "origin_owner_binding.h"
+#include "owner_config.h"
 #include "synthetic_resource_contract.h"
 #include <xpc/xpc.h>
 #include <Security/Security.h>
@@ -73,6 +74,13 @@ static int claim_startup(void){
  char canonical[PATH_MAX];struct stat dir;if(!realpath(parent,canonical)||strcmp(parent,canonical)||lstat(parent,&dir)||!S_ISDIR(dir.st_mode)||dir.st_uid!=getuid()||(dir.st_mode&0777)!=0700)return 0;
  int fd=open(AXIOM_ISSUER_SPAWN_CLAIM,O_CREAT|O_EXCL|O_NOFOLLOW|O_WRONLY|O_CLOEXEC,0600);if(fd<0)return 0;const char bytes[]="{\"status\":\"startup_consumed_unknown_no_retry\"}\n";int ok=write(fd,bytes,sizeof(bytes)-1)==(ssize_t)sizeof(bytes)-1&&fsync(fd)==0;int closed=close(fd);return ok&&!closed;
 }
+/* Profiles never fall back on failure. System consumed state belongs to its
+ * already-authenticated owner's protected journal before this broker launch. */
+static int startup_consumption(void){
+ if(AX_OWNER_PROFILE==AX_OWNER_PROFILE_SYSTEM)return axiom_owner_binding_current();
+ if(AX_OWNER_PROFILE==AX_OWNER_PROFILE_LEGACY)return claim_startup();
+ return 0;
+}
 static void drain(int fd){
  dispatch_source_t source=dispatch_source_create(DISPATCH_SOURCE_TYPE_READ,(uintptr_t)fd,0,control);if(!source){close(fd);revoke_slot();return;}
  __block uint64_t window=now_ns();__block size_t bytes=0;
@@ -83,14 +91,19 @@ static void retain_peer(Peer*p){atomic_fetch_add(&p->refs,1);}
 static void release_peer(void*value){Peer*p=value;if(atomic_fetch_sub(&p->refs,1)==1)free(p);}
 static void retain_job(Job*j){atomic_fetch_add(&j->refs,1);}
 static void release_job(Job*j){if(atomic_fetch_sub(&j->refs,1)==1){xpc_release(j->message);xpc_release(j->peer->connection);release_peer(j->peer);free(j);}}
-static int work_current(Job*j){return !atomic_load(&j->cancelled)&&!atomic_load(&j->peer->ended)&&now_ns()<j->deadline&&axiom_owner_binding_current()&&!atomic_load(&j->cancelled)&&now_ns()<j->deadline;}
+static int owner_profile_current(void){
+ if(AX_OWNER_PROFILE==AX_OWNER_PROFILE_SYSTEM)return axiom_owner_binding_current();
+ if(AX_OWNER_PROFILE==AX_OWNER_PROFILE_LEGACY)return 1;
+ return 0;
+}
+static int work_current(Job*j){return !atomic_load(&j->cancelled)&&!atomic_load(&j->peer->ended)&&now_ns()<j->deadline&&owner_profile_current()&&!atomic_load(&j->cancelled)&&now_ns()<j->deadline;}
 static void cancel_timer(Job*j){if(j->timer){dispatch_source_t timer=j->timer;j->timer=NULL;dispatch_source_cancel(timer);}}
 static void job_reply(Job*j,const char*status,pid_t child,const unsigned char*a,const unsigned char*b){if(j->replied)return;j->replied=1;reply(j->message,status,child,a,b);}
 static void discard_spawn(Job*j){if(j->input>=0){close(j->input);j->input=-1;}if(j->output>=0){close(j->output);j->output=-1;}if(j->error>=0){close(j->error);j->error=-1;}if(j->child>0){kill_owned(j->child);reap_owned(j->child,20);j->child=0;}}
 /* Worker owns every blocking prerequisite and the returned suspended child until
  * the control queue adopts it. No worker ever sends SIGCONT. */
 static void prepare_start(Job*j){
- if(!work_current(j)||!claim_startup()||!work_current(j)||!axiom_origin_bind_root(&j->binding)||!work_current(j)||!axiom_origin_root_current(&j->binding)||!work_current(j))return;
+ if(!work_current(j)||!startup_consumption()||!work_current(j)||!axiom_origin_bind_root(&j->binding)||!work_current(j)||!axiom_origin_root_current(&j->binding)||!work_current(j))return;
  char bootstrap[PATH_MAX];if(snprintf(bootstrap,sizeof(bootstrap),"%s/__axiom_runtime__/origin-bootstrap",AXIOM_ISSUER_PACKAGE_ROOT)>=(int)sizeof(bootstrap))return;
  posix_spawnattr_t attr;posix_spawn_file_actions_t actions;int output[2]={-1,-1},error[2]={-1,-1},input[2]={-1,-1};if(posix_spawnattr_init(&attr))return;if(posix_spawn_file_actions_init(&actions)){posix_spawnattr_destroy(&attr);return;}
  int failed=0;for(int fd=0;fd<3;fd++)if(fcntl(fd,F_GETFD)<0)failed=1;failed=failed||pipe(output)||pipe(error)||pipe(input);if(!failed)for(int i=0;i<2;i++)if(fcntl(output[i],F_SETFD,FD_CLOEXEC)||fcntl(error[i],F_SETFD,FD_CLOEXEC)||fcntl(input[i],F_SETFD,FD_CLOEXEC))failed=1;
@@ -105,7 +118,7 @@ static void prepare_start(Job*j){
  if(failed||!work_current(j)||!alive_pid(child)||!axiom_origin_root_current(&j->binding)||!work_current(j))return;
  j->prepared=1;
 }
-static int delivery_current(void){return axiom_owner_binding_current()&&!atomic_load(&delivery.cancelled)&&!shutting_down&&!epoch_revoked&&delivery.binding.epoch==epoch&&delivery.child==owned_child&&delivery.child==slot.child&&delivery.fd>=0&&slot.phase==AXIOM_ORIGIN_CONSUMED&&now_ns()<delivery.binding.deadline&&!memcmp(delivery.binding.client,slot.client,32)&&!memcmp(delivery.binding.broker,slot.broker,32)&&alive_pid(owned_child);}
+static int delivery_current(void){return owner_profile_current()&&!atomic_load(&delivery.cancelled)&&!shutting_down&&!epoch_revoked&&delivery.binding.epoch==epoch&&delivery.child==owned_child&&delivery.child==slot.child&&delivery.fd>=0&&slot.phase==AXIOM_ORIGIN_CONSUMED&&now_ns()<delivery.binding.deadline&&!memcmp(delivery.binding.client,slot.client,32)&&!memcmp(delivery.binding.broker,slot.broker,32)&&alive_pid(owned_child);}
 static void drain_delivery(void){
  if(!delivery_current()){revoke_slot();return;}
  /* Reserved history becomes consumed before any write that may expose bytes.
@@ -217,8 +230,9 @@ int main(int argc,char**argv){
  char current[PATH_MAX],actual[PATH_MAX],expected[PATH_MAX];uint32_t length=sizeof(current);struct stat own;
  if(_NSGetExecutablePath(current,&length)||!realpath(current,actual)||snprintf(expected,sizeof(expected),"%s%s",AXIOM_ISSUER_CONTROL_APP,AX_SYNTH_BROKER_SUFFIX)>=(int)sizeof(expected)||strcmp(actual,expected)||stat(expected,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&main,&own))return 71;
  /* Dedicated custodian only; no constructor/import invokes these APIs. */
- if(!axiom_owner_binding_startup())return 77;
- if(!axiom_owner_binding_current()||!axiom_private_supplier_startup()||!axiom_owner_binding_current())return 76;
+ if(AX_OWNER_PROFILE==AX_OWNER_PROFILE_SYSTEM){if(!axiom_owner_binding_startup())return 77;}
+ else if(AX_OWNER_PROFILE!=AX_OWNER_PROFILE_LEGACY)return 77;
+ if(!owner_profile_current()||!axiom_private_supplier_startup()||!owner_profile_current())return 76;
  signal(SIGPIPE,SIG_IGN);
  control=dispatch_queue_create("axiom.issuer.origin.control",DISPATCH_QUEUE_SERIAL);workers=dispatch_queue_create("axiom.issuer.origin.inspection",DISPATCH_QUEUE_CONCURRENT);if(!control||!workers)return 72;
  if(snprintf(peer_requirement,sizeof(peer_requirement),"(%s) or (%s)",AXIOM_ISSUER_NODE_REQUIREMENT,AXIOM_ISSUER_CONTROLLER_REQUIREMENT)>=(int)sizeof(peer_requirement))return 73;

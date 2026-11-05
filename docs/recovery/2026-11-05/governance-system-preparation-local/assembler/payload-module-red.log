@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_payload_module_files_are_copied_and_later_mutation_refused (governance_local_issuer.tests.test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 102, in test_payload_module_files_are_copied_and_later_mutation_refused
+    self.assertTrue((module/name).is_file())
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.025s
+
+FAILED (failures=1)

@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_native_leaves_phase_does_not_require_or_fake_future_broker_hash (governance_local_issuer.tests.test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 71, in test_native_leaves_phase_does_not_require_or_fake_future_broker_hash
+    self.assertEqual({x['role']for x in r['compileRecipes']},{'owner','broker','controller','maintenance','bootstrap'})
+AssertionError: Items in the first set but not the second:
+'guard'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.018s
+
+FAILED (failures=1)

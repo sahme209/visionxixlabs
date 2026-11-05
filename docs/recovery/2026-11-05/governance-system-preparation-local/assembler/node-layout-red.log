@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_actual_stage_contains_fixed_plist_source_copy_and_closed_recipes (governance_local_issuer.tests.test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 37, in test_actual_stage_contains_fixed_plist_source_copy_and_closed_recipes
+    self.assertTrue((self.stage/'payload/__axiom_runtime__/node').is_file());self.assertEqual((self.stage/'payload/__axiom_runtime__/node').read_bytes(),self.node.read_bytes());self.assertEqual(before,hashlib.sha256(self.node.read_bytes()).hexdigest())
+AssertionError: False is not true
+
+----------------------------------------------------------------------
+Ran 1 test in 0.021s
+
+FAILED (failures=1)

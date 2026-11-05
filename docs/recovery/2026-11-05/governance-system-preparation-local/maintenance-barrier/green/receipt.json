@@ -1,0 +1,8 @@
+{
+  "source_sha256": "6e7e724ce1beb6b37589b59451fdf7776c0f1f7026f8490f43fb67960b5f4599",
+  "exact_function_sha256": "047c97bf4b32928ddb73b290893cb30cf682f8a1b27c6fe20d5ee9060d702a6c",
+  "transform": "exact one function extraction plus fixed fake syscall harness",
+  "exit": 0,
+  "actual_provisioner_run": false,
+  "actual_barrier_call": false
+}

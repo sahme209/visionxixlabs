@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_receipt_permissions_cannot_be_broadened (governance_local_issuer.tests.test_system_preparation.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 68, in test_receipt_permissions_cannot_be_broadened
+    self.assertRaises(s.SystemPreparationUnavailable,s.verify_preparation,self.stage)
+AssertionError: SystemPreparationUnavailable not raised by verify_preparation
+
+----------------------------------------------------------------------
+Ran 1 test in 0.022s
+
+FAILED (failures=1)
