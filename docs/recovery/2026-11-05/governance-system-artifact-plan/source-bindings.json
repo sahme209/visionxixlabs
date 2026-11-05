@@ -1,0 +1,51 @@
+{
+  "source_base": "1ecb5d5c2f8a659d1edbe9992464ea51ab2d8e45",
+  "files": [
+    {
+      "path": "scripts/governance_local_issuer/native_overlay.py",
+      "sha256": "4201318ae62dc89c3eba6a4048896dede274b365fa0754ec8055cf51095373a6"
+    },
+    {
+      "path": "scripts/governance_local_issuer/origin_control.m",
+      "sha256": "4efd107c19cdb7e25dbea874107dd824bcc2cdcde5f4bbe76471ab038ae66528"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_broker.c",
+      "sha256": "21200e4f821d3fbeda2a48e196c6ef4c60c83aefa26cb6a9a5f44edc3fdf5489"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_config.h",
+      "sha256": "de02b11bfc8562fbe735e27a8f9ec989e56c781caf7e72cdc1678ffe0021ee72"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_resource_contract.h",
+      "sha256": "ec5fd7e35fe6eddfca537729d132bb1dbdc72af0e6e586d70ab0bf79cd007b87"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_resource_provisioner.m",
+      "sha256": "889f345d200da2bad960ce4ae3af7b8298d28cfc98f3db88c565f8af1a6c7a62"
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_root_binding.m",
+      "sha256": "a74167becb5225348ff6c14bba01e17b93d857c81a5d00a50fccae88cb44b252"
+    },
+    {
+      "path": "docs/recovery/2026-11-04/desktop-connection-repairs-package/signed-package.json",
+      "sha256": "44e4840e45b99773948c35b9186181128e7d777821a90c06cac2cc8cb8d742a5"
+    }
+  ],
+  "ordinary_node_file_observation": {
+    "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "uid": 501,
+    "mode": "0o755",
+    "dev": 16777232,
+    "ino": 859815,
+    "size": 122129232,
+    "mtime_ns": 1788824242000000000,
+    "ctime_ns": 1793319854477493638,
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b"
+  },
+  "security_api_calls": 0,
+  "source_artifact_operations": 0,
+  "historical_identity_only": true
+}

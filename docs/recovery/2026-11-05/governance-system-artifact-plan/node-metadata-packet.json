@@ -1,0 +1,35 @@
+{
+  "source_base": "1ecb5d5c2f8a659d1edbe9992464ea51ab2d8e45",
+  "state": "unapproved-display-plan",
+  "artifact": {
+    "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "uid": 501,
+    "mode": "0o755",
+    "dev": 16777232,
+    "ino": 859815,
+    "size": 122129232,
+    "mtime_ns": 1788824242000000000,
+    "ctime_ns": 1793319854477493638,
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b"
+  },
+  "argv": [
+    "/usr/bin/codesign",
+    "--display",
+    "--verbose=4",
+    "--entitlements",
+    ":-",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node"
+  ],
+  "maximum_displays": 1,
+  "timeout_seconds": 10,
+  "combined_output_limit_bytes": 65536,
+  "retries": 0,
+  "execution_authorized": false,
+  "qualification_conferred": false,
+  "exclusions": [
+    "no Node execution/loading",
+    "no signing or signature validation",
+    "no Keychain/certificate/privatekey enumeration/use",
+    "no network/provider/database/deployment/spending"
+  ]
+}

@@ -1,0 +1,7 @@
+# Independent source-only frontier/design review
+
+Reviewer /root/qualification_review read the existing overlay, broker/config, shared fixed installation contract, maintenance module and native binding source. Confirmed the private current-user staging/claim invariants conflict with root0755 generation layout, the per-user compile recipe/source list is incomplete for the new connected native graph, and the maintenance bundle lacks its fixed executable entry. Acyclic signing/binding requires actual Node/controller identities before broker and actual broker before guard; absent IDs cannot be guessed.
+
+Important finding resolved at design level: a dedicated-UID0700 leaf allows other processes sharing that UID to delete the claim. PLAN explicitly rejects this as a persistent no-replay solution. Source-only append-only-root-file and trusted launch-owner alternatives remain unselected; neither is qualified from metadata/manual declarations or advisory locking. Exact allowed-launch binding remains unresolved. Existing O_EXCL code is not silently repointed or weakened.
+
+Final review found the corrected design appropriately bounded. Node ordering permits an acceptable existing identity or a separately authorized resign after policy selection; it never mandates blind resigning. The proposed single Node display targets the exact existing file with clear bounds and no signing/validation/execution authority. No operation was performed by the reviewer. This review is not implementation, launch/custody/enforcement or full Governance acceptance.

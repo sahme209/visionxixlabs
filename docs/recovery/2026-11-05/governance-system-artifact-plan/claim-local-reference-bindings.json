@@ -1,0 +1,19 @@
+{
+  "scope": "Installed SDK/manual source text only; no flag/file/privilege operation performed",
+  "files": [
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man2/chflags.2",
+      "sha256": "f0b9820d233cfd0fc4657145532b14db0ed8817a0fde027bfc51b780b6d216d9"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man2/open.2",
+      "sha256": "2bb0b53e538c46cee9bb5b935fb14a7dcfc868735f7b4a6c339babd8be18ac61"
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stat.h",
+      "sha256": "31c8f252b05785343ca577c007657c0fbab45a182b60fc5b73994c621dc318d4"
+    }
+  ],
+  "mechanism_selected": false,
+  "os_enforcement_qualified": false
+}
