@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the [current-source qualification audit](../recovery/2026-11-05/governance-next-qualification-audit.md) shows current signed artifacts still cannot handle a business request if installed. Resolve the connected native custody → authenticated request channel → actual compiled consumer path through a reviewed local design; do not repeat packaging or blindly install still-refusing artifacts. Production resource-owner/writer cutover and full A2/A9 are distinct gates.
 
+## Cockpit guidance and implementation preparation
+
+~~Internal source-bound cockpit discovery guidance completed~~ ([guide](knowledge/cockpit-integration-discovery-source-supplement.md)); five current hashes/four links/two no-prefetch targets pass finite root assertions and independent source review. No customer/media/browser acceptance. ~~Private-handler numbered implementation plan prepared~~ ([plan](../superpowers/plans/2026-11-05-private-governance-handler-composition.md)); review corrected normal token length to110bytes, preserves whole4096-byte envelope and all existing authority refusals. Local implementation decision remains pending; no test/runtime/provider operation. [Evidence](../recovery/2026-11-05/cockpit-guidance-and-handler-plan/README.md).
+
 ## Private handler composition — reviewed next implementation unit
 
 ~~Concrete source design and independent review completed~~ ([proposal](../recovery/2026-11-05/governance-private-handler-composition-proposal.md)): extract the existing validated HTTP cores, compose them with the actual private graph and prepare the existing six-operation data adapter. Preserve legacy routes and no-provider history recovery; no listener, startup, positive identity or operational activation. Local implementation awaits the standing validation-first decision; custody/material supply and same-consumer qualification remain explicit later gates, not silently satisfied.
