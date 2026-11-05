@@ -1,0 +1,260 @@
+{
+  "state": "prepared-not-authorized",
+  "batch": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c",
+  "entitlements": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+    "sha256": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c",
+    "size": 181,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16836669,
+    "mtime_ns": 1793905078478643765,
+    "ctime_ns": 1793905078478643765
+  },
+  "leaves": [
+    {
+      "role": "owner",
+      "identifier": "com.visionxixlabs.axiom.synthetic.launch-owner",
+      "sourceArtifact": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-independent-leaves-6018e44c/stage/assembly/Axiom Synthetic Custodian.app/Contents/Helpers/AxiomSyntheticLaunchOwner",
+        "sha256": "fb1331cbe75470ef08d7780c7852edddf5dbaaa5089fa7f8a5867e25e93491a0",
+        "size": 79544,
+        "uid": 501,
+        "mode": "0o600",
+        "dev": 16777232,
+        "ino": 16769102,
+        "mtime_ns": 1793904145421996235,
+        "ctime_ns": 1793904145425080071
+      },
+      "target": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner",
+        "sha256": "fb1331cbe75470ef08d7780c7852edddf5dbaaa5089fa7f8a5867e25e93491a0",
+        "size": 79544,
+        "uid": 501,
+        "mode": "0o600",
+        "dev": 16777232,
+        "ino": 16836670,
+        "mtime_ns": 1793905078479008224,
+        "ctime_ns": 1793905078479008224
+      },
+      "commands": [
+        [
+          "/usr/bin/codesign",
+          "--force",
+          "--sign",
+          "4C2E59F247CA275001586AE020A9269464529452",
+          "--identifier",
+          "com.visionxixlabs.axiom.synthetic.launch-owner",
+          "--options",
+          "runtime",
+          "--entitlements",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+          "--timestamp=none",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner"
+        ],
+        [
+          "/usr/bin/codesign",
+          "--verify",
+          "--strict",
+          "--verbose=2",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner"
+        ],
+        [
+          "/usr/bin/codesign",
+          "--display",
+          "--verbose=4",
+          "--entitlements",
+          ":-",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner"
+        ]
+      ],
+      "execute": false
+    },
+    {
+      "role": "maintenance",
+      "identifier": "com.visionxixlabs.axiom.synthetic.provisioner",
+      "sourceArtifact": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-independent-leaves-6018e44c/stage/assembly/Axiom Synthetic Custodian.app/Contents/Helpers/AxiomSyntheticProvisioner",
+        "sha256": "0835680f3db7d707c67a7071971750d18de8937f9b4a7be36cf0b3fd63624dba",
+        "size": 91896,
+        "uid": 501,
+        "mode": "0o600",
+        "dev": 16777232,
+        "ino": 16769121,
+        "mtime_ns": 1793904145815825894,
+        "ctime_ns": 1793904145818810397
+      },
+      "target": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticProvisioner",
+        "sha256": "0835680f3db7d707c67a7071971750d18de8937f9b4a7be36cf0b3fd63624dba",
+        "size": 91896,
+        "uid": 501,
+        "mode": "0o600",
+        "dev": 16777232,
+        "ino": 16836671,
+        "mtime_ns": 1793905078479432016,
+        "ctime_ns": 1793905078479432016
+      },
+      "commands": [
+        [
+          "/usr/bin/codesign",
+          "--force",
+          "--sign",
+          "4C2E59F247CA275001586AE020A9269464529452",
+          "--identifier",
+          "com.visionxixlabs.axiom.synthetic.provisioner",
+          "--options",
+          "runtime",
+          "--entitlements",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+          "--timestamp=none",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticProvisioner"
+        ],
+        [
+          "/usr/bin/codesign",
+          "--verify",
+          "--strict",
+          "--verbose=2",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticProvisioner"
+        ],
+        [
+          "/usr/bin/codesign",
+          "--display",
+          "--verbose=4",
+          "--entitlements",
+          ":-",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticProvisioner"
+        ]
+      ],
+      "execute": false
+    },
+    {
+      "role": "bootstrap",
+      "identifier": "com.visionxixlabs.axiom.synthetic.bootstrap",
+      "sourceArtifact": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-independent-leaves-6018e44c/stage/payload/__axiom_runtime__/origin-bootstrap",
+        "sha256": "a3013078ec6976efdd81d2e916fce4f1a737047a2ffe28bcec2fce4accd64ad9",
+        "size": 34688,
+        "uid": 501,
+        "mode": "0o600",
+        "dev": 16777232,
+        "ino": 16769126,
+        "mtime_ns": 1793904145865382435,
+        "ctime_ns": 1793904145867589520
+      },
+      "target": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin-bootstrap",
+        "sha256": "a3013078ec6976efdd81d2e916fce4f1a737047a2ffe28bcec2fce4accd64ad9",
+        "size": 34688,
+        "uid": 501,
+        "mode": "0o600",
+        "dev": 16777232,
+        "ino": 16836672,
+        "mtime_ns": 1793905078479829766,
+        "ctime_ns": 1793905078479829766
+      },
+      "commands": [
+        [
+          "/usr/bin/codesign",
+          "--force",
+          "--sign",
+          "4C2E59F247CA275001586AE020A9269464529452",
+          "--identifier",
+          "com.visionxixlabs.axiom.synthetic.bootstrap",
+          "--options",
+          "runtime",
+          "--entitlements",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+          "--timestamp=none",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin-bootstrap"
+        ],
+        [
+          "/usr/bin/codesign",
+          "--verify",
+          "--strict",
+          "--verbose=2",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin-bootstrap"
+        ],
+        [
+          "/usr/bin/codesign",
+          "--display",
+          "--verbose=4",
+          "--entitlements",
+          ":-",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin-bootstrap"
+        ]
+      ],
+      "execute": false
+    },
+    {
+      "role": "guard",
+      "identifier": "com.visionxixlabs.axiom.synthetic.guard",
+      "sourceArtifact": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-bound-guard-6018e44c/stage/payload/node_modules/@axiom/verified-issuer-runtime/native/origin_guard.node",
+        "sha256": "6d81f559db3bbb0cb5f8743202c072b54dec2c0e3716f467a559bad182c9f54b",
+        "size": 75120,
+        "mode": "0o600",
+        "uid": 501,
+        "dev": 16777232,
+        "ino": 16836113,
+        "mtime_ns": 1793904972322119231,
+        "ctime_ns": 1793904972325682609
+      },
+      "target": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node",
+        "sha256": "6d81f559db3bbb0cb5f8743202c072b54dec2c0e3716f467a559bad182c9f54b",
+        "size": 75120,
+        "uid": 501,
+        "mode": "0o600",
+        "dev": 16777232,
+        "ino": 16836673,
+        "mtime_ns": 1793905078480031642,
+        "ctime_ns": 1793905078480031642
+      },
+      "commands": [
+        [
+          "/usr/bin/codesign",
+          "--force",
+          "--sign",
+          "4C2E59F247CA275001586AE020A9269464529452",
+          "--identifier",
+          "com.visionxixlabs.axiom.synthetic.guard",
+          "--options",
+          "runtime",
+          "--entitlements",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+          "--timestamp=none",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node"
+        ],
+        [
+          "/usr/bin/codesign",
+          "--verify",
+          "--strict",
+          "--verbose=2",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node"
+        ],
+        [
+          "/usr/bin/codesign",
+          "--display",
+          "--verbose=4",
+          "--entitlements",
+          ":-",
+          "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node"
+        ]
+      ],
+      "execute": false
+    }
+  ],
+  "per_command_seconds": 10,
+  "per_command_output_bytes": 65536,
+  "signing_operations": 4,
+  "conditional_static_commands": 8,
+  "retries": 0,
+  "stopWholeBatchOnAnyFailure": true,
+  "requireStandaloneNoBoundPlistOrSeal": true,
+  "requireExactFileSetAndUnchangedNonTargets": true,
+  "targetsExecutable": false,
+  "installationAuthorized": false,
+  "activationAllowed": false
+}

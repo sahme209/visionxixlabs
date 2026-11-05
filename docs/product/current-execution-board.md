@@ -2,6 +2,12 @@
 
 Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
+## November5 remaining native signatures — exact batch prepared
+
+1. ~~Frozen detached0600 copies of owner, maintenance, bootstrap and guard prepared from existing compiled artifacts~~ ([review packet](../recovery/2026-11-05/governance-remaining-leaf-signing/REVIEW.md)); original full bindings preserved, no repeated compile or key use.
+2. **Pending approval:** one four-target signing/static batch, stop whole remainder on any failure, no retry, no app sealing/execution/install.
+3. **Open:** actual assembly/integrity/custody/compiled consumer/System qualification, full enforcement and native enrollment. Signature success cannot satisfy these gates; all21parents stay open.
+
 ## November5 standalone broker signature and bound guard — locally verified
 
 ~~New exact detached broker signing/static sequence passed without bundle effects~~ ([evidence](../recovery/2026-11-05/governance-detached-broker-preparation/README.md)); independent review confirms original input/file-set closure and thin standalone display,0600/unrun. Approval consumed. ~~Actual guard-only build now binds that observed broker signature~~ ([evidence](../recovery/2026-11-05/governance-bound-guard-preparation/README.md)), compile0/empty stderr,0600/never loaded. No install/runtime/custody/Governance acceptance. Other role signatures, final assembly and actual qualification remain open; all21parents preserved.
