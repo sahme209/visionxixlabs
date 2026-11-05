@@ -1,0 +1,91 @@
+{
+  "actualCommandsCompleted": [
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--force",
+        "--sign",
+        "4C2E59F247CA275001586AE020A9269464529452",
+        "--identifier",
+        "com.visionxixlabs.axiom.synthetic.guard",
+        "--options",
+        "runtime",
+        "--entitlements",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+        "--timestamp=none",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.035044500000000006,
+      "stdout_bytes": 0,
+      "stderr_bytes": 177
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--verbose=2",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.01066983399999999,
+      "stdout_bytes": 0,
+      "stderr_bytes": 347
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--entitlements",
+        ":-",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.010723125,
+      "stdout_bytes": 0,
+      "stderr_bytes": 1269
+    }
+  ],
+  "artifact_after": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node",
+    "sha256": "820f33d35ee78851f54dd2e18b3f8ce734814aa4bc7ca425e6520ed90bbe506e",
+    "size": 92992,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16837234,
+    "mtime_ns": 1793905239169563648,
+    "ctime_ns": 1793905239169641689
+  },
+  "receiptParserError": "plistlib.InvalidFileException on empty saved guard display stdout; occurred after all12 commands terminal0",
+  "machOFileType": 8,
+  "embeddedSignatureSlots": [
+    {
+      "slot": 0,
+      "magic": "0xfade0c02",
+      "length": 371,
+      "sha256": "4eff899186275d6a2ba589ceb502e0e1bd481079558054272ec5f5f29b27dfd6"
+    },
+    {
+      "slot": 2,
+      "magic": "0xfade0c01",
+      "length": 200,
+      "sha256": "227f38e584e2bddd4f41e2167ef21f6643c21689721eef2abd8ba657dd2f1ad3"
+    },
+    {
+      "slot": 65536,
+      "magic": "0xfade0b01",
+      "length": 4688,
+      "sha256": "f8ee5a59a21509766321372bc2b95505607c4ca3d9099179cd08a260f01743ca"
+    }
+  ],
+  "xmlAndDerEntitlementSlotsAbsent": true,
+  "targetExecuted": false,
+  "retryAuthorized": false,
+  "observationOnlyNoNewAPICall": true
+}

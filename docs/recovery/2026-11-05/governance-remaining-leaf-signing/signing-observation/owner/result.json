@@ -1,0 +1,71 @@
+{
+  "role": "owner",
+  "results": [
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--force",
+        "--sign",
+        "4C2E59F247CA275001586AE020A9269464529452",
+        "--identifier",
+        "com.visionxixlabs.axiom.synthetic.launch-owner",
+        "--options",
+        "runtime",
+        "--entitlements",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+        "--timestamp=none",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.037338791,
+      "stdout_bytes": 0,
+      "stderr_bytes": 185
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--verify",
+        "--strict",
+        "--verbose=2",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.011077207999999998,
+      "stdout_bytes": 0,
+      "stderr_bytes": 363
+    },
+    {
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--entitlements",
+        ":-",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner"
+      ],
+      "state": "completed",
+      "exit": 0,
+      "elapsed_seconds": 0.012395083000000001,
+      "stdout_bytes": 184,
+      "stderr_bytes": 1284
+    }
+  ],
+  "artifact_after": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner",
+    "sha256": "07d5a9c58a6894b9f9021db67b34d22c3d1c799a6ed1fd0b921712aef7b33e3f",
+    "size": 97776,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16837201,
+    "mtime_ns": 1793905238992334705,
+    "ctime_ns": 1793905238992411538
+  },
+  "profile_matches": true,
+  "standalone_display_matches": true,
+  "exact_file_set_unchanged": true,
+  "nonTargetsAndOriginalsUnchanged": true,
+  "targetExecuted": false
+}

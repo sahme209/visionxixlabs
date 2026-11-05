@@ -1,0 +1,51 @@
+{
+  "completedCommandRoles": [
+    "owner",
+    "maintenance",
+    "bootstrap",
+    "guard"
+  ],
+  "all12CommandsExitedZero": true,
+  "expectedEntitlementDictionaryRoles": [
+    "owner",
+    "maintenance",
+    "bootstrap"
+  ],
+  "guardSavedDisplayEmpty": true,
+  "guardEntitlementDictionaryProfileUnconfirmed": true,
+  "guardEncodedEntitlementSlotsAbsent": true,
+  "exactBatchFileSetUnchanged": true,
+  "currentTargets": [
+    {
+      "role": "owner",
+      "sha256": "07d5a9c58a6894b9f9021db67b34d22c3d1c799a6ed1fd0b921712aef7b33e3f",
+      "mode": "0o600",
+      "size": 97776
+    },
+    {
+      "role": "maintenance",
+      "sha256": "783f845bce2867ceada5440e1fa5ada1766d9a5386a1b6cf1e30a2b3b54d0356",
+      "mode": "0o600",
+      "size": 110064
+    },
+    {
+      "role": "bootstrap",
+      "sha256": "8dae44a1a6f0857e5716d78230b3b8ff7a4845ff3da5c2d8195d65632bfdaa12",
+      "mode": "0o600",
+      "size": 53216
+    },
+    {
+      "role": "guard",
+      "sha256": "820f33d35ee78851f54dd2e18b3f8ce734814aa4bc7ca425e6520ed90bbe506e",
+      "mode": "0o600",
+      "size": 92992
+    }
+  ],
+  "allOriginalArtifactByteHashesUnchanged": true,
+  "allFourStaticSequencesAccepted": false,
+  "receiptErrorPreserved": true,
+  "batchConsumed": true,
+  "automaticRetryAuthorized": false,
+  "targetsExecuted": false,
+  "installationOrIdentityQualified": false
+}

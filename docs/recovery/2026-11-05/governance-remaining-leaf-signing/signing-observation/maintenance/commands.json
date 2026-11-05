@@ -1,0 +1,52 @@
+[
+  {
+    "argv": [
+      "/usr/bin/codesign",
+      "--force",
+      "--sign",
+      "4C2E59F247CA275001586AE020A9269464529452",
+      "--identifier",
+      "com.visionxixlabs.axiom.synthetic.provisioner",
+      "--options",
+      "runtime",
+      "--entitlements",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+      "--timestamp=none",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticProvisioner"
+    ],
+    "state": "completed",
+    "exit": 0,
+    "elapsed_seconds": 0.03535616700000001,
+    "stdout_bytes": 0,
+    "stderr_bytes": 185
+  },
+  {
+    "argv": [
+      "/usr/bin/codesign",
+      "--verify",
+      "--strict",
+      "--verbose=2",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticProvisioner"
+    ],
+    "state": "completed",
+    "exit": 0,
+    "elapsed_seconds": 0.012240374999999984,
+    "stdout_bytes": 0,
+    "stderr_bytes": 363
+  },
+  {
+    "argv": [
+      "/usr/bin/codesign",
+      "--display",
+      "--verbose=4",
+      "--entitlements",
+      ":-",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticProvisioner"
+    ],
+    "state": "completed",
+    "exit": 0,
+    "elapsed_seconds": 0.011353333999999993,
+    "stdout_bytes": 184,
+    "stderr_bytes": 1283
+  }
+]

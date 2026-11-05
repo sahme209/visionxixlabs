@@ -5,7 +5,7 @@ Reconciled November4,2026. Each linked receipt identifies its exact source versi
 ## November5 remaining native signatures — exact batch prepared
 
 1. ~~Frozen detached0600 copies of owner, maintenance, bootstrap and guard prepared from existing compiled artifacts~~ ([review packet](../recovery/2026-11-05/governance-remaining-leaf-signing/REVIEW.md)); original full bindings preserved, no repeated compile or key use.
-2. **Pending approval:** one four-target signing/static batch, stop whole remainder on any failure, no retry, no app sealing/execution/install.
+2. **Consumed observation:** all12approved commands exited0; firstthree profile checks pass. Final guard receipt parser rejected empty display stdout. Saved-byte inspection finds no XML/DER entitlement slots; literal dictionary-profile acceptance remains unconfirmed. No retry/resign or final app sealing/execution/install.
 3. **Open:** actual assembly/integrity/custody/compiled consumer/System qualification, full enforcement and native enrollment. Signature success cannot satisfy these gates; all21parents stay open.
 
 ## November5 standalone broker signature and bound guard — locally verified

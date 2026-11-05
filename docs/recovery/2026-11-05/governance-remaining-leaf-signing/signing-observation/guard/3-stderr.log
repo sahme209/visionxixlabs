@@ -1,0 +1,31 @@
+Executable=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node
+Identifier=com.visionxixlabs.axiom.synthetic.guard
+Format=Mach-O thin (arm64)
+CodeDirectory v=20500 size=371 flags=0x10000(runtime) hashes=5+2 location=embedded
+VersionPlatform=1
+VersionMin=851968
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=4eff899186275d6a2ba589ceb502e0e1bd481079
+CandidateCDHashFull sha256=4eff899186275d6a2ba589ceb502e0e1bd481079558054272ec5f5f29b27dfd6
+Hash choices=sha256
+CMSDigest=4eff899186275d6a2ba589ceb502e0e1bd481079558054272ec5f5f29b27dfd6
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=32768
+Executable Segment flags=0x0
+Page size=16384
+CDHash=4eff899186275d6a2ba589ceb502e0e1bd481079
+Signature size=4680
+Authority=Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Signed Time=Nov 5, 2026 at 14:00:39
+Info.plist=not bound
+TeamIdentifier=FG5N98FE6W
+Runtime Version=26.5.0
+Sealed Resources=none
+Internal requirements count=1 size=200
+warning: Specifying ':' in the path is deprecated and will not work in a future release
+Total signatures=1
+Chosen signature=1
