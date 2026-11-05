@@ -1,0 +1,10 @@
+{
+  "files": {
+    "packages/verified-issuer-runtime/native/origin_broker.c": "21200e4f821d3fbeda2a48e196c6ef4c60c83aefa26cb6a9a5f44edc3fdf5489",
+    "packages/verified-issuer-runtime/native/origin_runtime_protocol.c": "9c422d5b474c287b1c0bfdf2a3b28e132f226e421932d4ca3e431c056f9be648",
+    "packages/verified-issuer-runtime/native/origin_config.h": "de02b11bfc8562fbe735e27a8f9ec989e56c781caf7e72cdc1678ffe0021ee72"
+  },
+  "operations_performed": "ordinary source reads only",
+  "mechanism_qualified": false,
+  "implementation_authorized": false
+}

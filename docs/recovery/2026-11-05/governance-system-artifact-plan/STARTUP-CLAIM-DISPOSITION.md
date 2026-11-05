@@ -18,4 +18,4 @@ Neither option may produce a positive gate from metadata or mocks. Select or rej
 
 ## Next independent input
 
-The separate single pinned-Node metadata read remains necessary to resolve the Node/addon role profile and broker requirement dependency. It does not settle persistent claim enforcement. No additional external source, signature/API call, Node invocation or privileged action was used for this analysis. Local source provenance: claim-local-reference-bindings.json.
+The pinned Node display, separate signed minimal-JIT copy/static checks and bounded arithmetic invocation are now complete; their evidence is in sibling observation directories. They do not qualify addon/private-consumer or pre-main behavior. The next candidate is specified in APPEND-CONSUMPTION-CANDIDATE.md for review; no implementation or platform enforcement is authorized or accepted. It does not settle persistent claim enforcement. No additional external source, signature/API call, Node invocation or privileged action was used for this analysis. Local source provenance: claim-local-reference-bindings.json.
