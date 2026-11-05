@@ -99,9 +99,9 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     try {
       const maxTokens = opts.maxTokens ?? 500;
       const temperature = opts.temperature ?? 0.2;
-      // The release-workflow path must not be an unmetered escape hatch from
-      // the browser generation route. A meter outage also fails closed so a
-      // governed workspace never produces an unaccounted provider call.
+      // Scoped calls check the current credit meter and refuse on an outage.
+      // This read does not reserve capacity or admit a dispatch. An upstream
+      // financial hold, if required, must be established by the caller.
       if (orgId) {
         const creditDecision = await checkWorkspaceAICredits(
           orgId,
@@ -170,8 +170,9 @@ export function makeInstrumentedFetcher(opts: InstrumentedFetcherOptions): Ratio
     const latencyMs = now().getTime() - startMs;
     // Keep the budget meter tenant-scoped without retaining prompt text,
     // system instructions, provider credentials, or provider account data.
-    // Usage persistence is best effort; the preflight above is the safety
-    // boundary and must already have completed before the provider call.
+    // This post-call usage write is not a pre-call financial reservation.
+    // An unscoped call skips this branch; missing usage is not proof of zero
+    // cost. The timeout race below does not cancel an in-flight provider call.
     if (orgId && typeof raw.provider === "string" && typeof raw.model === "string" && raw.usage) {
       const usageWrite = await recordAIUsageEvent({
         organizationId: orgId,

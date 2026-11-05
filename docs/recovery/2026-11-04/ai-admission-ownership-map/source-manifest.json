@@ -1,0 +1,81 @@
+{
+  "files": [
+    {
+      "path": "app/api/ai/generate/route.ts",
+      "sha256": "030f73f18e9f945a4bd84172aa1a9cefe3970119703ee7955bbcc40d7293cc55"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/governedAiCall.ts",
+      "sha256": "990a8fcfbf66e0b912eb1da79e707f228f74682ea516f21bc3b3800aa3553ced"
+    },
+    {
+      "path": "lib/workforce/pipelines/codeProposeRealExecutor.ts",
+      "sha256": "8d31d7678f3b7a2fb78b115b90327bb7e4825e7076121e7c0028040c3b828d9e"
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "0fa0c2c83968ce333bd1ebedff09ed05d487ad9f8da522ee5d9b9d6d93534d79"
+    },
+    {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "caa33541753d3629424e7bb5302f634ffa89eb2186c9e1d6581c29b8eeaf2ceb"
+    },
+    {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "sha256": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce"
+    },
+    {
+      "path": "lib/ai/orchestrator.ts",
+      "sha256": "289333872bfa934ef59edd089f8ccb3f2e15ef9e3fd7ff8461c98bfe69d74bc5"
+    },
+    {
+      "path": "lib/releaseops/instrumentedAiFetcher.ts",
+      "sha256": "ae256805c2196f74be02cf13f67502c9e2b206085a40691e1cee452320bdb544"
+    },
+    {
+      "path": "lib/agents/aiWorkflowTranslator.ts",
+      "sha256": "fca768e7887bbcc53886b06164ddc1dbf00c30e509ce9332f697c57e6185e663"
+    },
+    {
+      "path": "lib/insights/tenantInsightsSynthesizer.ts",
+      "sha256": "bc2b6bf461b4308016b17bc663a1cd84c420884c9a05b402f95bcb5c2e7b655a"
+    },
+    {
+      "path": "app/api/chat/route.ts",
+      "sha256": "8efae19c7ecb6da9754cb35ae369884612b7e8b2f44681728b67708814445730"
+    },
+    {
+      "path": "lib/growth/imageGenerator.ts",
+      "sha256": "f88aa9e46a29e9209e58d75bc9b0cc553512a5ed50d528bf5c7ed1a1278ff4b3"
+    },
+    {
+      "path": "app/api/cron/linkedin-daily-drafts/route.ts",
+      "sha256": "c9c123b46dac1cc770a7ad7c2c79b42f68926b2ace597036aad110a45f8d16ff"
+    },
+    {
+      "path": "app/api/admin/growth/drafts/route.ts",
+      "sha256": "ffe050619f4f219721b54e5cf8384f8cac4dd87ac8ae73a5013acbd7881dd999"
+    },
+    {
+      "path": "app/admin/growth/content/page.tsx",
+      "sha256": "59b3304ee05cf1d8591777da637b6540808fabf4421c64a89a018ad589b9ae1b"
+    },
+    {
+      "path": "app/api/admin/agi-smoke-test/route.ts",
+      "sha256": "ba0255b8b3f51652ae934d4bbac8a3cda58fd9f424cd3c3aa3996247f2807159"
+    },
+    {
+      "path": "app/api/admin/anthropic-test/route.ts",
+      "sha256": "d3139ed491db2c621a704e2bb2588e486a38e4c2f32b41055a45d089ec9e5eb0"
+    },
+    {
+      "path": "app/api/workflows/translate/route.ts",
+      "sha256": "eecde964976ae7786896df126e82c9923507db7d440bad7c17293afc62824d30"
+    },
+    {
+      "path": "app/api/insights/tenant/route.ts",
+      "sha256": "d596c2ac8aecbbe13747d2aa58467cc3c03c7188c8284e2c90a2936abb6648fb"
+    }
+  ],
+  "qualification": "inspected source only; not complete request graph"
+}

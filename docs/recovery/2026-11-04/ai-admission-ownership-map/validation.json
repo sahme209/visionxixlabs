@@ -1,0 +1,21 @@
+{
+  "selectedSites": 69,
+  "callerFiles": 47,
+  "everyOriginalSitePreservedExactlyOnce": true,
+  "counts": {
+    "F1": 4,
+    "F10": 33,
+    "F2": 23,
+    "F3": 1,
+    "F4": 1,
+    "F5": 2,
+    "F6": 1,
+    "F7": 1,
+    "F8": 1,
+    "F9": 2
+  },
+  "qualification": "partition/provenance validation only; not upstream semantic or financial acceptance",
+  "originalCallerHashesMatchedBeforeCommentCorrection": true,
+  "currentBindings": "68sites exact original caller bytes;1instrumented fetcher site whole-file comment-only reconstruction",
+  "runtimeBehaviorChanged": false
+}
