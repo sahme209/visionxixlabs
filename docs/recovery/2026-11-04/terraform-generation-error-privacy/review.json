@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear",
+  "scope": "public500message only; internal logs and broader security separate",
+  "execution": "read-only no reruns"
+}

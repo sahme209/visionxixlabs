@@ -62,6 +62,6 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Generation failed";
     console.error("[terraform/generate]", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: "Terraform generation could not be completed." }, { status: 500 });
   }
 }

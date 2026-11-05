@@ -223,3 +223,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November 4 — saved-action source mapping reconciled
 ~~The 46 main Agent control records are requalified to Git b3612a09~~ ([evidence](../recovery/2026-11-04/agent-approved-port-binding-requalification/README.md)). One expected stale baseline failure became five passing unchanged AST checks. Replacing only the reviewed imported-port block restores the entire prior Git file. Tests, registry pins, control IDs, purposes and node hashes are unchanged; independent review passed. Running 475 remains older than this local repair. No native/customer/Governance acceptance transfers; all 21 parents remain open.
+
+### November 4 — Terraform generation error privacy
+~~Public generation failures no longer reflect database/generator diagnostics~~ ([evidence](../recovery/2026-11-04/terraform-generation-error-privacy/README.md)). Actual handler RED2fail/4compatibilitypass became six focused passes; independent review passed. One public response literal only; statuses, gates, arguments and internal diagnostics unchanged. No real generation/provider/DB, root build/types or production acceptance; internal log privacy remains separate. All21parents/current475app preserved.

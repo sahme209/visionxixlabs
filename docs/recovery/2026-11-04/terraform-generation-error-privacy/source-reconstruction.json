@@ -1,0 +1,8 @@
+{
+  "source": "app/api/terraform/generate/route.ts",
+  "onlyPublic500LiteralChanged": true,
+  "restoresWholeGitBaseline": true,
+  "baselineCommit": "d3672fd5a40d08d491cfecf04a531ac93113721c",
+  "oldSha256": "c214fff7ffb23e30bd83b270cc8f26647fd62339766005298dbd5fe210b0d244",
+  "currentSha256": "fd798f5eb052ebb7150a4e9210e95fa3c7d1493d23f2290cecaf516da5b15202"
+}
