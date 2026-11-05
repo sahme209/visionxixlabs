@@ -1,0 +1,13 @@
+{
+  "files": {
+    "scripts/governance_local_issuer/native_overlay.py": "4201318ae62dc89c3eba6a4048896dede274b365fa0754ec8055cf51095373a6",
+    "packages/verified-issuer-runtime/native/owner_config.h": "953bc71af6aa4ed73ef4edfe5f6eb80a38c26a8bc3263047595920a86d9659cf",
+    "packages/verified-issuer-runtime/native/origin_owner_binding.c": "2677c5d4a4723782f0e82576df0fd388c31c75626b7d8e850a8a0bc19b833c1a",
+    "packages/verified-issuer-runtime/native/origin_launch_owner.c": "b0403843963801d873ba59f7ca08c9d769ed6fb276cf0710bae04c45e9b3cd80",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecStaticCode.h": "4647531b672952064d7d014057c5147722babb29aa0ab6d11b8fbd45b3fde532",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecCode.h": "47a0cf42f3babd16f5f8523464f9895cc2302650c35e401e1d9923d6c30769db"
+  },
+  "scope": "source/local SDK text only",
+  "new_security_calls_performed": false,
+  "implementation_authorized": false
+}
