@@ -1,0 +1,15 @@
+{
+  "reviewer": "agent_reliability_review",
+  "recordedBy": "root from actual review message",
+  "decision": "CLEAR for one fresh isolated run",
+  "packetSha256": "752390a8130da50b0dd770921bac797dac96c1b5b08fa216853fce6c156c1512",
+  "reviewScope": [
+    "exact four runner selection/count-label transformations from previously reviewed runner",
+    "fresh private socket-only owned PostgreSQL target and private generated client",
+    "hoisted default-deny synthetic fetch before installed SDK imports",
+    "actual coding claim/admission/manager/SDK/usage and dual-ledger assertions",
+    "disabled-after-claim refusal and burned capability replay"
+  ],
+  "runtimeChanges": false,
+  "executionByReviewer": false
+}

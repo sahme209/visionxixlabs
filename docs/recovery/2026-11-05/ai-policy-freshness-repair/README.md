@@ -24,7 +24,7 @@ The explicit user decision approved the [reviewed repair](../generic-ai-policy-r
 | Family | Current local status | Required remaining proof |
 | --- | --- | --- |
 | Generic `/api/ai/generate` | Actual route, durable reservation/claim, current policy and installed SDK synthetic transport exercised | Real authentication/provider/production acceptance and wider schedules |
-| Fixed-hold coding proposal | Both actual callers now supply policy; actual durable coding admission and ledger refusals tested | Composed executor-to-SDK/usage and wider interleavings/variants |
+| Fixed-hold coding proposal | Both actual callers supply policy; durable admission/ledger refusals plus [two subsequent manager/installed-SDK/usage journeys](../coding-policy-sdk-composition/README.md) tested with synthetic transport | Full coding executor, real provider/authentication/settlement and wider interleavings/variants |
 | Internal admitted text stream | Same one-use/model/policy boundary; focused mocked manager tests | No production caller identified by this static search; real stream/SDK acceptance remains unproven |
 | Quoted coding text | Separate quote issuer/accounting semantics preserved; does not acquire this new requirement | Current policy composition and qualified quote issuance remain separate; no activation implied |
 | Structured extraction / structured stream | Existing authority/financial paths retained; not granted this text-policy coverage | Complete current-policy/final-transport qualification |

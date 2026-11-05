@@ -1,0 +1,8 @@
+{
+  "scope": "two new test/runner sources only, not full runtime custody",
+  "files": {
+    "lib/workforce/pipelines/__tests__/codingPolicySDK.pg.test.ts": "eb2c79daa72b5b5a1534313276a583134d31dff440a8599f1918bbef3d8fc2cd",
+    "scripts/run-coding-policy-sdk-postgres.py": "48b58c27203d6cba2089090d6a147eb90619f46e370787ca76a002125ced5496"
+  },
+  "runtimeBase": "f84719d4357709108b41bc77bc0806860004b579"
+}

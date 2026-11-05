@@ -1,0 +1,35 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR for finite local coding-stage SDK composition evidence",
+  "reviewMode": "read-only source and saved evidence; no rerun/DB/provider execution",
+  "packetSha256": "752390a8130da50b0dd770921bac797dac96c1b5b08fa216853fce6c156c1512",
+  "directSourceHashAfterMatches": true,
+  "results": {
+    "passed": 2,
+    "failed": 0,
+    "pending": 0
+  },
+  "ownedPostgresStopped": true,
+  "scopedTypesExitCode": 0,
+  "realBoundaries": [
+    "coding stage claim and fixed-hold admission",
+    "manager and installed Gateway SDK",
+    "durable usage attribution and both ledger links"
+  ],
+  "syntheticBoundaries": [
+    "fixed final SDK fetch response; never forwards",
+    "fresh local workspace/member/policy/budget fixtures"
+  ],
+  "provenCases": [
+    "one admitted call produces one synthetic SDK dispatch and one usage ID linked to both pending-settlement ledgers; capability replay refused",
+    "policy disabled after claim produces zero SDK fetch/usage; both unknown ledger rows unchanged; re-enable cannot reuse burned capability"
+  ],
+  "notProven": [
+    "entire codeProposeRealExecutor orchestration",
+    "real provider or authentication",
+    "settlement or pricing/quoted coding",
+    "all schedules or wire atomicity",
+    "full Governance/A2 qualification"
+  ],
+  "runtimeChangedByThisTestUnit": false
+}
