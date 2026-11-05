@@ -1,0 +1,12 @@
+{
+  "primaryToolSession": 56391,
+  "packetSha256": "c98cbc5472045983cc008bb66eef68a69f3280791fb8969eb70ad5bdbd90c525",
+  "status": "terminal-initial-failure-and-corrected-success",
+  "fixture": "one fresh private socket-only PostgreSQL cluster; exact root printed at termination",
+  "realProvider": false,
+  "productionChanged": false,
+  "correctedToolSession": 88438,
+  "correctedToolExit": 0,
+  "correctedFixture": "/private/tmp/axiom-generic-ai-pg-rfvvqnnm",
+  "bothOwnedServersStopped": true
+}

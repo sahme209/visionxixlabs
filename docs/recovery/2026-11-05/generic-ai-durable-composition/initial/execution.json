@@ -1,0 +1,12 @@
+{
+  "primaryToolSession": 56391,
+  "primaryExitCode": 1,
+  "ownedRoot": "/private/tmp/axiom-generic-ai-pg-7ob8bv13",
+  "packetSha256": "c98cbc5472045983cc008bb66eef68a69f3280791fb8969eb70ad5bdbd90c525",
+  "passed": 0,
+  "failed": 2,
+  "skipped": 0,
+  "ownedServerStopped": true,
+  "diagnosis": "fixture blank AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME means requested but invalid; withIsolatedWorkspaceScope refuses before financial/provider path; correction must use existing false value",
+  "applicationChanged": false
+}

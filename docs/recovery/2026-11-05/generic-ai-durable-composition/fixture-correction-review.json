@@ -1,0 +1,9 @@
+{
+  "reviewer": "agent_reliability_review",
+  "result": "clear",
+  "exactDelta": "AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME '' -> 'false' in test fixture only",
+  "reason": "actual requested predicate treats defined blank as opt-in; explicit false selects existing legacy path",
+  "priorRun": "0pass2fail0skipped; original stopped fixture never reused",
+  "correctedPacketSha256": "5759e6e053bbc37f38f0edd84c10f3bb3564596f13293df8cfa2b39299a0e161",
+  "scope": "one fresh cluster, no app/financial/runner change"
+}

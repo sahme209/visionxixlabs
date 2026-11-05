@@ -1,0 +1,6 @@
+{
+  "packetSha256": "c98cbc5472045983cc008bb66eef68a69f3280791fb8969eb70ad5bdbd90c525",
+  "test": "app/api/ai/generate/__tests__/durableComposition.pg.test.ts",
+  "execute": false,
+  "cases": "generic-durable"
+}

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)(deny file-write*)",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "--project",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/generic-ai-durable-composition/types.json"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 1.505,
+  "stdoutBase64": "",
+  "stderrBase64": "",
+  "processReaped": true,
+  "schemaBytesMatchCurrentVerifiedStage": true,
+  "scope": "new test and actual transitive source types only; no app code/DB/provider execution"
+}

@@ -1,0 +1,3 @@
+pg_ctl: server is running (PID: 80695)
+/opt/homebrew/Cellar/postgresql@17/17.11_1/bin/postgres "-D" "/private/tmp/axiom-generic-ai-pg-rfvvqnnm/data" "-k" "/private/tmp/axiom-generic-ai-pg-rfvvqnnm/socket" "-p" "55492" "-c" "listen_addresses=" "-c" "unix_socket_permissions=0700"
+
