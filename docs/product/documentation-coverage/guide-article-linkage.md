@@ -34,4 +34,14 @@ Indexed guide paths: 27. Stored article revisions: 25, including history. Custom
 | [Tour controls](../knowledge/website-scripted-tour-controls.md) | [website-teaching-navigation-controls.r1.json](articles/website-teaching-navigation-controls.r1.json) | Full control/state mapping, stable reviewed IDs, current supported version, authentic accessible media and genuine editorial/customer eligibility remain open. |
 | [Workflow illustration](../knowledge/website-workflow-visual.md) | [website-teaching-navigation-controls.r1.json](articles/website-teaching-navigation-controls.r1.json) | Full control/state mapping, stable reviewed IDs, current supported version, authentic accessible media and genuine editorial/customer eligibility remain open. |
 
+## November 5 current-workflow supplements — internal drafts only
+
+| Source guide | New source-grounded draft | Acceptance still required |
+| --- | --- | --- |
+| [Repository operations](../knowledge/repository-operations-controls.md) | [repository-operations-controls.r1.json](articles/repository-operations-controls.r1.json) | Exact supported-release/editorial/media/native/retrieval acceptance; existing acquisition/nested records remain historical and unchanged. |
+| [Browser sign-in and sessions](../knowledge/browser-signin-and-session-controls.md) | [browser-signin-session-controls.r1.json](articles/browser-signin-session-controls.r1.json) | Real browser/provider/session recovery and genuine editorial/customer qualification; existing signup/pairing/native records remain separate. |
+| [Shared website navigation](../knowledge/website-primary-navigation-controls.md), [Docs discovery](../knowledge/website-docs-navigation-controls.md) | [website-navigation-docs-discovery.r1.json](articles/website-navigation-docs-discovery.r1.json) | Supported browser/keyboard/AT/destination/media/editorial/retrieval qualification; older teaching/demo records are not silently superseded. |
+
+These are newly added draft links, not an assertion that every guide is mapped or customer eligible. Exact source hashes and proposed-case bindings passed integrity checks; the customer mode refused all three. No retrieval or ingestion was executed. [Batch evidence](../../recovery/2026-11-05/knowledge-current-workflows/README.md).
+
 Do not mutate historical bindings to make this table green. Review source drift, append a new revision where needed, preserve unaccepted states, and validate only newly changed bundles. Proposed evaluation prose is not executed retrieval; no API/model/ingestion pipeline is created by this table.

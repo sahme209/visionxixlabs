@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.website.navigation-docs-discovery",
+  "revision": 1,
+  "productVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+  "articleSha256": "e77d1b05e4a933a69ae291a91d64eead0e3278908b5f00b4bb54b00bf2e90ef5",
+  "status": "proposed-not-executed",
+  "scope": "Proposed cases for this internal source draft; no retrieval/AI/customer approval or execution acceptance.",
+  "cases": [
+    {
+      "id": "website-discovery-identity",
+      "question": "Does the Sign in link mean my browser is signed out?",
+      "requiredResponse": "No. The header does not read current session identity; follow the browser sign-in/access workflow separately.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-support",
+      "question": "Does Founding Supporters open a support ticket?",
+      "requiredResponse": "No. /support is distinct from authenticated /account/help and /contact. Link navigation is not a recorded request.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-search",
+      "question": "Can Docs search my private repo or read every article body using AI?",
+      "requiredResponse": "No. It is local AND-substring filtering of the catalogue and indexed literal headings/summaries, not private/full-body/AI search.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-filter",
+      "question": "I cannot find a guide that was visible before.",
+      "requiredResponse": "Clear/simplify the filter; the mounted query can hide the current guide. The catalogue has23entries and does not include every source page.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-pagination",
+      "question": "Is Next always the next sidebar result?",
+      "requiredResponse": "No. The shared primitive follows the explicit caller-supplied link, not search order/history; absent metadata is not an active control.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-modal",
+      "question": "Does the mobile menu make the entire page inert and guarantee all keyboard focus stays inside?",
+      "requiredResponse": "No. Only the header bar is inert; Tab boundary wrapping is not universal focus-in recovery or browser/AT qualification.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-escape",
+      "question": "Can I transfer the command palette IME acceptance to More/menu Escape?",
+      "requiredResponse": "No. These source handlers have no composition guard; separate Docs/palette behavior does not qualify them.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-resize",
+      "question": "Will every focused header element survive every viewport change?",
+      "requiredResponse": "Not established. Current recovery is conditional on focus inside an open panel, not a universal hidden-trigger or query/hash-only route guarantee.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-status",
+      "question": "Does Service status or footer service-verified copy prove current deployment health?",
+      "requiredResponse": "No. Navigation and rendered copy are not current service reads, authority or verified outcomes.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-uncertain",
+      "question": "A provider action was uncertain. Can I follow a guide and resend it?",
+      "requiredResponse": "No. Preserve its consumed history and use supported separately approved observation/recovery; page navigation cannot grant retry authority.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-source",
+      "question": "Can a citation with a changed source hash still be used silently?",
+      "requiredResponse": "No. Quarantine/refuse the changed source/version and require re-review; do not automatically rewrite hashes or reuse historical applicability.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    },
+    {
+      "id": "website-discovery-eligibility",
+      "question": "Can this draft answer a customer because its schema passes?",
+      "requiredResponse": "No. It is internal/draft/local-preview with null editorial review and no media/customer acceptance. Return applicable approved evidence unavailable instead.",
+      "requiredCitation": "axiom.help.website.navigation-docs-discovery revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence is unavailable"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "kind": "integrity-not-retrieval",
+  "retrievalEvaluationExecuted": false,
+  "results": [
+    {
+      "name": "repository-operations-controls",
+      "customer": false,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-workflow-integrity-qzd9tker/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/repository-operations-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/repository-operations-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469"
+      ],
+      "exitCode": 0,
+      "stdoutBase64": "ewogICJ2YWxpZCI6IHRydWUsCiAgImFydGljbGVJZCI6ICJheGlvbS5oZWxwLnJlcG9zaXRvcmllcy5vcGVyYXRpb25zLWNvbnRyb2xzIiwKICAicmV2aXNpb24iOiAxLAogICJwcm9kdWN0VmVyc2lvbiI6ICJsb2NhbC1zb3VyY2UtcHJldmlldzo5MTUyMGFiYTU2YjcyMWM5NzNlMjNhNzUwZmNhYWI0ZWU2ZGRjNDY5IiwKICAic291cmNlRmlsZXMiOiAxNiwKICAiZXZhbHVhdGlvbkNhc2VzIjogMTEsCiAgImN1c3RvbWVyRWxpZ2libGUiOiBmYWxzZSwKICAiY3VzdG9tZXJCbG9ja2VycyI6IFsKICAgICJhcnRpY2xlX25vdF9hcHByb3ZlZCIsCiAgICAiYXJ0aWNsZV9ub3RfcHVibGljIiwKICAgICJsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkIgogIF0sCiAgImV2YWx1YXRpb25TdGF0dXMiOiAicHJvcG9zZWQtbm90LWV4ZWN1dGVkIgp9Cg==",
+      "stderrBase64": ""
+    },
+    {
+      "name": "repository-operations-controls",
+      "customer": true,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-workflow-integrity-qzd9tker/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/repository-operations-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/repository-operations-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdoutBase64": "",
+      "stderrBase64": "U3VwcG9ydCBrbm93bGVkZ2UgdmFsaWRhdGlvbiBmYWlsZWQ6IGN1c3RvbWVyIHJldHJpZXZhbCBpbmVsaWdpYmxlOiBhcnRpY2xlX25vdF9hcHByb3ZlZCwgYXJ0aWNsZV9ub3RfcHVibGljLCBsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkCg=="
+    },
+    {
+      "name": "browser-signin-session-controls",
+      "customer": false,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-workflow-integrity-qzd9tker/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/browser-signin-session-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/browser-signin-session-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469"
+      ],
+      "exitCode": 0,
+      "stdoutBase64": "ewogICJ2YWxpZCI6IHRydWUsCiAgImFydGljbGVJZCI6ICJheGlvbS5oZWxwLmJyb3dzZXItc2lnbmluLXNlc3Npb24tY29udHJvbHMiLAogICJyZXZpc2lvbiI6IDEsCiAgInByb2R1Y3RWZXJzaW9uIjogImxvY2FsLXNvdXJjZS1wcmV2aWV3OjkxNTIwYWJhNTZiNzIxYzk3M2UyM2E3NTBmY2FhYjRlZTZkZGM0NjkiLAogICJzb3VyY2VGaWxlcyI6IDIzLAogICJldmFsdWF0aW9uQ2FzZXMiOiAxMiwKICAiY3VzdG9tZXJFbGlnaWJsZSI6IGZhbHNlLAogICJjdXN0b21lckJsb2NrZXJzIjogWwogICAgImFydGljbGVfbm90X2FwcHJvdmVkIiwKICAgICJhcnRpY2xlX25vdF9wdWJsaWMiLAogICAgImxvY2FsX3ByZXZpZXdfbm90X3NoaXBwZWQiCiAgXSwKICAiZXZhbHVhdGlvblN0YXR1cyI6ICJwcm9wb3NlZC1ub3QtZXhlY3V0ZWQiCn0K",
+      "stderrBase64": ""
+    },
+    {
+      "name": "browser-signin-session-controls",
+      "customer": true,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-workflow-integrity-qzd9tker/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/browser-signin-session-controls.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/browser-signin-session-controls-evaluation.r1.json",
+        "--version",
+        "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdoutBase64": "",
+      "stderrBase64": "U3VwcG9ydCBrbm93bGVkZ2UgdmFsaWRhdGlvbiBmYWlsZWQ6IGN1c3RvbWVyIHJldHJpZXZhbCBpbmVsaWdpYmxlOiBhcnRpY2xlX25vdF9hcHByb3ZlZCwgYXJ0aWNsZV9ub3RfcHVibGljLCBsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkCg=="
+    },
+    {
+      "name": "website-navigation-docs-discovery",
+      "customer": false,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-workflow-integrity-qzd9tker/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/website-navigation-docs-discovery.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/website-navigation-docs-discovery-evaluation.r1.json",
+        "--version",
+        "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469"
+      ],
+      "exitCode": 0,
+      "stdoutBase64": "ewogICJ2YWxpZCI6IHRydWUsCiAgImFydGljbGVJZCI6ICJheGlvbS5oZWxwLndlYnNpdGUubmF2aWdhdGlvbi1kb2NzLWRpc2NvdmVyeSIsCiAgInJldmlzaW9uIjogMSwKICAicHJvZHVjdFZlcnNpb24iOiAibG9jYWwtc291cmNlLXByZXZpZXc6OTE1MjBhYmE1NmI3MjFjOTczZTIzYTc1MGZjYWFiNGVlNmRkYzQ2OSIsCiAgInNvdXJjZUZpbGVzIjogNTcsCiAgImV2YWx1YXRpb25DYXNlcyI6IDEyLAogICJjdXN0b21lckVsaWdpYmxlIjogZmFsc2UsCiAgImN1c3RvbWVyQmxvY2tlcnMiOiBbCiAgICAiYXJ0aWNsZV9ub3RfYXBwcm92ZWQiLAogICAgImFydGljbGVfbm90X3B1YmxpYyIsCiAgICAibG9jYWxfcHJldmlld19ub3Rfc2hpcHBlZCIKICBdLAogICJldmFsdWF0aW9uU3RhdHVzIjogInByb3Bvc2VkLW5vdC1leGVjdXRlZCIKfQo=",
+      "stderrBase64": ""
+    },
+    {
+      "name": "website-navigation-docs-discovery",
+      "customer": true,
+      "command": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/knowledge-workflow-integrity-qzd9tker/check.sb",
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/documentation-coverage/validate-support-knowledge.cjs",
+        "--root",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+        "--article",
+        "docs/product/documentation-coverage/articles/website-navigation-docs-discovery.r1.json",
+        "--evaluation",
+        "docs/product/documentation-coverage/website-navigation-docs-discovery-evaluation.r1.json",
+        "--version",
+        "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+        "--customer"
+      ],
+      "exitCode": 1,
+      "stdoutBase64": "",
+      "stderrBase64": "U3VwcG9ydCBrbm93bGVkZ2UgdmFsaWRhdGlvbiBmYWlsZWQ6IGN1c3RvbWVyIHJldHJpZXZhbCBpbmVsaWdpYmxlOiBhcnRpY2xlX25vdF9hcHByb3ZlZCwgYXJ0aWNsZV9ub3RfcHVibGljLCBsb2NhbF9wcmV2aWV3X25vdF9zaGlwcGVkCg=="
+    }
+  ]
+}

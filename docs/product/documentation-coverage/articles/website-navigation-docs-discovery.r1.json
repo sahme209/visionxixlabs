@@ -1,0 +1,451 @@
+{
+  "schema": 1,
+  "id": "axiom.help.website.navigation-docs-discovery",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Find the right website destination and guide without mistaking navigation for authority",
+  "productVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+  "screenIds": [
+    "proposed.axiom.screen.website.primary-navigation",
+    "proposed.axiom.screen.website.docs-discovery"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.website.primary.skip",
+    "proposed.axiom.control.website.primary.home",
+    "proposed.axiom.control.website.primary.link",
+    "proposed.axiom.control.website.primary.more-toggle",
+    "proposed.axiom.control.website.primary.more-link",
+    "proposed.axiom.control.website.primary.signin-wide",
+    "proposed.axiom.control.website.primary.download-wide",
+    "proposed.axiom.control.website.primary.mobile-open",
+    "proposed.axiom.control.website.primary.mobile-close",
+    "proposed.axiom.control.website.primary.mobile-link",
+    "proposed.axiom.control.website.primary.signin-mobile",
+    "proposed.axiom.control.website.primary.download-mobile",
+    "proposed.axiom.control.website.footer.explore",
+    "proposed.axiom.control.website.footer.supporters",
+    "proposed.axiom.control.website.footer.home",
+    "proposed.axiom.control.website.footer.column-link",
+    "proposed.axiom.control.website.docs.landing.task-link",
+    "proposed.axiom.control.website.docs.contents.toggle",
+    "proposed.axiom.control.website.docs.filter.query",
+    "proposed.axiom.control.website.docs.filter.clear",
+    "proposed.axiom.control.website.docs.sidebar.guide-link",
+    "proposed.axiom.control.website.docs.article.previous",
+    "proposed.axiom.control.website.docs.article.next",
+    "proposed.axiom.control.website.docs.feedback.contact"
+  ],
+  "goal": "Use the shared website menus, footer and Docs discovery/recovery controls with exact source/version citations and truthful operational limits.",
+  "prerequisites": [
+    "Internal source-only draft for the exact local preview, not the installed public release. No browser/media/AT/editorial/customer acceptance is established.",
+    "Source guides retain their historical pins49c5 and8a80. Their selected bytes match this new91520 snapshot; new sources are bound explicitly, not silently rebinding historical articles.",
+    "Supplemental to the older website-teaching-navigation draft; its conceptual/demo/skip coverage and historical bytes are preserved, not superseded."
+  ],
+  "permissions": [
+    "Navigation, focus, filters and local menus grant no account, role, deployment, provider, AI-credit or approval authority. Destinations may load their own content/state and require current access.",
+    "Operational actions still require current exact authority, genuine independent review and one-attempt execution where applicable; a guide or simulated demo cannot approve them.",
+    "Source-derived public destinations do not permit new authentication, provider requests, consent, purchases, uploads or documentation publication."
+  ],
+  "steps": [
+    {
+      "instruction": "website.primary.skip: Activate Skip to content when it receives keyboard focus.",
+      "effect": "local-preference",
+      "expectedState": "Requests both menus closed, focuses the first main, adding tabindex -1 only if absent; missing main has no destination. Real keyboard/AT/focus placement remains unaccepted."
+    },
+    {
+      "instruction": "website.primary.home: Follow Vision XIX Labs home from the header.",
+      "effect": "read",
+      "expectedState": "Requests menu closure and navigates to /. Does not sign out or cancel ongoing work."
+    },
+    {
+      "instruction": "website.primary.link: Choose Product, Integrations, Security, Docs or Demo from the wide header.",
+      "effect": "read",
+      "expectedState": "Follows that literal route, not an operational command or capability grant. Header presence is not destination health or deployed-version qualification."
+    },
+    {
+      "instruction": "website.primary.more-toggle: Toggle More or press ArrowDown on its trigger.",
+      "effect": "local-preference",
+      "expectedState": "Click toggles local disclosure; ArrowDown opens/focuses the first link. role=group is not a roving ARIA menu or focus trap. Escape and outside/blur behavior have separate limits."
+    },
+    {
+      "instruction": "website.primary.more-link: Choose Pricing, Support (account required), Status or Company in More.",
+      "effect": "read",
+      "expectedState": "Requests local menu closure while following its route. /account/help separately requires browser identity; /status navigation does not establish service health."
+    },
+    {
+      "instruction": "website.primary.signin-wide: Choose Sign in in the wide header.",
+      "effect": "read",
+      "expectedState": "Opens /auth/signin; this header does not inspect the current session. Visible label is not signed-out proof or completed login."
+    },
+    {
+      "instruction": "website.primary.download-wide: Choose Download in the wide header.",
+      "effect": "read",
+      "expectedState": "Opens /download; no specific installer is selected or hash/signature checked by this link."
+    },
+    {
+      "instruction": "website.primary.mobile-open: Open navigation menu at a narrow viewport.",
+      "effect": "local-preference",
+      "expectedState": "Shows the full-screen dialog, closes More, makes only its header bar inert, captures/restores scroll styles and schedules initial Close focus. Not whole-page isolation."
+    },
+    {
+      "instruction": "website.primary.mobile-close: Choose Close navigation menu in the narrow dialog.",
+      "effect": "local-preference",
+      "expectedState": "Closes locally and schedules trigger focus. Blank space within the full-screen dialog is inside, not a separate backdrop close target."
+    },
+    {
+      "instruction": "website.primary.mobile-link: Choose one of the ten narrow navigation destinations.",
+      "effect": "read",
+      "expectedState": "Uses five primary plus four secondary entries and Founding Supporters in preserved order; requests menu closure. Not an authenticated action catalogue."
+    },
+    {
+      "instruction": "website.primary.signin-mobile: Follow Sign in from the narrow dialog.",
+      "effect": "read",
+      "expectedState": "Requests menu closure and opens the same browser sign-in route; no provider consent or device pairing is completed."
+    },
+    {
+      "instruction": "website.primary.download-mobile: Follow Download from the narrow dialog.",
+      "effect": "read",
+      "expectedState": "Requests menu closure and opens /download; installation/session acceptance remains separate."
+    },
+    {
+      "instruction": "website.footer.explore: Choose Explore Axiom in the footer.",
+      "effect": "read",
+      "expectedState": "Opens /product; starts no underlying operational pipeline or AI call through this handler."
+    },
+    {
+      "instruction": "website.footer.supporters: Choose Founding Supporters in the footer.",
+      "effect": "read",
+      "expectedState": "Opens /support; distinct from account help and contact, not purchase/subscription or customer-ticket acceptance."
+    },
+    {
+      "instruction": "website.footer.home: Follow the footer Vision XIX Labs link.",
+      "effect": "read",
+      "expectedState": "Navigates to / without signing out or altering account authority."
+    },
+    {
+      "instruction": "website.footer.column-link: Choose a footer Product, Company or Legal link.",
+      "effect": "read",
+      "expectedState": "Fifteen literal records preserve two Security entries; supporters also has a separate CTA. Links do not attest current legal approval, pricing, support resolution or service readiness."
+    },
+    {
+      "instruction": "website.docs.landing.task-link: On /docs choose a task under Get started, Complete a task, Look up a control or Resolve a problem.",
+      "effect": "read",
+      "expectedState": "Fifteen landing routes navigate to guides. Before following operational steps check installed-version and preview scope; page availability is not deployment permission."
+    },
+    {
+      "instruction": "website.docs.contents.toggle: Use Documentation contents at narrow widths.",
+      "effect": "local-preference",
+      "expectedState": "Initially collapsed disclosure toggles contents. At wide layout contents remain visible; it is not a modal. Opening does not itself focus search."
+    },
+    {
+      "instruction": "website.docs.filter.query: Enter task words or a guide heading in Find a guide.",
+      "effect": "local-preference",
+      "expectedState": "Local AND-substring match over catalogue label/section plus indexed literal summaries/headings; no article-body, private knowledge, AI, fuzzy ranking or request submission. Query can persist in the mounted layout."
+    },
+    {
+      "instruction": "website.docs.filter.clear: Use Clear guide filter if the raw query is nonempty or matches nothing.",
+      "effect": "local-preference",
+      "expectedState": "Clears local query and returns search focus, including whitespace-only input. Does not clear remote data or browser history."
+    },
+    {
+      "instruction": "website.docs.sidebar.guide-link: Follow a matching guide in contents.",
+      "effect": "read",
+      "expectedState": "Twenty-three catalogue entries define the current search universe, not all28source pages. Exact pathname alone determines current-page semantics; a filter can hide the current guide."
+    },
+    {
+      "instruction": "website.docs.article.previous: Follow Previous where an article supplies a previous link.",
+      "effect": "read",
+      "expectedState": "Uses that caller-provided label/href, not browser history or filtered results; absent previous metadata gives a noninteractive spacer."
+    },
+    {
+      "instruction": "website.docs.article.next: Follow Next where an article supplies a next link.",
+      "effect": "read",
+      "expectedState": "Uses explicit caller metadata, not inferred sidebar ordering. Not every page mounts pagination, and source presence is not HTTP verification."
+    },
+    {
+      "instruction": "website.docs.feedback.contact: Use Open support request in the Still blocked card.",
+      "effect": "read",
+      "expectedState": "Navigates to /contact; does not submit a ticket or helpfulness vote. Contact recording, email and resolution have their own gates; never include credentials in support material."
+    }
+  ],
+  "expectedOutcome": "Locate an appropriate page/guide and understand the next supported boundary; no successful sign-in, installation, ticket, deployment, rollback or live service result is inferred.",
+  "limitations": [
+    "Sixteen direct shared-navigation declarations and eight Docs families are finite source scopes, not all website body controls, runtime instances, operational capability or completed B4/B5.",
+    "More/mobile Escape handlers lack IME ownership guards; mobile Tab handling contains boundary traversal only and inertness covers the bar, not the whole page. Browser/AT/modal guarantees remain open.",
+    "Responsive home-focus recovery applies only when an open panel owned focus. Pathname closure does not promise query/hash-only or every hidden-trigger focus recovery.",
+    "Docs controlled focus/IME checks are distinct from actual browser behavior. The23sidebar and15landing records are not every Docs page; five source pages are outside the catalogue.",
+    "The imported heading index covers literal extracted metadata, not full bodies. Filtering does not perform freshness checks on each keystroke; explicit article pagination can differ from catalogue order.",
+    "No authentic media, genuine editorial approval, shipped-version qualification, executed retrieval or customer-approved answer exists in this article."
+  ],
+  "recovery": [
+    "If a guide is hidden, clear/simplify the local filter. If the destination is unavailable, preserve the original task/outcome and find applicable help; do not infer no provider effect from a page failure.",
+    "Close a local menu deliberately; closure is not cancellation of requests from another page. Do not use account changes or navigation as an authorization/refusal workaround.",
+    "Uncertain or consumed operational actions must not be resent from guide instructions. Preserve the original record and use the separately approved supported observation/recovery process.",
+    "A missing source, wrong version or ineligible draft requires refusal/escalation, not substitution of an older article or invented approval."
+  ],
+  "searchTerms": [
+    "More destinations",
+    "Open navigation menu",
+    "Close navigation menu",
+    "Skip to content",
+    "Support account required",
+    "Founding Supporters",
+    "Find a guide",
+    "Clear guide filter",
+    "No guides match",
+    "Documentation contents",
+    "Previous Next",
+    "Open support request",
+    "Docs search not AI",
+    "menu focus after resize",
+    "local preview not shipped"
+  ],
+  "sources": [
+    {
+      "path": "app/(marketing)/contact/page.tsx",
+      "sha256": "0839c1483337e12d962a538fdce153c4abddf0bc2af2b2c0f3e96e0ef03f14a6"
+    },
+    {
+      "path": "app/(marketing)/layout.tsx",
+      "sha256": "ddb4b4430acf31a7116204232af84aca29f6a614aaaa68b5b0c63223f88d7c88"
+    },
+    {
+      "path": "app/(marketing)/plans/page.tsx",
+      "sha256": "ef9ecb4583ebf266ec7d828c9c39e485c76a7ac5532a50136bfe3b609bb6367c"
+    },
+    {
+      "path": "app/(marketing)/support/page.tsx",
+      "sha256": "928bfaa5791c630446622e66f287c8292fcc6889d97c94243c3cc3503ec34b11"
+    },
+    {
+      "path": "app/account/help/page.tsx",
+      "sha256": "5700ec264a256c97f2d014789a7f9f78c1f2653dca17e8466701bce1f5f003e8"
+    },
+    {
+      "path": "app/auth/signin/page.tsx",
+      "sha256": "db3cc1f97a2c2c23e32c33004c3c08171d1970298edbd994dcfad44604ef47d3"
+    },
+    {
+      "path": "app/axiom/page.tsx",
+      "sha256": "93c4f6e5a4b5e2500664d514b5664902269ab41f09eccd0bccc0f5293d44bfec"
+    },
+    {
+      "path": "app/demo/page.tsx",
+      "sha256": "05d600e7caa41958cc680304f9455bf1ca73775cf7759ae6cf56011c60f91d9a"
+    },
+    {
+      "path": "app/docs/approval-workflow/page.tsx",
+      "sha256": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16"
+    },
+    {
+      "path": "app/docs/architecture/page.tsx",
+      "sha256": "e89584e7dc7ad2b0b65b4f8e5814f120bdf36d82eda660832935e85196947640"
+    },
+    {
+      "path": "app/docs/audit-logs/page.tsx",
+      "sha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945"
+    },
+    {
+      "path": "app/docs/aws-setup/page.tsx",
+      "sha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be"
+    },
+    {
+      "path": "app/docs/azure-setup/page.tsx",
+      "sha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01"
+    },
+    {
+      "path": "app/docs/best-practices/page.tsx",
+      "sha256": "9100c65e1d837ccb82a06eb00957b4a6f62b017f3d7e68872cba6a894245f26f"
+    },
+    {
+      "path": "app/docs/desktop-architecture/page.tsx",
+      "sha256": "378c913c435c1c4cb397b937f3e7b28181fddb00759a5fc8236326e1c12738e3"
+    },
+    {
+      "path": "app/docs/desktop-install/page.tsx",
+      "sha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+    },
+    {
+      "path": "app/docs/execution-plans/page.tsx",
+      "sha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a"
+    },
+    {
+      "path": "app/docs/faq/page.tsx",
+      "sha256": "333d6185edf68082966fe41f71b89a60cfdc0ff43854e6459a5ca1b57524b999"
+    },
+    {
+      "path": "app/docs/gcp-setup/page.tsx",
+      "sha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba"
+    },
+    {
+      "path": "app/docs/getting-started/page.tsx",
+      "sha256": "73d5f64e12ad08fedcf8a05c0c5ded47bf799daa772f1bd0e72f8e19fd0e315e"
+    },
+    {
+      "path": "app/docs/glossary/page.tsx",
+      "sha256": "d6b7283b7bb71a7c36e932f30e2eed5c98a65581160db5ac3ed6c5d55d527d3f"
+    },
+    {
+      "path": "app/docs/integration-setup/page.tsx",
+      "sha256": "f939343248aa38633f7ee1f8e4b13ae136b9a34bfbb74eef02686109df07269c"
+    },
+    {
+      "path": "app/docs/layout.tsx",
+      "sha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce"
+    },
+    {
+      "path": "app/docs/oauth-setup/page.tsx",
+      "sha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820"
+    },
+    {
+      "path": "app/docs/page.tsx",
+      "sha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32"
+    },
+    {
+      "path": "app/docs/permissions-model/page.tsx",
+      "sha256": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c"
+    },
+    {
+      "path": "app/docs/quickstart-checklist/page.tsx",
+      "sha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc"
+    },
+    {
+      "path": "app/docs/releaseops/connectors/page.tsx",
+      "sha256": "bb77feb3010780bcc416a307547d1c2dc5682781b806fcdbebc70765d2320104"
+    },
+    {
+      "path": "app/docs/releaseops/page.tsx",
+      "sha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38"
+    },
+    {
+      "path": "app/docs/releaseops/readiness/page.tsx",
+      "sha256": "0c34ac29fe6525f68df106f2fc305bd81bdb8a7b138aa312227327d875b10e3a"
+    },
+    {
+      "path": "app/docs/rollback/page.tsx",
+      "sha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140"
+    },
+    {
+      "path": "app/docs/scanning/page.tsx",
+      "sha256": "6e83ba68eff9dad360fcd2b7f45ace937b72cda6e8fd5e505e2f81f8ecb96fd8"
+    },
+    {
+      "path": "app/docs/security-model/page.tsx",
+      "sha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+    },
+    {
+      "path": "app/docs/source-modes/page.tsx",
+      "sha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456"
+    },
+    {
+      "path": "app/docs/surfaces/page.tsx",
+      "sha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f"
+    },
+    {
+      "path": "app/docs/terraform-export/page.tsx",
+      "sha256": "778e16e015dcf24fb22fb0735ed20736430bf102c537b9aa69749876048c00df"
+    },
+    {
+      "path": "app/docs/troubleshooting/page.tsx",
+      "sha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0"
+    },
+    {
+      "path": "app/download/page.tsx",
+      "sha256": "b313b2b557231890a48974f69d6d5cc4f82581549e3a5778410003979846489f"
+    },
+    {
+      "path": "app/integrations/page.tsx",
+      "sha256": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce"
+    },
+    {
+      "path": "app/page.tsx",
+      "sha256": "9e5bcdce1091ee3cfb4502ac427a15680580634cdff3094eef9f2697deab357c"
+    },
+    {
+      "path": "app/privacy/page.tsx",
+      "sha256": "6a7c72becc33aacd0ca8b77ee06e048c6a3aac6444813668181717033f33b7bb"
+    },
+    {
+      "path": "app/product/page.tsx",
+      "sha256": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a"
+    },
+    {
+      "path": "app/security/page.tsx",
+      "sha256": "c449cb38d23eba652b7738f59dc6e8515167f6de4247de9e175e99468d736639"
+    },
+    {
+      "path": "app/status/page.tsx",
+      "sha256": "5a9dcebae33f9af8ddaa5db374823c1fa337a4aac89ff9d9af17b94f9ad0c5a8"
+    },
+    {
+      "path": "app/terms/page.tsx",
+      "sha256": "3f68e758394f9b50ad650be266aad8457118a1f378a97a9de92f2420f469372d"
+    },
+    {
+      "path": "components/Footer.tsx",
+      "sha256": "843c916375922a58e6e50931323abaec9426adfe411253513946e628d540c091"
+    },
+    {
+      "path": "components/Navigation.tsx",
+      "sha256": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5"
+    },
+    {
+      "path": "components/docs/DocPrimitives.tsx",
+      "sha256": "b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855"
+    },
+    {
+      "path": "components/docs/DocsContents.tsx",
+      "sha256": "9bf4930205a7c2ddff2194255816f7d26cedadd55b65198c8ae0ef8442c17d8b"
+    },
+    {
+      "path": "components/docs/DocsSidebar.tsx",
+      "sha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a"
+    },
+    {
+      "path": "docs/product/knowledge/website-docs-navigation-controls.md",
+      "sha256": "a9838a4d00d2c144c78e76ad5e43745462b67e5274906865f749c32f289d9cf2"
+    },
+    {
+      "path": "docs/product/knowledge/website-docs-navigation-controls.sources.json",
+      "sha256": "686b039fb26f99ab47a42dc730b188368639757b2a38b7a63efd05da64b92192"
+    },
+    {
+      "path": "docs/product/knowledge/website-primary-navigation-controls.md",
+      "sha256": "6e8ec87a5c5a3f304001a6a95add815f67d53df5582d126056dd8c7f9c926dc1"
+    },
+    {
+      "path": "docs/product/knowledge/website-primary-navigation-controls.sources.json",
+      "sha256": "ba82dbdd9b5ceb69c37147bac65bb5a914cc18f487bd0b59e9ba264566ce7ad6"
+    },
+    {
+      "path": "lib/docs/guide-heading-index.json",
+      "sha256": "d2e232775d3c28b1fb64fc9eb4a7e8c7b2b73a6a6650499506eb612d9d25369f"
+    },
+    {
+      "path": "scripts/check-vercel-build.mjs",
+      "sha256": "72247c1c379b845133f9e5cd570697660b30c58190ab0901169b8f9e63e15163"
+    },
+    {
+      "path": "scripts/generate-docs-heading-index.cjs",
+      "sha256": "9d481bdd8a7aef0b4970ce99ae97c10dec18c60e37897d0ef906eae7a1b483c3"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/website-primary-navigation-controls.md",
+      "docs/product/knowledge/website-docs-navigation-controls.md",
+      "docs/recovery/2026-11-05/website-primary-navigation-source-guide/source-verification.json",
+      "docs/recovery/2026-11-05/website-docs-navigation-source-guide/README.md"
+    ],
+    "verifiedVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+    "verifiedAt": "2026-11-05T13:11:45Z"
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

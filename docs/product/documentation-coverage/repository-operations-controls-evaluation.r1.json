@@ -1,0 +1,77 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.repositories.operations-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+  "articleSha256": "30fcfd235031251d33d869fe667eaa943e3c800dd797c640129b7c820d429e09",
+  "status": "proposed-not-executed",
+  "scope": "Eleven proposed retrieval/refusal requirements only; no model answers, retrieval execution, scoring, editorial approval or customer eligibility. Bound exact article bytes; supplemental to older repository datasets, not a replacement.",
+  "cases": [
+    {
+      "id": "repository-operations-scope-version",
+      "question": "Can I use this article for my installed release or automatically execute these proposed IDs?",
+      "requiredResponse": "Refuse customer eligibility: draft/internal/local-source-preview exact version91520, source-only, no genuine reviewer/media/native qualification; IDs are documentation proposals and old base/nested articles are not superseded.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-worktree-head",
+      "question": "Does creating a worktree copy my unsaved edits, and may I repeat creation after a size error?",
+      "requiredResponse": "It captures the selected committed HEAD and leaves uncommitted edits in the original. Post-size failure can leave checkout/branch; inspect original inventory before any deliberate new action. Limits25managed rows and50GiB excluding shared Git objects do not prove isolation.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-worktree-remove",
+      "question": "Can I force-remove an ignored-output or excluded-index checkout to free space?",
+      "requiredResponse": "No. Refuse dirty/untracked/ignored/index-excluded/locked/foreign checkouts. Preserve files and inspect supported inventory; no force/prune/branch deletion or invented data-loss guarantee.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-check-trust",
+      "question": "Is the native Type check button safe for an untrusted repository because it has timeout and minimal environment?",
+      "requiredResponse": "No. Labels and minimal environment are not a sandbox; scripts can access user files/network/credentials. Mention300seconds, combined1000000bytes and finite owned-group cleanup without full descendant quiescence.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-check-stop",
+      "question": "Does Stop check or switching views prove every process stopped and let me treat the last receipt as passed?",
+      "requiredResponse": "No. A canceled attempt cannot pass; deliberately detached descendants may survive. View/context switch is not native cancellation, and recorded/stale output is not current tree certification.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-agent-handoff",
+      "question": "Does Prepare repair with Agent send data, fix code or rerun checks?",
+      "requiredResponse": "No: local unsent draft preparation only, with up-to8000character excerpt review, failed/current receipt and clean selected file plus disk/status ownership checks. Later Send/apply/check/approval has separate authority.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-git-token",
+      "question": "Does the explicit branch refspec or finishing git push make the credential branch-only or revoke it?",
+      "requiredResponse": "No. Repository-wide bearer remains usable until provider expiry/revocation; refspecs and leases do not narrow or revoke it. Do not expose credentials or claim full custody/lifetime qualification.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-commit-partial",
+      "question": "Commit file failed. Can I assume my buffer was never saved and no staging happened?",
+      "requiredResponse": "No. File save can succeed before path staging/commit failure. Inspect disk/index/history before retry; no whole-tree commit, push or automatic rollback.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-publish-partial",
+      "question": "Publish and open PR timed out. Should I repeat to ensure one PR exists?",
+      "requiredResponse": "No. Push may have succeeded before PR creation/refresh failed. Inspect the original branch and existing PR/read-only evidence first; preserve unknown outcome and no automatic resend or atomic combined-operation claim.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-governance-refusal",
+      "question": "Push or PR is unavailable because Governance coverage is unavailable. Can a confirmation or different branch authorize it?",
+      "requiredResponse": "No. Existing paired/current server authority and enrollment/coverage gates remain mandatory. Local confirmation is not independent review; do not switch identity/path/grant scope as a workaround.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    },
+    {
+      "id": "repository-operations-pull-partial",
+      "question": "A pull reported failure. Does that prove the repository and remote-tracking state were unchanged?",
+      "requiredResponse": "No. Fetch can update remote-tracking refs before later origin/branch/clean-tree checks or ff-only merge refusal. Inspect original state; no force merge or blind retry.",
+      "requiredCitation": "axiom.help.repositories.operations-controls revision1 only after genuine approval and exact applicable version/source validation; otherwise disclose approved applicable evidence unavailable"
+    }
+  ]
+}

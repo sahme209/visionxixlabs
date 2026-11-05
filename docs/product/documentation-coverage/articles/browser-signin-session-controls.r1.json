@@ -1,0 +1,244 @@
+{
+  "schema": 1,
+  "id": "axiom.help.browser-signin-session-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Browser sign-in, sign-out and paired-device session recovery",
+  "productVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+  "screenIds": [
+    "proposed.axiom.screen.browser.signin",
+    "proposed.axiom.screen.browser.control",
+    "proposed.axiom.screen.browser.settings"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.browser.signin.home",
+    "proposed.axiom.control.browser.signin.email",
+    "proposed.axiom.control.browser.signin.password",
+    "proposed.axiom.control.browser.signin.visibility",
+    "proposed.axiom.control.browser.signin.credentials",
+    "proposed.axiom.control.browser.signin.google",
+    "proposed.axiom.control.browser.signin.github",
+    "proposed.axiom.control.browser.signin.cognito",
+    "proposed.axiom.control.browser.signin.create",
+    "proposed.axiom.control.browser.signin.agent-setup",
+    "proposed.axiom.control.browser.signin.download",
+    "proposed.axiom.control.browser.session.workspace-select",
+    "proposed.axiom.control.browser.session.workspace-switch",
+    "proposed.axiom.control.browser.session.signout-wide",
+    "proposed.axiom.control.browser.session.signout-narrow",
+    "proposed.axiom.control.browser.session.settings-tabs",
+    "proposed.axiom.control.browser.session.device-review",
+    "proposed.axiom.control.browser.session.dialog-close",
+    "proposed.axiom.control.browser.session.dialog-cancel",
+    "proposed.axiom.control.browser.session.dialog-confirm"
+  ],
+  "goal": "Choose the intended browser identity, recover an available workspace, end a browser session and review or revoke an owned paired desktop session using finite source-described controls. Internal source draft; customer ineligible.",
+  "prerequisites": [
+    "Use this article only with the exact local-source-preview version and matching pinned sources; this is not a shipped-version support promise.",
+    "Use an existing intended account and configured canonical sign-in page. Credentials require stored password verification and verified email; provider registration, upstream identity and actual service availability were not queried.",
+    "Workspace recovery requires an accepted membership. Device review/revocation requires a signed-in browser identity and current organization context.",
+    "Existing signup/email-verification, browser desktop-pairing and native sign-in/access drafts remain separate and are supplemented, not superseded."
+  ],
+  "permissions": [
+    "These twenty proposed control-family labels and proposed screen labels are documentation IDs only: no runtime help binding, identity proof or permission keys are established.",
+    "Browser identity, provider identity and native paired-session identity are distinct. Sign-in or callback navigation does not approve pairing, provider consent or workspace entitlement.",
+    "The selected GET lists active sessions for the current browser user in the current organization. DELETE independently checks active-session ownership and organization before calling revocation.",
+    "Source-only authoring authority is not genuine human editorial approval. No production/deployment/provider/credential/DB action or customer publication is authorized by this record."
+  ],
+  "steps": [
+    {
+      "instruction": "Open the configured canonical sign-in page. Use the home logo for / or Return to downloads for /download when that is your intended task.",
+      "effect": "read",
+      "expectedState": "Canonical page navigation uses configured origin; the auth endpoint refuses noncanonical hosts rather than forwarding credentials or OAuth codes/state."
+    },
+    {
+      "instruction": "For email sign-in, enter the intended Email and current Password. Use Show password / Hide password only when safe for the screen audience, then choose Sign in once.",
+      "effect": "execute",
+      "expectedState": "Email is trimmed; credentials sign-in requests redirect:false. Returned error shows Invalid email or password; thrown failure shows Something went wrong. Otherwise the handler pushes the bounded callback and refreshes; inspect the actual resulting identity/workspace."
+    },
+    {
+      "instruction": "Alternatively choose an available Sign in with Google, GitHub or Cognito button and complete the intended provider account choice.",
+      "effect": "execute",
+      "expectedState": "Discovery controls availability: Google/GitHub can initially appear while unresolved; Cognito requires positive registration metadata. Known-unavailable providers refuse; discovery failure hides all. Google account-switch intent requests select_account; GitHub account selection must be handled upstream."
+    },
+    {
+      "instruction": "If creating an account for a /desktop/ callback, use Create one and follow the separate signup guide; otherwise Set up through Axiom Agent opens /download.",
+      "effect": "read",
+      "expectedState": "Conditional signup preserves the callback as redirect. Opening signup/download or returning from sign-in does not approve a desktop challenge."
+    },
+    {
+      "instruction": "After Control opens, confirm the intended identity and workspace. If Active workspace is offered, select an available workspace and choose Open workspace.",
+      "effect": "execute",
+      "expectedState": "Selection alone is local form state. Ordinary POST /api/account/workspace checks browser authentication, same origin and accepted membership before selection/redirect; it grants no role or membership."
+    },
+    {
+      "instruction": "To end the browser session, use the wide-shell icon Sign out or narrow-shell Sign out.",
+      "effect": "execute",
+      "expectedState": "NextAuth browser sign-out returns to /. Provider sessions, paired desktop sessions and already-started work require separate consideration."
+    },
+    {
+      "instruction": "For device review, open Settings & sessions and select Sessions, or use the recognized section=sessions URL. Security displays browser identity; Profile is the default.",
+      "effect": "read",
+      "expectedState": "Settings keeps panels mounted. The initial no-store GET /api/desktop/session with browser credentials can begin before Sessions is selected; loading, unavailable, ready-empty and populated states differ. Changing tabs does not refetch."
+    },
+    {
+      "instruction": "Review the device label, platform, optional version and last-seen date. Choose that row’s Revoke device only for the intended pairing.",
+      "effect": "human-review",
+      "expectedState": "Revoke device access? opens for that row. Metadata is not independent device-ownership proof; no bearer token, fingerprint or provider credential is rendered."
+    },
+    {
+      "instruction": "Before submission, use Close dialog, Cancel or nonbusy Escape to dismiss if uncertain; otherwise choose Revoke device in the confirmation.",
+      "effect": "execute",
+      "expectedState": "Cancel is initially focused; busy actions are disabled. Confirmation sends DELETE with the encoded selected ID and browser credentials. HTTP OK removes the row locally; the client does not inspect an exact revocation receipt body. The dialog closes after either outcome."
+    },
+    {
+      "instruction": "If revocation was not confirmed, refresh/reopen the actual page or otherwise remount the list before deciding whether to try again.",
+      "effect": "recover",
+      "expectedState": "A non-OK response or thrown failure may follow a completed request. There is no Refresh button or automatic resend; switching keepMounted tabs is not a new read. A missing row is not proof of native credential deletion or all-worker quiescence."
+    }
+  ],
+  "expectedOutcome": "Source-described navigation, workspace recovery and browser/device-session choices are understandable, with uncertain outcomes kept explicit. No real sign-in, sign-out, provider callback, device read/revocation or native outcome was accepted.",
+  "limitations": [
+    "The shared synchronous ref excludes overlapping credentials/OAuth starts only through the same mounted form and releases in finally; it is not backend, server-session, account, cross-tab or remount serialization. Fields remain editable while submission buttons are busy. Form noValidate prevents a promise of native required/email constraint enforcement.",
+    "The form accepts bounded same-origin callbacks, defaults to /control, rejects protocol-relative, backslash/control/space, cross-origin and credential-bearing destinations, and may normalize a same-origin absolute URL. Canonical page navigation has its own narrower callback allowlist; these are not one universal redirect validator.",
+    "switchAccount=1 and verified=1 banners are informational rather than independent identity or verification proof. The OAuth-returned message is inside the provider render branch and can be absent with no providers.",
+    "Credentials normalization, rate limit, verified-email/password check and identity-store refusal are selected source mechanisms. Workspace bootstrap is best effort; configured JWT maxAge of 30 days guarantees neither usable duration nor native credential lifetime. This is not a complete auth/SSO/MFA/password-reset audit.",
+    "The selected auth/success route forwards recognized connection-return display parameters rather than blindly forwarding provider codes/state; it certifies neither integration authorization nor deployment.",
+    "Browser sign-out has no local pending/error recovery UI and does not log out Google/GitHub/Cognito, revoke paired devices or prove in-flight work stopped.",
+    "The Sessions panel has no refresh, polling, expiry editor, token display, rename or revoke-all control. Invalid last-seen dates display Unknown; expiry/status types do not establish an expiry countdown or revoked history.",
+    "A successful DELETE HTTP status is UI acknowledgement only, without exact response-body readback or separately accepted native enforcement. Store revokedAt/reason and active-list omission do not prove device credential deletion, universal immediate timing or all-server/worker quiescence.",
+    "Initial-read cleanup ignores late responses but does not cancel the request. Comprehensive mutation-response ownership, browser/OSIME/keyboard/assistive-technology behavior and focus guarantees were not accepted by execution.",
+    "Draft/internal, media empty, genuine reviewer and reviewedAt unset. verifiedAt records only source author review using the supplied actual-clock timestamp; it is not customer, browser/native, media, retrieval, security or genuine human editorial acceptance."
+  ],
+  "recovery": [
+    "For Invalid email or password, check the intended account and use the separate email-verification guide if needed; do not disclose passwords, codes, cookies, tokens or secrets in support reports.",
+    "For provider start/return failure, retry deliberately after checking intended upstream account or use available email sign-in/contact support. Do not infer tenant SSO availability from a Cognito button.",
+    "For canonical configuration unavailable feedback, report the nonsecret symptom; do not run commands or change production configuration from this article. Never replay credentials/OAuth state across hosts.",
+    "For Choose an available workspace or access unavailable, select a permitted accepted-membership alternative or seek access recovery; editing cookies cannot grant membership.",
+    "After uncertain DELETE, obtain a new list through actual remount/page reload before retrying. Close/Cancel is not cancellation of a DELETE already sent. Do not automatically resend or infer revoke-all.",
+    "If the question requires another product version, unavailable/tampered source, unknown control, runtime identity proof or universal revocation timing, abstain from unsupported instructions and request matching reviewed evidence."
+  ],
+  "searchTerms": [
+    "browser sign in",
+    "canonical callback",
+    "Google GitHub Cognito",
+    "switch account",
+    "browser sign out",
+    "workspace access unavailable",
+    "Settings Sessions",
+    "paired device revoke",
+    "uncertain DELETE",
+    "keepMounted",
+    "source-only"
+  ],
+  "sources": [
+    {
+      "path": "docs/product/knowledge/browser-signin-and-session-controls.md",
+      "sha256": "ec18eaac457141c45f0cb0e2c7b4ebbe5b4ad1a3d77c93617886c520f8e4e372"
+    },
+    {
+      "path": "docs/product/knowledge/browser-signin-and-session-controls.sources.json",
+      "sha256": "d3538c4c3d56643f70c0cfb7692b051a33deb03257fdcc66b34dd50dcada8f89"
+    },
+    {
+      "path": "app/auth/signin/page.tsx",
+      "sha256": "db3cc1f97a2c2c23e32c33004c3c08171d1970298edbd994dcfad44604ef47d3"
+    },
+    {
+      "path": "app/auth/signin/AuthFormClient.tsx",
+      "sha256": "af6332f1eccb7511b32a835bd8ff770903d6327250ec43ade14c182d8d6a9376"
+    },
+    {
+      "path": "lib/auth/canonicalAuthPage.ts",
+      "sha256": "3d6e9b1eb8e37ee9cd1ce6db5c2514a744ba9c9d676673263544da11f2dad75f"
+    },
+    {
+      "path": "lib/auth/canonicalAuthOrigin.ts",
+      "sha256": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b"
+    },
+    {
+      "path": "app/api/auth/[...nextauth]/route.ts",
+      "sha256": "89985549d497e6104dddb109aa16ff2112527dd98ed1eb2d1b3cc25e654675c4"
+    },
+    {
+      "path": "components/auth/VerificationRecovery.tsx",
+      "sha256": "0bd44c54be28b08589e653ea4377d59c28edb8a91d5687e0bae6e47d52b72a80"
+    },
+    {
+      "path": "app/auth/success/page.tsx",
+      "sha256": "64ac8176def0e81127301c2d8813088b43ea1d6fa909ecdf2dcda75fd19002db"
+    },
+    {
+      "path": "lib/integrations/connectionReturnParams.ts",
+      "sha256": "addddeeae6ef4aabcef97d8c94338a63cc9f732325dfcce24e932ff5a11de2e0"
+    },
+    {
+      "path": "app/control/layout.tsx",
+      "sha256": "3722c05889a3ffd2d70471df6be00ee5f15984190001a18b82a52e47ab3381e9"
+    },
+    {
+      "path": "lib/auth/currentContext.ts",
+      "sha256": "8ad71ac9507376030ec947824abcabb455568407e513c1f530d008915b2da907"
+    },
+    {
+      "path": "app/api/account/workspace/route.ts",
+      "sha256": "16768b9ee50a429dec96da79dff28d78bcb94b639e60c54862fbb60d039d079c"
+    },
+    {
+      "path": "app/account/page.tsx",
+      "sha256": "39582a981ef706318d9fb55dafb427cf90a9cdef3734809c54e9162bd71ecfed"
+    },
+    {
+      "path": "app/control/settings/page.tsx",
+      "sha256": "c0f4a2d99ddffd92a0f42778edb40bd78479a842ef9f386964f3d8efc64da2eb"
+    },
+    {
+      "path": "components/cockpit/SectionTabs.tsx",
+      "sha256": "2633257a47840bd5612d849acf53c0b7e52b04f26c23423b18e9d2ef2dcadded"
+    },
+    {
+      "path": "components/auth/DesktopSessionsPanel.tsx",
+      "sha256": "53c19585b2c083f0c5eb922f766a74e6dc025e7875511699ec37793ca0f94f0f"
+    },
+    {
+      "path": "components/cockpit/ConfirmDialog.tsx",
+      "sha256": "abb7264d26b90b2de5082d28235ce4e3f2c1fda51a242991dc9274a2ad13afbe"
+    },
+    {
+      "path": "app/api/desktop/session/route.ts",
+      "sha256": "f70dde9529908cfbf398868bc49da759acf8354e3b7484abfd69c0fd5f7f41b7"
+    },
+    {
+      "path": "lib/auth.ts",
+      "sha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91"
+    },
+    {
+      "path": "components/cockpit/CockpitShell.tsx",
+      "sha256": "750f4b2fcd7f832e23acf68e5516d93ced1d47b6393b9ce1ff18b92e36fbc182"
+    },
+    {
+      "path": "lib/desktop/privateDesktopSession.ts",
+      "sha256": "e3b615227850fb406c6d6795013fc101cf4b2adfb9d297700533a178a473a07a"
+    },
+    {
+      "path": "lib/desktop/desktopSession.ts",
+      "sha256": "d23ff184bb8a1797315236b3d5a1d82309e42bccc0c8d8a6b587eaf37b74bd7e"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/browser-signin-and-session-controls.md",
+      "docs/product/knowledge/browser-signin-and-session-controls.sources.json"
+    ],
+    "verifiedVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+    "verifiedAt": "2026-11-05T13:11:45Z"
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

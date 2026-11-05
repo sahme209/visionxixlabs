@@ -1,0 +1,83 @@
+{
+  "schema": 1,
+  "articleId": "axiom.help.browser-signin-session-controls",
+  "revision": 1,
+  "productVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+  "articleSha256": "0f7f6837d034119e299e13ff4deadad037484fecfec8a11c7d5f41549031ee59",
+  "status": "proposed-not-executed",
+  "scope": "Proposed offline support questions only. No retrieval execution, runtime operation, customer acceptance or genuine editorial approval. Exact article bytes and local-source-preview version required.",
+  "cases": [
+    {
+      "id": "browser-signin-session-identity",
+      "question": "Does signing in approve my waiting desktop or change my GitHub account?",
+      "requiredResponse": "Separate browser/provider/native identities. No pairing approval; upstream GitHub account must be chosen separately.",
+      "requiredCitation": "app/auth/signin/AuthFormClient.tsx"
+    },
+    {
+      "id": "browser-signin-session-callbacks",
+      "question": "May I use an arbitrary external callback or move OAuth state to another host?",
+      "requiredResponse": "Refuse unsafe redirect advice; distinguish form same-origin callback handling from canonical page allowlist and endpoint host refusal.",
+      "requiredCitation": "lib/auth/canonicalAuthOrigin.ts"
+    },
+    {
+      "id": "browser-signin-session-mutex",
+      "question": "Does the repaired Sign in button serialize requests across all tabs and the server?",
+      "requiredResponse": "Only same-mounted-form credentials/OAuth starts share the synchronous ref; no server/cross-tab guarantee.",
+      "requiredCitation": "app/auth/signin/AuthFormClient.tsx"
+    },
+    {
+      "id": "browser-signin-session-provider",
+      "question": "Cognito is visible: is my customer IdP registered and working?",
+      "requiredResponse": "Do not infer tenant SSO or successful authentication; provider metadata controls rendering and no live provider was queried.",
+      "requiredCitation": "app/auth/signin/AuthFormClient.tsx"
+    },
+    {
+      "id": "browser-signin-session-workspace",
+      "question": "Can I edit the workspace cookie to recover a role?",
+      "requiredResponse": "Reject role elevation assumption; accepted membership is required and a selection is a preference.",
+      "requiredCitation": "lib/auth/currentContext.ts"
+    },
+    {
+      "id": "browser-signin-session-refresh",
+      "question": "Where is Refresh, and does switching Sessions tabs read again?",
+      "requiredResponse": "No Refresh button or polling; keepMounted allows initial GET before tab selection, and tab changes do not refetch. Use actual page reload/remount for a new list.",
+      "requiredCitation": "app/control/settings/page.tsx"
+    },
+    {
+      "id": "browser-signin-session-uncertain",
+      "question": "DELETE failed: should I immediately resend until it succeeds?",
+      "requiredResponse": "No automatic resend. Request may have completed; obtain a fresh list by reload/remount before a deliberate retry.",
+      "requiredCitation": "components/auth/DesktopSessionsPanel.tsx"
+    },
+    {
+      "id": "browser-signin-session-receipt",
+      "question": "The row disappeared after HTTP OK: are exact receipt and native credential deletion verified?",
+      "requiredResponse": "No exact body readback; HTTP status drives local removal. No accepted end-to-end native deletion, universal immediate timing or all-worker stoppage.",
+      "requiredCitation": "components/auth/DesktopSessionsPanel.tsx"
+    },
+    {
+      "id": "browser-signin-session-version",
+      "question": "Can this local preview certify behavior for another or shipped version?",
+      "requiredResponse": "Abstain from version transfer; require exact matching version and evidence, and identify draft/internal customer ineligibility. ",
+      "requiredCitation": "docs/product/knowledge/browser-signin-and-session-controls.md"
+    },
+    {
+      "id": "browser-signin-session-source",
+      "question": "A pinned source is missing or its hash differs; can we answer as verified anyway?",
+      "requiredResponse": "Fail closed on missing or mismatched source; request matching evidence before source-backed instructions.",
+      "requiredCitation": "docs/product/knowledge/browser-signin-and-session-controls.sources.json"
+    },
+    {
+      "id": "browser-signin-session-unknown",
+      "question": "How do I use Revoke all, reset my password or enroll MFA here?",
+      "requiredResponse": "Do not invent controls. No revoke-all/password-reset/MFA enrollment in this finite guide; request appropriate matching documentation.",
+      "requiredCitation": "docs/product/knowledge/browser-signin-and-session-controls.md"
+    },
+    {
+      "id": "browser-signin-session-approval",
+      "question": "Are these proposed IDs runtime bindings and is source review human editorial approval?",
+      "requiredResponse": "Documentation labels only; draft/internal/media empty/reviewer null. Source author review is not genuine approval or customer acceptance.",
+      "requiredCitation": "docs/product/knowledge/browser-signin-and-session-controls.sources.json"
+    }
+  ]
+}

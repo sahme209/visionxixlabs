@@ -1,0 +1,315 @@
+{
+  "schema": 1,
+  "id": "axiom.help.repositories.operations-controls",
+  "revision": 1,
+  "status": "draft",
+  "classification": "internal",
+  "title": "Repository operations: managed worktrees, trusted checks, Git and partial publication recovery",
+  "productVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+  "screenIds": [
+    "proposed.axiom.screen.repositories.operations"
+  ],
+  "controlIds": [
+    "proposed.axiom.control.repository.operations.worktree.disclosure",
+    "proposed.axiom.control.repository.operations.worktree.branch",
+    "proposed.axiom.control.repository.operations.worktree.create",
+    "proposed.axiom.control.repository.operations.worktree.refresh",
+    "proposed.axiom.control.repository.operations.worktree.open",
+    "proposed.axiom.control.repository.operations.worktree.remove",
+    "proposed.axiom.control.repository.operations.worktree.cancel",
+    "proposed.axiom.control.repository.operations.worktree.confirm-remove",
+    "proposed.axiom.control.repository.operations.check.run",
+    "proposed.axiom.control.repository.operations.check.stop",
+    "proposed.axiom.control.repository.operations.check.output-toggle",
+    "proposed.axiom.control.repository.operations.check.output",
+    "proposed.axiom.control.repository.operations.check.agent-output",
+    "proposed.axiom.control.repository.operations.check.agent-repair",
+    "proposed.axiom.control.repository.operations.git.disclosure",
+    "proposed.axiom.control.repository.operations.git.branch-name",
+    "proposed.axiom.control.repository.operations.git.branch-create",
+    "proposed.axiom.control.repository.operations.git.pull",
+    "proposed.axiom.control.repository.operations.git.push",
+    "proposed.axiom.control.repository.operations.publish.disclosure",
+    "proposed.axiom.control.repository.operations.publish.commit-message",
+    "proposed.axiom.control.repository.operations.publish.commit",
+    "proposed.axiom.control.repository.operations.publish.title",
+    "proposed.axiom.control.repository.operations.publish.base",
+    "proposed.axiom.control.repository.operations.publish.review",
+    "proposed.axiom.control.repository.operations.publish.open-link",
+    "proposed.axiom.control.repository.operations.confirm.cancel",
+    "proposed.axiom.control.repository.operations.confirm.execute"
+  ],
+  "goal": "Explain the 28 documented operation families of the mounted repository workspace, distinguishing local worktree/file/Git effects, unsandboxed check processes, unsent Agent handoffs, credential lifetime and two-stage publication from independent approval and verified outcomes.",
+  "prerequisites": [
+    "Internal source-only local-preview supplement; customer eligibility, publication, genuine editorial/media/native/browser/AT and retrieval acceptance are false. The verification timestamp records source review only.",
+    "Use the current mounted repository workspace and exact intended checkout/file; inspect recorded repository, branch and changes. Other source/editor/acquisition guides retain their separate historical scopes.",
+    "Existing current paired/workspace/provider authority must already be authorized. Visible controls, local confirmations and cached status do not establish permissions or create an independent human review.",
+    "Run repository checks only for trusted code after explicit command review. They are unsandboxed and can access user-level files, network and stored credentials. No commands or provider actions were performed for this article."
+  ],
+  "permissions": [
+    "Proposed screen/control IDs are documentation labels, not runtime HTML bindings, native permits or a guarantee of current feature availability.",
+    "Pull/push use purpose-specific credential requests; current server policy and connection scope remain authoritative. The bearer is repository-wide rather than branch-bound and remains usable until provider expiry or revocation; refspecs, invocation completion and lease accounting do not narrow or revoke it.",
+    "Enrolled/unavailable legacy Governance write coverage refuses push/PR paths. Do not change identity/path/branch or reconnect as a refusal workaround. Local dialogs do not supply genuine independent approval.",
+    "Agent-output/repair preparation creates an unsent draft only; later Send and data/model/cost permission remain separate."
+  ],
+  "steps": [
+    {
+      "instruction": "Expand Workspaces for the intended selected checkout. Documentation family: repository.operations.worktree.disclosure.",
+      "effect": "read",
+      "expectedState": "Shows managed checkout inventory and operations. Opening it is not a native create/remove action. Displayed count is verified inventory, not isolation/security qualification."
+    },
+    {
+      "instruction": "Enter a new worktree branch after reviewing which checkout supplies committed HEAD. Documentation family: repository.operations.worktree.branch.",
+      "effect": "local-preference",
+      "expectedState": "Enter a new branch name for a separate checkout. Input maxLength 200; disabled when parent-disabled or busy. Native validation additionally checks UTF-8 byte length, trimming, leading hyphen, valid ref and that the branch is new."
+    },
+    {
+      "instruction": "Choose Create worktree only for the reviewed new branch and verified inventory. Documentation family: repository.operations.worktree.create.",
+      "effect": "execute",
+      "expectedState": "Creates a managed sibling checkout at the selected checkout's captured committed HEAD and a new branch. Requires nonblank name, verified inventory and idle/enabled state. Uncommitted edits stay in the source checkout; creation does not open it, install dependencies or run tests. Native creation can succeed before a later size check reports failure: inspect refreshed inventory before retrying."
+    },
+    {
+      "instruction": "Use Refresh workspaces to inspect recorded inventory after an unavailable or unconfirmed result. Documentation family: repository.operations.worktree.refresh.",
+      "effect": "read",
+      "expectedState": "Deliberately reloads recorded worktrees and size metadata. Disabled while parent-disabled or busy. Read failure empties rows and marks inventory unverified; it is not proof that existing folders disappeared."
+    },
+    {
+      "instruction": "Choose Open on the intended different managed checkout; preserve wanted buffer text before any discard confirmation. Documentation family: repository.operations.worktree.open.",
+      "effect": "local-preference",
+      "expectedState": "Selects that recorded checkout in the parent. Current checkout cannot be reopened from this button; disabled while busy/unverified/parent-disabled. Follow any unsaved-editor prompt; switching is not command cancellation."
+    },
+    {
+      "instruction": "Choose row Remove to review the exact managed checkout selected for removal. Documentation family: repository.operations.worktree.remove.",
+      "effect": "propose",
+      "expectedState": "Opens the exact checkout-removal dialog. Same row guards as Open. The current checkout cannot be removed from here. This button alone does not delete files."
+    },
+    {
+      "instruction": "Choose Cancel if removal of that exact checkout is not intended. Documentation family: repository.operations.worktree.cancel.",
+      "effect": "local-preference",
+      "expectedState": "Dismisses the removal dialog. Cancels only the pending local choice, not an already submitted native removal."
+    },
+    {
+      "instruction": "Choose Remove clean checkout only after reviewing the exact local folder and preservation warning. Documentation family: repository.operations.worktree.confirm-remove.",
+      "effect": "execute",
+      "expectedState": "Requests removal of the reviewed recorded checkout folder; branch/commits remain. Native code refuses changed/untracked/ignored files, unusual index exclusions, foreign ownership and locked worktrees; it does not force/prune/delete the branch. Unconfirmed results require inspecting refreshed inventory and preserving files, not blindly repeating removal."
+    },
+    {
+      "instruction": "Choose a detected check, inspect the displayed command and unsandboxed-code warning, and separately confirm Run check only for trusted repository code. Documentation family: repository.operations.check.run.",
+      "effect": "execute",
+      "expectedState": "Inspect the shown description/command, then the **Run …?** confirmation and deliberate **Run check** action. Disabled while another view operation is busy. Save/discard unsaved editor content first: checks run disk files. Consent/source epoch and root are rechecked around native preparation. Local confirmation is user consent to this process, not independent approval or a sandbox."
+    },
+    {
+      "instruction": "Use Stop check (direct child only) for the currently owned running attempt, without assuming descendants stopped. Documentation family: repository.operations.check.stop.",
+      "effect": "recover",
+      "expectedState": "Requests cancellation of the current owned run; the UI marks the attempt canceled/stale and never accepts its result as passing. Offered while a prepared run is executing. Accepted stop, already-completed response and unconfirmed stop have distinct messages. Descendants remain unverified; navigating away/closing a view is not a stop action. Do not start replacement work assuming all descendants stopped."
+    },
+    {
+      "instruction": "Open the recorded check result and distinguish stale, failed and passed display states. Documentation family: repository.operations.check.output-toggle.",
+      "effect": "read",
+      "expectedState": "Shows/hides the recorded result/output panel. Display is historical process evidence, not current working-tree certification. Stale local edits prevent using the receipt as current repair context."
+    },
+    {
+      "instruction": "Read the recorded check ID, duration, exit status and bounded output before relying on it. Documentation family: repository.operations.check.output.",
+      "effect": "read",
+      "expectedState": "Read check ID, duration, exit code and captured stdout/stderr; empty output has an explicit message. Output may contain private data or credentials. This guide does not authorize exporting it. Invalid native receipts are refused; absence of a result is not success."
+    },
+    {
+      "instruction": "Choose Prepare check output for Agent and review the preview before preparing the unsent draft. Documentation family: repository.operations.check.agent-output.",
+      "effect": "propose",
+      "expectedState": "Opens a local confirmation with at most the first 8,000 characters; review it before preparing an unsent Agent draft. Requires output, idle state and a host handoff callback. Confirmation rechecks source epoch/verification generation and has a once-only local handoff guard. Preparing does not call a model or execute commands; redact the unsent prompt before any separately authorized Send."
+    },
+    {
+      "instruction": "Choose Prepare repair with Agent only for an eligible failed current receipt and clean selected file; review the bound source and excerpt. Documentation family: repository.operations.check.agent-repair.",
+      "effect": "propose",
+      "expectedState": "Opens an unsent repair-draft review bound to the selected file/repository/branch and failed receipt excerpt. Requires non-stale failed result, usable exit code/target, selected clean file and valid prompt context. Confirmation rereads status and disk content and refuses changed source/target/receipt ownership. It does not save, apply a fix, rerun checks or approve changes."
+    },
+    {
+      "instruction": "Expand Branch & sync in compact presentation. Documentation family: repository.operations.git.disclosure.",
+      "effect": "local-preference",
+      "expectedState": "Expands these controls in compact presentation; initially open when not compact. Disclosure does not run Git."
+    },
+    {
+      "instruction": "Enter a valid new local branch name. Documentation family: repository.operations.git.branch-name.",
+      "effect": "local-preference",
+      "expectedState": "Enter the desired new local branch name. UI trims it; native checks nonempty/up-to-240-byte name, rejects leading hyphen and uses Git ref validation."
+    },
+    {
+      "instruction": "Choose Branch to create and switch to the new local branch, then inspect refreshed status. Documentation family: repository.operations.git.branch-create.",
+      "effect": "execute",
+      "expectedState": "Creates and switches to a new local branch, then refreshes status and clears the field. Requires selected checkout, nonblank name and idle state. It does not push. Native failure may occur after some local Git effects; inspect branch/status before another attempt."
+    },
+    {
+      "instruction": "Choose Pull, review the intended repository/branch and confirm Pull changes only when the intended current source is clear. Documentation family: repository.operations.git.pull.",
+      "effect": "execute",
+      "expectedState": "Review **Pull remote changes?**, then **Pull changes**. On confirmed completion, status refreshes and the UI reports fast-forward synchronization. Requires recorded GitHub target and idle state. Native requires matching canonical remote/reviewed branch and clean tracked/untracked state, fetches the reviewed branch, rechecks origin/branch/clean state, then merges fast-forward-only. Fetch can have updated remote-tracking state even if a later merge refuses; inspect before retrying."
+    },
+    {
+      "instruction": "Choose Push, review the exact repository/branch and confirm Push branch only under existing authorized current access. Documentation family: repository.operations.git.push.",
+      "effect": "execute",
+      "expectedState": "Review **Push branch to GitHub?**, then **Push branch**. Disabled on the UI-known default branch. Native checks target/origin/current branch and pushes an explicit same-name branch refspec, not late-resolved HEAD and not force push. It does not open/merge a PR or prove CI/deployment success. Lost/unconfirmed responses require read-only inspection of the original branch, not automatic resend."
+    },
+    {
+      "instruction": "Expand Commit & publish for the selected file. Documentation family: repository.operations.publish.disclosure.",
+      "effect": "local-preference",
+      "expectedState": "Shows commit and PR fields; compact mode remembers local disclosure state and may label a recorded PR available. Visible only with a selected file in this mount. It is not approval or publication."
+    },
+    {
+      "instruction": "Enter the message for the one selected file commit. Documentation family: repository.operations.publish.commit-message.",
+      "effect": "local-preference",
+      "expectedState": "Record the message for the selected file's local commit. Nonblank trimmed value required. Native message length limit is 500 UTF-8 bytes despite the UI/native wording “characters”; this is not a whole-tree commit message workflow."
+    },
+    {
+      "instruction": "Choose Commit file after reviewing the selected file and saved/unsaved state. Documentation family: repository.operations.publish.commit.",
+      "effect": "execute",
+      "expectedState": "Saves the captured unsaved buffer first using expected previous content, then stages/commits the selected path and refreshes status. Busy/default-branch guards apply; there is no extra confirmation prompt in this handler. Native uses path-scoped add/commit and returns HEAD SHA. Save may succeed even when commit fails, and staging may remain; inspect disk/index/history before retrying. Other staged files must not be assumed absent or unchanged. No push occurs."
+    },
+    {
+      "instruction": "Enter the pull request title for the intended publication. Documentation family: repository.operations.publish.title.",
+      "effect": "local-preference",
+      "expectedState": "Records the title for the next publication attempt. Nonblank trimmed value required; typing is not a provider request."
+    },
+    {
+      "instruction": "Review or change the pull request base branch; verify that it is the intended different target. Documentation family: repository.operations.publish.base.",
+      "effect": "local-preference",
+      "expectedState": "Records the intended PR target. Starts at main and is updated from matched connected-repository default metadata. Must be nonblank and differ from current source branch. A typed base is not verified provider existence or branch-policy approval."
+    },
+    {
+      "instruction": "Choose Publish & open PR, review the source/base/repository, then deliberately confirm Publish and open PR. Documentation family: repository.operations.publish.review.",
+      "effect": "execute",
+      "expectedState": "Opens the local exact source/base/repository confirmation; **Publish and open PR** first pushes, then requests PR creation. Requires idle state, recorded status, clean recorded Git changes, saved buffer and title/base. No automatic atomicity: push may succeed while PR creation/refreshed status fails. Inspect the original branch/PR before retrying; a dialog is not independent human review or deployment admission."
+    },
+    {
+      "instruction": "Use Open PR to inspect the recorded acknowledged pull request separately from local status. Documentation family: repository.operations.publish.open-link.",
+      "effect": "read",
+      "expectedState": "Opens the recorded acknowledged PR URL through the existing external-link component. Replaces the publish button once this view records a PR URL. A link is not verified merge, review, CI or delivery state."
+    },
+    {
+      "instruction": "Use the existing shared Cancel before submission if the pending operation is not intended. Documentation family: repository.operations.confirm.cancel.",
+      "effect": "local-preference",
+      "expectedState": "Dismisses only the pending callback. It does not cancel submitted native/provider work or undo file writes, staging, commits or remote effects."
+    },
+    {
+      "instruction": "Read the operation-specific shared confirmation and use its action button only for the exact intended operation. Documentation family: repository.operations.confirm.execute.",
+      "effect": "human-review",
+      "expectedState": "The parent clears the dialog before awaiting its captured callback. Confirmation is local user consent, not independent Governance approval or provider permission; current ownership/server restrictions still apply."
+    }
+  ],
+  "expectedOutcome": "Readers can identify each finite operation family, its local or provider effect, source-owned readiness and limits, and a read-first recovery path when creation, save/commit, Git or push-then-PR completion is unconfirmed. This article does not establish that any operation ran or that a release/Governance/customer workflow is accepted.",
+  "limitations": [
+    "Supplemental revision only: does not supersede the repository acquisition/base-editor or nested-editor draft. Only selected mounted operations, native effects and credential/PR route boundaries are source-described; not legacy Repositories UI or all backend invariants.",
+    "28 documentation families cover repeated/conditional declarations, not unique rendered controls or complete supported-release/native qualification. The UI-known default branch depends on matched connected metadata; it is not a universal server invariant.",
+    "Worktree limits: 25 managed rows, excluding primary; 50 * 1024^3 file bytes, excluding shared Git objects. Creation captures selected committed HEAD; uncommitted edits remain in the original checkout. Post-size failure can leave the new checkout and branch.",
+    "Worktree operations skip repository hooks/custom checkout filters for their selected native helper; do not transfer those restrictions to every ordinary Git command or claim general OS/process isolation.",
+    "Check detection offers configured npm build/typecheck/lint/test, cargo check/test and swift test, not arbitrary UI shell commands. Labels do not prove script effects. Native preparation binds root/check/manifest/window for 60 seconds and one claim; registry capacity32, manifest cap1000000bytes.",
+    "Checks use a 300-second process/output deadline and combined1000000-byte output cap. Environment clearing is not a sandbox: HOME remains supplied; macOS filters absolute PATH entries/adds known directories while other platforms retain inherited PATH. Owned Unix group cleanup is attempted, but deliberately detached descendants may escape. No whole-tree quiescence guarantee.",
+    "Native commit message cap500 is UTF-8 bytes despite characters wording. Branch/worktree name limits are respectively240/200native bytes. A check receipt is historical process output, not an exact current working-tree snapshot.",
+    "Git helper waits for child output and has no check-style five-minute deadline or corresponding Git Cancel control in this source. A child result cannot establish provider token revocation, full credential custody or absence of remote effects.",
+    "No actual provider readback, authentic media, genuine human editorial approval, real native/browser/AT acceptance, current releases, customer eligibility or executed retrieval is established."
+  ],
+  "recovery": [
+    "After unconfirmed worktree creation/removal, inspect refreshed recorded inventory and preserve files before another action. Do not assume post-size/create failure removed the checkout or branch; removal refuses dirty/untracked/ignored/index-excluded/locked/foreign checkouts and never force-prunes or deletes branches.",
+    "After uncertain save/commit, inspect current disk content, index and history before retrying. The save can have completed while commit failed; path staging can remain. No automatic rollback or blind repeat.",
+    "A pull can update remote-tracking state before a later cleanliness/branch check or fast-forward merge refuses. Inspect original source/target/status; do not infer no effect from an overall error.",
+    "Push and PR creation are separate effects: branch publication can succeed before PR creation or refresh fails. Read the original branch and existing pull requests before another publication; never auto-resend unknown effects or invent a fresh identity to bypass history.",
+    "Stop/check timeout/output failure cannot certify every descendant stopped. A canceled attempt must not become passing; inspect supported current observations before new work. View/context changes retire UI ownership without proving cancellation.",
+    "Review/redact at most8000characters of check output before unsent Agent handoff. Repair preparation rechecks disk/status/source/receipt ownership; a stale failed receipt is not permission to apply a fix, send a prompt, rerun checks or approve changes."
+  ],
+  "searchTerms": [
+    "Workspaces",
+    "Create worktree",
+    "Remove clean checkout",
+    "Stop check direct child only",
+    "unsandboxed checks",
+    "stale verification",
+    "Prepare repair with Agent",
+    "Pull fast-forward",
+    "Push branch",
+    "Commit file",
+    "Publish and open PR",
+    "repository-wide bearer",
+    "unknown push PR outcome"
+  ],
+  "sources": [
+    {
+      "path": "docs/product/knowledge/repository-operations-controls.md",
+      "sha256": "081dc59f78dbc828092f7c9efb8630ee0c17fab7ea5bdff5986bb958ce6f3f9d"
+    },
+    {
+      "path": "docs/product/knowledge/repository-operations-controls.sources.json",
+      "sha256": "3a3ed0499c98bbaa91819b16ca57d1ffa6e441b82bdfa00b5256fcb397778606"
+    },
+    {
+      "path": "desktop/src/views/RepositoryWorkspaceView.tsx",
+      "sha256": "faf39df36f63155f84d43756f03caa760e26c189d2dbf48640849a0d241bcc3a"
+    },
+    {
+      "path": "desktop/src/components/RepositoryWorktrees.tsx",
+      "sha256": "c499b725d5fca2a5b9c81ab9b53ee59af1d5e3bc8f98e46f0814f9972d746970"
+    },
+    {
+      "path": "desktop/src-tauri/src/worktrees.rs",
+      "sha256": "6b1cafbeb50529c4cd3227d30d174f785dc70141b50f226e4880831fa9184dbd"
+    },
+    {
+      "path": "desktop/src-tauri/src/verification.rs",
+      "sha256": "85fb8d738898dcd54eb6c09756551f942549e86d44f0ee4bb28f43ad46e3a696"
+    },
+    {
+      "path": "desktop/src/lib/verificationReceipt.ts",
+      "sha256": "0932c7d9314a47ac9aa4f9e6de4ffcfbf318566121638df38cdb7a2b5f625063"
+    },
+    {
+      "path": "app/api/desktop/github/clone-token/route.ts",
+      "sha256": "868dc8c1cdf0fd9a64e000264d28eb714eb23a0faf721e441c715881768ae927"
+    },
+    {
+      "path": "desktop/src-tauri/src/git.rs",
+      "sha256": "6043d50d7ee73812b549485ec8885bacbdd8034085aac6478612d15fd07baa66"
+    },
+    {
+      "path": "desktop/src/lib/desktopClient.ts",
+      "sha256": "d4d5c4ad06661c1cbb54c0aa22fc31688e1a5d558fb838f817b2afd45031eee1"
+    },
+    {
+      "path": "app/api/desktop/github/pull-request/route.ts",
+      "sha256": "a2ab882d237bcf99258c30b753ac6712750d62ab39e0f3ead3990089440d091f"
+    },
+    {
+      "path": "lib/desktop/currentGithubWriteAuthority.ts",
+      "sha256": "4a4a0dc9cdeb621a8b491322203cd017c9004d6269005541c2811d7857aaeb41"
+    },
+    {
+      "path": "desktop/src-tauri/src/main.rs",
+      "sha256": "d840add8009f65f5d756ec0fcd5b0220b50f96e7a5098391a0a943658e7e35cf"
+    },
+    {
+      "path": "desktop/src/App.tsx",
+      "sha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348"
+    },
+    {
+      "path": "docs/recovery/2026-11-05/repository-operations-source-guide/review.md",
+      "sha256": "7f88ddfc1e5e06d37f41b5b0cf093d9859574348a3e4b3c9645b5977d1e9009e"
+    },
+    {
+      "path": "docs/recovery/2026-11-05/repository-operations-source-guide/source-verification.json",
+      "sha256": "8d04ecb9f23f89fd17949912e27f31fa7edfbea9f132c6865c6b65516a873d3d"
+    }
+  ],
+  "media": [],
+  "verification": {
+    "kind": "source-only",
+    "evidencePaths": [
+      "docs/product/knowledge/repository-operations-controls.md",
+      "docs/product/knowledge/repository-operations-controls.sources.json",
+      "docs/recovery/2026-11-05/repository-operations-source-guide/review.md",
+      "docs/recovery/2026-11-05/repository-operations-source-guide/source-verification.json"
+    ],
+    "verifiedVersion": "local-source-preview:91520aba56b721c973e23a750fcaab4ee6ddc469",
+    "verifiedAt": "2026-11-05T13:11:45Z"
+  },
+  "review": {
+    "reviewer": null,
+    "reviewedAt": null
+  },
+  "supersedes": null
+}

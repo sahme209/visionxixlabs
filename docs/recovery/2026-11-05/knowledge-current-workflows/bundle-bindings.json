@@ -1,0 +1,37 @@
+{
+  "baseRevision": "91520aba56b721c973e23a750fcaab4ee6ddc469",
+  "currentAndPinnedSourcesMatch": true,
+  "retrievalEvaluationExecuted": false,
+  "bundles": [
+    {
+      "name": "repository-operations-controls",
+      "articleId": "axiom.help.repositories.operations-controls",
+      "sha256": "30fcfd235031251d33d869fe667eaa943e3c800dd797c640129b7c820d429e09",
+      "controlFamilyReferences": 28,
+      "steps": 28,
+      "sourceFiles": 16,
+      "proposedCases": 11,
+      "customerEligible": false
+    },
+    {
+      "name": "browser-signin-session-controls",
+      "articleId": "axiom.help.browser-signin-session-controls",
+      "sha256": "0f7f6837d034119e299e13ff4deadad037484fecfec8a11c7d5f41549031ee59",
+      "controlFamilyReferences": 20,
+      "steps": 10,
+      "sourceFiles": 23,
+      "proposedCases": 12,
+      "customerEligible": false
+    },
+    {
+      "name": "website-navigation-docs-discovery",
+      "articleId": "axiom.help.website.navigation-docs-discovery",
+      "sha256": "e77d1b05e4a933a69ae291a91d64eead0e3278908b5f00b4bb54b00bf2e90ef5",
+      "controlFamilyReferences": 24,
+      "steps": 24,
+      "sourceFiles": 57,
+      "proposedCases": 12,
+      "customerEligible": false
+    }
+  ]
+}

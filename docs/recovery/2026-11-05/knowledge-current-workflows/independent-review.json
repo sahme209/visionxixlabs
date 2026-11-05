@@ -1,0 +1,24 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR within finite semantic scope",
+  "filesReviewed": [
+    "docs/product/documentation-coverage/articles/repository-operations-controls.r1.json",
+    "docs/product/documentation-coverage/articles/browser-signin-session-controls.r1.json",
+    "docs/product/documentation-coverage/articles/website-navigation-docs-discovery.r1.json",
+    "docs/product/documentation-coverage/repository-operations-controls-evaluation.r1.json",
+    "docs/product/documentation-coverage/browser-signin-session-controls-evaluation.r1.json",
+    "docs/product/documentation-coverage/website-navigation-docs-discovery-evaluation.r1.json"
+  ],
+  "reviewed": [
+    "draft/internal/local-preview/source-only and null human review",
+    "supplemental historical overlap not silent supersession",
+    "partial Git effects/repository-wide bearer/checks unsandboxed and no retry",
+    "per-form auth exclusion vs browser/provider/device identity",
+    "hidden initial session list read and uncertain revocation",
+    "website local filtering and modal/focus/destination limits",
+    "evaluation questions are requirements not fabricated outcomes"
+  ],
+  "customerOrMediaApproval": false,
+  "retrievalEvaluationExecuted": false,
+  "providerRuntimeOrTestsByReviewer": false
+}
