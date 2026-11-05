@@ -1,11 +1,11 @@
 {
   "format": "axiom.master-plan-reconciliation/1",
-  "recorded_at": "2026-11-05T00:48:09.975667+00:00",
+  "recorded_at": "2026-11-05T02:22:55.518676+00:00",
   "master_path": "docs/product/axiom-master-action-plan.md",
-  "master_sha256": "9318d0e64ded150b0c58c8bf9d2cd298702431630e801342389fa87d118bc64e",
-  "master_git_blob": "77f2093a67673c8c3888d401f7664a3e01e161e3",
+  "master_sha256": "6d54e83fdf2d31f3860ef5245087364b8a79b09a74cc5374c475c87aef2791b3",
+  "master_git_blob": "0623e1c7bf79810055cae871b92801773828251c",
   "last_full_read_prelink_sha256": "7f3b5cc7589fee59ced5b947215060b23c7d35b0f976916ffbe1d1473a492449",
-  "current_method": "Existence-only A2 assessment found allfour bound909temporary artifacts missing. Master receives an insertion-only current-status correction, preserving allprior bytes and21requirements. Fresh persistent localpreparation design awaits approval; no rebind/helper/controller/API action.",
+  "current_method": "Full user-owned early-adoption insertion read; removing only insertion reconstructs exact committed master. Existing board already preserves research/design-only scope. User master remains unstaged and unmodified.",
   "open_parents": [
     "A1",
     "A2",
@@ -73,5 +73,6 @@
     "scope": "execution/plan-quality acceptance, not new operations authority",
     "views": "Four source-derived reporting views implemented locally with5puretests, drift/local-link checks and independent review; classification is bounded reported evidence, not full capability/adoption qualification.",
     "view_evidence": "docs/recovery/2026-11-04/master-execution-contract-reconciliation/plan-views/root-final-receipt.json"
-  }
+  },
+  "latest_reconciliation_evidence": "docs/recovery/2026-11-04/master-adoption-insertion-reconciliation/receipt.json"
 }

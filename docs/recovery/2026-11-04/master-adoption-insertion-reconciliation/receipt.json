@@ -1,0 +1,10 @@
+{
+  "priorMasterSha256": "9318d0e64ded150b0c58c8bf9d2cd298702431630e801342389fa87d118bc64e",
+  "currentMasterSha256": "6d54e83fdf2d31f3860ef5245087364b8a79b09a74cc5374c475c87aef2791b3",
+  "onlyChange": "insertion of full early customer adoption/AI usage/monetization research-design section",
+  "wholePriorBytesRestoredByRemovingInsertion": true,
+  "scope": "research/design only; no commercial implementation, billing, prices, payments, provider reads, deployment or publication authority",
+  "boardAlreadyContainsScope": true,
+  "userMasterUnstagedAndUnmodified": true,
+  "parentsPreserved": 21
+}
