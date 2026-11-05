@@ -1,0 +1,19 @@
+E
+======================================================================
+ERROR: test_real_preparation_emits_fixed_main_info_recipe_and_closed_v2 (test_container_preparation.ContainerPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_preparation.py", line 15, in test_real_preparation_emits_fixed_main_info_recipe_and_closed_v2
+    info=plistlib.loads((self.stage/'metadata/Info.plist').read_bytes())
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1249, in read_bytes
+    with self.open(mode='rb') as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/tmpfzndae2y/stage/metadata/Info.plist'
+
+----------------------------------------------------------------------
+Ran 1 test in 0.005s
+
+FAILED (errors=1)

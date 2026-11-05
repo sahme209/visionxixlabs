@@ -1,0 +1,11 @@
+{
+  "format": "axiom.container-preparation-local-source-bindings/1",
+  "files": {
+    "scripts/governance_local_issuer/container_preparation.py": "82701df5dfe12c82ec6d9ab86089fe20c0f3aefe1239abb5da53d5e03a3088d2",
+    "scripts/governance_local_issuer/container_main.c": "2b69d9fa99f0a12509878305aca4386c334cbab31115406a2a2546b45fa1cdc0",
+    "scripts/governance_local_issuer/tests/test_container_preparation.py": "8cbaa280d5454727d2a484592f8adf5e2e7525779a97f27caf094a331c609581"
+  },
+  "actualCompilerInvoked": false,
+  "containerExecuted": false,
+  "executionAuthorized": false
+}

@@ -1,4 +1,6 @@
-# Acyclic final container seal — proposed local design amendment
+# Acyclic final container seal — approved local preparation
+
+Local source/compilation/pure/mock preparation approved via call_JTk51lvoRfOo1Oo2e21DEbgF. No target/signing/assembly/installation authority.
 
 ## Verified dependency blocker
 
@@ -22,4 +24,4 @@ Tests must show: all authoritative leaf coordinates differ from CFBundleExecutab
 
 No new key use, codesign/static/dynamic Security/Keychain call, target/container/Node execution, real image build/mount/seal, root/account/service/installation, grant, provider action, deployment or spending. Actual signing and final app sealing require fresh exact frozen review/approval after preparation, including the new main target. This design alone does not establish a sealed app, operational issuer, supported System topology, custody, private consumer, fleet coverage, native enrollment or Governance completion. All21master parents remain open.
 
-Independent source/evidence review confirms the real dependency cycle and that this proposed distinct-main DAG addresses it while retaining sealed_control and all authoritative leaf paths. No wrapper code or artifact exists yet; explicit local design/implementation approval remains required.
+Independent source/evidence review confirms the real dependency cycle and that this proposed distinct-main DAG addresses it while retaining sealed_control and all authoritative leaf paths. Local implementation is now authorized and In Progress. No actual wrapper target execution, signing, final assembly or installation is authorized.

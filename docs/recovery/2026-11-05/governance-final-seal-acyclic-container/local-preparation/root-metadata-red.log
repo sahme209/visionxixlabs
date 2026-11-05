@@ -1,0 +1,21 @@
+
+======================================================================
+FAIL: test_forged_generation_or_privileged_future_mode_refuses (__main__.ContainerPreparationTests) (key='generation')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_preparation.py", line 60, in test_forged_generation_or_privileged_future_mode_refuses
+    with self.subTest(key=key):self.assertRaises(ValueError,c.verify_container,self.stage)
+AssertionError: ValueError not raised by verify_container
+
+======================================================================
+FAIL: test_forged_generation_or_privileged_future_mode_refuses (__main__.ContainerPreparationTests) (key='prospectiveInstalledMainMode')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_preparation.py", line 60, in test_forged_generation_or_privileged_future_mode_refuses
+    with self.subTest(key=key):self.assertRaises(ValueError,c.verify_container,self.stage)
+AssertionError: ValueError not raised by verify_container
+
+----------------------------------------------------------------------
+Ran 1 test in 0.005s
+
+FAILED (failures=2)

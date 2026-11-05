@@ -4,7 +4,7 @@ Reconciled November4,2026. Each linked receipt identifies its exact source versi
 
 ## November5 final-seal dependency — source/evidence-confirmed blocker
 
-The current broker-main app seal would change the broker CDHash after the guard pins it, creating a guard→DMG→outer-seal→broker cycle. Existing real bundle/detached observations corroborate it. ~~A concrete acyclic container-main design is prepared and independently reviewed~~ ([proposal](../recovery/2026-11-05/governance-final-seal-acyclic-container/PROPOSAL.md)). **Pending:** explicit approval for local source/preparation only. No signing loop, skipped sealed_control or authoritative leaf change. Old profiles remain unresolved and all21parents stay open.
+The current broker-main app seal would change the broker CDHash after the guard pins it, creating a guard→DMG→outer-seal→broker cycle. Existing real bundle/detached observations corroborate it. ~~A concrete acyclic container-main design is prepared and independently reviewed~~ ([proposal](../recovery/2026-11-05/governance-final-seal-acyclic-container/PROPOSAL.md)). **In Progress, approved:** local source/compilation/preparation only. No signing loop, skipped sealed_control or authoritative leaf change. Old profiles remain unresolved and all21parents stay open.
 
 ## November5 connected System build/materialization — reviewed proposal
 

@@ -1,0 +1,45 @@
+EE...EE.
+======================================================================
+ERROR: test_authoritative_leaf_coordinates_and_ids_never_select_main (test_container_preparation.ContainerPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_preparation.py", line 24, in test_authoritative_leaf_coordinates_and_ids_never_select_main
+    r=c.prepare_container(self.repo,self.stage);main=r['intendedMain']
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_preparation.py", line 23, in prepare_container
+    def prepare_container(*args,**kwargs):raise ValueError('container preparation not implemented')
+ValueError: container preparation not implemented
+
+======================================================================
+ERROR: test_compiled_output_is_not_implicitly_accepted (test_container_preparation.ContainerPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_preparation.py", line 49, in test_compiled_output_is_not_implicitly_accepted
+    r=c.prepare_container(self.repo,self.stage);Path(r['compileRecipe']['output']).write_bytes(b'COMPILED BUT NOT OBSERVED')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_preparation.py", line 23, in prepare_container
+    def prepare_container(*args,**kwargs):raise ValueError('container preparation not implemented')
+ValueError: container preparation not implemented
+
+======================================================================
+ERROR: test_real_preparation_emits_fixed_main_info_recipe_and_closed_v2 (test_container_preparation.ContainerPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_preparation.py", line 14, in test_real_preparation_emits_fixed_main_info_recipe_and_closed_v2
+    r=c.prepare_container(self.repo,self.stage);self.assertEqual(c.verify_container(self.stage),r)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_preparation.py", line 23, in prepare_container
+    def prepare_container(*args,**kwargs):raise ValueError('container preparation not implemented')
+ValueError: container preparation not implemented
+
+======================================================================
+ERROR: test_staged_mutation_and_unexpected_output_refuse (test_container_preparation.ContainerPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_container_preparation.py", line 46, in test_staged_mutation_and_unexpected_output_refuse
+    c.prepare_container(self.repo,self.stage);(self.stage/'source/container_main.c').write_bytes(b'ALTERED')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_preparation.py", line 23, in prepare_container
+    def prepare_container(*args,**kwargs):raise ValueError('container preparation not implemented')
+ValueError: container preparation not implemented
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.009s
+
+FAILED (errors=4)
