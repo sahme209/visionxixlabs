@@ -1,0 +1,8 @@
+{
+  "scope": "ordinary installed manual text only",
+  "files": {
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man2/fsync.2": "2399c28e11ea3a1e71b85d0002ac96b540372d405926657a101025f70ae10006",
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man2/fcntl.2": "75f4c8574c1778d501de61708cf08b785dd6adca432b9162c23ea042ba4ab644"
+  },
+  "platform_calls_performed": false
+}
