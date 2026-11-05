@@ -1,0 +1,30 @@
+{
+  "app": "current signed983 Axiom Agent Local Preview",
+  "precondition": "Documentation, no form/modal/draft visible",
+  "initialTab": "Settings visible focus ring in screenshot; AX did not initially expose focus",
+  "threeFurtherTabs": "Open repository, actual AX focus",
+  "subsequentIndividualTabs": [
+    "Open Agent",
+    "Open deployment requests",
+    "Open Airflow",
+    "Review deployment evidence",
+    "Product documentation",
+    "Getting started",
+    "Permissions model",
+    "Approval workflow",
+    "Glossary",
+    "Troubleshooting",
+    "Surfaces"
+  ],
+  "restoration": "15 Shift+Tab; actual AX focused Documentation sidebar button",
+  "activatedControls": 0,
+  "externalLinksOpened": 0,
+  "sourceChanges": false,
+  "limits": [
+    "no VoiceOver or other assistive technology test",
+    "one existing theme/window size",
+    "not activation/destination/version/help delivery validation",
+    "focus observation does not measure contrast",
+    "screenshot emitted in chat only, not retained as local file"
+  ]
+}

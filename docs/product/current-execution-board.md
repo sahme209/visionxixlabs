@@ -175,3 +175,6 @@ Twelve existing rendered controls now have stable source identifiers (two mapped
 
 ### November4 current Documentation visual observation
 Existing native Documentation page inspected through AX and screenshot without input. Two-column dark journey cards, five stage buttons and availability notices visible at one window size. [Bounded observation](../recovery/2026-11-04/native-documentation-walkthrough/current-visual-observation.json). Screenshot emitted in chat only; no all-theme/responsive/contrast/AT or control execution acceptance. User's current Documentation view preserved. Governance preparation decision remains pending; all 21 parents open.
+
+### November4 actual Documentation keyboard traversal
+~~Five journey buttons and seven guide links keyboard-reachable~~ in the current signed983 app, each subsequent focus observed through native AX. [Evidence](../recovery/2026-11-04/native-documentation-keyboard/README.md). No activation/external URL/provider action; reverse traversal restored Documentation sidebar focus. This is one-page reachability only; AT/contrast/themes/destinations and full A4/B4 remain open. Pending Governance recovery design decision unchanged; all21parents preserved.
