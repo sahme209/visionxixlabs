@@ -1,0 +1,98 @@
+{
+  "status": "internal-source-draft",
+  "baselineCommit": "5f208e0a3917b32d278e4ee98c586ef275265da8",
+  "customerEligible": false,
+  "runtimeAccepted": false,
+  "mediaAccepted": false,
+  "editorialAccepted": false,
+  "releaseAccepted": false,
+  "proposedIdsNotRuntimeBinding": true,
+  "guide": {
+    "path": "docs/product/knowledge/native-documentation-controls.md",
+    "sha256": "afdc0b3e6486f342c5a736c14c2d643cdec6289744b9404a2b141ba4b20097ba"
+  },
+  "rangeConvention": "inclusive1-based raw lines retaining newlines",
+  "sources": [
+    {
+      "path": "desktop/src/App.tsx",
+      "wholeFileSha256": "b333eafb15f9b2f80f73e2dc30335e89dcaec5e7f6b5d72a4ef2248a92cbc348",
+      "matchesOlderWholeFile": false,
+      "ranges": [
+        {
+          "startLine": 187,
+          "endLine": 205,
+          "sha256": "efac5ba6a396c54ef57fb8aa996bf5d5ee569851658582ac3dd3e04c7859d8b5"
+        },
+        {
+          "startLine": 227,
+          "endLine": 230,
+          "sha256": "d2301f7a23838020402dcb63177f2b4d68b0b947f08e68f61500f0c4240f16e2"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/customerNavigation.ts",
+      "wholeFileSha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3",
+      "matchesOlderWholeFile": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 29,
+          "sha256": "73a2148c0d33c2d362a6c293fb264eb7c4a9ff4a37de16b12618fd87a05012c3"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/views/DocsView.tsx",
+      "wholeFileSha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd",
+      "matchesOlderWholeFile": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 101,
+          "sha256": "239fd7bd513f8e87ffa63247777ea2e0f5bbe0c82dcd8272c155cd5f555a14cd"
+        }
+      ]
+    },
+    {
+      "path": "lib/desktop/governedJourney.ts",
+      "wholeFileSha256": "c4c0a5eaeb16f6684d8a9fa0dca48837d0dffcbf6baab52be1382ec687c73d2e",
+      "matchesOlderWholeFile": true,
+      "ranges": [
+        {
+          "startLine": 1,
+          "endLine": 33,
+          "sha256": "c4c0a5eaeb16f6684d8a9fa0dca48837d0dffcbf6baab52be1382ec687c73d2e"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/components/Primitives.tsx",
+      "wholeFileSha256": "1f7dc15b99807cc6eda5388d37d36d7d5fb3f698e623d751c5d3cd44353e3c5e",
+      "matchesOlderWholeFile": true,
+      "ranges": [
+        {
+          "startLine": 310,
+          "endLine": 347,
+          "sha256": "6a7dcb41be887a5f1ca6d9c5afa1c1faa55bbcf7c5fafb7b6223de4df5258401"
+        }
+      ]
+    },
+    {
+      "path": "desktop/src/lib/notifications.ts",
+      "wholeFileSha256": "2b0d9b898cb988a4db7eb2d1cbcf17883a4d920fb4c47ea9dfb24bf28dabf5cf",
+      "matchesOlderWholeFile": true,
+      "ranges": [
+        {
+          "startLine": 149,
+          "endLine": 162,
+          "sha256": "694f2561316d3d725e49aacb2a5debdb66d70b27f91ec19eda2c06d7f285539c"
+        }
+      ]
+    }
+  ],
+  "compiledCopyAndFixedUrlPresenceChecked": true,
+  "compiledEvidence": "docs/recovery/2026-11-04/current-persistent-preview/frontend-output.json",
+  "scope": "finite DocsView/routing/direct external handoff source plus compiled literal presence only; actual native Documentation visit blocked by Mac lock; no destination/browser qualification",
+  "historicalManifestUnchanged": "docs/recovery/2026-11-03/native-documentation-guide/source-bindings.json"
+}

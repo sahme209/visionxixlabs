@@ -1,0 +1,3 @@
+# Independent factual review
+
+No important issue. Historical42ad source versus new5f/983compiledsource is explicit; current Appnavigation/mount and direct externalhandoff ranges support only described sourcebehavior. SevenURL/warning presence is staticbuild evidence. First CUArequest blocked by Maclock, with no nativevisit/nav/unlock/retry/screenshot/linkopening qualification. PriorHome/Releases scope separate. Sixfiles/sevenranges do not qualify allauth/destinations; customer/editorial/retrieval remain false and oldmanifest unchanged. Reviewer performed no tests, UI, network or runtime actions.
