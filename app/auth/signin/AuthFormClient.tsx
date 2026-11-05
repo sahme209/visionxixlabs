@@ -1,7 +1,7 @@
 "use client";
 
 import { VerificationRecovery } from "@/components/auth/VerificationRecovery";
-import { useState, Suspense, useEffect } from "react";
+import { useState, Suspense, useEffect, useRef } from "react";
 import { signIn, getProviders } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -14,6 +14,7 @@ function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const authInFlight = useRef(false);
   const [oauthLoading, setOauthLoading] = useState<null | "google" | "github" | "cognito">(null);
   const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean; cognito: boolean } | null>(null);
   const router = useRouter();
@@ -43,6 +44,8 @@ function SignInForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (authInFlight.current) return;
+    authInFlight.current = true;
     setError("");
     setLoading(true);
     try {
@@ -60,6 +63,7 @@ function SignInForm() {
     } catch {
       setError("Something went wrong");
     } finally {
+      authInFlight.current = false;
       setLoading(false);
     }
   };
@@ -68,6 +72,7 @@ function SignInForm() {
     provider === "google" ? "Google" : provider === "github" ? "GitHub" : "Cognito";
 
   const handleOAuth = async (provider: "google" | "github" | "cognito") => {
+    if (authInFlight.current) return;
     // Hard-stop when the provider isn't actually registered on the server.
     if (enabledProviders && !enabledProviders[provider]) {
       setError(
@@ -76,6 +81,7 @@ function SignInForm() {
       );
       return;
     }
+    authInFlight.current = true;
     setOauthLoading(provider);
     setError("");
     try {
@@ -90,6 +96,7 @@ function SignInForm() {
     } catch {
       setError(`We couldn't start ${providerLabel(provider)} sign-in. Try again or use email sign-in.`);
     } finally {
+      authInFlight.current = false;
       setOauthLoading(null);
     }
   };

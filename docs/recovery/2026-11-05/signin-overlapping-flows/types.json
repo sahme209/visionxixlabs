@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/signin-overlap-ohlp1wnx/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/typescript/bin/tsc",
+    "--project",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/signin-overlapping-flows/tsconfig.scoped.json"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.521066875,
+  "stdoutBase64": "",
+  "stderrBase64": ""
+}

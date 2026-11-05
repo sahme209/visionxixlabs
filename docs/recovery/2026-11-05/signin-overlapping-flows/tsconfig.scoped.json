@@ -1,0 +1,25 @@
+{
+  "extends": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "noEmit": true,
+    "types": [
+      "node"
+    ],
+    "typeRoots": [
+      "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@types"
+    ],
+    "paths": {
+      "@/*": [
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/*"
+      ]
+    }
+  },
+  "files": [
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/next-env.d.ts",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/auth/signin/AuthFormClient.tsx",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/app/auth/signin/__tests__/overlappingFlows.test.ts"
+  ],
+  "include": [],
+  "exclude": []
+}

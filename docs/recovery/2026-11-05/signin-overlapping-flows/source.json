@@ -1,0 +1,25 @@
+{
+  "baselineRevision": "af6e51bbd170a84349bc1a466f9f253866c5b80b",
+  "wholeBaselineReconstructed": true,
+  "sourceFiles": [
+    {
+      "path": "app/auth/signin/AuthFormClient.tsx",
+      "sha256": "af6332f1eccb7511b32a835bd8ff770903d6327250ec43ade14c182d8d6a9376"
+    },
+    {
+      "path": "app/auth/signin/__tests__/overlappingFlows.test.ts",
+      "sha256": "c018daddef0eaf0d08d597cc657ad5b7b1391f404e6e6c7af20937b5f8a4559f"
+    },
+    {
+      "path": "app/auth/signin/__tests__/accountSwitchProviders.test.ts",
+      "sha256": "c476631f918c1f7078e0ff788fa286e37fcfedf9d39215fca6b8d266eae28517"
+    },
+    {
+      "path": "app/auth/signin/__tests__/verifiedConfirmation.test.ts",
+      "sha256": "e755aa8b243e5ad2fcdd006802011ba6335e7e17f00c2b20470fd78711a33f95"
+    }
+  ],
+  "authorityScope": "Per-mounted-form handler exclusion only; backend/provider/callback rules unchanged",
+  "wholeSuiteRun": false,
+  "browserProviderDatabaseCalls": false
+}

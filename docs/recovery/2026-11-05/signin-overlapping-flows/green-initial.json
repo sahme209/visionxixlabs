@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/signin-overlap-ohlp1wnx/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--no-experimental-webstorage",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/vitest/vitest.mjs",
+    "run",
+    "--config",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/signin-overlap-ohlp1wnx/vitest.config.mjs",
+    "--configLoader",
+    "native"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 0.579468667,
+  "stdoutBase64": "ChtbMW0bWzMwbRtbNDZtIFJVTiAbWzQ5bRtbMzltG1syMm0gG1szNm12NC4xLjExIBtbMzltG1s5MG0vVXNlcnMvc2FtaXJhaG1lZC9Eb2N1bWVudHMvQ29kZXgvMjAyNi0xMC0yOS9heGlvbS10aWNrZXQtaW5zdGFsbC1jb21wbGV0aW9uG1szOW0KCiAbWzMybeKckxtbMzltIGFwcC9hdXRoL3NpZ25pbi9fX3Rlc3RzX18vb3ZlcmxhcHBpbmdGbG93cy50ZXN0LnRzIBtbMm0oG1syMm0bWzJtNCB0ZXN0cxtbMjJtG1sybSkbWzIybRtbMzJtIDEyORtbMm1tcxtbMjJtG1szOW0KChtbMm0gVGVzdCBGaWxlcyAbWzIybSAbWzFtG1szMm0xIHBhc3NlZBtbMzltG1syMm0bWzkwbSAoMSkbWzM5bQobWzJtICAgICAgVGVzdHMgG1syMm0gG1sxbRtbMzJtNCBwYXNzZWQbWzM5bRtbMjJtG1s5MG0gKDQpG1szOW0KG1sybSAgIFN0YXJ0IGF0IBtbMjJtIDEyOjUwOjI1ChtbMm0gICBEdXJhdGlvbiAbWzIybSA0NDdtcxtbMm0gKHRyYW5zZm9ybSAyNW1zLCBzZXR1cCAwbXMsIGltcG9ydCA5Mm1zLCB0ZXN0cyAxMjltcywgZW52aXJvbm1lbnQgMTgzbXMpG1syMm0KCg==",
+  "stderrBase64": ""
+}

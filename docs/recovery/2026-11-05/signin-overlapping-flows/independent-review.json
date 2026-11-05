@@ -1,0 +1,15 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR within per-mounted-form overlap scope",
+  "findings": [],
+  "reviewed": [
+    "synchronous shared exclusion before both signIn calls",
+    "unavailable-provider exit before acquisition",
+    "both finally blocks release guard",
+    "credentials/OAuth callback and account selection unchanged",
+    "real component overlap/failure/explicit retry tests"
+  ],
+  "typesResultObservedByRoot": 0,
+  "realAuthBrowserProviderAcceptance": false,
+  "testsRunByReviewer": false
+}
