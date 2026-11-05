@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Verification/agent-precommit-b5m457tk/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--test",
+    "scripts/tests/test_docs_heading_build_gate.cjs"
+  ],
+  "exitCode": 0,
+  "stdout": "\u2714 fresh public heading index passes the existing prebuild contract (177.197375ms)\n\u2714 prebuild refuses changed-guide without regenerating (175.455834ms)\n\u2714 prebuild refuses changed-index without regenerating (172.783166ms)\n\u2714 prebuild refuses missing-index without regenerating (175.750333ms)\n\u2714 migration build refusal remains enforced (113.382709ms)\n\u2139 tests 5\n\u2139 suites 0\n\u2139 pass 5\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 845.463084\n",
+  "stderr": ""
+}

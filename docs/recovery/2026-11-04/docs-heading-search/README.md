@@ -11,3 +11,7 @@ Initial rendered3heading failures/10passes reproduced the gap. Generation then r
 Architecture overview is a fifth legacy redirect to ReleaseOps. Earlier documentation called24listed destinations authored guides; that classification was wrong:23authored pages plus this alias were listed. The alias URL remains unchanged and works as before, while its duplicate navigation entry is removed in favor of existing canonical ReleaseOps. Five explicit redirect aliases are now excluded by the independent page inventory. All23authored guides are uniquely linked. Previous test runs/counts remain historical; their broader authored-content claim is superseded here.
 
 Current475signed desktop app and existing website previews are untouched; this website source is unshipped. Full body/error/version/availability search, real browser accessibility, approved support retrieval and genuine enterprise/governance acceptance remain open.
+
+## Subsequent build integration
+
+The later [read-only prebuild gate](../docs-heading-build-gate/README.md) now refuses missing/stale index data. The earlier manual-only statement describes the implementation at that receipt; no automatic regeneration is added. Source/customer/browser/Governance acceptance limits remain unchanged.

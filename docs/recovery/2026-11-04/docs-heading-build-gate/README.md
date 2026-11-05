@@ -1,0 +1,7 @@
+# Public search index build freshness gate — local
+
+The existing prebuild contract now reads the current public-heading generator result and requires exact equality with the committed index. It never generates or rewrites content during the build. Missing, malformed, unavailable or stale data refuses with a fixed regeneration/review instruction. All original migration/type-boundary/proxy/cloud-SDK checks run first; removing only the added import and freshness block reconstructs the entire previous Git file exactly.
+
+Three actual copied-checker fixture failures reproduced acceptance of stale guide text, tampered index and missing index; two original/fresh controls passed. Final five cases pass, including unchanged migration refusal and no index rewrite in negative cases. Fixtures use only synthetic public text and the existing installed TypeScript parser through a read-only module link. One actual canonical prebuild-contract invocation also passes under network denial. This is not a Next/Prisma build, production rollout or CI run. No frontend suite was repeated because its source did not change.
+
+No page code is evaluated, no new dependency installed, no source/private knowledge/provider/AI/DB/credential/permission/deployment mutation. Current475native and web previews unchanged. The previous manual-only index receipt is historical; the check now runs through the existing prebuild script. It enforces source/index freshness, not content accuracy, customer help authority, real-browser acceptance or complete B4/B5/Governance.

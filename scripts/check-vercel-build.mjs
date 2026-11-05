@@ -1,4 +1,5 @@
 import { existsSync, readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -45,6 +46,19 @@ if (missingExternals.length > 0) {
   throw new Error(
     `Node-only cloud SDKs must be listed in serverExternalPackages: ${missingExternals.join(", ")}`,
   );
+}
+
+// This is a read-only freshness check, never automatic content generation.
+let headingIndexCurrent = false;
+try {
+  const require = createRequire(import.meta.url);
+  const expected = JSON.stringify(require("./generate-docs-heading-index.cjs").build(), null, 2) + "\n";
+  headingIndexCurrent = readFileSync(join(projectRoot, "lib/docs/guide-heading-index.json"), "utf8") === expected;
+} catch {
+  // Missing, malformed or unavailable source/index data must stop the build.
+}
+if (!headingIndexCurrent) {
+  throw new Error("Public guide heading index is missing or stale. Run node scripts/generate-docs-heading-index.cjs and review the resulting source-bound index before building.");
 }
 
 console.log(

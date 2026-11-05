@@ -1,0 +1,6 @@
+{
+  "scripts/check-vercel-build.mjs": "72247c1c379b845133f9e5cd570697660b30c58190ab0901169b8f9e63e15163",
+  "scripts/tests/test_docs_heading_build_gate.cjs": "f2f2dc0387d2ff30651b0f8182a4881d5144077e4d834e6d38d06c6e48320fe7",
+  "scripts/generate-docs-heading-index.cjs": "9d481bdd8a7aef0b4970ce99ae97c10dec18c60e37897d0ef906eae7a1b483c3",
+  "lib/docs/guide-heading-index.json": "d2e232775d3c28b1fb64fc9eb4a7e8c7b2b73a6a6650499506eb612d9d25369f"
+}

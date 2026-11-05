@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear",
+  "scope": "originalguards retained/readonlyfreshness/noCLIwrites/fivecases/canonicalcheckscope",
+  "execution": "read-only no reruns"
+}

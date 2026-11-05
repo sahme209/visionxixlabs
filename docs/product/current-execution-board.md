@@ -214,3 +214,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November4 public task-heading search — local only
 ~~Authored summaries/headings searchable across23canonical public guides~~ ([evidence](../recovery/2026-11-04/docs-heading-search/README.md)):14rendered+3extractor/freshness checks/scopedtypes/finalreview pass. ASTliteralextraction only/no codeeval/privatecontent/AI/answers. Corrected prior24-authoredclassification: Architecture is fifthlegacyredirect, URLretained/duplicatenavremoved. Existing23contentroutes unique; sourcehashindex/manualcheck, noautomaticbuildhook/fullbody or browser/AT/publication acceptance. Current475native untouched. All21parents/Governance decision preserved.
+
+### November4 public search index build gate
+~~Existing prebuildcontract now refuses missing/stale/tampered headingindex without rewriting~~ ([evidence](../recovery/2026-11-04/docs-heading-build-gate/README.md)): actualRED3fail2pass→GREEN5; canonicalreadonlycontractcheckPASS/independentreviewclear. Wholeoldcontract reconstructed after removingonlyaddedimport/block; migration/type/proxy/SDKguards unchanged. NoNext/Prisma build, CI/deploy/customerauthority or fullB4/Gov acceptance. Prior manual-onlycheckpoint historical; current475app preserved.

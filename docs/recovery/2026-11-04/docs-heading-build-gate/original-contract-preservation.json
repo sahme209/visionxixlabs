@@ -1,0 +1,6 @@
+{
+  "removingOnlyNewImportAndFreshnessBlockRestoresWholeGitBaseline": true,
+  "oldSha256": "97051be4dde53d122022445f86e36bd43fb9bd926663d4731618dd9036e05f3a",
+  "currentSha256": "72247c1c379b845133f9e5cd570697660b30c58190ab0901169b8f9e63e15163",
+  "baselineCommit": "7a717a5354bb463279d234484fcf0e7ff125ae29"
+}
