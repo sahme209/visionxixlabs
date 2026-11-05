@@ -1,0 +1,10 @@
+{
+  "method": "restore patch onto recorded Git base in fresh owned document-only fixture",
+  "restoreSha256": "7ce16009c2080bcf872819556d161a13adce8846c608de89d5d10a5a1fd21ccf",
+  "workingFileSha256": "7ce16009c2080bcf872819556d161a13adce8846c608de89d5d10a5a1fd21ccf",
+  "match": true,
+  "masterFileChanged": false,
+  "boardExistingB1Extension": "already tracks authorized first-user/authenticated research and not-observed status; no duplicate addition",
+  "productTestOrRuntimeExecuted": false,
+  "externalReadOrAccess": false
+}

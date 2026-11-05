@@ -1,0 +1,7 @@
+# User master-plan extension preserved
+
+The current unstaged user master contains the previously recorded adoption/economics research direction plus the first-user journey paragraph under B1. The latter requires legitimate sign-up/sign-in, onboarding and authenticated product research for Cursor, Harness, ChatGPT, Claude, Codex and Grok/Grokbot, including consent, setup, roles, integrations, first actions, limits, recovery, accessibility and return sessions. Missing access remains **not observed**. Account creation, personal-data submission, paid trials, provider connections, charges and access bypasses still require specific approval. Findings feed original A4/B2/B6 work without delaying critical A2.
+
+The current board already has the corresponding B1 extension and unobserved/access-gated status; no duplicate task was added and no research was performed. Every A1–A9/B1–B6/C1–C6 requirement remains intact.
+
+The master file was not changed or staged. Its current SHA256 is `7ce16009c2080bcf872819556d161a13adce8846c608de89d5d10a5a1fd21ccf`; the earlier `6d54…` recovery snapshot remains historical. The new recovery patch includes both unstaged user insertions against the recorded Git blob. Applying it to that exact base in a fresh owned document-only fixture reproduced the current hash. This preserves the user-owned change in the local recovery bundle without attributing its authorship to the implementation commits. No production, product test, account, browser, provider or security-boundary action occurred.
