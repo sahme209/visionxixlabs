@@ -1,0 +1,9 @@
+{
+  "sourceRevision": "0b0e8b48aa3469c1146bc2db38cdce4b2dc1a43d",
+  "driverFunctionASTUnchanged": true,
+  "controllerFunctionASTUnchanged": true,
+  "changes": "frozen source/packet/helper hashes and fresh owned path literals only; tested controller bodies unchanged",
+  "controllerPureTestsRepeated": false,
+  "buildStarted": false,
+  "executionAuthorized": false
+}

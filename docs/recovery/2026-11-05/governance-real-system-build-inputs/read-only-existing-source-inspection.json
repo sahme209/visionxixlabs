@@ -1,0 +1,13 @@
+{
+  "status": "existing_source_subtree_input_observation_passed",
+  "scope": "read-only existing native preparation source subtree; not a fresh source archive/build/stage record",
+  "packetSha256": "b2c24cb73b63d49d8961c69ef47a5d31fa553838e73948ac00da341e72068aa3",
+  "roleCount": 7,
+  "sourceInputCount": 55,
+  "generatedArtifactsWritten": false,
+  "freshArchiveVerified": false,
+  "buildStarted": false,
+  "executionAuthorized": false,
+  "installationReady": false,
+  "activationAllowed": false
+}

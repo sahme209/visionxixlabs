@@ -1,0 +1,14 @@
+{
+  "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-real-system-build-inputs/prepared-build-controller.py",
+  "sha256": "b25e38fd49169ef1ed5a0acb359c2579cba22ad1179c389a21f4942ca70449ac",
+  "driverSha256": "9b23e596f229bc25d2b86d62b0c7648f9155f4ba500a3215a09eb52738ddf2f9",
+  "wallSeconds": 1800,
+  "combinedOutputBytes": 1048576,
+  "driverCommand": [
+    "/usr/bin/python3",
+    "-B",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-real-system-build-inputs/prepared-build-driver.py"
+  ],
+  "controllerRun": false,
+  "executionAuthorized": false
+}

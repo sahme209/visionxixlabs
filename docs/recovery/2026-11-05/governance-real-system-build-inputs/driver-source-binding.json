@@ -1,0 +1,19 @@
+{
+  "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-real-system-build-inputs/prepared-build-driver.py",
+  "sha256": "9b23e596f229bc25d2b86d62b0c7648f9155f4ba500a3215a09eb52738ddf2f9",
+  "sourceRevision": "0b0e8b48aa3469c1146bc2db38cdce4b2dc1a43d",
+  "packetPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-real-system-build-inputs/system-build-packet-0b0e8b48.json",
+  "packetSha256": "8b3e95635e610cfeb2af13b1680a5cff0929612a92d5fc8253170c86b88fa6fc",
+  "helperSha256": {
+    "scripts/build-local-issuer-package-source.py": "6b8445a8ecf84a25ca43b5d3a7ca738a4d3b2d6c89d4c54a48833c129f4290a5",
+    "scripts/local_prisma_engine_inputs.py": "82e56a85c386ba735a5237c87546e1b41576c37a8f34fdab6769cee36f8743a0",
+    "scripts/governance_local_issuer/system_build_inputs.py": "54a5552179f2aef7f15fbb1eb646b61b1febd7922852faec1a6a83edf435d980",
+    "scripts/governance_local_issuer/materialize.py": "438416de2e4b54f6a88479f229c46f7678fc66d066ae354f9088e522ab1b1a54",
+    "scripts/governance_local_issuer/system_preparation.py": "1cdf90d0b9ad38bc8849d567036db8a83ce26cd0f0c74b2fe5ba5a30024e141e",
+    "scripts/governance_local_issuer/native_linkage.py": "027a0f78c0341112fee376a828aeec5e62cbbdd2c9445873b7ed997af9be7490",
+    "scripts/governance_local_issuer/manifest.py": "19304f8c9e9fbe8620cf6b484fd599b6f7fc3611d55eea3339a45030f0f5e5e0"
+  },
+  "originalBuildToolNodeSha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+  "driverRun": false,
+  "executionAuthorized": false
+}

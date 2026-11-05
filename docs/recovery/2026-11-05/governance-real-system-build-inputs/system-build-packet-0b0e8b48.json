@@ -1,0 +1,705 @@
+{
+  "executionAuthorized": false,
+  "format": "axiom.system-build-packet/1",
+  "generation": "c3b7bf334ce56a64575183b7a66e5109",
+  "guardHistoricalResult": {
+    "mode": 420,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/result.json",
+    "sha256": "dc108c8fc762eb3bc5506749e58b932b64ba3d06ab5c5011bc352847402eeeb1",
+    "size": 1351
+  },
+  "guardSupplement": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-guard-profile-reconciliation/saved-batch-supplement.json",
+    "sha256": "a8f47a44328250b46fd3e40556d424706097a729c8119bba0946e40336a5b6e7",
+    "size": 2384
+  },
+  "installationReady": false,
+  "layout": {
+    "app": "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/Axiom Synthetic Custodian.app",
+    "brokerService": "com.visionxixlabs.axiom.synthetic.bootstrap.c3b7bf334ce56a64575183b7a66e5109",
+    "image": "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/Axiom Synthetic Custodian.app/Contents/Resources/issuer-package.dmg",
+    "owner": "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/Axiom Synthetic Custodian.app/Contents/Helpers/AxiomSyntheticLaunchOwner",
+    "ownerService": "com.visionxixlabs.axiom.synthetic.launch-owner.c3b7bf334ce56a64575183b7a66e5109",
+    "packageRoot": "/Volumes/Axiom Synthetic Issuer-c3b7bf334ce56a64575183b7a66e5109",
+    "root": "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109"
+  },
+  "preparationReceipts": [
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/stage/system-preparation.json",
+      "sha256": "33377cdd913d3fa2facd87a13267d0e0bb93c7c16f0be2616315ed1e4fb02448",
+      "size": 1440084
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/system-preparation.json",
+      "sha256": "534252bb1fdd07792b20927c23ff33db558d943893e1489cd8f5b6024b3cd67b",
+      "size": 1443010
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-independent-leaves-6018e44c/stage/system-preparation.json",
+      "sha256": "a37e2b92fa4e4fdada77dde3df16e6d350380261c611291512ffe1c85002a61f",
+      "size": 1446539
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-bound-guard-6018e44c/stage/system-preparation.json",
+      "sha256": "e751099cd93afde965507daed75d1f8c9e8295d58a16de36e58c73a8af0e79d9",
+      "size": 1454472
+    }
+  ],
+  "roles": {
+    "bootstrap": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin-bootstrap",
+        "sha256": "8dae44a1a6f0857e5716d78230b3b8ff7a4845ff3da5c2d8195d65632bfdaa12",
+        "size": 53216
+      },
+      "displayStderr": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/3-stderr.log",
+        "sha256": "0368cd190640ca8b719bf75b968026f417f3c0fc957b2c920e1cb972fcc7d501",
+        "size": 1272
+      },
+      "displayStdout": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/3-stdout.log",
+        "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+        "size": 184
+      },
+      "identifier": "com.visionxixlabs.axiom.synthetic.bootstrap",
+      "provenance": {
+        "compileReceipt": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-independent-leaves/compile-results.json",
+          "sha256": "11d53ce620bc121f18fb94c463dc26fa8232e6eddf80d76d5535601cf86b54e0",
+          "size": 9544
+        },
+        "preparationReceipt": {
+          "mode": 384,
+          "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-independent-leaves-6018e44c/stage/system-preparation.json",
+          "sha256": "a37e2b92fa4e4fdada77dde3df16e6d350380261c611291512ffe1c85002a61f",
+          "size": 1446539
+        },
+        "savedCommands": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/commands.json",
+          "sha256": "a980d4bc897c8572455e8543b48808907d11232bb7749390c5aff79e36e0bdfc",
+          "size": 1576
+        },
+        "signingPacket": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-packet.json",
+          "sha256": "124409f0462e2efb239266c213817047241e1e74aadc57547436310eeb5fe165",
+          "size": 10802
+        }
+      },
+      "rawLogs": [
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/1-stderr.log",
+            "sha256": "b98a558f21aceafc5691062de121a68a57a34989d302c1d0bd66bc3674436ef0",
+            "size": 176
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/1-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/2-stderr.log",
+            "sha256": "da208875c8262843de7c097b44927cdf9432dcac938979a44cd9bea38396514a",
+            "size": 345
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/2-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/3-stderr.log",
+            "sha256": "0368cd190640ca8b719bf75b968026f417f3c0fc957b2c920e1cb972fcc7d501",
+            "size": 1272
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/3-stdout.log",
+            "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+            "size": 184
+          }
+        }
+      ],
+      "resultReceipt": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/bootstrap/result.json",
+        "sha256": "9f60210258f005b74641b25dbe199680800d3a4a817276d3d2d20387e77ed58d",
+        "size": 2330
+      }
+    },
+    "broker": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker",
+        "sha256": "bc9dada02019204bd581f8441e977880c40902e154b5653b5e6f1ff128be43ed",
+        "size": 190656
+      },
+      "displayStderr": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/3-stderr.log",
+        "sha256": "dea5871a987c337e05cc49790e8d50505868c573b81f6776cb84afe12e15f18e",
+        "size": 1277
+      },
+      "displayStdout": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/3-stdout.log",
+        "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+        "size": 184
+      },
+      "identifier": "com.visionxixlabs.axiom.synthetic.broker",
+      "provenance": {
+        "compileReceipt": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/compile-result.json",
+          "sha256": "2af1ee8ed851b8b19b9199d4ae82511b0a077400ba11e2831eddb21a6d19c7c6",
+          "size": 4957
+        },
+        "preparationReceipt": {
+          "mode": 384,
+          "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/system-preparation.json",
+          "sha256": "534252bb1fdd07792b20927c23ff33db558d943893e1489cd8f5b6024b3cd67b",
+          "size": 1443010
+        },
+        "signingPacket": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-packet.json",
+          "sha256": "29bf1110f250ca889e6d4e573f57c1fbc4c8632dcfa1b2af43cd99dd034e706b",
+          "size": 2562
+        }
+      },
+      "rawLogs": [
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/1-stderr.log",
+            "sha256": "09f9d88888efb73945697e47381266558870810137716c9b2bf1615f6f61d6d1",
+            "size": 183
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/1-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/2-stderr.log",
+            "sha256": "992a742076c51e6f6da0395ec83f988aab637509d10aa5cb338dfea3cef307ea",
+            "size": 359
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/2-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/3-stderr.log",
+            "sha256": "dea5871a987c337e05cc49790e8d50505868c573b81f6776cb84afe12e15f18e",
+            "size": 1277
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/3-stdout.log",
+            "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+            "size": 184
+          }
+        }
+      ],
+      "resultReceipt": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-detached-broker-preparation/signing-observation/result.json",
+        "sha256": "ac155613fd42f68aaf27dd6758e9c7f286dfff43d87e873323bbf1a5ab110769",
+        "size": 2448
+      }
+    },
+    "controller": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/stage/assembly/Axiom Synthetic Custodian.app/Contents/MacOS/AxiomIssuerController",
+        "sha256": "8b9fe2463a29ad643f53a987dcbd1259994526e97894a7bb3d602c576da8558e",
+        "size": 54752
+      },
+      "displayStderr": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/3-stderr.log",
+        "sha256": "082c7e3bb0edef0554a0ae46fbffba22109d0a2843f33b3f3e3a304bfdab43ca",
+        "size": 1339
+      },
+      "displayStdout": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/3-stdout.log",
+        "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+        "size": 184
+      },
+      "identifier": "com.visionxixlabs.axiom.synthetic.controller",
+      "provenance": {
+        "compileReceipt": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/compile-result.json",
+          "sha256": "b566f5a25218050d48be429a0d695df25c6de4a14dd6142c7f3b69a1f8680815",
+          "size": 2360
+        },
+        "preparationReceipt": {
+          "mode": 384,
+          "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-controller-first-6018e44c/stage/system-preparation.json",
+          "sha256": "33377cdd913d3fa2facd87a13267d0e0bb93c7c16f0be2616315ed1e4fb02448",
+          "size": 1440084
+        },
+        "signingPacket": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-packet.json",
+          "sha256": "f484fcd35ab6d52abb46772537e50b85b04f859dbf89edf9e87ea37c2e331d32",
+          "size": 2744
+        }
+      },
+      "rawLogs": [
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/1-stderr.log",
+            "sha256": "6ee59289ec9fd7b310c8f901524583d14a1ea33c9e57d714de52f57c412a0a45",
+            "size": 242
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/1-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/2-stderr.log",
+            "sha256": "3bb9c22af675f405ed85e75cf5f507f0f5157cc97f81b0681c88e95a6e975688",
+            "size": 477
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/2-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/3-stderr.log",
+            "sha256": "082c7e3bb0edef0554a0ae46fbffba22109d0a2843f33b3f3e3a304bfdab43ca",
+            "size": 1339
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/3-stdout.log",
+            "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+            "size": 184
+          }
+        }
+      ],
+      "resultReceipt": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-controller-first/signing-observation/result.json",
+        "sha256": "6791549270c7ebe1668fcfe95e025d2a3cbb7ab1b5fa258f530c360c7b435885",
+        "size": 2578
+      }
+    },
+    "guard": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/origin_guard.node",
+        "sha256": "820f33d35ee78851f54dd2e18b3f8ce734814aa4bc7ca425e6520ed90bbe506e",
+        "size": 92992
+      },
+      "displayStderr": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/3-stderr.log",
+        "sha256": "72378522a062552151c44d925ab122b03367a17cad57fe7e941338aeaaeb799f",
+        "size": 1269
+      },
+      "displayStdout": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/3-stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size": 0
+      },
+      "identifier": "com.visionxixlabs.axiom.synthetic.guard",
+      "provenance": {
+        "compileReceipt": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-bound-guard-preparation/compile-result.json",
+          "sha256": "52585e7ed41fff355c0a06d3604044c36fc98cadf1405b5eeb01839b797b156e",
+          "size": 3092
+        },
+        "preparationReceipt": {
+          "mode": 384,
+          "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-bound-guard-6018e44c/stage/system-preparation.json",
+          "sha256": "e751099cd93afde965507daed75d1f8c9e8295d58a16de36e58c73a8af0e79d9",
+          "size": 1454472
+        },
+        "savedCommands": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/commands.json",
+          "sha256": "9e20fa829a7cec9a8fe6106d4b8c95416fb1d6f8f84968586df74a9d921b19df",
+          "size": 1572
+        },
+        "signingPacket": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-packet.json",
+          "sha256": "124409f0462e2efb239266c213817047241e1e74aadc57547436310eeb5fe165",
+          "size": 10802
+        }
+      },
+      "rawLogs": [
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/1-stderr.log",
+            "sha256": "b39a38d68387b0d09bea53756148c5b62adcf9bf3681851521bb217b2dd8203e",
+            "size": 177
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/1-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/2-stderr.log",
+            "sha256": "1b8172a33d0d65029aca2896c256b61647a2ff21f749d0f11e7da75dbd924dd7",
+            "size": 347
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/2-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/3-stderr.log",
+            "sha256": "72378522a062552151c44d925ab122b03367a17cad57fe7e941338aeaaeb799f",
+            "size": 1269
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/3-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        }
+      ],
+      "resultReceipt": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/saved-byte-inspection.json",
+        "sha256": "c00f273024e896fef47b3e6cc81ef50c2a06d850b85861511ad819b11b66e6a9",
+        "size": 2970
+      }
+    },
+    "maintenance": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticProvisioner",
+        "sha256": "783f845bce2867ceada5440e1fa5ada1766d9a5386a1b6cf1e30a2b3b54d0356",
+        "size": 110064
+      },
+      "displayStderr": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/3-stderr.log",
+        "sha256": "3d44b8871c9596b5994e3ced9e8c5417486826c5f05f6a1ae5080275061d1fa5",
+        "size": 1283
+      },
+      "displayStdout": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/3-stdout.log",
+        "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+        "size": 184
+      },
+      "identifier": "com.visionxixlabs.axiom.synthetic.provisioner",
+      "provenance": {
+        "compileReceipt": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-independent-leaves/compile-results.json",
+          "sha256": "11d53ce620bc121f18fb94c463dc26fa8232e6eddf80d76d5535601cf86b54e0",
+          "size": 9544
+        },
+        "preparationReceipt": {
+          "mode": 384,
+          "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-independent-leaves-6018e44c/stage/system-preparation.json",
+          "sha256": "a37e2b92fa4e4fdada77dde3df16e6d350380261c611291512ffe1c85002a61f",
+          "size": 1446539
+        },
+        "savedCommands": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/commands.json",
+          "sha256": "438a473b8283548a4670cdce7231b79807babe4b54bd5c0d5e71dc85e35e40ea",
+          "size": 1613
+        },
+        "signingPacket": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-packet.json",
+          "sha256": "124409f0462e2efb239266c213817047241e1e74aadc57547436310eeb5fe165",
+          "size": 10802
+        }
+      },
+      "rawLogs": [
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/1-stderr.log",
+            "sha256": "f182857ce62f9e1fd8eae3c238895553089a8c3a022d629c5e17b80787eadd92",
+            "size": 185
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/1-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/2-stderr.log",
+            "sha256": "a8f50f906eb74a57055d6cf0933d175eb9c590317b635e56d98c706e3149f4d3",
+            "size": 363
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/2-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/3-stderr.log",
+            "sha256": "3d44b8871c9596b5994e3ced9e8c5417486826c5f05f6a1ae5080275061d1fa5",
+            "size": 1283
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/3-stdout.log",
+            "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+            "size": 184
+          }
+        }
+      ],
+      "resultReceipt": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/maintenance/result.json",
+        "sha256": "7c6b7d71fb3cafbf7af9a0d7d20792015633994ec91479f547ef80339e791a32",
+        "size": 2379
+      }
+    },
+    "node": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy",
+        "sha256": "1aa6f6936040d80d6f9c1bb75ba4af97ce596af514ab7f0157a77f461abce134",
+        "size": 121418704
+      },
+      "displayStderr": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/3-stderr.log",
+        "sha256": "a637766924d14f13433e5016fb25e5f09a886af41fe4e1b16f37c9e38af9fbe0",
+        "size": 1264
+      },
+      "displayStdout": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/3-stdout.log",
+        "sha256": "84ea240cae1d3d70098e6bfe66ed4cf2e991a14ef6e66978af7b5813d2d17176",
+        "size": 233
+      },
+      "identifier": "com.visionxixlabs.axiom.synthetic-node",
+      "provenance": {
+        "signingPacket": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-review-packet.json",
+          "sha256": "062f4158afe127df857ba855a4c20c3ceb846e78280d7ea122c46b62604bbd39",
+          "size": 1828
+        }
+      },
+      "rawLogs": [
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/1-stderr.log",
+            "sha256": "cc4da704060fecd84a51af96743b830fb9c306ba2141ee85177e5f75683822be",
+            "size": 165
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/1-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/2-stderr.log",
+            "sha256": "2d04d8f088dd4410250ba86485531dc254c49ba28804e9d567b39f41ef48f062",
+            "size": 323
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/2-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/3-stderr.log",
+            "sha256": "a637766924d14f13433e5016fb25e5f09a886af41fe4e1b16f37c9e38af9fbe0",
+            "size": 1264
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/3-stdout.log",
+            "sha256": "84ea240cae1d3d70098e6bfe66ed4cf2e991a14ef6e66978af7b5813d2d17176",
+            "size": 233
+          }
+        }
+      ],
+      "resultReceipt": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-artifact-plan/node-signing-observation/result.json",
+        "sha256": "fd24ec310ed76bb6fde09b4d79389668c5da93510d126f2bfca8e2b5cd6213c4",
+        "size": 2660
+      }
+    },
+    "owner": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/AxiomSyntheticLaunchOwner",
+        "sha256": "07d5a9c58a6894b9f9021db67b34d22c3d1c799a6ed1fd0b921712aef7b33e3f",
+        "size": 97776
+      },
+      "displayStderr": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/3-stderr.log",
+        "sha256": "b7b9aedcd9aefa9b167a948fc3ff2cc16b9ba31b76e383a59d839966bc6d972d",
+        "size": 1284
+      },
+      "displayStdout": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/3-stdout.log",
+        "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+        "size": 184
+      },
+      "identifier": "com.visionxixlabs.axiom.synthetic.launch-owner",
+      "provenance": {
+        "compileReceipt": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-system-independent-leaves/compile-results.json",
+          "sha256": "11d53ce620bc121f18fb94c463dc26fa8232e6eddf80d76d5535601cf86b54e0",
+          "size": 9544
+        },
+        "preparationReceipt": {
+          "mode": 384,
+          "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-system-independent-leaves-6018e44c/stage/system-preparation.json",
+          "sha256": "a37e2b92fa4e4fdada77dde3df16e6d350380261c611291512ffe1c85002a61f",
+          "size": 1446539
+        },
+        "savedCommands": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/commands.json",
+          "sha256": "0491b3740596c95378617ff139e838d5661e8ee9c46b8adcdbb29b5254b54d11",
+          "size": 1606
+        },
+        "signingPacket": {
+          "mode": 420,
+          "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-packet.json",
+          "sha256": "124409f0462e2efb239266c213817047241e1e74aadc57547436310eeb5fe165",
+          "size": 10802
+        }
+      },
+      "rawLogs": [
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/1-stderr.log",
+            "sha256": "bda13058584aa4ec6916c2f1d80e7c848cabb518cee93a0fdae61f0efdca3631",
+            "size": 185
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/1-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/2-stderr.log",
+            "sha256": "30dfa928567cce1963c97b7c5d71ea8ce7ad6a65b06ef2ab0bdf2dc884b56ffa",
+            "size": 363
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/2-stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "size": 0
+          }
+        },
+        {
+          "stderr": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/3-stderr.log",
+            "sha256": "b7b9aedcd9aefa9b167a948fc3ff2cc16b9ba31b76e383a59d839966bc6d972d",
+            "size": 1284
+          },
+          "stdout": {
+            "mode": 420,
+            "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/3-stdout.log",
+            "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+            "size": 184
+          }
+        }
+      ],
+      "resultReceipt": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/owner/result.json",
+        "sha256": "190cb91d0767b3e1b943efc0f811888a798c423ea0ad9657811952bedecb6c91",
+        "size": 2365
+      }
+    }
+  },
+  "sourceRevision": "0b0e8b48aa3469c1146bc2db38cdce4b2dc1a43d"
+}

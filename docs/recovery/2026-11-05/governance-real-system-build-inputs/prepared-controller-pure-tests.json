@@ -1,0 +1,14 @@
+{
+  "format": "axiom.prepared-controller-pure-tests/1",
+  "files": {
+    "prepared-build-controller.py": "a08f9b3175a350c48bf91e1d0112d759b9f6f57131f41af46c17d70c94678098",
+    "test_prepared_build_controller.py": "94d401c5c020cd906d8fc81b860aded4154970372561fcd30befe66b5fa6feba"
+  },
+  "casesPassed": 4,
+  "actualChildCreated": false,
+  "actualSignalSent": false,
+  "actualDriverExecuted": false,
+  "actualControllerProcessLaunched": false,
+  "executionAuthorized": false,
+  "scope": "Imported real main called in process with fake driver hash and owned temporary CONTROL; process/selector/read/signals/clock/forward streams mocked."
+}

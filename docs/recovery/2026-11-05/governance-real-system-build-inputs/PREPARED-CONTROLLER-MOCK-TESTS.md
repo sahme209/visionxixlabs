@@ -1,0 +1,7 @@
+# Prepared controller pure/mock verification
+
+Four focused tests invoke the actual prepared controller main body in the test process. Popen, selectors, file-descriptor reads/nonblocking setup, signal-status/killpg, clock and forwarded output are mocked; the fixed driver is inert test bytes in an owned private temporary directory and is never executed. Only test-owned temporary CONTROL evidence files are created during those calls. Import bytecode writing is disabled explicitly. The original controller source/driver and its production constants are not edited.
+
+Verified cases: output cap stores/forwards exactly the accepted bytes and discards the overflow byte; read failure persists empty bounded logs and terminal evidence, signalling only the fake unreaped original process group; completed wait reaps the fake child and prevents any subsequent group signal; both waits timing out leave unknown cleanup/exit and refuse success/retry. These exercise the real finally block, byte accounting, process ownership and terminal result persistence rather than copied controller logic.
+
+All four pass. No actual child, controller/driver process, group signal, compiler, signing/API, service, provider, network or database action occurred. Mock success does not authorize or establish the actual ordinary build attempt, descendant quiescence or issuer qualification. No actual controller source correction was needed for these cases.
