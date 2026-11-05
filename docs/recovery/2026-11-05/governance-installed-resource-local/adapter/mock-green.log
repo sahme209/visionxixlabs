@@ -1,0 +1,2 @@
+PASS actual journal/publish callbacks with renamed inert filesystem mocks
+PASS actual Add adapter shape/type/bounds/collision/refusal via renamed inert Security mock; no OS qualification

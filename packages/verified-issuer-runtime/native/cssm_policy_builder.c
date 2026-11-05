@@ -2,13 +2,15 @@
  * verification. No item, service, credential or supplier integration exists. */
 #include "cssm_policy_copy.h"
 #include "cssm_policy_once.h"
+#include "cssm_policy_prepared.h"
+#include "synthetic_resource_contract.h"
 #include <Security/Security.h>
 #include <stdlib.h>
 #ifndef AX_CSSM_PROFILE
 #define AX_CSSM_PROFILE 0
 #endif
 #if AX_CSSM_PROFILE == 0
-static const char proposed_path[] = "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/origin-broker";
+static const char proposed_path[] = AX_SYNTH_BROKER;
 #elif AX_CSSM_PROFILE == 1
 static const char proposed_path[] = "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-test";
 #else
@@ -30,6 +32,9 @@ static CFArrayRef applications, authorizations;
 static CSSM_ACL_OWNER_PROTOTYPE *exported_owner;
 static CSSM_ACL_ENTRY_INFO *exported_entries;
 static atomic_flag attempted=ATOMIC_FLAG_INIT;
+static atomic_int ax_cssm_prepared_ready;
+SecAccessRef ax_cssm_prepared_access(void){return atomic_load_explicit(&ax_cssm_prepared_ready,memory_order_acquire)?prepared:NULL;}
+const ax_cssm_policy *ax_cssm_prepared_policy(void){return atomic_load_explicit(&ax_cssm_prepared_ready,memory_order_acquire)?&arena:NULL;}
 int ax_cssm_prepare_once(void) {
  if(!ax_cssm_claim_once(&attempted)) return 0;
  CSSM_ACL_PROCESS_SUBJECT_SELECTOR selector={CSSM_ACL_PROCESS_SELECTOR_CURRENT_VERSION,CSSM_ACL_MATCH_UID,0,0};
@@ -66,5 +71,7 @@ int ax_cssm_prepare_once(void) {
  if(AX_CALL(5,SecAccessGetOwnerAndACL(temporary,&exported_owner,&count,&exported_entries))!=errSecSuccess) return 0;
  ax_cssm_phase="copy";
  if(!ax_cssm_copy_framework(exported_owner,count,exported_entries,&arena)) return 0;
- return AX_CALL(6,SecAccessCreateFromOwnerAndACL(&arena.owner,1,&arena.entry,&prepared))==errSecSuccess;
+ int ok=AX_CALL(6,SecAccessCreateFromOwnerAndACL(&arena.owner,1,&arena.entry,&prepared))==errSecSuccess&&prepared!=NULL;
+ if(ok)atomic_store_explicit(&ax_cssm_prepared_ready,1,memory_order_release);
+ return ok;
 }

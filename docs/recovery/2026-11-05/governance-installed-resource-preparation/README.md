@@ -1,4 +1,6 @@
-# Connected installed-resource preparation — design reviewed, not implemented
+# Connected installed-resource preparation — historical design review
+
+Subsequently approved in call_ki0MT62UMPoGrpZkw7ucTXb2 and implemented as [dormant local source preparation](../governance-installed-resource-local/README.md). The checklist below records the earlier design checkpoint; its pending decision is now consumed. Earlier source bindings remain pinned historical diagnosis, not current runtime bytes.
 
 1. ~~Reconcile the next actual source gaps after the consumed successful in-memory experiment.~~ Canonical builder/broker executable layouts differ; closed supplier still uses unscoped service/account discovery, unlike the selected exact-reference installation design.
 2. ~~Specify the connected local unit~~ in PROPOSAL.md: shared fixed installed identity, actual three-Add transaction preparation, exact locator wire format, durable-intent state-machine contract and corresponding reference-bound supplier source. All positive operational/canonical gates remain unavailable.

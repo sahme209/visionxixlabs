@@ -8,6 +8,7 @@
 #include "origin_root_binding.h"
 #include "origin_process_identity.h"
 #include "origin_private_bootstrap.h"
+#include "synthetic_resource_contract.h"
 #include <xpc/xpc.h>
 #include <Security/Security.h>
 #include <dispatch/dispatch.h>
@@ -211,9 +212,9 @@ static void end_peer(Peer*p){
 }
 int main(int argc,char**argv){
  (void)argv;if(argc!=1)return 69;
- if(!AXIOM_ISSUER_ORIGIN_SERVICE[0]||!AXIOM_ISSUER_NODE_REQUIREMENT[0]||!AXIOM_ISSUER_CONTROLLER_REQUIREMENT[0]||!AXIOM_ISSUER_CONTROL_APP[0]||!SecCodeCreateWithXPCMessage)return 70;
+ if(!AXIOM_ISSUER_ORIGIN_SERVICE[0]||!AXIOM_ISSUER_NODE_REQUIREMENT[0]||!AXIOM_ISSUER_CONTROLLER_REQUIREMENT[0]||!ax_synthetic_control_app_matches(AXIOM_ISSUER_CONTROL_APP)||!SecCodeCreateWithXPCMessage)return 70;
  char current[PATH_MAX],actual[PATH_MAX],expected[PATH_MAX];uint32_t length=sizeof(current);struct stat own;
- if(_NSGetExecutablePath(current,&length)||!realpath(current,actual)||snprintf(expected,sizeof(expected),"%s/Contents/MacOS/AxiomIssuerBroker",AXIOM_ISSUER_CONTROL_APP)>=(int)sizeof(expected)||strcmp(actual,expected)||stat(expected,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&main,&own))return 71;
+ if(_NSGetExecutablePath(current,&length)||!realpath(current,actual)||snprintf(expected,sizeof(expected),"%s%s",AXIOM_ISSUER_CONTROL_APP,AX_SYNTH_BROKER_SUFFIX)>=(int)sizeof(expected)||strcmp(actual,expected)||stat(expected,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&main,&own))return 71;
  /* Dedicated custodian only; no constructor/import invokes these APIs. */
  if(!axiom_private_supplier_startup())return 76;
  signal(SIGPIPE,SIG_IGN);

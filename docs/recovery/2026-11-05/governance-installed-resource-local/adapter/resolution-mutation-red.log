@@ -1,0 +1,2 @@
+Removed attrs->attr null guard in temporary copy only. Expected crash by null-array case. Original Security imports excluded before mocktest execution.
+exit=-11

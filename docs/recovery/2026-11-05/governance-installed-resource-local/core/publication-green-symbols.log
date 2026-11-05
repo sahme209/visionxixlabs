@@ -1,0 +1,6 @@
+___asan_init
+___asan_register_image_globals
+___asan_unregister_image_globals
+___asan_version_mismatch_check_apple_clang_2100
+___ubsan_handle_add_overflow
+_printf

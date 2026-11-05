@@ -1,0 +1,70 @@
+[
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "-std=c11",
+      "-fobjc-arc",
+      "-fblocks",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-isysroot",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-I",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/source",
+      "origin_broker.c",
+      "origin_runtime_protocol.c",
+      "origin_root_binding.m",
+      "origin_process_identity.c",
+      "protected_resource_inventory.c",
+      "origin_private_bootstrap.c",
+      "origin_private_resource_supplier.m",
+      "cssm_policy_builder.c",
+      "cssm_policy_copy.c",
+      "cssm_policy_inspect.c",
+      "synthetic_resource_contract.c",
+      "-framework",
+      "Foundation",
+      "-framework",
+      "Security",
+      "-framework",
+      "CoreFoundation",
+      "-o",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/nm",
+      "-u",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/maintenance-never-loaded.bundle"
+    ],
+    "exit": 0,
+    "stdout": "_CFArrayCreate\n_CFDataGetBytePtr\n_CFDataGetLength\n_CFDataGetTypeID\n_CFGetTypeID\n_CFRelease\n_OBJC_CLASS_$_NSData\n_OBJC_CLASS_$_NSDictionary\n_OBJC_CLASS_$_NSString\n_OBJC_CLASS_$_NSURLComponents\n_SecACLCreateWithSimpleContents\n_SecACLUpdateAuthorizations\n_SecAccessCreateFromOwnerAndACL\n_SecAccessGetOwnerAndACL\n_SecItemAdd\n_SecKeychainOpen\n_SecKeychainSetUserInteractionAllowed\n_SecTrustedApplicationCreateFromPath\n___CFConstantStringClassReference\n___chkstk_darwin\n___error\n___kCFBooleanTrue\n___memcpy_chk\n___memset_chk\n___stack_chk_fail\n___stack_chk_guard\n_acl_free\n_acl_get_entry\n_acl_get_fd_np\n_bzero\n_close\n_fchmod\n_fchown\n_fstat\n_fsync\n_geteuid\n_kCFTypeArrayCallBacks\n_kSecACLAuthorizationDecrypt\n_kSecACLAuthorizationKeychainItemRead\n_kSecAttrAccess\n_kSecAttrAccount\n_kSecAttrService\n_kSecClass\n_kSecClassGenericPassword\n_kSecReturnPersistentRef\n_kSecUseKeychain\n_kSecValueData\n_memcmp\n_memcpy\n_memset\n_objc_alloc\n_objc_autoreleasePoolPop\n_objc_autoreleasePoolPush\n_objc_msgSend\n_objc_release\n_objc_retain\n_objc_retainAutoreleasedReturnValue\n_objc_storeStrong\n_open\n_openat\n_renameatx_np\n_strtok_r\n_write\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/nm",
+      "-u",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run"
+    ],
+    "exit": 0,
+    "stdout": "_CFArrayCreate\n_CFDataCreate\n_CFDataGetLength\n_CFDataGetTypeID\n_CFEqual\n_CFGetTypeID\n_CFRelease\n_OBJC_CLASS_$_NSArray\n_OBJC_CLASS_$_NSDictionary\n_OBJC_CLASS_$_NSString\n_OBJC_CLASS_$_NSURLComponents\n_SecACLCreateWithSimpleContents\n_SecACLUpdateAuthorizations\n_SecAccessCopyOwnerAndACL\n_SecAccessCreateFromOwnerAndACL\n_SecAccessGetOwnerAndACL\n_SecItemCopyMatching\n_SecKeychainItemCopyAccess\n_SecKeychainItemCopyAttributesAndData\n_SecKeychainItemCopyContent\n_SecKeychainItemCopyKeychain\n_SecKeychainItemFreeAttributesAndData\n_SecKeychainItemFreeContent\n_SecKeychainItemGetTypeID\n_SecKeychainOpen\n_SecKeychainSetUserInteractionAllowed\n_SecTrustedApplicationCreateFromPath\n___CFConstantStringClassReference\n___chkstk_darwin\n___error\n___kCFBooleanTrue\n___memcpy_chk\n___memset_chk\n___snprintf_chk\n___stack_chk_fail\n___stack_chk_guard\n_acl_free\n_acl_get_entry\n_acl_get_fd_np\n_bzero\n_calloc\n_clock_gettime\n_close\n_fcntl\n_free\n_fstat\n_getcwd\n_getpid\n_kCFTypeArrayCallBacks\n_kSecACLAuthorizationDecrypt\n_kSecACLAuthorizationKeychainItemRead\n_kSecClass\n_kSecClassGenericPassword\n_kSecMatchItemList\n_kSecMatchLimit\n_kSecMatchLimitOne\n_kSecMatchSearchList\n_kSecReturnRef\n_lstat\n_mach_port_deallocate\n_mach_task_self_\n_mach_vm_region\n_mach_vm_region_recurse\n_memchr\n_memcmp\n_memcpy\n_memset\n_objc_alloc\n_objc_autoreleasePoolPop\n_objc_autoreleasePoolPush\n_objc_msgSend\n_objc_release\n_objc_retainAutoreleasedReturnValue\n_objc_storeStrong\n_open\n_openat\n_poll\n_proc_pidinfo\n_qsort\n_read\n_realpath$DARWIN_EXTSN\n_stat\n_statfs\n_strcmp\n_strlen\n_strtok_r\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/nm",
+      "-gU",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run"
+    ],
+    "exit": 0,
+    "stdout": "0000000100000000 T __mh_execute_header\n000000010000614c T _ax_cssm_copy\n0000000100006604 T _ax_cssm_copy_framework\n000000010000767c T _ax_cssm_inspect\n0000000100007adc T _ax_cssm_inspect_framework\n0000000100005c50 T _ax_cssm_prepare_once\n0000000100005bd4 T _ax_cssm_prepared_access\n0000000100005c1c T _ax_cssm_prepared_policy\n0000000100008520 T _ax_synthetic_account\n0000000100008e20 T _ax_synthetic_journal_decode\n0000000100008c80 T _ax_synthetic_journal_next\n000000010000890c T _ax_synthetic_locator_decode\n000000010000857c T _ax_synthetic_locator_encode\n0000000100008fac T _ax_synthetic_provision_once\n0000000100002150 T _axiom_classify_protected_descriptor\n000000010000223c T _axiom_classify_protected_region\n0000000100001cdc T _axiom_collect_protected_region\n0000000100000f60 T _axiom_origin_bind_root\n0000000100001588 T _axiom_origin_identity_capture\n0000000100001a34 T _axiom_origin_identity_current\n0000000100001444 T _axiom_origin_loaded_file_matches\n0000000100001010 T _axiom_origin_root_current\n0000000100001274 T _axiom_origin_same_file_metadata\n0000000100000d0c T _axiom_origin_slot_ack\n0000000100000be4 T _axiom_origin_slot_begin\n0000000100000e2c T _axiom_origin_slot_live\n0000000100000b40 T _axiom_origin_slot_may_resume\n0000000100000a0c T _axiom_origin_slot_reserve\n0000000100000978 T _axiom_origin_slot_revoke\n0000000100000a94 T _axiom_origin_slot_spawn\n00000001000037c8 T _axiom_private_frame_read\n0000000100003760 T _axiom_private_material_wipe\n0000000100004344 T _axiom_private_supplier_operational\n00000001000048a8 T _axiom_private_supplier_read\n000000010000434c T _axiom_private_supplier_startup\n0000000100002380 T _axiom_protected_inventory_own\n00000001000008e8 T _main\n",
+    "stderr": ""
+  }
+]

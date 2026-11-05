@@ -1,0 +1,24 @@
+{
+  "base": "48417d463176950cb1f125715f65aae262036cc0",
+  "files": {
+    "packages/verified-issuer-runtime/native/cssm_policy_builder.c": "3fbff40c76a0312720e35be1f85bbec5300202c4b28c87495fcfbe6dd602be40",
+    "packages/verified-issuer-runtime/native/cssm_policy_prepared.h": "84fd33ce50a03cdb4fc86b3775a4614b035c40a4e3848ce97951f9dfccf154e0",
+    "packages/verified-issuer-runtime/native/cssm_policy_prepared_test.c": "f1ffdd791a812de797aecd03e7d01f36be929e47502f76966aeb6e9153fbfcf8",
+    "packages/verified-issuer-runtime/native/origin_broker.c": "21200e4f821d3fbeda2a48e196c6ef4c60c83aefa26cb6a9a5f44edc3fdf5489",
+    "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m": "e62c24164f3db8e2ee0a9087785ca0bc0d3b2c4ffb24bed956422478e5ca31a7",
+    "packages/verified-issuer-runtime/native/synthetic_resource_adapter_mock_test.m": "c1821e9416401ceae37267d94692c777d200869050757c5da40e9861e479986a",
+    "packages/verified-issuer-runtime/native/synthetic_resource_contract.c": "f2a6ab833c2ddcd1068149a780bf5ebeb7b9556b3bb8afeed0dc7e6c77663e50",
+    "packages/verified-issuer-runtime/native/synthetic_resource_contract.h": "ec5fd7e35fe6eddfca537729d132bb1dbdc72af0e6e586d70ab0bf79cd007b87",
+    "packages/verified-issuer-runtime/native/synthetic_resource_contract_test.c": "ff4490941c9314afdbbc1c6922ec1750ce60f605553373842f97083510e40959",
+    "packages/verified-issuer-runtime/native/synthetic_resource_identity_test.c": "f5745b2ea7df97e17d7c506743e0a666482209eb6ea7c8b27b5473cbfd355170",
+    "packages/verified-issuer-runtime/native/synthetic_resource_provisioner.h": "f7b65345c65b8f134f167c00d74d0284740babdfc5456c01c04ac8ad6f7ba03f",
+    "packages/verified-issuer-runtime/native/synthetic_resource_provisioner.m": "889f345d200da2bad960ce4ae3af7b8298d28cfc98f3db88c565f8af1a6c7a62",
+    "packages/verified-issuer-runtime/native/synthetic_supplier_gate_mock_test.m": "d1fdfccf7cd419a826c1c8608d6d973083b8bd65c20c902244f5a616e8ce7c10",
+    "packages/verified-issuer-runtime/native/synthetic_supplier_read_mock_test.m": "2712d842c28874698cf73aa7c205120983bfdc1deea955ffb0f4895651905094",
+    "packages/verified-issuer-runtime/native/synthetic_supplier_read_mock_test.py": "ad189851df4eadceeb4f6521e61ecfb7da101a7f915a00c826439a74ef175e82",
+    "packages/verified-issuer-runtime/native/synthetic_supplier_resolution_mock_test.m": "d85bc89b371f2948d3f86c1939d728ab274e22156dc6acdd2ca14a2d8a679e8d"
+  },
+  "execution_authorized": false,
+  "installed_policy_qualified": false,
+  "canonical_supplier_operational": false
+}

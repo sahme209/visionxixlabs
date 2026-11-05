@@ -1,0 +1,110 @@
+[
+  {
+    "argv": [
+      "/usr/bin/xcrun",
+      "--find",
+      "clang"
+    ],
+    "exit": 0,
+    "stdout": "/Library/Developer/CommandLineTools/usr/bin/clang\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/xcrun",
+      "--show-sdk-path"
+    ],
+    "exit": 0,
+    "stdout": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "--version"
+    ],
+    "exit": 0,
+    "stdout": "Apple clang version 21.0.0 (clang-2100.1.1.101)\nTarget: arm64-apple-darwin27.2.0\nThread model: posix\nInstalledDir: /Library/Developer/CommandLineTools/usr/bin\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/usr/bin/xcrun",
+      "--show-sdk-version"
+    ],
+    "exit": 0,
+    "stdout": "26.5\n",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "-std=c11",
+      "-fobjc-arc",
+      "-fblocks",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-isysroot",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-I",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/source",
+      "-bundle",
+      "synthetic_resource_provisioner.m",
+      "cssm_policy_builder.c",
+      "cssm_policy_copy.c",
+      "cssm_policy_inspect.c",
+      "synthetic_resource_contract.c",
+      "-framework",
+      "Foundation",
+      "-framework",
+      "Security",
+      "-framework",
+      "CoreFoundation",
+      "-o",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/maintenance-never-loaded.bundle"
+    ],
+    "exit": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "argv": [
+      "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "-std=c11",
+      "-fobjc-arc",
+      "-fblocks",
+      "-Wall",
+      "-Wextra",
+      "-Werror",
+      "-Wno-deprecated-declarations",
+      "-isysroot",
+      "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+      "-I",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/source",
+      "origin_broker.c",
+      "origin_runtime_protocol.c",
+      "origin_root_binding.m",
+      "origin_process_identity.c",
+      "protected_resource_inventory.c",
+      "origin_private_bootstrap.c",
+      "origin_private_resource_supplier.m",
+      "cssm_policy_builder.c",
+      "cssm_policy_copy.c",
+      "cssm_policy_inspect.c",
+      "synthetic_resource_contract.c",
+      "-framework",
+      "Foundation",
+      "-framework",
+      "Security",
+      "-framework",
+      "CoreFoundation",
+      "-o",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/broker-never-run"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "origin_private_resource_supplier.m:110:11: error: call to undeclared function 'memset_s'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]\n  110 |  if(data){memset_s(data,n,0,n);SecKeychainItemFreeContent(NULL,data);}return ok;\n      |           ^\norigin_private_resource_supplier.m:110:11: note: did you mean 'memset'?\n/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_string.h:84:3: note: 'memset' declared here\n   84 |                 memset(void *_LIBC_SIZE(__len) __b, int __c, size_t __len);\n      |                 ^\n1 error generated.\n"
+  }
+]

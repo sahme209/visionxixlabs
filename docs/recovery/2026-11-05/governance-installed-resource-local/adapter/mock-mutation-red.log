@@ -1,0 +1,3 @@
+Mutation replaces persistent-ref return with returnData. Expected assertion failure.
+exit=-6
+Assertion failed: ([q[(__bridge id)kSecReturnPersistentRef] isEqual:@YES]), function ax_mock_SecItemAdd, file axiom-adapter-mutation-test.m, line 17.
