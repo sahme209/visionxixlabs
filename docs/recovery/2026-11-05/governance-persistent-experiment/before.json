@@ -1,0 +1,46 @@
+{
+  "packet": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/qualification-manifest.json",
+    "uid": 501,
+    "mode": 384,
+    "dev": 16777232,
+    "ino": 16614210,
+    "size": 8262,
+    "mtime_ns": 1793886925472492675,
+    "ctime_ns": 1793886925472492675,
+    "sha256": "b2cf2c8c6d3ecb791008531acb4ccb700b8193780e4a8b7ac2323895b964bc2e"
+  },
+  "controller": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/cssm_policy_watchdog.py",
+    "uid": 501,
+    "mode": 384,
+    "dev": 16777232,
+    "ino": 16614211,
+    "size": 10689,
+    "mtime_ns": 1793886925472680633,
+    "ctime_ns": 1793886925472680633,
+    "sha256": "8d3c1162fdb3962831e64b21d6d5f411aefbfec83e4eb5e3ad23c1fd2f22a29f"
+  },
+  "helper": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/qualification-helper",
+    "uid": 501,
+    "mode": 384,
+    "dev": 16777232,
+    "ino": 16614189,
+    "size": 52776,
+    "mtime_ns": 1793886924717329871,
+    "ctime_ns": 1793886924719603873,
+    "sha256": "3737856eff4c166f29ea2b9b1874942ee59a74e9656ee4e9dd9758e7433891cf"
+  },
+  "fixture": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/pure-test",
+    "uid": 501,
+    "mode": 384,
+    "dev": 16777232,
+    "ino": 16614182,
+    "size": 137928,
+    "mtime_ns": 1793886924552515713,
+    "ctime_ns": 1793886924719594665,
+    "sha256": "41dddf2e3c44f7dfd490e6919bba3978965a2071f871ca1c0ec981452b64e0a1"
+  }
+}

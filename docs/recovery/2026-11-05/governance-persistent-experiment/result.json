@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/usr/bin/env",
+    "-i",
+    "PATH=/usr/bin:/bin",
+    "LANG=C",
+    "LC_ALL=C",
+    "HOME=/var/empty",
+    "TMPDIR=/private/tmp",
+    "/usr/bin/python3",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-04-v2/cssm_policy_watchdog.py",
+    "--run-reviewed-once"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.149968625,
+  "stdout_bytes": 290,
+  "stderr_bytes": 0,
+  "finished_at": "2026-11-05T14:00:36.104246+00:00",
+  "attempt_consumed": true,
+  "retry_authorized": false,
+  "helper_mode_after": "0o600",
+  "fixture_unchanged": true,
+  "controller_result": {
+    "result": "completed",
+    "serialization": {
+      "profile": "fixed-fixture-1",
+      "source_revision": "persistent-v2-e7e493d9",
+      "source_sha256": "3f6899ea5d681c55fd4baa9d959574f41e803587f953c48bb22805452b2145d3",
+      "phase": "inspect",
+      "stage": 7,
+      "result": "success",
+      "osstatus": 0,
+      "structural_pass": true,
+      "entries": 1
+    }
+  }
+}
