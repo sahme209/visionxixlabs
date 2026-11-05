@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)(deny file-write*)",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--test",
+    "docs/product/knowledge/agent-workspace-bindings.test.cjs"
+  ],
+  "exitCode": 1,
+  "stdout": "\u2714 finite internal inventory identifies all 46 direct declarations and explicit child exclusions (0.619958ms)\n\u2714 all actual direct interactive controls bind literal metadata to their original exact nodes (21.812292ms)\n\u2716 removing only inserted static attributes restores the complete baseline bytes (0.703708ms)\n\u2714 rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (54.584583ms)\n\u2714 rejects a newly added unbound control and metadata outside the finite scope (14.468917ms)\n\u2139 tests 5\n\u2139 suites 0\n\u2139 pass 4\n\u2139 fail 1\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 192.277417\n\n\u2716 failing tests:\n\ntest at docs/product/knowledge/agent-workspace-bindings.test.cjs:41:1\n\u2716 removing only inserted static attributes restores the complete baseline bytes (0.703708ms)\n  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n  + actual - expected\n  \n  + '1a09ed03b30f715b983d9cfbc6c03ab5f9daacad9332ef12405f4ef1de6d34c7'\n  - 'b5732ae366b71507ddff2a2cb7c659c27ac23daa78f81ee3b10bb8d936b1458c'\n  \n      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/product/knowledge/agent-workspace-bindings.test.cjs:41:97)\n      at Test.runInAsyncScope (node:async_hooks:227:14)\n      at Test.run (node:internal/test_runner/test:1402:25)\n      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)\n      at Test.postRun (node:internal/test_runner/test:1542:19)\n      at Test.run (node:internal/test_runner/test:1467:12)\n      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {\n    generatedMessage: true,\n    code: 'ERR_ASSERTION',\n    actual: '1a09ed03b30f715b983d9cfbc6c03ab5f9daacad9332ef12405f4ef1de6d34c7',\n    expected: 'b5732ae366b71507ddff2a2cb7c659c27ac23daa78f81ee3b10bb8d936b1458c',\n    operator: 'strictEqual',\n    diff: 'simple'\n  }\n",
+  "stderr": ""
+}

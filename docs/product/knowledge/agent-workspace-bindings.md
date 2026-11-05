@@ -16,6 +16,10 @@ All controls directly authored inside shared Disclosure children are included. E
 
 No full build, application/native restart, browser interaction, screenshot, provider/network request, accepted media, customer walkthrough, editorial approval, installer qualification or publication was performed. Source metadata and AST validation establish only this bounded static mapping; they do not establish all screen states or customer coverage. Exact source hashes are recorded in [the supplement source manifest](agent-workspace-bindings.sources.json).
 
-## Current local source requalification — November4
+## Earlier local source requalification — source18284bd2
 
 Actual Git `18284bd29aad7b663a5ccc908932f3202655632b` retains the original control IDs, purposes, tags and node digests. Only reviewed precommit connection guards changed non-metadata source. The current stripped baseline is derived from that exact Git source; the prior baseline remains in Git history. [Proof](../../recovery/2026-11-04/agent-binding-requalification/README.md). This is unshipped local source, not the current983 native build or customer help/retrieval approval.
+
+## Current local source requalification — sourceb3612a09
+
+Actual Git `b3612a090bfc33a012b4f802a23bf5b561022b89` retains all 46 direct intrinsic control records. The only change from the 182 source is the independently reviewed three context checks on imported AgentApprovedActions ports; replacing that block restores the complete old Git file exactly. The current non-metadata baseline is derived by stripping only existing static IDs from the exact b361 Git source, retaining all reviewed functional guards. [Evidence](../../recovery/2026-11-04/agent-approved-port-binding-requalification/README.md). The current running 475 preview predates this local repair; no native/customer/retrieval acceptance transfers.

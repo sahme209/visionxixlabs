@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear",
+  "scope": "whole Git reconstruction, 46 unchanged records, explicit current derivation, older native build limits",
+  "execution": "read-only no reruns"
+}

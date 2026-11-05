@@ -1,0 +1,9 @@
+{
+  "source": "desktop/src/views/AgentChatView.tsx",
+  "oldGit": "18284bd29aad7b663a5ccc908932f3202655632b",
+  "currentGit": "b3612a090bfc33a012b4f802a23bf5b561022b89",
+  "replacingOnlyReviewedImportedPortBlockRestoresWholeOldGitSource": true,
+  "intrinsicControlRecordsUnchanged": 46,
+  "oldNonMetadataSha256": "b5732ae366b71507ddff2a2cb7c659c27ac23daa78f81ee3b10bb8d936b1458c",
+  "currentNonMetadataSha256": "1a09ed03b30f715b983d9cfbc6c03ab5f9daacad9332ef12405f4ef1de6d34c7"
+}

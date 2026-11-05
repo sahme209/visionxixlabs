@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)(deny file-write*)",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--test",
+    "docs/product/knowledge/agent-workspace-bindings.test.cjs"
+  ],
+  "exitCode": 0,
+  "stdout": "\u2714 finite internal inventory identifies all 46 direct declarations and explicit child exclusions (0.589625ms)\n\u2714 all actual direct interactive controls bind literal metadata to their original exact nodes (21.450833ms)\n\u2714 removing only inserted static attributes restores the complete baseline bytes (0.28575ms)\n\u2714 rejects missing, duplicate, dynamic, unknown, wrong-tag and swapped-field metadata (52.634125ms)\n\u2714 rejects a newly added unbound control and metadata outside the finite scope (14.296625ms)\n\u2139 tests 5\n\u2139 suites 0\n\u2139 pass 5\n\u2139 fail 0\n\u2139 cancelled 0\n\u2139 skipped 0\n\u2139 todo 0\n\u2139 duration_ms 187.684792\n",
+  "stderr": ""
+}

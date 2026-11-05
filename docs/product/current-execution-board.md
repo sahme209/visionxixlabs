@@ -220,3 +220,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November4 saved Agent action-port context repair
 ~~Outcome/readiness/prepare/execute/cancel ports refuse stale renderedconnection before request~~ ([evidence](../recovery/2026-11-04/agent-approved-ports-context/README.md)): actualRED5fail5pass→GREEN10/desktoptypes/reviewclear. Three callbackguards only; nonsentfailure confinedzero-callbranch, inflightunknown/noresend unchanged. Current475app untouched/unshipped; mainAgentwholefilebindingrequirescurrentGit requalification. No server/native/provider/human/Gov acceptance inferred; all21parents preserved.
+
+### November 4 — saved-action source mapping reconciled
+~~The 46 main Agent control records are requalified to Git b3612a09~~ ([evidence](../recovery/2026-11-04/agent-approved-port-binding-requalification/README.md)). One expected stale baseline failure became five passing unchanged AST checks. Replacing only the reviewed imported-port block restores the entire prior Git file. Tests, registry pins, control IDs, purposes and node hashes are unchanged; independent review passed. Running 475 remains older than this local repair. No native/customer/Governance acceptance transfers; all 21 parents remain open.

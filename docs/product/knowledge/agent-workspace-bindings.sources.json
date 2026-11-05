@@ -2,16 +2,16 @@
   "status": "INTERNAL DRAFT",
   "customerEligible": false,
   "publicationApproved": false,
-  "baselineCommit": "18284bd29aad7b663a5ccc908932f3202655632b",
+  "baselineCommit": "b3612a090bfc33a012b4f802a23bf5b561022b89",
   "bindingScope": "46 intrinsic interactive JSX declarations authored in AgentChatSession only; explicit child-component exclusions retained",
   "sources": [
     {
       "path": "desktop/src/views/AgentChatView.tsx",
-      "sha256": "aa33b1486d2d1d0b8663545ea75850d038bd1b963ef58385934a3f9bb8993f3f"
+      "sha256": "29a5b9ae180a22676a8c6d2bb98023b7bd6c48017f11f83fee82b92afa643dee"
     },
     {
       "path": "docs/product/knowledge/agent-workspace-bindings.json",
-      "sha256": "17ad46d1b197044fd07aeb770b0e9abf4d555ed651a5120a15336efa9f8cc7f9"
+      "sha256": "272ec22d12ea5ea04c4310026427ce64710e88cbae33ab79d5581374eeac857e"
     },
     {
       "path": "docs/product/knowledge/agent-workspace-bindings.test.cjs",
@@ -19,10 +19,10 @@
     },
     {
       "path": "docs/product/knowledge/agent-workspace-bindings.md",
-      "sha256": "ad9511328d9bcd580cd16f7db5cee4c2733b12c0548080cfc9818b875be22a29"
+      "sha256": "dfe0f832564de6d5ee905203d7a056b95e97d814d2cb7dc9b704e6b020add55e"
     }
   ],
-  "validation": "Exact two-family AST run:10passed/0failed/0skipped after two expected stale-baseline failures; all original control IDs/purposes/tags/node digests preserved. Current non-metadata baseline derived from actual Git18284bd2; source reconstruction removes only reviewed guards to restore historical Git bytes. No native/customer/retrieval acceptance.",
+  "validation": "Five unchanged main-family AST checks pass after one expected stale-baseline failure; all46records unchanged; actualGit wholefile reconstructed by replacing only reviewed importedportblock. No child-family rerun/native/customer/retrieval acceptance.",
   "baselineDerivation": "Actual Git source at baselineCommit with only existing static data-help-id annotations removed; reviewed non-metadata connection guards retained.",
-  "requalificationEvidence": "docs/recovery/2026-11-04/agent-binding-requalification"
+  "requalificationEvidence": "docs/recovery/2026-11-04/agent-approved-port-binding-requalification"
 }
