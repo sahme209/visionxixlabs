@@ -178,3 +178,6 @@ Existing native Documentation page inspected through AX and screenshot without i
 
 ### November4 actual Documentation keyboard traversal
 ~~Five journey buttons and seven guide links keyboard-reachable~~ in the current signed983 app, each subsequent focus observed through native AX. [Evidence](../recovery/2026-11-04/native-documentation-keyboard/README.md). No activation/external URL/provider action; reverse traversal restored Documentation sidebar focus. This is one-page reachability only; AT/contrast/themes/destinations and full A4/B4 remain open. Pending Governance recovery design decision unchanged; all21parents preserved.
+
+### November4 current support metadata refusal
+~~Actual metadata gate refuses all29current draft revisions~~ under kernel network/all-write denial; two synthetic function controls pass and per-article reread hashes unchanged. [Evidence](../recovery/2026-11-04/support-current-metadata-gate/README.md). This is not the failed expanded byte-pipeline rerun, extraction/citation/evaluation/customer acceptance, or B5 completion. Existing reader restrictions and pending runner/Governance decisions unchanged.
