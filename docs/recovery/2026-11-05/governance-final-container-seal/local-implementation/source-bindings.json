@@ -1,0 +1,12 @@
+{
+  "files": {
+    "scripts/governance_local_issuer/final_seal.py": "74364895040011b9878d01d906de98d0a61aebd5d370037a20a1cf1c8fbec123",
+    "scripts/governance_local_issuer/tests/test_final_seal.py": "dbbed95b1b15e36543834f808a93f6bd1573126532661e94a77f4716ecaa1d9d"
+  },
+  "focusedTestsPassed": 17,
+  "independentSourceReview": "no material remaining findings",
+  "actualCodesignOrSecurityPerformed": false,
+  "actualProtectedImageHashed": false,
+  "actualTargetExecuted": false,
+  "executionAuthorized": false
+}

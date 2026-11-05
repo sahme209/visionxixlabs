@@ -1,0 +1,17 @@
+E
+======================================================================
+ERROR: test_output_cap_and_unreaped_owned_child_only (test_final_seal.FinalSealRunnerTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 96, in test_output_cap_and_unreaped_owned_child_only
+    r,p=self.exercise(True);self.assertEqual(r['stdout'],b'12345678');self.assertEqual(r['state'],'output_bound');p.kill.assert_called_once()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 93, in exercise
+    r=s._run('sign');no_signal.assert_not_called();launch.assert_called_once();self.assertEqual(launch.call_args.args[0],s.commands()['sign'])
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 108, in _run
+    def _run(kind):raise ValueError("seal runner not implemented")
+ValueError: seal runner not implemented
+
+----------------------------------------------------------------------
+Ran 1 test in 0.001s
+
+FAILED (errors=1)

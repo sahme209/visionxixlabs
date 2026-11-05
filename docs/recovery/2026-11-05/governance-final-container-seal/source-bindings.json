@@ -1,0 +1,19 @@
+{
+  "files": {
+    "operation-inputs.json": "f15b476c66b67267c42dd376dab97cbac71c0a1932669ac6db55e86604228935",
+    "prepared-seal-driver.py": "524ff17f039c3296cfd0176f6d82173785fda500362c9691bded11b60b2fa5fb",
+    "prepared-seal-controller.py": "d1432516d8a5f80991343eebb1d082e435af00587aa2b2236f747f84a062817e"
+  },
+  "conditionalApproval": "call_q0tV3lWa1iYDD0HVEWrjm535",
+  "proposalSha256": "06fb5bd9db5a30f561f0ff201b4b700fafdfcca51608e9a9c797dc40b2b3b223",
+  "focusedTestsPassed": 17,
+  "independentSourceReview": "no material remaining findings",
+  "actualKeyOrSecurityUse": false,
+  "controllerOrDriverExecuted": false,
+  "rootOwnsActualRun": true,
+  "executionAuthorized": false,
+  "reviewDocuments": {
+    "PROPOSAL.md": "06fb5bd9db5a30f561f0ff201b4b700fafdfcca51608e9a9c797dc40b2b3b223",
+    "EXECUTION-REVIEW.md": "e3a27fb9e1fc9786492ea4c6e22c3a623d83334cd440482c3e825f384a8e7307"
+  }
+}

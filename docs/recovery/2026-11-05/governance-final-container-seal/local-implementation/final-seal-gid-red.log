@@ -1,0 +1,13 @@
+F
+======================================================================
+FAIL: test_existing_directory_group_metadata_cannot_change (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 55, in test_existing_directory_group_metadata_cannot_change
+    with self.assertRaisesRegex(ValueError,'seal_directory_metadata_changed'):s.validate_postseal(base,records,self.output)
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 1 test in 0.032s
+
+FAILED (failures=1)

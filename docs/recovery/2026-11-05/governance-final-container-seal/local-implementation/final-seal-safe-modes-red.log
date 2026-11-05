@@ -1,0 +1,17 @@
+E
+======================================================================
+ERROR: test_standard_safe_new_signature_modes_are_bounded (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 48, in test_standard_safe_new_signature_modes_are_bounded
+    self.assertTrue(s.validate_postseal(base,records,self.output)['allowedMutationScopeVerified'])
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 97, in validate_postseal
+    _need(directories['Contents/_CodeSignature']['mode']==0o700,'private_code_resources_directory_required')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 19, in _need
+    if not value:raise ValueError(reason)
+ValueError: private_code_resources_directory_required
+
+----------------------------------------------------------------------
+Ran 1 test in 0.033s
+
+FAILED (errors=1)

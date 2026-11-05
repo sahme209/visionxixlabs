@@ -1,0 +1,15 @@
+{
+  "approval": "call_q0tV3lWa1iYDD0HVEWrjm535",
+  "approvedProposalSha256": "06fb5bd9db5a30f561f0ff201b4b700fafdfcca51608e9a9c797dc40b2b3b223",
+  "scope": "local validator/executor preparation and synthetic tests/review/freeze, then one fixed app seal/strict verification/display only if gates pass",
+  "existingCompanySigningKeyUseAuthorized": true,
+  "maximumWholeSeconds": 600,
+  "signSeconds": 60,
+  "verifySeconds": 30,
+  "displaySeconds": 30,
+  "perCommandOutputBytes": 65536,
+  "signingStarted": false,
+  "automaticRetryAuthorized": false,
+  "keyExportOrNewGrantAuthorized": false,
+  "runtimeInstallationProviderDatabaseDeploymentSpendAuthorized": false
+}

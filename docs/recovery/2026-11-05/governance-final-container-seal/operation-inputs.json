@@ -1,0 +1,102 @@
+{
+  "app": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembled/Axiom Synthetic Custodian.app",
+  "conditionalApproval": "call_q0tV3lWa1iYDD0HVEWrjm535",
+  "controllerRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-controller-792e817d",
+  "emptyEntitlements": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-remaining-leaf-signing-6018e44c/native-empty-entitlements.plist",
+    "sha256": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c",
+    "size": 181
+  },
+  "executionAuthorized": false,
+  "format": "axiom.final-seal-operation-inputs/1",
+  "helperBindings": {
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/__init__.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/__init__.py",
+      "sha256": "89b16b5e62a7f03009da2b7b09d865d8cbc6d6cf60629b203420c91b100b2878",
+      "size": 76
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_assembly.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_assembly.py",
+      "sha256": "8783276ab05b0ef92ccdbab6c85051874dd9516da9f1d907f7711999e5aee373",
+      "size": 18185
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_preparation.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/container_preparation.py",
+      "sha256": "6fd39f068931c785f6ed8f5ff0ea7666ed048f44a63995ab0aaa325073e8eec3",
+      "size": 9173
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py",
+      "sha256": "74364895040011b9878d01d906de98d0a61aebd5d370037a20a1cf1c8fbec123",
+      "size": 15732
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py",
+      "sha256": "da6b8cc485a4ffb9c4d2e5660a5a51677ff89d1fff97090f603a691179bdcc00",
+      "size": 11016
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/manifest.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/manifest.py",
+      "sha256": "19304f8c9e9fbe8620cf6b484fd599b6f7fc3611d55eea3339a45030f0f5e5e0",
+      "size": 18081
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/materialize.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/materialize.py",
+      "sha256": "438416de2e4b54f6a88479f229c46f7678fc66d066ae354f9088e522ab1b1a54",
+      "size": 33139
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/native_linkage.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/native_linkage.py",
+      "sha256": "027a0f78c0341112fee376a828aeec5e62cbbdd2c9445873b7ed997af9be7490",
+      "size": 11644
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py",
+      "sha256": "54a5552179f2aef7f15fbb1eb646b61b1febd7922852faec1a6a83edf435d980",
+      "size": 20171
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py": {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py",
+      "sha256": "1cdf90d0b9ad38bc8849d567036db8a83ce26cd0f0c74b2fe5ba5a30024e141e",
+      "size": 15253
+    }
+  },
+  "labParent": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab",
+  "originalMain": {
+    "mode": 493,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembled/Axiom Synthetic Custodian.app/Contents/MacOS/AxiomSyntheticContainerMain",
+    "sha256": "b3a4f59e49b2f8a172a9071a16fbcb6c0b829f8eb2cbe53c7ca6d426dbe155d8",
+    "size": 16856
+  },
+  "outputControllerBytes": 1048576,
+  "outputPerCommandBytes": 65536,
+  "presealReceipt": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembled/container-assembly.json",
+    "sha256": "53008642e48af49efc0a09cedaa7f63cb71f70050139a5c90f97d502bf5e0cea",
+    "size": 7613
+  },
+  "presealReceiptSha256": "53008642e48af49efc0a09cedaa7f63cb71f70050139a5c90f97d502bf5e0cea",
+  "proposalSha256": "06fb5bd9db5a30f561f0ff201b4b700fafdfcca51608e9a9c797dc40b2b3b223",
+  "retryAuthorized": false,
+  "runRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-final-container-seal-792e817d",
+  "runtimeIdentityQualified": false,
+  "signerSha1": "4C2E59F247CA275001586AE020A9269464529452",
+  "timeouts": {
+    "display": 30,
+    "sign": 60,
+    "total": 600,
+    "verify": 30
+  }
+}

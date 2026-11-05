@@ -1,0 +1,89 @@
+EE.FE.EEE
+======================================================================
+ERROR: test_authoritative_leaf_metadata_or_bytes_never_adopted (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 61, in test_authoritative_leaf_metadata_or_bytes_never_adopted
+    base=self.baseline();records=self.seal();(self.app/'Contents/MacOS/AxiomIssuerBroker').write_bytes(b'CHANGED')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 32, in baseline
+    def baseline(self):return s.capture_baseline(self.output)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 17, in capture_baseline
+    def capture_baseline(*args):raise ValueError('final seal not implemented')
+ValueError: final seal not implemented
+
+======================================================================
+ERROR: test_empty_display_does_not_hide_encoded_entitlements (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 67, in test_empty_display_does_not_hide_encoded_entitlements
+    base=self.baseline();records=self.seal();record=json.loads(Path(records['display']['path']).read_text());path=Path(record['stdout']['path']);path.write_bytes(b'');record['stdout']=a.binding(path);self.f.js(Path(records['display']['path']),record);records['display']=a.binding(Path(records['display']['path']))
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 32, in baseline
+    def baseline(self):return s.capture_baseline(self.output)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 17, in capture_baseline
+    def capture_baseline(*args):raise ValueError('final seal not implemented')
+ValueError: final seal not implemented
+
+======================================================================
+ERROR: test_known_main_absence_branch_requires_structural_absence (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 47, in test_known_main_absence_branch_requires_structural_absence
+    base=self.baseline();records=self.seal(False);r=s.validate_postseal(base,records,self.output);self.assertEqual(r['mainProfile']['entitlementsRepresentation'],'structurally_absent')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 32, in baseline
+    def baseline(self):return s.capture_baseline(self.output)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 17, in capture_baseline
+    def capture_baseline(*args):raise ValueError('final seal not implemented')
+ValueError: final seal not implemented
+
+======================================================================
+ERROR: test_positive_actual_prefix_scope_and_poststate_join (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 44, in test_positive_actual_prefix_scope_and_poststate_join
+    before=self.receipt.read_bytes();base=self.baseline();records=self.seal();r=s.validate_postseal(base,records,self.output)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 32, in baseline
+    def baseline(self):return s.capture_baseline(self.output)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 17, in capture_baseline
+    def capture_baseline(*args):raise ValueError('final seal not implemented')
+ValueError: final seal not implemented
+
+======================================================================
+ERROR: test_unexpected_file_and_unsafe_alias_refuse (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 70, in test_unexpected_file_and_unsafe_alias_refuse
+    base=self.baseline();records=self.seal();(self.app/'extra').write_bytes(b'NEW')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 32, in baseline
+    def baseline(self):return s.capture_baseline(self.output)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 17, in capture_baseline
+    def capture_baseline(*args):raise ValueError('final seal not implemented')
+ValueError: final seal not implemented
+
+======================================================================
+ERROR: test_wrong_display_or_failed_tool_never_qualifies (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 64, in test_wrong_display_or_failed_tool_never_qualifies
+    base=self.baseline();records=self.seal();record=json.loads(Path(records['verify']['path']).read_text());record['exit']=1;self.f.js(Path(records['verify']['path']),record);records['verify']=a.binding(Path(records['verify']['path']))
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 32, in baseline
+    def baseline(self):return s.capture_baseline(self.output)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/final_seal.py", line 17, in capture_baseline
+    def capture_baseline(*args):raise ValueError('final seal not implemented')
+ValueError: final seal not implemented
+
+======================================================================
+FAIL: test_instruction_byte_change_is_not_signature_mutation (test_final_seal.FinalSealTests)
+----------------------------------------------------------------------
+ValueError: final seal not implemented
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_final_seal.py", line 50, in test_instruction_byte_change_is_not_signature_mutation
+    with self.assertRaisesRegex(ValueError,'main_non_signature_bytes_changed'):s.validate_main_change(self.real_main,bytes(bad))
+AssertionError: "main_non_signature_bytes_changed" does not match "final seal not implemented"
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.227s
+
+FAILED (failures=1, errors=6)
