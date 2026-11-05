@@ -1,0 +1,19 @@
+# Nonexecuting role and evidence plan
+
+This is a continuation of the existing source-only installation specification. No artifact assembly, code, API call or protection mechanism is implemented/qualified. The [proposed profile](CUSTODIAN-PROFILE-PROPOSAL.md) stays a proposal.
+
+| Role | Proposed boundary | Current authoritative evidence | Missing acceptance |
+| --- | --- | --- | --- |
+| Non-JIT custodian | Existing fixed app/broker path; non-root dedicated principal; no runtime exception requests; privileged Add absent | 25-source integration/link receipt, separate0600 broker, mock checks; default unavailable config | Actual signed-image/runtime/entitlement evidence; complete enforced loader/dependency boundary, principal/system launch, installed resources and actual pre-read/denial behavior |
+| Maintenance writer | Separate trusted root-only one-shot program; same installation generation; fixed synthetic-only Add/journal/locator flow; never linked into broker | Separate0600 bundle, Add import and mocked transactional behavior; no installed executable entry | Reviewed concrete immutable maintenance executable/entry, signing/startup/dependency contract, admin operation packet and actual durable partial-failure/enforcement tests |
+| Node/addon/private consumer | Separate pinned runtime, native owned-child/epoch and one-use delivery; no inherited custodian exception policy | Historical private composition/launcher preparation; canonical issuer unavailable | Exact JIT/runtime/loaded dependency policy, actual same-artifact compiled consumer and original unchanged validation matrix; no substitution/renaming of blocked cases |
+
+## Evidence sequence and reject points
+
+1. Record the current compile-only outputs' **observed** signature/entitlement metadata separately from intended policy. The prepared [metadata display review](METADATA-READ-REVIEW.md) asks only two display operations; it grants no authority until approved. Existing hashes/modes identify inputs, not valid signatures or protected processes.
+2. Reconcile observed metadata with the proposed native role policy. An absent, ad-hoc, malformed or otherwise unmatched property remains unavailable; do not sign, repair, recompile or substitute another artifact automatically. New artifacts need a fresh review and identity record.
+3. Resolve actual enforcement of the entire pre-main boundary. A dependency inventory match and enabled library validation **do not establish exact dependency closure**, because platform admission includes Apple/same-team code. The mechanism that prevents every unqualified load/host path remains **UNKNOWN**, not locally implemented. Preserve the existing reject-profile outcome if no supported mechanism and actual qualification can meet the boundary. A new metadata checker must not turn UNKNOWN into authority.
+4. Only after a coherent role-specific mechanism, immutable package, principal, System-Keychain backing and signing identity are specified and reviewed, propose the exact preparation/signing/installation/operational qualification steps. No guessed UID, signer, requirement or placeholder can complete a runnable installation packet. Existing integration outputs are not that packet.
+5. Observe the actual installed OS/resource/owned-instance behavior under separate authorization, preserving every positive/negative/unknown/copy/current-authority requirement. Source docs, compilation, signatures, hashes or successful synthetic policy serialization cannot waive those gates. Full Governance remains open.
+
+The public Apple-read approval is consumed and covered text research only. No new source library/framework, configuration flag, entitlement file, signer/key use, service, provider access, experiment or production operation is approved by this plan. All21masterparents and historical evidence remain intact.

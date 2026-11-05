@@ -1,4 +1,12 @@
-# Installed native integrity — next platform evidence required
+# Installed-integrity research — four approved reads completed
+
+The public-read approval was granted and consumed. [Findings](FINDINGS.md), [proposed custodian profile](CUSTODIAN-PROFILE-PROPOSAL.md) and [role/evidence plan](ROLE-EVIDENCE-PLAN.md) now distinguish platform guarantees from unresolved exact dependency/process enforcement. No implementation, signing or operational qualification followed from reading documentation.
+
+**Next concrete decision:** the independently reviewed [two display-only metadata reads](METADATA-READ-REVIEW.md) require a new scoped approval, because public-text permission excluded local Security-backed operations. Current native source remains5d276967 and both integration images remain0600/unexecuted. [Independent review](REVIEW.md). All21masterparents remain open.
+
+The original scope below is preserved as history, not a statement that those approved reads are still pending.
+
+# Original installed-integrity research scope (historical)
 
 Design/source research only under the existing installation-design specification scope. Local source5d276967 and the installed macOS26.5 SDK were read; no native binary, codesign tool, Security/Keychain API, service, principal, credential or external source was accessed.
 

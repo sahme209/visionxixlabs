@@ -1,0 +1,56 @@
+{
+  "source_base": "f929bc623ff0acc4c533beb07e90e23a55fb10e0",
+  "state": "read-only-metadata-plan-unapproved",
+  "execution_authorized": false,
+  "commands": [
+    {
+      "role": "maintenance",
+      "artifact": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/maintenance-never-loaded.bundle",
+        "sha256": "54b21cbd41c533d8ee986d828e9a805f50f140f118dbd9f7b9b5430396dbd86b",
+        "bytes": 73568,
+        "mode": "0o600"
+      },
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--entitlements",
+        ":-",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-source-3gafhgi1/maintenance-never-loaded.bundle"
+      ],
+      "purpose": "display-only signature/entitlement metadata; never execute/load/verify/sign target"
+    },
+    {
+      "role": "custodian-broker",
+      "artifact": {
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run",
+        "sha256": "b3431a8ed92c1681bb3c148c234c4676eb4096621e767a4276effe16da434c5d",
+        "bytes": 93456,
+        "mode": "0o600"
+      },
+      "argv": [
+        "/usr/bin/codesign",
+        "--display",
+        "--verbose=4",
+        "--entitlements",
+        ":-",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/connected-final-4bod9_8w/broker-never-run"
+      ],
+      "purpose": "display-only signature/entitlement metadata; never execute/load/verify/sign target"
+    }
+  ],
+  "limits": {
+    "maximum_displays_per_artifact": 1,
+    "deadline_seconds_per_display": 10,
+    "combined_output_limit_bytes": 65536,
+    "retries": 0
+  },
+  "exclusions": [
+    "no --sign, --verify, --assess or --deep",
+    "no security find-identity or Keychain/certificate enumeration",
+    "no target binary execution or bundle loading",
+    "no private key/signing/timestamp/notarization/installation/service/account/provider/network operation"
+  ],
+  "qualification_conferred": false
+}
