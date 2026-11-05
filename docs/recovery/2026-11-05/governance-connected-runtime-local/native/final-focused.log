@@ -1,0 +1,27 @@
+["/usr/bin/clang", "-std=c11", "-Wall", "-Wextra", "-Werror", "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/request_protocol.c", "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/request_protocol_test.c", "-o", "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/protocol-test"]
+["/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/protocol-test"]
+["python3", "-m", "unittest", "discover", "-s", "packages/verified-issuer-runtime/native/tests", "-p", "test_request_bridge_bodies.py"]
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.446s
+
+OK
+["python3", "-m", "unittest", "discover", "-s", "scripts/tests", "-p", "test_system_ingress_preparation.py"]
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+["/usr/bin/clang", "-std=c11", "-Wall", "-Wextra", "-Werror", "-Wno-deprecated-declarations", "-fblocks", "-mmacosx-version-min=13.0", "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native", "-I/Users/samirahmed/.nvm/versions/node/v24.21.0/include/node", "-c", "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_guard.c", "-o", "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/origin_guard.o"]
+["/usr/bin/clang", "-std=c11", "-Wall", "-Wextra", "-Werror", "-Wno-deprecated-declarations", "-fblocks", "-mmacosx-version-min=13.0", "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native", "-c", "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_session.c", "-o", "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/origin_session.o"]
+["/usr/bin/clang", "-std=c11", "-Wall", "-Wextra", "-Werror", "-Wno-deprecated-declarations", "-fblocks", "-mmacosx-version-min=13.0", "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native", "-c", "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_broker.c", "-o", "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/origin_broker.o"]
+/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_broker.c:149:12: error: redefinition of 'admitted' with a different type: 'uint64_t' (aka 'unsigned long long') vs 'xpc_object_t' (aka 'void *')
+  149 |   uint64_t admitted=epoch;struct {unsigned char bytes[32];} admitted_id;memcpy(admitted_id.bytes,id,32);dispatch_after(at_deadline(deadline),control,^{if(business.epoch==admitted&&!memcmp(business.id,admitted_id.bytes,32)&&business.phase==AX_REQUEST_DISPATCHED){business.phase=AX_REQUEST_EXPIRED;business_child_event("cancel");business_external_result("unknown",NULL,0);}});
+      |            ^
+/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_broker.c:147:16: note: previous definition is here
+  147 |   xpc_object_t admitted=xpc_dictionary_create(NULL,NULL,0);if(!admitted){business_revoke();goto done;}xpc_dictionary_set_string(admitted,"status","admitted");xpc_dictionary_set_data(admitted,"id",id,32);xpc_connection_send_message(connection,admitted);xpc_release(admitted);
+      |                ^
+/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_broker.c:149:169: error: comparison between pointer and integer ('uint64_t' (aka 'unsigned long long') and 'xpc_object_t' (aka 'void *')) [-Werror,-Wpointer-integer-compare]
+  149 |   uint64_t admitted=epoch;struct {unsigned char bytes[32];} admitted_id;memcpy(admitted_id.bytes,id,32);dispatch_after(at_deadline(deadline),control,^{if(business.epoch==admitted&&!memcmp(business.id,admitted_id.bytes,32)&&business.phase==AX_REQUEST_DISPATCHED){business.phase=AX_REQUEST_EXPIRED;business_child_event("cancel");business_external_result("unknown",NULL,0);}});
+      |                                                                                                                                                           ~~~~~~~~~~~~~~^ ~~~~~~~~
+2 errors generated.

@@ -1,0 +1,28 @@
+✖ adapter abort does not release native context while actual handler is unsettled (29.992834ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 156.898125
+
+✖ failing tests:
+
+test at packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs:69:1
+✖ adapter abort does not release native context while actual handler is unsettled (29.992834ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs:72:166)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

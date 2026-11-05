@@ -4,6 +4,7 @@
 #include "origin_owner_binding.h"
 #include "owner_protocol.h"
 #include "owner_config.h"
+#include "synthetic_fixture_readiness.h"
 #include "system_peer_binding.h"
 #include <xpc/xpc.h>
 #include <Security/Security.h>
@@ -68,7 +69,7 @@ static int validate(xpc_object_t r,const char*status,int stage){
 int axiom_owner_binding_startup(void){
  if(atomic_exchange(&attempted,1))return 0;
  /* No platform/credential call before these closed source-preparation checks. */
- if(!AX_OWNER_OPERATIONAL||AX_OWNER_PROFILE!=AX_OWNER_PROFILE_SYSTEM||AX_OWNER_FIXED_UID==0||AX_OWNER_FIXED_GID==0||AX_OWNER_MAX_LIFETIME_NS==0||atomic_load(&revoked))return 0;
+ if(!ax_fixture_selected_principals()||AX_OWNER_PROFILE!=AX_OWNER_PROFILE_SYSTEM||AX_OWNER_FIXED_UID==0||AX_OWNER_FIXED_GID==0||AX_OWNER_MAX_LIFETIME_NS==0||atomic_load(&revoked))return 0;
  if(pthread_mutex_trylock(&lock)){axiom_owner_binding_revoke();return 0;}int ok=0;unsigned char g[16],challenge[32];
  if(getuid()!=AX_OWNER_FIXED_UID||geteuid()!=AX_OWNER_FIXED_UID||getgid()!=AX_OWNER_FIXED_GID||getegid()!=AX_OWNER_FIXED_GID||!generation(g))goto done;
  if(!ax_system_peer_prepare(&expected_owner,AX_SYSTEM_PEER_OWNER))goto done;
@@ -83,7 +84,7 @@ int axiom_owner_binding_startup(void){
  done:if(!ok){ax_owner_client_revoke(&client);ax_system_peer_revoke(&expected_owner);axiom_owner_binding_revoke();}pthread_mutex_unlock(&lock);return ok;
 }
 int axiom_owner_binding_current(void){
- if(!AX_OWNER_OPERATIONAL||atomic_load(&revoked)||!atomic_load(&attempted))return 0;
+ if(!ax_fixture_selected_principals()||atomic_load(&revoked)||!atomic_load(&attempted))return 0;
  if(pthread_mutex_trylock(&lock)){axiom_owner_binding_revoke();return 0;}int ok=0;uint64_t seq;
  if(!ax_owner_client_next(&client,&seq))goto done;
  xpc_object_t q=request("live",seq),r=q?exchange(q):NULL;if(q)xpc_release(q);ok=validate(r,"owner_current",2)&&!atomic_load(&revoked);if(r)xpc_release(r);

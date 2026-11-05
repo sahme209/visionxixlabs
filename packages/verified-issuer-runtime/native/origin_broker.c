@@ -5,6 +5,7 @@
 #define _DARWIN_C_SOURCE 1
 #include "origin_config.h"
 #include "origin_runtime_protocol.h"
+#include "request_protocol.h"
 #include "origin_root_binding.h"
 #include "origin_process_identity.h"
 #include "origin_private_bootstrap.h"
@@ -67,7 +68,8 @@ static int alive_pid(pid_t child){if(child<=0)return 0;siginfo_t info;memset(&in
 static void kill_owned(pid_t child){if(alive_pid(child))kill(child,SIGKILL);}
 static void maybe_exit(void){if(!shutting_down||owned_child>0||delivery.worker_active)return;for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i])return;_exit(0);}
 static void reap_owned(pid_t child,unsigned remaining){int status;pid_t result=waitpid(child,&status,WNOHANG);if(result==child){if(owned_child==child)owned_child=0;maybe_exit();return;}if(result<0&&errno!=EINTR){fputs("verified_issuer_child_cleanup_unknown\n",stderr);return;}if(!remaining){fputs("verified_issuer_child_cleanup_unknown\n",stderr);return;}dispatch_after(dispatch_time(DISPATCH_TIME_NOW,10000000LL),control,^{reap_owned(child,remaining-1);});}
-static void revoke_slot(void){close_delivery();if(!epoch_revoked){uint64_t old_epoch=epoch;epoch++;epoch_revoked=1;axiom_origin_slot_revoke(&slot);for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i]&&jobs[i]->epoch==old_epoch)atomic_store(&jobs[i]->cancelled,1);}kill_owned(slot.child);if(slot.child>0)reap_owned(slot.child,20);}
+static void business_revoke(void);
+static void revoke_slot(void){business_revoke();close_delivery();if(!epoch_revoked){uint64_t old_epoch=epoch;epoch++;epoch_revoked=1;axiom_origin_slot_revoke(&slot);for(size_t i=0;i<MAX_JOBS;i++)if(jobs[i]&&jobs[i]->epoch==old_epoch)atomic_store(&jobs[i]->cancelled,1);}kill_owned(slot.child);if(slot.child>0)reap_owned(slot.child,20);}
 static void reply(xpc_object_t message,const char*status,pid_t child,const unsigned char*a,const unsigned char*b){xpc_object_t value=xpc_dictionary_create_reply(message);if(!value)return;xpc_dictionary_set_string(value,"status",status);xpc_dictionary_set_int64(value,"child",child);if(a)xpc_dictionary_set_data(value,"client",a,32);if(b)xpc_dictionary_set_data(value,"broker",b,32);if(a&&b){xpc_dictionary_set_uint64(value,"epoch",epoch);xpc_dictionary_set_uint64(value,"deadline",slot.deadline);}xpc_connection_t peer=xpc_dictionary_get_remote_connection(message);if(peer)xpc_connection_send_message(peer,value);xpc_release(value);}
 static int claim_startup(void){
  if(!AXIOM_ISSUER_SPAWN_CLAIM[0])return 0;char parent[PATH_MAX];if(strlen(AXIOM_ISSUER_SPAWN_CLAIM)>=sizeof(parent))return 0;strcpy(parent,AXIOM_ISSUER_SPAWN_CLAIM);char*end=strrchr(parent,'/');if(!end||end==parent||strcmp(end+1,"issuer-startup-claim.json"))return 0;*end=0;
@@ -95,6 +97,63 @@ static int owner_profile_current(void){
  if(AX_OWNER_PROFILE==AX_OWNER_PROFILE_SYSTEM)return axiom_owner_binding_current();
  if(AX_OWNER_PROFILE==AX_OWNER_PROFILE_LEGACY)return 1;
  return 0;
+}
+/* Separate business namespace: never relax origin op/key schemas. Control owns
+ * serialization; slow sender-code inspection runs on workers before admission. */
+static AxRequestSlot business;
+static xpc_object_t business_message;
+static xpc_connection_t business_desktop;
+static unsigned business_peers;
+static int business_auth_busy,business_child_auth_busy,business_lane_ready;
+static void business_child_event(const char*kind){if(slot.peer&&business.phase!=AX_REQUEST_EMPTY){xpc_object_t event=xpc_dictionary_create(NULL,NULL,0);if(!event)return;xpc_dictionary_set_string(event,"protocol",AX_REQUEST_PROTOCOL);xpc_dictionary_set_string(event,"kind",kind);xpc_dictionary_set_data(event,"id",business.id,32);xpc_dictionary_set_uint64(event,"epoch",business.epoch);xpc_connection_send_message((xpc_connection_t)slot.peer,event);xpc_release(event);}}
+static void business_external_result(const char*status,const unsigned char*bytes,size_t length){if(!business_message)return;xpc_object_t value=xpc_dictionary_create_reply(business_message);if(value){xpc_dictionary_set_string(value,"status",status);if(bytes)xpc_dictionary_set_data(value,"bytes",bytes,length);if(business_desktop)xpc_connection_send_message(business_desktop,value);xpc_release(value);}xpc_release(business_message);business_message=NULL;}
+static void business_revoke(void){business_lane_ready=0;ax_request_revoke(&business);business_child_event("cancel");business_external_result("unknown",NULL,0);}
+static int business_owned(void){return !shutting_down&&!epoch_revoked&&owner_profile_current()&&slot.phase==AXIOM_ORIGIN_CONSUMED&&slot.child==owned_child&&owned_child>0&&alive_pid(owned_child)&&business.epoch==epoch&&business.child==slot.peer;}
+static void business_drop(void){if(business_message){xpc_release(business_message);business_message=NULL;}if(business_desktop){xpc_release(business_desktop);business_desktop=NULL;}memset(&business,0,sizeof(business));}
+static void business_child(Peer*p,xpc_object_t message){
+ const char*protocol=xpc_dictionary_get_string(message,"protocol"),*kind=xpc_dictionary_get_string(message,"kind");size_t ni=0,nn=0;const void*id=xpc_dictionary_get_data(message,"id",&ni),*nonce=xpc_dictionary_get_data(message,"nonce",&nn);xpc_object_t ep=xpc_dictionary_get_value(message,"epoch");
+ if(protocol&&!strcmp(protocol,AX_REQUEST_PROTOCOL)&&kind&&!strcmp(kind,"ready")&&xpc_dictionary_get_count(message)==3&&ep&&xpc_get_type(ep)==XPC_TYPE_UINT64&&!business_child_auth_busy){
+  business_child_auth_busy=1;xpc_retain(message);retain_peer(p);xpc_retain(p->connection);dispatch_async(workers,^{int auth=message_matches(message,AXIOM_ISSUER_NODE_REQUIREMENT);dispatch_async(control,^{business_child_auth_busy=0;if(auth&&business.phase==AX_REQUEST_EMPTY&&!business_lane_ready&&!atomic_load(&p->ended)&&!epoch_revoked&&!shutting_down&&owner_profile_current()&&slot.phase==AXIOM_ORIGIN_CONSUMED&&slot.peer==(uintptr_t)p->connection&&slot.child==owned_child&&alive_pid(owned_child)&&xpc_uint64_get_value(ep)==epoch&&delivery.phase==DELIVERY_CONSUMED)business_lane_ready=1;xpc_release(message);xpc_release(p->connection);release_peer(p);});});return;
+ }
+ if(business_child_auth_busy)return;
+ if(!protocol||strcmp(protocol,AX_REQUEST_PROTOCOL)||!kind||!id||!nonce||ni!=32||nn!=32||!ep||xpc_get_type(ep)!=XPC_TYPE_UINT64)return;
+ int response=!strcmp(kind,"response"),query=!strcmp(kind,"request_current"),drain=!strcmp(kind,"drained");if((!response&&!query&&!drain)||xpc_dictionary_get_count(message)!=(response?6U:5U))return;
+ /* Exact consumed connection is required in addition to actual sender code.
+  * Authentication work cannot block the origin/control arbitration queue. */
+ business_child_auth_busy=1;xpc_retain(message);retain_peer(p);xpc_retain(p->connection);dispatch_async(workers,^{int authenticated=message_matches(message,AXIOM_ISSUER_NODE_REQUIREMENT);dispatch_async(control,^{
+  business_child_auth_busy=0;int owned=authenticated&&!atomic_load(&p->ended)&&business_owned()&&p->connection==(xpc_connection_t)slot.peer&&xpc_uint64_get_value(ep)==business.epoch&&!memcmp(id,business.id,32);int accepted=0;
+  if(drain)accepted=owned&&(business.phase==AX_REQUEST_COMPLETED||business.phase==AX_REQUEST_CANCELLED||business.phase==AX_REQUEST_EXPIRED);
+  else if(query)accepted=owned&&ax_request_current(&business,(uintptr_t)p->connection,epoch,id,now_ns());
+  else if(owned){size_t size=0;const void*bytes=xpc_dictionary_get_data(message,"bytes",&size);uint32_t status;size_t body;
+   if(bytes&&ax_request_response(bytes,size,&status,&body)){
+    if(ax_request_complete(&business,(uintptr_t)p->connection,epoch,id,now_ns(),bytes,size)){business_external_result("completed",bytes,size);accepted=1;}
+    else if(business.phase==AX_REQUEST_CANCELLED||business.phase==AX_REQUEST_EXPIRED){business_external_result("unknown",NULL,0);accepted=1;}
+   }
+  }
+  xpc_object_t value=xpc_dictionary_create_reply(message);if(value){xpc_dictionary_set_string(value,"protocol",AX_REQUEST_PROTOCOL);xpc_dictionary_set_string(value,"kind","request_result");xpc_dictionary_set_string(value,"status",accepted?(drain?"drained":response?"completed":"eligible"):"refused");xpc_dictionary_set_data(value,"id",id,32);xpc_dictionary_set_data(value,"nonce",nonce,32);xpc_dictionary_set_uint64(value,"epoch",xpc_uint64_get_value(ep));xpc_connection_send_message(p->connection,value);xpc_release(value);}if(response&&accepted)business_lane_ready=0;if(drain&&accepted){business_drop();business_lane_ready=1;}xpc_release(message);xpc_release(p->connection);release_peer(p);
+ });});
+}
+static void business_external(xpc_connection_t connection,xpc_object_t message){
+ if(xpc_get_type(message)!=XPC_TYPE_DICTIONARY)return;
+ const char*protocol=xpc_dictionary_get_string(message,"protocol"),*kind=xpc_dictionary_get_string(message,"kind");if(!protocol||strcmp(protocol,"axiom.issuer-request/1")||!kind)return;
+ if(business_auth_busy){return;}business_auth_busy=1;xpc_retain(connection);xpc_retain(message);
+ dispatch_async(workers,^{int authenticated=message_matches(message,AXIOM_ISSUER_DESKTOP_REQUIREMENT);dispatch_async(control,^{business_auth_busy=0;
+  if(!authenticated||shutting_down)goto done;
+  if(!strcmp(kind,"cancel")&&xpc_dictionary_get_count(message)==3){size_t n=0;const void*id=xpc_dictionary_get_data(message,"id",&n);if(id&&n==32&&ax_request_cancel(&business,(uintptr_t)connection,id)){business_child_event("cancel");business_external_result("unknown",NULL,0);}goto done;}
+  if(strcmp(kind,"request")||xpc_dictionary_get_count(message)!=4||business.phase!=AX_REQUEST_EMPTY||!business_lane_ready||epoch_revoked||slot.phase!=AXIOM_ORIGIN_CONSUMED||!owner_profile_current()||slot.child!=owned_child||!alive_pid(owned_child))goto done;
+  size_t size=0;const void*bytes=xpc_dictionary_get_data(message,"bytes",&size);xpc_object_t budget=xpc_dictionary_get_value(message,"budgetMs");if(!bytes||!size||size>AX_REQUEST_INPUT_CAP||!budget||xpc_get_type(budget)!=XPC_TYPE_UINT64)goto done;uint64_t ms=xpc_uint64_get_value(budget),now=now_ns();if((ms!=10000&&ms!=25000)||now==UINT64_MAX||now>UINT64_MAX-ms*1000000ULL)goto done;uint64_t deadline=now+ms*1000000ULL;if(deadline>slot.deadline)deadline=slot.deadline;
+  unsigned char id[32];arc4random_buf(id,32);if(!ax_request_admit(&business,(uintptr_t)connection,slot.peer,epoch,deadline,now,id,size)||!ax_request_dispatch(&business,now))goto done;
+  business_message=xpc_retain(message);business_desktop=xpc_retain(connection);
+  xpc_object_t admission_notice=xpc_dictionary_create(NULL,NULL,0);if(!admission_notice){business_revoke();goto done;}xpc_dictionary_set_string(admission_notice,"status","admitted");xpc_dictionary_set_data(admission_notice,"id",id,32);xpc_connection_send_message(connection,admission_notice);xpc_release(admission_notice);
+  xpc_object_t event=xpc_dictionary_create(NULL,NULL,0);if(!event){business_revoke();goto done;}xpc_dictionary_set_string(event,"protocol",AX_REQUEST_PROTOCOL);xpc_dictionary_set_string(event,"kind","request");xpc_dictionary_set_data(event,"id",id,32);xpc_dictionary_set_uint64(event,"epoch",epoch);xpc_dictionary_set_uint64(event,"deadline",deadline);xpc_dictionary_set_data(event,"bytes",bytes,size);xpc_connection_send_message((xpc_connection_t)slot.peer,event);xpc_release(event);
+  uint64_t admitted=epoch;struct {unsigned char bytes[32];} admitted_id;memcpy(admitted_id.bytes,id,32);dispatch_after(at_deadline(deadline),control,^{if(business.epoch==admitted&&!memcmp(business.id,admitted_id.bytes,32)&&business.phase==AX_REQUEST_DISPATCHED){business.phase=AX_REQUEST_EXPIRED;business_child_event("cancel");business_external_result("unknown",NULL,0);}});
+ done:xpc_release(connection);xpc_release(message);
+ });});
+}
+static int business_listen(void){
+ if(!AXIOM_ISSUER_DESKTOP_REQUIREMENT[0])return 0;
+ xpc_connection_t listener=xpc_connection_create_mach_service(AXIOM_ISSUER_REQUEST_SERVICE,control,XPC_CONNECTION_MACH_SERVICE_LISTENER);if(!listener||xpc_connection_set_peer_code_signing_requirement(listener,AXIOM_ISSUER_DESKTOP_REQUIREMENT))return 0;
+ xpc_connection_set_event_handler(listener,^(xpc_object_t peer){if(xpc_get_type(peer)!=XPC_TYPE_CONNECTION)return;if(business_peers>=16||shutting_down){xpc_connection_set_event_handler(peer,^(xpc_object_t event){(void)event;});xpc_connection_activate(peer);xpc_connection_cancel(peer);return;}business_peers++;__block int ended=0;xpc_connection_set_target_queue(peer,control);xpc_connection_set_event_handler(peer,^(xpc_object_t event){if(ended)return;if(xpc_get_type(event)==XPC_TYPE_DICTIONARY)business_external(peer,event);else{ended=1;if(business.desktop==(uintptr_t)peer&&business.phase==AX_REQUEST_DISPATCHED){business.phase=AX_REQUEST_CANCELLED;business_child_event("cancel");business_external_result("unknown",NULL,0);}if(business_peers)business_peers--;xpc_connection_cancel(peer);}});xpc_connection_activate(peer);});xpc_connection_activate(listener);return 1;
 }
 static int work_current(Job*j){return !atomic_load(&j->cancelled)&&!atomic_load(&j->peer->ended)&&now_ns()<j->deadline&&owner_profile_current()&&!atomic_load(&j->cancelled)&&now_ns()<j->deadline;}
 static void cancel_timer(Job*j){if(j->timer){dispatch_source_t timer=j->timer;j->timer=NULL;dispatch_source_cancel(timer);}}
@@ -193,6 +252,7 @@ static void run_job(Job*j){
  retain_job(j);dispatch_async(control,^{finish_job(j);release_job(j);});release_job(j); /* worker ownership */
 }
 static void handle(Peer*p,xpc_object_t message){
+ if(xpc_get_type(message)==XPC_TYPE_DICTIONARY&&xpc_dictionary_get_string(message,"protocol")){business_child(p,message);return;}
  if(shutting_down){reply(message,"refused",0,NULL,NULL);return;}
  if(xpc_get_type(message)!=XPC_TYPE_DICTIONARY)return;
  const char*op=xpc_dictionary_get_string(message,"op");if(!op||strnlen(op,25)>24){reply(message,"refused",0,NULL,NULL);return;}
@@ -226,7 +286,7 @@ static void end_peer(Peer*p){
 }
 int main(int argc,char**argv){
  (void)argv;if(argc!=1)return 69;
- if(!AXIOM_ISSUER_ORIGIN_SERVICE[0]||!AXIOM_ISSUER_NODE_REQUIREMENT[0]||!AXIOM_ISSUER_CONTROLLER_REQUIREMENT[0]||!ax_synthetic_control_app_matches(AXIOM_ISSUER_CONTROL_APP)||!SecCodeCreateWithXPCMessage)return 70;
+ if(!AXIOM_ISSUER_DESKTOP_REQUIREMENT[0]||!AXIOM_ISSUER_ORIGIN_SERVICE[0]||!AXIOM_ISSUER_NODE_REQUIREMENT[0]||!AXIOM_ISSUER_CONTROLLER_REQUIREMENT[0]||!ax_synthetic_control_app_matches(AXIOM_ISSUER_CONTROL_APP)||!SecCodeCreateWithXPCMessage)return 70;
  char current[PATH_MAX],actual[PATH_MAX],expected[PATH_MAX];uint32_t length=sizeof(current);struct stat own;
  if(_NSGetExecutablePath(current,&length)||!realpath(current,actual)||snprintf(expected,sizeof(expected),"%s%s",AXIOM_ISSUER_CONTROL_APP,AX_SYNTH_BROKER_SUFFIX)>=(int)sizeof(expected)||strcmp(actual,expected)||stat(expected,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&main,&own))return 71;
  /* Dedicated custodian only; no constructor/import invokes these APIs. */
@@ -245,6 +305,7 @@ int main(int argc,char**argv){
   int configured=xpc_connection_set_peer_code_signing_requirement(peer,peer_requirement)==0;
   xpc_connection_set_event_handler(peer,^(xpc_object_t event){if(atomic_load(&p->ended))return;if(xpc_get_type(event)!=XPC_TYPE_DICTIONARY){end_peer(p);return;}handle(p,event);});xpc_connection_activate(peer);if(!configured)end_peer(p);
  });xpc_connection_activate(listener);
+ if(!business_listen())return 78;
  signal(SIGTERM,SIG_IGN);signal(SIGINT,SIG_IGN);dispatch_source_t term=dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL,SIGTERM,0,control),interrupt=dispatch_source_create(DISPATCH_SOURCE_TYPE_SIGNAL,SIGINT,0,control);if(!term||!interrupt)return 75;
  /* Graceful shutdown waits for all creation jobs and tracked child reaping.
   * SIGKILL/OS forced termination while kernel creation is blocked cannot offer

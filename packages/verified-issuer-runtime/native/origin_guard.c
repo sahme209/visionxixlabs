@@ -41,11 +41,11 @@ static const char* fixed_process_failure(int main_thread){
  return NULL;
 }
 static napi_value refuse(napi_env env,const char*reason){napi_throw_error(env,"axiom_origin_unavailable",reason);return NULL;}
-typedef struct {atomic_uint refs;atomic_int invalid;atomic_flag busy;atomic_flag bootstrap_attempted;AxiomOriginSession*session;AxiomOriginProcessIdentity startup;dispatch_queue_t queue;} NativeOrigin;
+typedef struct {atomic_uint refs;atomic_int invalid;atomic_flag busy;atomic_flag bootstrap_attempted;int request_waiting,bootstrap_consumed;AxiomOriginSession*session;AxiomOriginProcessIdentity startup;dispatch_queue_t queue;} NativeOrigin;
 typedef struct {atomic_uint refs;atomic_int cancelled;atomic_int success;NativeOrigin*origin;dispatch_semaphore_t done;uint64_t deadline;} NativeProbe;
 static uint64_t monotonic_ns(void){struct timespec t;if(clock_gettime(CLOCK_MONOTONIC,&t)||t.tv_sec<0||t.tv_nsec<0)return UINT64_MAX;return(uint64_t)t.tv_sec*1000000000ULL+(uint64_t)t.tv_nsec;}
 static void release_origin(NativeOrigin*o){if(atomic_fetch_sub(&o->refs,1)==1){axiom_origin_session_destroy(o->session);dispatch_release(o->queue);free(o);}}
-static void revoke_origin(void*value){NativeOrigin*o=value;if(!o)return;atomic_store(&o->invalid,1);axiom_origin_session_revoke(o->session);}
+static void revoke_origin(void*value){NativeOrigin*o=value;if(!o)return;if(!atomic_exchange(&o->invalid,1))axiom_origin_session_revoke(o->session);}
 static void cleanup_origin(void*value){NativeOrigin*o=value;revoke_origin(o);release_origin(o);}
 static void release_probe(NativeProbe*p){if(atomic_fetch_sub(&p->refs,1)==1){release_origin(p->origin);dispatch_release(p->done);free(p);}}
 static napi_value assert_current(napi_env env,napi_callback_info info){
@@ -95,10 +95,39 @@ static napi_value consume_bootstrap(napi_env env,napi_callback_info info){
  if(napi_create_object(env,&result)!=napi_ok||napi_create_string_utf8(env,(char*)material.datasource,material.datasource_length,&dsn)!=napi_ok||napi_create_arraybuffer(env,32,&bytes,&vault)!=napi_ok)goto done;
  vault_bytes=bytes;memcpy(bytes,material.vault,32);if(napi_create_typedarray(env,napi_uint8_array,32,vault,0,&vault)!=napi_ok||napi_create_arraybuffer(env,material.session_length,&bytes,&session)!=napi_ok)goto done;
  session_bytes=bytes;session_length=material.session_length;memcpy(bytes,material.session,material.session_length);if(napi_create_typedarray(env,napi_uint8_array,material.session_length,session,0,&session)!=napi_ok||napi_set_named_property(env,result,"datasource",dsn)!=napi_ok||napi_set_named_property(env,result,"vaultKey",vault)!=napi_ok||napi_set_named_property(env,result,"sessionSigningKey",session)!=napi_ok||napi_object_freeze(env,result)!=napi_ok)goto done;
- ok=1;
+ ok=1;o->bootstrap_consumed=1;
  done:axiom_private_material_wipe(&material);memset(&binding,0,sizeof(binding));
  if(!ok){if(vault_bytes)memset(vault_bytes,0,32);if(session_bytes)memset(session_bytes,0,session_length);close_bootstrap_input();revoke_origin(o);return refuse(env,"origin_bootstrap_unavailable");}return result;
 }
+typedef struct{NativeOrigin*origin;napi_async_work work;napi_deferred deferred;AxiomRequestEvent event;int ok;} RequestWait;
+static void request_wait_execute(napi_env env,void*value){(void)env;RequestWait*w=value;w->ok=axiom_origin_session_next_request(w->origin->session,&w->event);}
+static void request_wait_complete(napi_env env,napi_status status,void*value){
+ RequestWait*w=value;NativeOrigin*o=w->origin;if(!env)revoke_origin(o);o->request_waiting=0;napi_value result=NULL,id=NULL,kind=NULL,bytes=NULL,buffer=NULL;void*data=NULL;
+ int ok=status==napi_ok&&w->ok&&!atomic_load(&o->invalid)&&napi_create_object(env,&result)==napi_ok&&napi_create_string_utf8(env,w->event.id,64,&id)==napi_ok&&napi_create_string_utf8(env,w->event.cancelled?"cancel":"request",NAPI_AUTO_LENGTH,&kind)==napi_ok&&napi_set_named_property(env,result,"id",id)==napi_ok&&napi_set_named_property(env,result,"kind",kind)==napi_ok;
+ if(ok&&!w->event.cancelled){ok=napi_create_arraybuffer(env,w->event.length,&data,&buffer)==napi_ok;if(ok){memcpy(data,w->event.bytes,w->event.length);ok=napi_create_typedarray(env,napi_uint8_array,w->event.length,buffer,0,&bytes)==napi_ok&&napi_set_named_property(env,result,"bytes",bytes)==napi_ok;}}
+ if(ok)ok=napi_object_freeze(env,result)==napi_ok;
+ if(ok&&env)napi_resolve_deferred(env,w->deferred,result);else if(env){napi_value message,error;if(napi_create_string_utf8(env,"origin_request_unavailable",NAPI_AUTO_LENGTH,&message)==napi_ok&&napi_create_error(env,NULL,message,&error)==napi_ok)napi_reject_deferred(env,w->deferred,error);revoke_origin(o);}
+ memset(&w->event,0,sizeof(w->event));if(env)napi_delete_async_work(env,w->work);release_origin(o);free(w);
+}
+static napi_value next_request_event(napi_env env,napi_callback_info info){
+ size_t argc=1;void*value=NULL;napi_value arg,promise,name;if(napi_get_cb_info(env,info,&argc,&arg,NULL,&value)!=napi_ok||argc||!value)return refuse(env,"origin_request_zero_arguments_required");NativeOrigin*o=value;
+ if(!pthread_main_np()||atomic_load(&o->invalid)||o->request_waiting||!o->bootstrap_consumed||!axiom_origin_session_locally_valid(o->session))return refuse(env,"origin_request_wait_unavailable");
+ RequestWait*w=calloc(1,sizeof(*w));if(!w)return refuse(env,"origin_request_allocation_unavailable");w->origin=o;
+ if(napi_create_promise(env,&w->deferred,&promise)!=napi_ok||napi_create_string_utf8(env,"axiom owned request",NAPI_AUTO_LENGTH,&name)!=napi_ok||napi_create_async_work(env,NULL,name,request_wait_execute,request_wait_complete,w,&w->work)!=napi_ok){free(w);return refuse(env,"origin_request_wait_unavailable");}
+ o->request_waiting=1;atomic_fetch_add(&o->refs,1);if(napi_queue_async_work(env,w->work)!=napi_ok){o->request_waiting=0;napi_delete_async_work(env,w->work);release_origin(o);free(w);return refuse(env,"origin_request_wait_unavailable");}return promise;
+}
+static int request_id_arg(napi_env env,napi_value arg,unsigned char id[32]){char text[65];size_t length=0;napi_valuetype type;if(napi_typeof(env,arg,&type)!=napi_ok||type!=napi_string||napi_get_value_string_utf8(env,arg,NULL,0,&length)!=napi_ok||length!=64||napi_get_value_string_utf8(env,arg,text,sizeof(text),&length)!=napi_ok||length!=64)return 0;return ax_request_id_parse(text,id);}
+static napi_value assert_request_current(napi_env env,napi_callback_info info){
+ size_t argc=2;void*value=NULL;napi_value args[2],result;unsigned char id[32];if(napi_get_cb_info(env,info,&argc,args,NULL,&value)!=napi_ok||argc!=1||!value||!request_id_arg(env,args[0],id))return refuse(env,"origin_request_id_required");NativeOrigin*o=value;
+ uint64_t start=monotonic_ns();if(!pthread_main_np()||atomic_load(&o->invalid)||fixed_process_failure(1)||!axiom_origin_identity_current(&o->startup)||!axiom_origin_session_request_current(o->session,id)||!axiom_origin_identity_current(&o->startup)||fixed_process_failure(1)||monotonic_ns()<start||monotonic_ns()-start>AXIOM_ORIGIN_EXCHANGE_NS)return refuse(env,"origin_request_current_unavailable");
+ if(napi_get_undefined(env,&result)!=napi_ok)return refuse(env,"origin_request_current_unavailable");return result;
+}
+static napi_value complete_request(napi_env env,napi_callback_info info){
+ size_t argc=3;void*value=NULL;napi_value args[3],result;unsigned char id[32];napi_typedarray_type type;size_t length=0,offset=0;void*data=NULL;napi_value buffer;
+ if(napi_get_cb_info(env,info,&argc,args,NULL,&value)!=napi_ok||argc!=2||!value||!request_id_arg(env,args[0],id)||napi_get_typedarray_info(env,args[1],&type,&length,&data,&buffer,&offset)!=napi_ok||type!=napi_uint8_array||!data||length>AX_REQUEST_FRAME_CAP)return refuse(env,"origin_request_response_invalid");NativeOrigin*o=value;
+ if(!pthread_main_np()||atomic_load(&o->invalid)||!axiom_origin_session_complete_request(o->session,id,data,length))return refuse(env,"origin_request_completion_unavailable");if(napi_get_undefined(env,&result)!=napi_ok)return refuse(env,"origin_request_completion_unavailable");return result;
+}
+static napi_value close_runtime(napi_env env,napi_callback_info info){size_t argc=1;void*value=NULL;napi_value arg,result;if(napi_get_cb_info(env,info,&argc,&arg,NULL,&value)!=napi_ok||argc||!value)return refuse(env,"origin_close_zero_arguments_required");revoke_origin(value);if(napi_get_undefined(env,&result)!=napi_ok)return refuse(env,"origin_close_unavailable");return result;}
 static napi_value initialize(napi_env env,napi_value exports){
  if(atomic_flag_test_and_set(&constructor_attempted))return refuse(env,"origin_fresh_constructor_required");
  const char*reason=fixed_process_failure(1);if(reason)return refuse(env,reason);
@@ -114,8 +143,8 @@ static napi_value initialize(napi_env env,napi_value exports){
  if(!axiom_origin_identity_capture((uintptr_t)&initialize,(uintptr_t)node_code,&o->startup)){dispatch_release(o->queue);free(o);return refuse(env,"origin_loaded_artifact_identity_unavailable");}
  o->session=axiom_origin_session_open();if(!o->session){dispatch_release(o->queue);free(o);return refuse(env,"origin_startup_unavailable");}
  if(!axiom_origin_identity_current(&o->startup)){cleanup_origin(o);return refuse(env,"origin_startup_resource_changed");}
- napi_value consume,probe;if(napi_create_function(env,"consumeBootstrapResources",NAPI_AUTO_LENGTH,consume_bootstrap,o,&consume)!=napi_ok||napi_create_function(env,"assertCurrentOrigin",NAPI_AUTO_LENGTH,assert_current,o,&probe)!=napi_ok||napi_add_env_cleanup_hook(env,cleanup_origin,o)!=napi_ok){cleanup_origin(o);return refuse(env,"origin_private_session_unavailable");}
- if(napi_object_freeze(env,consume)!=napi_ok||napi_set_named_property(env,exports,"consumeBootstrapResources",consume)!=napi_ok||napi_object_freeze(env,probe)!=napi_ok||napi_set_named_property(env,exports,"assertCurrentOrigin",probe)!=napi_ok||napi_object_freeze(env,exports)!=napi_ok){revoke_origin(o);return refuse(env,"origin_exports_unavailable");}
+ napi_value consume,probe,next,complete,request_probe,close;if(napi_create_function(env,"consumeBootstrapResources",NAPI_AUTO_LENGTH,consume_bootstrap,o,&consume)!=napi_ok||napi_create_function(env,"assertCurrentOrigin",NAPI_AUTO_LENGTH,assert_current,o,&probe)!=napi_ok||napi_create_function(env,"nextRequestEvent",NAPI_AUTO_LENGTH,next_request_event,o,&next)!=napi_ok||napi_create_function(env,"completeRequest",NAPI_AUTO_LENGTH,complete_request,o,&complete)!=napi_ok||napi_create_function(env,"assertRequestCurrent",NAPI_AUTO_LENGTH,assert_request_current,o,&request_probe)!=napi_ok||napi_create_function(env,"closeRuntime",NAPI_AUTO_LENGTH,close_runtime,o,&close)!=napi_ok||napi_add_env_cleanup_hook(env,cleanup_origin,o)!=napi_ok){cleanup_origin(o);return refuse(env,"origin_private_session_unavailable");}
+ if(napi_object_freeze(env,probe)!=napi_ok||napi_set_named_property(env,exports,"assertCurrentOrigin",probe)!=napi_ok||napi_object_freeze(env,consume)!=napi_ok||napi_set_named_property(env,exports,"consumeBootstrapResources",consume)!=napi_ok||napi_object_freeze(env,next)!=napi_ok||napi_set_named_property(env,exports,"nextRequestEvent",next)!=napi_ok||napi_object_freeze(env,complete)!=napi_ok||napi_set_named_property(env,exports,"completeRequest",complete)!=napi_ok||napi_object_freeze(env,request_probe)!=napi_ok||napi_set_named_property(env,exports,"assertRequestCurrent",request_probe)!=napi_ok||napi_object_freeze(env,close)!=napi_ok||napi_set_named_property(env,exports,"closeRuntime",close)!=napi_ok||napi_object_freeze(env,exports)!=napi_ok){revoke_origin(o);return refuse(env,"origin_exports_unavailable");}
  return exports;
 }
 NAPI_MODULE(axiom_origin_guard,initialize)

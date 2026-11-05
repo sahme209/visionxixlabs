@@ -1,6 +1,7 @@
-/* Standalone preparation only. No build definition enables operational gate. */
+/* Fixed trusted maintenance entry. Missing selected principals/installed identity refuse. */
 #define _DARWIN_C_SOURCE 1
 #include "owner_config.h"
+#include "synthetic_fixture_readiness.h"
 #include "synthetic_resource_provisioner.h"
 #include "origin_process_identity.h"
 #include <mach-o/dyld.h>
@@ -33,7 +34,7 @@ static int protected_parent(void){
  return close(fd)==0;
 }
 int main(int argc,char**argv){
- (void)argv;if(argc!=1||!AX_OWNER_OPERATIONAL)return 69;
+ (void)argv;if(argc!=1||!ax_fixture_maintenance_current())return 69;
  if(getuid()!=0||geteuid()!=0)return 70;
  char path[PATH_MAX],canonical[PATH_MAX];uint32_t length=sizeof(path);struct stat own;
  if(_NSGetExecutablePath(path,&length)||!realpath(path,canonical)||strcmp(canonical,MAINTENANCE_PATH)||!protected_parent()||lstat(MAINTENANCE_PATH,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&main,&own))return 71;

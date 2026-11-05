@@ -1,0 +1,22 @@
+✔ simulated canonical startup establishes live identity but never claims qualification or action permission (2.489625ms)
+✔ actual source reader permanently revokes simulated origin/cache loss (1.33875ms)
+✔ one simulated native request binds fresh request checks and returns framed reply (0.839417ms)
+✔ broker-terminal simulated request refuses before child cancellation event without revoking origin (0.68725ms)
+✔ late cancellation of a drained request does not close the healthy epoch (0.601542ms)
+✔ cancelled work drains its exact native slot before a distinct new request (1.164291ms)
+✔ actual initializer constructs fixed graph, wipes staging and exposes idempotent cleanup only (30.297875ms)
+✔ graph failure disconnects actual owned client port and wipes mutable staging (6.944792ms)
+✔ rejects unknown fields, accessor records, wrong bounds before factory construction (10.571333ms)
+✔ unavailable actual canonical reader refuses before resource construction (5.562208ms)
+✔ owned dispatch checks canonical currentness and closed lifetime refuses reuse (5.280416ms)
+✔ close disables admission before pending work and disconnects once (3.5645ms)
+✔ overlapping owned dispatch refuses instead of queuing (4.685834ms)
+✔ adapter abort does not release native context while actual handler is unsettled (5.034083ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 204.921167

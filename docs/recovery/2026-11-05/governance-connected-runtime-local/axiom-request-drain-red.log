@@ -1,0 +1,32 @@
+✖ cancelled work drains its exact native slot before a distinct new request (3.671458ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 66.100708
+
+✖ failing tests:
+
+test at packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs:49:1
+✖ cancelled work drains its exact native slot before a distinct new request (3.671458ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+  - ]
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs:50:235)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [ 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

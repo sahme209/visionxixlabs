@@ -23,6 +23,12 @@
 #ifndef AX_OWNER_FIXED_GID
 #define AX_OWNER_FIXED_GID 0
 #endif
+#ifndef AX_FIXTURE_FIXED_UID
+#define AX_FIXTURE_FIXED_UID 0
+#endif
+#ifndef AX_FIXTURE_FIXED_GID
+#define AX_FIXTURE_FIXED_GID 0
+#endif
 /* No synthetic diagnostic lifetime is silently a production lease. */
 #ifndef AX_OWNER_MAX_LIFETIME_NS
 #define AX_OWNER_MAX_LIFETIME_NS 0ULL

@@ -1,0 +1,126 @@
+{
+  "scope": "local pure/stubbed tests and compile-only original native source; no original native target/API execution",
+  "stage": "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/request_protocol.c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/request_protocol_test.c",
+        "-o",
+        "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/protocol-test"
+      ],
+      "exitCode": 0
+    },
+    {
+      "argv": [
+        "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/protocol-test"
+      ],
+      "exitCode": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "packages/verified-issuer-runtime/native/tests",
+        "-p",
+        "test_request_bridge_bodies.py"
+      ],
+      "exitCode": 0
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-p",
+        "test_system_ingress_preparation.py"
+      ],
+      "exitCode": 0
+    },
+    {
+      "argv": [
+        "/usr/bin/clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-deprecated-declarations",
+        "-fblocks",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-I/Users/samirahmed/.nvm/versions/node/v24.21.0/include/node",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_guard.c",
+        "-o",
+        "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/origin_guard.o"
+      ],
+      "exitCode": 0
+    },
+    {
+      "argv": [
+        "/usr/bin/clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-deprecated-declarations",
+        "-fblocks",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_session.c",
+        "-o",
+        "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/origin_session.o"
+      ],
+      "exitCode": 0
+    },
+    {
+      "argv": [
+        "/usr/bin/clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-Wno-deprecated-declarations",
+        "-fblocks",
+        "-mmacosx-version-min=13.0",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "-c",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_broker.c",
+        "-o",
+        "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-ingress-final-ptyn4gy3/origin_broker.o"
+      ],
+      "exitCode": 0
+    }
+  ],
+  "sourceCorrection": "Final broker compile caught a same-scope admitted variable collision introduced by admission correlation notice; renamed notice, reran only failed broker compile. Pure/state+4body+3config tests and guard/session compiles already passed; no redundant reruns. Both raw logs retained.",
+  "files": {
+    "packages/verified-issuer-runtime/native/request_protocol.c": "811e5d21f19224e92101d7c10f5d161d8b40a447ec65fc8a078ab8b9108bd2b4",
+    "packages/verified-issuer-runtime/native/request_protocol.h": "52a367aa6664b0261cc87444d65c04f11d99cce89935b3df1a944f500de881fc",
+    "packages/verified-issuer-runtime/native/origin_config.h": "9a8edb2e43f044094bf00142893e1e4daa9c8760529167b20318ca615c08d09c",
+    "packages/verified-issuer-runtime/native/origin_broker.c": "3ad12420f1e278aefde01f6cb7b5e7a078ba18c9ca4e5eaf3189165673c6b39a",
+    "packages/verified-issuer-runtime/native/origin_session.c": "cd06e2e7fe0110425af7b94e055da85bdb49b45640a29a4bfeb2950ee939eb72",
+    "packages/verified-issuer-runtime/native/origin_session.h": "b64c9e1470e0a99d1b2988fbce73bf0b4414100c393f97049b9456dc9d8d27db",
+    "packages/verified-issuer-runtime/native/origin_guard.c": "1622e6e65a6559ab57ccbb0cf279aae570e582faa0f0c5a04e8f1d42aa360588",
+    "packages/verified-issuer-runtime/native/tests/request_protocol_test.c": "4767452fea8200ded8934f3eb21452b43b5961a923d6cd7d163d1b2c0ef0e59e",
+    "packages/verified-issuer-runtime/native/tests/request_bridge_stubs.h": "f7d6cad5706b8e20ca44fd92a8d07428fb712a69992340eeba97fa1880b887b8",
+    "packages/verified-issuer-runtime/native/tests/request_napi_stubs.h": "f7c4567d8fe8ecf5c4c50508a914f9514264817342b8c549bd74ecaa4a549e36",
+    "packages/verified-issuer-runtime/native/tests/test_request_bridge_bodies.py": "468e197414a15ff65d0d204f632c5523033ecb59ff26b4638ec09b6f5daff8bb",
+    "scripts/governance_local_issuer/system_preparation.py": "feb9f23b1186d6cb9b123cf68aad2c824f5a0526700b4e0017c0fd5cbb659da8",
+    "scripts/tests/test_system_ingress_preparation.py": "c96046a202ae9f7bac7a381ff1199956c7e7f2489be6bb91b04575197c4164b8"
+  },
+  "actualNativeRuntimeQualified": false,
+  "executionAuthorized": false,
+  "activationAllowed": false
+}

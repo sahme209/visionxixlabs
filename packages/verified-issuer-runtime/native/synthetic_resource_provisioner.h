@@ -5,6 +5,7 @@
 /* Dormant maintenance composition only: not linked into any runtime target.
  * A separate closed standalone main is prepared; this module itself accepts no
  * command line, environment selection, registration, or launch. Trusted
- * installer input custody and pre-main installation identity remain unresolved. */
+ * installer material is prepared only by the fixed owned fixture producer;
+ * installed/effective-policy qualification remains a separate operational gate. */
 AxSyntheticProvisionResult ax_synthetic_native_provision(void);
 #endif

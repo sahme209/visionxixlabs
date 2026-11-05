@@ -1,0 +1,284 @@
+{
+  "baseRevision": "d7ccb6f421de63fb543a33463e7618fb2a29287b",
+  "approval": "call_GjF0CqpEZVvkvCJePejRRd7I[0] Approve bounded local runtime implementation",
+  "sourceFiles": [
+    {
+      "path": "lib/desktop/privateReleaseMergeBootstrap.ts",
+      "sha256": "e028f66e4fb51da14561926b66f62f04cc29c8416e44d4cd48ca77582ee92811",
+      "bytes": 6747
+    },
+    {
+      "path": "lib/governance/intelligence/__tests__/mergeOutboundIssuerCurrent.test.ts",
+      "sha256": "664e297fb53808195efe0e7ed97e0b29c3dcee1386365a9f09c7f85d5666d768",
+      "bytes": 1141
+    },
+    {
+      "path": "lib/governance/intelligence/issuerArtifactIdentity.ts",
+      "sha256": "281496968f6bb79d73c4fa063adde13a78556fba38c2ee04587b2d730ad950fe",
+      "bytes": 454
+    },
+    {
+      "path": "lib/governance/intelligence/mergeOutboundIssuer.ts",
+      "sha256": "a0c8ff953bac232125a159a137764f6a8df47db6a5e0a86293401df1c500cdd9",
+      "bytes": 605
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateSyntheticFixtureProducer.test.ts",
+      "sha256": "664d00619ba83493df2e030a1b384027215081a2ee0175375b26e8b94d19ed6a",
+      "bytes": 3180
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/syntheticFixtureRecipe.test.ts",
+      "sha256": "dfc60500afb0916805b469b645420f63a0d2ff0808be424b16d8b2fb014cf196",
+      "bytes": 1778
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/syntheticFixtureSchema.test.ts",
+      "sha256": "e936f53665894c664cf8d42d1150062a7a22d535a7cef7d326ad1d85e19546d2",
+      "bytes": 438
+    },
+    {
+      "path": "lib/governance/qualification/fixture-seed.sql",
+      "sha256": "664f4ab7b1b582b64b0c92fb5577e311e85ec25924e91aad82be99822c3f1750",
+      "bytes": 1378
+    },
+    {
+      "path": "lib/governance/qualification/privateSyntheticFixtureEntry.ts",
+      "sha256": "b4befdef8c5542e877cd4d7bf622cb1a57277d12f94c87dedae5cb3b761838cb",
+      "bytes": 241
+    },
+    {
+      "path": "lib/governance/qualification/privateSyntheticFixtureProducer.ts",
+      "sha256": "1aa3c64ed2fa1def39842274545a92aec33a3d749ca88b0f9fccb466d1ed4c24",
+      "bytes": 9129
+    },
+    {
+      "path": "lib/governance/qualification/syntheticFixtureSchema.ts",
+      "sha256": "0ab8719dd5cd3c66db106eff072caf41308ac1e9659ac9a5556c04eb74d78f82",
+      "bytes": 1374
+    },
+    {
+      "path": "packages/verified-issuer-runtime/README.md",
+      "sha256": "b0047e7228d0e1a738dfbac55ffc23ee25206177a4453c554ed40a2b752e6a51",
+      "bytes": 4241
+    },
+    {
+      "path": "packages/verified-issuer-runtime/index.cjs",
+      "sha256": "5253866804342273380e13a6282880bd0af6776b042a088067835daf2ace9308",
+      "bytes": 11340
+    },
+    {
+      "path": "packages/verified-issuer-runtime/index.d.ts",
+      "sha256": "4215cdaea537ddab1ea8c43858ab45cf3d6abaa15d58215a71fc8c652641bc7c",
+      "bytes": 1239
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_broker.c",
+      "sha256": "3ad12420f1e278aefde01f6cb7b5e7a078ba18c9ca4e5eaf3189165673c6b39a",
+      "bytes": 35144
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_config.h",
+      "sha256": "9a8edb2e43f044094bf00142893e1e4daa9c8760529167b20318ca615c08d09c",
+      "bytes": 1077
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_guard.c",
+      "sha256": "1622e6e65a6559ab57ccbb0cf279aae570e582faa0f0c5a04e8f1d42aa360588",
+      "bytes": 18547
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_launch_owner.c",
+      "sha256": "b0d6883dfa92a87c02f423515fb10907dedc23859709d18e96e537c36138fffe",
+      "bytes": 14421
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_owner_binding.c",
+      "sha256": "5034b1c3e824d31c99a112d8f65f40acfa3c2f27a2aa26705428d4e9516a35f0",
+      "bytes": 8303
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.h",
+      "sha256": "fb84c3e36b940cf6fd25a0c10d258fb41d9ab76c736169c5250fbac8ff0655c0",
+      "bytes": 844
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+      "sha256": "5958707022f7ffd515ffcd2ef9c11bbb9522aff97566bee0ad9ee0c21fafe299",
+      "bytes": 9694
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_session.c",
+      "sha256": "cd06e2e7fe0110425af7b94e055da85bdb49b45640a29a4bfeb2950ee939eb72",
+      "bytes": 14556
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_session.h",
+      "sha256": "b64c9e1470e0a99d1b2988fbce73bf0b4414100c393f97049b9456dc9d8d27db",
+      "bytes": 1172
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/owner_config.h",
+      "sha256": "4c34b00816e44092a6b8301a2d7202a2c49781e5dedd95dd3e1b753f8619d249",
+      "bytes": 1146
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/request_protocol.c",
+      "sha256": "811e5d21f19224e92101d7c10f5d161d8b40a447ec65fc8a078ab8b9108bd2b4",
+      "bytes": 2744
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/request_protocol.h",
+      "sha256": "52a367aa6664b0261cc87444d65c04f11d99cce89935b3df1a944f500de881fc",
+      "bytes": 1269
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_frame.c",
+      "sha256": "bd43cc627eb233958becc878ff45ccf466660127c2282b2d5a66472147110e13",
+      "bytes": 931
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_frame.h",
+      "sha256": "53d92f409ae09346b354412b411180b8f668a7f29ceb26dfab4e9739ae9f6739",
+      "bytes": 574
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_frame_test.c",
+      "sha256": "d1cff4df948c2dd573c6f6a934959834c69c5d9c498936804a8b7a2948a8b4c7",
+      "bytes": 686
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_integration_test.cjs",
+      "sha256": "ca0f97eec76c3d04a9b089d87d0c81d9225b093258ac4c00ae3fb1d3ff91b877",
+      "bytes": 585
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_producer.c",
+      "sha256": "7bcbe85ee63cc8541c7ebf9285eeffeab8de96ffd29eb6e43f776fa2694e1965",
+      "bytes": 9271
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_producer.h",
+      "sha256": "180cc529673ed712bb6708630604cec2d2dd35cda0594aac2736e0a7e3fd703b",
+      "bytes": 270
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_producer_mock_test.c",
+      "sha256": "e76d3d9f79b79be686a3180526e2ccb86b7a76417a6c5a795024d7baaf265ddf",
+      "bytes": 4746
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_readiness.c",
+      "sha256": "315960d485fb2788ed03bd25ceb7040b4f82aeb2aee012fa9d3f4e42f2e80ca3",
+      "bytes": 1715
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_readiness.h",
+      "sha256": "ba4c44339004791144134afe38a62756453c1ffb189bbace5b8332faa4806474",
+      "bytes": 363
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_readiness_mock_test.c",
+      "sha256": "d10e4aeb853f80dd0cb42f4e49aa1a0348e0a3c29ffd25611b7852f140bad623",
+      "bytes": 2685
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_supplier_context.c",
+      "sha256": "ecd9badc0f064591b9e57c7dcbb39b8935148ad7955d808af367660179afe2d5",
+      "bytes": 460
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_resource_maintenance_main.c",
+      "sha256": "c98068894642a08ac709b6361e8f953243a65ae7e7ebbd29bb73f43664f03676",
+      "bytes": 2220
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_resource_provisioner.h",
+      "sha256": "d3ba876483abff5bab626f31ce2a1ca7eaecd8d8e20ca685aff2d2407b1198f4",
+      "bytes": 624
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_resource_provisioner.m",
+      "sha256": "d3c9e44b06ce8bb70a3f6ca802755a4daee094e52cba75ffc966e38af2a3f604",
+      "bytes": 7181
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/tests/request_bridge_stubs.h",
+      "sha256": "f7d6cad5706b8e20ca44fd92a8d07428fb712a69992340eeba97fa1880b887b8",
+      "bytes": 2436
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/tests/request_napi_stubs.h",
+      "sha256": "f7c4567d8fe8ecf5c4c50508a914f9514264817342b8c549bd74ecaa4a549e36",
+      "bytes": 5341
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/tests/request_protocol_test.c",
+      "sha256": "4767452fea8200ded8934f3eb21452b43b5961a923d6cd7d163d1b2c0ef0e59e",
+      "bytes": 1417
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/tests/test_request_bridge_bodies.py",
+      "sha256": "468e197414a15ff65d0d204f632c5523033ecb59ff26b4638ec09b6f5daff8bb",
+      "bytes": 10995
+    },
+    {
+      "path": "packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs",
+      "sha256": "53821ad5d2d77782c56facf5865cbc067401c4df5249a45e75f46d828e398418",
+      "bytes": 6128
+    },
+    {
+      "path": "packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs",
+      "sha256": "e02b817340ec6284d1373493489ecd04d149d9a877d8b0ec276ddd1741b13eb6",
+      "bytes": 7861
+    },
+    {
+      "path": "scripts/emit-synthetic-fixture-producer.cjs",
+      "sha256": "34f93483c2fe0139b8941390306e31150748d849fc3d23cf859a2896be3312ea",
+      "bytes": 2269
+    },
+    {
+      "path": "scripts/governance_local_issuer/system_preparation.py",
+      "sha256": "feb9f23b1186d6cb9b123cf68aad2c824f5a0526700b4e0017c0fd5cbb659da8",
+      "bytes": 16909
+    },
+    {
+      "path": "scripts/prepare-synthetic-fixture-recipe.cjs",
+      "sha256": "ce6a329f69d792edcf1461e83be88160b5a094274dfe92b6a068149987d81155",
+      "bytes": 3131
+    },
+    {
+      "path": "scripts/tests/test_system_ingress_preparation.py",
+      "sha256": "c96046a202ae9f7bac7a381ff1199956c7e7f2489be6bb91b04575197c4164b8",
+      "bytes": 2846
+    }
+  ],
+  "emitted": [
+    {
+      "path": "/private/tmp/axiom-connected-runtime-compile-7a4a_riu/.next/server/__axiom_private__/release-merge-bootstrap.cjs",
+      "bytes": 682424,
+      "sha256": "f96f3a6a0eb848e35ff1e94ed147a39021a87ab816bfee8b5c82e56ec0c62dd4",
+      "mode": "0o644",
+      "executed": false
+    },
+    {
+      "path": "/private/tmp/axiom-connected-runtime-compile-7a4a_riu/.next/server/__axiom_private_fixture__/fixture-producer.cjs",
+      "bytes": 14730,
+      "sha256": "6f15f6588976e2bdc8c946d45408a61194619dc83e4cf5e3109fb024c3cb463f",
+      "mode": "0o644",
+      "executed": false
+    }
+  ],
+  "vitest": {
+    "files": 8,
+    "passed": 22,
+    "failed": 0
+  },
+  "vmLifetimeCases": 15,
+  "scopedTypes": "passed",
+  "actualRuntimeQualified": false,
+  "actualCustodyQualified": false,
+  "actualDatabaseOrProvider": false,
+  "installableArtifactComplete": false,
+  "sourceInventoryDigest": "509f3a75631414031e15523a266f5d76ab96b3160c88011f85e39e4d58f2e249"
+}

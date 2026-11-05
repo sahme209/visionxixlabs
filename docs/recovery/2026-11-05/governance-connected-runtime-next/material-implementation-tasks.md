@@ -1,0 +1,52 @@
+# Fixed material producer — implementation tasks awaiting approval
+
+**Plan only. Pending connected-runtime approval has no answer.** No code, compilation, SQL, randomness, helper/process/OS/Security action or test execution is performed by this document. Proposed commands below are future local preparation commands, not authorization to run them. Actual root installation, principals, PostgreSQL, provisioning and qualification need a separate exact packet.
+
+## 1. Pure frame and one-use maintenance state
+
+New `packages/verified-issuer-runtime/native/synthetic_fixture_frame.h/.c`:
+- Private `AxSyntheticFixtureFrame` owns fixed version/generation, password32 source bytes, vault32 and session32; no pointers supplied by a runtime caller. Fixed encoded length, explicit integer byte order, exact magic/version/generation, no variable filenames/SQL/URI/UID/role fields. Native code hex-encodes password internally; the JS decoder never accepts arbitrary strings as authority.
+- `ax_fixture_frame_encode(const AxSyntheticFixtureFrame *, unsigned char *, size_t)` and `ax_fixture_frame_decode(const unsigned char *,size_t,AxSyntheticFixtureFrame *)` are pure; `ax_fixture_frame_wipe(AxSyntheticFixtureFrame *)` clears mutable staging. A once-state records entered/producer-started/DB-confirmed/final-HBA-confirmed/items-started/complete/unknown; no reset/retry setter.
+- Pure tests: exact roundtrip; each wrong magic/version/generation/size/trailing byte; partial IO assembler; once-state replay; every unknown phase terminal; fixed status records cannot carry input bytes. Native random generation is stubbed in tests, never called to create a credential.
+
+## 2. Actual fixed compiled fixture producer
+
+New `lib/governance/qualification/privateSyntheticFixtureProducer.ts` and pure tests. Import `createPrivateAuthorityDatabase` directly; do not import global DB, currentContext, env secret readers, generic website handlers or a test-generated Prisma client.
+- `decodeSyntheticFixtureInput(bytes:Uint8Array)` validates the exact native frame; decoded key buffers remain private to the process. Fixed coordinates/roles/recipe identity are emitted constants from a reviewed nonsecret profile, not request parameters.
+- `produceFixedSyntheticFixture(material)` is module-private and uses actual explicit admin/runtime Prisma instances. Public module export is a fixed zero-argument process entry `runFixedSyntheticFixtureProducer()` reading exactly stdin and writing one bounded status frame; it is not mounted in the application or callable with a supplied datasource/adapter. Tests exercise an internal pure implementation harness with fake clients/IO, not a public runtime registration hook.
+- Initial explicit admin URI names `postgres` over the fixed socket and `axiom_fixture_admin`, authenticated by OS root peer. Execute fixed fresh-database/role phases; generated lowercasehex password is the only password-DDL interpolation. All arbitrary SQL/identifiers are absent. DB creation is outside a transaction; record its uncertain outcome separately. Use bound parameters for synthetic rows.
+- Connect to the new qualification database with another explicit admin client, execute the frozen complete schema recipe and fixture inserts, inspect expected schema/role/grants, then authenticate a runtime instance using the generated password. No network/provider records or real App private key is imported. Synthetic plan/review fixtures represent their declared simulated acceptance lane, never a human decision or live effect.
+- The parent root maintenance owner, not this helper, performs final HBA publication/reload/currentness. Return `fixture_prepared` before that transition; it is not `provisioning_ready`. Parent must confirm final HBA before any item Add.
+- Close every instantiated client on every path; write only fixed numeric phases. Do not log exception objects/query text/URI/material. Current Prisma/V8 copies cannot be promised zeroized; document trusted administrative process lifetime.
+- Mock tests: root-peer bootstrap URI fixed; no secret env/argv/file use; exact role/database selections; CREATE DATABASE not transaction-wrapped; typed source recipe/inserts; wrong password refuses; SQL/finalization/close unknown outcomes cannot reach item phase; no arbitrary target/client/transport injection in exported entry.
+
+## 3. Complete source-derived schema, not a surrogate fixture
+
+New `scripts/emit-synthetic-fixture-producer.cjs` follows `scripts/emit-private-release-bootstrap.cjs` emission/source-binding practices, producing a fixed protected producer artifact and its real Prisma/engine closure. It also prepares a **nonsecret** `fixture-schema.sql` recipe from current `prisma/schema.prisma` and actual generated client metadata. Include the complete current application schema for this fresh isolated database rather than guessing a reduced five-model closure: private sessions, memberships/commercial configuration, GitHub installation/configuration, durable plans/events, governance/drain/policy stores and all related constraints must match the real emitted graph.
+
+A later authorized offline schema-preparation invocation may use pinned Prisma `migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script` after verifying this pinned version's exact CLI options; this plan does not execute it or assume the option spelling is already qualified. It creates a new recipe, not a database migration. Review generated SQL for source-derived schema only, bind its hash and compare complete model/enum/field/index/foreign-key inventory to current schema/generated metadata before approval. No production connection/env, engine download, generated-client substitute or unresolved schema omission is permitted. The real prepared recipe/schema graph is an input to later compilation/qualification, not an empty placeholder SQL file.
+
+Tests use finite synthetic schema/compiler artifacts and mocked emitter subprocesses; verify missing model/constraint/version mismatch fails before emission. Actual offline Prisma engine generation/diff must be named separately if outside the compilation scope eventually granted.
+
+## 4. Fixed owned producer launch and provisioning composition
+
+New `native/synthetic_fixture_producer.h/.c` exposes internally `ax_fixture_prepare_once(AxSyntheticFixtureState *)`; its operational body owns anonymous pipes, fixed protected Node/module paths, source/code/current-file checks, clean environment, descriptor closure, bounded frame IO, actual child binding/reap and numeric outcomes. No service/public IPC or caller-configurable executable. Stub process/filesystem/Security/resource dependencies in local tests; never run a produced helper.
+
+Modify `synthetic_resource_provisioner.m` to replace the invalid datasource/public key arrays with owned native frame/randomness and the internally prepared real URI, after successful producer and final-HBA phases. Keep `ax_synthetic_native_provision(void)` zero-argument. Reuse the existing three serial Adds, collision/unknown journal semantics and exact returned persistent-reference publication. No secret-taking public provision API, search/adoption/update/delete or automatic rollback.
+
+The administrative owner creates the fresh cluster with `initdb --username=axiom_fixture_admin` under the separately allocated fixture-server principal. Initial HBA admits root/admin to `postgres` and qualification DB, runtime SCRAM only to qualification DB, then rejects everything. Root publishes the final fixed HBA without the bootstrap `postgres` rule, reloads, checks effective rules and confirms a new root/admin `postgres` connection refuses; only then may provisioning continue. Root operation, allocation, SQL, reload and process IO are all stubbed in this source unit. A timeout/unknown at any phase remains incomplete without retry.
+
+## 5. Derived maintenance and supplier/owner predicates
+
+Modify `synthetic_resource_maintenance_main.c`, `owner_config.h` and narrowly shared private predicate source. Replace reliance on `AX_OWNER_OPERATIONAL` for maintenance with actual fixed protected maintenance-image/root identity, selected nonzero principal configuration, fresh exact generation and exclusive unconsumed journal ownership. Do not make the runtime readiness predicate true merely because maintenance is allowed or returns success.
+
+Owner/supplier startup separately requires the selected System profile, actual protected installed peers/code, distinct selected server/runtime principals, current owned owner/broker epoch, exact fixed resource references and effective item-policy checks. Retain `installation_context()` around each actual reference lookup/read. No writable ready file, receipt boolean, environment flag, proposed manifest, test digest or caller-supplied fact enables this. Unknown/missing live facts must still refuse; source tests may mock their observations but cannot qualify them. Current native origin lifetime and one-use fd0 bootstrap semantics remain unchanged.
+
+## 6. Future local compile/check commands and closure review
+
+After explicit source/compilation approval only, prepare commands in an owned new output directory (operational outputs mode0600, never executed):
+- `clang -std=c11 -Wall -Wextra -Werror -c synthetic_fixture_frame.c -o <owned>/frame.o` for the pure unit.
+- Use `scripts/governance_local_issuer/system_preparation.py`'s existing role source/recipe generation (`ROLE_SOURCE_PATHS`, fixed `clang -std=c11 -fblocks -mmacosx-version-min=13.0`, Foundation/Security links) with the reviewed new producer/frame source closure. Inspect its actual CLI before invocation; do not guess a command or enable an operational macro. No background service or target execution is part of linking.
+- Emit/typecheck the fixed TS producer with the existing pinned local compiler/emitter, no dependency installation/network. Scope pure/mocked Vitest/native tests to new files and changed predicate regressions, RED before source changes then one final joined run.
+
+Finite completion is reviewed actual source/closure plus pure/stubbed tests and allowed compilation. It is not a launched producer, real datasource, item-policy acceptance, native current instance, same-consumer qualification, enrollment or full A2/A9. Changed code requires a fresh later bound generation/artifact packet before any installation; do not modify/re-sign current sealed artifacts in anticipation.

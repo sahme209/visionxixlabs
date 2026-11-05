@@ -1,0 +1,16 @@
+✔ actual initializer constructs fixed graph, wipes staging and exposes idempotent cleanup only (28.384042ms)
+✔ graph failure disconnects actual owned client port and wipes mutable staging (6.931667ms)
+✔ rejects unknown fields, accessor records, wrong bounds before factory construction (9.936459ms)
+✔ unavailable actual canonical reader refuses before resource construction (3.4415ms)
+✔ owned dispatch checks canonical currentness and closed lifetime refuses reuse (3.470459ms)
+✔ close disables admission before pending work and disconnects once (2.956708ms)
+✔ overlapping owned dispatch refuses instead of queuing (4.108584ms)
+✔ adapter abort does not release native context while actual handler is unsettled (4.677167ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 191.768625

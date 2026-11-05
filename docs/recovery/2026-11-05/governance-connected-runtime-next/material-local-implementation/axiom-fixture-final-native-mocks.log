@@ -1,0 +1,4 @@
+synthetic_fixture_frame_test: PASS (pure/fake OS only)
+synthetic_fixture_readiness_mock_test: PASS (pure/fake OS only)
+synthetic_fixture_producer_mock_test: PASS (pure/fake OS only)
+source integration: PASS

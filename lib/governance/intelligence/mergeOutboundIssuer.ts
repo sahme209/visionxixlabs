@@ -1,10 +1,9 @@
 import 'server-only';
 import {readLocalIssuerArtifactIdentity} from './issuerArtifactIdentity';
-/** Internal canonical issuer seam. There is currently NO verified variant.
- * Kept typed as a digest for the approved adapter's composition, but always
- * refuses. No copied descriptor, source hash or future status shape is accepted.
- * A real return path requires separately qualified same-artifact launch code. */
+/** Every use reads the real canonical instance and its fresh native assertions.
+ * A current artifact is not an approval, fleet qualification or action grant. */
 export function readMergeOutboundIssuerDigest():string {
- readLocalIssuerArtifactIdentity();
- throw Error('governance_merge_outbound_issuer_unavailable');
+ const identity=readLocalIssuerArtifactIdentity();
+ if(identity.status!=='current'||typeof identity.issuerArtifactDigest!=='string'||!/^[a-f0-9]{64}$/.test(identity.issuerArtifactDigest))throw Error('governance_merge_outbound_issuer_unavailable');
+ return identity.issuerArtifactDigest;
 }

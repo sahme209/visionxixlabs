@@ -1,6 +1,8 @@
 /* COMPILE/LINK ONLY. Uninstalled, unlinked maintenance adapter. Never run during
  * preparation. No operational qualification or runtime activation is provided. */
 #include "synthetic_resource_provisioner.h"
+#include "synthetic_fixture_producer.h"
+#include "synthetic_fixture_readiness.h"
 #include "cssm_policy_inspect.h"
 #import <Foundation/Foundation.h>
 #include <sys/stat.h>
@@ -59,17 +61,18 @@ static int valid_material(const AxSyntheticInstallerMaterial*m){
  for(size_t i=0;i<m->length[0];i++)if(m->bytes[0][i]<=0x20||m->bytes[0][i]==0x7f)return 0;return 1;
 }
 AxSyntheticProvisionResult ax_synthetic_native_provision(void){
- static const unsigned char datasource[]="postgresql://axiom-synthetic.invalid/qualification";
- static const unsigned char vault[32]={0x53},session[32]={0x71};
- const AxSyntheticInstallerMaterial fixed={{datasource,vault,session},{sizeof datasource-1,32,32}};
+ AxiomPrivateMaterial owned;memset(&owned,0,sizeof owned);
+ AxSyntheticInstallerMaterial fixed={{owned.datasource,owned.vault,owned.session},{0,32,32}};
  const AxSyntheticInstallerMaterial*m=&fixed;
  AxSyntheticProvisionResult refused={10,AX_SYNTH_UNSUPPORTED,0,0};
  /* Trusted operator only; no runtime caller can acquire this maintenance module. */
  static atomic_flag entered=ATOMIC_FLAG_INIT;if(atomic_flag_test_and_set(&entered))return refused;
- if(geteuid()!=0||!valid_material(m))return refused;
+ if(!ax_fixture_maintenance_current()||!ax_fixture_prepare_once(&owned))return refused;
+ fixed.length[0]=owned.datasource_length;fixed.length[2]=owned.session_length;
+ if(!valid_material(m)){volatile unsigned char*p=(volatile unsigned char*)&owned;for(size_t i=0;i<sizeof owned;i++)p[i]=0;return refused;}
  Native n={.dir=-1,.journal=-1,.material=m};
  @autoreleasepool{
- n.dir=protected_directory();if(n.dir<0)return refused;
+ n.dir=protected_directory();if(n.dir<0)goto finish;
  if(SecKeychainSetUserInteractionAllowed(false)!=errSecSuccess||!ax_cssm_prepare_once()||!(n.access=ax_cssm_prepared_access()))goto finish;
  CSSM_ACL_OWNER_PROTOTYPE*owner=NULL;CSSM_ACL_ENTRY_INFO*entries=NULL;uint32 count=0;
  if(SecAccessGetOwnerAndACL(n.access,&owner,&count,&entries)!=errSecSuccess||!ax_cssm_prepared_policy()||!ax_cssm_inspect_framework(ax_cssm_prepared_policy(),owner,count,entries))goto finish;
@@ -78,5 +81,5 @@ AxSyntheticProvisionResult ax_synthetic_native_provision(void){
  if(n.journal<0||fchown(n.journal,0,0)||fchmod(n.journal,0600)||!safe_stat(n.journal,0,0600)||!sync_fd(n.journal)||!sync_fd(n.dir))goto finish;
  AxSyntheticProvisionOps ops={&n,journal_write,add,publish};refused=ax_synthetic_provision_once(&native_once,&ops);
  finish:if(n.journal>=0)close(n.journal);if(n.dir>=0)close(n.dir);if(n.keychain)CFRelease(n.keychain);
- }return refused;
+ }volatile unsigned char*w=(volatile unsigned char*)&owned;for(size_t i=0;i<sizeof owned;i++)w[i]=0;return refused;
 }

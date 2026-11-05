@@ -2,6 +2,7 @@
  * No generated executable is run by the source qualification tests. */
 #define _DARWIN_C_SOURCE 1
 #include "owner_config.h"
+#include "synthetic_fixture_readiness.h"
 #include "owner_launch.h"
 #include "owner_journal_native.h"
 #include "owner_protocol.h"
@@ -56,7 +57,7 @@ static int protected_file(const char*path,int directory){
 }
 static int fixed_environment(void*context){
  (void)context;
- if(!AX_OWNER_OPERATIONAL||getuid()!=0||geteuid()!=0||!AX_OWNER_FIXED_UID||!AX_OWNER_FIXED_GID||AX_OWNER_PROFILE!=AX_OWNER_PROFILE_SYSTEM||!AX_OWNER_MAX_LIFETIME_NS||!SecCodeCreateWithXPCMessage)return 0;
+ if(!ax_fixture_selected_principals()||getuid()!=0||geteuid()!=0||!AX_OWNER_FIXED_UID||!AX_OWNER_FIXED_GID||AX_OWNER_PROFILE!=AX_OWNER_PROFILE_SYSTEM||!AX_OWNER_MAX_LIFETIME_NS||!SecCodeCreateWithXPCMessage)return 0;
  char running[PATH_MAX],canonical[PATH_MAX];uint32_t n=sizeof(running);struct stat own;
  if(_NSGetExecutablePath(running,&n)||!realpath(running,canonical)||strcmp(canonical,AX_OWNER_PATH)||!protected_file(AX_OWNER_PATH,0)||!protected_file(AX_SYNTH_BROKER,0)||!protected_file(AX_SYNTH_ROOT,1)||stat(AX_OWNER_PATH,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&fixed_environment,&own))return 0;
  /* No inherited capabilities beyond standard descriptors. Fail instead of
@@ -181,7 +182,7 @@ static int configure_listener(void*p){
 }
 
 int main(int argc,char**argv){
- (void)argv;if(argc!=1||!AX_OWNER_OPERATIONAL)return 69;
+ (void)argv;if(argc!=1||!ax_fixture_selected_principals())return 69;
  AxOwnerNativeJournal native={0};AxOwnerJournalOps journal;
  if(!ax_owner_native_journal_ops(&native,&journal))return 70;
  AxOwnerLaunchOps effects={&native,fixed_environment,spawn_fixed,child_alive,kill_and_reap};

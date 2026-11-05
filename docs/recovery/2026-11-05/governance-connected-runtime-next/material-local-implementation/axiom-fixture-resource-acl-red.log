@@ -1,0 +1,1 @@
+Assertion failed: (!ax_fixture_prepare_once(&out)), function main, file synthetic_fixture_producer_mock_test.c, line 46.

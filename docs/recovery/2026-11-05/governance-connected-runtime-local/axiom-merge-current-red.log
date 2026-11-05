@@ -1,0 +1,30 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/governance/intelligence/__tests__/mergeOutboundIssuerCurrent.test.ts (4 tests | 1 failed) 2ms
+   × reads the actual reader on each call and stops after currentness loss 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/intelligence/__tests__/mergeOutboundIssuerCurrent.test.ts > reads the actual reader on each call and stops after currentness loss
+Error: governance_merge_outbound_issuer_unavailable
+ ❯ Module.readMergeOutboundIssuerDigest lib/governance/intelligence/mergeOutboundIssuer.ts:9:8
+      7| export function readMergeOutboundIssuerDigest():string {
+      8|  readLocalIssuerArtifactIdentity();
+      9|  throw Error('governance_merge_outbound_issuer_unavailable');
+       |        ^
+     10| }
+     11|
+ ❯ lib/governance/intelligence/__tests__/mergeOutboundIssuerCurrent.test.ts:8:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  18:02:25
+   Duration  112ms (transform 13ms, setup 0ms, import 19ms, tests 2ms, environment 0ms)
+

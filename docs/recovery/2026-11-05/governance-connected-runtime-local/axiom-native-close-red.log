@@ -1,0 +1,31 @@
+✔ simulated canonical startup establishes live identity but never claims qualification or action permission (2.473958ms)
+✖ actual source reader permanently revokes simulated origin/cache loss (1.663583ms)
+✔ one simulated native request binds fresh request checks and returns framed reply (1.249417ms)
+✔ broker-terminal simulated request refuses before child cancellation event without revoking origin (0.571125ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 3
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 74.600208
+
+✖ failing tests:
+
+test at packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs:35:1
+✖ actual source reader permanently revokes simulated origin/cache loss (1.663583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs:36:333)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

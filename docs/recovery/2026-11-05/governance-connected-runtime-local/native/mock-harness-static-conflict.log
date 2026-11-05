@@ -1,0 +1,22 @@
+...F
+======================================================================
+FAIL: test_actual_session_terminal_completion_can_drain_after_deadline (test_request_bridge_bodies.Bodies)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_request_bridge_bodies.py", line 67, in test_actual_session_terminal_completion_can_drain_after_deadline
+    run(pre+code+post)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_request_bridge_bodies.py", line 12, in run
+    if compiled.returncode:raise AssertionError(compiled.stderr)
+AssertionError: /var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-request-mock-40r_84wb/test.c:8:13: error: static declaration of 'arc4random_buf' follows non-static declaration
+    8 | static void arc4random_buf(void*b,size_t n){memset(b,4,n);}
+      |             ^
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/_stdlib.h:293:7: note: previous declaration is here
+  293 | void     arc4random_buf(void *_LIBC_SIZE(__nbytes) __buf, size_t __nbytes) __OSX_AVAILABLE_STARTING(__MAC_10_7, __IPHONE_4_3);
+      |          ^
+1 error generated.
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.309s
+
+FAILED (failures=1)

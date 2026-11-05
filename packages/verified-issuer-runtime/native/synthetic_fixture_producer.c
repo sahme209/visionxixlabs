@@ -1,0 +1,50 @@
+#define _DARWIN_C_SOURCE 1
+#include "synthetic_fixture_producer.h"
+#include "synthetic_fixture_frame.h"
+#include "synthetic_fixture_readiness.h"
+#include "owner_config.h"
+#include <CommonCrypto/CommonDigest.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <sys/resource.h>
+#include <fcntl.h>
+#include <poll.h>
+#include <signal.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <time.h>
+#ifndef AX_FIXTURE_NODE_SHA256
+#define AX_FIXTURE_NODE_SHA256 ""
+#endif
+#ifndef AX_FIXTURE_PRODUCER_SHA256
+#define AX_FIXTURE_PRODUCER_SHA256 ""
+#endif
+#define FIXTURE_NODE AX_SYNTH_ROOT "/fixture-tools/node"
+#define PRODUCER AX_SYNTH_APP "/Contents/Resources/qualification/fixture-producer.cjs"
+#define HBA AX_SYNTH_ROOT "/fixture/pg_hba.conf"
+static atomic_flag once=ATOMIC_FLAG_INIT;
+static uint64_t now_ms(void){struct timespec t;if(clock_gettime(CLOCK_MONOTONIC,&t))return UINT64_MAX;return(uint64_t)t.tv_sec*1000+(uint64_t)t.tv_nsec/1000000;}
+static int recipe_files_current(void){const char*files[]={AX_SYNTH_APP "/Contents/Resources/qualification/fixture-schema.binding.json",AX_SYNTH_APP "/Contents/Resources/qualification/fixture-schema.sql",AX_SYNTH_APP "/Contents/Resources/qualification/fixture-seed.sql"};for(unsigned i=0;i<sizeof files/sizeof files[0];i++)if(!ax_fixture_protected_file(files[i],0))return 0;return 1;}
+static int file_hash(const char*path,const char*expected){if(strlen(expected)!=64||!ax_fixture_protected_file(path,0))return 0;int fd=open(path,O_RDONLY|O_NOFOLLOW|O_CLOEXEC);if(fd<0)return 0;struct stat before,after;CC_SHA256_CTX hash;unsigned char data[8192],digest[32]={0};char hex[65]={0};int ok=!fstat(fd,&before)&&CC_SHA256_Init(&hash);while(ok){ssize_t n=read(fd,data,sizeof data);if(n<0&&errno==EINTR)continue;if(n<0){ok=0;break;}if(!n)break;if(!CC_SHA256_Update(&hash,data,(CC_LONG)n)){ok=0;break;}}ok=ok&&!fstat(fd,&after)&&before.st_dev==after.st_dev&&before.st_ino==after.st_ino&&before.st_size==after.st_size&&before.st_mtimespec.tv_sec==after.st_mtimespec.tv_sec&&before.st_mtimespec.tv_nsec==after.st_mtimespec.tv_nsec&&CC_SHA256_Final(digest,&hash);if(close(fd))ok=0;for(unsigned i=0;i<32;i++)snprintf(hex+2*i,3,"%02x",digest[i]);return ok&&!strcmp(hex,expected);}
+static int io_all(int fd,unsigned char*data,size_t n,int writing,uint64_t deadline){while(n){uint64_t at=now_ms();if(at==UINT64_MAX||at>=deadline)return 0;struct pollfd p={fd,writing?POLLOUT:POLLIN,0};int ready=poll(&p,1,(int)(deadline-at));if(ready<0&&errno==EINTR)continue;if(ready<=0||p.revents&(POLLERR|POLLNVAL))return 0;ssize_t got=writing?write(fd,data,n):read(fd,data,n);if(got<0&&errno==EINTR)continue;if(got<=0)return 0;data+=got;n-=(size_t)got;}return 1;}
+static int final_hba(void){static const char text[]="local axiom_issuer_qualification axiom_fixture_admin peer map=axiom_fixture_root\nlocal axiom_issuer_qualification axiom_fixture_runtime scram-sha-256\nlocal all all reject\nhost all all 0.0.0.0/0 reject\nhost all all ::0/0 reject\n";if(!ax_fixture_protected_file(HBA,0))return 0;int fd=open(HBA ".final-staging",O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC,0600);if(fd<0)return 0;size_t used=0;int ok=1;while(used<sizeof text-1){ssize_t n=write(fd,text+used,sizeof text-1-used);if(n<0&&errno==EINTR)continue;if(n<=0){ok=0;break;}used+=(size_t)n;}if(fchmod(fd,0644)||fcntl(fd,F_FULLFSYNC,0)||close(fd))ok=0;if(!ok||rename(HBA ".final-staging",HBA))return 0;int parent=open(AX_SYNTH_ROOT "/fixture",O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);if(parent<0)return 0;ok=fcntl(parent,F_FULLFSYNC,0)==0;if(close(parent))ok=0;return ok&&ax_fixture_protected_file(HBA,0);}
+static int phase(int fd,unsigned value,uint64_t deadline){unsigned char actual[8],expected[8]={'A','X','F','S',0,0,0,(unsigned char)value};return io_all(fd,actual,sizeof actual,0,deadline)&&!memcmp(actual,expected,sizeof actual);}
+static int record_phase(unsigned phase_value){if(!ax_fixture_protected_file(AX_SYNTH_ROOT "/fixture-producer.v1",0))return 0;int fd=open(AX_SYNTH_ROOT "/fixture-producer.v1",O_WRONLY|O_APPEND|O_NOFOLLOW|O_CLOEXEC);if(fd<0)return 0;unsigned char record[8]={'A','X','F','J',0,0,0,(unsigned char)phase_value};int ok=write(fd,record,sizeof record)==sizeof record&&fcntl(fd,F_FULLFSYNC,0)==0;if(close(fd))ok=0;return ok;}
+static int exact_eof(int fd,uint64_t deadline){uint64_t at=now_ms();if(at>=deadline)return 0;struct pollfd p={fd,POLLIN,0};int ready=poll(&p,1,(int)(deadline-at));if(ready<=0)return 0;unsigned char extra;return read(fd,&extra,1)==0;}
+int ax_fixture_prepare_once(AxiomPrivateMaterial*out){if(!out)return 0;memset(out,0,sizeof *out);if(atomic_flag_test_and_set(&once)||!ax_fixture_maintenance_current()||!file_hash(FIXTURE_NODE,AX_FIXTURE_NODE_SHA256)||!file_hash(PRODUCER,AX_FIXTURE_PRODUCER_SHA256)||!recipe_files_current())return 0;struct sigaction child_signal;if(sigaction(SIGCHLD,NULL,&child_signal)||child_signal.sa_handler!=SIG_DFL||(child_signal.sa_flags&SA_NOCLDWAIT))return 0;AxSyntheticFixtureFrame material={0};unsigned char frame[AX_FIXTURE_FRAME_SIZE];int to_child[2]={-1,-1},from_child[2]={-1,-1};pid_t child=-1;int ok=0,journal_owned=0;uint64_t deadline=now_ms();if(deadline==UINT64_MAX||deadline>UINT64_MAX-60000)return 0;deadline+=60000;
+ int journal=open(AX_SYNTH_ROOT "/fixture-producer.v1",O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC,0600);if(journal<0)goto finish;journal_owned=1;unsigned char intent[8]={'A','X','F','J',0,0,0,1};int durable=write(journal,intent,sizeof intent)==sizeof intent&&fcntl(journal,F_FULLFSYNC,0)==0;if(close(journal))durable=0;int directory=open(AX_SYNTH_ROOT,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);if(directory<0)durable=0;else{if(fcntl(directory,F_FULLFSYNC,0))durable=0;close(directory);}if(!durable)goto finish;struct sigaction ignored;memset(&ignored,0,sizeof ignored);ignored.sa_handler=SIG_IGN;sigemptyset(&ignored.sa_mask);if(sigaction(SIGPIPE,&ignored,NULL))goto finish;
+ arc4random_buf(material.password,32);arc4random_buf(material.vault,32);arc4random_buf(material.session,32);if(!ax_fixture_frame_encode(&material,frame,sizeof frame)||pipe(to_child)||pipe(from_child))goto finish;
+ child=fork();if(child<0)goto finish;if(child==0){if(dup2(to_child[0],0)<0||dup2(from_child[1],1)<0)_exit(120);int null=open("/dev/null",O_WRONLY|O_CLOEXEC);if(null<0||dup2(null,2)<0)_exit(121);struct rlimit limits;if(getrlimit(RLIMIT_NOFILE,&limits)||limits.rlim_cur>65536)_exit(122);for(int fd=3;fd<(int)limits.rlim_cur;fd++)close(fd);char*const argv[]={FIXTURE_NODE,PRODUCER,NULL};char*const env[]={"NODE_ENV=production","LANG=C","TZ=UTC",NULL};if(chdir(AX_SYNTH_ROOT))_exit(123);execve(FIXTURE_NODE,argv,env);_exit(124);}
+ close(to_child[0]);to_child[0]=-1;close(from_child[1]);from_child[1]=-1;
+ if(!io_all(to_child[1],frame,sizeof frame,1,deadline))goto finish;
+ {const unsigned steps[]={9,10,11,12,13,14,1};for(unsigned i=0;i<sizeof steps/sizeof steps[0];i++)if(!phase(from_child[0],steps[i],deadline)||!record_phase(steps[i]))goto finish;}
+ if(!ax_fixture_maintenance_current()||!final_hba()||!record_phase(20))goto finish;
+ {unsigned char ack[8]={'A','X','F','A',0,0,0,1};if(!io_all(to_child[1],ack,sizeof ack,1,deadline)||!phase(from_child[0],2,deadline))goto finish;}
+ {int status=0;for(;;){pid_t result=waitpid(child,&status,WNOHANG);if(result==child){child=-1;ok=WIFEXITED(status)&&WEXITSTATUS(status)==0;break;}if(result<0&&errno!=EINTR){child=-1;break;}if(now_ms()>=deadline)break;struct timespec pause={0,1000000};nanosleep(&pause,NULL);}}
+ if(ok&&!exact_eof(from_child[0],deadline))ok=0;
+ if(ok&&file_hash(FIXTURE_NODE,AX_FIXTURE_NODE_SHA256)&&file_hash(PRODUCER,AX_FIXTURE_PRODUCER_SHA256)&&recipe_files_current()&&ax_fixture_maintenance_current()){char password[65],socket[4096];for(unsigned i=0;i<32;i++)snprintf(password+2*i,3,"%02x",material.password[i]);const unsigned char*raw=(const unsigned char*)AX_SYNTH_ROOT "/fixture/socket";size_t used=0;for(;*raw;raw++){if(used+4>=sizeof socket){ok=0;break;}if((*raw>='a'&&*raw<='z')||(*raw>='A'&&*raw<='Z')||(*raw>='0'&&*raw<='9')||strchr("-_.~",*raw))socket[used++]=(char)*raw;else{snprintf(socket+used,4,"%%%02X",*raw);used+=3;}}socket[used]=0;if(ok){int n=snprintf((char*)out->datasource,sizeof out->datasource,"postgresql://axiom_fixture_runtime:%s@localhost/axiom_issuer_qualification?host=%s",password,socket);ok=n>0&&(size_t)n<sizeof out->datasource;if(ok){out->datasource_length=(size_t)n;memcpy(out->vault,material.vault,32);memcpy(out->session,material.session,32);out->session_length=32;}}volatile char*p=password;for(unsigned i=0;i<sizeof password;i++)p[i]=0;}else ok=0;
+ finish:if(journal_owned&&!record_phase(ok?30:255))ok=0;if(child>0){int status=0;pid_t observed=waitpid(child,&status,WNOHANG);if(observed==0){kill(child,SIGKILL);uint64_t stop=now_ms()+2000;for(;;){pid_t reaped=waitpid(child,&status,WNOHANG);if(reaped==child){child=-1;break;}if(reaped<0&&errno!=EINTR){child=-1;break;}if(now_ms()>=stop)break;struct timespec pause={0,1000000};nanosleep(&pause,NULL);}}else child=-1;}for(unsigned i=0;i<2;i++){if(to_child[i]>=0)close(to_child[i]);if(from_child[i]>=0)close(from_child[i]);}ax_fixture_frame_wipe(&material);volatile unsigned char*p=frame;for(unsigned i=0;i<sizeof frame;i++)p[i]=0;if(!ok)memset(out,0,sizeof *out);return ok;
+}

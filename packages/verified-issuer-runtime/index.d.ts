@@ -10,5 +10,16 @@ export interface IssuerIdentityUnavailable {
   readonly legacyQualification: 'unavailable';
   readonly executionAuthorized: false;
 }
-/** Read only. No initializer, digest argument, authority or verified variant. */
-export function readIssuerIdentity(): Readonly<IssuerIdentityUnavailable>;
+/** Live artifact identity only; no runtime qualification or action grant. */
+export interface IssuerIdentityCurrent {
+  readonly status: 'current';
+  readonly issuerArtifactDigest: string;
+  readonly executingIssuerIdentity: 'current';
+  readonly runtimeQualification: 'unavailable';
+  readonly fleetQualification: 'unavailable';
+  readonly legacyQualification: 'unavailable';
+  readonly executionAuthorized: false;
+}
+export type IssuerIdentity = IssuerIdentityUnavailable | IssuerIdentityCurrent;
+/** Read only. Only the protected canonical main can initialize lexical state. */
+export function readIssuerIdentity(): Readonly<IssuerIdentity>;

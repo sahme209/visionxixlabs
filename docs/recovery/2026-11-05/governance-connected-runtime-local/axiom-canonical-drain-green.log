@@ -1,0 +1,14 @@
+✔ simulated canonical startup establishes live identity but never claims qualification or action permission (2.441375ms)
+✔ actual source reader permanently revokes simulated origin/cache loss (1.400917ms)
+✔ one simulated native request binds fresh request checks and returns framed reply (0.963583ms)
+✔ broker-terminal simulated request refuses before child cancellation event without revoking origin (0.657834ms)
+✔ late cancellation of a drained request does not close the healthy epoch (1.199958ms)
+✔ cancelled work drains its exact native slot before a distinct new request (1.707584ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 67.985917

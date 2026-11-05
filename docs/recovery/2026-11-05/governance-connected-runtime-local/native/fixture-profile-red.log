@@ -1,0 +1,17 @@
+E..
+======================================================================
+ERROR: test_explicit_desktop_requirement_is_bound_but_absence_stays_closed (test_system_ingress_preparation.IngressInputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/tests/test_system_ingress_preparation.py", line 10, in test_explicit_desktop_requirement_is_bound_but_absence_stays_closed
+    c['fixturePrincipal']={'uid':502,'gid':20};c['fixtureTools']={'nodeSha256':'c'*64,'producerSha256':'d'*64};p._config(c,'independent-leaves');header=p._header(c,'independent-leaves');self.assertIn(b'AX_FIXTURE_FIXED_UID 502',header);self.assertIn(b'AX_FIXTURE_NODE_SHA256',header);self.assertIn(b'AX_FIXTURE_PRODUCER_SHA256',header)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 62, in _config
+    if not isinstance(c,dict) or set(c)not in (keys,keys|{'desktopRequirement'}) or c['format']!='axiom.system-preparation-config/1' or c['generation']!=GENERATION:_refuse('exact_system_config_required')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 31, in _refuse
+    def _refuse(reason):raise SystemPreparationUnavailable(reason)
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: exact_system_config_required
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (errors=1)

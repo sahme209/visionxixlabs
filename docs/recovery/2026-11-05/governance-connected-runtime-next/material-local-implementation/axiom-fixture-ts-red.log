@@ -1,0 +1,27 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/governance/qualification/__tests__/privateSyntheticFixtureProducer.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/qualification/__tests__/privateSyntheticFixtureProducer.test.ts [ lib/governance/qualification/__tests__/privateSyntheticFixtureProducer.test.ts ]
+Error: Cannot find module '../privateSyntheticFixtureProducer' imported from /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/lib/governance/qualification/__tests__/privateSyntheticFixtureProducer.test.ts
+ ❯ lib/governance/qualification/__tests__/privateSyntheticFixtureProducer.test.ts:2:1
+      1| import {describe,it,expect,vi} from 'vitest';
+      2| import {decodeSyntheticFixtureFrame,createSyntheticFixtureProducerCore…
+       | ^
+      3| const frame=()=>{const b=Buffer.alloc(136,1);Buffer.from([65,88,70,73,…
+      4| describe('fixed synthetic producer',()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  17:57:40
+   Duration  119ms (transform 12ms, setup 0ms, import 0ms, tests 0ms, environment 0ms)
+

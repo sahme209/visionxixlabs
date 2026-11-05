@@ -1,0 +1,17 @@
+...E
+======================================================================
+ERROR: test_actual_session_terminal_completion_can_drain_after_deadline (test_request_bridge_bodies.Bodies)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_request_bridge_bodies.py", line 67, in test_actual_session_terminal_completion_can_drain_after_deadline
+    run(pre+code+post)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/test_request_bridge_bodies.py", line 11, in run
+    subprocess.run(['/usr/bin/clang','-std=c11','-Wall','-Wextra','-Werror','-Wno-unused-function','-Wno-unused-variable','-fblocks','-I'+str(ROOT/'tests'),str(p/'test.c'),str(ROOT/'request_protocol.c'),'-o',str(p/'test')],check=True,capture_output=True)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", line 528, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['/usr/bin/clang', '-std=c11', '-Wall', '-Wextra', '-Werror', '-Wno-unused-function', '-Wno-unused-variable', '-fblocks', '-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests', '/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-request-mock-qp5g3r_d/test.c', '/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/request_protocol.c', '-o', '/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-request-mock-qp5g3r_d/test']' returned non-zero exit status 1.
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.295s
+
+FAILED (errors=1)

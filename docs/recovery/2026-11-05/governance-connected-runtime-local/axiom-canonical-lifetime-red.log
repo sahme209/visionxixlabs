@@ -1,0 +1,31 @@
+/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs:24
+  if(name.endsWith('/release-merge-bootstrap.cjs'))return {initializePrivateReleaseMergeBootstrap:async()=>({close:async()=>{state.closed++},dispatch:async(bytes,signal)=>{state.dispatches.push({bytes,signal});return new Promise(resolve=>{state.finish=()=>resolve({status:200,body:new Uint8Array([123,125])})})}};
+                                                                                                                                                                                                                                                                                                                        ^
+
+SyntaxError: Unexpected token ';'
+    at wrapSafe (node:internal/modules/cjs/loader:1691:18)
+    at Module._compile (node:internal/modules/cjs/loader:1734:20)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1892:10)
+    at Module.load (node:internal/modules/cjs/loader:1480:32)
+    at Module._load (node:internal/modules/cjs/loader:1299:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:154:5)
+    at node:internal/main/run_main_module:33:47
+
+Node.js v25.2.1
+✖ packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs (49.669375ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 54.595042
+
+✖ failing tests:
+
+test at packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs:1:1
+✖ packages/verified-issuer-runtime/test/canonical-lifetime-vm.test.cjs (49.669375ms)
+  'test failed'

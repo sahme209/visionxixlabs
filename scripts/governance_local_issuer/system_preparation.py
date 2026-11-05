@@ -10,16 +10,17 @@ ROOT='/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/gen
 APP=ROOT+'/Axiom Synthetic Custodian.app'
 OWNER_PATH=APP+'/Contents/Helpers/AxiomSyntheticLaunchOwner'
 OWNER_SERVICE='com.visionxixlabs.axiom.synthetic.launch-owner.'+GENERATION
+REQUEST_SERVICE='com.visionxixlabs.axiom.issuer-request'
 BROKER_SERVICE='com.visionxixlabs.axiom.synthetic.bootstrap.'+GENERATION
 PACKAGE_ROOT='/Volumes/Axiom Synthetic Issuer-'+GENERATION
 NATIVE='packages/verified-issuer-runtime/native/'
 ROLE_SOURCES={
- 'owner':('origin_launch_owner.c','owner_launch.c','owner_resume.c','owner_privilege_drop.c','owner_journal.c','owner_journal_native.c','owner_protocol.c','system_peer_binding.c','origin_process_identity.c','protected_resource_inventory.c'),
- 'broker':('origin_broker.c','origin_owner_binding.c','system_peer_binding.c','owner_protocol.c','origin_runtime_protocol.c','origin_root_binding.m','origin_process_identity.c','protected_resource_inventory.c','origin_private_resource_supplier.m','origin_private_bootstrap.c','origin_private_bootstrap_writer.c','synthetic_resource_contract.c','cssm_policy_builder.c','cssm_policy_copy.c','cssm_policy_inspect.c'),
+ 'owner':('origin_launch_owner.c','synthetic_fixture_readiness.c','owner_launch.c','owner_resume.c','owner_privilege_drop.c','owner_journal.c','owner_journal_native.c','owner_protocol.c','system_peer_binding.c','origin_process_identity.c','protected_resource_inventory.c'),
+ 'broker':('origin_broker.c','synthetic_fixture_readiness.c','synthetic_fixture_supplier_context.c','request_protocol.c','origin_owner_binding.c','system_peer_binding.c','owner_protocol.c','origin_runtime_protocol.c','origin_root_binding.m','origin_process_identity.c','protected_resource_inventory.c','origin_private_resource_supplier.m','origin_private_bootstrap.c','origin_private_bootstrap_writer.c','synthetic_resource_contract.c','cssm_policy_builder.c','cssm_policy_copy.c','cssm_policy_inspect.c'),
  'controller':('scripts/governance_local_issuer/origin_control.m',),
- 'maintenance':('synthetic_resource_maintenance_main.c','synthetic_resource_provisioner.m','synthetic_resource_contract.c','cssm_policy_builder.c','cssm_policy_copy.c','cssm_policy_inspect.c','origin_process_identity.c','protected_resource_inventory.c'),
+ 'maintenance':('synthetic_resource_maintenance_main.c','synthetic_fixture_readiness.c','synthetic_fixture_frame.c','synthetic_fixture_producer.c','synthetic_resource_provisioner.m','synthetic_resource_contract.c','cssm_policy_builder.c','cssm_policy_copy.c','cssm_policy_inspect.c','origin_process_identity.c','protected_resource_inventory.c'),
  'bootstrap':('origin_bootstrap.c',),
- 'guard':('origin_guard.c','origin_session.c','origin_process_identity.c','protected_resource_inventory.c'),
+ 'guard':('origin_guard.c','request_protocol.c','origin_session.c','origin_process_identity.c','protected_resource_inventory.c'),
 }
 ROLE_SOURCE_PATHS=tuple(sorted({x if role=='controller' else NATIVE+x for role,files in ROLE_SOURCES.items() for x in files}))
 PACKAGE_SOURCE_PATHS=tuple('packages/verified-issuer-runtime/'+x for x in ('package.json','index.cjs','index.d.ts','README.md','internal/verify-package.cjs'))
@@ -58,9 +59,14 @@ def _snapshot(path,limit=MAX_FILE):
 def _config(c,phase):
  if phase not in ('complete','native-leaves','controller-first','independent-leaves','broker-leaf'):_refuse('unsupported_preparation_phase')
  keys={'format','generation','principal','lifetimeNs','nativeProfile','systemProfile','team','node','requirements'}
- if not isinstance(c,dict) or set(c)!=keys or c['format']!='axiom.system-preparation-config/1' or c['generation']!=GENERATION:_refuse('exact_system_config_required')
+ if not isinstance(c,dict) or not keys<=set(c) or not set(c)<=keys|{'desktopRequirement','fixturePrincipal','fixtureTools'} or c['format']!='axiom.system-preparation-config/1' or c['generation']!=GENERATION:_refuse('exact_system_config_required')
  p=c['principal']
  if not isinstance(p,dict) or set(p)!={'account','uid','gid'} or p['account']!='_axiomissuer_synthetic' or any(type(p[k]) is not int or not 1<=p[k]<=2147483647 for k in ('uid','gid')):_refuse('reviewed_nonroot_principal_required')
+ if ('fixturePrincipal'in c)!=('fixtureTools'in c):_refuse('paired_fixture_binding_required')
+ if 'fixturePrincipal'in c:
+  f=c['fixturePrincipal'];t=c['fixtureTools']
+  if not isinstance(f,dict)or set(f)!={'uid','gid'}or any(type(f[k])is not int or not 1<=f[k]<=2147483647 for k in ('uid','gid'))or f['uid']==p['uid']:_refuse('distinct_explicit_fixture_principal_required')
+  if not isinstance(t,dict)or set(t)!={'nodeSha256','producerSha256'}or any(not isinstance(v,str)or not re.fullmatch('[a-f0-9]{64}',v)for v in t.values()):_refuse('exact_fixture_tool_pins_required')
  if type(c['lifetimeNs']) is not int or not 0<c['lifetimeNs']<2**63:_refuse('exact_lifetime_required')
  if c['nativeProfile']!='hardened-runtime-no-exceptions/1' or c['systemProfile']!='trusted-owner-root-journal/1' or c['team']!='FG5N98FE6W':_refuse('unsupported_system_profile')
  n=c['node'];q=c['requirements']
@@ -68,6 +74,7 @@ def _config(c,phase):
  required={'node','controller','brokerForGuard'} if phase=='complete' else ({'node','controller'} if phase in ('native-leaves','broker-leaf') else set())
  if phase in ('controller-first','independent-leaves')and q!={}:_refuse('independent_phase_has_no_code_requirements')
  if not isinstance(q,dict) or not required<=set(q) or not set(q)<={'node','controller','brokerForGuard'} or any(not isinstance(v,str) or not re.fullmatch('cdhash H"[a-f0-9]{40}"',v) for v in q.values()):_refuse('exact_leaf_requirements_required')
+ if 'desktopRequirement'in c and (not isinstance(c['desktopRequirement'],str)or not re.fullmatch('cdhash H"[a-f0-9]{40}"',c['desktopRequirement'])):_refuse('exact_desktop_requirement_required')
  return c
 def _inputs(repo,config):
  source={};pending=list(ROLE_SOURCE_PATHS)+list(PACKAGE_SOURCE_PATHS)
@@ -112,8 +119,11 @@ def _header(c,phase):
  if phase in ('complete','native-leaves','broker-leaf'):
   values['AXIOM_ISSUER_NODE_REQUIREMENT']=c['requirements']['node']
   values['AXIOM_ISSUER_CONTROLLER_REQUIREMENT']=c['requirements']['controller']
+ if 'fixturePrincipal'in c:
+  values['AX_FIXTURE_FIXED_UID']=c['fixturePrincipal']['uid'];values['AX_FIXTURE_FIXED_GID']=c['fixturePrincipal']['gid'];values['AX_FIXTURE_NODE_SHA256']=c['fixtureTools']['nodeSha256'];values['AX_FIXTURE_PRODUCER_SHA256']=c['fixtureTools']['producerSha256']
+ if 'desktopRequirement'in c:values['AXIOM_ISSUER_DESKTOP_REQUIREMENT']=c['desktopRequirement']
  if phase=='complete':values['AXIOM_ISSUER_BROKER_REQUIREMENT']=c['requirements']['brokerForGuard']
- lines=['/* Preparation data only. Existing owner/supplier operational gates stay OFF. */']
+ lines=['/* Preparation data only. Derived readiness still requires actual selected protected resources; no execution authority. */']
  for key,v in values.items():
   literal=str(v)if isinstance(v,int)or key.endswith('_NS')else json.dumps(v)
   lines.append('#define '+key+' '+literal)
@@ -135,6 +145,8 @@ def _recipes(stage,phase):
   if role=='guard':flags+=['-I'+str(stage/'headers'),'-bundle','-undefined','dynamic_lookup']
   result.append({'role':role,'operation':'compile_only','argv':[*common,*map(str,src),*flags,'-o',str(outputs[role])],'output':str(outputs[role]),'requiredOutputMode':0o600,'execute':False})
  return result
+def _launch_daemon():
+ return {'Label':OWNER_SERVICE,'ProgramArguments':[OWNER_PATH],'MachServices':{OWNER_SERVICE:True,BROKER_SERVICE:True,REQUEST_SERVICE:True},'KeepAlive':False,'RunAtLoad':False,'UserName':'root','GroupName':'wheel'}
 def prepare_system(repo,stage,config,*,phase='complete'):
  c=json.loads(json.dumps(_config(config,phase),sort_keys=True));repo=_path(repo);stage=_path(stage)
  parent=stage.parent
@@ -153,7 +165,7 @@ def prepare_system(repo,stage,config,*,phase='complete'):
  app=stage/'assembly/Axiom Synthetic Custodian.app'
  for name in ('Contents/MacOS','Contents/Helpers','Contents/Resources'):_mkdir(app/name)
  _write(app/'Contents/Info.plist',plistlib.dumps({'CFBundleIdentifier':'com.visionxixlabs.axiom.synthetic.custodian','CFBundleName':'Axiom Synthetic Custodian','CFBundlePackageType':'APPL','CFBundleVersion':'0','CFBundleExecutable':'AxiomIssuerBroker'},sort_keys=True))
- daemon={'Label':OWNER_SERVICE,'ProgramArguments':[OWNER_PATH],'MachServices':{OWNER_SERVICE:True},'KeepAlive':False,'RunAtLoad':False,'UserName':'root','GroupName':'wheel'}
+ daemon=_launch_daemon()
  _write(stage/'assembly/LaunchDaemons'/f'{OWNER_SERVICE}.plist',plistlib.dumps(daemon,sort_keys=True))
  recipes=_recipes(stage,phase)
  for recipe in recipes:_mkdir(Path(recipe['output']).parent)

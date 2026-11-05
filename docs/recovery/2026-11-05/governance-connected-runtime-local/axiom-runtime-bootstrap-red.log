@@ -1,0 +1,55 @@
+✖ actual initializer constructs fixed graph, wipes staging and exposes idempotent cleanup only (26.601458ms)
+✔ graph failure disconnects actual owned client port and wipes mutable staging (5.676042ms)
+✔ rejects unknown fields, accessor records, wrong bounds before factory construction (9.984458ms)
+✖ unavailable actual canonical reader refuses before resource construction (2.658583ms)
+✖ owned dispatch checks canonical currentness and closed lifetime refuses reuse (2.097166ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 2
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 186.325042
+
+✖ failing tests:
+
+test at packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs:28:1
+✖ actual initializer constructs fixed graph, wipes staging and exposes idempotent cleanup only (26.601458ms)
+  Error: private_bootstrap_initialization_unavailable
+      at initializePrivateReleaseMergeBootstrap (evalmachine.<anonymous>:54:15)
+      at async TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs:29:85)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:358:3)
+
+test at packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs:46:1
+✖ unavailable actual canonical reader refuses before resource construction (2.658583ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + [
+  +   'database',
+  +   'vault',
+  +   'composition',
+  +   'disconnect'
+  + ]
+  - []
+  
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs:47:145)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'database', 'vault', 'composition', 'disconnect' ],
+    expected: [],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs:49:1
+✖ owned dispatch checks canonical currentness and closed lifetime refuses reuse (2.097166ms)
+  Error: private_bootstrap_initialization_unavailable
+      at initializePrivateReleaseMergeBootstrap (evalmachine.<anonymous>:54:15)
+      at async TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/test/private-bootstrap-initializer.test.cjs:50:57)
+      at async Test.run (node:internal/test_runner/test:1113:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:788:7)

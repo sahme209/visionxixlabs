@@ -10,3 +10,7 @@ Source baseline4204d172. User resumed the goal and requested at least four agent
 6. ~~Combined local implementation review packet prepared.~~ [Decision packet](IMPLEMENTATION-REVIEW.md) is ready for the standing validation-first decision before source implementation. Actual operational qualification is not ready; build/package/sign/install/Keychain/SQL/provider/deploy permissions remain separate except the proposed local compile/pure/mock scope.
 
 No new dependency, filesystem mount, native/helper/runtime invocation, SQL, credentials, provider read/write, test/build, production change or spending was performed in this preparation. Current static artifacts and consumed attempts remain preserved. Full21parent scope and November23 readiness/November24 target remain unchanged.
+
+## Approved local implementation milestone
+
+User approved the bounded source/compile/pure-mock scope in call_GjF0CqpEZVvkvCJePejRRd7I[0]. [Current source evidence](../governance-connected-runtime-local/README.md) supersedes the earlier pending-decision wording for this unit. Runtime protocols/private lifetime/material preparation are implemented and source-reviewed; actual artifact delivery, installation, custody and SAME-consumer acceptance remain open. The current package/container inventory cannot yet deliver every fixed fixture resource, which is the next concrete source gap.

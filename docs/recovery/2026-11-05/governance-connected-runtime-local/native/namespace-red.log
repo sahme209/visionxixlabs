@@ -1,0 +1,21 @@
+.F.
+======================================================================
+FAIL: test_fixed_owner_job_advertises_exact_owned_child_namespaces (test_system_ingress_preparation.IngressInputs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/tests/test_system_ingress_preparation.py", line 12, in test_fixed_owner_job_advertises_exact_owned_child_namespaces
+    daemon=p._launch_daemon();self.assertEqual(daemon['MachServices'],{p.OWNER_SERVICE:True,p.BROKER_SERVICE:True,p.REQUEST_SERVICE:True});self.assertEqual(daemon['ProgramArguments'],[p.OWNER_PATH]);self.assertFalse(daemon['RunAtLoad']);self.assertFalse(daemon['KeepAlive'])
+AssertionError: {'com[78 chars] True} != {'com[78 chars] True, 'com.visionxixlabs.axiom.synthetic.boot[89 chars]True}
++ {'com.visionxixlabs.axiom.issuer-request': True,
++  'com.visionxixlabs.axiom.synthetic.bootstrap.c3b7bf334ce56a64575183b7a66e5109': True,
+- {'com.visionxixlabs.axiom.synthetic.launch-owner.c3b7bf334ce56a64575183b7a66e5109': True}
+? ^
+
++  'com.visionxixlabs.axiom.synthetic.launch-owner.c3b7bf334ce56a64575183b7a66e5109': True}
+? ^
+
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=1)

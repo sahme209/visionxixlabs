@@ -1,5 +1,6 @@
 #include "origin_private_resource_supplier.h"
 #include "origin_owner_binding.h"
+#include "synthetic_fixture_readiness.h"
 #import <Foundation/Foundation.h>
 #import <Security/Security.h>
 #import <LocalAuthentication/LocalAuthentication.h>
@@ -20,10 +21,9 @@ static int installation_context(void);
 extern OSStatus SecKeychainSetUserInteractionAllowed(Boolean) __attribute__((weak_import));
 static atomic_int startup_state;
 int axiom_private_supplier_operational(void){
- /* No provisioned/qualified installation exists in this preparation profile.
-  * Changing this gate requires separately authorized installation evidence. */
- return 0;
+ return ax_fixture_supplier_context_current();
 }
+
 int axiom_private_supplier_startup(void){
  int expected=0;if(!atomic_compare_exchange_strong(&startup_state,&expected,-1))return 0;
  #pragma clang diagnostic push
@@ -66,8 +66,8 @@ static int ax_synthetic_inspect_item(SecKeychainItemRef item,SecKeychainRef expe
 static SecKeychainRef selected_keychain;
 static SecKeychainItemRef retained_items[3];
 static int installation_context(void){
- /* Actual installed backing identity, principal and pre-main integrity remain
-  * unresolved. operational is immutable false; no manifest/flag can qualify. */
+ /* Current owned origin and protected installed coordinates; item policy is
+  * checked separately around every retained reference access. */
  return axiom_private_supplier_operational()&&axiom_owner_binding_current();
 }
 static int safe_stat(int fd,int directory,mode_t mode){

@@ -1,0 +1,7 @@
+packages/verified-issuer-runtime/native/origin_broker.c:143:179: error: cannot refer to declaration with an array type inside block
+  143 |   uint64_t admitted=epoch;unsigned char admitted_id[32];memcpy(admitted_id,id,32);dispatch_after(at_deadline(deadline),control,^{if(business.epoch==admitted&&!memcmp(business.id,admitted_id,32)&&business.phase==AX_REQUEST_DISPATCHED){business.phase=AX_REQUEST_EXPIRED;business_child_event("cancel");business_external_result("unknown",NULL,0);}});
+      |                                                                                                                                                                                   ^
+packages/verified-issuer-runtime/native/origin_broker.c:143:41: note: 'admitted_id' declared here
+  143 |   uint64_t admitted=epoch;unsigned char admitted_id[32];memcpy(admitted_id,id,32);dispatch_after(at_deadline(deadline),control,^{if(business.epoch==admitted&&!memcmp(business.id,admitted_id,32)&&business.phase==AX_REQUEST_DISPATCHED){business.phase=AX_REQUEST_EXPIRED;business_child_event("cancel");business_external_result("unknown",NULL,0);}});
+      |                                         ^
+1 error generated.

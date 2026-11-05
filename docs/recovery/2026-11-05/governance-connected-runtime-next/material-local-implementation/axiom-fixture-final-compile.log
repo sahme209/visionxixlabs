@@ -1,0 +1,9 @@
+synthetic_fixture_frame.c: 0
+synthetic_fixture_readiness.c: 0
+synthetic_fixture_supplier_context.c: 0
+synthetic_fixture_producer.c: 0
+synthetic_resource_provisioner.m: 0
+synthetic_resource_maintenance_main.c: 0
+origin_launch_owner.c: 0
+origin_owner_binding.c: 0
+origin_private_resource_supplier.m: 0
