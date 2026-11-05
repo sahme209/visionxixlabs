@@ -17,3 +17,7 @@ The runner is the previously reviewed fresh socket-only PG runner with only fixe
 The test calls the real coding-stage claim, admission and manager directly. It does **not** invoke the entire `codeProposeRealExecutor`, prove real authentication/provider behavior, generate an accepted repository patch, qualify prices/settlement or validate every concurrent schedule. Quoted coding, extraction/direct legacy families, canonical issuer/custody/fleet, production rollout and complete Governance remain separate gates. All 21 master-plan parents remain open.
 
 See `preparation-review.json`, `types.json`, `receipt.json`, `results.json`, the cleanup logs and `final-review.json`. A real local database and installed SDK are stronger than fully mocked storage, but the final transport remains synthetic and cannot establish live customer acceptance.
+
+## Subsequent actual-caller evidence
+
+The later [actual proposal-function composition](../coding-policy-executor-composition/README.md) tests its successful branch and a witnessed policy-lock race. The original two SDK-level cases above remain historical evidence; full worker/pipeline, real provider, GitHub effects and Governance acceptance remain open.

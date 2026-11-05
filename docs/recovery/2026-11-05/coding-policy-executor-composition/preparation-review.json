@@ -1,0 +1,14 @@
+{
+  "reviewer": "agent_reliability_review",
+  "recordedBy": "root from actual review message",
+  "decision": "CLEAR for one fresh isolated run",
+  "packetSha256": "1a1b040cfa0dc0290026dbb1d338270bce372b4366bfd8c790f48d7aaf7ddfc2",
+  "scope": [
+    "actual codeProposeRealExecutor uses real policy, credit, claim, manager, installed SDK and financial stores",
+    "only audit persistence, private client wiring and final synthetic fetch are substituted",
+    "policy FOR UPDATE writer and bounded actual policy FOR SHARE wait observation",
+    "finally release and drain writer/executor, fresh socket-only owned fixture, no recovery SQL"
+  ],
+  "limitation": "finite one-claim fixture; pg_stat_activity witness scoped by owned database/user/query, not organization parameter or all schedules",
+  "executionByReviewer": false
+}

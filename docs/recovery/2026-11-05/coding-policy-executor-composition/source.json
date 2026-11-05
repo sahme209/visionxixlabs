@@ -1,0 +1,9 @@
+{
+  "runtimeBase": "6c8f87f5137dc3c2c433cd5f2751afeb2a53204d",
+  "runtimeChanges": false,
+  "testAndRunnerSha256": {
+    "lib/workforce/pipelines/__tests__/codingPolicyExecutor.pg.test.ts": "3ece4a9aefc78182af05eca99808225e8069e91953004d0c0a45a945a94601c5",
+    "scripts/run-coding-policy-executor-postgres.py": "22085f623a1caddadc96a2c40adadc232f9887370c83f2a51178ea6383968fe5"
+  },
+  "scope": "finite direct source packet, not full transitive custody"
+}

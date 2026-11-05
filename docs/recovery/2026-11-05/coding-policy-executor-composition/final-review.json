@@ -1,0 +1,36 @@
+{
+  "reviewer": "agent_reliability_review",
+  "decision": "CLEAR for finite actual codeProposeRealExecutor proposal-branch composition",
+  "mode": "source and saved evidence review only; no rerun/database/provider execution",
+  "packetSha256": "1a1b040cfa0dc0290026dbb1d338270bce372b4366bfd8c790f48d7aaf7ddfc2",
+  "directSourceHashAfterMatches": true,
+  "results": {
+    "passed": 2,
+    "failed": 0,
+    "pending": 0
+  },
+  "scopedTypesExitCode": 0,
+  "ownedPostgresStopped": true,
+  "realBoundaries": [
+    "actual codeProposeRealExecutor proposal branch",
+    "coding stage claim, workspace policy and dual-ledger admission",
+    "installed manager/Gateway SDK with synthetic final fetch",
+    "real attributed usage and dual-ledger linkage",
+    "owned database policy row locking"
+  ],
+  "mockedBoundaries": [
+    "lib/db wiring to generated owned client",
+    "secureAudit.record",
+    "provider credentials and final SDK fetch"
+  ],
+  "provenCases": [
+    "valid synthetic new-file patch returned with refinementAttempts0 and recorded pending-settlement cost; one usage linked both ledgers; repeated same context produces no second SDK call",
+    "held policy writer plus newly reserved hold and owned-database policy FOR SHARE lock-wait witness; committed disabled policy results executor okfalse, zero SDK/usage and both reserved ledgers unclaimed"
+  ],
+  "limits": [
+    "finite owned-database schedule; not all interleavings",
+    "refusal may arise from predicate or Serializable conflict",
+    "not queue-worker execution, real AI/authentication, GitHub patch apply/write, native approval, fleet/custody, settlement, quote or full Governance qualification"
+  ],
+  "runtimeChangedByThisTestUnit": false
+}
