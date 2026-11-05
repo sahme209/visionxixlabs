@@ -1,0 +1,133 @@
+{
+  "approval": "call_nAel7PPZG3HBVPUfSg43CdAx",
+  "toolSourceRevision": "8d0e09832c64864d481955cf0f572f75b8493621",
+  "packageSourceRevision": "0b0e8b48aa3469c1146bc2db38cdce4b2dc1a43d",
+  "toolSession": 15332,
+  "toolExit": 0,
+  "records": [
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/claimed.json",
+      "saved": "run/claimed.json",
+      "sha256": "4fa4f1088d3380a76b294579bfca32637c36a6b347a4add22b77253c78e72d50",
+      "bytes": 216
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/image-attempt.json",
+      "saved": "run/image-attempt.json",
+      "sha256": "28905c524531803a49a561b1fe49a51be042e05dad6e0c95b1442b24c18d36ed",
+      "bytes": 770
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/image-operation.json",
+      "saved": "run/image-operation.json",
+      "sha256": "6225dda6b9e35ad455944025370e348044dfb6dea8fcb5c0bba4c397814f7991",
+      "bytes": 1239
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/image-completion.json",
+      "saved": "run/image-completion.json",
+      "sha256": "1d84b8d705cc7b22f219bc1a562db0a823ee7f571f949f902f25b9b41d8da1d3",
+      "bytes": 1366
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembly-inputs.json",
+      "saved": "run/assembly-inputs.json",
+      "sha256": "dbe2f7be4a6737f7ee339e49a307f5ece97445d47da2e87f746fb9d0ba29613d",
+      "bytes": 2034
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/result.json",
+      "saved": "run/result.json",
+      "sha256": "cd24fa22fe1d28fca3ef02d941602253f068d2dc6bfe84f943bc7480a63cbc3e",
+      "bytes": 940
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/assembled/container-assembly.json",
+      "saved": "run/assembled/container-assembly.json",
+      "sha256": "53008642e48af49efc0a09cedaa7f63cb71f70050139a5c90f97d502bf5e0cea",
+      "bytes": 7613
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/inspection/attach-command.json",
+      "saved": "inspection/attach-command.json",
+      "sha256": "b85d001d91b02ee747f0d1b1e8936e3f71c597879dacca263b9bc7cb298025b9",
+      "bytes": 1069
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/inspection/attach-stdout.log",
+      "saved": "inspection/attach-stdout.log",
+      "sha256": "5e516a695c3c92736ddbd001651c13ea3bf268da1f62949d8050e6088ce793d8",
+      "bytes": 1331
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/inspection/attach-stderr.log",
+      "saved": "inspection/attach-stderr.log",
+      "sha256": "397cc021abd54dbd1c3b21133b76451ecfb23c1f78937dd2b27fbfcb841fcd7e",
+      "bytes": 182
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/inspection/detach-command.json",
+      "saved": "inspection/detach-command.json",
+      "sha256": "dd4ef521726560d2d42b682625a7f70b0066d7859289992af0d2800ea4c6e3d0",
+      "bytes": 726
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/inspection/detach-stdout.log",
+      "saved": "inspection/detach-stdout.log",
+      "sha256": "b3a5d4bc293f6462c7bac0039449e2b1418800cab79d6d566667c59786bf4108",
+      "bytes": 18
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/inspection/detach-stderr.log",
+      "saved": "inspection/detach-stderr.log",
+      "sha256": "dd2e6d5d2227b9d3236b0a0f6cfe0fb59d68b9c29c990f4763c4a19ca9f7ae44",
+      "bytes": 95
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/inspection/result.json",
+      "saved": "inspection/result.json",
+      "sha256": "2256d954a5b32c4e6c52957eed3de2986542613a217837be3d7f825d995b9bd4",
+      "bytes": 2388
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-controller-558f12f1/claimed.json",
+      "saved": "controller/claimed.json",
+      "sha256": "26497c9fd5521213121b16141afc4eb0c6f9fd434e966122e47d995a9c0b7dc6",
+      "bytes": 156
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-controller-558f12f1/process.json",
+      "saved": "controller/process.json",
+      "sha256": "664d066f84018828c4ae2f154a7bb35427d78b554f0eca96731b5172ef5e4d1a",
+      "bytes": 130
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-controller-558f12f1/stdout.log",
+      "saved": "controller/stdout.log",
+      "sha256": "19213ee3ea981cc51e7532f0d9a473d0f8322851942ebeb2d4222693409906de",
+      "bytes": 211
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-controller-558f12f1/stderr.log",
+      "saved": "controller/stderr.log",
+      "sha256": "686e42464285836aee32f0839a2aa6025e737b01e76ac06ef3fec484d3efc201",
+      "bytes": 152
+    },
+    {
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-controller-558f12f1/result.json",
+      "saved": "controller/result.json",
+      "sha256": "5fef93fba61a4c54c5875274777bdd19465a0ecb4fcd50bf1b095d14254c6f4f",
+      "bytes": 349
+    }
+  ],
+  "postTerminalNamespaceObservation": {
+    "exists": true,
+    "dev": 16777232,
+    "ino": 17169810,
+    "readOnly": false
+  },
+  "imageBytes": 4026898667,
+  "executionAuthorized": false,
+  "activationAllowed": false,
+  "retryAuthorized": false
+}
