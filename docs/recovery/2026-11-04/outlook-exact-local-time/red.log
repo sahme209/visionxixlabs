@@ -1,0 +1,516 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ❯ lib/desktop/__tests__/outlookExactLocalTime.test.ts (3 tests | 2 failed) 2134ms
+   × refuses a nonexistent local event time rather than changing it: 2027-03-14T02:30 → 2027-03-14T04:00 1081ms
+   × refuses a nonexistent local event time rather than changing it: 2027-03-14T01:30 → 2027-03-14T02:30 1020ms
+   ✓ preserves valid times on opposite sides of the spring-forward gap 33ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/desktop/__tests__/outlookExactLocalTime.test.ts > refuses a nonexistent local event time rather than changing it: 2027-03-14T02:30 → 2027-03-14T04:00
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"mt-4 space-y-4 border-t border-white/10 pt-4"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mclass[39m=[32m"font-medium"[39m
+      [36m>[39m
+        [0mGoverned Outlook actions[0m
+      [36m</h4>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-xs text-zinc-400"[39m
+      [36m>[39m
+        [0mConnecting Outlook does not send mail or create events. Separate Microsoft action consent and another authorized person’s exact approval are required.[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"btn-secondary"[39m
+      [36m>[39m
+        [0mReload saved actions[0m
+      [36m</button>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-xs"[39m
+      [36m>[39m
+        [0mExecution is not activated. Saved reviews remain available.[0m
+      [36m</p>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"rounded-lg border border-white/10 p-3"[39m
+        [33mopen[39m=[32m""[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-sm text-zinc-300"[39m
+        [36m>[39m
+          [0mPrepare an email or event draft[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-3 grid gap-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mAction[0m
+            [36m<select[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"outlook_mail_send"[39m
+              [36m>[39m
+                [0mSend one email[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"outlook_event_create"[39m
+              [36m>[39m
+                [0mCreate one calendar event[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mRequired attendees[0m
+            [0m · comma-separated[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+              [33mvalue[39m=[32m"test@example.invalid"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mSubject[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+              [33mvalue[39m=[32m"Synthetic DST draft"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mExact plain-text content[0m
+            [36m<textarea[39m
+              [33mclass[39m=[32m"input mt-1 min-h-24 w-full"[39m
+            [36m>[39m
+              [0mNo real event[0m
+            [36m</textarea>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap gap-3"[39m
+          [36m>[39m
+            [36m<label>[39m
+              [0mStart · [0m
+              [0mAmerica/New_York[0m
+              [36m<input[39m
+                [33mclass[39m=[32m"input block"[39m
+                [33mtype[39m=[32m"datetime-local"[39m
+                [33mvalue[39m=[32m"2027-03-14T02:30"[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<label>[39m
+              [0mEnd[0m
+              [36m<input[39m
+                [33mclass[39m=[32m"input block"[39m
+                [33mtype[39m=[32m"datetime-local"[39m
+                [33mvalue[39m=[32m"2027-03-14T04:00"[39m
+              [36m/>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn-secondary justify-self-start"[39m
+          [36m>[39m
+            [0mSave exact action for review[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</details>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"mt-4 space-y-4 border-t border-white/10 pt-4"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mclass[39m=[32m"font-medium"[39m
+      [36m>[39m
+        [0mGoverned Outlook actions[0m
+      [36m</h4>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-xs text-zinc-400"[39m
+      [36m>[39m
+        [0mConnecting Outlook does not send mail or create events. Separate Microsoft action consent and another authorized person’s exact approval are required.[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"btn-secondary"[39m
+      [36m>[39m
+        [0mReload saved actions[0m
+      [36m</button>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-xs"[39m
+      [36m>[39m
+        [0mExecution is not activated. Saved reviews remain available.[0m
+      [36m</p>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"rounded-lg border border-white/10 p-3"[39m
+        [33mopen[39m=[32m""[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-sm text-zinc-300"[39m
+        [36m>[39m
+          [0mPrepare an email or event draft[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-3 grid gap-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mAction[0m
+            [36m<select[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"outlook_mail_send"[39m
+              [36m>[39m
+                [0mSend one email[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"outlook_event_create"[39m
+              [36m>[39m
+                [0mCreate one calendar event[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mRequired attendees[0m
+            [0m · comma-separated[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+              [33mvalue[39m=[32m"test@example.invalid"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mSubject[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+              [33mvalue[39m=[32m"Synthetic DST draft"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mExact plain-text content[0m
+            [36m<textarea[39m
+              [33mclass[39m=[32m"input mt-1 min-h-24 w-full"[39m
+            [36m>[39m
+              [0mNo real event[0m
+            [36m</textarea>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap gap-3"[39m
+          [36m>[39m
+            [36m<label>[39m
+              [0mStart · [0m
+              [0mAmerica/New_York[0m
+              [36m<input[39m
+                [33mclass[39m=[32m"input block"[39m
+                [33mtype[39m=[32m"datetime-local"[39m
+                [33mvalue[39m=[32m"2027-03-14T02:30"[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<label>[39m
+              [0mEnd[0m
+              [36m<input[39m
+                [33mclass[39m=[32m"input block"[39m
+                [33mtype[39m=[32m"datetime-local"[39m
+                [33mvalue[39m=[32m"2027-03-14T04:00"[39m
+              [36m/>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn-secondary justify-self-start"[39m
+          [36m>[39m
+            [0mSave exact action for review[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</details>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ lib/desktop/__tests__/outlookExactLocalTime.test.ts:29:23
+     27|   expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe('Ameri…
+     28|   await draft(start, end);
+     29|   expect(await screen.findByRole('alert')).toHaveProperty('textContent…
+       |                       ^
+     30|   expect(fixture.request.mock.calls.filter(call => call[1]?.action ===…
+     31| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/desktop/__tests__/outlookExactLocalTime.test.ts > refuses a nonexistent local event time rather than changing it: 2027-03-14T01:30 → 2027-03-14T02:30
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"mt-4 space-y-4 border-t border-white/10 pt-4"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mclass[39m=[32m"font-medium"[39m
+      [36m>[39m
+        [0mGoverned Outlook actions[0m
+      [36m</h4>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-xs text-zinc-400"[39m
+      [36m>[39m
+        [0mConnecting Outlook does not send mail or create events. Separate Microsoft action consent and another authorized person’s exact approval are required.[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"btn-secondary"[39m
+      [36m>[39m
+        [0mReload saved actions[0m
+      [36m</button>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-xs"[39m
+      [36m>[39m
+        [0mExecution is not activated. Saved reviews remain available.[0m
+      [36m</p>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"rounded-lg border border-white/10 p-3"[39m
+        [33mopen[39m=[32m""[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-sm text-zinc-300"[39m
+        [36m>[39m
+          [0mPrepare an email or event draft[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-3 grid gap-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mAction[0m
+            [36m<select[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"outlook_mail_send"[39m
+              [36m>[39m
+                [0mSend one email[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"outlook_event_create"[39m
+              [36m>[39m
+                [0mCreate one calendar event[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mRequired attendees[0m
+            [0m · comma-separated[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+              [33mvalue[39m=[32m"test@example.invalid"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mSubject[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+              [33mvalue[39m=[32m"Synthetic DST draft"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mExact plain-text content[0m
+            [36m<textarea[39m
+              [33mclass[39m=[32m"input mt-1 min-h-24 w-full"[39m
+            [36m>[39m
+              [0mNo real event[0m
+            [36m</textarea>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap gap-3"[39m
+          [36m>[39m
+            [36m<label>[39m
+              [0mStart · [0m
+              [0mAmerica/New_York[0m
+              [36m<input[39m
+                [33mclass[39m=[32m"input block"[39m
+                [33mtype[39m=[32m"datetime-local"[39m
+                [33mvalue[39m=[32m"2027-03-14T01:30"[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<label>[39m
+              [0mEnd[0m
+              [36m<input[39m
+                [33mclass[39m=[32m"input block"[39m
+                [33mtype[39m=[32m"datetime-local"[39m
+                [33mvalue[39m=[32m"2027-03-14T02:30"[39m
+              [36m/>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn-secondary justify-self-start"[39m
+          [36m>[39m
+            [0mSave exact action for review[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</details>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33mclass[39m=[32m"mt-4 space-y-4 border-t border-white/10 pt-4"[39m
+    [36m>[39m
+      [36m<h4[39m
+        [33mclass[39m=[32m"font-medium"[39m
+      [36m>[39m
+        [0mGoverned Outlook actions[0m
+      [36m</h4>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-xs text-zinc-400"[39m
+      [36m>[39m
+        [0mConnecting Outlook does not send mail or create events. Separate Microsoft action consent and another authorized person’s exact approval are required.[0m
+      [36m</p>[39m
+      [36m<button[39m
+        [33mclass[39m=[32m"btn-secondary"[39m
+      [36m>[39m
+        [0mReload saved actions[0m
+      [36m</button>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"text-xs"[39m
+      [36m>[39m
+        [0mExecution is not activated. Saved reviews remain available.[0m
+      [36m</p>[39m
+      [36m<details[39m
+        [33mclass[39m=[32m"rounded-lg border border-white/10 p-3"[39m
+        [33mopen[39m=[32m""[39m
+      [36m>[39m
+        [36m<summary[39m
+          [33mclass[39m=[32m"cursor-pointer text-sm text-zinc-300"[39m
+        [36m>[39m
+          [0mPrepare an email or event draft[0m
+        [36m</summary>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mt-3 grid gap-3"[39m
+        [36m>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mAction[0m
+            [36m<select[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+            [36m>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"outlook_mail_send"[39m
+              [36m>[39m
+                [0mSend one email[0m
+              [36m</option>[39m
+              [36m<option[39m
+                [33mvalue[39m=[32m"outlook_event_create"[39m
+              [36m>[39m
+                [0mCreate one calendar event[0m
+              [36m</option>[39m
+            [36m</select>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mRequired attendees[0m
+            [0m · comma-separated[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+              [33mvalue[39m=[32m"test@example.invalid"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mSubject[0m
+            [36m<input[39m
+              [33mclass[39m=[32m"input mt-1 w-full"[39m
+              [33mvalue[39m=[32m"Synthetic DST draft"[39m
+            [36m/>[39m
+          [36m</label>[39m
+          [36m<label[39m
+            [33mclass[39m=[32m"text-sm"[39m
+          [36m>[39m
+            [0mExact plain-text content[0m
+            [36m<textarea[39m
+              [33mclass[39m=[32m"input mt-1 min-h-24 w-full"[39m
+            [36m>[39m
+              [0mNo real event[0m
+            [36m</textarea>[39m
+          [36m</label>[39m
+          [36m<div[39m
+            [33mclass[39m=[32m"flex flex-wrap gap-3"[39m
+          [36m>[39m
+            [36m<label>[39m
+              [0mStart · [0m
+              [0mAmerica/New_York[0m
+              [36m<input[39m
+                [33mclass[39m=[32m"input block"[39m
+                [33mtype[39m=[32m"datetime-local"[39m
+                [33mvalue[39m=[32m"2027-03-14T01:30"[39m
+              [36m/>[39m
+            [36m</label>[39m
+            [36m<label>[39m
+              [0mEnd[0m
+              [36m<input[39m
+                [33mclass[39m=[32m"input block"[39m
+                [33mtype[39m=[32m"datetime-local"[39m
+                [33mvalue[39m=[32m"2027-03-14T02:30"[39m
+              [36m/>[39m
+            [36m</label>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"btn-secondary justify-self-start"[39m
+          [36m>[39m
+            [0mSave exact action for review[0m
+          [36m</button>[39m
+        [36m</div>[39m
+      [36m</details>[39m
+    [36m</section>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ lib/desktop/__tests__/outlookExactLocalTime.test.ts:29:23
+     27|   expect(Intl.DateTimeFormat().resolvedOptions().timeZone).toBe('Ameri…
+     28|   await draft(start, end);
+     29|   expect(await screen.findByRole('alert')).toHaveProperty('textContent…
+       |                       ^
+     30|   expect(fixture.request.mock.calls.filter(call => call[1]?.action ===…
+     31| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  19:16:13
+   Duration  2.60s (transform 24ms, setup 0ms, import 81ms, tests 2.13s, environment 328ms)
+

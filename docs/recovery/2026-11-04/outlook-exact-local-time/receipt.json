@@ -1,0 +1,21 @@
+{
+  "baselineHead": "d20dd1b5f221bc6592dd69ce5c650276bb1945f0",
+  "sources": {
+    "desktop/src/components/OutlookActionsPanel.tsx": "0fb15da220faedbc98ee1bc439f823034c1b219ed20ea471842df078c056c2ef",
+    "desktop/src/lib/outlookLocalTime.ts": "93863a98389812d2d217dcfea9ea5520b838ab1a18e5d9dbcc1e46c89464867f",
+    "lib/desktop/__tests__/outlookExactLocalTime.test.ts": "2de9e5cd00cf39ddf5e02028a0c6032d9143cab07238c94614cdceadcf928fae"
+  },
+  "componentOnlyImportAndTwoConversionsChanged": true,
+  "renderedRed": {
+    "failed": 2,
+    "passed": 1
+  },
+  "renderedGreen": 3,
+  "finalCompatibilityTotal": 19,
+  "newFileCases": 16,
+  "desktopTypesPassed": true,
+  "timezone": "America/New_York",
+  "systemTimezoneChanged": false,
+  "fallBackOverlapDisambiguated": false,
+  "nativeProviderOrFullSuiteAcceptance": false
+}

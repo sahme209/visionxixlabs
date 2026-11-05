@@ -1,0 +1,10 @@
+
+ RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+
+ ✓ lib/desktop/__tests__/outlookExactLocalTime.test.ts (3 tests) 112ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed (3)
+   Start at  19:16:43
+   Duration  393ms (transform 19ms, setup 0ms, import 52ms, tests 112ms, environment 175ms)
+

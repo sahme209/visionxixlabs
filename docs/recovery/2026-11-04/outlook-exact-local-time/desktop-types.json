@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/private/tmp/axiom-outlook-time-2se5k1ak/test.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/node_modules/typescript/bin/tsc",
+    "--project",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/tsconfig.json",
+    "--noEmit"
+  ],
+  "exitCode": 0,
+  "timedOut": false,
+  "elapsedSeconds": 3.734
+}
