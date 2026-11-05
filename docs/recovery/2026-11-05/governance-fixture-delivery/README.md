@@ -15,6 +15,8 @@ Native compile-only and fully mocked actual-body observations are separately bou
 
 ## Original gates that remain open
 
+**Next source prerequisite:** the [qualification audit](NEXT-QUALIFICATION-GATES.md) found no supported fixture-scoped authentication/scenario driver for the new isolated session key. Seeded rows and the six-operation channel alone cannot exercise a positive business workflow. This is unimplemented source/procedure work requiring an exact reviewed design; production credentials and impersonated reviewers are not substitutes. The [artifact audit](NEXT-ARTIFACT-GATES.md) also records the necessary separate pre-emission and fresh full-build stages. Do not run expensive artifact generation before the needed consumer scenario is actually implementable.
+
 1. Actually generate the fixed recipe with the pinned schema engine and inspect full-schema/seed output; static binding/model checks do not prove that the engine generated that SQL.
 2. Produce the complete current-source artifacts under a separately authorized exact run. Verify the emitted producer, generated Prisma client/query engine, selected signed Node and every native pin together. The helper's fixed lookup does not establish hardened-runtime engine compatibility.
 3. Perform fresh assembly, signing/static verification and installation/resource provisioning under exact authority. No historical signed app is patched or relabeled by this unit.
