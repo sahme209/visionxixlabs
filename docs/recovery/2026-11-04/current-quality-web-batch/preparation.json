@@ -1,0 +1,12 @@
+{
+  "sourceRevision": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "driverSha256": "6c572e68739320dd37553512cae0f0f7fee7227ca54c13366baab81607f23db3",
+  "helperHashes": {
+    "scripts/build-local-issuer-package-source.py": "c099c90b95778062873ed4b17546d84c915f707fdaa4c5399b4938e5f31cb2a1",
+    "scripts/local_prisma_engine_inputs.py": "6def73deece943de43643b385d83321abdbfcdd17c59eb48f84eeb647293fb2f"
+  },
+  "freeBytesBefore": 659400851456,
+  "onlyDriverChanges": "frozen source revision and owned prefix",
+  "qualification": "ordinary offline compile/types/output check only; issuer/custody/closure/activation unavailable",
+  "userMasterEdit": "intentionally unstaged and not archived; lossless recovery patch remains committed"
+}

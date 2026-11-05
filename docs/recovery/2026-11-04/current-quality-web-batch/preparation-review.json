@@ -1,0 +1,7 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "no blocking finding",
+  "scope": "two-literal driver diff, unchanged helper/current/source hashes and ordinary offlinebuild scope",
+  "executionByReviewer": false,
+  "qualification": "no native/issuer/activation/preview or production authority"
+}

@@ -1,0 +1,6 @@
+{
+  "wholePriorDriverRestoredWithOnlyRevisionAndPrefixReversal": true,
+  "previousDriverSha256": "f75af10087e4ff6149824e81852024841f9fef923e79c1a226d0a92f48b311c4",
+  "newDriverSha256": "6c572e68739320dd37553512cae0f0f7fee7227ca54c13366baab81607f23db3",
+  "source": "0c9d0e4072056f56c28d95bf53925afc429ccaf2"
+}
