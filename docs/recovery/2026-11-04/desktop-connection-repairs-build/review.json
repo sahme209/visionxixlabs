@@ -1,0 +1,12 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear",
+  "phases": [
+    "frontend/preparation",
+    "concrete native inputs",
+    "owned Swift cache correction",
+    "final static embedding evidence"
+  ],
+  "execution": "read-only no builds/tests/network/UI by reviewer",
+  "limits": "unsigned unexecuted, no native/custody/fullGovernance acceptance"
+}

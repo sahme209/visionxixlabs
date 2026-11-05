@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/build.sb",
+    "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+    "build",
+    "--locked",
+    "--offline",
+    "--features",
+    "tauri/custom-protocol"
+  ],
+  "cwd": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/stage/desktop/src-tauri",
+  "environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_HOME": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/cargo-home",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_NET_OFFLINE": "true",
+    "CARGO_TARGET_DIR": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target",
+    "CLANG_MODULE_CACHE_PATH": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/clang-cache",
+    "HOME": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/home",
+    "PATH": "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains/stable-aarch64-apple-darwin/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+    "RUSTC": "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+    "RUSTUP_HOME": "/Users/samirahmed/Documents/Codex/2026-10-22/referenced-chatgpt-conversation-this-is-an/work/desktop-audit/toolchains/rustup/toolchains",
+    "TMPDIR": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/tmp",
+    "XDG_CACHE_HOME": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/cache"
+  },
+  "sourceHead": "4756328040ec60f86b1bd81e8ff3eeb2141a794b"
+}

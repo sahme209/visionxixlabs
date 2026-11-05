@@ -202,3 +202,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November4 canonical navigation scoped types qualified
 ~~Changed docs test/transitive components scopedtypes now pass~~ after bounded trace exposed missing Node types in external config. [Correction](../recovery/2026-11-04/docs-canonical-navigation/tsconfig.corrected.json) explicitly references existing installed declarations; no install/source/runtime change. Original45s timeout and failed trace retained; timing cause not inferred. Current10rendered checks were not repeated. Browser/build/AT/production and richer search remain open.
+
+### November4 current Agent-repair desktop compilation
+~~Exact475frontend and new ARM64 native debug embedding built/verified~~ ([evidence](../recovery/2026-11-04/desktop-connection-repairs-build/README.md)):80nativeGitinputs/sixembeddedassets verified; initialarchiveancestor and copiedSwiftpath failures retained, one concrete correctedofflinebuild passed. Original983app/pairedsessions untouched. Newbinary0600unsigned/unexecuted/unpackaged; signing/safehandoff/nativeUX and allinstaller/Governance gates remain open. No production/provider/DB/CI/spend change.

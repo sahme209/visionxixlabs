@@ -1,0 +1,10 @@
+{
+  "session": 98091,
+  "exitCode": 2,
+  "error": "archive safety assertion rejected top-level desktop directory",
+  "nativeCargoStarted": false,
+  "frontendRepeated": false,
+  "copiedOldPrimaryRemoved": true,
+  "originalPrimaryPresent": true,
+  "correction": "allow exact desktop directory ancestor only; othermembers require desktop/ prefix and no dotdot"
+}

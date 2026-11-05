@@ -1,0 +1,23 @@
+{
+  "sourceHead": "4756328040ec60f86b1bd81e8ff3eeb2141a794b",
+  "nativeFilesExactGit": 80,
+  "frontendAssets": 6,
+  "directDecodedHashMatches": 5,
+  "htmlTokenEquivalentExceptKnownNonceAndSerialization": true,
+  "compressedPayloadOffsets": {
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/2046e30b044f93b630ebee82c018b94288ed1b936a747e4055613196b4a585e7.js": 17670039,
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/395853debf7f851c29dca44d8098527118aae8ce18d57f6f8f5359ad011eec73.css": 18102656,
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/6077380a7ecdf9cd065aaad93b57d99a027571a6fb8e5f7ebcea5a3b0051e5a2.html": 17669477,
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/6af03cf43a0e6864be31f9a444e750e6fc0bf04fb0926e7d7dab18f03f3ba3eb.js": 17668531,
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/9a4202f02e0ebc3fcb334765e150c91857ceea39e25305e03aa2e1b5496d1705.png": 17657469,
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/d54d24f5394cb1223c97d2d267cd58fb7ee8b7e9cd861d5111392f3740c7600c.png": 18118401
+  },
+  "unsignedBinarySha256": "ff18d22e8041252bfd898eccc28d8c23dccf6e610d77a865c5e85f0a50ea178b",
+  "bytes": 53769248,
+  "architecture": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/axiom-desktop: Mach-O 64-bit executable arm64",
+  "retainedMode": "0600",
+  "executed": false,
+  "signed": false,
+  "packaged": false,
+  "oldPrimaryUnchanged": true
+}

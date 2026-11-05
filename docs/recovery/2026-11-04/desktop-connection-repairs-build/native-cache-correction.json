@@ -1,0 +1,10 @@
+{
+  "priorBuildExit": 101,
+  "actualFailure": "SwiftShims cached module records old absolute module-cache path",
+  "ownedCachePreservedAs": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/swift-module-cache-relocated-prior",
+  "sourceChanged": false,
+  "permissionsBroadened": false,
+  "correctedAttemptLimit": 1,
+  "originalBuildRootUntouched": true,
+  "newCompilationWillCreateFreshOwnedCache": true
+}

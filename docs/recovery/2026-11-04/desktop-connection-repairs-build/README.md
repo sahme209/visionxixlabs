@@ -1,0 +1,9 @@
+# Current connection-repair desktop build — unsigned, unexecuted
+
+Source47563280. Vite6.4.2/fixedNode frontend passed once (six hashed files). Staged80tracked native inputs were checked byte-for-byte against that Git source. Existing owned offline caches/target were APFS cloned without changing originals. Git's exact top-level desktop directory initially failed a too-strict archive-prefix assertion before Cargo; that failure and precise correction are preserved. No frontend/reclone repetition.
+
+First native build failed101 because the copied Swift module cache embedded its original absolute path. Only that exact new-owned cache was moved aside and retained; source, environment, network/write policy and original caches were unchanged. One deliberate corrected locked/offline custom-protocol debug build passed in30.246s. Existing nonfatal xcrun cache-denial and unused-function warnings remain in raw/lossless logs.
+
+Five Brotli-decoded assets match frontend hashes exactly; the sixth HTML token stream matches after only the known Tauri style nonce/void-tag/crossorigin serialization and insignificant whitespace handling. All six actual current dependency-listed compressed payloads occur in the new Mach-O. ARM64,53,769,248bytes, unsigned SHA in embedding-verification.json. Binary retained0600, not executed, signed, packaged, installed or launched. Existing983app/pairedsessions and original primary remain unchanged.
+
+Independent read-only reviews clear for preparation, cache correction and final static receipts. This is ordinary local compilation/embedding evidence, not a customer installer, release size, Gatekeeper/notarization, native UI/account/Governance custody/issuer/fleet/enrollment qualification. No provider/AI/DB/deploy/paidCI/grant/credential/service/purchase action. Next: separately prepare a concrete reviewed app package/signature and safe user-draft handoff; never force restart.

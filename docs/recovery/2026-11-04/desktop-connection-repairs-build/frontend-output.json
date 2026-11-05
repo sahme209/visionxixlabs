@@ -1,0 +1,32 @@
+[
+  {
+    "path": "assets/index-C8TPjahg.js",
+    "bytes": 2304,
+    "sha256": "3f6974e4378e2b8bbde0e275d86671d207c853a319a25315259104763759dcfa"
+  },
+  {
+    "path": "assets/index-CHzCjC8I.js",
+    "bytes": 1567615,
+    "sha256": "6eee568daa28113921a955374d95766ad0fb8068725bb92614ddea12cab52439"
+  },
+  {
+    "path": "assets/index-xeoNjdaE.css",
+    "bytes": 84512,
+    "sha256": "fb7f17745e1ec7b1e6b67519b84ba4937f820fb3790c4284ef0e6016284d3afa"
+  },
+  {
+    "path": "assets/servicenow-B5BT0v3W.png",
+    "bytes": 11033,
+    "sha256": "5d8ad5f9badc5eda5a42df74a6d4133425ed3144226249bdaf50d3e8732e6318"
+  },
+  {
+    "path": "axiom-logo.png",
+    "bytes": 16456,
+    "sha256": "680c38d3c8bd178f2fbc1dbc9d079e16b7b6c130ebe90a0c9c2479d7ec98bee9"
+  },
+  {
+    "path": "index.html",
+    "bytes": 864,
+    "sha256": "cb3304a8c21bc5539029c0bbda69081ce5d122949f1f10c950dc7e61d872d469"
+  }
+]

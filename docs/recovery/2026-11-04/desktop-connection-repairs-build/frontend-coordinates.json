@@ -1,0 +1,20 @@
+{
+  "owned": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280",
+  "sourceHead": "4756328040ec60f86b1bd81e8ff3eeb2141a794b",
+  "command": [
+    "/usr/bin/sandbox-exec",
+    "-f",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/build.sb",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop/node_modules/vite/bin/vite.js",
+    "build",
+    ".",
+    "--config",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/frontend.config.mjs",
+    "--configLoader",
+    "runner"
+  ],
+  "cwd": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/desktop",
+  "viteVersion": "6.4.2",
+  "configSha256": "94d384645ca027e44fd59afd34fce7fff67ecbf7d377dbdb8cc2de72e856b57e"
+}

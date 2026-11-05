@@ -1,0 +1,48 @@
+[
+  {
+    "generated": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/2046e30b044f93b630ebee82c018b94288ed1b936a747e4055613196b4a585e7.js",
+    "decodedBytes": 1567615,
+    "sha256": "6eee568daa28113921a955374d95766ad0fb8068725bb92614ddea12cab52439",
+    "matchesFrontend": [
+      "assets/index-CHzCjC8I.js"
+    ]
+  },
+  {
+    "generated": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/395853debf7f851c29dca44d8098527118aae8ce18d57f6f8f5359ad011eec73.css",
+    "decodedBytes": 84512,
+    "sha256": "fb7f17745e1ec7b1e6b67519b84ba4937f820fb3790c4284ef0e6016284d3afa",
+    "matchesFrontend": [
+      "assets/index-xeoNjdaE.css"
+    ]
+  },
+  {
+    "generated": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/6077380a7ecdf9cd065aaad93b57d99a027571a6fb8e5f7ebcea5a3b0051e5a2.html",
+    "decodedBytes": 892,
+    "sha256": "941291b32b1ba0fa40573271418330c199c22fe36bb8ffe89cbaed8b68690e80",
+    "matchesFrontend": []
+  },
+  {
+    "generated": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/6af03cf43a0e6864be31f9a444e750e6fc0bf04fb0926e7d7dab18f03f3ba3eb.js",
+    "decodedBytes": 2304,
+    "sha256": "3f6974e4378e2b8bbde0e275d86671d207c853a319a25315259104763759dcfa",
+    "matchesFrontend": [
+      "assets/index-C8TPjahg.js"
+    ]
+  },
+  {
+    "generated": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/9a4202f02e0ebc3fcb334765e150c91857ceea39e25305e03aa2e1b5496d1705.png",
+    "decodedBytes": 11033,
+    "sha256": "5d8ad5f9badc5eda5a42df74a6d4133425ed3144226249bdaf50d3e8732e6318",
+    "matchesFrontend": [
+      "assets/servicenow-B5BT0v3W.png"
+    ]
+  },
+  {
+    "generated": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Builds/connection-repairs-47563280/target/debug/build/axiom-desktop-129f2f6074eeefe7/out/tauri-codegen-assets/d54d24f5394cb1223c97d2d267cd58fb7ee8b7e9cd861d5111392f3740c7600c.png",
+    "decodedBytes": 16456,
+    "sha256": "680c38d3c8bd178f2fbc1dbc9d079e16b7b6c130ebe90a0c9c2479d7ec98bee9",
+    "matchesFrontend": [
+      "axiom-logo.png"
+    ]
+  }
+]
