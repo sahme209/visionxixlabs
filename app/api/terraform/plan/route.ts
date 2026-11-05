@@ -52,6 +52,6 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Plan failed";
     console.error("[terraform/plan]", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: "Terraform plan request could not be completed." }, { status: 500 });
   }
 }

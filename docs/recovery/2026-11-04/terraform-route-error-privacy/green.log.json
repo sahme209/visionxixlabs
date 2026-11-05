@@ -1,0 +1,4 @@
+{
+  "format": "lossless-text-log",
+  "text": "\n RUN  v4.1.11 /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion\n\n \u2713 app/api/terraform/__tests__/error-privacy.test.ts (17 tests) 8ms\n\n Test Files  1 passed (1)\n      Tests  17 passed (17)\n   Start at  02:03:56\n   Duration  132ms (transform 22ms, setup 0ms, import 45ms, tests 8ms, environment 0ms)\n\n"
+}

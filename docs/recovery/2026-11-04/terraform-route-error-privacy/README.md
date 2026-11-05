@@ -1,0 +1,7 @@
+# Remaining Terraform HTTP exception privacy — local batch
+
+Plan, approval, apply and job-status catches reflected arbitrary exception messages. Five synthetic exception cases reproduced disclosure (four database paths and the status runner). Each public500error value now uses a fixed message; apply retains its existing correlationId. Reverting only the four literals restores every complete prior Git source file exactly.
+
+Final17real-handler checks pass: five disclosure cases, four expired-token and four foreign-job refusals, three legacy authority/execution refusals and one status-read control. All auth/rate/database/runner/audit ports are mocked. Internal diagnostics/audit arguments, response status/shape, success paths and all execution/ownership gates are unchanged. Independent read-only review passed. No real plan, approval, apply, job, audit, provider, AI, database or token operation occurred.
+
+This repairs public exception reflection, not every sensitive output channel. Existing internal-log/audit privacy and the thrown-audit-failure behavior remain separate open work. There is no claim of actual customer leakage, server authorization bypass, root type/full build, real Terraform/production acceptance or completed security/Governance. Only string values changed; no new runtime type or dependency. Earlier generation-route checks were not repeated. Current475app/production remain unchanged, all21parents open.

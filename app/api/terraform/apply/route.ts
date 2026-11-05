@@ -92,6 +92,6 @@ export async function POST(req: NextRequest) {
       actor: "user",
       metadata: { errorMessage: msg, correlationId },
     });
-    return NextResponse.json({ error: msg, correlationId }, { status: 500 });
+    return NextResponse.json({ error: "Terraform apply request could not be completed.", correlationId }, { status: 500 });
   }
 }

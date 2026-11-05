@@ -72,6 +72,6 @@ export async function POST(req: NextRequest) {
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Approval failed";
     console.error("[terraform/approve]", msg);
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return NextResponse.json({ error: "Terraform approval request could not be completed." }, { status: 500 });
   }
 }

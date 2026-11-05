@@ -226,3 +226,6 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### November 4 — Terraform generation error privacy
 ~~Public generation failures no longer reflect database/generator diagnostics~~ ([evidence](../recovery/2026-11-04/terraform-generation-error-privacy/README.md)). Actual handler RED2fail/4compatibilitypass became six focused passes; independent review passed. One public response literal only; statuses, gates, arguments and internal diagnostics unchanged. No real generation/provider/DB, root build/types or production acceptance; internal log privacy remains separate. All21parents/current475app preserved.
+
+### November 4 — remaining Terraform exception privacy
+~~Plan, approval, apply and status failures use fixed public error messages~~ ([evidence](../recovery/2026-11-04/terraform-route-error-privacy/README.md)). Five actual mocked-handler disclosure failures became17focusedpasses; ownership/auth and three legacy refusals remain enforced in tests. Four literal changes only, whole Git baselines reconstructed; internal audit/logging and correlation unchanged. No real Terraform/DB/provider/rootbuild/production acceptance; internal privacy/audit-failure handling remain open. All21parents and current475app preserved.
