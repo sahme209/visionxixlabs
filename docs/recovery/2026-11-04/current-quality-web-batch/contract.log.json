@@ -1,0 +1,5 @@
+{
+  "encoding": "base64",
+  "bytes": "VmVyY2VsIGJ1aWxkIGNvbnRyYWN0IHZlcmlmaWVkOiB3ZWIvZGVza3RvcCB0eXBlIGJvdW5kYXJpZXMgZXhwbGljaXQsIHR5cGUgY2hlY2tzIGVuZm9yY2VkLCBwcm94eSBjb252ZW50aW9uIGN1cnJlbnQsIG5vIG1pZ3JhdGlvbiBzaWRlIGVmZmVjdHMsIGFuZCAzOSBjbG91ZCBTREsgcGFja2FnZXMgZXh0ZXJuYWxpemVkLgo=",
+  "text": "Vercel build contract verified: web/desktop type boundaries explicit, type checks enforced, proxy convention current, no migration side effects, and 39 cloud SDK packages externalized.\n"
+}

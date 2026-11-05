@@ -1,0 +1,41 @@
+{
+  "sourceRevision": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "primaryToolSession": 71847,
+  "primaryToolExit": 0,
+  "owned": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-current-quality-build-0c9d0e40-ya3nsqus",
+  "archiveBytes": 100597760,
+  "archiveSha256": "895114ac805c60903fef49202057d049332897145e14cd805fb482a7350b3eb6",
+  "verifiedRegularFiles": 9255,
+  "missingOptional": [
+    {
+      "location": "node_modules/@emnapi/core",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@emnapi/wasi-threads",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@napi-rs/wasm-runtime",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    },
+    {
+      "location": "node_modules/@tybys/wasm-util",
+      "presentAfterInstall": false,
+      "reason": "pinned_tarball_cache_miss"
+    }
+  ],
+  "buildOutputsVerified": true,
+  "buildCompatibilityVerified": false,
+  "completeExecutableClosure": "unavailable",
+  "runtimeQualification": "unavailable",
+  "activationQualification": "unavailable",
+  "executingIssuerIdentity": "unavailable",
+  "descendantQuiescence": "unavailable",
+  "executionAuthorized": false,
+  "previewStarted": false,
+  "currentApplicationSourceMatchesFrozenTarget": true
+}

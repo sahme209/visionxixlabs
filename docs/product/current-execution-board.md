@@ -314,3 +314,7 @@ Five omitted authored guides added; actual rendered page-inventory/titlelookup R
 
 ### Docs contents IME Escape — local keyboard repair
 ~~Composing Escape no longer closes the narrow Docs contents panel~~ ([evidence](../recovery/2026-11-04/docs-contents-ime/README.md)): nativecomposition/229 cases RED2/6existingcontrols→GREEN8, scopedtypes, wholefile reconstruction and independentreview pass. Open/focus/filter/default preservation and laterordinaryEscape verified in renderedDOM. Not realOSIME/browser/AT/build/deploy acceptance. No routing/financial/authority or provider changes, older previews preserved; all21parents and pending decisions remain open.
+
+
+### Exact current quality web integration — ordinary local build
+~~Exact0c9source compiled, production-web types/303staticpages/output checks passed~~ ([evidence](../recovery/2026-11-04/current-quality-web-batch/README.md)):9255regular inputs/archive100597760bytes/SHA895114ac...; primary71847terminal0. Three dynamicdependencywarnings/fouroptionalcachemisses preserved. Strictcompatibilityfalse, issuer/runtime/closure/activation/quiescenceunavailable/executionAuthorizedfalse remain. No new preview/native/deploy, actualbrowser/customer/Gov acceptance or paid operation. Existing source-focused tests not repeated; all21parents/pending decisions and usermasteredit preserved.

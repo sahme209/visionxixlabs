@@ -1,0 +1,8 @@
+{
+  "reviewer": "adapter_probe_review",
+  "result": "no important findings",
+  "scope": "actual ordinarybuild receipts/logs/qualification limits",
+  "source": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "observed": "exit0,compile37.5s/types25.6s/303staticpages/outputverified",
+  "limits": "3warnings/4optional misses; strictcompatfalse/allissuer-runtime-activation-closure-quiescenceunavailable; no preview/production/Gov acceptance"
+}
