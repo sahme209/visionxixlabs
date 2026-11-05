@@ -1,0 +1,67 @@
+{
+  "state": "prepared-not-authorized",
+  "artifact": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker",
+    "sha256": "dab32033aab6bf0e78e2ffdef31cad254beee4d4f4061f3649ccf21345c1c247",
+    "size": 172944,
+    "mode": "0o600",
+    "uid": 501,
+    "dev": 16777232,
+    "ino": 16831611,
+    "mtime_ns": 1793904824655269747,
+    "ctime_ns": 1793904824660179751
+  },
+  "entitlements": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/native-empty-entitlements.plist",
+    "sha256": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c",
+    "size": 181,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16831722,
+    "mtime_ns": 1793904847410033151,
+    "ctime_ns": 1793904847410033151
+  },
+  "compile_receipt_sha256": "2af1ee8ed851b8b19b9199d4ae82511b0a077400ba11e2831eddb21a6d19c7c6",
+  "stage_input_manifest_sha256": "534252bb1fdd07792b20927c23ff33db558d943893e1489cd8f5b6024b3cd67b",
+  "postcompile_file_set_verified": true,
+  "commands": [
+    [
+      "/usr/bin/codesign",
+      "--force",
+      "--sign",
+      "4C2E59F247CA275001586AE020A9269464529452",
+      "--identifier",
+      "com.visionxixlabs.axiom.synthetic.broker",
+      "--options",
+      "runtime",
+      "--entitlements",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/native-empty-entitlements.plist",
+      "--timestamp=none",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker"
+    ],
+    [
+      "/usr/bin/codesign",
+      "--verify",
+      "--strict",
+      "--verbose=2",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker"
+    ],
+    [
+      "/usr/bin/codesign",
+      "--display",
+      "--verbose=4",
+      "--entitlements",
+      ":-",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-detached-broker-6018e44c/stage/leaves/AxiomIssuerBroker"
+    ]
+  ],
+  "per_command_seconds": 10,
+  "per_command_output_bytes": 65536,
+  "attempts": 1,
+  "retries": 0,
+  "broker_execution": false,
+  "root_installation": false,
+  "requiresStandaloneDisplay": true,
+  "requiresExactPostsignFileSet": true
+}

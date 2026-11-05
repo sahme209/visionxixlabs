@@ -1,0 +1,20 @@
+F
+======================================================================
+FAIL: test_broker_leaf_compiles_outside_app_before_any_assembly (__main__.SystemPreparationTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 122, in test_broker_leaf_compiles_outside_app_before_any_assembly
+    try:r=s.prepare_system(self.repo,self.stage,self.config,phase='broker-leaf')
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: unsupported_preparation_phase
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_system_preparation.py", line 123, in test_broker_leaf_compiles_outside_app_before_any_assembly
+    except s.SystemPreparationUnavailable as error:self.fail('detached broker preparation required: '+str(error))
+AssertionError: detached broker preparation required: unsupported_preparation_phase
+
+----------------------------------------------------------------------
+Ran 1 test in 0.007s
+
+FAILED (failures=1)

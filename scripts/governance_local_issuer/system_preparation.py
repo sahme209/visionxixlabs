@@ -56,7 +56,7 @@ def _snapshot(path,limit=MAX_FILE):
  data=b''.join(chunks)
  return data,{'sha256':hashlib.sha256(data).hexdigest(),'size':len(data),'mode':stat.S_IMODE(before.st_mode),'dev':before.st_dev,'ino':before.st_ino,'mtimeNs':before.st_mtime_ns,'ctimeNs':before.st_ctime_ns}
 def _config(c,phase):
- if phase not in ('complete','native-leaves','controller-first','independent-leaves'):_refuse('unsupported_preparation_phase')
+ if phase not in ('complete','native-leaves','controller-first','independent-leaves','broker-leaf'):_refuse('unsupported_preparation_phase')
  keys={'format','generation','principal','lifetimeNs','nativeProfile','systemProfile','team','node','requirements'}
  if not isinstance(c,dict) or set(c)!=keys or c['format']!='axiom.system-preparation-config/1' or c['generation']!=GENERATION:_refuse('exact_system_config_required')
  p=c['principal']
@@ -65,7 +65,7 @@ def _config(c,phase):
  if c['nativeProfile']!='hardened-runtime-no-exceptions/1' or c['systemProfile']!='trusted-owner-root-journal/1' or c['team']!='FG5N98FE6W':_refuse('unsupported_system_profile')
  n=c['node'];q=c['requirements']
  if not isinstance(n,dict) or set(n)!={'path','sha256','headers'} or not re.fullmatch('[a-f0-9]{64}',str(n['sha256'])):_refuse('bound_node_required')
- required={'node','controller','brokerForGuard'} if phase=='complete' else ({'node','controller'} if phase=='native-leaves' else set())
+ required={'node','controller','brokerForGuard'} if phase=='complete' else ({'node','controller'} if phase in ('native-leaves','broker-leaf') else set())
  if phase in ('controller-first','independent-leaves')and q!={}:_refuse('independent_phase_has_no_code_requirements')
  if not isinstance(q,dict) or not required<=set(q) or not set(q)<={'node','controller','brokerForGuard'} or any(not isinstance(v,str) or not re.fullmatch('cdhash H"[a-f0-9]{40}"',v) for v in q.values()):_refuse('exact_leaf_requirements_required')
  return c
@@ -109,7 +109,7 @@ def _write(path,data):
  if stat.S_IMODE(path.stat().st_mode)!=0o600:_refuse('private_output_required')
 def _header(c,phase):
  values={'AX_OWNER_PROFILE':2,'AX_OWNER_FIXED_UID':c['principal']['uid'],'AX_OWNER_FIXED_GID':c['principal']['gid'],'AX_OWNER_MAX_LIFETIME_NS':str(c['lifetimeNs'])+'ULL','AXIOM_ISSUER_PACKAGE_ROOT':PACKAGE_ROOT,'AXIOM_ISSUER_IMAGE_BACKING':APP+'/Contents/Resources/issuer-package.dmg','AXIOM_ISSUER_CONTROL_APP':APP,'AXIOM_ISSUER_ORIGIN_SERVICE':BROKER_SERVICE}
- if phase in ('complete','native-leaves'):
+ if phase in ('complete','native-leaves','broker-leaf'):
   values['AXIOM_ISSUER_NODE_REQUIREMENT']=c['requirements']['node']
   values['AXIOM_ISSUER_CONTROLLER_REQUIREMENT']=c['requirements']['controller']
  if phase=='complete':values['AXIOM_ISSUER_BROKER_REQUIREMENT']=c['requirements']['brokerForGuard']
@@ -121,9 +121,11 @@ def _header(c,phase):
 def _recipes(stage,phase):
  native=stage/'source'/NATIVE;app=stage/'assembly/Axiom Synthetic Custodian.app'
  outputs={'owner':app/'Contents/Helpers/AxiomSyntheticLaunchOwner','broker':app/'Contents/MacOS/AxiomIssuerBroker','controller':app/'Contents/MacOS/AxiomIssuerController','maintenance':app/'Contents/Helpers/AxiomSyntheticProvisioner','bootstrap':stage/'payload/__axiom_runtime__/origin-bootstrap','guard':stage/'payload/node_modules/@axiom/verified-issuer-runtime/native/origin_guard.node'}
+ if phase=='broker-leaf':outputs['broker']=stage/'leaves/AxiomIssuerBroker'
  common=['/usr/bin/xcrun','clang','-std=c11','-Wall','-Wextra','-Werror','-Wno-deprecated-declarations','-fblocks','-mmacosx-version-min=13.0','-I'+str(native),'-include',str(stage/'config/system-preparation.h')]
  result=[]
  for role,files in ROLE_SOURCES.items():
+  if phase=='broker-leaf'and role!='broker':continue
   if phase=='native-leaves'and role=='guard':continue
   if phase=='controller-first'and role!='controller':continue
   if phase=='independent-leaves'and role not in ('owner','maintenance','bootstrap'):continue
@@ -164,6 +166,7 @@ def prepare_system(repo,stage,config,*,phase='complete'):
   if _snapshot(Path(c['node']['headers'])/name)[1]!=before:_refuse('header_changed_during_preparation')
  manifest={p.relative_to(stage).as_posix():{'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'size':p.stat().st_size}for p in sorted(stage.rglob('*'))if p.is_file()}
  result={'format':'axiom.system-preparation/1','preparationPhase':phase,'generation':GENERATION,'config':c,'sourceInputs':{k:v[1]for k,v in source.items()},'nodeInput':node[1],'headerInputs':{k:v[1]for k,v in headers.items()},'intendedInstallation':{'root':ROOT,'app':APP,'owner':OWNER_PATH,'packageRoot':PACKAGE_ROOT,'image':APP+'/Contents/Resources/issuer-package.dmg','ownerService':OWNER_SERVICE,'requiredRootOwnership':True},'staging':str(stage),'compileRecipes':recipes,'files':manifest,'unresolved':['actual_installation_and_runtime_qualification_missing','broker_service_topology_unqualified','compiled_consumer_materialization_missing','signing_and_resource_custody_unqualified'],'executionAuthorized':False,'installationReady':False,'activationAllowed':False,'configurationAuthority':'unverified declarations only'}
+ if phase=='broker-leaf':result['unresolved'].append('broker_leaf_requires_separate_signature_and_final_assembly')
  if phase=='native-leaves':result['unresolved'].append('guard_requires_actual_signed_broker')
  if phase=='controller-first':result['unresolved'].extend(['native_leaves_require_actual_node_and_controller','guard_requires_actual_signed_broker'])
  if phase=='independent-leaves':result['unresolved'].append('controller_broker_guard_requirements_pending')
