@@ -1,0 +1,26 @@
+{
+  "packages/verified-issuer-runtime/native/system_peer_binding.c": {
+    "sha256": "8da6ff4a7f11d2a815527a33c09b84487f25d823cfba01f5b9fdfa5eabe1b918",
+    "size": 7904
+  },
+  "docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/commands.json": {
+    "sha256": "9e20fa829a7cec9a8fe6106d4b8c95416fb1d6f8f84968586df74a9d921b19df",
+    "size": 1572
+  },
+  "docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/3-stdout.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+  },
+  "docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/3-stderr.log": {
+    "sha256": "72378522a062552151c44d925ab122b03367a17cad57fe7e941338aeaaeb799f",
+    "size": 1269
+  },
+  "docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/guard/saved-byte-inspection.json": {
+    "sha256": "c00f273024e896fef47b3e6cc81ef50c2a06d850b85861511ad819b11b66e6a9",
+    "size": 2970
+  },
+  "docs/recovery/2026-11-05/governance-remaining-leaf-signing/signing-observation/result.json": {
+    "sha256": "dc108c8fc762eb3bc5506749e58b932b64ba3d06ab5c5011bc352847402eeeb1",
+    "size": 1351
+  }
+}

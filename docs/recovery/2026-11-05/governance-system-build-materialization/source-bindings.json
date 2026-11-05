@@ -1,0 +1,52 @@
+{
+  "executionAuthorized": false,
+  "files": {
+    "docs/recovery/2026-11-05/governance-system-artifact-plan/SYSTEM-PEER-BINDING-PROPOSAL.md": {
+      "sha256": "1c0726d7a96b103143578dfcb26b19fcc0b21e790b132f17bb2ced2c2dd02913",
+      "size": 6620
+    },
+    "lib/desktop/privateReleaseMergeBootstrap.ts": {
+      "sha256": "ba74b3a38c57124b6b391f5adf11cfd542082ac77620cabfe80b07d1399aeff9",
+      "size": 3408
+    },
+    "packages/verified-issuer-runtime/index.cjs": {
+      "sha256": "2cde061f2a897d98427616ee9fba10160a6bc1a16a75cbd110612ccd2f766af4",
+      "size": 7258
+    },
+    "packages/verified-issuer-runtime/internal/verify-package.cjs": {
+      "sha256": "1d2fe048e4fd873691ab04f86668056963d62276d0fdc5df85b8c6334ce84a17",
+      "size": 11873
+    },
+    "scripts/build-local-issuer-package-source.py": {
+      "sha256": "c099c90b95778062873ed4b17546d84c915f707fdaa4c5399b4938e5f31cb2a1",
+      "size": 42094
+    },
+    "scripts/emit-private-release-bootstrap.cjs": {
+      "sha256": "c10743ea2290a8790354e958eeb5ba90486e418e73fdb777c24ff05c1747acc0",
+      "size": 2264
+    },
+    "scripts/governance_local_issuer/manifest.py": {
+      "sha256": "19304f8c9e9fbe8620cf6b484fd599b6f7fc3611d55eea3339a45030f0f5e5e0",
+      "size": 18081
+    },
+    "scripts/governance_local_issuer/materialize.py": {
+      "sha256": "f68f30913fa036ed53a586ec112fa84302f5af82694fb8938bc6575531202afc",
+      "size": 22810
+    },
+    "scripts/governance_local_issuer/native_linkage.py": {
+      "sha256": "027a0f78c0341112fee376a828aeec5e62cbbdd2c9445873b7ed997af9be7490",
+      "size": 11644
+    },
+    "scripts/governance_local_issuer/native_overlay.py": {
+      "sha256": "4201318ae62dc89c3eba6a4048896dede274b365fa0754ec8055cf51095373a6",
+      "size": 11435
+    },
+    "scripts/governance_local_issuer/system_preparation.py": {
+      "sha256": "1cdf90d0b9ad38bc8849d567036db8a83ce26cd0f0c74b2fe5ba5a30024e141e",
+      "size": 15253
+    }
+  },
+  "format": "axiom.system-build-materialization-proposal-source-bindings/1",
+  "observation": "source bytes only; no execution or qualification",
+  "proposalSha256": "1135546759c3de10a5e9ce3494f823300c0bd702d84065f23d2f687b8554c308"
+}

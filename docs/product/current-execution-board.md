@@ -2,11 +2,16 @@
 
 Reconciled November4,2026. Each linked receipt identifies its exact source version; no single snapshot is used as authority for every historical milestone. This is a compact navigation aid for the [full master plan](axiom-master-action-plan.md), whose detailed requirements remain binding. All15A/B parents are open; six newly added C parents remain future-scoped. None is declared complete. Internal source drafts, simulated tests, local processes and live acceptance are different evidence classes. No percentage or finish-time estimate is asserted.
 
+## November5 connected System build/materialization — reviewed proposal
+
+~~Actual missing compiler/materializer seams traced to current source~~ ([proposal](../recovery/2026-11-05/governance-system-build-materialization/PROPOSAL.md)). One connected local unit would bind System artifacts into a fresh real source-compiler profile and paired package materializer, preserving distinct build-tool/runtime Node, actual compiled private bootstrap, exact role/loader closure, companion separation and immutable provenance. Quarantined input modes and eventual mode mapping stay distinct. **Pending validation-first approval:** source/mock-filesystem implementation only; actual build/sign/install/runtime qualification excluded. All21parents remain open.
+
 ## November5 remaining native signatures — exact batch prepared
 
 1. ~~Frozen detached0600 copies of owner, maintenance, bootstrap and guard prepared from existing compiled artifacts~~ ([review packet](../recovery/2026-11-05/governance-remaining-leaf-signing/REVIEW.md)); original full bindings preserved, no repeated compile or key use.
 2. **Consumed observation:** all12approved commands exited0; firstthree profile checks pass. Final guard receipt parser rejected empty display stdout. Saved-byte inspection finds no XML/DER entitlement slots; literal dictionary-profile acceptance remains unconfirmed. No retry/resign or final app sealing/execution/install.
-3. **Open:** actual assembly/integrity/custody/compiled consumer/System qualification, full enforcement and native enrollment. Signature success cannot satisfy these gates; all21parents stay open.
+3. ~~Separately approved local saved-profile reconciliation implemented and observed~~ ([evidence](../recovery/2026-11-05/governance-guard-profile-reconciliation/LOCAL-IMPLEMENTATION.md)):6pure+8batchfixturechecks across focused groups and one ordinary saved-file observation; locally grounded SDK structures distinguish the guard’s absent payload from the other three empty dictionaries. New supplement records all four representations; historical failure remains byte-identical/false, execution and installation remain unavailable.
+4. **Open:** actual assembly/integrity/custody/compiled consumer/System qualification, full enforcement and native enrollment. Signature success cannot satisfy these gates; all21parents stay open.
 
 ## November5 standalone broker signature and bound guard — locally verified
 

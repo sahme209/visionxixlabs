@@ -1,0 +1,62 @@
+{
+  "format": "axiom.saved-static-profile-supplement/1",
+  "representations": [
+    {
+      "role": "owner",
+      "observation": {
+        "representation": "explicit_empty_dictionary_observed",
+        "executionAuthorized": false,
+        "installationReady": false
+      },
+      "artifactSha256": "07d5a9c58a6894b9f9021db67b34d22c3d1c799a6ed1fd0b921712aef7b33e3f",
+      "commandsSha256": "0491b3740596c95378617ff139e838d5661e8ee9c46b8adcdbb29b5254b54d11"
+    },
+    {
+      "role": "maintenance",
+      "observation": {
+        "representation": "explicit_empty_dictionary_observed",
+        "executionAuthorized": false,
+        "installationReady": false
+      },
+      "artifactSha256": "783f845bce2867ceada5440e1fa5ada1766d9a5386a1b6cf1e30a2b3b54d0356",
+      "commandsSha256": "438a473b8283548a4670cdce7231b79807babe4b54bd5c0d5e71dc85e35e40ea"
+    },
+    {
+      "role": "bootstrap",
+      "observation": {
+        "representation": "explicit_empty_dictionary_observed",
+        "executionAuthorized": false,
+        "installationReady": false
+      },
+      "artifactSha256": "8dae44a1a6f0857e5716d78230b3b8ff7a4845ff3da5c2d8195d65632bfdaa12",
+      "commandsSha256": "a980d4bc897c8572455e8543b48808907d11232bb7749390c5aff79e36e0bdfc"
+    },
+    {
+      "role": "guard",
+      "observation": {
+        "representation": "no_encoded_entitlement_payload_observed",
+        "machOFileType": 8,
+        "signatureSlots": [
+          0,
+          2,
+          65536
+        ],
+        "codeDirectorySha256": "4eff899186275d6a2ba589ceb502e0e1bd481079558054272ec5f5f29b27dfd6",
+        "cdhash": "4eff899186275d6a2ba589ceb502e0e1bd481079",
+        "executionAuthorized": false,
+        "installationReady": false,
+        "cryptographicSignatureVerifiedHere": false
+      },
+      "artifactSha256": "820f33d35ee78851f54dd2e18b3f8ce734814aa4bc7ca425e6520ed90bbe506e",
+      "commandsSha256": "9e20fa829a7cec9a8fe6106d4b8c95416fb1d6f8f84968586df74a9d921b19df"
+    }
+  ],
+  "allFourRepresentationsObserved": true,
+  "historicalBatchAccepted": false,
+  "historicalResultSha256": "dc108c8fc762eb3bc5506749e58b932b64ba3d06ab5c5011bc352847402eeeb1",
+  "packetSha256": "124409f0462e2efb239266c213817047241e1e74aadc57547436310eeb5fe165",
+  "executionAuthorized": false,
+  "installationReady": false,
+  "operationalIdentity": "unavailable",
+  "cryptographicSignatureVerifiedHere": false
+}

@@ -1,0 +1,25 @@
+E..E..
+======================================================================
+ERROR: test_absent_guard_payload_is_distinct_observation_not_dictionary (__main__.SavedProfileTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_saved_profile_observation.py", line 21, in test_absent_guard_payload_is_distinct_observation_not_dictionary
+    result=inspect_guard_no_entitlements(fixture(),ID,TEAM)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/saved_profile_observation.py", line 4, in inspect_guard_no_entitlements
+    raise ObservationUnavailable('guard_representation_unconfirmed')
+governance_local_issuer.saved_profile_observation.ObservationUnavailable: guard_representation_unconfirmed
+
+======================================================================
+ERROR: test_explicit_empty_dictionary (__main__.SavedProfileTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_saved_profile_observation.py", line 24, in test_explicit_empty_dictionary
+    self.assertEqual(inspect_empty_dictionary(b'<?xml version="1.0"?><plist version="1.0"><dict/></plist>')['representation'],'explicit_empty_dictionary_observed')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/saved_profile_observation.py", line 6, in inspect_empty_dictionary
+    raise ObservationUnavailable('dictionary_representation_unconfirmed')
+governance_local_issuer.saved_profile_observation.ObservationUnavailable: dictionary_representation_unconfirmed
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (errors=2)

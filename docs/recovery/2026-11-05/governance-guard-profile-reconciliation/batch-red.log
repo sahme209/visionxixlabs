@@ -1,0 +1,15 @@
+..E.
+======================================================================
+ERROR: test_new_supplement_observes_both_forms_without_rewriting_failure (__main__.SavedBatchTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_saved_profile_observation.py", line 62, in test_new_supplement_observes_both_forms_without_rewriting_failure
+    old=self.prior.read_bytes();result=reconcile_saved_batch(self.packet,self.obs)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/saved_profile_observation.py", line 70, in reconcile_saved_batch
+    raise ObservationUnavailable('saved_batch_unconfirmed')
+governance_local_issuer.saved_profile_observation.ObservationUnavailable: saved_batch_unconfirmed
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.021s
+
+FAILED (errors=1)

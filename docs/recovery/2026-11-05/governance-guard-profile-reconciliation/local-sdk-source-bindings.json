@@ -1,0 +1,14 @@
+[
+  {
+    "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/System/Library/Frameworks/Kernel.framework/Versions/A/Headers/kern/cs_blobs.h",
+    "sha256": "71179676100bab2b321abd888237d4a6eda0088489f9930a77559c517d8c7c80",
+    "size": 14256,
+    "purpose": "ordinary local source definitions only; no Security API invocation"
+  },
+  {
+    "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/usr/include/mach-o/loader.h",
+    "sha256": "5862aeb7fbf183453080bc887c0d502fe25a86ff5bd81291bbcc408bd7fe6e74",
+    "size": 74809,
+    "purpose": "ordinary local source definitions only; no Security API invocation"
+  }
+]
