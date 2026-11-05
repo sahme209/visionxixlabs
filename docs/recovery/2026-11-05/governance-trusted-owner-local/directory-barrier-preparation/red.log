@@ -1,0 +1,1 @@
+Assertion failed: (ax_probe_barriers(31,32,&r)==1), function main, file barriers_test.c, line 8.

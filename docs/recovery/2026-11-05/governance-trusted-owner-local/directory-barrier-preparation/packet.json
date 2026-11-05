@@ -1,0 +1,61 @@
+{
+  "exit": 0,
+  "source_hashes": {
+    "probe.c": "aee785647a756b5f09205b1993d319bb7998d2cecebc02bada08c451b7c518c9",
+    "barriers.c": "4ebc6e3bbe3ea4e748bd0ce0d6da3dc363b65e82a44ddb9cdf7e4da9e8fbd911",
+    "barriers.h": "a215704debf191f509773e1d12ca88b532f6fa6f2ce7649eba4a5255590c012a"
+  },
+  "target_executed": false,
+  "artifact": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier/barrier-probe",
+    "sha256": "35953e017227f0b347d98dbe0c5cb584e13e625b9c78cd3b21841b62589f8308",
+    "size": 33904,
+    "uid": 501,
+    "mode": "0o600",
+    "dev": 16777232,
+    "ino": 16714491,
+    "mtime_ns": 1793899425147950686,
+    "ctime_ns": 1793899425150058940
+  },
+  "fixture_directory": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier",
+    "uid": 501,
+    "mode": "0o700",
+    "dev": 16777232,
+    "ino": 16714486
+  },
+  "maximum_seconds": 10,
+  "maximum_combined_output_bytes": 65536,
+  "attempts": 1,
+  "retries": 0,
+  "execution_authorized": false,
+  "environment": {
+    "PATH": "/usr/bin:/bin",
+    "LANG": "C",
+    "TZ": "UTC"
+  },
+  "compile_argv": [
+    "/usr/bin/clang",
+    "-std=c11",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-mmacosx-version-min=13.0",
+    "docs/recovery/2026-11-05/governance-trusted-owner-local/directory-barrier-preparation/probe.c",
+    "docs/recovery/2026-11-05/governance-trusted-owner-local/directory-barrier-preparation/barriers.c",
+    "-o",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier/barrier-probe"
+  ],
+  "execution_argv": [
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier/barrier-probe"
+  ],
+  "cwd": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-directory-barrier",
+  "stdin": "closed",
+  "owned_process_group": true,
+  "mode_policy": {
+    "before": "0o600",
+    "temporary": "0o700",
+    "finally": "0o600",
+    "method": "retained O_NOFOLLOW verified descriptor fchmod; path same dev/inode/hash before and after; record ctime transitions"
+  }
+}
