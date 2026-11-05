@@ -902,6 +902,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   }
 
   function submitDraft() {
+    if (transportContext !== desktopClient.config) return;
     if (submissionDisabled) return;
     if (sending || currentQueue.length) queueDraft();
     else void send();
@@ -914,6 +915,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   }, [queuedMessages, conversationId, active, sending, queuePaused, loadingConversation, needsRecovery, pendingProposal, decidingId, modelState, selectedModel, selectedModelUnavailable, requestKey]);
 
   async function send(queued?: QueuedAgentMessage) {
+    if (transportContext !== desktopClient.config) return;
     const instruction = queued?.instruction ?? input.trim();
     if (renamingBusy || !active || modelState !== "ready" || !selectedModel || !instruction || !conversationId || activeConversation.current !== conversationId || loadingConversation || sending || pendingProposal || messageAbort.current || recoveryRef.current.has(conversationId) || (composerMode === "code" && (!repositoryFullName.includes("/") || !branch.trim() || !filePath.trim()))) return;
     const choice = modelOptions.find(option => option.key === selectedModel);
@@ -1014,6 +1016,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
   }
 
   async function decide(approve: boolean) {
+    if (transportContext !== desktopClient.config) return;
     if (!pendingProposal || !conversationId || activeConversation.current !== conversationId || loadingConversation) return;
     const context = desktopClient.config;
     const generation = ++decisionEpoch.current;

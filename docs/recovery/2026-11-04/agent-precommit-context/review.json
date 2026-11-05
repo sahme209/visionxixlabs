@@ -1,0 +1,6 @@
+{
+  "reviewer": "/root/adapter_probe_review",
+  "result": "clear, no important findings",
+  "scope": "three render-context guards and six rendered cases",
+  "execution": "read-only; no reruns or edits"
+}

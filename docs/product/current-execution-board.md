@@ -184,3 +184,6 @@ Existing native Documentation page inspected through AX and screenshot without i
 
 ### November4 current Agent native rendering
 ~~Current signed983 Agent saved conversation/composer/mode guidance observed~~; model loading settled to enabled named model, empty Send disabled and keyboard instruction visible. [Evidence](../recovery/2026-11-04/native-agent-readonly/README.md). No request, mode/model/file/terminal/approval action; historical refusal messages are not current policy/balance proof. Documentation restored. Execution/IME/AT/fullA4 and Governance remain open.
+
+### November4 Agent precommit connection ownership repair
+~~Retained Send/approval/rejection handlers refuse replacement client configuration before notification~~: actual rendered3RED→6GREEN (three same-context controls), desktop types and independent review pass. [Evidence](../recovery/2026-11-04/agent-precommit-context/README.md). Three entry guards only; draft retained and no stale mocked outbound calls. No real server/provider/native acceptance, running983 unchanged, no production activation or full Governance claim. All21parents preserved.
