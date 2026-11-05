@@ -1,0 +1,21 @@
+{
+  "scope": "read-only native observation; no UI action",
+  "app": "Axiom Agent Local Preview",
+  "currentPage": "Documentation",
+  "actualAX": "five journey buttons, seven external guide links, active workspace summary",
+  "actualScreenshot": "emitted in chat by CUA; no local image artifact retained",
+  "observations": [
+    "dark theme current screenshot has two-column journey cards",
+    "five stages and their buttons visibly rendered",
+    "availability and guide-is-not-acceptance notices visibly rendered",
+    "long page scrolls; guide section begins below workflow cards"
+  ],
+  "limitations": [
+    "one existing window size/theme only",
+    "no measured contrast, accessibility or responsive acceptance",
+    "no controls clicked, theme changed, provider request initiated or session modified",
+    "local metadata identifiers from ee26827d are not in this running build"
+  ],
+  "previousGoalTurn": "progress: ee26827d metadata/test/evidence commit and verified local bundle",
+  "masterSha256": "9318d0e64ded150b0c58c8bf9d2cd298702431630e801342389fa87d118bc64e"
+}

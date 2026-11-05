@@ -172,3 +172,6 @@ Existence-only inspection found helper/packet/controllercopy/fixture from909miss
 
 ### November4 Documentation control identifiers — local only
 Twelve existing rendered controls now have stable source identifiers (two mapped declarations). [Evidence](../recovery/2026-11-04/documentation-control-identifiers/README.md). Targeted rendered tests RED then 2 PASS, desktop types PASS, independent review clear; original behavior reconstructs exactly after metadata removal. Current native app unchanged; no customer help/retrieval/global AST or production acceptance. All 21 parents remain open; Governance persistent recovery preparation decision remains pending.
+
+### November4 current Documentation visual observation
+Existing native Documentation page inspected through AX and screenshot without input. Two-column dark journey cards, five stage buttons and availability notices visible at one window size. [Bounded observation](../recovery/2026-11-04/native-documentation-walkthrough/current-visual-observation.json). Screenshot emitted in chat only; no all-theme/responsive/contrast/AT or control execution acceptance. User's current Documentation view preserved. Governance preparation decision remains pending; all 21 parents open.
