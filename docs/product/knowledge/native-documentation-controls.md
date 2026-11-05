@@ -53,3 +53,9 @@ The current983 preview was built from source5f208e0a. A fresh [six-file/seven-ra
 The hash-verified compiled frontend contains the version/availability warning and all seven fixed web-guide URLs. Their presence proves a compiled source scope, not successful links or current web content. The five journey controls still navigate only; destination effects and execution requirements remain separate.
 
 The attempted actual native visit stopped at the Mac lock before navigation. Native Documentation rendering/keyboard, browser destinations, media/editorial/customer and retrieval acceptance remain false. No unlock, external browser, web request, form or action was performed. Prior native Home/Releases checks do not substitute for this screen. [Observation and limits](../../recovery/2026-11-04/native-documentation-walkthrough/README.md).
+
+## November4 resumed native observation
+
+After manual unlock, the current983 native screen showed both version/availability notices, all five journey button labels and all seven external guide labels. The single tested internal button, **Open deployment requests**, opened Releases; Apps & skills was then restored. No external link, provider verification, form, skill, approval or execution control was used. [Exact resumed scope](../../recovery/2026-11-04/native-documentation-walkthrough/resume-observation.json).
+
+The earlier lock report is historical. This bounded pointer/content observation leaves Documentation keyboard/AT, other destinations, external web content, full visual/media/customer/editorial/retrieval and end-to-end acceptance open. No screenshot was captured in this check.

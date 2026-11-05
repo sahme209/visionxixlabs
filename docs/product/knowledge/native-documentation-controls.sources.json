@@ -9,7 +9,7 @@
   "proposedIdsNotRuntimeBinding": true,
   "guide": {
     "path": "docs/product/knowledge/native-documentation-controls.md",
-    "sha256": "afdc0b3e6486f342c5a736c14c2d643cdec6289744b9404a2b141ba4b20097ba"
+    "sha256": "d9d321ebddd4064d2430f1855070961b47428cdc766f71b96b8526e6fe2bbb66"
   },
   "rangeConvention": "inclusive1-based raw lines retaining newlines",
   "sources": [
@@ -94,5 +94,11 @@
   "compiledCopyAndFixedUrlPresenceChecked": true,
   "compiledEvidence": "docs/recovery/2026-11-04/current-persistent-preview/frontend-output.json",
   "scope": "finite DocsView/routing/direct external handoff source plus compiled literal presence only; actual native Documentation visit blocked by Mac lock; no destination/browser qualification",
-  "historicalManifestUnchanged": "docs/recovery/2026-11-03/native-documentation-guide/source-bindings.json"
+  "historicalManifestUnchanged": "docs/recovery/2026-11-03/native-documentation-guide/source-bindings.json",
+  "boundedNativeObservation": {
+    "evidence": "docs/recovery/2026-11-04/native-documentation-walkthrough/resume-observation.json",
+    "noticeAndLabelsObserved": true,
+    "internalReleasesPointerHandoffObserved": true,
+    "externalOrAllControlAcceptance": false
+  }
 }

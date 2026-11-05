@@ -1,0 +1,43 @@
+{
+  "build": "current signed983preview from5fsource",
+  "userManualUnlockReported": true,
+  "initialHomeObserved": true,
+  "firstDocumentationClick": "CUA cancelled because user changed app",
+  "freshState": "Apps & skills; All filter; empty search; no open draft form",
+  "resume": "Fresh sidebarDocumentation control selected, no force or alternate UI mechanism",
+  "documentationObserved": {
+    "versionAvailabilityWarning": true,
+    "journeyAvailabilityNotAcceptanceWarning": true,
+    "journeyButtons": [
+      "Open repository",
+      "Open Agent",
+      "Open deployment requests",
+      "Open Airflow",
+      "Review deployment evidence"
+    ],
+    "externalGuideLinkLabels": [
+      "Product documentation",
+      "Getting started",
+      "Permissions model",
+      "Approval workflow",
+      "Glossary",
+      "Troubleshooting",
+      "Surfaces"
+    ]
+  },
+  "action": "Clicked only Open deployment requests journey button",
+  "destinationObserved": [
+    "Releases heading",
+    "Loading current workspace requests"
+  ],
+  "restoredView": "Apps & skills; All filter; empty search",
+  "externalLinksOpened": false,
+  "providerVerificationOrActionControlsClicked": false,
+  "formOrSkillSettingsChanged": false,
+  "aiOrExecutionRequested": false,
+  "documentationKeyboardOrATTested": false,
+  "screenshotCaptured": false,
+  "allDocumentationOrDeploymentAcceptance": false,
+  "governancePreparationApprovalInferredFromUnlock": false,
+  "method": "Actual CUA AX and pointer navigation; selected tool observations transcribed, no local raw AX/media artifact claimed"
+}
