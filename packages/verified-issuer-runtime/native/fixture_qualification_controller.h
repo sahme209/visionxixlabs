@@ -1,0 +1,4 @@
+#ifndef AX_FIXTURE_QUALIFICATION_CONTROLLER_H
+#define AX_FIXTURE_QUALIFICATION_CONTROLLER_H
+int ax_fixture_qualification_controller(void);
+#endif

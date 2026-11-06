@@ -72,6 +72,14 @@ export async function listReleaseOperationPlans(repo:ReleaseOperationPlanRepo,in
  scope(input);identity.parse(input.requestId);return repo.$transaction(async tx=>{await membership(tx,input);const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:input.organizationId,workflowKind:RELEASE_OPERATION_PLAN_KIND,inputJson:{path:['plan','requestId'],equals:input.requestId}},orderBy:[{createdAt:'desc'},{id:'desc'}],take:6});if(rows.length>6)throw new ReleaseOperationPlanConflict();const plans=[];
  for(const row of rows.slice(0,5)){const bound=unpack(row,input.organizationId);if(bound.input.plan.requestId!==input.requestId)throw new ReleaseOperationPlanConflict();const current=await source(tx,input.organizationId,bound.input.plan);plans.push(dto(row,await history(tx,row),input.actorUserId,input.canManage,!!current&&current.requesterUserId===bound.input.releaseRequesterUserId&&now(at).getTime()<Date.parse(bound.input.deadlineAt)))}await input.assertCurrent(tx);return{plans,truncated:rows.length>5};});
 }
+/** Exact private lookup inside the caller's transaction. Reuses the same
+ * membership, source, history and deadline checks as the existing list view;
+ * unlike a bounded list, it cannot lose a selected older plan to pagination. */
+export async function readReleaseOperationPlanInTransaction(tx:ReleaseOperationPlanTransaction,input:Scope&idInput&{canManage:boolean},at?:Date){
+ scope(input);const row=await loadLocked(tx,input);await membership(tx,input);const bound=unpack(row,input.organizationId),events=await history(tx,row);
+ const current=await source(tx,input.organizationId,bound.input.plan);await input.assertCurrent(tx);
+ return dto(row,events,input.actorUserId,input.canManage,!!current&&current.requesterUserId===bound.input.releaseRequesterUserId&&now(at).getTime()<Date.parse(bound.input.deadlineAt));
+}
 function actionId(value:string){return z.string().uuid().parse(value)}
 function replay(events:ReleaseOperationPlanEvent[],clientRequestId:string,actorUserId:string,type:string,expectedVersion:number){const match=events.find(e=>!!e.detailJson&&typeof e.detailJson==='object'&&'actionId'in e.detailJson&&e.detailJson.actionId===clientRequestId);if(!match)return false;if(!match.detailJson||typeof match.detailJson!=='object'||!('expectedVersion'in match.detailJson)||match.detailJson.expectedVersion!==expectedVersion||match.actorId!==actorUserId||match.eventType!=='release_plan.'+type&&!(match.eventType==='release_plan.stale'&&!!match.detailJson&&typeof match.detailJson==='object'&&'requestedDecision'in match.detailJson&&match.detailJson.requestedDecision===type))throw new ReleaseOperationPlanConflict();return true}
 async function assertWindow(tx:ReleaseOperationPlanTransaction,deadlineAt:string){

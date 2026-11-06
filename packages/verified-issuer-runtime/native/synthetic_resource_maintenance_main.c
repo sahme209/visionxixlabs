@@ -3,6 +3,7 @@
 #include "owner_config.h"
 #include "synthetic_fixture_readiness.h"
 #include "synthetic_resource_provisioner.h"
+#include "synthetic_fixture_producer.h"
 #include "origin_process_identity.h"
 #include <mach-o/dyld.h>
 #include <sys/stat.h>
@@ -40,6 +41,8 @@ int main(int argc,char**argv){
  if(_NSGetExecutablePath(path,&length)||!realpath(path,canonical)||strcmp(canonical,MAINTENANCE_PATH)||!protected_parent()||lstat(MAINTENANCE_PATH,&own)||!axiom_origin_loaded_file_matches((uintptr_t)&main,&own))return 71;
  AxSyntheticProvisionResult result=ax_synthetic_native_provision();
  /* Fixed numeric statuses only: never print locator, item, key or material. */
- printf("{\"phase\":%u,\"reason\":%u}\n",result.phase,result.reason);
- return result.phase==9&&result.reason==0&&result.adds_started==3&&result.locators_published==1?0:72;
+ int provisioned=result.phase==9&&result.reason==0&&result.adds_started==3&&result.locators_published==1;
+ int controller=provisioned?ax_fixture_commit_and_run_controller():0;if(!provisioned)ax_fixture_discard_authorization();
+ printf("{\"phase\":%u,\"reason\":%u,\"controllerObservation\":%u}\n",result.phase,result.reason,controller?1U:0U);
+ return provisioned&&controller?0:72;
 }

@@ -39,7 +39,7 @@ static int publish(void *v,const AxSyntheticLocators *locators){
  if(!ok)return AX_SYNTH_PUBLISH_UNKNOWN;
  /* macOS SDK declares RENAME_EXCL: no replace, no unsafe rename fallback. */
  if(renameatx_np(n->dir,"bootstrap-locators.v1.staging",n->dir,"bootstrap-locators.v1",RENAME_EXCL)){if(errno==EEXIST)return AX_SYNTH_PUBLISH_COLLISION;if(errno==ENOTSUP||errno==EINVAL)return AX_SYNTH_PUBLISH_UNSUPPORTED;return AX_SYNTH_PUBLISH_UNKNOWN;}
- return sync_fd(n->dir)?AX_SYNTH_PUBLISH_OK:AX_SYNTH_PUBLISH_UNKNOWN;
+ return sync_fd(n->dir)&&ax_fixture_authorization_locators_published()?AX_SYNTH_PUBLISH_OK:AX_SYNTH_PUBLISH_UNKNOWN;
 }
 static int add(void *v,unsigned role,unsigned char locator[AX_SYNTH_LOCATOR_MAX],size_t *length){
  Native*n=v;if(role<1||role>3)return AX_SYNTH_ADD_FAILED;

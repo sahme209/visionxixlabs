@@ -1,5 +1,8 @@
 import 'server-only';
 import {createHash} from 'node:crypto';
+import type {PrismaClient} from '@prisma/client';
+import {prepareFixedFixtureBase} from './privateFixtureBase';
+import {mintFixedFixtureAuthorization} from './privateFixtureAuthentication';
 import {readFileSync,lstatSync,realpathSync,readSync,writeSync} from 'node:fs';
 import {splitSyntheticFixtureSql} from './syntheticFixtureSchema';
 import {createPrivateAuthorityDatabase} from '@/lib/security/privateAuthorityDatabase';
@@ -23,11 +26,11 @@ function signalPhase(phase:number){writeSync(1,Buffer.from([65,88,70,83,0,0,0,ph
 async function validateFinal(admin:Client){const reload=await admin.$queryRawUnsafe('SELECT pg_reload_conf() AS ok');if(!Array.isArray(reload)||reload.length!==1||reload[0].ok!==true)return false;const rules=await admin.$queryRawUnsafe('SELECT database, user_name, auth_method, error FROM pg_hba_file_rules ORDER BY rule_number');if(!Array.isArray(rules)||rules.some(r=>r.error||r.auth_method==='trust'||(Array.isArray(r.database)&&r.database.includes('postgres'))))return false;const probe=createPrivateAuthorityDatabase(uri('postgres','axiom_fixture_admin'));try{await probe.$queryRawUnsafe('SELECT 1');return false;}catch(error){if(!error||typeof error!=='object'||!('code'in error)||error.code!=='P1010')return false;const live=await admin.$queryRawUnsafe('SELECT 1 AS ok');return Array.isArray(live)&&live.length===1&&live[0].ok===1;}finally{await probe.$disconnect();}}
 /** Fixed installed zero-argument entry; importing this module performs no IO/SQL. */
 export async function runFixedSyntheticFixtureProducer(){
- let frame:Buffer|undefined;
+ let frame:Buffer|undefined;let authorization:Uint8Array|undefined;
  try{if(process.getuid?.()!==0||process.geteuid?.()!==0||process.argv.length!==2||realpathSync(process.argv[1])!==RESOURCE+'/fixture-producer.cjs'||process.execArgv.length||process.env.NODE_ENV!=='production')throw Error();
  for(const key of Object.keys(process.env))if(key!=='NODE_ENV'&&/^(NODE_|DYLD_|LD_|TS_NODE_|BABEL_|AXIOM_)/i.test(key))throw Error();
  protectedBytes(RESOURCE+'/fixture-producer.cjs',16*1024*1024);
- const producer=createSyntheticFixtureProducerCore({phase:async value=>{signalPhase(value);},connect:createPrivateAuthorityDatabase,readRecipe,inspect,parentFinalHba:async()=>{signalPhase(1);const ack=exactRead(8);return ack.equals(Buffer.from([65,88,70,65,0,0,0,1]));},validateFinal,seed:async client=>{const binding=JSON.parse(protectedBytes(RESOURCE+'/fixture-schema.binding.json',16384).toString('utf8'));const seed=protectedBytes(RESOURCE+'/fixture-seed.sql',1024*1024);if(binding.schemaSha256!==SCHEMA||binding.seedSha256!==createHash('sha256').update(seed).digest('hex'))throw Error();for(const statement of splitSyntheticFixtureSql(seed.toString('utf8')))await client.$executeRawUnsafe(statement);}});
- frame=exactRead(136);await producer(frame);signalPhase(2);
- }catch{signalPhase(255);throw Error('synthetic_fixture_unavailable');}finally{frame?.fill(0);}
+ const producer=createSyntheticFixtureProducerCore({phase:async value=>{signalPhase(value);},connect:createPrivateAuthorityDatabase,readRecipe,inspect,parentFinalHba:async()=>{signalPhase(1);const ack=exactRead(8);return ack.equals(Buffer.from([65,88,70,65,0,0,0,1]));},validateFinal,seed:async (client,material)=>{const binding=JSON.parse(protectedBytes(RESOURCE+'/fixture-schema.binding.json',16384).toString('utf8'));const seed=protectedBytes(RESOURCE+'/fixture-seed.sql',1024*1024);if(binding.schemaSha256!==SCHEMA||binding.seedSha256!==createHash('sha256').update(seed).digest('hex'))throw Error();for(const statement of splitSyntheticFixtureSql(seed.toString('utf8')))await client.$executeRawUnsafe(statement);const privateClient=client as unknown as PrismaClient;const inputs=await prepareFixedFixtureBase(privateClient,material.vault,new Date());authorization=await mintFixedFixtureAuthorization(privateClient,material.session,inputs.scenarios,AbortSignal.timeout(15000));}});
+ frame=exactRead(136);await producer(frame);if(!authorization)throw Error();let sent=0;while(sent<authorization.byteLength){const n=writeSync(3,authorization,sent,authorization.byteLength-sent);if(n<=0)throw Error();sent+=n;}signalPhase(2);
+ }catch{signalPhase(255);throw Error('synthetic_fixture_unavailable');}finally{frame?.fill(0);authorization?.fill(0);}
 }

@@ -14,6 +14,23 @@ function show(canManage = true) {return render(createElement(PluginsSkillsView, 
 function changeContext() {m.client.config = {}; m.revision++; for (const fn of m.listeners) fn();}
 beforeEach(() => {vi.resetAllMocks(); m.client.config = {}; m.revision++; m.client.listAgentSkills.mockResolvedValue(ok({skills: [skill], storageAvailable: true})); m.client.integrationStatus.mockResolvedValue(ok({configuration: {github: true, slack: false, teams: false, linear: false}, github: {status: "not_connected", repositorySelection: "selected"}, cloud: [], collaboration: []})); m.client.airflowConnection.mockResolvedValue(ok({status: "not_connected"}));});
 afterEach(cleanup);
+it("uses one catalogue view while preserving search and read-only action guards", async () => {
+  m.client.listAgentSkills.mockResolvedValue(ok({skills:[{...skill,status:"enabled"},{...skill,id:"other",name:"Release guidance",status:"disabled"}],storageAvailable:true}));
+  show(false); await screen.findByText("Safe change");
+  const views=within(screen.getByRole("group",{name:"Choose catalogue view"}));
+  const search=screen.getByRole("searchbox",{name:"Search apps and skills"});
+  fireEvent.change(search,{target:{value:"Safe"}});
+  fireEvent.click(views.getByRole("button",{name:"Apps"}));
+  expect(screen.queryByText("Safe change")).toBeNull();
+  fireEvent.click(views.getByRole("button",{name:"Enabled"}));
+  expect(screen.getByText("Safe change")).toBeTruthy();
+  expect((search as HTMLInputElement).value).toBe("Safe");
+  expect(views.getAllByRole("button",{pressed:true})).toHaveLength(1);
+  expect(views.getByRole("button",{name:"Apps"}).getAttribute("aria-pressed")).toBe("false");
+  expect((screen.getByRole("button",{name:"Disable"}) as HTMLButtonElement).disabled).toBe(true);
+  expect(m.client.updateAgentSkill).not.toHaveBeenCalled();
+  expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
 it("shows declared tools and keeps members read-only", async () => {
   show(false); await screen.findByText("Safe change");
   fireEvent.click(screen.getByText("Review skill tools"));

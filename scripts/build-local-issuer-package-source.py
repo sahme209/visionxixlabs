@@ -492,6 +492,9 @@ def verify_build_outputs(stage):
  return {'requiredMetadata':metadata,'routeCount':len(routes),'traceCount':traces,'traceEntryCount':entries,
          'completeExecutableClosure':'unavailable','loadedCodeIdentity':'unavailable'}
 
+def private_bootstrap_emitter(fixture_selected):
+ return 'scripts/emit-private-fixture-release-bootstrap.cjs' if fixture_selected else 'scripts/emit-private-release-bootstrap.cjs'
+
 def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,generation_run=None,node=None,owned=None,timeout=600):
  import math,time
  if any(value is None for value in [stage,repo,revision,cache,bound_dir,generation_run,node,owned])or not isinstance(stage,(str,Path)):fail('exact_owned_build_coordinates_required')
@@ -544,7 +547,7 @@ def execute_build(stage=None,repo=None,revision=None,cache=None,bound_dir=None,g
    result['contractCheckStarted']=True;run(['scripts/check-vercel-build.mjs'],'contract.log')
    if prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node)!=inputs or tool.stable_file_hash(node)!=node_identity:fail('build_inputs_changed_before_compiler')
    result['buildStarted']=True;result['exit']=run(['node_modules/next/dist/bin/next','build','--webpack'],'next-build.log')
-   run(['scripts/emit-private-release-bootstrap.cjs'],'private-bootstrap-emission.log')
+   run([private_bootstrap_emitter(fixture_selected)],'private-bootstrap-emission.log')
    if fixture_selected:run(['scripts/emit-synthetic-fixture-producer.cjs'],'fixture-producer-emission.log')
    outputs=verify_build_outputs(stage)
    outputs['frameworkGeneratedDeclaration']=verify_framework_declaration(stage)

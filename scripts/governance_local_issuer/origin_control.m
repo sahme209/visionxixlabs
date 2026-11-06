@@ -3,6 +3,7 @@
  * Never execute against a real service without the exact run authorization. */
 #import <Foundation/Foundation.h>
 #include "origin_config.h"
+#include "fixture_qualification_controller.h"
 #include "origin_runtime_protocol.h"
 #include <Security/Security.h>
 #include <xpc/xpc.h>
@@ -18,6 +19,7 @@ static int actual_sender(xpc_object_t message,const char*text){
  if(!SecCodeCreateWithXPCMessage||xpc_get_type(message)!=XPC_TYPE_DICTIONARY)return 0;CFStringRef string=CFStringCreateWithCString(NULL,text,kCFStringEncodingUTF8);if(!string)return 0;SecRequirementRef requirement=NULL;SecCodeRef code=NULL;OSStatus status=SecRequirementCreateWithString(string,kSecCSDefaultFlags,&requirement);CFRelease(string);if(status!=errSecSuccess||!requirement)return 0;status=SecCodeCreateWithXPCMessage(message,kSecCSDefaultFlags,&code);int ok=status==errSecSuccess&&code&&SecCodeCheckValidity(code,kSecCSDefaultFlags,requirement)==errSecSuccess;if(code)CFRelease(code);CFRelease(requirement);return ok;
 }
 int main(int argc,const char**argv){@autoreleasepool{
+ if(argc==2&&!strcmp(argv[1],"--qualification-reviewed-issuer"))return ax_fixture_qualification_controller();
  if(argc!=3||!AXIOM_ISSUER_ORIGIN_SERVICE[0]||strlen(argv[2])>1024)return 64;
  const char*operation=NULL,*expected=NULL;int64_t timeout;
  if(!strcmp(argv[1],"--start-reviewed-issuer")){operation="start";expected="spawned_origin_only";timeout=(int64_t)AXIOM_ORIGIN_STARTUP_NS;}

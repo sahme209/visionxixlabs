@@ -1,0 +1,27 @@
+# Task 2 — fixed fixture authentication/scenario source
+
+Scope: user call_mMqfhxv3T8NfxA9xrWEBvzBI, local source and pure/mocked verification only. No SQL, cluster, real credentials, native/helper/service launch, provider, signing, build/emission or deployment occurred.
+
+Implemented:
+- strict bounded AXQAUTH1 codec; fixed tenant/session actors and ten ordered unique descriptors, exact decoded-key checks, source-plan IDs from real builders;
+- actual private token codec/session/resolver/commercial reader, with mocked DB evidence in tests;
+- F0 base source scopes/billing/schedule and future synthetic App generation/encryption; only opaque tokens leave via descriptor3 after successful original producer protocol;
+- immutable finite no-network provider with fixed JWT/repository/profile checks, single write grants/effects and consumed lost acknowledgements;
+- F1 real plan/review/document/baseline/policy/provider-approval writers with actual captured authority, private registered service composition; F3 true handler settlement before durable-history/response verification, no retroactive approval;
+- source-owned fixture bootstrap/emitter; ordinary initializer/emitter preserved, trusted selected source profile chooses fixed new entry, same canonical output ABI.
+
+Meaningful behavioral RED→GREEN logs (all /private/tmp): axiom-fixture-auth-frame-{red,green}.log (4); axiom-fixture-authentication-{red,green}.log (3); axiom-fixture-scenario-inputs-{red,green}.log (2); axiom-fixture-base-{red,green}.log (2); axiom-fixture-provider-{red,green}.log (4); axiom-fixture-scenario-{red,green}.log (2). The provider initial GREEN attempt exposed a syntax typo, corrected before behavioral GREEN. These are source/mock tests, not native/DB acceptance.
+
+Subsequent integration checks: axiom-fixture-scenario-provider-schedule.log (10); axiom-fixture-scenario-lifecycle.log (4); axiom-fixture-authentication-currentness.log (2 selected additional); axiom-fixture-bootstrap-lifecycle.log (2); axiom-fixture-bootstrap-emitter.log (2 node VM tests); axiom-fixture-auth-frame-cross.log (1 selected export). Integration/wrapper tests were added after their mechanical implementation and have no claimed RED→GREEN evidence. No actual emitter/compiler invocation. Synthetic frame work/joined-fixture-driver/ts-frame.bin was decoded by owner's pure C test.
+
+Types: first scoped config followed legacy cloud-SDK declarations and stalled (owned PID36246/session6033 terminated); no type PASS claimed. Replacement work/joined-fixture-driver/tsconfig.json uses the exact previously materialized dependency tree and CURRENT canonical declaration; prepared, not run until root's shared coverage wiring stabilizes.
+
+Remaining before local-unit completion: root joint types and finite combined selection; code review of scenario/wrapper/producer plus final source bindings. Full actual fixture generation/native/SQL/current-instance/enrolled consumer acceptance is still unavailable. This does not establish real independent human review, fleet qualification, production custody, universal enforcement or full Governance completion.
+
+Further focused checks after integration: authentication-currentness selected2 PASS (expired/role/unavailable commercial + actual wrong-key signature refusal); scenario-f3-positive selected1 PASS (real source automaton, mocked store constructor/DTO); bootstrap-source-selection1 pure Python PASS (fixed selected emitter vs preserved default). No TDD-first claim for these mechanical integration tests. The sole cross-language export initially had a test-helper name typo, corrected and selected test passed; no production correction was inferred from that test typo.
+
+Owned source paths: lib/governance/qualification/{fixtureAuthorizationFrame,fixtureScenarioInputs,privateFixtureAuthentication,privateFixtureBase,privateFixtureProvider,privateFixtureScenario,privateFixtureSchedule}.ts and their seven focused test files; privateSyntheticFixtureProducer.ts; lib/desktop/privateReleaseMergeBootstrap.ts/privateFixtureReleaseMergeBootstrapEntry.ts and privateFixtureBootstrap.test.ts; privateReleaseMergeComposition.ts fixture-specific additions over root's shared coverage wiring; scripts/emit-private-fixture-release-bootstrap.cjs; scripts/build-local-issuer-package-source.py selected-emitter branch; fixture_delivery_inputs.py SOURCE_PATHS; scripts/tests/test_private_fixture_bootstrap_emitter.cjs/test_fixture_bootstrap_selection.py. Design append records root's prepare-precondition correction without restamping the approved historical SHA.
+
+Final current scoped TypeScript PASS: `./node_modules/.bin/tsc -p work/joined-fixture-driver/tsconfig.json --pretty false`, exit0, /private/tmp/axiom-joined-fixture-types.log (empty). This uses current canonical declarations and existing exact materialized dependency tree. The first pass's real type errors were corrected (root descriptor/contextual types; my scenario never-returning helper CFA); no type assertions were added to bypass executing authority.
+
+Explicit remaining validation gap: the source-level scenario tests mock writer/service constructors. They do **not** constitute a composed real-writer→actual enrolled guard/coverage→atomic claim→final transport journey, even when the transaction/provider boundaries would be mocked. That joined acceptance remains open, in addition to actual isolated SQL/native/compiled-consumer qualification. No full Governance or completed runtime-driver acceptance claim is made.

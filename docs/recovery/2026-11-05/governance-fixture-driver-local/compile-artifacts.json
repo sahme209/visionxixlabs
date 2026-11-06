@@ -1,0 +1,20 @@
+{
+  "work/joined-fixture-driver/native-compile/controller": {
+    "sha256": "7f96806b935292e6ff08469f93c44923152667700ebd9b9dc8ecb8fa4ad1826b",
+    "size": 94856,
+    "mode": 384,
+    "executed": false
+  },
+  "work/joined-fixture-driver/native-compile/broker.o": {
+    "sha256": "0eb84ec9eb34053a3e2c667eeef6bcd81594a057450c7d718ba97ef1c706731c",
+    "size": 752,
+    "mode": 384,
+    "executed": false
+  },
+  "work/joined-fixture-driver/native-compile/maintenance": {
+    "sha256": "7f0a2ae1fb1ec070a0479136550c16d86145d8e9bba9b82b1fcbf2271589dc67",
+    "size": 115256,
+    "mode": 384,
+    "executed": false
+  }
+}

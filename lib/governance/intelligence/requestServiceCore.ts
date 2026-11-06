@@ -24,6 +24,7 @@ import {compileBaseline,scopeSchema,type EvidenceSnapshot} from './contracts';
 import type {createPrivateGovernanceRequestAuthority} from './requestAuthorityCore';
 import type {createGovernanceExecutionPolicyRequestServiceCore} from './executionPolicyRequestServiceCore';
 import type {createGithubGovernanceCollectionRequestServiceCore} from './githubCollectionRequestServiceCore';
+import {isPrivateMergeRequestCoverage,type PrivateMergeRequestCoverage} from './privateMergeExecutionCoverage';
 export type GovernanceServiceDeploymentContext={store:ReturnType<typeof createGovernanceRevisionStore>;activeProofs:Map<string,Awaited<ReturnType<ReturnType<typeof createGovernanceEvidencePreflight>['read']>>>;bound:(s:RevisionScope)=>void};
 export interface GovernanceRequestDependencies<D extends object>{
  authority:ReturnType<typeof createPrivateGovernanceRequestAuthority>;
@@ -33,12 +34,17 @@ export interface GovernanceRequestDependencies<D extends object>{
  assertSource:(e:Pick<EvidenceSnapshot,'source'>)=>void;
  now:()=>number;
  deployment:(context:GovernanceServiceDeploymentContext)=>D;
+ /** Only a recognized private mounted graph can supply coverage. Global callers
+  * retain the default absence/refusal; a structural callback is insufficient. */
+ coverage?:PrivateMergeRequestCoverage;
 }
 /** Local request composition behind default-off, undeployed routes. Reads
  * bind existing paired authority. No executor coverage is invented here. */
 export function createGovernanceRequestServiceCore<D extends object>(request:NextRequest,repo:ReleaseOperationPlanRepo,scope:RevisionScope,isEnabled:()=>boolean,dependencies:GovernanceRequestDependencies<D>){
  const authority=dependencies.authority,nonce=z.string().uuid();
  const executionPolicies=dependencies.executionPolicies;
+ const coverage=dependencies.coverage;
+ if(coverage!==undefined&&!isPrivateMergeRequestCoverage(coverage))throw Error('governance_execution_coverage_unavailable');
  const enabled=()=>{request.signal.throwIfAborted();if(!isEnabled())throw Error('governance_intelligence_unavailable')};
  const bound=(s:RevisionScope)=>{enabled();if(s.organizationId!==scope.organizationId||s.actorUserId!==scope.actorUserId||s.sessionId!==scope.sessionId)throw Error('governance_request_scope_changed')};
  async function current(s:RevisionScope,signal:AbortSignal){bound(s);signal.throwIfAborted();await repo.$transaction(tx=>authority(tx,s,'reader'));signal.throwIfAborted()}
@@ -65,8 +71,7 @@ export function createGovernanceRequestServiceCore<D extends object>(request:Nex
    const capability=role==='policy_admin'?'policy:manage':role==='approver'?'agent:approve':'workspace:read';
    if(rows.length!==1||m.organizationId!==s.organizationId||m.userId!==actor||!m.acceptedAt||!['owner','admin','operator','security_reviewer','finance_viewer','read_only'].includes(m.role)||!hasDesktopCapability(m.role as DesktopWorkspaceRole,capability))throw Error('governance_recorded_principal_unavailable');
   },verifyEvidence:async(tx,s,b)=>{const proof=await preflight.read(tx,s,b);activeProofs.set(b.digest,proof);return true},
-  // Deliberately no verifyCoverage port. Unregistered executor seams cannot
-  // enroll a scope, even if a baseline has genuine independent approval.
+  ...(coverage?{verifyCoverage:async(tx,s,b)=>{bound(s);return coverage.verifyBaselineActivation(tx,s,b)}}:{}),
  });
  const baselines=createGovernanceBaselineService({store,preflight}),drift=createGovernanceDriftReader({now:dependencies.now,assertCurrent:current,readHistorical,readCurrent});
  return{
@@ -123,7 +128,9 @@ export function createGovernanceRequestServiceCore<D extends object>(request:Nex
    * cannot turn an uncovered scope into execution coverage. */
   async readExecutionCoverage(selection:unknown){
    const enrollment=await this.readScopeEnrollment(selection);
-   return{enrolled:enrollment.enrolled,coveredActions:[] as string[]};
+   if(!enrollment.enrolled||!coverage)return{enrolled:enrollment.enrolled,coveredActions:[] as string[]};
+   const registered=await coverage.readCoverage(selection,request.signal);await current(scope,request.signal);
+   return{enrolled:true,coveredActions:[...registered.coveredActions]};
   },
   async readEvidence(digest:string){enabled();return history.read(scope,digest)},
   async listEvidence(){enabled();const result=await history.list(scope);for(const item of result.items)dependencies.assertSource(item);return result},
@@ -160,6 +167,10 @@ export function createGovernanceRequestServiceCore<D extends object>(request:Nex
   },
   // Legacy deployment composition remains outside the private merge graph.
   ...dependencies.deployment({store,activeProofs,bound}),
-  async activate(){enabled();throw Error('governance_execution_coverage_unavailable')},
+  async activate(id?:string,parentDigest?:string|null,clientRequestId?:string){
+   enabled();if(!coverage)throw Error('governance_execution_coverage_unavailable');
+   if(typeof id!=='string'||(parentDigest!==null&&typeof parentDigest!=='string')||typeof clientRequestId!=='string')throw Error('governance_baseline_changed');
+   nonce.parse(clientRequestId);return baselines.activate(scope,id,parentDigest,clientRequestId,request.signal);
+  },
  };
 }

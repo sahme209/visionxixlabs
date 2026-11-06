@@ -4,8 +4,9 @@ import { readIssuerIdentity } from "@axiom/verified-issuer-runtime";
 import { createPrivateReleaseMergeDataDispatcher } from "./privateReleaseMergeRequestData";
 import { createPrivateAuthorityDatabase } from "@/lib/security/privateAuthorityDatabase";
 import { createPrivateCredentialVault } from "@/lib/security/privateCredentialVault";
-import { createPrivateReleaseMergeComposition } from "./privateReleaseMergeComposition";
+import { createPrivateReleaseMergeComposition,createPrivateFixtureReleaseMergeComposition } from "./privateReleaseMergeComposition";
 
+import {loadFixedFixtureSchedule} from '@/lib/governance/qualification/privateFixtureSchedule';
 // Fixed private profile. Native currentness never substitutes for action authority.
 const billing = Object.freeze({ kind: "legacy" as const });
 const current = () => readIssuerIdentity().status === "current";
@@ -15,9 +16,9 @@ const transport: typeof fetch = fetch.bind(globalThis);
 /** Canonical lexical startup only. No graph, resource or readiness setter is exposed.
  * Native resource custody and executing-consumer qualification remain separate.
  */
-export async function initializePrivateReleaseMergeBootstrap(material: unknown) {
+async function initializePrivateMergeBootstrap(material: unknown,fixture:boolean) {
   let client: ReturnType<typeof createPrivateAuthorityDatabase> | undefined;
-  let graph: ReturnType<typeof createPrivateReleaseMergeComposition> | undefined;
+  let graph: ReturnType<typeof createPrivateReleaseMergeComposition>|ReturnType<typeof createPrivateFixtureReleaseMergeComposition> | undefined;
   let keys: { vaultKey: Uint8Array; sessionSigningKey: Uint8Array } | undefined;
   try {
     if (!material || typeof material !== "object" || !Object.isFrozen(material) || Object.getPrototypeOf(material) !== Object.prototype) throw Error("private_bootstrap_record_invalid");
@@ -32,7 +33,9 @@ export async function initializePrivateReleaseMergeBootstrap(material: unknown) 
     if (!current()) throw Error("private_bootstrap_origin_unavailable");
     client = createPrivateAuthorityDatabase(datasource); // Actual lazy Prisma; no SQL.
     const vault = createPrivateCredentialVault(vaultKey);
-    graph = createPrivateReleaseMergeComposition({ client, vault, sessionSigningKey, billing, fetch: transport, now: clock, enabled: current, governanceEnabled: current });
+    const resources={client,vault,sessionSigningKey,billing,fetch:transport,now:clock,enabled:current,governanceEnabled:current};
+    if(fixture){const initial=AbortSignal.timeout(25000);const schedule=await loadFixedFixtureSchedule(client,initial);initial.throwIfAborted();const fixed=createPrivateFixtureReleaseMergeComposition(resources,schedule);graph=fixed;await fixed.initializeFixtureScenario(initial);initial.throwIfAborted();if(!current())throw Error("private_bootstrap_origin_unavailable");}else graph=createPrivateReleaseMergeComposition(resources);
+    const ownedGraph=graph;
     let closing: Promise<void> | undefined;
     let closed = false;
     const pendingHandlers = new Set<Promise<unknown>>();
@@ -91,16 +94,19 @@ export async function initializePrivateReleaseMergeBootstrap(material: unknown) 
         const work = {controller, promise: Promise.resolve().then(async () => {
           combined.throwIfAborted();
           if (closed || !current()) throw Error("private_bootstrap_dispatch_unavailable");
+          let response:Readonly<{status:number;body:Uint8Array}>;
           try {
-            const response = await ownedDispatch(bytes, combined);
+            response=await ownedDispatch(bytes,combined);
             combined.throwIfAborted();
-            if (closed || !current()) throw Error("private_bootstrap_dispatch_unavailable");
-            return response;
-          } finally {
-            // Adapter cancellation races its handler; only actual settlement
-            // permits reuse of the canonical/native request context.
+            if(closed||!current())throw Error("private_bootstrap_dispatch_unavailable");
+          }finally{
+            // Only actual underlying settlement permits finite fixture continuation.
             await drain(drainLimit);
           }
+          combined.throwIfAborted();if(closed||!current())throw Error("private_bootstrap_dispatch_unavailable");
+          if('afterFixtureRequestSettled'in ownedGraph)await ownedGraph.afterFixtureRequestSettled(bytes,response,combined);
+          combined.throwIfAborted();if(closed||!current())throw Error("private_bootstrap_dispatch_unavailable");
+          return response;
         })};
         active = work;
         try { return await work.promise; }
@@ -118,3 +124,8 @@ export async function initializePrivateReleaseMergeBootstrap(material: unknown) 
     // storage have no zeroization guarantee; this wipes only mutable staging.
   }
 }
+
+export function initializePrivateReleaseMergeBootstrap(material:unknown){return initializePrivateMergeBootstrap(material,false);}
+/** Only the fixed source emitter aliases this entry into the synthetic artifact.
+ * No decoded material, environment, URL or business payload selects the profile. */
+export function initializePrivateFixtureReleaseMergeBootstrap(material:unknown){return initializePrivateMergeBootstrap(material,true);}

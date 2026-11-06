@@ -17,8 +17,8 @@
 #define AX_SYSTEM_PEER_TEAM "FG5N98FE6W"
 #define AX_SYSTEM_PEER_OWNER_ID "com.visionxixlabs.axiom.synthetic.launch-owner"
 #define AX_SYSTEM_PEER_BROKER_ID "com.visionxixlabs.axiom.synthetic.broker"
-static const char*peer_path(int role){return role==AX_SYSTEM_PEER_OWNER?AX_OWNER_PATH:role==AX_SYSTEM_PEER_BROKER?AX_SYNTH_BROKER:NULL;}
-static const char*peer_identifier(int role){return role==AX_SYSTEM_PEER_OWNER?AX_SYSTEM_PEER_OWNER_ID:role==AX_SYSTEM_PEER_BROKER?AX_SYSTEM_PEER_BROKER_ID:NULL;}
+static const char*peer_path(int role){return role==AX_SYSTEM_PEER_OWNER?AX_OWNER_PATH:role==AX_SYSTEM_PEER_BROKER?AX_SYNTH_BROKER:role==AX_SYSTEM_PEER_CONTROLLER?AX_SYNTH_APP "/Contents/MacOS/AxiomIssuerController":NULL;}
+static const char*peer_identifier(int role){return role==AX_SYSTEM_PEER_OWNER?AX_SYSTEM_PEER_OWNER_ID:role==AX_SYSTEM_PEER_BROKER?AX_SYSTEM_PEER_BROKER_ID:role==AX_SYSTEM_PEER_CONTROLLER?"com.visionxixlabs.axiom.synthetic.controller":NULL;}
 static int metadata_equal(const struct stat*a,const struct stat*b){return a->st_dev==b->st_dev&&a->st_ino==b->st_ino&&a->st_uid==b->st_uid&&a->st_gid==b->st_gid&&a->st_mode==b->st_mode&&a->st_nlink==b->st_nlink&&a->st_size==b->st_size&&a->st_mtimespec.tv_sec==b->st_mtimespec.tv_sec&&a->st_mtimespec.tv_nsec==b->st_mtimespec.tv_nsec&&a->st_ctimespec.tv_sec==b->st_ctimespec.tv_sec&&a->st_ctimespec.tv_nsec==b->st_ctimespec.tv_nsec;}
 static int protected_fd(int fd,int directory,struct stat*out){
  struct stat s;if(fstat(fd,&s)||s.st_uid!=0||(!directory&&s.st_gid!=0)||(s.st_mode&07777)!=0755||!(directory?S_ISDIR(s.st_mode):S_ISREG(s.st_mode))||(!directory&&(s.st_nlink!=1||s.st_size<(off_t)sizeof(struct mach_header_64)||s.st_size>AX_SYSTEM_PEER_MAX_BYTES)))return 0;

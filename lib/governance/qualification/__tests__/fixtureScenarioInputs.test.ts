@@ -1,0 +1,7 @@
+import {expect,it} from 'vitest';
+import {buildFixedFixtureScenarioInputs} from '../fixtureScenarioInputs';
+import {releaseOperationPlanId} from '@/lib/agent/workflows/releaseOperationPlanStore';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+const ids=Array.from({length:10},(_,i)=>`${String(i+1).padStart(8,'0')}-1111-4111-8111-111111111111`);
+it('derives fixed fixture schedules with actual plan contracts and separate revocation scopes',()=>{const result=buildFixedFixtureScenarioInputs(new Date('2026-11-05T20:00:00Z'),ids);expect(result.scenarios).toHaveLength(10);expect(result.groups).toHaveLength(6);for(const group of result.groups){expect(group.planDigest).toBe(sha256ContentHash(group.plan));expect(group.planId).toBe(releaseOperationPlanId('qualification_workspace',group.request.id,1,group.planDigest));expect(group.plan.pullRequest.repositoryFullName).toMatch(/^axiom-qualification\//)}expect(new Set(result.groups.map(g=>g.plan.pullRequest.repositoryFullName)).size).toBe(6);expect(result.scenarios[1].planId).toBe(result.scenarios[2].planId);expect(result.scenarios[5].planId).toBe(result.scenarios[6].planId)});
+it('does not take a caller tenant/provider/approval/readiness selector and rejects invalid once IDs',()=>{expect(()=>buildFixedFixtureScenarioInputs(new Date('invalid'),ids)).toThrow();expect(()=>buildFixedFixtureScenarioInputs(new Date(),ids.slice(1))).toThrow();expect(()=>buildFixedFixtureScenarioInputs(new Date(),ids.map(()=>ids[0]))).toThrow()});
