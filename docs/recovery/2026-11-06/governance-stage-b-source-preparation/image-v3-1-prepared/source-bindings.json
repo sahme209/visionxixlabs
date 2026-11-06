@@ -1,0 +1,50 @@
+{
+  "companySigningIncluded": false,
+  "compilerInvoked": false,
+  "controller": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/image-v3-1-prepared/prepared-image-controller.py",
+    "sha256": "66bd67b4f231dcc0f12578e30d0e015e02d58cc60707b041e37991efa9fcab42",
+    "size": 5334
+  },
+  "controllerFunctionsAstUnchanged": true,
+  "driver": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/image-v3-1-prepared/prepared-image-driver.py",
+    "sha256": "3083a268234ca60ebabf7298dfe19f6ed334b404e7ec5209974b8c0c3cc40c85",
+    "size": 9939
+  },
+  "executionAuthorized": false,
+  "focusedMockTests": {
+    "count": 6,
+    "passed": 6,
+    "realCommandsInvoked": false,
+    "scope": "compiler/proof/data joins and stop-before-image branch; image/assembly validators separately verified by existing tests"
+  },
+  "imageInvoked": false,
+  "installationReady": false,
+  "mountInvoked": false,
+  "operationInputs": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/image-v3-1-prepared/operation-inputs.json",
+    "sha256": "d2c853eb3e4ac61834e31e3af7cde93509b48b3543708b70300feb875efc1d9a",
+    "size": 12081
+  },
+  "preparedOnly": true,
+  "preservedDraftFailures": [
+    "initial missing driver scaffold",
+    "umask0177 stripped directory traversal; corrected to077 throughout process/directory steps; regression creates traversable compiler-internal directory"
+  ],
+  "sourcePreparation": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-procedure-1/SOURCE-PREPARATION.json",
+    "sha256": "93a1d7797bd164fe8743a680b7326da413f3d2fbd706abe2e297ebb90cf37f69",
+    "size": 16329
+  },
+  "tests": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/image-v3-1-prepared/test_prepared_image_driver.py",
+    "sha256": "24e6f64bb0d077569658cd0feafb5068259cb723a380441c0bffec48d418c83e",
+    "size": 5480
+  }
+}
