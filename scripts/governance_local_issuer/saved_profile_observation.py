@@ -21,9 +21,13 @@ def inspect_guard_no_entitlements(data,identifier,team):
  _need(type(data) is bytes and 48<=len(data)<=16*1024*1024,'bounded_macho_required')
  try:return _guard(data,identifier,team)
  except (struct.error,UnicodeError,IndexError,OverflowError):raise ObservationUnavailable('signature_structure_unreadable') from None
-def _guard(data,identifier,team):
+def inspect_library_no_entitlements(data,identifier,team,*,original=None):
+ _need(type(data)is bytes and 48<=len(data)<=32*1024*1024,'bounded_library_required')
+ try:return _guard(data,identifier,team,file_type=6,page_limit=2048,original=original)
+ except (struct.error,UnicodeError,IndexError,OverflowError):raise ObservationUnavailable('signature_structure_unreadable') from None
+def _guard(data,identifier,team,file_type=8,page_limit=1024,original=None):
  magic,cpu,sub,kind,ncmds,cmdbytes,flags,reserved=struct.unpack_from('<8I',data)
- _need((magic,cpu,sub,kind,reserved)==(0xfeedfacf,0x100000c,0,8,0),'guard_arm64_bundle_required')
+ _need((magic,cpu,sub,kind,reserved)==(0xfeedfacf,0x100000c,0,file_type,0),'expected_arm64_filetype_required')
  _need(0<ncmds<=4096 and ncmds*8<=cmdbytes<=len(data)-32,'load_commands_bound')
  at=32;signatures=[]
  for _ in range(ncmds):
@@ -36,7 +40,10 @@ def _guard(data,identifier,team):
  offset,length=signatures[0]
  _need(offset>=at and 36<=length<=1024*1024 and offset+length==len(data),'signature_range')
  signature=data[offset:];magic,total,count=struct.unpack_from('>III',signature)
- _need(magic==0xfade0cc0 and count==3 and 36<=total<=length and not any(signature[total:]),'known_superblob_required')
+ _need(magic==0xfade0cc0 and count==3 and 36<=total<=length,'known_superblob_required')
+ residue=signature[total:]
+ if any(residue):
+  _need(file_type==6 and type(original)is bytes and len(original)<=32*1024*1024 and offset+length<=len(original)and original[offset+total:offset+length]==residue,'exact_original_residual_required')
  blobs={};ranges=[];expected={0:0xfade0c02,2:0xfade0c01,65536:0xfade0b01}
  for i in range(count):
   slot,start=struct.unpack_from('>II',signature,12+8*i)
@@ -55,7 +62,7 @@ def _guard(data,identifier,team):
  scatter,teamoff,spare3,limit64=struct.unpack_from('>IIIQ',cd,44)
  base,execsize,execflags,runtime,preencrypt=struct.unpack_from('>QQQII',cd,64)
  _need((scatter,spare3,limit64,base,execflags,preencrypt)==(0,0,0,0,0,0) and 0<execsize<=offset and runtime>0,'known_guard_directory_options')
- _need(limit==offset and codes==(limit+16383)//16384 and 0<codes<=1024,'code_directory_image_range')
+ _need(limit==offset and codes==(limit+16383)//16384 and 0<codes<=page_limit,'code_directory_image_range')
  _need(hashoff+codes*32==len(cd) and hashoff-64>=96,'code_directory_hash_range')
  _need(type(identifier) is str and type(team) is str and identifier.isascii() and team.isascii(),'fixed_ascii_identity')
  ident=identifier.encode()+b'\0';team_bytes=team.encode()+b'\0'
@@ -65,7 +72,9 @@ def _guard(data,identifier,team):
  for i in range(codes):
   page=data[i*16384:min((i+1)*16384,limit)]
   _need(cd[hashoff+i*32:hashoff+(i+1)*32]==hashlib.sha256(page).digest(),'directory_page_hash_mismatch')
- return {'representation':'no_encoded_entitlement_payload_observed','machOFileType':kind,'signatureSlots':sorted(blobs),'codeDirectorySha256':hashlib.sha256(cd).hexdigest(),'cdhash':hashlib.sha256(cd).hexdigest()[:40],'executionAuthorized':False,'installationReady':False,'cryptographicSignatureVerifiedHere':False}
+ result={'representation':'no_encoded_entitlement_payload_observed','machOFileType':kind,'signatureSlots':sorted(blobs),'codeDirectorySha256':hashlib.sha256(cd).hexdigest(),'cdhash':hashlib.sha256(cd).hexdigest()[:40],'executionAuthorized':False,'installationReady':False,'cryptographicSignatureVerifiedHere':False}
+ if file_type==6:result.update(preservedResidualBytes=len(residue)if any(residue)else 0,preservedResidualSha256=hashlib.sha256(residue).hexdigest()if any(residue)else None)
+ return result
 
 def _read(path,limit=1024*1024):
  p=Path(path);_need(p.is_absolute() and p.resolve()==p,'canonical_evidence_path_required')

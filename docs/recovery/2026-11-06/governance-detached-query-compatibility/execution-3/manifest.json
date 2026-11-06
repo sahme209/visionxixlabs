@@ -1,0 +1,50 @@
+{
+  "authorization.json": {
+    "sha256": "bc11fece33a35c7132653ab87346bbf0353fdaf3425fddc54c67ccb96069ec7c",
+    "size": 288
+  },
+  "packet.json": {
+    "sha256": "d28c2eb9d2b68fab262119293ac0f463188db7ad18e935901aef71bafcf79064",
+    "size": 7134
+  },
+  "attempt.json": {
+    "sha256": "d6d55ea0a55d2df36a4f98962b0d7cef1112644aaf02c13a2052b9bc99c03400",
+    "size": 143
+  },
+  "result.json": {
+    "sha256": "789c55373172245140373f6a53c4a223b0364522bbf7a4e18668b4638f839c81",
+    "size": 480
+  },
+  "command-0.json": {
+    "sha256": "b92a74ca0f76347dac74c54d586e9b566da191bd5cb02328a606037eedbaa672",
+    "size": 35
+  },
+  "command-1.json": {
+    "sha256": "b7e2cb80ed6d3190b798b2c086df1bf0ba8a9f207540b68a33d3d4f64c9289d1",
+    "size": 35
+  },
+  "command-2.json": {
+    "sha256": "df7937bd37286e4773e1a581e7f554cbc298873af89d5895218ccc619b781fad",
+    "size": 36
+  },
+  "work/command-0.log": {
+    "sha256": "941da106a32363b3d17b7cbb468e8ec929c3d9471ccf60d93ce4e037a943cea0",
+    "size": 174
+  },
+  "work/command-1.log": {
+    "sha256": "a38ab48539f98d447bcc6ff19ae5db26596bb453c9cdecb9868d1bb4f6a92244",
+    "size": 341
+  },
+  "work/command-2.log": {
+    "sha256": "5e347acf9398c3ac29abe74c3696fa1525a4095309a17821b3716a9491bedca7",
+    "size": 1273
+  },
+  "empty.plist": {
+    "sha256": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c",
+    "size": 181
+  },
+  "fixture.cjs": {
+    "sha256": "6651d6ffcb75d3db09302132406d001b512ceb118b8ccfd69aee8ae125d22efd",
+    "size": 1000
+  }
+}

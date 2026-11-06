@@ -1,0 +1,15 @@
+# Reconcile saved absent-entitlement representation; one load only
+
+## Evidence
+
+Compat3’s actual signing/strict verification/display passed. The receipt then stopped because the existing XML parser cannot represent no encoded entitlements. Existing approved saved_profile_observation.py already validates precisely that three-slot signed representation for MH_BUNDLE guards. The actual query library is MH_DYLIB17,169,584bytes; its saved signature has exactly CodeDirectory/requirements/CMS slots and the existing signature-only byte comparator passes. No new signing is needed or proposed.
+
+## Conditional next bundle
+
+Adapt only that existing pure-byte no-entitlement parser for a separately named MH_DYLIB32MiB entry; preserve original MH_BUNDLE behavior/caps, including its1024-page ceiling. The distinct32MiB dylib entry derives a2048-page ceiling and must test the actual1045-page shape; do not broaden the existing guard entry. Validate exact identifier/team/Runtime, no entitlement slots, known bounded nonoverlapping signature grammar, CodeDirectory page hashes and requirement hash using existing rules. The prior strict verification receipt must remain bound to this exact unchanged d911… copy. Tests must reject entitlement slots, identity mismatches, content/page tampering, malformed signatures and wrong Mach-O type. Preserve original unknown wrapper/history; a new saved-data reconciliation is a separate observation, never a rewrite of consumed attempts.
+
+After code/tests/independent source and exact packet review pass, authorize ONE new export-only Node load of that SAME existing signed copy (no re-signing/static Security API or identity read). Use a fresh exclusive load ledger and fixed script, pin originalNodee4b5/signedNode1aa6/originalquerye0/signedcopyd911 and all saved command results/logs/derivative proof. The exact saved copy must remain current0600/owned/singlelink; compare stable byte hashes and metadata before/after reconciliation. Replay/substitution or changed profile refuses.
+
+Reuse p.run_candidate descriptor arm-before-chmod/finally restore600, fixed10second network-denied/write-bounded load plus at most5owned cleanup/64KiB, no retry. Do not construct engine/PrismaClient, query, load private consumer, enable issuer, access credentials or call providers. No key use, grants, installation, database, deployment or spending. Success proves this exact signed export loads on this Mac only; custody/SAME-consumer/fleet/enforcement/production and every master parent remain open. The changed saved-receipt representation and new consumed-attempt ledger need the user’s validation-first decision; the third grant is consumed. This conditional bundle requests local parser preparation/review plus that single exact load, avoiding an unnecessary signing repetition.
+
+Independent design review PASS with the explicit1045-page/2048-bound adapter requirement above. Observed actual signatureOffset17117696/size51888, v0x20500/runtime0x10000/SHA256/pageShift14/special2 fit the existing rules otherwise. No API/signing/loading/tests ran during that file-only review.

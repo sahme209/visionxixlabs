@@ -1,0 +1,9 @@
+# Next package dependency — source-only reconciliation
+
+The actual load-1 result closes only signed Node/query-export compatibility. Do not repeat it or overwrite earlier failure records.
+
+Existing local_prisma_engine_inputs.bind_local_engines already supports exact trusted-local selected query bytes; it does not hardcode the old e0 hash. prepare_generation and verify_generated_outputs require the generated query file to match the selected bound-input hash and size. build-local-issuer-package-source.prepare_build_inputs propagates that receipt through canonical generation and source/output verification. Thus no new permissive engine selector or second generic validator is justified.
+
+A fresh StageB operational packet can select the exact signed d911 derivative through these existing APIs, but must explicitly retain the e0→d911 signature-only transformation, exact saved signing/static evidence, active-signature absence observation/residual relation and actual load-1 receipt as supplemental input provenance. Keep supplemental records outside engine-inputs’ fixed three-file inventory; never silently alter that format or swap generated files after generation. Record actual selected schema-engine bytes separately. This is trusted-local provenance, not authenticated upstream/commit evidence.
+
+The current old StageA/client/package remains untouched. StageB still needs fresh matching generation/source, actual selected issuer/fixture/controller principals and current phase-specific native/config/signing bindings. Earlier stageB dependency report remains binding; all real operations require their reviewed exact authority. No generic API gap is claimed here, and this audit performs no copy/preparation/generation/build/native/principal/System action. Do not invent UID/GID selections or reissue old artifacts’ freshness. Complete custody/SAME-consumer/fleet/enforcement/native enrollment remains unqualified.

@@ -1,0 +1,30 @@
+{
+  "authorization.json": {
+    "sha256": "ea2fea9cd66c4b15faeb8dc634cffa8a94f5519eae8977550bccb961cd399596",
+    "size": 312
+  },
+  "packet.json": {
+    "sha256": "85776a369041124a647745200bccd144dbf90b9486130f74756195b401f2ee04",
+    "size": 10890
+  },
+  "attempt.json": {
+    "sha256": "9ad08ce561be3b04df2f3c3226b1ce444d97a24dc7fed0fbab83439e282de418",
+    "size": 143
+  },
+  "result.json": {
+    "sha256": "83d0e255161f9c50ad6f704e8fcf51f19caca0597d6eee06252cf60488f3031e",
+    "size": 578
+  },
+  "reconciliation.json": {
+    "sha256": "187ac7332792b9dbdc3b0fd3f7a11c3d82bc21bc8f5958923603dd63b880bb1a",
+    "size": 5961
+  },
+  "fixture.cjs": {
+    "sha256": "6651d6ffcb75d3db09302132406d001b512ceb118b8ccfd69aee8ae125d22efd",
+    "size": 1000
+  },
+  "work/output.log": {
+    "sha256": "bbab71edbe4bc17defa6485ce3fdce5aab8e39e25f34dab6b6f0344f9164bc6d",
+    "size": 36
+  }
+}
