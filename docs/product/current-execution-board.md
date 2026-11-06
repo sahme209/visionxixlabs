@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the exact reviewed single-outer-policy artifact run ([packet and limits](../recovery/2026-11-05/governance-stage-a-single-outer/EXECUTION-REVIEW.md)) is prepared and awaits one fresh specific user execution decision. Do not restart completed source preparation, infer approval from goal continuation, reset the consumed3dd attempt or reuse unready19286. After an accepted artifact result, follow the [StageB dependencies](../recovery/2026-11-05/governance-stage-a-local/STAGE-B-DEPENDENCIES.md): real selected principals, signed runtime/query-loader qualification, current native roles, fresh same-source build and actual custody/SAME-consumer tests. No full A2/A9, fleet or universal mutation coverage acceptance exists.
 
+## Scripted timed playback — actual review stop
+
+~~One Play traversed Code & review to its scripted review step and stopped there with Play restored~~ ([evidence](../recovery/2026-11-05/demo-review-stop-browser/README.md)); initial short observation timeout preserved and same run observed without replay. No sample decision or provider action; not genuine review enforcement, precise timing, all-story visibility/performance/full B6 acceptance.
+
 ## Skip to content — actual browser cross-page focus
 
 ~~Enter Skip focused main, then Tab stayed in main on Product/Docs/Integrations after client navigation~~ ([evidence](../recovery/2026-11-05/skip-content-browser/README.md)); reached Download/Start with Axiom/Search without activating them. Initial locator focus and AT/mobile/full keyboard/B6 limits explicit; no runtime change.

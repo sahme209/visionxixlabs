@@ -1,0 +1,1 @@
+qualification_review verified saved visible/reducefalse/static1→one Play/Pause→step3 Play/noPause/review-guidance states. Observation timeout requested22s/enforced3s is preserved, not restart/terminal failure. Six current bindings match prior0c9 receipt. No precise elapsed/post-stop dwell/all-story/background/genuine review enforcement/full B6 overclaim; no rerun/edit.

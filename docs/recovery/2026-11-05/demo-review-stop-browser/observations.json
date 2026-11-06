@@ -1,0 +1,25 @@
+{
+  "playbackBefore": {
+    "reduce": false,
+    "step": "1 / 5Step 1 of 5: Choose the working context.",
+    "visibility": "visible"
+  },
+  "playbackStarted": {
+    "guidance": false,
+    "pauseButtons": 1,
+    "step": "1 / 5Step 1 of 5: Choose the working context."
+  },
+  "playbackStopped": {
+    "pauseButtons": 0,
+    "playButtons": 1,
+    "reviewGuidance": true,
+    "step": "3 / 5Step 3 of 5: Review the bounded check.",
+    "visibility": "visible"
+  },
+  "observationTimeout": "Heading wait requested22000ms but selector service enforced3000ms; no match yet. Same tab observed again without replay/restart, then step3 and stopped Play state confirmed.",
+  "actions": {
+    "playClicks": 1,
+    "sampleDecisionClicks": 0
+  },
+  "scope": "One actual Code & review timed traversal, not precise wall-clock timing or all-story/background pause qualification"
+}
