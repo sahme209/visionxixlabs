@@ -1,0 +1,25 @@
+{
+  "menuInitial": {
+    "bodyOverflow": "hidden",
+    "dialog": "true",
+    "documentWidth": 320,
+    "expanded": "true",
+    "focus": "Close navigation menu",
+    "rootOverflow": "hidden",
+    "width": 320
+  },
+  "menuReverse": {
+    "focus": "Download",
+    "href": "/download"
+  },
+  "menuForward": {
+    "focus": "Close navigation menu"
+  },
+  "menuClosed": {
+    "bodyOverflow": "",
+    "dialogs": 0,
+    "expanded": "false",
+    "focus": "Open navigation menu",
+    "rootOverflow": ""
+  }
+}

@@ -8,13 +8,17 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the exact reviewed single-outer-policy artifact run ([packet and limits](../recovery/2026-11-05/governance-stage-a-single-outer/EXECUTION-REVIEW.md)) is prepared and awaits one fresh specific user execution decision. Do not restart completed source preparation, infer approval from goal continuation, reset the consumed3dd attempt or reuse unready19286. After an accepted artifact result, follow the [StageB dependencies](../recovery/2026-11-05/governance-stage-a-local/STAGE-B-DEPENDENCIES.md): real selected principals, signed runtime/query-loader qualification, current native roles, fresh same-source build and actual custody/SAME-consumer tests. No full A2/A9, fleet or universal mutation coverage acceptance exists.
 
+## Narrow navigation — actual browser recovery
+
+~~At 320px CSS width, menu initial focus, reverse/forward boundary wrapping and Escape/focus/scroll recovery observed in a real browser~~ ([evidence](../recovery/2026-11-05/navigation-320-browser/README.md)); exact current Navigation source matches served0c9. Owned test override cleared and tab closed; no account/provider link activated. Physical-device/touch/AT/contrast/performance/full B6 remain open.
+
 ## Product responsive layout and catalogue copy — bounded local evidence
 
 ~~Retained actual Product measurements at 375px and 320px CSS widths saved~~ ([limits](../recovery/2026-11-05/product-responsive-browser/README.md)): no measured horizontal overflow in the observed document/workflow controls; not physical-device, touch or full B6 acceptance. Browser cleanup could not be confirmed after control became unavailable. ~~The observed single-result catalogue plural corrected locally~~ ([verification](../recovery/2026-11-05/integrations-count-copy/README.md)); source-only, existing preview unchanged. All21 parents and the pending exact Governance decision remain open.
 
 ## Integrations filters — actual browser recovery evidence
 
-~~Public catalogue planned/search/empty recovery and Search focus observed in a real browser~~ ([evidence](../recovery/2026-11-05/integrations-filter-browser/README.md)); current four source files match preview. Planned GitLab offered no setup link; both Clear branches restored15results and Search focus. Minor singular-count copy remains open. Screen-reader, contrast, multi-device/full B6 and actual provider readiness remain unaccepted.
+~~Public catalogue planned/search/empty recovery and Search focus observed in a real browser~~ ([evidence](../recovery/2026-11-05/integrations-filter-browser/README.md)); the four source files matched the preview at that checkpoint. Planned GitLab offered no setup link; both Clear branches restored15results and Search focus. The singular-count copy was subsequently corrected locally; the running historical preview retains the old wording. Screen-reader, contrast, multi-device/full B6 and actual provider readiness remain unaccepted.
 
 ## Product workflow — actual browser keyboard evidence
 
