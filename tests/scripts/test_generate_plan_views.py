@@ -20,6 +20,15 @@ def board():
 
 
 class PlanViewsTests(unittest.TestCase):
+    def test_new_visual_candidates_remain_proposals(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self.fixture(root)
+            (root / m.MASTER).write_text('### B2. Visual research\nHairline and Teardown are proposed evaluations.\n')
+            inventory = m.render(root)[m.OUT + '/adoption-inventory.md']
+            for name in ('Hairline', 'Teardown'):
+                self.assertIn('**' + name + '**: master-plan proposal/evaluation reference; not adopted or installed by this report.', inventory)
+
     def test_exact_parent_set_and_mixed_classes(self):
         parsed = m.parse_board(board())
         self.assertEqual(set(parsed), m.PARENTS)

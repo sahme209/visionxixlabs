@@ -14,7 +14,7 @@ BOARD = 'docs/product/current-execution-board.md'
 OUT = 'docs/product/plan-views'
 PARENTS = {*(f'A{i}' for i in range(1, 10)), *(f'B{i}' for i in range(1, 7)), *(f'C{i}' for i in range(1, 7))}
 CLASSES = {'implemented', 'local-only', 'simulated', 'planned', 'disabled', 'live-accepted'}
-CANDIDATES = ('Taste Skill', 'Web Design Guidelines', 'Awesome Design', 'Image-to-Code', 'Playwright', 'React Bits', 'GSAP', 'Lenis', 'GetLayers', 'Prompt Motion', 'OPA', 'Conftest', 'OpenTelemetry', 'Promptfoo', 'Langfuse', 'Temporal')
+CANDIDATES = ('Taste Skill', 'Web Design Guidelines', 'Awesome Design', 'Image-to-Code', 'Playwright', 'React Bits', 'GSAP', 'Lenis', 'GetLayers', 'Prompt Motion', 'Hairline', 'Teardown', 'OPA', 'Conftest', 'OpenTelemetry', 'Promptfoo', 'Langfuse', 'Temporal')
 
 
 def table_rows(text):
