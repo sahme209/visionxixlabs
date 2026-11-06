@@ -1,0 +1,37 @@
+{
+  "commit": "682268fcff897aedfc2489cb38c428bcbadc9c09",
+  "tree": "486425bdd89e2e2193489425f771e533f99007bd",
+  "ref": "refs/heads/backup/axiom-complete-source-2026-11-06",
+  "parents": [
+    "5fc50c77dc36a00ef4b07d3956f616efbea06eff",
+    "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+    "b7a524464fa3b7fa3df268c1020765fda2892fb9",
+    "bd3648b634edf1d3881c283d8c088afbd3bcc37d",
+    "1369f4837f3fde73eb873449501fb2b7c7947587",
+    "e6f4ebf1c9a38b25ffb3d0c70aa0ea372132904a"
+  ],
+  "overlayHashes": {
+    "docs/product/axiom-master-action-plan.md": "e99a61a3292746ab1ea3b6a32ce9bca08b6db38253ba171450c14917185784b1",
+    "docs/product/current-execution-board.md": "1512060cffbd06922c0b012c52d52924ce7202f5988d43186b7993621d642f14",
+    "docs/product/plan-views/adoption-inventory.md": "9c5301e9d648c1f657099dc3edb7d21c689f5942a7488d0ea236fd0fbf2cf21a",
+    "docs/product/plan-views/capabilities.md": "7c9b7481f46cf77ad5653ca2839e514ea3b5d76d458fbad0796456ae7aac3cd9",
+    "docs/product/plan-views/dependencies-decisions.md": "5e7c4c50031d9233dde29139191a869e2da8218cd464835d88f970646d489d08",
+    "docs/product/plan-views/execution-brief.md": "8dcbe7fa2fc975b153cce51251cbbf374e0103847897fdabccb32ed40c2e5f15",
+    "docs/recovery/2026-11-06/docs-path-hierarchy/README.md": "d6da7eb6f02b87d48526ead9dba421edb4aa1bd8ee1340793aceadfa1fabefe0",
+    "docs/product/axiom-master-action-plan.md.backup-20261103-195450": "fa79db7f0639a4d6952c185c5dd0ec778603348b58108919b334b29711f0929d"
+  },
+  "mainIndexUnchanged": true,
+  "worktreeUnchanged": true,
+  "excludes": "untracked work/, binary images, signing keys, databases and credentials",
+  "remoteBefore": {
+    "main": "568110c239684dcca9bbd18a082ac8c3a45988cf",
+    "oldBackup": "b80a85a9b74a7deff9c4a691643644316c41f8ed"
+  },
+  "usageUsedPercent": 96,
+  "pushPerformed": true,
+  "remoteRefVerified": true,
+  "mainAndPriorBackupUnchanged": true,
+  "productionDeploymentPerformed": false,
+  "productionGate": "Actual database target/schema/recovery/cutover unverified; permission remains unused",
+  "completedAt": "2026-11-06T20:48:35.031035+00:00"
+}

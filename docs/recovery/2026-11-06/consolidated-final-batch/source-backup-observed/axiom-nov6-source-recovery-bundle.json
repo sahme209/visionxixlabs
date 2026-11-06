@@ -1,0 +1,10 @@
+{
+  "bundlePath": "/Users/samirahmed/Documents/Codex/2026-11-04/axiom-local-recovery/nov6-consolidated-source-self-contained.bundle",
+  "sha256": "3129c9610c31d2cdb24cca6560c0224b1622a0d21ea35835263820f9c483a982",
+  "bytes": 56475630,
+  "sourceCommit": "682268fcff897aedfc2489cb38c428bcbadc9c09",
+  "bundleVerification": "passed; complete history, no prerequisites",
+  "restorePerformed": false,
+  "binaryRuntimeOrCredentialBackup": false,
+  "recordedAt": "2026-11-06T20:49:07.094965+00:00"
+}
