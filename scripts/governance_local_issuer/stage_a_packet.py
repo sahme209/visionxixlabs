@@ -120,15 +120,29 @@ def _stage_sources(p):
   if (got['sha256'],got['size'])!=(want['sha256'],want['size']):refuse('archived_source_changed')
  return stage
 
+def _offline_diagnostic(phase,error):
+ if phase not in ('packet','context','source','archive','extraction','archived_sources','install','receipt'):return None
+ reason='offline_operation_unavailable'
+ if type(error)is StageAUnavailable and len(error.args)==1 and type(error.args[0])is str and error.args[0]in ('fixed_child_context_required','archive_package_changed','offline_install_refused'):reason=error.args[0]
+ return {'phase':phase,'reason':reason}
 def run_offline_child(path):
- p=verify_stage_a_packet(path);work=Path(p['work']);stage=work/'offline/stage';contained=stage_a_tools._create_stage_a_tools(p);tools=contained.builder
- if os.environ.get('AXIOM_PRIVATE_GIT_SCRATCH')!=str(work/'tmp')or stage.exists():refuse('fixed_child_context_required')
- package,lock,source=tools.source_inputs(Path(p['repo']),p['sourceRevision'])
- if source['packageSha256']!=p['sourceBindings']['package.json']['sha256']or source['lockSha256']!=p['sourceBindings']['package-lock.json']['sha256']:refuse('archive_package_changed')
- archive=tools.git_bytes(Path(p['repo']),['archive','--format=tar',p['sourceRevision']]);provenance=builder.extract_archive(archive,stage);_stage_sources(p)
- plan=builder.lock_plan(package,lock);dependencies=tools.install_offline(stage,plan,Path(p['cacheCopy']),Path(p['node']['path']),Path(p['npmCli']['path']),Path(p['cache']),Path(p['repo']))
- if dependencies.get('status')!='offline_dependencies_installed'or dependencies.get('exit')!=0 or dependencies.get('lifecycleScriptsExecuted')is not False or dependencies.get('network')!='kernel_denied':refuse('offline_install_refused')
- r={'format':'axiom.stage-a-offline/1','status':'installed','sourceRevision':p['sourceRevision'],'source':source,'archive':provenance,'dependencies':dependencies,'cacheSelection':p['cacheSelection'],'executionAuthorized':False};_write(work/'offline/result.json',_json(r));return r
+ phase='packet'
+ try:
+  p=verify_stage_a_packet(path);phase='context';work=Path(p['work']);stage=work/'offline/stage';contained=stage_a_tools._create_stage_a_tools(p);tools=contained.builder
+  if os.environ.get('AXIOM_PRIVATE_GIT_SCRATCH')!=str(work/'tmp')or stage.exists():refuse('fixed_child_context_required')
+  phase='source'
+  package,lock,source=tools.source_inputs(Path(p['repo']),p['sourceRevision'])
+  if source['packageSha256']!=p['sourceBindings']['package.json']['sha256']or source['lockSha256']!=p['sourceBindings']['package-lock.json']['sha256']:refuse('archive_package_changed')
+  phase='archive'
+  archive=tools.git_bytes(Path(p['repo']),['archive','--format=tar',p['sourceRevision']]);phase='extraction';provenance=builder.extract_archive(archive,stage);phase='archived_sources';_stage_sources(p)
+  phase='install'
+  plan=builder.lock_plan(package,lock);dependencies=tools.install_offline(stage,plan,Path(p['cacheCopy']),Path(p['node']['path']),Path(p['npmCli']['path']),Path(p['cache']),Path(p['repo']))
+  if dependencies.get('status')!='offline_dependencies_installed'or dependencies.get('exit')!=0 or dependencies.get('lifecycleScriptsExecuted')is not False or dependencies.get('network')!='kernel_denied':refuse('offline_install_refused')
+  phase='receipt'
+  r={'format':'axiom.stage-a-offline/1','status':'installed','sourceRevision':p['sourceRevision'],'source':source,'archive':provenance,'dependencies':dependencies,'cacheSelection':p['cacheSelection'],'executionAuthorized':False};_write(work/'offline/result.json',_json(r));return r
+ except Exception as error:
+  error.offlineDiagnostic=_offline_diagnostic(phase,error)
+  raise
 
 def _generation_files(p,preparation,contained=None):
  stage=_stage_sources(p);tool=Path(p['node']['path']);lock=_load(stage/'package-lock.json')
@@ -216,5 +230,8 @@ if __name__=='__main__':
  except Exception as error:
   diagnostic=getattr(error,'launchDiagnostic',None)
   if type(diagnostic)is dict and set(diagnostic)=={'phase','class','errno'}and diagnostic['phase']in ('null_input','spawn','git_spawn')and diagnostic['class']in ('OSError','SubprocessError')and diagnostic['errno']in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC','UNKNOWN'):sys.stderr.write(json.dumps({'error':'stage_a_artifact_unavailable','launchDiagnostic':diagnostic},sort_keys=True)+'\n')
-  else:sys.stderr.write('stage_a_artifact_unavailable\n')
+  else:
+   offline=getattr(error,'offlineDiagnostic',None)
+   if type(offline)is dict and set(offline)=={'phase','reason'} and _offline_diagnostic(offline.get('phase'),StageAUnavailable(offline.get('reason')))==offline:sys.stderr.write(json.dumps({'error':'stage_a_artifact_unavailable','offlineDiagnostic':offline},sort_keys=True)+'\n')
+   else:sys.stderr.write('stage_a_artifact_unavailable\n')
   sys.exit(74)

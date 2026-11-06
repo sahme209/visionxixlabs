@@ -1,0 +1,5 @@
+# Approved single offline run — refused
+
+The exact approved a5d58305 packet/source 55557ed3 was verified unused, then invoked once. The parent completed and saved status `refused`, reason `driver_refused`. The driver saved phase `offline`, reason `offline_child_failed`; offline stderr contains only `stage_a_artifact_unavailable`. This does not establish the underlying cause. No generation/producer result was accepted. No retry or modification of the consumed packet was performed. Runtime qualification and descendant-quiescence remain unavailable in the receipts.
+
+The authorization, exact packet, attempt, results and logs are copied with hashes in manifest.json. No database, signing, installation, provider action, deployment or spending was performed by the authorized procedure. Governance remains incomplete. Next: source-only diagnosis of the offline refusal; any further real invocation requires a separately reviewed decision. The legacy-bot containment decision remains distinct and unanswered.

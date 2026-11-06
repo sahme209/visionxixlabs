@@ -1,0 +1,18 @@
+{
+  "work/offline/stage": {
+    "exists": false,
+    "symlink": false
+  },
+  "work/offline/result.json": {
+    "exists": false,
+    "symlink": false
+  },
+  "work/generation/attempt.json": {
+    "exists": false,
+    "symlink": false
+  },
+  "work/emission/attempt.json": {
+    "exists": false,
+    "symlink": false
+  }
+}
