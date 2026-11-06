@@ -1,0 +1,20 @@
+{
+  "scope": "3 existing disclaimer foregrounds only; source candidate",
+  "sourcePath": "app/(marketing)/support/page.tsx",
+  "beforeSha256": "928bfaa5791c630446622e66f287c8292fcc6889d97c94243c3cc3503ec34b11",
+  "afterSha256": "4530446892636681c0af1e68f14f1e2a6e47d17825ceadf3ee506a48c548640c",
+  "classReplacements": 3,
+  "completeInverseReconstruction": true,
+  "nonClassSourcePreserved": true,
+  "literalColorPairs": {
+    "foregroundBefore": "#71717a",
+    "foregroundAfter": "#a1a1aa",
+    "canvas": "#090a08",
+    "ratioBefore": 4.105,
+    "ratioAfter": 7.741,
+    "classification": "literal sRGB calculations; not actual rendered composite/AA acceptance"
+  },
+  "testsRun": false,
+  "buildRun": false,
+  "browserAccepted": false
+}

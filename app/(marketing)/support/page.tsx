@@ -102,7 +102,7 @@ export default function SupportPage() {
             <span aria-hidden="true" className="block h-9 text-6xl leading-none text-orange-300/70">“</span>
             <blockquote className="mt-3 text-xl font-medium leading-relaxed tracking-[-0.02em] text-zinc-200 sm:text-2xl">You’re not going to lose your job to an AI, but you’re going to lose your job to someone who uses AI.</blockquote>
             <figcaption className="mt-5 text-xs leading-6 text-zinc-500">Jensen Huang, NVIDIA founder and CEO · Milken Institute Global Conference, 2025.<br /><a href="https://www.cnbc.com/2025/05/28/nvidia-ceo-jensen-huang-youll-lose-your-job-to-somebody-who-uses-ai.html" target="_blank" rel="noopener noreferrer" className="text-zinc-400 underline decoration-white/20 underline-offset-4 hover:text-zinc-200">As reported by CNBC, May 28, 2025 <span className="sr-only">(opens in a new tab)</span></a></figcaption>
-            <p className="mt-3 text-[11px] leading-5 text-zinc-500">Personal inspiration. Axiom is an independent project with no affiliation or endorsement from NVIDIA or Jensen Huang.</p>
+            <p className="mt-3 text-[11px] leading-5 text-zinc-400">Personal inspiration. Axiom is an independent project with no affiliation or endorsement from NVIDIA or Jensen Huang.</p>
           </figure>
         </div>
       </section>
@@ -116,7 +116,7 @@ export default function SupportPage() {
           <CapabilityList eyebrow="Implemented today" title="What the demonstration represents" items={implemented} tone="implemented" />
           <CapabilityList eyebrow="Development direction" title="What support helps us advance" items={planned} tone="planned" />
         </div>
-        <p className="mt-8 max-w-3xl text-sm leading-6 text-zinc-500">The interactive tour uses scripted sample data. Planned items describe development direction, not promised release dates or guaranteed outcomes.</p>
+        <p className="mt-8 max-w-3xl text-sm leading-6 text-zinc-400">The interactive tour uses scripted sample data. Planned items describe development direction, not promised release dates or guaranteed outcomes.</p>
       </section>
 
       <section className="border-y border-white/[0.07] bg-white/[0.015]">
@@ -146,7 +146,7 @@ export default function SupportPage() {
 
       <section id="sponsorship" className="border-y border-white/[0.08] bg-white/[0.015]">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12 lg:py-28">
-          <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Strategic sponsorship</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Partner with us to advance autonomous engineering.</h2><p className="mt-6 max-w-xl text-base leading-7 text-zinc-400">For individuals, foundations, and organizations considering a substantial commitment, begin with a private, professional conversation about fit, scope, and appropriate payment arrangements. AI companies and technology partners can also discuss infrastructure credits, research collaboration, or a defined technical partnership.</p><div className="mt-8 flex items-center gap-3 text-sm text-zinc-500"><ScaleIcon className="h-5 w-5 text-zinc-400" /> Sponsorship is not equity, an investment, or a charitable contribution.</div><p className="mt-4 max-w-xl text-sm leading-6 text-zinc-400">For infrastructure credits or other non-financial proposals, select “Prefer to discuss” in the inquiry form.</p></div>
+          <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Strategic sponsorship</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Partner with us to advance autonomous engineering.</h2><p className="mt-6 max-w-xl text-base leading-7 text-zinc-400">For individuals, foundations, and organizations considering a substantial commitment, begin with a private, professional conversation about fit, scope, and appropriate payment arrangements. AI companies and technology partners can also discuss infrastructure credits, research collaboration, or a defined technical partnership.</p><div className="mt-8 flex items-center gap-3 text-sm text-zinc-400"><ScaleIcon className="h-5 w-5 text-zinc-400" /> Sponsorship is not equity, an investment, or a charitable contribution.</div><p className="mt-4 max-w-xl text-sm leading-6 text-zinc-400">For infrastructure credits or other non-financial proposals, select “Prefer to discuss” in the inquiry form.</p></div>
           <div className="rounded-xl border border-white/[0.08] bg-[#151517] p-5 sm:p-7"><SponsorInquiryForm /></div>
         </div>
       </section>
