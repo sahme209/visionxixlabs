@@ -1,0 +1,196 @@
+{
+  "method": "WCAG sRGB luminance/source-over; candidate zinc400 from retained browser measured palette, NOT candidate rendered acceptance",
+  "samples": [
+    {
+      "text": "This page describes source-level controls and known limits. It is not a completed security assessment or proof that every deployment path is qualified.",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        16.0,
+        16.0,
+        16.0
+      ],
+      "baselineRatio": 3.937207064975839,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.424421689103911,
+      "threshold": 4.5
+    },
+    {
+      "text": "Start here",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "baselineRatio": 4.1049261053287855,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.740690775367921,
+      "threshold": 4.5
+    },
+    {
+      "text": "Configure delivery",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "baselineRatio": 4.1049261053287855,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.740690775367921,
+      "threshold": 4.5
+    },
+    {
+      "text": "Operate",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "baselineRatio": 4.1049261053287855,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.740690775367921,
+      "threshold": 4.5
+    },
+    {
+      "text": "ReleaseOps",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "baselineRatio": 4.1049261053287855,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.740690775367921,
+      "threshold": 4.5
+    },
+    {
+      "text": "Desktop",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "baselineRatio": 4.1049261053287855,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.740690775367921,
+      "threshold": 4.5
+    },
+    {
+      "text": "Trust & security",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "baselineRatio": 4.1049261053287855,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.740690775367921,
+      "threshold": 4.5
+    },
+    {
+      "text": "Reference",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "baselineRatio": 4.1049261053287855,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.740690775367921,
+      "threshold": 4.5
+    },
+    {
+      "text": "Task, heading or guide title",
+      "foreground": [
+        113.0,
+        113.0,
+        122.0
+      ],
+      "background": [
+        16.38,
+        17.349999999999998,
+        15.41
+      ],
+      "baselineRatio": 3.90684011684279,
+      "candidateForeground": [
+        161,
+        161,
+        170
+      ],
+      "candidateComputedPairRatio": 7.3671585011053695,
+      "threshold": 4.5
+    }
+  ],
+  "candidatePaletteSource": "../public-text-contrast-browser/computed-styles.json docContrast.samples[1]; same unchanged app/globals.css hash",
+  "baselineSource": "0c9d0e4072056f56c28d95bf53925afc429ccaf2"
+}

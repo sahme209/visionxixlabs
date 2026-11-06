@@ -1,0 +1,924 @@
+{
+  "labels": [
+    {
+      "chain": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "P"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "NAV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "hidden mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "ASIDE"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(9, 10, 8)",
+          "blend": "normal",
+          "className": "min-h-screen bg-[#141414] text-zinc-100",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(16, 16, 16)",
+          "blend": "normal",
+          "className": "axiom-font-inter axiom-font-mono antialiased",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "BODY"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "HTML"
+        }
+      ],
+      "color": "rgb(113, 113, 122)",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "text": "Start here"
+    },
+    {
+      "chain": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "P"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "NAV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "hidden mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "ASIDE"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(9, 10, 8)",
+          "blend": "normal",
+          "className": "min-h-screen bg-[#141414] text-zinc-100",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(16, 16, 16)",
+          "blend": "normal",
+          "className": "axiom-font-inter axiom-font-mono antialiased",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "BODY"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "HTML"
+        }
+      ],
+      "color": "rgb(113, 113, 122)",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "text": "Configure delivery"
+    },
+    {
+      "chain": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "P"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "NAV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "hidden mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "ASIDE"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(9, 10, 8)",
+          "blend": "normal",
+          "className": "min-h-screen bg-[#141414] text-zinc-100",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(16, 16, 16)",
+          "blend": "normal",
+          "className": "axiom-font-inter axiom-font-mono antialiased",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "BODY"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "HTML"
+        }
+      ],
+      "color": "rgb(113, 113, 122)",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "text": "Operate"
+    },
+    {
+      "chain": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "P"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "NAV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "hidden mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "ASIDE"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(9, 10, 8)",
+          "blend": "normal",
+          "className": "min-h-screen bg-[#141414] text-zinc-100",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(16, 16, 16)",
+          "blend": "normal",
+          "className": "axiom-font-inter axiom-font-mono antialiased",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "BODY"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "HTML"
+        }
+      ],
+      "color": "rgb(113, 113, 122)",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "text": "ReleaseOps"
+    },
+    {
+      "chain": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "P"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "NAV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "hidden mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "ASIDE"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(9, 10, 8)",
+          "blend": "normal",
+          "className": "min-h-screen bg-[#141414] text-zinc-100",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(16, 16, 16)",
+          "blend": "normal",
+          "className": "axiom-font-inter axiom-font-mono antialiased",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "BODY"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "HTML"
+        }
+      ],
+      "color": "rgb(113, 113, 122)",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "text": "Desktop"
+    },
+    {
+      "chain": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "P"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "NAV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "hidden mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "ASIDE"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(9, 10, 8)",
+          "blend": "normal",
+          "className": "min-h-screen bg-[#141414] text-zinc-100",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(16, 16, 16)",
+          "blend": "normal",
+          "className": "axiom-font-inter axiom-font-mono antialiased",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "BODY"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "HTML"
+        }
+      ],
+      "color": "rgb(113, 113, 122)",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "text": "Trust & security"
+    },
+    {
+      "chain": [
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "P"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "space-y-6",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "NAV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "hidden mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "ASIDE"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(9, 10, 8)",
+          "blend": "normal",
+          "className": "min-h-screen bg-[#141414] text-zinc-100",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "DIV"
+        },
+        {
+          "background": "rgb(16, 16, 16)",
+          "blend": "normal",
+          "className": "axiom-font-inter axiom-font-mono antialiased",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "BODY"
+        },
+        {
+          "background": "rgba(0, 0, 0, 0)",
+          "blend": "normal",
+          "className": "",
+          "filter": "none",
+          "image": "none",
+          "opacity": "1",
+          "tag": "HTML"
+        }
+      ],
+      "color": "rgb(113, 113, 122)",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "text": "Reference"
+    }
+  ],
+  "placeholder": {
+    "chain": [
+      {
+        "background": "rgba(255, 255, 255, 0.03)",
+        "blend": "normal",
+        "className": "min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "INPUT"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "space-y-2 px-3",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "space-y-6",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "NAV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "hidden mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "ASIDE"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgb(9, 10, 8)",
+        "blend": "normal",
+        "className": "min-h-screen bg-[#141414] text-zinc-100",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgb(16, 16, 16)",
+        "blend": "normal",
+        "className": "axiom-font-inter axiom-font-mono antialiased",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "BODY"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "HTML"
+      }
+    ],
+    "color": "rgb(113, 113, 122)",
+    "fontSize": "14px",
+    "opacity": "1",
+    "text": "Task, heading or guide title"
+  },
+  "url": "http://127.0.0.1:5262/docs"
+}

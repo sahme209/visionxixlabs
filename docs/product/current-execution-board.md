@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the exact reviewed single-outer-policy artifact run ([packet and limits](../recovery/2026-11-05/governance-stage-a-single-outer/EXECUTION-REVIEW.md)) is prepared and awaits one fresh specific user execution decision. Do not restart completed source preparation, infer approval from goal continuation, reset the consumed3dd attempt or reuse unready19286. After an accepted artifact result, follow the [StageB dependencies](../recovery/2026-11-05/governance-stage-a-local/STAGE-B-DEPENDENCIES.md): real selected principals, signed runtime/query-loader qualification, current native roles, fresh same-source build and actual custody/SAME-consumer tests. No full A2/A9, fleet or universal mutation coverage acceptance exists.
 
+## Small security/docs text — measured contrast correction locally
+
+~~Nine actual browser CSS pairs identified below4.5:1; five local class sites use the existing brighter token~~ ([evidence](../recovery/2026-11-05/security-notice-contrast/README.md)); baseline3.9068–4.1049, calculated candidates7.3672–7.7407, NOT candidate-rendered acceptance. Complete two-file reversal preserves text/layout/handlers. Original guide/model hashes retained as historical; running preview unchanged and build/browser/AT/full B6 gates remain open.
+
 ## Legacy public-bot AI path — bounded local diagnostic
 
 ~~Actual selected route/orchestrator/legacy manager/Gateway reached terminal SDK mock without workspace attribution; three existing refusal controls also passed~~ ([evidence](../recovery/2026-11-05/legacy-bot-chat-diagnostic/README.md)):4synthetic cases/scoped types PASS; preparation/CLI/ambient-type failures preserved. Intentional public-embed source is not a viewer-login defect or proof of live private-data exposure. Reviewed [local503 containment proposal](../recovery/2026-11-05/legacy-bot-chat-diagnostic/local-containment-proposal.md) needs a separate availability-boundary decision before implementation; no deployment granted. All21 parents/full A7/A2 remain open.

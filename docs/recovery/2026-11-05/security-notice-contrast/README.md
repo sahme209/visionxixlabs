@@ -1,0 +1,11 @@
+# Small security/docs text contrast — baseline failure and local correction
+
+Actual guarded0c9 browser CSS measurements at1280×720 captured the14px Security scope notice, seven10px Docs category labels and the visible search placeholder. All nine observed normal-text foreground/background pairs calculate below4.5:1 (3.9068–4.1049). Ancestor opacity/filter/blend/images and source-over backgrounds are retained; placeholder pseudo-style opacity is1. This is a finite CSS-pair contrast finding, not an all-page pixel/overlay/WCAG audit.
+
+Local correction changes five color-class sites only: Security small eyebrow, scope notice and repeated step numbers, plus Docs category labels and placeholder, from existing zinc500 to existing zinc400. The Security large heading's secondary span is unchanged. Baseline rendered measurements cover the notice and Docs elements; the other two small Security labels share the source token and are source-based consistency corrections, not additional measured failures. All text, layout, handlers, query/state, links, authority and availability remain byte-identical after reversing the five exact class replacements.
+
+The candidate foreground161/161/170 was actually measured earlier from the same unchanged shared stylesheet. Calculated candidate pairs range7.3672–7.7407:1. These are calculations against observed baseline backgrounds, NOT a new candidate browser rendering. The running0c9 preview is unchanged; current-source build/browser/native/light/dark/responsive/AT/visual/whole-WCAG acceptance remains open. No unnecessary new test or full build for these class-only edits.
+
+An initial authoring assertion used a nonunique reverse string and stopped before writing either source; authoring-stop.json preserves it. Specific anchored replacements then reconstructed both complete baseline files exactly. Source receipt hashes match the original0c9 files and the corrected local files. Historical source-guide and threat-model hashes are not silently requalified.
+
+Owned browser tabs22/23 closed; user tabs/app unchanged. No runtime provider/auth/data/approval/spending action or deployment. No dependency or global-theme change. All21 master parents and the distinct pending Governance-run/legacy-containment decisions remain open.

@@ -1,0 +1,78 @@
+{
+  "chain": [
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "blend": "normal",
+      "className": "text-sm leading-6 text-zinc-500",
+      "color": "rgb(113, 113, 122)",
+      "filter": "none",
+      "image": "none",
+      "opacity": "1",
+      "tag": "P"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "blend": "normal",
+      "className": "max-w-3xl space-y-5",
+      "color": "rgb(244, 244, 245)",
+      "filter": "none",
+      "image": "none",
+      "opacity": "1",
+      "tag": "HEADER"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "blend": "normal",
+      "className": "mx-auto max-w-[1280px] space-y-14 px-5 pb-20 pt-28 sm:px-8 lg:px-10 lg:pt-36",
+      "color": "rgb(244, 244, 245)",
+      "filter": "none",
+      "image": "none",
+      "opacity": "1",
+      "tag": "MAIN"
+    },
+    {
+      "background": "rgb(16, 16, 16)",
+      "blend": "normal",
+      "className": "axiom-canvas min-h-screen text-zinc-100",
+      "color": "rgb(244, 244, 245)",
+      "filter": "none",
+      "image": "none",
+      "opacity": "1",
+      "tag": "DIV"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "blend": "normal",
+      "className": "",
+      "color": "rgb(237, 237, 235)",
+      "filter": "none",
+      "image": "none",
+      "opacity": "1",
+      "tag": "DIV"
+    },
+    {
+      "background": "rgb(16, 16, 16)",
+      "blend": "normal",
+      "className": "axiom-font-inter axiom-font-mono antialiased",
+      "color": "rgb(237, 237, 235)",
+      "filter": "none",
+      "image": "none",
+      "opacity": "1",
+      "tag": "BODY"
+    },
+    {
+      "background": "rgba(0, 0, 0, 0)",
+      "blend": "normal",
+      "className": "",
+      "color": "rgb(255, 255, 255)",
+      "filter": "none",
+      "image": "none",
+      "opacity": "1",
+      "tag": "HTML"
+    }
+  ],
+  "color": "rgb(113, 113, 122)",
+  "fontSize": "14px",
+  "fontWeight": "400",
+  "text": "This page describes source-level controls and known limits. It is not a completed security assessment or proof that every deployment path is qualified."
+}

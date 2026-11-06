@@ -1,0 +1,43 @@
+{
+  "sites": 5,
+  "scope": "color classes only; no text/layout/handlers/authority change",
+  "files": [
+    {
+      "path": "app/security/page.tsx",
+      "beforeSha256": "c449cb38d23eba652b7738f59dc6e8515167f6de4247de9e175e99468d736639",
+      "afterSha256": "2c584aad1c4f05313f7fa0d3416d67e12b398ef3b96ddd8011599f8836cb36b8",
+      "replacements": [
+        [
+          "text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500\">Axiom \u00b7 Security",
+          "text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400\">Axiom \u00b7 Security"
+        ],
+        [
+          "text-sm leading-6 text-zinc-500\">This page describes",
+          "text-sm leading-6 text-zinc-400\">This page describes"
+        ],
+        [
+          "text-xs tabular-nums text-zinc-500\">{String",
+          "text-xs tabular-nums text-zinc-400\">{String"
+        ]
+      ],
+      "completeReverseEquality": true
+    },
+    {
+      "path": "components/docs/DocsSidebar.tsx",
+      "beforeSha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+      "afterSha256": "b21e9ab28f934edda30dfce53355d257b63727b68b7bd9f7537281caf480e6b2",
+      "replacements": [
+        [
+          "placeholder:text-zinc-500",
+          "placeholder:text-zinc-400"
+        ],
+        [
+          "text-[10px] font-semibold text-zinc-500 uppercase",
+          "text-[10px] font-semibold text-zinc-400 uppercase"
+        ]
+      ],
+      "completeReverseEquality": true
+    }
+  ],
+  "candidateRendered": false
+}

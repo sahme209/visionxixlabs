@@ -73,6 +73,10 @@ Example acceptance vectors are proposals, not tests run by this unit: revoked me
 
 The [selected legacy-bot diagnostic](../../recovery/2026-11-05/legacy-bot-chat-diagnostic/README.md) subsequently passed four synthetic characterization/control cases using the actual selected call graph and mocked SDK/storage. It confirms the distinct unattributed legacy call family, not a production leak, real charge or universal policy bypass. Public embedding intent is established by source; publication/owner/accounting decisions remain required. The reviewed local containment proposal changes availability and has not been implemented or approved. This follow-up satisfies the proposed synthetic diagnostic step only; it does not satisfy T11's broader acceptance gates or change the33-runtime-source baseline.
 
+## Later presentation-only drift
+
+A [local readability correction](../../recovery/2026-11-05/security-notice-contrast/README.md) subsequently changes three small-text color classes in the bound public-security page. Its original source hash remains evidence of the reviewed baseline, not the updated file. The original words, links and authority mechanisms are unchanged; this is not requalification of the33-source model or deployed security.
+
 ## Verification, recovery and cost
 
 Three specialist source inventories and root review supplied this finite map. The accompanying manifest pins files/ranges; it does not validate runtime call coverage or security properties. No programs under qualification, OS/Security/Keychain operations, database/provider/model calls, scans, installs, credentials, grants, builds or deployments were run. No new dependency or spending. Documentation can be reverted without changing runtime behavior; retain historical models, evidence and the original master scope. Independent assessment and the complete A7 security program remain open, as do all21 master parents.

@@ -1,0 +1,6 @@
+{
+  "phase": "before writing either source file",
+  "reason": "Reverse comparison used a nonunique replacement string already present elsewhere; stopped on assertion",
+  "sourceChanged": false,
+  "contrastBaselinePreserved": true
+}

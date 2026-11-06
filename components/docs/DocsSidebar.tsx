@@ -114,14 +114,14 @@ export function DocsSidebar() {
         <input ref={field} id={`${prefix}-query`} type="search" value={query}
           aria-describedby={`${prefix}-scope`} aria-controls={`${prefix}-results`}
           onChange={event => setQuery(event.target.value)} placeholder="Task, heading or guide title"
-          className="min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300" />
+          className="min-h-11 w-full rounded-lg border border-white/15 bg-white/[0.03] px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300" />
         {query && <button type="button" onClick={() => { setQuery(""); field.current?.focus(); }} className="min-h-11 rounded-lg px-2 text-xs text-zinc-300 underline underline-offset-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">Clear guide filter</button>}
         <p role="status" aria-live="polite" aria-atomic="true" className="text-xs leading-5 text-zinc-400">{resultCount ? `${resultCount} ${resultCount === 1 ? "guide" : "guides"} shown` : "No guides match."}</p>
       </div>
       <div id={`${prefix}-results`} className="space-y-6">
       {sections.map((section) => (
         <div key={section.title}>
-          <p className="px-3 mb-1.5 text-[10px] font-semibold text-zinc-500 uppercase tracking-widest">
+          <p className="px-3 mb-1.5 text-[10px] font-semibold text-zinc-400 uppercase tracking-widest">
             {section.title}
           </p>
           <ul className="space-y-0.5">
