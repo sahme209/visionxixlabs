@@ -1,0 +1,5 @@
+# Single outer policy — design review and local scope
+
+Reviewer system_assembler: design PASS. Fixed private StageA composition must propagate the same builder through all actual engine/source checks, validate finite operation tuples, bind the new module, retain standalone default profiles, and use exactly one outer kernel policy. No caller runner, prefix, environment skip or false authority. Work-union/per-phase-isolation and default-read/descendant limitations remain explicit. Reviewer performed no code/operations.
+
+Root scope decision: local factoring plus pure/mocked tests is a routine correction within the existing artifact-driver/local Governance source grant. It does not grant runtime identity or new application permissions. Design review precedes implementation; no separate actual execution is inferred. The prior attempt remains consumed, prepared19286 remains unready/unchanged, and any later actual run needs a newly frozen exact packet and fresh specific user decision. No sandbox write exception or weaker kernel boundary is introduced.
