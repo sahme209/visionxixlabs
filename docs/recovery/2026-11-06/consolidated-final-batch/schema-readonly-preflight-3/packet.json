@@ -1,0 +1,150 @@
+{
+  "format": "axiom.private-endpoint-schema-readonly-proposal/3",
+  "historicalTarget": {
+    "project_id": "odd-union-57413470",
+    "branch_id": "br-holy-voice-ai303o8m",
+    "database_name": "neondb",
+    "role_name": "neondb_owner"
+  },
+  "currentProductionBinding": "unknown_until_private_exact_endpoint_join",
+  "metadataToolCalls": [
+    {
+      "order": 1,
+      "tool": "mcp__codex_apps__neon_describe_project",
+      "arguments": {
+        "project_id": "odd-union-57413470"
+      },
+      "allowedProjection": [
+        "project.id",
+        "project.name",
+        "project.pg_version",
+        "project.history_retention_seconds",
+        "project.created_at",
+        "project.updated_at"
+      ],
+      "purpose": "project identity and declared retention only"
+    },
+    {
+      "order": 2,
+      "tool": "mcp__codex_apps__neon_list_branches",
+      "arguments": {
+        "project_id": "odd-union-57413470",
+        "search": "br-holy-voice-ai303o8m",
+        "limit": 5,
+        "include_deleted": false
+      },
+      "purpose": "exact historical branch existence/current metadata, not default branch substitution"
+    },
+    {
+      "order": 3,
+      "tool": "mcp__codex_apps__neon_get_branch",
+      "arguments": {
+        "project_id": "odd-union-57413470",
+        "branch_id": "br-holy-voice-ai303o8m"
+      },
+      "purpose": "branch identity,parent/default/state, available LSN/time/retention/restorable metadata only"
+    },
+    {
+      "order": 4,
+      "tool": "mcp__codex_apps__neon_list_postgres_endpoints",
+      "arguments": {
+        "project_id": "odd-union-57413470"
+      },
+      "purpose": "endpoint identity/branch/type/state/host metadata; select only exact branch, no start/resume/reconfigure"
+    },
+    {
+      "order": 5,
+      "tool": "mcp__codex_apps__neon_list_snapshots",
+      "arguments": {
+        "project_id": "odd-union-57413470"
+      },
+      "purpose": "existing snapshot id/branch/createdAt/expiresAt/LSN/status metadata; no creation/restore"
+    }
+  ],
+  "sqlToolCall": {
+    "enabled": false,
+    "tool": "mcp__codex_apps__neon_run_sql_transaction",
+    "arguments": {
+      "project_id": "odd-union-57413470",
+      "branch_id": "br-holy-voice-ai303o8m",
+      "database_name": "neondb",
+      "role_name": "neondb_owner",
+      "sql_statements": [
+        "SET TRANSACTION READ ONLY",
+        "SET TRANSACTION ISOLATION LEVEL REPEATABLE READ",
+        "SET LOCAL statement_timeout='30s'",
+        "SET LOCAL lock_timeout='5s'",
+        "SET LOCAL idle_in_transaction_session_timeout='60s'",
+        "SELECT current_database() AS database,current_user AS role,current_setting('server_version_num')::integer AS server_version_num,current_setting('transaction_read_only') AS read_only,current_setting('transaction_isolation') AS isolation",
+        "SELECT table_name,column_name,ordinal_position,data_type,udt_name,is_nullable,column_default,character_maximum_length,collation_name FROM information_schema.columns WHERE table_schema='public' AND table_name IN ('PipelineAICallReservation','PipelineStageRun','PipelineRun','AIUsageReservation') ORDER BY table_name,ordinal_position LIMIT 300",
+        "SELECT c.relname AS table_name,i.relname AS index_name,x.indisunique,x.indisprimary,x.indisvalid,pg_get_indexdef(x.indexrelid) AS definition FROM pg_index x JOIN pg_class c ON c.oid=x.indrelid JOIN pg_namespace n ON n.oid=c.relnamespace JOIN pg_class i ON i.oid=x.indexrelid WHERE n.nspname='public' AND c.relname IN ('PipelineAICallReservation','PipelineStageRun','PipelineRun','AIUsageReservation') ORDER BY c.relname,i.relname LIMIT 150",
+        "SELECT c.relname AS table_name,k.conname,k.contype,k.convalidated,pg_get_constraintdef(k.oid) AS definition FROM pg_constraint k JOIN pg_class c ON c.oid=k.conrelid JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='public' AND c.relname IN ('PipelineAICallReservation','PipelineStageRun','PipelineRun','AIUsageReservation') ORDER BY c.relname,k.conname LIMIT 150",
+        "SELECT migration_name,CASE WHEN rolled_back_at IS NOT NULL THEN 'rolled_back' WHEN finished_at IS NOT NULL THEN 'finished' ELSE 'unfinished' END AS status,applied_steps_count FROM public._prisma_migrations ORDER BY migration_name LIMIT 100",
+        "SELECT count(*) AS migration_count FROM public._prisma_migrations",
+        "SELECT 'PipelineAICallReservation' AS relation,status::text AS status,count(*) AS rows FROM public.\"PipelineAICallReservation\" GROUP BY status UNION ALL SELECT 'AIUsageReservation',status::text,count(*) FROM public.\"AIUsageReservation\" GROUP BY status UNION ALL SELECT 'PipelineRun',status::text,count(*) FROM public.\"PipelineRun\" GROUP BY status UNION ALL SELECT 'PipelineStageRun',status::text,count(*) FROM public.\"PipelineStageRun\" GROUP BY status ORDER BY relation,status LIMIT 100",
+        "SELECT backend_type,state,wait_event_type,count(*) AS sessions,max(EXTRACT(EPOCH FROM (clock_timestamp()-xact_start)))::bigint AS oldest_transaction_seconds FROM pg_stat_activity WHERE datname=current_database() AND pid<>pg_backend_pid() GROUP BY backend_type,state,wait_event_type ORDER BY backend_type,state,wait_event_type LIMIT 50",
+        "SELECT c.relname AS table_name,l.mode,l.granted,count(*) AS locks FROM pg_locks l JOIN pg_class c ON c.oid=l.relation JOIN pg_namespace n ON n.oid=c.relnamespace WHERE l.database=(SELECT oid FROM pg_database WHERE datname=current_database()) AND n.nspname='public' AND c.relname IN ('PipelineAICallReservation','PipelineStageRun','PipelineRun','AIUsageReservation') GROUP BY c.relname,l.mode,l.granted ORDER BY c.relname,l.mode,l.granted LIMIT 100"
+      ]
+    },
+    "gate": "explicit private-inspection+readonly authority AND reviewed in-isolate collector binding_verified against exact same-call Neon endpointmetadata; otherwise STOP",
+    "derivedComputeId": "exact endpoint_id from successful internal binding, no default endpoint selection"
+  },
+  "maximumProviderCalls": 8,
+  "automaticRetries": 0,
+  "rowDigestsOrRowValues": false,
+  "queryTextOrMigrationLogs": false,
+  "credentialExtractionOrConnectionStringCalls": false,
+  "writesOrApplyOrBackupCreation": false,
+  "executionAuthorized": false,
+  "permissionRequired": "fresh explicit informed consent: existing production DATABASE_URL may return in private Codex tool response solely for endpoint verification; private platform/tooltrace retention not ruled out; never ordinary-message display/public export/workspace persistence. Separately include counts-only readonly preflight scope; no consent granted now",
+  "privateVercelMetadataCall": {
+    "tool": "mcp__codex_apps__vercel_filter_project_envs",
+    "arguments": {
+      "idOrName": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp",
+      "teamId": "team_j0CEiAAorasdEVQyeAJjpNfm",
+      "decrypt": "false"
+    },
+    "handling": "inside private functions.exec isolate only; discard every value; select unique key DATABASE_URL with production target; emit no rawresponse"
+  },
+  "privateVercelDetailCall": {
+    "tool": "mcp__codex_apps__vercel_get_project_env",
+    "arguments": {
+      "idOrName": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp",
+      "teamId": "team_j0CEiAAorasdEVQyeAJjpNfm"
+    },
+    "derivedId": "ONLY unique ID from same scoped metadata response, never caller selected",
+    "handling": "authorized existing URI only in SAME private V8 isolate/toolresponse; no ordinary-message display/public export/workspace/files/IPC/rawerror logging; private platform trace retention is disclosed"
+  },
+  "privateExistingUriInspectionRequired": true,
+  "rawCredentialExportPermitted": false,
+  "credentialExtractionMeaning": "no new connection string retrieval/export; explicit private inspection of existing URI is proposed sensitive access and requires fresh approval",
+  "supersedesDesignOnly": "schema-readonly-preflight-2 (preserved unchanged)",
+  "inIsolateCollector": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/schema-endpoint-binding.cjs",
+    "sha256": "364a88fa6ecc53a27a94b80623974fd36885955389b60f5eaea143b22e516a28",
+    "factory": "new Function('module', source + ';return module.exports')({exports:{}})",
+    "requiredGlobals": [
+      "Function",
+      "decodeURIComponent",
+      "standard JavaScript builtins"
+    ],
+    "forbiddenDependencies": [
+      "URL",
+      "crypto",
+      "require",
+      "filesystem",
+      "network",
+      "logging"
+    ],
+    "sourceLoading": "ordinary local source read/hash BEFORE any provider read; source is nonsecret only",
+    "secretTransfer": "no Python/process/argv/files/tool-output forwarding"
+  },
+  "privateSessionTraceLimitation": "provider/platform/connector private tool/session traces may retain response; not controlled by collector; explicit informed private-session consent required before read",
+  "privateIsolateCallingSource": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-3/private-isolate-preflight.cjs",
+    "sha256": "5d8e2312d00fa4ad57f6bd7608bf1ed04be5fbdd05f020222dbcc825d2c81efa",
+    "factory": "new Function('module', source + ';return module.exports')({exports:{}})",
+    "entry": "runApprovedPreflight(tools,collector) ONLY after fresh informed private-session+readonly user consent",
+    "actualCallsPerformed": false
+  }
+}

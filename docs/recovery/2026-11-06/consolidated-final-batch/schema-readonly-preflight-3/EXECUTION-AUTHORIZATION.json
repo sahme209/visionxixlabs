@@ -1,0 +1,11 @@
+{
+  "userDecision": "Approve private target inspection and read-only preflight",
+  "questionItemId": "call_ysIaum3rQOfeOWrQ5vMaitgH",
+  "maximumProviderCalls": 8,
+  "retries": 0,
+  "privatePlatformTraceRetentionDisclosed": true,
+  "schemaApplyAuthorized": false,
+  "deploymentAuthorized": false,
+  "scope": "One current-target inspection and metadata/count-only SQL transaction if exact binding verified",
+  "status": "Approved; invocation not yet observed"
+}

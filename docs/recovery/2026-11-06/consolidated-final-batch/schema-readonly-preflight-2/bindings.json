@@ -1,0 +1,40 @@
+{
+  "files": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-2/packet.json",
+      "sha256": "d6da658c9337a57252f9df2e56eaf9c8ce88ed1b250425401917d425ee1bbd84",
+      "size": 7515
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-2/metadata-counts-only.REVIEW-ONLY.sql",
+      "sha256": "aff266fea61754a300bbe3f15d8ae13ec9c47a897f9791bd3edefdecfac93e6b",
+      "size": 3261
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-2/REVIEW.md",
+      "sha256": "86a521a0d8ab1af895101411f447b4153d126a610d2d4e43151f36c108436588",
+      "size": 5399
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/schema-endpoint-binding.cjs",
+      "sha256": "ceff397822b95782a2e62ced6d149a220b42f9273ecab1156dd06fb51a3feaf9",
+      "size": 2918
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/tests/test_schema_endpoint_binding.cjs",
+      "sha256": "f6b90af6443000ab177a13a6ba5131af8e18cdc519eb1c8e82c8956589d595d2",
+      "size": 2275
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/schema_endpoint_binding.py",
+      "sha256": "6ab9783895b39c3caa2a40da317b71984f5eb2a0a07f06d751feddfa15d69259",
+      "size": 3855
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/tests/test_schema_endpoint_binding.py",
+      "sha256": "0fcd6140a9d7ecb4779c45717be8f7e7590efaf56f34ebec188a4e2ff1080fcb",
+      "size": 3759
+    }
+  ],
+  "executionAuthorized": false
+}

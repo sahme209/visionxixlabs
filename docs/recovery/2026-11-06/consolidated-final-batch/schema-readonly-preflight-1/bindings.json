@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-1/REVIEW.md",
+      "sha256": "0c6af05dafc5d8b2639ebd5d76da702ede238004c7b8a3e07a346a7a8cf9487a",
+      "size": 5865
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-1/metadata-counts-only.REVIEW-ONLY.sql",
+      "sha256": "97fe6b1d6410c50afca38700fcb8d4c5d4053c1e8af6141c9e4742768074745b",
+      "size": 3226
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-1/packet.json",
+      "sha256": "116e9d4d3e799110774c057023e5af9150ca645d48246215a6989d1f895189b5",
+      "size": 6025
+    }
+  ],
+  "executionAuthorized": false
+}

@@ -1,0 +1,35 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "scope": "Source-only exact caller, collector and operative consent packet",
+  "findingsResolved": [
+    "Historical BEFORE review explicitly superseded without modifying bytes",
+    "Private platform/tool trace retention disclosed; no unsupported ephemerality promise"
+  ],
+  "codeChecks": [
+    "Eight-call maximum, no retries",
+    "Exact endpoint binding before conditional SQL",
+    "Discard all env-list values and suppress raw URI/errors",
+    "Only whitelisted nonsecret metadata/count outputs"
+  ],
+  "actualProviderCalls": 0,
+  "actualSQLCalls": 0,
+  "authority": "Prepared only; informed private-read/read-only decision pending",
+  "files": [
+    {
+      "path": "docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-3/CURRENT-SCOPE.md",
+      "sha256": "f781e4f3cc6a195b264e99670dc53003593f03617eb858a4b029010c5e15b73c"
+    },
+    {
+      "path": "docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-3/REVIEW.md",
+      "sha256": "f88ee8e31e03c82ac060a5dfb3658fdb7297e94d74fef2a727ff51242c61b2ef"
+    },
+    {
+      "path": "docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-3/private-isolate-preflight.cjs",
+      "sha256": "5d8e2312d00fa4ad57f6bd7608bf1ed04be5fbdd05f020222dbcc825d2c81efa"
+    },
+    {
+      "path": "docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-3/packet.json",
+      "sha256": "8d5c4b7165a713d6669c1aaae412b5c47434967529f9ba762368902035dd7f2d"
+    }
+  ]
+}

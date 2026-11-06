@@ -1,0 +1,7 @@
+# Operative preflight scope and explicit supersession
+
+REVIEW-BEFORE-PRIVATE-SESSION-CONSENT.md is immutable HISTORICAL REJECTED-GATE evidence. Its requirement to prove that platform/private tool traces are not retained (including line13) is superseded and is NOT operative. Its bytes are preserved, not approved as a current execution condition.
+
+The current REVIEW.md and packet.json govern the proposed scope: only after fresh, explicit informed user consent may the existing production DATABASE_URL return in a PRIVATE Codex tool response solely for endpoint verification and conditional metadata/counts-only read-only preflight. Provider/platform/connector/private-session traces may retain the response; this limitation must be disclosed rather than represented as preventable. The assistant must not quote/display the URI/password in ordinary messages, publicly export it, write it to workspace/files/logs or transfer it through process/argv/IPC. Current consent does not authorize unrelated credentials, configuration changes, SQL writes, migration/apply, grants, branches, backup creation or deployment.
+
+No execution or sensitive inspection is authorized by preparing these files. The exact reviewed collector and caller still require the genuine permission and endpoint/project/branch gates before any calls. Historical v1/v2 and the BEFORE file are preserved for traceability; they do not override current explicitly reviewed scope.

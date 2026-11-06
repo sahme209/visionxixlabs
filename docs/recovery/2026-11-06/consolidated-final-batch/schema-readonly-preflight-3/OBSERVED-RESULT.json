@@ -1,0 +1,15 @@
+{
+  "status": "unverified",
+  "reason": "private_readonly_preflight_stopped",
+  "actualCalls": [
+    "vercel_filter_project_envs"
+  ],
+  "callCount": 1,
+  "sqlCalled": false,
+  "decryptedEnvironmentDetailCalled": false,
+  "retryPerformed": false,
+  "schemaChanged": false,
+  "underlyingCause": "Not established; the first env-metadata response did not yield an accepted unique production DATABASE_URL record or the call failed. No raw response/error retained or printed.",
+  "remaining": "Safe parser/metadata diagnostic and fresh one-run permission before repeating any call",
+  "authorizationConsumed": true
+}

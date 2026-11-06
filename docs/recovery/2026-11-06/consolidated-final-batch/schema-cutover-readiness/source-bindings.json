@@ -1,0 +1,80 @@
+{
+  "sourceRevision": "1369f4837f3fde73eb873449501fb2b7c7947587",
+  "currentMainSchemaSha256Confirmed": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031",
+  "files": [
+    {
+      "path": "prisma/schema.prisma",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/prisma/schema.prisma",
+      "sha256": "50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031",
+      "size": 190558
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunReservation.ts",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/lib/workforce/pipelines/codingRunReservation.ts",
+      "sha256": "f57067373e4fd4912960c908ea24ec3b7ce53f7f7f525cf749cad5d9b43894c7",
+      "size": 30654
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/lib/billing/governedExtractAdmission.ts",
+      "sha256": "8480a12435cd52052fec3b340a0809e56864293d84921c93d169f5850db0879d",
+      "size": 16964
+    },
+    {
+      "path": "lib/ai/codingRequestQuote.ts",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/lib/ai/codingRequestQuote.ts",
+      "sha256": "368b1b67adf0e3eb17c8332298821fc0439d2720707f81981037cee60712ab40",
+      "size": 17269
+    },
+    {
+      "path": "lib/ai/textAdmissionPolicy.ts",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/lib/ai/textAdmissionPolicy.ts",
+      "sha256": "6aa3daf8c9ff6120abce64381807493933df980a7c89a2f83d54978de508a2b2",
+      "size": 2366
+    },
+    {
+      "path": "lib/billing/publicBillingConfig.ts",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/lib/billing/publicBillingConfig.ts",
+      "sha256": "662031ef93b05aca18cb73f3ed2990c6dfd6af26b1d1520c98ff9a4fbc41e052",
+      "size": 1692
+    },
+    {
+      "path": "docs/recovery/2026-11-04/combined-production-batch/COMPLETION.md",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/docs/recovery/2026-11-04/combined-production-batch/COMPLETION.md",
+      "sha256": "ef57fd907194a4064539709f56a1c0d374a8df89674f2878660b4652cf487180",
+      "size": 3895
+    },
+    {
+      "path": "docs/recovery/2026-11-04/combined-production-batch/candidate.prisma",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/docs/recovery/2026-11-04/combined-production-batch/candidate.prisma",
+      "sha256": "c5c85e99016be6752308be8c60c550a44221abe572030a9ed783a3f6764c0377",
+      "size": 190478
+    },
+    {
+      "path": "docs/recovery/2026-11-04/combined-production-batch/production-apply-request.json",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/docs/recovery/2026-11-04/combined-production-batch/production-apply-request.json",
+      "sha256": "4f17ef36a6d0c93965129c2c0c94a253574051e63abde93eeb845bb392ea0d17",
+      "size": 8037
+    },
+    {
+      "path": "docs/recovery/2026-11-04/combined-production-batch/production-apply-result.raw.json",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/docs/recovery/2026-11-04/combined-production-batch/production-apply-result.raw.json",
+      "sha256": "94ae979ffbaafdbf75cae920b3cc1f629f3a6088f284ab6b85967d191ff4e29f",
+      "size": 1306
+    },
+    {
+      "path": "docs/recovery/2026-11-04/quote-schema-rehearsal/README.md",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/docs/recovery/2026-11-04/quote-schema-rehearsal/README.md",
+      "sha256": "11878a1c9e2b785c4bfdb6430ec24b78f066c08895ef25bd1251df5596db118d",
+      "size": 1530
+    },
+    {
+      "path": "docs/recovery/2026-11-06/consolidated-final-batch/SCHEMA-COMPATIBILITY.md",
+      "observedCoordinate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-4/repo/docs/recovery/2026-11-06/consolidated-final-batch/SCHEMA-COMPATIBILITY.md",
+      "sha256": "c10af858703e11969e032264580a8b395d5a7884763a00b1b8ccbd0586891f3c",
+      "size": 2281
+    }
+  ],
+  "actualProductionState": "unknown_not_read",
+  "productionActionsPerformed": false
+}
