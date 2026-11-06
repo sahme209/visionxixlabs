@@ -1,0 +1,51 @@
+{
+  "revision": "1369f4837f3fde73eb873449501fb2b7c7947587",
+  "tree": "c65081590225f9a8c6d54677c48e6d3dec8597ab",
+  "parent": "f66a24020cbfb933213f9dba6c43665885cf28d1",
+  "explicitOverlays": [
+    {
+      "path": "docs/product/axiom-master-action-plan.md",
+      "sha256": "e99a61a3292746ab1ea3b6a32ce9bca08b6db38253ba171450c14917185784b1",
+      "size": 220021,
+      "gitBlob": "332caa912c5affb01cdb3189415976ead7d8fc6d"
+    },
+    {
+      "path": "docs/product/current-execution-board.md",
+      "sha256": "279a40d14454a51d9a8660234da094c4fa4c2f98c8bf416608e00004f785b4c8",
+      "size": 170661,
+      "gitBlob": "56d223e82c60ac79108e6d4a6c3872be314dceab"
+    },
+    {
+      "path": "docs/product/plan-views/adoption-inventory.md",
+      "sha256": "8f3547ef41734e5c1e3de9d0e3736e07aa9bb0187ba884f8e566a9d179730b47",
+      "size": 15566,
+      "gitBlob": "f0e13297b596bedef66ded92ce2be8a147e72cf7"
+    },
+    {
+      "path": "docs/product/plan-views/capabilities.md",
+      "sha256": "a6c83fba3db240cfec7548ee8ab6075bcf62284223c9277a161d1a3036330fa4",
+      "size": 14364,
+      "gitBlob": "5ba4fb49fdefcbb5bf7c14a0dfd65feca73b2e98"
+    },
+    {
+      "path": "docs/product/plan-views/dependencies-decisions.md",
+      "sha256": "6a3029e00e8be0a30145e6056e8c105043b0474ca45ed9341e16a37891aac236",
+      "size": 12369,
+      "gitBlob": "78c655f74578da2570d471f1ba6fcde1924f6e82"
+    },
+    {
+      "path": "docs/product/plan-views/execution-brief.md",
+      "sha256": "d838d7d5535274e361d7f26320ad8fe9854ddfb19c4835f229fdb09eabe83aa6",
+      "size": 7334,
+      "gitBlob": "1de13cd31d15597fea4a92402bc39d5c1901c3d1"
+    },
+    {
+      "path": "docs/recovery/2026-11-06/docs-path-hierarchy/README.md",
+      "sha256": "d6da7eb6f02b87d48526ead9dba421edb4aa1bd8ee1340793aceadfa1fabefe0",
+      "size": 39053,
+      "gitBlob": "ad4dc744690a0510ce594caa09df2140ce31b984"
+    }
+  ],
+  "mainIndexUnchanged": true,
+  "untrackedWorkspaceInventoryClaimed": false
+}
