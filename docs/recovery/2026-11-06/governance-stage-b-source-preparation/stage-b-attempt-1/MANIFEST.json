@@ -1,0 +1,59 @@
+{
+  "files": [
+    {
+      "file": "run/attempt.json",
+      "sha256": "e724c818ddfa584011c1bddac17c4dac9b8b534f3b6c55cc8b97313ef9b25b50",
+      "size": 2675
+    },
+    {
+      "file": "run/npm-global-config",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "run/npm-user-config",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "run/offline-ci.log",
+      "sha256": "e0d350cef8bcf411b80346cf371983d4867c9955fcd21602b435fa796bf0d6f6",
+      "size": 518
+    },
+    {
+      "file": "run/preparation.json",
+      "sha256": "97d1a20d8aeed74579ab8887201b30305713929dcc79b17f52821696eb24df89",
+      "size": 1693
+    },
+    {
+      "file": "run/terminal-summary.json",
+      "sha256": "68e877579ba2ac87ad09c2948b34b67c990c918366521d573643c6907ae583b3",
+      "size": 323
+    },
+    {
+      "file": "controller/claimed.json",
+      "sha256": "dbf82ca6e17029ed86e9771057888c324b1aeb83641cc59d9f1286532d57f80c",
+      "size": 156
+    },
+    {
+      "file": "controller/process.json",
+      "sha256": "29926722dffa2f0d1e7c0615065e0827d45ac0faa9def396284db7df16e6ce14",
+      "size": 130
+    },
+    {
+      "file": "controller/result.json",
+      "sha256": "9c0da4553e6b586462905a17c4c969f3e82e2f43f6f0f1cce8e10d9c5fc1d347",
+      "size": 340
+    },
+    {
+      "file": "controller/stderr.log",
+      "sha256": "d897eb2e6931ac1c3c5465adb171b5b49d9cfd77da267e094ed8fd62c51d450a",
+      "size": 1638
+    },
+    {
+      "file": "controller/stdout.log",
+      "sha256": "8c58b009772b8d76a6f5dd4d8f4dd03afda72a1f5f422b5909ebdedf8cdec601",
+      "size": 52
+    }
+  ]
+}

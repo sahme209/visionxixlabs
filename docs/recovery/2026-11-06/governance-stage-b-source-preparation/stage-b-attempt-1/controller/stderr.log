@@ -1,0 +1,14 @@
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/next-system-inputs-1/prepared-stage-b-build-driver.py", line 77, in <module>
+    if __name__=='__main__':main()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/next-system-inputs-1/prepared-stage-b-build-driver.py", line 46, in main
+    system.record_system_inputs(stage,REPO,REVISION,build,node,Path(FIXED['systemPacket']['path']))
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 212, in record_system_inputs
+    value=_observe(stage,repo,revision,run,build_node,packet_path)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py", line 109, in _observe
+    data,snap=prep._snapshot(repo/name)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 56, in _snapshot
+    if fields(before)!=fields(after) or fields(before)!=fields(current):_refuse('input_changed')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py", line 31, in _refuse
+    def _refuse(reason):raise SystemPreparationUnavailable(reason)
+governance_local_issuer.system_preparation.SystemPreparationUnavailable: input_changed

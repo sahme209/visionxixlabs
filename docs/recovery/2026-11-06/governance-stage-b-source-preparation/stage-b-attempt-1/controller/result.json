@@ -1,0 +1,1 @@
+{"state": "completed", "driverExit": 1, "elapsedSeconds": 13.256444, "bytes": {"stdout": 52, "stderr": 1638}, "monitorErrorType": null, "persistenceErrorType": null, "originalDriverCleanup": "reaped_original_driver", "descendantQuiescence": "unavailable", "executionAuthorized": false, "installationReady": false, "retryAuthorized": false}
