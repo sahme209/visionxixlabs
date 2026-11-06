@@ -1,0 +1,37 @@
+{
+  "packet.json": {
+    "sha256": "0204315726c0d447d3fd27949ecc2262293296783bf6cb872a94ed18c0fd7e7e",
+    "size": 27415,
+    "savedAs": "packet.json"
+  },
+  "execution-authorization.json": {
+    "sha256": "59d22d6b7d210d0ee940403425278d8d7050d6eea2170398b71c887977ab4b08",
+    "size": 312,
+    "savedAs": "execution-authorization.json"
+  },
+  "attempt.json": {
+    "sha256": "792120fa38adf8153ee8c62d6c15f5214b19ef78c9f94e1d5888dbc158b6b1f8",
+    "size": 447,
+    "savedAs": "attempt.json"
+  },
+  "result.json": {
+    "sha256": "80041fd71d9146793c51b9f6004532849042a830e57790aa86c66ced107747b5",
+    "size": 183,
+    "savedAs": "result.json"
+  },
+  "outer.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "savedAs": "outer.log"
+  },
+  "work/driver-result.json": {
+    "sha256": "ea056dded2797735d71fb8225326c48d69ff1b2ed6b80fc4a0f171f81bc39e41",
+    "size": 274,
+    "savedAs": "work-driver-result.json"
+  },
+  "work/offline/outer.log": {
+    "sha256": "2d14e38fee513cb32ec187ff9acbeb502fdc54b856cec3b74be6a26cf1136005",
+    "size": 127,
+    "savedAs": "work-offline-outer.log"
+  }
+}
