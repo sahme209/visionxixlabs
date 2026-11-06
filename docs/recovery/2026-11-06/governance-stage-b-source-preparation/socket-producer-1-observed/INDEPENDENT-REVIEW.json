@@ -1,0 +1,14 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS actual emitted artifact checkpoint",
+  "bindingsMatched": 80,
+  "producerSha256": "ab6de13646a3c295bd74ee9476d0934d41f5daa6112e5b338be3fa0ebb027a52",
+  "producerBytes": 772578,
+  "producerMode": "0600",
+  "sourceRevision": "1369f4837f3fde73eb873449501fb2b7c7947587",
+  "preImportVerifierAndExternalPrismaPreserved": true,
+  "shortSocketPresentOldCoordinateAbsent": true,
+  "controllerSeconds": 29.73857175,
+  "emittedCodeExecuted": false,
+  "runtimeQualified": false
+}

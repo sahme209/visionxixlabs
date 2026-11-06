@@ -1,0 +1,15 @@
+{
+  "savedBinding": {
+    "ctimeNs": 1793987839652766691,
+    "dev": 16777232,
+    "ino": 19733312,
+    "mode": 384,
+    "mtimeNs": 1793987839652503440,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/offline/stage/.next/server/__axiom_private_fixture__/fixture-producer.cjs",
+    "sha256": "ab6de13646a3c295bd74ee9476d0934d41f5daa6112e5b338be3fa0ebb027a52",
+    "size": 772578
+  },
+  "currentBytesHashSizeModeMatch": true,
+  "payloadCopied": false,
+  "executionAuthorized": false
+}

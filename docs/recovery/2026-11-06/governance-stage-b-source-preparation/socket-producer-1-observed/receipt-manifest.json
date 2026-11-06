@@ -1,0 +1,167 @@
+{
+  "copies": [
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/attempt.json",
+      "savedPath": "operation/attempt.json",
+      "sha256": "ab583867c312510a14aabde41b2debbdf4761092f6a1b080825931f9ca39a990",
+      "size": 451,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/outer.log",
+      "savedPath": "operation/outer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/packet.json",
+      "savedPath": "operation/packet.json",
+      "sha256": "b759a7f395c102adb27e7a76ea05d616bb39a8f44816d9e96f3f399dd59099e2",
+      "size": 30608,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/result.json",
+      "savedPath": "operation/result.json",
+      "sha256": "64fbe5369ab55638912da3faa4ebfbee09be3493f69f47dca47732173fa06f61",
+      "size": 12045,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/driver-result.json",
+      "savedPath": "operation/work/driver-result.json",
+      "sha256": "68aae8e98a0e10299d7e627a0babeec7ef4b1057f4808bae541c241bc106a27c",
+      "size": 12380,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/emission/attempt.json",
+      "savedPath": "operation/work/emission/attempt.json",
+      "sha256": "280ef13834fdb8df94aed68d024155b29389f61be0ca931ac09da4cd98bf28c8",
+      "size": 11125,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/emission/producer.log",
+      "savedPath": "operation/work/emission/producer.log",
+      "sha256": "1850679a4025bcb7d9faa70bed6bcd2220df4d4d65ecd66fe2461ee7ac2582c4",
+      "size": 63,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/emission/result.json",
+      "savedPath": "operation/work/emission/result.json",
+      "sha256": "d778532a99b7710e3562023d869c780e9727f4651343f5e89da48c30fa3f860e",
+      "size": 11566,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/generation/attempt.json",
+      "savedPath": "operation/work/generation/attempt.json",
+      "sha256": "6d2607990b0f87d3af651d7dc8983553385800ee237865e15d222876e1ad4929",
+      "size": 5202,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/generation/format-archive.log",
+      "savedPath": "operation/work/generation/format-archive.log",
+      "sha256": "7c445321471fb662310a17072a5ec5545415eac9a1b81dc760552d5a0b94d5f3",
+      "size": 135,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/generation/format-emitted.log",
+      "savedPath": "operation/work/generation/format-emitted.log",
+      "sha256": "4376be4e18769d0800a66bf52d8f28cf91d966a52693d665c8b5424555e70872",
+      "size": 135,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/generation/generation.log",
+      "savedPath": "operation/work/generation/generation.log",
+      "sha256": "57d179e0cd92b7dc61e3a119212c19764ef8db2741de1bd2b2827cd5113a32b9",
+      "size": 341,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/generation/node-version.log",
+      "savedPath": "operation/work/generation/node-version.log",
+      "sha256": "f2ec568164f99546161909b0189b57bb5be3e80f8e2ccd8a51a4aed8c4055a04",
+      "size": 9,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/generation/result.json",
+      "savedPath": "operation/work/generation/result.json",
+      "sha256": "2c4fae2062d2291bf5d0bc889836cc2b96239af44f863a5020bab63fcb01b222",
+      "size": 1768,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/offline/offline-ci.log",
+      "savedPath": "operation/work/offline/offline-ci.log",
+      "sha256": "c599d00405cc02966a08c5b4d225c371b7613146a5fe3ad8b23a75d20697b254",
+      "size": 519,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/offline/outer.log",
+      "savedPath": "operation/work/offline/outer.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-1/packet/work/offline/result.json",
+      "savedPath": "operation/work/offline/result.json",
+      "sha256": "3e4e3466521b9cae7c97340fcd01d5cc7db6b8033f495d597475892e3afb981d",
+      "size": 1499,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-controller-1/claimed.json",
+      "savedPath": "controller/claimed.json",
+      "sha256": "2926a93bf0b8a9f6667efa564e443b01345a17e877e2a6f650f5307d7b446ed2",
+      "size": 156,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-controller-1/process.json",
+      "savedPath": "controller/process.json",
+      "sha256": "8ae72f046252bbcc7aa334b6f55de3df630f5a05b01258902a015688d42f840f",
+      "size": 130,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-controller-1/result.json",
+      "savedPath": "controller/result.json",
+      "sha256": "41ab44aa2ca9dfffa462f0a6ff9bc80d3069ba8c65df51c6ab8b22c25b3d9305",
+      "size": 339,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-controller-1/stderr.log",
+      "savedPath": "controller/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-producer-controller-1/stdout.log",
+      "savedPath": "controller/stdout.log",
+      "sha256": "5cc186487b3c8eecb6a26f82b1e4650003a975a8122d174f1fe2ce9f65985eaa",
+      "size": 90,
+      "mode": 420
+    }
+  ],
+  "excluded": [
+    "emitted producer payload",
+    "node_modules",
+    "cache",
+    "binaries",
+    "stage and temporary payloads"
+  ],
+  "executionAuthorized": false,
+  "installationReady": false
+}
