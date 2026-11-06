@@ -1,0 +1,27 @@
+{
+  "scope": "ordinary file reads and Mach-O load-command inspection only; no execution or Security API",
+  "signedNode": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy",
+    "sha256": "1aa6f6936040d80d6f9c1bb75ba4af97ce596af514ab7f0157a77f461abce134",
+    "size": 121418704,
+    "inode": 16697314,
+    "mode": "0600",
+    "matchesSavedHash": true
+  },
+  "queryLibrary": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-system-build-0b0e8b48/engine-inputs/libquery_engine-darwin-arm64.dylib.node",
+    "sha256": "e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d",
+    "size": 17251592,
+    "inode": 17017374,
+    "mode": "0600",
+    "matchesSavedHash": true,
+    "embeddedCodeSignatureCommand": {
+      "offset": 17117696,
+      "size": 133896
+    },
+    "signatureValidity": "not_verified",
+    "teamCompatibility": "not_verified"
+  },
+  "databaseConnectionPerformed": false,
+  "runtimeExecutionPerformed": false
+}
