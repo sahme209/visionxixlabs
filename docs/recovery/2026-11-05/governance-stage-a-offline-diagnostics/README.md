@@ -7,3 +7,7 @@
 5. **Open:** real failure root cause, fresh frozen packet/review/authorization, actual artifact and subsequent runtime/custody qualification.
 
 Synthetic tests mock boundaries; no Git/npm/Prisma/sandbox child was invoked. These do not prove real OS or artifact compatibility. Optional untested diagnostic branches: context/archived_sources/install/receipt and CLI stderr. No full repository suite or production build was run. Existing consumed packet was not changed or retried. No deployment, credentials, database, provider, signing, installation or spending. User master changes remain unstaged.
+
+## Diagnostic output follow-up
+
+Added four late-phase synthetic subcases plus tests of actual CLI message formatter: forged/extra fields refuse disclosure, arbitrary exception text stays hidden, and bounded launch errors retain priority. Formatter extracted without changing the CLI exit or output contract. The new output test first failed because the formatter was absent; all21 focused StageA tests then pass (0.298s). Independent read-only follow-up review found no important defect. Real CLI subprocess/OS behavior remains untested; these are pure/mocked tests, not an authorized repeat experiment.

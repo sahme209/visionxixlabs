@@ -223,15 +223,16 @@ def execute_stage_a_packet(path):
  finally:
   with os.fdopen(fd,'wb')as output:output.write(_json(result));output.flush();os.fsync(output.fileno())
  return result
+def _child_failure_message(error):
+ diagnostic=getattr(error,'launchDiagnostic',None)
+ if type(diagnostic)is dict and set(diagnostic)=={'phase','class','errno'}and diagnostic['phase']in ('null_input','spawn','git_spawn')and diagnostic['class']in ('OSError','SubprocessError')and diagnostic['errno']in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC','UNKNOWN'):return json.dumps({'error':'stage_a_artifact_unavailable','launchDiagnostic':diagnostic},sort_keys=True)+'\n'
+ offline=getattr(error,'offlineDiagnostic',None)
+ if type(offline)is dict and set(offline)=={'phase','reason'} and _offline_diagnostic(offline.get('phase'),StageAUnavailable(offline.get('reason')))==offline:return json.dumps({'error':'stage_a_artifact_unavailable','offlineDiagnostic':offline},sort_keys=True)+'\n'
+ return 'stage_a_artifact_unavailable\n'
 if __name__=='__main__':
  try:
   if len(sys.argv)!=3 or sys.argv[1]not in ('--offline-child','--driver-child'):refuse('fixed_child_invocation_required')
   value=run_offline_child(sys.argv[2])if sys.argv[1]=='--offline-child'else run_stage_a_driver(sys.argv[2]);sys.exit(0 if value['status']in ('installed','artifact_observed')else 73)
  except Exception as error:
-  diagnostic=getattr(error,'launchDiagnostic',None)
-  if type(diagnostic)is dict and set(diagnostic)=={'phase','class','errno'}and diagnostic['phase']in ('null_input','spawn','git_spawn')and diagnostic['class']in ('OSError','SubprocessError')and diagnostic['errno']in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC','UNKNOWN'):sys.stderr.write(json.dumps({'error':'stage_a_artifact_unavailable','launchDiagnostic':diagnostic},sort_keys=True)+'\n')
-  else:
-   offline=getattr(error,'offlineDiagnostic',None)
-   if type(offline)is dict and set(offline)=={'phase','reason'} and _offline_diagnostic(offline.get('phase'),StageAUnavailable(offline.get('reason')))==offline:sys.stderr.write(json.dumps({'error':'stage_a_artifact_unavailable','offlineDiagnostic':offline},sort_keys=True)+'\n')
-   else:sys.stderr.write('stage_a_artifact_unavailable\n')
+  sys.stderr.write(_child_failure_message(error))
   sys.exit(74)
