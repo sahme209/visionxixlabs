@@ -1,0 +1,26 @@
+{
+  "questionId": "call_PXsGlUWps7G3i9yiMijpobQ1",
+  "answer": "Approve one broker-and-guard batch",
+  "roles": [
+    "broker",
+    "guard"
+  ],
+  "scope": [
+    "prepare/test/review fixed runner and broker compile packet",
+    "one offline broker compile and independent output review",
+    "one broker signing/static sequence",
+    "derive actual broker CDHash and prepare/review guard source packet",
+    "one offline guard compile and independent output review",
+    "one guard signing/static sequence"
+  ],
+  "perCommandSeconds": 10,
+  "cleanupSeconds": 5,
+  "combinedOutputCap": 65536,
+  "retry": false,
+  "targetLaunch": false,
+  "accountsServicesInstallation": false,
+  "database": false,
+  "providerAction": false,
+  "deployment": false,
+  "spending": false
+}
