@@ -1,0 +1,7 @@
+# Product to documentation — actual browser journey
+
+In one new hidden IAB tab at1280×720 on guarded local0c9, clicked Product’s Read the workflow guide. The Approval workflow article loaded with the correct title, unique h1 in the first viewport, matching aria-current sidebar link and explicit separate-execution local-preview warning. Pressed Enter on the observed Next Security model pagination link; URL/title/h1/sidebar current link changed to Security model and the former article heading disappeared. Both measured document widths1274 fit viewport1280.
+
+The first exact locator used uppercase NEXT as printed by the AX snapshot; it matched nothing and sent no action. Fresh DOM pagination text exposed mixed-case Next Security model; that locator succeeded. This is a tool selector mismatch, not a reproduced page defect. Initial pagination focus was supplied by the locator, not a complete keyboard-only page-entry test.
+
+observations.json retains arrivals and selector failure; arrival.jpg is the actual final security article screenshot. Seven named current files equal preview source; whole-current-source and complete DocsContents qualification are not inferred. No feedback/support/auth/account/download/provider control activated. The owned tab closed successfully; original tabs/app preserved. No new source/build/deployment, screen reader, contrast, touch, mobile, performance, editorial or full B4/B6/Governance acceptance.

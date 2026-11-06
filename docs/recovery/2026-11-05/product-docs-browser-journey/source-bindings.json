@@ -1,0 +1,13 @@
+{
+  "previewSource": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "currentMatchingFiles": {
+    "app/product/page.tsx": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+    "app/docs/approval-workflow/page.tsx": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16",
+    "app/docs/security-model/page.tsx": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7",
+    "app/docs/layout.tsx": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+    "components/docs/DocsSidebar.tsx": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+    "components/docs/DocPrimitives.tsx": "b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855",
+    "components/Navigation.tsx": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5"
+  },
+  "scope": "Only named sources compared, not whole website or runtime"
+}

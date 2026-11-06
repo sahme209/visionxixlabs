@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the exact reviewed single-outer-policy artifact run ([packet and limits](../recovery/2026-11-05/governance-stage-a-single-outer/EXECUTION-REVIEW.md)) is prepared and awaits one fresh specific user execution decision. Do not restart completed source preparation, infer approval from goal continuation, reset the consumed3dd attempt or reuse unready19286. After an accepted artifact result, follow the [StageB dependencies](../recovery/2026-11-05/governance-stage-a-local/STAGE-B-DEPENDENCIES.md): real selected principals, signed runtime/query-loader qualification, current native roles, fresh same-source build and actual custody/SAME-consumer tests. No full A2/A9, fleet or universal mutation coverage acceptance exists.
 
+## Product to documentation — actual browser journey
+
+~~Product workflow CTA and Enter-activated next-guide pagination reached the correct articles and updated sidebar current-page state~~ ([evidence](../recovery/2026-11-05/product-docs-browser-journey/README.md)); first-viewport headings and no measured document overflow at1280×720. Seven named current files match served0c9; not whole-site/current DocsContents or full keyboard/AT/customer acceptance. Owned test tab closed; no provider/account/form action. All21 parents remain open.
+
 ## Narrow navigation — actual browser recovery
 
 ~~At 320px CSS width, menu initial focus, reverse/forward boundary wrapping and Escape/focus/scroll recovery observed in a real browser~~ ([evidence](../recovery/2026-11-05/navigation-320-browser/README.md)); exact current Navigation source matches served0c9. Owned test override cleared and tab closed; no account/provider link activated. Physical-device/touch/AT/contrast/performance/full B6 remain open.

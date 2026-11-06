@@ -1,0 +1,53 @@
+{
+  "approvalArrival": {
+    "currentLinks": [
+      {
+        "href": "/docs/approval-workflow",
+        "text": "Approval workflow"
+      }
+    ],
+    "documentWidth": 1274,
+    "heading": [
+      {
+        "bottom": 183,
+        "left": 324,
+        "right": 1242,
+        "text": "A write starts as a proposal.",
+        "top": 135
+      }
+    ],
+    "previewWarning": true,
+    "title": "Approval workflow — Axiom Documentation | Vision XIX Labs",
+    "url": "http://127.0.0.1:5262/docs/approval-workflow",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "securityArrival": {
+    "approvalHeadingStillPresent": false,
+    "currentLinks": [
+      {
+        "href": "/docs/security-model",
+        "text": "Security model"
+      }
+    ],
+    "documentWidth": 1274,
+    "heading": [
+      {
+        "bottom": 183,
+        "left": 324,
+        "right": 1242,
+        "text": "The current Axiom security model.",
+        "top": 135
+      }
+    ],
+    "title": "Security model — Axiom Documentation | Vision XIX Labs",
+    "url": "http://127.0.0.1:5262/docs/security-model",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "selectorFailure": "AX displayed NEXT uppercase; exact DOM-role name NEXT Security model had zero matches before action; fresh pagination text exposed Next Security model and Enter succeeded"
+}
