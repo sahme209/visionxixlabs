@@ -1,0 +1,3 @@
+# Output supervisor and exact compat-3 review — PASS
+
+Reviewer independently verified packetd28c2eb9d2b68fab262119293ac0f463188db7ad18e935901aef71bafcf79064,9sources/6inputs/current hashes/stats/modes/device/commands/private0700/noattempt/result/logs. Nonblocking capture stores at most64KiB combined;10seconds monitoring/child wait plus at most5owned cleanup; failures cannot advance batch; no retry. No artifact RLIMIT on signer. Node path remains original sandbox/helper. No important findings. Prompt interaction is never authorized; an unanswered blocking prompt times out, but the supervisor does not explicitly recognize GUI prompts. Review was file-only, no signing/API/execution.

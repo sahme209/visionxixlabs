@@ -29,7 +29,7 @@ class EnvironmentTests(unittest.TestCase):
  def test_signing_keeps_system_default_keychain_resolution(self):
   with tempfile.TemporaryDirectory()as t:
    root=Path(t).resolve();(root/'work').mkdir()
-   with patch.object(d,'ROOT',root),patch.object(d.p.files.engine_tools,'_run_generation_child',return_value=(0,None))as run:
+   with patch.object(d,'ROOT',root),patch.object(d.signing_tools,'run',return_value={'exit':0,'state':'completed','cleanup':'reaped_original_child','error':None,'output':b''})as run,patch.object(d.p.files.engine_tools,'_run_generation_child',side_effect=AssertionError('signer must not inherit artifact file cap')):
     d.command(['/usr/bin/codesign'],0)
    environment=run.call_args.args[2]
    self.assertNotIn('HOME',environment);self.assertNotIn('TMPDIR',environment)
