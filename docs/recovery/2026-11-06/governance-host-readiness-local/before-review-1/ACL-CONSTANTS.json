@@ -1,0 +1,20 @@
+{
+  "ACL_FIRST_ENTRY": 0,
+  "ACL_TYPE_EXTENDED": 256,
+  "aclGetEntryEntryPresent": 1,
+  "aclGetEntryNoEntry": 0,
+  "entrySemantics": {
+    "mode": 420,
+    "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_get_entry.3",
+    "sha256": "d99383df75ec5cc6213282be27adf61ee10f09f2e4d24bc00fbb5ba79d2c6486",
+    "size": 3769
+  },
+  "negativeOrOther": "stop",
+  "preparationReadOnlyText": true,
+  "sourceHeader": {
+    "mode": 292,
+    "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/acl.h",
+    "sha256": "9511f84f0abe1e108e10979900d4fea8567534aef78f0984f7050c49f6c29ff7",
+    "size": 8877
+  }
+}

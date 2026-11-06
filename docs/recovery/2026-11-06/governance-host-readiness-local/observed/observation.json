@@ -1,0 +1,1 @@
+{"commands": [], "custodyQualified": false, "executionAuthorized": false, "format": "axiom.nonsecret-host-readiness/1", "installationReady": false, "lastBoundary": {"index": 0, "phase": "command"}, "paths": [], "postgres": [], "reason": "directory_ambiguous", "state": "stopped"}

@@ -1,0 +1,21 @@
+..E.
+======================================================================
+ERROR: test_monitor_setup_error_aborts_owned_group (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 93, in test_monitor_setup_error_aborts_owned_group
+    with self.assertRaises(KeyboardInterrupt):m.run_command(m.COMMANDS[0],m.Budget(lambda:0))
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/inspector.py", line 150, in run_command
+    sel=selectors.DefaultSelector()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1093, in __call__
+    return self._mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1097, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1152, in _execute_mock_call
+    raise effect
+RuntimeError: SECRET_MARKER
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.021s
+
+FAILED (errors=1)

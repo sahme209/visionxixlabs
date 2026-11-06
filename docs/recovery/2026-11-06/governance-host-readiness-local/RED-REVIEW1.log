@@ -1,0 +1,25 @@
+EF
+======================================================================
+ERROR: test_pg_hash_ignores_atime_but_checks_integrity (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 78, in test_pg_hash_ignores_atime_but_checks_integrity
+    r=m.pg_metadata(m.PG[0],m.Budget(lambda:0));self.assertEqual(r['size'],1)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/inspector.py", line 107, in pg_metadata
+    if before!=s:refuse('postgres_candidate_changed')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/inspector.py", line 14, in refuse
+    def refuse(code):raise Stop(code)
+inspector.Stop: postgres_candidate_changed
+
+======================================================================
+FAIL: test_unsafe_pg_ancestry_stops_before_static_calls (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 88, in test_unsafe_pg_ancestry_stops_before_static_calls
+    self.assertEqual(len(calls),7);self.assertEqual(r['reason'],'postgres_trusted_ancestry_blocked');self.assertFalse(r['postgres'][0]['rootOwnedNonwritableNoAclAncestry'])
+AssertionError: 8 != 7
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.026s
+
+FAILED (failures=1, errors=1)

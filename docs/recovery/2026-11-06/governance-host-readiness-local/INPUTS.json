@@ -1,0 +1,142 @@
+{
+  "acceptedStaticResultSha256": "6078b00db6ac529b92a9770b89efaaa0eb374eb29a7ec9b3ad7e47c0212eed1c",
+  "activationAllowed": false,
+  "aggregateOutputBytes": 1048576,
+  "aggregateSeconds": 120,
+  "cleanupSeconds": 5,
+  "commands": [
+    [
+      "/usr/bin/dscl",
+      "/Local/Default",
+      "-search",
+      "/Users",
+      "UniqueID",
+      "501"
+    ],
+    [
+      "/usr/bin/dscl",
+      "/Local/Default",
+      "-search",
+      "/Users",
+      "UniqueID",
+      "65001"
+    ],
+    [
+      "/usr/bin/dscl",
+      "/Local/Default",
+      "-search",
+      "/Users",
+      "UniqueID",
+      "65002"
+    ],
+    [
+      "/usr/bin/dscl",
+      "/Local/Default",
+      "-search",
+      "/Groups",
+      "PrimaryGroupID",
+      "20"
+    ],
+    [
+      "/usr/bin/dscl",
+      "/Local/Default",
+      "-search",
+      "/Groups",
+      "PrimaryGroupID",
+      "65001"
+    ],
+    [
+      "/usr/bin/dscl",
+      "/Local/Default",
+      "-search",
+      "/Groups",
+      "PrimaryGroupID",
+      "65002"
+    ],
+    [
+      "/usr/bin/dscl",
+      "/Local/Default",
+      "-search",
+      "/Users",
+      "RecordName",
+      "_axiomissuer_synthetic"
+    ],
+    [
+      "/usr/bin/otool",
+      "-L",
+      "/opt/homebrew/opt/postgresql@17/bin/postgres"
+    ],
+    [
+      "/usr/bin/otool",
+      "-l",
+      "/opt/homebrew/opt/postgresql@17/bin/postgres"
+    ],
+    [
+      "/usr/bin/otool",
+      "-L",
+      "/opt/homebrew/opt/postgresql@17/bin/initdb"
+    ],
+    [
+      "/usr/bin/otool",
+      "-l",
+      "/opt/homebrew/opt/postgresql@17/bin/initdb"
+    ],
+    [
+      "/usr/bin/otool",
+      "-L",
+      "/opt/homebrew/opt/postgresql@17/bin/pg_ctl"
+    ],
+    [
+      "/usr/bin/otool",
+      "-l",
+      "/opt/homebrew/opt/postgresql@17/bin/pg_ctl"
+    ],
+    [
+      "/bin/launchctl",
+      "print",
+      "system/com.visionxixlabs.axiom.synthetic.launch-owner.c3b7bf334ce56a64575183b7a66e5109"
+    ],
+    [
+      "/bin/launchctl",
+      "print",
+      "system/com.visionxixlabs.axiom.synthetic.bootstrap.c3b7bf334ce56a64575183b7a66e5109"
+    ],
+    [
+      "/bin/launchctl",
+      "print",
+      "system/com.visionxixlabs.axiom.issuer-request"
+    ]
+  ],
+  "custodyQualified": false,
+  "executionAuthorized": false,
+  "format": "axiom.fixed-nonsecret-host-readiness/1",
+  "installationReady": false,
+  "maximumCommands": 16,
+  "output": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-governance-host-readiness-1",
+  "perCommandSeconds": 10,
+  "perCommandSharedBytes": 65536,
+  "proposal": {
+    "mode": 420,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/protected-installation-design-1/NONSECRET-HOST-READINESS-PREFLIGHT-PROPOSAL.md",
+    "sha256": "44e7105a1f1ce7c50988389bbe955302294c4e7086e49b4e643bfa0c795715d2",
+    "size": 7437
+  },
+  "rawCommandOutputPersisted": false,
+  "retries": 0,
+  "sourceBindings": [
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/inspector.py",
+      "sha256": "960aa0aedaa5fef7f77b9ad5dbd2bb5783b46f807b3f55a8d10e8c58383c373c",
+      "size": 12916
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/ACL-CONSTANTS.json",
+      "sha256": "b8f70a36a42c4b3e0a2bd87f0eebe0b11c6fc40c54ae42eed4f523948d90426f",
+      "size": 1373
+    }
+  ],
+  "sourceRevision": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "supersedes": "before-review-1/INPUTS.json"
+}

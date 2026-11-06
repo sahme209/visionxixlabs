@@ -1,0 +1,132 @@
+{
+  "actualAclBehaviorObserved": false,
+  "format": "axiom.source-only-sdk-contract-finding/1",
+  "liveVulnerabilityConfirmed": false,
+  "nativeSourceChanged": false,
+  "sdkText": [
+    {
+      "mode": 292,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/acl.h",
+      "sha256": "9511f84f0abe1e108e10979900d4fea8567534aef78f0984f7050c49f6c29ff7",
+      "size": 8877
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_init.3",
+      "sha256": "3a255e9b01bfcc1a1f84971741a989265a6395c81241415086635ce294d06aec",
+      "size": 3101
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_copy_ext.3",
+      "sha256": "1cf4d84bf340dda10d433b6b2d627667a0ec1263af37d0eb5ca50f46d7bcafb9",
+      "size": 3868
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_get_entry.3",
+      "sha256": "d99383df75ec5cc6213282be27adf61ee10f09f2e4d24bc00fbb5ba79d2c6486",
+      "size": 3769
+    }
+  ],
+  "sources": [
+    {
+      "anchors": [
+        {
+          "line": 51,
+          "text": "  acl_entry_t entry;int acl_result=acl_get_entry(acl,ACL_FIRST_ENTRY,&entry);acl_free(acl);"
+        }
+      ],
+      "source": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_launch_owner.c",
+        "sha256": "b0d6883dfa92a87c02f423515fb10907dedc23859709d18e96e537c36138fffe",
+        "size": 14421
+      }
+    },
+    {
+      "anchors": [
+        {
+          "line": 13,
+          "text": "int ax_fixture_protected_file(const char*path,int directory){char copy[PATH_MAX],canonical[PATH_MAX];if(!path||strlen(path)>=sizeof copy||!realpath(path,canonical)||strcmp(path,canonical))return 0;strcpy(copy,path);for(;;){struct stat st;if(lstat(copy,&st)||S_ISLNK(st.st_mode)||st.st_uid||(st.st_mode&0022))return 0;if(!strcmp(copy,path)){if(directory?!S_ISDIR(st.st_mode):(!S_ISREG(st.st_mode)||st.st_nlink!=1))return 0;}else if(!S_ISDIR(st.st_mode))return 0;acl_t acl=acl_get_file(copy,ACL_TYPE_EXTENDED);if(!acl)return 0;acl_entry_t entry;int has=acl_get_entry(acl,ACL_FIRST_ENTRY,&entry),freed=acl_free(acl);if(has||freed)return 0;char*end=strrchr(copy,'/');if(!end)return 0;if(end==copy)break;*end=0;}return 1;}"
+        }
+      ],
+      "source": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_readiness.c",
+        "sha256": "315960d485fb2788ed03bd25ceb7040b4f82aeb2aee012fa9d3f4e42f2e80ca3",
+        "size": 1715
+      }
+    },
+    {
+      "anchors": [
+        {
+          "line": 75,
+          "text": " acl_t a=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!a)return 0;acl_entry_t e;int n=acl_get_entry(a,ACL_FIRST_ENTRY,&e);acl_free(a);return n==0;"
+        }
+      ],
+      "source": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+        "sha256": "5958707022f7ffd515ffcd2ef9c11bbb9522aff97566bee0ad9ee0c21fafe299",
+        "size": 9694
+      }
+    },
+    {
+      "anchors": [
+        {
+          "line": 23,
+          "text": " acl_t a=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!a)return 0;acl_entry_t e;int n=acl_get_entry(a,ACL_FIRST_ENTRY,&e);acl_free(a);return n==0;"
+        }
+      ],
+      "source": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_provisioner.m",
+        "sha256": "8fceba2e14355cdca3e0afc65097a883744aca4104d027a27288f6ee9ba45590",
+        "size": 7228
+      }
+    },
+    {
+      "anchors": [
+        {
+          "line": 22,
+          "text": " acl_entry_t entry;int count=acl_get_entry(a,ACL_FIRST_ENTRY,&entry),freed=acl_free(a);"
+        }
+      ],
+      "source": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_maintenance_main.c",
+        "sha256": "ac1ff015e512451bb2988a21092a1ecfed248091533f8d76e7aa8d9afcf065e6",
+        "size": 2469
+      }
+    },
+    {
+      "anchors": [
+        {
+          "line": 14,
+          "text": " acl_t acl=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!acl)return 0;acl_entry_t entry;int count=acl_get_entry(acl,ACL_FIRST_ENTRY,&entry);int freed=acl_free(acl);if(count!=0||freed)return 0;"
+        }
+      ],
+      "source": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_journal_native.c",
+        "sha256": "5b7d8d85be2eccb138902c42e092bccd38a413e863adf14f31a3db0b8e227e12",
+        "size": 3766
+      }
+    },
+    {
+      "anchors": [
+        {
+          "line": 25,
+          "text": " acl_t acl=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!acl)return 0;acl_entry_t entry;int n=acl_get_entry(acl,ACL_FIRST_ENTRY,&entry);int freed=acl_free(acl);if(n!=0||freed)return 0;if(out)*out=s;return 1;"
+        }
+      ],
+      "source": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/system_peer_binding.c",
+        "sha256": "ce3f111e3e0704697062daadc9ef012ceae630fa75110914215946589cbe92c2",
+        "size": 8068
+      }
+    }
+  ]
+}

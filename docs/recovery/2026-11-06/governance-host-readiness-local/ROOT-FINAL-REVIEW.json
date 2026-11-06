@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "reviewer": "offline_diagnostic_review",
+  "frozenBindingsSha256": "915d54797b29fcd977b6d080917460cdaea89a511fdd4104b187a63f2965e844",
+  "rootVerifiedBindings": 18,
+  "actualInvocationYet": false,
+  "fourFindingsCorrected": true,
+  "sourceOnlyIndependentReview": true,
+  "authorizedEntry": "/usr/bin/python3 -B docs/recovery/2026-11-06/governance-host-readiness-local/controller.py",
+  "retries": 0,
+  "reviewedAt": "2026-11-06T22:17:09.495471+00:00"
+}

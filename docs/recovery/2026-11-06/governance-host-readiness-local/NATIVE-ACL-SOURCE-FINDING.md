@@ -1,0 +1,5 @@
+# Existing native ACL assumption requires separate qualification
+
+Source-only finding, no actual ACL/host API call or native execution. Bound SDK acl_get_entry(3) RETURN VALUES says0 successfully obtains an entry and-1 indicates error. Existing native sources listed with exact line/hash anchors in NATIVE-ACL-SOURCE-FINDING.json treat0 as no entry. Those assumptions are incompatible with the bound SDK documentation and remain unqualified; this is not a confirmed live vulnerability or observation of actual platform return behavior. Earlier static signatures/tests do not resolve it.
+
+No native source, accepted package, signature or old receipt was changed. A separate reviewed correction/qualification scope and affected artifact graph are required before protected installation/custody acceptance; this inspector grant does not authorize native compilation, signing, replacement or execution. The inspector itself now proves absence only by exact bounded opaque external-serialization equality with a newly allocated empty ACL. A documented successful entry means present; ambiguous/error results stop. No ACL mutation or internal representation parsing is used.

@@ -1,0 +1,115 @@
+{
+  "actualInspectionPerformed": false,
+  "files": [
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/ACL-CONSTANTS.json",
+      "sha256": "b8f70a36a42c4b3e0a2bd87f0eebe0b11c6fc40c54ae42eed4f523948d90426f",
+      "size": 1373
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/GREEN-FINAL-REVIEW.log",
+      "sha256": "8d07bcca4d98c58e6e61982273d511fc9a19d64a50b606a43b2218d829583a76",
+      "size": 115
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/GREEN-REVIEW-CLEANUP.log",
+      "sha256": "9f75add94930d82f86f40553d972627172fa9fcad2415eaa9947d6de3d460011",
+      "size": 98
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/GREEN-REVIEW1.log",
+      "sha256": "2590853e37d39837df7201c880a222b46589307a545ee26b9cf166932c576b94",
+      "size": 1496
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/GREEN.log",
+      "sha256": "a9a62c93b51eee640410bdd1924c2eb7632ed5f8a5eac2ea425b405c1a8a196c",
+      "size": 111
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/INPUTS.json",
+      "sha256": "c20b81435e2917cd83f6a3d086e8a4c405d95f5d09f49b6ad3b60bfe65ed4846",
+      "size": 3687
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/NATIVE-ACL-SOURCE-FINDING.json",
+      "sha256": "4ce65d5d60d15a76b498d57c951259b3db57d5de1d4c89e959675a79a7c262b7",
+      "size": 5667
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/NATIVE-ACL-SOURCE-FINDING.md",
+      "sha256": "a48a307c173537bb636386a602c8e1197cd63f527bcaebf58e9f47e217c864e7",
+      "size": 1169
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/RED-CONTROLLER.log",
+      "sha256": "6cae2630febec7fcc2ff66256cec448802ca6b76691f278795909c6a9ebc8af4",
+      "size": 727
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/RED-DIAGNOSTIC.log",
+      "sha256": "17fff2102276a60e7f17b550d7c30b316a91de1f66755be31ce3329c1263d35d",
+      "size": 783
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/RED-REVIEW-ACL-CLEANUP.log",
+      "sha256": "894f87b52ae260f508a143307c1d2c2d2e9a0168f162221fd312c8c27f581ac5",
+      "size": 2502
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/RED-REVIEW1.log",
+      "sha256": "c3620fbb220c1c7bd2f1331cfceb2741f0b4c8811d1108fcd2e4377d22202552",
+      "size": 1841
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/RED.log",
+      "sha256": "5fa087b28eb8083041e3250ffbd9327dbd7c986db72747a2cce43825dc19e266",
+      "size": 4679
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/REVIEW.md",
+      "sha256": "1a534a8c56bd03eeabe6f73e8cdd3ceb027607044c2d090d394065afe50398b8",
+      "size": 3826
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/ROOT-AUTHORIZATION.json",
+      "sha256": "135b08aa038fab9561b3c2ea66475d11a47d3cc559e58450bb5c5b9fa66074e9",
+      "size": 937
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/controller.py",
+      "sha256": "bb74befad906b6c458000b67f69cd67428954f74215c22f344c8d6b2215008a7",
+      "size": 4777
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/inspector.py",
+      "sha256": "960aa0aedaa5fef7f77b9ad5dbd2bb5783b46f807b3f55a8d10e8c58383c373c",
+      "size": 12916
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py",
+      "sha256": "c335fbfa2cf3a96d22b6725dba0a99838853afede7fbe1a62be693d2c37ce834",
+      "size": 8919
+    }
+  ],
+  "firstFreezePreserved": "before-review-1/FROZEN-BINDINGS.json",
+  "reviewCorrectionsApplied": true
+}

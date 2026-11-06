@@ -1,0 +1,26 @@
+{
+  "files": [
+    {
+      "name": "claimed.json",
+      "sha256": "e99087b4ec2de38f5ac488b8d0fb2f7866d1f3fefd78b256b04b1b8084fd9ac8",
+      "size": 156
+    },
+    {
+      "name": "process.json",
+      "sha256": "1b3c22228d3d0a064fa324b138909e012e163faa739a97664455aba470241f2c",
+      "size": 46
+    },
+    {
+      "name": "result.json",
+      "sha256": "b7facc0dcf9bc16f12565d4d8c21c0019ea3bd0fdeb6d4b1e9d2eaaeb09643a3",
+      "size": 359
+    },
+    {
+      "name": "observation.json",
+      "sha256": "a10d7c7b66b45068b59386d33413bb57d4abc14e28b612b0fb0c39b52645afb4",
+      "size": 280
+    }
+  ],
+  "copiesMatchActualOwnedOutput": true,
+  "containsRawHostCommandOutput": false
+}

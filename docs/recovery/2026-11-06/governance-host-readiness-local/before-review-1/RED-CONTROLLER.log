@@ -1,0 +1,13 @@
+........F..
+======================================================================
+FAIL: test_outer_entrypoint_exists (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 58, in test_outer_entrypoint_exists
+    self.assertTrue(P.with_name('controller.py').exists(),'bounded frozen outer entry missing')
+AssertionError: False is not true : bounded frozen outer entry missing
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.005s
+
+FAILED (failures=1)

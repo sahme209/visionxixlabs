@@ -1,0 +1,17 @@
+{
+  "independentReviewer": "offline_diagnostic_review",
+  "result": "stopped_safe_unqualified",
+  "oneInvocationConsumed": true,
+  "firstCommandIndex": 0,
+  "causeEstablished": "ASCII decoded first dscl output had more than one split line",
+  "notEstablished": [
+    "multiple distinct accounts",
+    "name collision",
+    "underlying response shape",
+    "host readiness"
+  ],
+  "laterProbesEstablished": false,
+  "workerReaped": true,
+  "rawOutputRetained": false,
+  "newReadOrRetryAuthorized": false
+}

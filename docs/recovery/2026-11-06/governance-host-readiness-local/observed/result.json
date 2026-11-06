@@ -1,0 +1,1 @@
+{"activationAllowed": false, "bytes": {"stderr": 0, "stdout": 258}, "cleanup": "reaped_original_worker", "descendantQuiescence": "unavailable", "elapsedSeconds": 0.12221299999999999, "executionAuthorized": false, "installationReady": false, "monitorError": false, "retryAuthorized": false, "safeObservationSaved": true, "state": "completed", "workerExit": 1}

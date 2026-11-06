@@ -1,0 +1,11 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS",
+  "proposalSha256": "8b3e7d5eebd8f6ecdbb9f01e487069238dd9f98ecdf4a566074415a82feed6f5",
+  "conditions": [
+    "finite exit/count enums",
+    "raw streams never reach logs/tracebacks",
+    "fresh explicit user decision before implementation/run"
+  ],
+  "implementationOrInvocationAuthorized": false
+}

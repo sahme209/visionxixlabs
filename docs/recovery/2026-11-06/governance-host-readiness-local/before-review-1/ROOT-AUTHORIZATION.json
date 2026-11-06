@@ -1,0 +1,33 @@
+{
+  "decision": "approved",
+  "source": "Direct user message Approved after goal was blocked on pending host-readiness decision",
+  "proposalSha256": "44e7105a1f1ce7c50988389bbe955302294c4e7086e49b4e643bfa0c795715d2",
+  "conditionalScope": [
+    "local code",
+    "synthetic tests",
+    "independent frozen-input review",
+    "one readonly host inspection after pass"
+  ],
+  "limits": {
+    "maximumCommands": 16,
+    "aggregateSeconds": 120,
+    "perCommandSeconds": 10,
+    "perCommandBytes": 65536,
+    "aggregateBytes": 1048576,
+    "cleanupSeconds": 5,
+    "retries": 0
+  },
+  "excluded": [
+    "installation",
+    "accounts/groups/grants",
+    "Security.framework/Keychain",
+    "PostgreSQL or native payload launch",
+    "database connection/SQL",
+    "network/provider calls",
+    "signing",
+    "production changes",
+    "spending"
+  ],
+  "actualInvocationPerformed": false,
+  "recordedAt": "2026-11-06T22:06:58.958811+00:00"
+}

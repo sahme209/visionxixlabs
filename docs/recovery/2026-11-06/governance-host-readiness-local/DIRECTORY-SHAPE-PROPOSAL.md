@@ -1,0 +1,9 @@
+# One finite directory-response shape diagnostic — proposed only
+
+The reviewed host run stopped at first UID501 query because its ASCII response had multiple split lines. Raw output was intentionally discarded. This is not proof of duplicate accounts; no later host readiness fact is established. Preserve that consumed attempt unchanged.
+
+Proposed conditional unit: prepare a fixed private shape projector and one-shot supervisor, synthetic privacy/error/timeout/byte-cap tests, freeze source/command packet and independent review, then make exactly ONE `/usr/bin/dscl /Local/Default -search /Users UniqueID 501` invocation. Maximum10seconds child plus5seconds owned cleanup, shared64KiB stdout/stderr, no retry or fallback. Save only fixed categories: command exit class, ASCII decode success, total/blank/nonempty line-count buckets, nonempty field-count buckets, and whether final numeric fields match501 (all/none/mixed/notApplicable). No actual names, field values, raw stdout/stderr or underlying error text may be written/displayed. Exceptions/unknown shapes stop without extra reads.
+
+No account/group membership query, second UID, ACL/Security/Keychain API, PG/runtime launch, installation, grants, database/network/provider access, spending, production change or full preflight retry. After observation, analysis and a proposed parser correction may be recorded; no authority criterion is weakened or accepted from counts alone. Any later corrected full preflight remains separately reviewed/authorized.
+
+This proposal grants nothing. Existing user restrictions on new host operations and one-attempt execution require a fresh explicit decision before implementation/execution. The completed static carrier, source backup, source-only website change and all21 master parents remain unchanged.

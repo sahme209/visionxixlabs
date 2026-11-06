@@ -1,0 +1,69 @@
+FFFFFFFF
+======================================================================
+FAIL: test_budget_stops_before_next_command (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 6, in setUp
+    self.assertTrue(P.exists(),'fixed inspector implementation missing')
+AssertionError: False is not true : fixed inspector implementation missing
+
+======================================================================
+FAIL: test_command_failure_output_cap_and_timeout_are_finite (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 6, in setUp
+    self.assertTrue(P.exists(),'fixed inspector implementation missing')
+AssertionError: False is not true : fixed inspector implementation missing
+
+======================================================================
+FAIL: test_dependencies_only_categories_no_paths (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 6, in setUp
+    self.assertTrue(P.exists(),'fixed inspector implementation missing')
+AssertionError: False is not true : fixed inspector implementation missing
+
+======================================================================
+FAIL: test_directory_privacy_collision_ambiguity (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 6, in setUp
+    self.assertTrue(P.exists(),'fixed inspector implementation missing')
+AssertionError: False is not true : fixed inspector implementation missing
+
+======================================================================
+FAIL: test_exact_commands (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 6, in setUp
+    self.assertTrue(P.exists(),'fixed inspector implementation missing')
+AssertionError: False is not true : fixed inspector implementation missing
+
+======================================================================
+FAIL: test_full_mock_stops_at_first_foreign_no_followups (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 6, in setUp
+    self.assertTrue(P.exists(),'fixed inspector implementation missing')
+AssertionError: False is not true : fixed inspector implementation missing
+
+======================================================================
+FAIL: test_path_refuses_alias_acl_writable_and_collision (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 6, in setUp
+    self.assertTrue(P.exists(),'fixed inspector implementation missing')
+AssertionError: False is not true : fixed inspector implementation missing
+
+======================================================================
+FAIL: test_service_never_exports_raw (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/test_inspector.py", line 6, in setUp
+    self.assertTrue(P.exists(),'fixed inspector implementation missing')
+AssertionError: False is not true : fixed inspector implementation missing
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.000s
+
+FAILED (failures=8)

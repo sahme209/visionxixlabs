@@ -1,0 +1,19 @@
+# Fixed host-readiness source freeze
+
+Approved proposal44e7105a is bound in INPUTS.json. Exact entry (root owns the one later invocation): `/usr/bin/python3 -B docs/recovery/2026-11-06/governance-host-readiness-local/controller.py`, repository cwd. Fixed output is 2026-11-06-governance-host-readiness-1 under the private Lab; mkdir is once-only and no retry exists. No host inspection was performed during preparation.
+
+TDD: eight missing-implementation failures preserved; controller-presence and exact failing-path diagnostic regressions separately RED, then12pure synthetic tests GREEN. Full mocked16-command journey and first-foreign-occupant stop run without host tools. Raw dscl/launchctl streams and arbitrary errors never leave worker memory. Output uses fixed candidate labels/status/counts, fixed coordinates and numeric metadata; no account names, memberships, querytexts, secrets, ACEs or UUIDs. Otool dependency output is minimized to system/non-system counts and finite known load-command names; no arbitrary dependency path is exported or adopted.
+
+Controller120seconds includes its startup and passes remaining deadline to private worker; 16maximum commands each10seconds/shared64KiB. A command bound aborts the whole worker process group. Controller owns that original group, retains unreaped leader until pipes close, kills only before reap on bounds, and allows5seconds cleanup. No post-reap group signals, process discovery or descendant-quiescence claim. Worker stderr is discarded even on unexpected failure; only sanitized JSON observations and finite controller metadata are saved. Aggregate command output cannot exceed16x64KiB=1MiB.
+
+ACL values and entry semantics are bound to SDK text only. Ordinary stat/hash/ACL reads are fixed-path and share aggregate deadline. Three candidate PG binaries are bounded64MiB each and byte/currentness rechecked after their two static reads. No PostgreSQL binary is executed, no recursive dependency hashing occurs, and even root-owned direct binaries never qualify complete runtime closure. User-writable Homebrew ancestry remains an explicit blocked custody decision. Missing principals are not provisioning authority. All installation/activation/custody/execution flags remain false.
+
+Source-only independent review is required before root invokes. No host/NSS/otool/launchctl/ACL/Security/SQL/network calls have occurred here. Old package and all working overlays remain unchanged.
+
+## Review corrections — operative final source
+
+The first frozen source/packet/test evidence is preserved under before-review-1. Initial ACL entry-return claims were incorrect relative to bound SDK documentation and are superseded by ACL-CONSTANTS.json and NATIVE-ACL-SOURCE-FINDING.md. Current ACL absence uses bounded opaque external equality against a newly allocated empty ACL; success0 with a nonnull entry proves presence, all unknowns refuse. No real ACL API was invoked.
+
+Currentness now compares dev/ino/mode/uid/gid/nlink/size/mtime_ns/ctime_ns, excluding read-induced access time. Unsafe PG ancestry records its fixed candidate observation then stops before static or subsequent probes. Selector/setup/read faults after Popen abort the same owned worker group; if the group signal fails the worker remains alive for the outer controller's deadline cleanup instead of abandoning its child. The outer controller still owns the only reap and never signals after reap.
+
+Four focused regression cases were reproduced RED; sixteen synthetic cases now pass, including atime-only stability versus mtime mutation, unsafe ancestry zero static calls, ctypes empty/present/unknown ACLs and mocked selector/read cleanup faults. Intermediate expected failures and the corrected mock returncode fixture are preserved. No project/native/full build tests or host probes were run.
