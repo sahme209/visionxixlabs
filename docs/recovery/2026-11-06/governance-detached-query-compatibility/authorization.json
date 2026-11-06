@@ -1,0 +1,11 @@
+{
+  "questionId": "call_eFLffVkcnWnbG9Xw08ECy6d6",
+  "answer": "Approve one conditional compatibility bundle",
+  "scope": "Prepare/test/review fixed signature-only comparator; sign one detached pinned-library copy with existing company key; static verify/display; one bounded signed-Node load after exact gates",
+  "retry": false,
+  "production": false,
+  "database": false,
+  "installation": false,
+  "providerAction": false,
+  "spending": false
+}

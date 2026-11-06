@@ -93,14 +93,14 @@ def execute_child(p):
  logpath=work/'output.log'
  with exclusive(logpath)as log:code,error=files.engine_tools._run_generation_child(['/usr/bin/sandbox-exec','-p',policy,str(NODE),str(ROOT/'fixture.cjs')],work,env,log,10,file_size_limit=CAP,creation_mask=0o077)
  return classify(code,error,logpath.read_bytes())
-def run_candidate(p):
+def run_candidate(p,child=None):
  want=p['node'];fd=None;activated=False;r={'status':'unknown','reason':'runtime_or_input_unavailable'};restoration='not_changed';after=None;path_current='unavailable';descriptor_cleanup='not_opened'
  try:
   fd=os.open(want['path'],os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW)
   if descriptor_binding(fd,want['path'])!=want or binding(Path(want['path']))!=want:raise ValueError('candidate_changed')
   activated=True;os.fchmod(fd,0o700);active=descriptor_binding(fd,want['path'])
   if not same_candidate(active,want,0o700)or binding(Path(want['path']))!=active:raise ValueError('candidate_activation_changed')
-  r=execute_child(p)
+  r=(execute_child if child is None else child)(p)
  except BaseException:r={'status':'unknown','reason':'runtime_or_input_unavailable'}
  finally:
   if fd is not None:
