@@ -1,0 +1,9 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS ordinary source placement",
+  "filesMatched": 11587,
+  "tree": "c65081590225f9a8c6d54677c48e6d3dec8597ab",
+  "sourcePinsMatched": 38,
+  "nativeChangedFiles": 2,
+  "compilerOrRuntimeInvoked": false
+}

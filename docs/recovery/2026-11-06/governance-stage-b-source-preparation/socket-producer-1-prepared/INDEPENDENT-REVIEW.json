@@ -1,0 +1,12 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS exact prepared packet",
+  "packetSha256": "b759a7f395c102adb27e7a76ea05d616bb39a8f44816d9e96f3f399dd59099e2",
+  "bindingsMatched": 72,
+  "stageAChildCeilingSeconds": 390,
+  "wrapperCeilingSeconds": 450,
+  "wrapperSharedOutputBytes": 1048576,
+  "cleanupSeconds": 5,
+  "controllerRootAbsent": true,
+  "operationStarted": false
+}

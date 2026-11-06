@@ -1,0 +1,14 @@
+{
+  "previousSelectedSources": 73,
+  "changes": {
+    "packages/verified-issuer-runtime/native/synthetic_fixture_producer.c": {
+      "old": "45a38b4069ca11ed77a558ed398279783882180fd04a60bac4b6ab99d1758c4e",
+      "new": "a71c82f32d4169198dca2da1a858389f2d74fc51790d152683c0c1b5d60479a4"
+    },
+    "packages/verified-issuer-runtime/native/synthetic_resource_contract.h": {
+      "old": "ec5fd7e35fe6eddfca537729d132bb1dbdc72af0e6e586d70ab0bf79cd007b87",
+      "new": "fd88568de48140ef62d269d14a3582bcf495dd409756979c535dd556abf8057f"
+    }
+  },
+  "allOtherSelectedSourcesUnchanged": true
+}
