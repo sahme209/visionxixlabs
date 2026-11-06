@@ -1,0 +1,17 @@
+{
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "url": "http://127.0.0.1:5290/docs",
+  "actualBrowserObserved": true,
+  "observations": [
+    "Shared dark canvas, header and page gutters inspected",
+    "Task-oriented Find your next step heading and grouped guide paths visible",
+    "Version/scope warning and unknown-outcome guidance visible",
+    "Home restored afterward; tab26marked deliverable"
+  ],
+  "screenshot": {
+    "path": "axiom-docs-current-b8b0314c.jpg",
+    "sha256": "61df533cf75c127d41e3fde17ff4dcf265233ed7ba987e93a6fcba03360ac1bf",
+    "bytes": 46785
+  },
+  "limits": "One representative Docs landing page, not full documentation/editorial/accessibility acceptance"
+}
