@@ -1,0 +1,13 @@
+{
+  "format": "axiom.isolated-source-snapshot/1",
+  "parent": "d832c949a8a5e9651b22ac1f137db14bd1e97eb8",
+  "commit": "55557ed34257b5a5a28862d79a6c5e8e1e98abf2",
+  "tree": "e0fe36848cef7c20187c76892bcc84ff0565d9e8",
+  "ref": "refs/heads/codex/stage-a-source-d832c949-f5f1678c",
+  "masterSha256": "f5f1678c58e6bd89246a0a04e900ab524bdeb09aa1b6d46333db6b1af6dcdc92",
+  "mainHeadUnchanged": true,
+  "mainIndexEntriesUnchanged": true,
+  "workingDiffUnchanged": true,
+  "unverifiedUiExcluded": true,
+  "actualExecutionPerformed": false
+}
