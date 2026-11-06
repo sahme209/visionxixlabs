@@ -1,0 +1,175 @@
+{
+  "archive": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/source.tar",
+    "sha256": "ddc3ce5a790549895ce17cfc0aadd4b7161047fb53071a6e2af51b25202e79e0",
+    "size": 125747200
+  },
+  "buildExecuted": false,
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)",
+        "/usr/bin/git",
+        "-c",
+        "init.defaultBranch=frozen",
+        "init",
+        "--template=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/empty-template",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/git-source"
+      ],
+      "exit": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 171,
+      "timeoutSeconds": 60
+    },
+    {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)",
+        "/usr/bin/git",
+        "-C",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/git-source",
+        "-c",
+        "protocol.file.allow=always",
+        "-c",
+        "maintenance.auto=0",
+        "-c",
+        "gc.auto=0",
+        "fetch",
+        "--depth=1",
+        "--no-tags",
+        "file:///Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/.git",
+        "64eca1cd5ba954e6ce03deceeb9e5eef541f6684"
+      ],
+      "exit": 0,
+      "stderrBytes": 166,
+      "stdoutBytes": 0,
+      "timeoutSeconds": 60
+    },
+    {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)",
+        "/usr/bin/git",
+        "-C",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/git-source",
+        "update-ref",
+        "refs/heads/frozen",
+        "64eca1cd5ba954e6ce03deceeb9e5eef541f6684"
+      ],
+      "exit": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "timeoutSeconds": 60
+    },
+    {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)",
+        "/usr/bin/git",
+        "-C",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/git-source",
+        "symbolic-ref",
+        "HEAD",
+        "refs/heads/frozen"
+      ],
+      "exit": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "timeoutSeconds": 60
+    },
+    {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)",
+        "/usr/bin/git",
+        "-C",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/git-source",
+        "archive",
+        "--format=tar",
+        "64eca1cd5ba954e6ce03deceeb9e5eef541f6684"
+      ],
+      "exit": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 125747200,
+      "timeoutSeconds": 60
+    },
+    {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)",
+        "/usr/bin/git",
+        "-C",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/repo",
+        "rev-parse",
+        "64eca1cd5ba954e6ce03deceeb9e5eef541f6684^{commit}"
+      ],
+      "exit": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 41,
+      "timeoutSeconds": 60
+    },
+    {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)",
+        "/usr/bin/git",
+        "-C",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/repo",
+        "remote"
+      ],
+      "exit": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "timeoutSeconds": 60
+    },
+    {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-p",
+        "(version 1)(allow default)(deny network*)",
+        "/usr/bin/git",
+        "-C",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/repo",
+        "rev-parse",
+        "64eca1cd5ba954e6ce03deceeb9e5eef541f6684^{tree}"
+      ],
+      "exit": 0,
+      "stderrBytes": 0,
+      "stdoutBytes": 41,
+      "timeoutSeconds": 60
+    }
+  ],
+  "descendantQuiescence": "unavailable",
+  "exactChangedFilesFromParent": {
+    "scripts/check-vercel-build.mjs": "27206afbf8066590131c5c4a704d327bd8ae3e112d3f5a4081addbca03b496af",
+    "scripts/tests/test_docs_heading_build_gate.cjs": "2f4afeea865a4ee82cc68bac66fca3231148a0b35de944d80f9e7e8f3d842d31",
+    "tsconfig.next.json": "d2027302038c7fb1276839fba23a1418489a1e36faa74bbc2e520392e0191e45"
+  },
+  "executionAuthorized": false,
+  "format": "axiom.owned-source-placement/1",
+  "fullTreeContentAndArchiveModesVerified": true,
+  "installationReady": false,
+  "nativeSourceFiles": 73,
+  "noAlternates": true,
+  "noHardlinkedObjects": true,
+  "noHooks": true,
+  "noRemotes": true,
+  "originalSourceRecord": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-type-source-1/SOURCE.json",
+  "regularFiles": 11240,
+  "shallowLocalFileTransfer": true,
+  "sourceRepo": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/repo",
+  "sourceRevision": "64eca1cd5ba954e6ce03deceeb9e5eef541f6684",
+  "status": "owned_exact_source_prepared",
+  "symlinks": 0,
+  "systemPacketOnlySourceRevisionChanged": true,
+  "systemRecorderInvoked": false,
+  "tree": "78c5688cb7416ecc18ee50734cb5cb342b3d11a1"
+}
