@@ -1,0 +1,34 @@
+
+ RUN  v4.1.11 /private/tmp/axiom-assembly-check-92z2210h/source
+
+ ❯ components/marketing/__tests__/GovernanceAssembly.test.ts (0 test)
+ ✓ components/marketing/__tests__/governanceAssemblyModel.test.ts (3 tests) 2ms
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/GovernanceAssembly.test.ts [ components/marketing/__tests__/GovernanceAssembly.test.ts ]
+Error: Failed to resolve import "../GovernanceAssembly" from "components/marketing/__tests__/GovernanceAssembly.test.ts". Does the file exist?
+  Plugin: vite:import-analysis
+  File: /private/tmp/axiom-assembly-check-92z2210h/source/components/marketing/__tests__/GovernanceAssembly.test.ts:5:33
+  3  |  import { afterEach, expect, it, vi } from "vitest";
+  4  |  import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+  5  |  import { GovernanceAssembly } from "../GovernanceAssembly";
+     |                                      ^
+  6  |  afterEach(() => {
+  7  |  	cleanup();
+ ❯ TransformPluginContext._formatLog ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/vite/dist/node/chunks/node.js:8736:39
+ ❯ TransformPluginContext.error ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/vite/dist/node/chunks/node.js:8733:14
+ ❯ normalizeUrl ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/vite/dist/node/chunks/node.js:26423:18
+ ❯ ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/vite/dist/node/chunks/node.js:26493:30
+ ❯ TransformPluginContext.transform ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/vite/dist/node/chunks/node.js:26459:4
+ ❯ EnvironmentPluginContainer.transform ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/vite/dist/node/chunks/node.js:8515:14
+ ❯ loadAndTransform ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/vite/dist/node/chunks/node.js:19998:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  3 passed (3)
+   Start at  18:04:43
+   Duration  573ms (transform 8ms, setup 0ms, import 12ms, tests 2ms, environment 415ms)
+

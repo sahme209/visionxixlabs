@@ -1,0 +1,14 @@
+{
+  "exit": 1,
+  "timeout": false,
+  "elapsed": 0.8346483749999998,
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "scripts/run-vitest.mjs",
+    "components/marketing/__tests__/governanceAssemblyModel.test.ts",
+    "components/marketing/__tests__/GovernanceAssembly.test.ts",
+    "--config",
+    "/private/tmp/axiom-assembly-check-92z2210h/vitest.config.mjs"
+  ],
+  "note": "model exists; component not yet implemented; import failure is scaffold RED, not behavior reproduction"
+}

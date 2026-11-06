@@ -1,0 +1,30 @@
+
+ RUN  v4.1.11 /private/tmp/axiom-assembly-check-92z2210h/source
+
+ ❯ components/marketing/__tests__/GovernanceAssembly.test.ts (5 tests | 1 failed | 4 skipped) 15ms
+   ↓ uses the same selected record in the scene and semantic explanation
+   ↓ keeps modified/composing keyboard input untouched and separates instances
+   ↓ shows all three possible outcomes and has no network, timer or storage operation
+   ↓ mounts the actual shared assembly in Home first screen without losing its primary route or availability limits
+   × server renders a complete ordered no-JavaScript reading of every record and boundary 15ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/GovernanceAssembly.test.ts > server renders a complete ordered no-JavaScript reading of every record and boundary
+AssertionError: expected null not to be null
+ ❯ components/marketing/__tests__/GovernanceAssembly.test.ts:57:68
+     55|  const markup=renderToStaticMarkup(createElement(GovernanceAssembly));
+     56|  const doc=new DOMParser().parseFromString(markup,'text/html');
+     57|  const fallback=doc.querySelector('noscript');expect(fallback).not.toB…
+       |                                                                    ^
+     58|  expect(fallback!.textContent).toContain('Interactive controls require…
+     59|  const records=fallback!.querySelectorAll('ol > li');expect(records).t…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 skipped (5)
+   Start at  18:09:37
+   Duration  585ms (transform 85ms, setup 0ms, import 206ms, tests 15ms, environment 300ms)
+

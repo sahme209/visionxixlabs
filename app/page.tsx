@@ -13,6 +13,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
+import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
 
@@ -43,6 +44,8 @@ export default function Home() {
       <Navigation />
       <main>
         <section className="mx-auto max-w-[1280px] px-5 pb-16 pt-28 sm:px-8 lg:px-10 lg:pb-20 lg:pt-36">
+          <div className="grid gap-10 xl:grid-cols-[0.85fr_1.15fr] xl:items-start xl:gap-12">
+          <div className="min-w-0">
           <div className="mx-auto max-w-[880px] text-left lg:mx-0">
             <span className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-400">
               Axiom Agent · the governed engineering workspace
@@ -69,6 +72,9 @@ export default function Home() {
             <Link href="/docs/approval-workflow" className="text-zinc-200 underline underline-offset-4">Read the approval workflow</Link>.
           </p>
 
+          </div>
+          <div className="min-w-0"><GovernanceAssembly compact /></div>
+          </div>
           <HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} />
         </section>
 

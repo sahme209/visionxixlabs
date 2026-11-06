@@ -24,7 +24,7 @@ it('keeps five ordered concepts and deliberate selection connected to the explan
 });
 it('supports deliberate keyboard navigation and leaves focus on the chosen control',()=>{
  render(createElement(WorkflowEvidenceMap));
- const controls=screen.getAllByRole('button');
+ const controls=within(screen.getByRole('list',{name:'Conceptual workflow'})).getAllByRole('button');
  controls[0].focus();
  for(const [key,index] of [['ArrowRight',1],['End',4],['ArrowRight',0],['ArrowLeft',4],['Home',0]] as const){
   fireEvent.keyDown(document.activeElement!,{key});

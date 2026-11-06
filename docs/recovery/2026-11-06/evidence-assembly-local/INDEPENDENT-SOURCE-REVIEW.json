@@ -1,0 +1,10 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS after actual no-JS fallback fix",
+  "staticFallbackRecords": 5,
+  "semanticIdsKeyboardImeTouchReducedMotionPreserved": true,
+  "authorityOrNetworkEffectsAdded": false,
+  "upstreamUsage": "adapted workflows, no imported runtime or validator claim",
+  "browserAcceptance": false,
+  "selectedLayerVisibilityReflowContrastPerformance": "pending actual preview"
+}
