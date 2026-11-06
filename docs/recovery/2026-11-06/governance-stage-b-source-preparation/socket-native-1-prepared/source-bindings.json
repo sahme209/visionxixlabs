@@ -1,0 +1,145 @@
+{
+  "files": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/socket_native_initial_batch.py",
+      "sha256": "8bbd92225a245aac6c3c98e08fba232764d6cf4399decda25260c976917cf709",
+      "size": 21855,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/socket_native_peer_batch.py",
+      "sha256": "d59f7ed60b181849b6f3b8f51169eb3dbef19a888799891c1c355a5591be8a6f",
+      "size": 24217,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/bounded_signing_tool.py",
+      "sha256": "2e32667028dfdab59b02ba1c37cb90695321d6e70f521d2b900438bf4f121a84",
+      "size": 2738,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_preparation.py",
+      "sha256": "f22c68e1dc19319a406bb27ed22de349f290ae8ec8c7c7d51a1b85f0f233564e",
+      "size": 17924,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/system_build_inputs.py",
+      "sha256": "0961b52f2d4b525ac47ec8b34e66ca7f840a0b02da18fa70d3db422c4cb75c0e",
+      "size": 21477,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/saved_profile_observation.py",
+      "sha256": "8e9a80b344b5a5bfee9e6f748346d828fc074d41f569bc5bdc858b558da3193e",
+      "size": 11610,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/manifest.py",
+      "sha256": "19304f8c9e9fbe8620cf6b484fd599b6f7fc3611d55eea3339a45030f0f5e5e0",
+      "size": 18081,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/NATIVE-BATCH-PLAN.json",
+      "sha256": "102f7a58e383ea882c9c047df2db60208ee4955baac80dc9f024df7615b32c91",
+      "size": 18321,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/node-basis.json",
+      "sha256": "66ac4eea3ae2545d35ba144c9c7fb2d9c6300a4452cc2a85bc569d17d470d47a",
+      "size": 1146,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-native-1/compile-packet.json",
+      "sha256": "0c9d459cad82251fffc3a9fff5d00f8c644379232dfbe9fac6f53c951f3bc6f0",
+      "size": 3464549,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-1-compile-initial.py",
+      "sha256": "d8fa8c56007f3d98ce423858d52d7e46a824d3746ac1a1f3f56c9cf56dd554ef",
+      "size": 1476,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-2-sign-initial.py",
+      "sha256": "1db402ac88542898293c6753d9c4ef8f14408f1e9eac5a7073f2817c74c2bac2",
+      "size": 1478,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-3-compile-broker.py",
+      "sha256": "299a358a4d46513e8fe78f093527feb103272c2e1282e0f4258731bbe9efbdb3",
+      "size": 1457,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-4-sign-broker.py",
+      "sha256": "47e0fec59d9ae68839f3ac984b1fc331ded0f9f3f367783aeaab081438b1327f",
+      "size": 1477,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-5-compile-guard.py",
+      "sha256": "0abb76d22e9923ec7ff96d53e5b5b9b1aeca53c039d8cd6cf1485eb41fce35cb",
+      "size": 1448,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-6-sign-guard.py",
+      "sha256": "1f316ce5ae1d547a03e8ca2002bd4c072f18cd1d3a7fc517ea7425d750f36bad",
+      "size": 1474,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-1-compile-initial.py",
+      "sha256": "98b7011d698bedc7a4c0fb8b9d38091374fce8874608d5447621ccded5a26870",
+      "size": 5460,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-2-sign-initial.py",
+      "sha256": "e8088b4a49ffa9b853bf470e6b8a5dfa0f86ae53d0d659b4140063b681c46cad",
+      "size": 5454,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-3-compile-broker.py",
+      "sha256": "d4d5dce27db7e0a2b3ac97c4f1cc0cbfbb1551db04e6894e1cebb27308039e88",
+      "size": 5458,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-4-sign-broker.py",
+      "sha256": "d93873c341f5a0415ae8dcfd157d9e9f5c2c153325601429ded490c1032f14e8",
+      "size": 5452,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-5-compile-guard.py",
+      "sha256": "95321e4f6025e1c99153aab1dc9b767cd5051103ffebe1bc4808b97188d30148",
+      "size": 5456,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-6-sign-guard.py",
+      "sha256": "f708e812e726c0ece80366359cf37110d7654cfb8925754eb432878dd916f4b9",
+      "size": 5450,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-bindings.json",
+      "sha256": "dbb2195b6ec40eba30136f6ce5b9e54e22dce7274cf0f6dde74a2cc8aa3bdb92",
+      "size": 6263,
+      "mode": 420
+    }
+  ],
+  "executionAuthorized": false,
+  "installationReady": false,
+  "activationAllowed": false
+}

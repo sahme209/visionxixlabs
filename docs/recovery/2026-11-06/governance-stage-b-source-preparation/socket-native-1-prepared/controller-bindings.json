@@ -1,0 +1,83 @@
+{
+  "format": "axiom.fixed-native-step-controllers/1",
+  "steps": [
+    {
+      "step": "1-compile-initial",
+      "driver": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-1-compile-initial.py",
+      "driverSha256": "d8fa8c56007f3d98ce423858d52d7e46a824d3746ac1a1f3f56c9cf56dd554ef",
+      "controller": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-1-compile-initial.py",
+      "controllerSha256": "98b7011d698bedc7a4c0fb8b9d38091374fce8874608d5447621ccded5a26870",
+      "controlRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-native-controller-1-compile-initial",
+      "wallSeconds": 120,
+      "sharedOutputBytes": 1048576,
+      "functionsASTMatchesAccepted": true,
+      "entrypointCreationMask": "0o077 before main writes/spawn"
+    },
+    {
+      "step": "2-sign-initial",
+      "driver": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-2-sign-initial.py",
+      "driverSha256": "1db402ac88542898293c6753d9c4ef8f14408f1e9eac5a7073f2817c74c2bac2",
+      "controller": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-2-sign-initial.py",
+      "controllerSha256": "e8088b4a49ffa9b853bf470e6b8a5dfa0f86ae53d0d659b4140063b681c46cad",
+      "controlRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-native-controller-2-sign-initial",
+      "wallSeconds": 240,
+      "sharedOutputBytes": 1048576,
+      "functionsASTMatchesAccepted": true,
+      "entrypointCreationMask": "0o077 before main writes/spawn"
+    },
+    {
+      "step": "3-compile-broker",
+      "driver": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-3-compile-broker.py",
+      "driverSha256": "299a358a4d46513e8fe78f093527feb103272c2e1282e0f4258731bbe9efbdb3",
+      "controller": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-3-compile-broker.py",
+      "controllerSha256": "d4d5dce27db7e0a2b3ac97c4f1cc0cbfbb1551db04e6894e1cebb27308039e88",
+      "controlRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-native-controller-3-compile-broker",
+      "wallSeconds": 120,
+      "sharedOutputBytes": 1048576,
+      "functionsASTMatchesAccepted": true,
+      "entrypointCreationMask": "0o077 before main writes/spawn"
+    },
+    {
+      "step": "4-sign-broker",
+      "driver": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-4-sign-broker.py",
+      "driverSha256": "47e0fec59d9ae68839f3ac984b1fc331ded0f9f3f367783aeaab081438b1327f",
+      "controller": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-4-sign-broker.py",
+      "controllerSha256": "d93873c341f5a0415ae8dcfd157d9e9f5c2c153325601429ded490c1032f14e8",
+      "controlRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-native-controller-4-sign-broker",
+      "wallSeconds": 120,
+      "sharedOutputBytes": 1048576,
+      "functionsASTMatchesAccepted": true,
+      "entrypointCreationMask": "0o077 before main writes/spawn"
+    },
+    {
+      "step": "5-compile-guard",
+      "driver": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-5-compile-guard.py",
+      "driverSha256": "0abb76d22e9923ec7ff96d53e5b5b9b1aeca53c039d8cd6cf1485eb41fce35cb",
+      "controller": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-5-compile-guard.py",
+      "controllerSha256": "95321e4f6025e1c99153aab1dc9b767cd5051103ffebe1bc4808b97188d30148",
+      "controlRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-native-controller-5-compile-guard",
+      "wallSeconds": 120,
+      "sharedOutputBytes": 1048576,
+      "functionsASTMatchesAccepted": true,
+      "entrypointCreationMask": "0o077 before main writes/spawn"
+    },
+    {
+      "step": "6-sign-guard",
+      "driver": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/step-6-sign-guard.py",
+      "driverSha256": "1f316ce5ae1d547a03e8ca2002bd4c072f18cd1d3a7fc517ea7425d750f36bad",
+      "controller": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/socket-native-1-prepared/controller-6-sign-guard.py",
+      "controllerSha256": "f708e812e726c0ece80366359cf37110d7654cfb8925754eb432878dd916f4b9",
+      "controlRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-socket-native-controller-6-sign-guard",
+      "wallSeconds": 120,
+      "sharedOutputBytes": 1048576,
+      "functionsASTMatchesAccepted": true,
+      "entrypointCreationMask": "0o077 before main writes/spawn"
+    }
+  ],
+  "sumOfDistinctStepWallCeilingsSeconds": 840,
+  "cleanupSecondsPerStepAtMost": 5,
+  "externalReviewTimeIncluded": false,
+  "aggregateBatchDeadlineClaimed": false,
+  "executionAuthorized": false,
+  "installationReady": false
+}
