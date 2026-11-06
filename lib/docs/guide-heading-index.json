@@ -1,12 +1,12 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+  "navigationSha256": "b21e9ab28f934edda30dfce53355d257b63727b68b7bd9f7537281caf480e6b2",
   "guides": [
     {
       "href": "/docs",
       "source": "app/docs/page.tsx",
-      "sourceSha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "sourceSha256": "472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de",
       "fields": [
         "Find your next step.",
         "Start with setup, follow a task, understand a control or investigate an outcome. Choose the guide that matches the work in front of you.",
@@ -17,7 +17,7 @@
     {
       "href": "/docs/quickstart-checklist",
       "source": "app/docs/quickstart-checklist/page.tsx",
-      "sourceSha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc",
+      "sourceSha256": "49eb4234bdd59f012d637751029d2fb0d10acb6fd0cbf4ac31556581b3979357",
       "fields": [
         "Install, configure, and verify your first workflow.",
         "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
@@ -27,11 +27,11 @@
     {
       "href": "/docs/getting-started",
       "source": "app/docs/getting-started/page.tsx",
-      "sourceSha256": "73d5f64e12ad08fedcf8a05c0c5ded47bf799daa772f1bd0e72f8e19fd0e315e",
+      "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4",
       "fields": [
         "Getting started with Axiom Agent.",
         "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
-        "The installed app is the product",
+        "Desktop workflows and the web companion",
         "Prerequisites",
         "Step 1 — Download and install",
         "Step 2 — Authenticate the desktop",
@@ -218,7 +218,7 @@
     {
       "href": "/docs/integration-setup",
       "source": "app/docs/integration-setup/page.tsx",
-      "sourceSha256": "f939343248aa38633f7ee1f8e4b13ae136b9a34bfbb74eef02686109df07269c",
+      "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206",
       "fields": [
         "Operator integration configuration",
         "Axiom opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app.",

@@ -1,0 +1,332 @@
+{
+  "format": "axiom.public-guide-headings/1",
+  "scope": "Literal summaries and headings only; no body, private knowledge or answers",
+  "navigationSha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+  "guides": [
+    {
+      "href": "/docs",
+      "source": "app/docs/page.tsx",
+      "sourceSha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "fields": [
+        "Find your next step.",
+        "Start with setup, follow a task, understand a control or investigate an outcome. Choose the guide that matches the work in front of you.",
+        "Version and scope",
+        "When an outcome is unknown"
+      ]
+    },
+    {
+      "href": "/docs/quickstart-checklist",
+      "source": "app/docs/quickstart-checklist/page.tsx",
+      "sourceSha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc",
+      "fields": [
+        "Install, configure, and verify your first workflow.",
+        "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
+        "Use a non-production environment first"
+      ]
+    },
+    {
+      "href": "/docs/getting-started",
+      "source": "app/docs/getting-started/page.tsx",
+      "sourceSha256": "73d5f64e12ad08fedcf8a05c0c5ded47bf799daa772f1bd0e72f8e19fd0e315e",
+      "fields": [
+        "Getting started with Axiom Agent.",
+        "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
+        "The installed app is the product",
+        "Prerequisites",
+        "Step 1 — Download and install",
+        "Step 2 — Authenticate the desktop",
+        "Step 3 — Configure integrations",
+        "Step 4 — Complete a deployment workflow",
+        "Trust questions for first launch",
+        "Next steps"
+      ]
+    },
+    {
+      "href": "/docs/source-modes",
+      "source": "app/docs/source-modes/page.tsx",
+      "sourceSha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456",
+      "fields": [
+        "Know which source you are using.",
+        "A file on your computer, a connected GitHub repository and a recorded result are different sources. Check the source and target before asking for an explanation or preparing a change.",
+        "Version and scope",
+        "Local files on your computer",
+        "Connected GitHub repository",
+        "Preparing context is not sending it",
+        "Preview, live and recorded evidence",
+        "When an outcome is uncertain"
+      ]
+    },
+    {
+      "href": "/docs/surfaces",
+      "source": "app/docs/surfaces/page.tsx",
+      "sourceSha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f",
+      "fields": [
+        "Find the right place to work.",
+        "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
+        "Version and availability",
+        "Choose a desktop destination",
+        "Use the website for guidance",
+        "Know who acts next",
+        "Keep uncertain work in its original history"
+      ]
+    },
+    {
+      "href": "/docs/aws-setup",
+      "source": "app/docs/aws-setup/page.tsx",
+      "sourceSha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be",
+      "fields": [
+        "Deploy through your workflow and your AWS role.",
+        "Axiom dispatches a workflow in the selected GitHub repository. GitHub Actions uses OIDC to assume the AWS role configured for the selected environment.",
+        "No AWS access key in Axiom",
+        "Prepare the repository",
+        "Create the OIDC trust boundary",
+        "Map an Axiom environment",
+        "Validate before production",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/azure-setup",
+      "source": "app/docs/azure-setup/page.tsx",
+      "sourceSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01",
+      "fields": [
+        "Azure setup.",
+        "Axiom currently provides Azure configuration validation and preview-derived analysis. Live Azure inventory and write execution are not enabled by the verified release.",
+        "Preview is not a live connector",
+        "Desktop source candidate",
+        "What is available",
+        "What is not verified",
+        "Configuration required for a future live path",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/gcp-setup",
+      "source": "app/docs/gcp-setup/page.tsx",
+      "sourceSha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba",
+      "fields": [
+        "GCP setup.",
+        "Axiom currently provides GCP configuration validation and preview-derived analysis. Live Google Cloud inventory and write execution are not enabled by the verified release.",
+        "Preview is not a live connector",
+        "What is available",
+        "What is not verified",
+        "Configuration required for a future live path",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/approval-workflow",
+      "source": "app/docs/approval-workflow/page.tsx",
+      "sourceSha256": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16",
+      "fields": [
+        "A write starts as a proposal.",
+        "For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.",
+        "Preview workflow reference",
+        "Proposal approval boundary",
+        "Risk classification",
+        "Approve or reject",
+        "Execution and recovery",
+        "Audit evidence",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/execution-plans",
+      "source": "app/docs/execution-plans/page.tsx",
+      "sourceSha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a",
+      "fields": [
+        "Understand a saved plan.",
+        "A plan records intended work. Review, current access, execution and outcome evidence are separate steps.",
+        "Guide scope",
+        "Read the proposed change",
+        "Keep four different states separate",
+        "When the plan or access changes",
+        "When the outcome is unknown",
+        "Inspect before another action"
+      ]
+    },
+    {
+      "href": "/docs/rollback",
+      "source": "app/docs/rollback/page.tsx",
+      "sourceSha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140",
+      "fields": [
+        "Rollback is specific to the execution path.",
+        "The released automatic rollback applies to the AWS ECS workflow. Axiom does not claim a universal rollback engine for every provider or resource type.",
+        "Verified ECS behavior",
+        "The recovery sequence",
+        "Limits",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/releaseops",
+      "source": "app/docs/releaseops/page.tsx",
+      "sourceSha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38",
+      "fields": [
+        "ReleaseOps overview.",
+        "ReleaseOps is the deployment-governance workflow inside Axiom Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
+        "Coordinate existing tools; do not impersonate them",
+        "The deployment lifecycle",
+        "What users manage",
+        "Availability rules",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/releaseops/connectors",
+      "source": "app/docs/releaseops/connectors/page.tsx",
+      "sourceSha256": "bb77feb3010780bcc416a307547d1c2dc5682781b806fcdbebc70765d2320104",
+      "fields": [
+        "Integration boundaries.",
+        "What Axiom can currently connect, what each connection is allowed to see, and the checks required before it is treated as active.",
+        "The model: consent is not proof",
+        "Revocation and revalidation",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/releaseops/readiness",
+      "source": "app/docs/releaseops/readiness/page.tsx",
+      "sourceSha256": "0c34ac29fe6525f68df106f2fc305bd81bdb8a7b138aa312227327d875b10e3a",
+      "fields": [
+        "Deployment readiness.",
+        "Axiom Agent assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments.",
+        "A score is not evidence by itself",
+        "Readiness dimensions",
+        "Required signal states",
+        "How gates behave",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/desktop-install",
+      "source": "app/docs/desktop-install/page.tsx",
+      "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c",
+      "fields": [
+        "Install the desktop app.",
+        "The website explains and distributes Axiom Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
+        "Use the live release manifest",
+        "What the current desktop build delivers",
+        "System requirements",
+        "Install — macOS (Apple Silicon + Intel)",
+        "Install — Windows x64",
+        "Install — Linux x64",
+        "Updates and release notes",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/integration-setup",
+      "source": "app/docs/integration-setup/page.tsx",
+      "sourceSha256": "f939343248aa38633f7ee1f8e4b13ae136b9a34bfbb74eef02686109df07269c",
+      "fields": [
+        "Operator integration configuration",
+        "Axiom opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app.",
+        "Two separate responsibilities",
+        "Before connecting a provider",
+        "GitHub App",
+        "Slack",
+        "Microsoft tenant / Teams",
+        "Linear",
+        "Understand connection states"
+      ]
+    },
+    {
+      "href": "/docs/security-model",
+      "source": "app/docs/security-model/page.tsx",
+      "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7",
+      "fields": [
+        "The current Axiom security model.",
+        "Implemented product controls are described separately from configuration requirements, unverified deployment behavior, independent certification, and customer obligations.",
+        "Current release boundary",
+        "Desktop authentication",
+        "Connector permissions",
+        "Secret handling",
+        "Tenant boundaries",
+        "Audit and evidence",
+        "Retention, deletion, and recovery",
+        "Compliance posture"
+      ]
+    },
+    {
+      "href": "/docs/permissions-model",
+      "source": "app/docs/permissions-model/page.tsx",
+      "sourceSha256": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c",
+      "fields": [
+        "Each capability has its own authority boundary.",
+        "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. Axiom does not treat one successful connection as authority for everything else.",
+        "Preview workflow reference",
+        "Fail closed",
+        "Workspace roles",
+        "GitHub repository scope",
+        "Agent authority",
+        "AWS ECS authority",
+        "Trust questions"
+      ]
+    },
+    {
+      "href": "/docs/oauth-setup",
+      "source": "app/docs/oauth-setup/page.tsx",
+      "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820",
+      "fields": [
+        "Enable Google + GitHub sign-in",
+        "Axiom uses NextAuth. Google and GitHub providers are wired in code but only register when their environment credentials are present on the host. Set the env vars below and the buttons on the sign-in page activate automatically.",
+        "Overview",
+        "1. Base NextAuth env",
+        "2. Google sign-in",
+        "3. GitHub sign-in",
+        "4. Verify it works",
+        "Troubleshooting"
+      ]
+    },
+    {
+      "href": "/docs/troubleshooting",
+      "source": "app/docs/troubleshooting/page.tsx",
+      "sourceSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0",
+      "fields": [
+        "Troubleshooting",
+        "Start with the visible problem. Installation, connection readiness, approval, and execution are separate checks.",
+        "Unknown result or consumed operation? Stop here first.",
+        "Install or sign in",
+        "A connection is not ready",
+        "A review is stale, expired, or unavailable",
+        "The original operation is uncertain or consumed",
+        "Get help safely"
+      ]
+    },
+    {
+      "href": "/docs/audit-logs",
+      "source": "app/docs/audit-logs/page.tsx",
+      "sourceSha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945",
+      "fields": [
+        "Read the evidence, not just the status.",
+        "A saved decision, an attempted action and an observed external result answer different questions.",
+        "Version and coverage",
+        "Review the original record",
+        "Separate decisions from effects",
+        "Handle an uncertain result",
+        "Preserve the original attempt",
+        "Share evidence safely"
+      ]
+    },
+    {
+      "href": "/docs/faq",
+      "source": "app/docs/faq/page.tsx",
+      "sourceSha256": "333d6185edf68082966fe41f71b89a60cfdc0ff43854e6459a5ca1b57524b999",
+      "fields": [
+        "Frequently asked questions.",
+        "The questions we see most often, grouped by topic. If something isn't answered here, the troubleshooting guide or product documentation usually has the answer.",
+        "Need a specific answer?"
+      ]
+    },
+    {
+      "href": "/docs/glossary",
+      "source": "app/docs/glossary/page.tsx",
+      "sourceSha256": "d6b7283b7bb71a7c36e932f30e2eed5c98a65581160db5ac3ed6c5d55d527d3f",
+      "fields": [
+        "Glossary.",
+        "Definitions for vocabulary used across the Axiom platform — operational, AI, cloud, and ReleaseOps terms."
+      ]
+    }
+  ]
+}

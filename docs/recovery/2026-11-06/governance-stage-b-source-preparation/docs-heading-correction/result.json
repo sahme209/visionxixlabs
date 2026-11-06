@@ -1,0 +1,210 @@
+{
+  "all24GeneratorInputsMatchFrozen2c": true,
+  "changedGuides": [
+    {
+      "href": "/docs",
+      "literalFieldsChanged": false,
+      "new": {
+        "fields": [
+          "Find your next step.",
+          "Start with setup, follow a task, understand a control or investigate an outcome. Choose the guide that matches the work in front of you.",
+          "Version and scope",
+          "When an outcome is unknown"
+        ],
+        "href": "/docs",
+        "source": "app/docs/page.tsx",
+        "sourceSha256": "472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de"
+      },
+      "old": {
+        "fields": [
+          "Find your next step.",
+          "Start with setup, follow a task, understand a control or investigate an outcome. Choose the guide that matches the work in front of you.",
+          "Version and scope",
+          "When an outcome is unknown"
+        ],
+        "href": "/docs",
+        "source": "app/docs/page.tsx",
+        "sourceSha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32"
+      }
+    },
+    {
+      "href": "/docs/quickstart-checklist",
+      "literalFieldsChanged": false,
+      "new": {
+        "fields": [
+          "Install, configure, and verify your first workflow.",
+          "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
+          "Use a non-production environment first"
+        ],
+        "href": "/docs/quickstart-checklist",
+        "source": "app/docs/quickstart-checklist/page.tsx",
+        "sourceSha256": "49eb4234bdd59f012d637751029d2fb0d10acb6fd0cbf4ac31556581b3979357"
+      },
+      "old": {
+        "fields": [
+          "Install, configure, and verify your first workflow.",
+          "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
+          "Use a non-production environment first"
+        ],
+        "href": "/docs/quickstart-checklist",
+        "source": "app/docs/quickstart-checklist/page.tsx",
+        "sourceSha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc"
+      }
+    },
+    {
+      "href": "/docs/getting-started",
+      "literalFieldsChanged": true,
+      "new": {
+        "fields": [
+          "Getting started with Axiom Agent.",
+          "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
+          "Desktop workflows and the web companion",
+          "Prerequisites",
+          "Step 1 \u2014 Download and install",
+          "Step 2 \u2014 Authenticate the desktop",
+          "Step 3 \u2014 Configure integrations",
+          "Step 4 \u2014 Complete a deployment workflow",
+          "Trust questions for first launch",
+          "Next steps"
+        ],
+        "href": "/docs/getting-started",
+        "source": "app/docs/getting-started/page.tsx",
+        "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4"
+      },
+      "old": {
+        "fields": [
+          "Getting started with Axiom Agent.",
+          "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
+          "The installed app is the product",
+          "Prerequisites",
+          "Step 1 \u2014 Download and install",
+          "Step 2 \u2014 Authenticate the desktop",
+          "Step 3 \u2014 Configure integrations",
+          "Step 4 \u2014 Complete a deployment workflow",
+          "Trust questions for first launch",
+          "Next steps"
+        ],
+        "href": "/docs/getting-started",
+        "source": "app/docs/getting-started/page.tsx",
+        "sourceSha256": "73d5f64e12ad08fedcf8a05c0c5ded47bf799daa772f1bd0e72f8e19fd0e315e"
+      }
+    },
+    {
+      "href": "/docs/integration-setup",
+      "literalFieldsChanged": false,
+      "new": {
+        "fields": [
+          "Operator integration configuration",
+          "Axiom opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app.",
+          "Two separate responsibilities",
+          "Before connecting a provider",
+          "GitHub App",
+          "Slack",
+          "Microsoft tenant / Teams",
+          "Linear",
+          "Understand connection states"
+        ],
+        "href": "/docs/integration-setup",
+        "source": "app/docs/integration-setup/page.tsx",
+        "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
+      },
+      "old": {
+        "fields": [
+          "Operator integration configuration",
+          "Axiom opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app.",
+          "Two separate responsibilities",
+          "Before connecting a provider",
+          "GitHub App",
+          "Slack",
+          "Microsoft tenant / Teams",
+          "Linear",
+          "Understand connection states"
+        ],
+        "href": "/docs/integration-setup",
+        "source": "app/docs/integration-setup/page.tsx",
+        "sourceSha256": "f939343248aa38633f7ee1f8e4b13ae136b9a34bfbb74eef02686109df07269c"
+      }
+    }
+  ],
+  "executionAuthorized": false,
+  "failedBuildRunsModified": false,
+  "file": "lib/docs/guide-heading-index.json",
+  "fullCompilerInvoked": false,
+  "generatorInputs": {
+    "app/docs/approval-workflow/page.tsx": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16",
+    "app/docs/audit-logs/page.tsx": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945",
+    "app/docs/aws-setup/page.tsx": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be",
+    "app/docs/azure-setup/page.tsx": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01",
+    "app/docs/desktop-install/page.tsx": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c",
+    "app/docs/execution-plans/page.tsx": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a",
+    "app/docs/faq/page.tsx": "333d6185edf68082966fe41f71b89a60cfdc0ff43854e6459a5ca1b57524b999",
+    "app/docs/gcp-setup/page.tsx": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba",
+    "app/docs/getting-started/page.tsx": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4",
+    "app/docs/glossary/page.tsx": "d6b7283b7bb71a7c36e932f30e2eed5c98a65581160db5ac3ed6c5d55d527d3f",
+    "app/docs/integration-setup/page.tsx": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206",
+    "app/docs/oauth-setup/page.tsx": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820",
+    "app/docs/page.tsx": "472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de",
+    "app/docs/permissions-model/page.tsx": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c",
+    "app/docs/quickstart-checklist/page.tsx": "49eb4234bdd59f012d637751029d2fb0d10acb6fd0cbf4ac31556581b3979357",
+    "app/docs/releaseops/connectors/page.tsx": "bb77feb3010780bcc416a307547d1c2dc5682781b806fcdbebc70765d2320104",
+    "app/docs/releaseops/page.tsx": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38",
+    "app/docs/releaseops/readiness/page.tsx": "0c34ac29fe6525f68df106f2fc305bd81bdb8a7b138aa312227327d875b10e3a",
+    "app/docs/rollback/page.tsx": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140",
+    "app/docs/security-model/page.tsx": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7",
+    "app/docs/source-modes/page.tsx": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456",
+    "app/docs/surfaces/page.tsx": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f",
+    "app/docs/troubleshooting/page.tsx": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0",
+    "components/docs/DocsSidebar.tsx": "b21e9ab28f934edda30dfce53355d257b63727b68b7bd9f7537281caf480e6b2"
+  },
+  "generatorInvocations": [
+    {
+      "argv": [
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "scripts/generate-docs-heading-index.cjs"
+      ],
+      "exit": 0,
+      "rawOutputRetained": false,
+      "timeoutSeconds": 30
+    },
+    {
+      "argv": [
+        "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+        "scripts/generate-docs-heading-index.cjs",
+        "--check"
+      ],
+      "exit": 0,
+      "rawOutputRetained": false,
+      "timeoutSeconds": 30
+    }
+  ],
+  "guideCount": 23,
+  "installationReady": false,
+  "newBytes": 14258,
+  "newNavigationSha256": "b21e9ab28f934edda30dfce53355d257b63727b68b7bd9f7537281caf480e6b2",
+  "newSha256": "cc27fa27fd47640fb9ea555d6a3adcbbe6c2ecc1560756e0bb71f5c93789e18d",
+  "oldBytes": 14251,
+  "oldNavigationSha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+  "oldSha256": "d2e232775d3c28b1fb64fc9eb4a7e8c7b2b73a6a6650499506eb612d9d25369f",
+  "postGenerationAssertionFailure": {
+    "correctedFinding": "existing_index_also_stale_for_navigation_and_three_other_guides",
+    "generatorRerun": false,
+    "reason": "assumed_only_docs_changed_and_navigation_unchanged"
+  },
+  "prismaGenerationInvoked": false,
+  "readonlyContract": {
+    "argv": [
+      "/usr/bin/sandbox-exec",
+      "-p",
+      "(version 1)(allow default)(deny network*)",
+      "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "scripts/check-vercel-build.mjs"
+    ],
+    "exit": 0,
+    "stderrPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/docs-heading-correction/readonly-contract-stderr.log",
+    "stdoutPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/docs-heading-correction/readonly-contract-stdout.log",
+    "timeoutSeconds": 30
+  },
+  "selectedSourceRevision": "2c6d47935cb858d4a78cf5efc03b09b4eeedba9e",
+  "status": "existing_generator_repaired_stale_heading_index",
+  "systemRecorderInvoked": false
+}
