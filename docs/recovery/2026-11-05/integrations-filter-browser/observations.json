@@ -1,0 +1,56 @@
+{
+  "source": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "url": "http://127.0.0.1:5262/integrations",
+  "planned": {
+    "cardLinks": 0,
+    "cardText": "GitLab\nPlanned\n\nNo customer-ready activation path is published.\n\nOperation models\n\nRead context\nChange workflows\n\nNo setup available yet",
+    "cards": [
+      "GitLab"
+    ],
+    "count": "1 connectors shown · 15 in the catalog",
+    "filters": [
+      "all",
+      "planned",
+      "all"
+    ],
+    "search": "GitLab"
+  },
+  "clearResults": {
+    "clearButtonCount": 0,
+    "count": "15 connectors shown · 15 in the catalog",
+    "filters": [
+      "all",
+      "all",
+      "all"
+    ],
+    "search": "",
+    "searchFocused": true
+  },
+  "empty": {
+    "cards": 0,
+    "count": "0 connectors shown · 15 in the catalog",
+    "filters": [
+      "source",
+      "available",
+      "events"
+    ],
+    "text": "Search connectors\nJob\nAll jobs\nCloud delivery\nSource & CI\nWork tracking\nCommunication\nOrchestration & observability\nData\nAvailability\nAll availability\nAvailable workflows\nConfiguration required\nPreview or review\nPlanned\nOperation model\nAll operation models\nRead context\nChange workflows\nReceive events\n\n0 connectors shown · 15 in the catalog\n\nFilters describe the catalog, not your account’s connection or permission status. Operation models include preview and planned designs; they do not enable actions.\n\nNo connectors match these filters\n\nTry another job, availability, operation model or tool name.\n\nClear filters"
+  },
+  "emptyFocus": {
+    "focusedTag": "BUTTON",
+    "focusedText": "Clear filters"
+  },
+  "clearEmpty": {
+    "cards": 15,
+    "count": "15 connectors shown · 15 in the catalog",
+    "filters": [
+      "all",
+      "all",
+      "all"
+    ],
+    "hasEmptyHeading": false,
+    "search": "",
+    "searchFocused": true
+  },
+  "scope": "Public static catalogue; no account/provider/connection or full B6 acceptance"
+}

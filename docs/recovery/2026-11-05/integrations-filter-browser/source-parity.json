@@ -1,0 +1,18 @@
+{
+  "app/integrations/page.tsx": {
+    "sha256": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce",
+    "matchesPreviewSource": true
+  },
+  "components/marketing/IntegrationCatalogBrowser.tsx": {
+    "sha256": "d977dd0fcbb44de33b2fd29209f7fef1517172ef81fead2b6673be2c0c282528",
+    "matchesPreviewSource": true
+  },
+  "lib/integrations/publicIntegrationCatalog.ts": {
+    "sha256": "e225d21bf0fedc57ed4fc3ba8a5c7ee9eb0cae57110d5167c3dbd9180f554f03",
+    "matchesPreviewSource": true
+  },
+  "app/globals.css": {
+    "sha256": "e0699f89ffebf7d68baa4fd58591afc6ad0eb2129f81501149ea45de2facc8f4",
+    "matchesPreviewSource": true
+  }
+}
