@@ -1,6 +1,6 @@
 # Next matching System build — prepared evidence, execution pending
 
-The seven existing signed roles can now be selected with existing System v2 APIs. Root subsequently froze actual source `2c6d47935cb858d4a78cf5efc03b09b4eeedba9e` and its real System v2 packet at `BASE/2026-11-06-stage-b-full-source-3`; the concrete next one-run build proposal is [prepared here](next-system-inputs-1/EXECUTION-REVIEW.md), with materialization excluded. [The incomplete selection](next-system-inputs-1/seven-role-evidence.json) has **no sourceRevision** and is deliberately not a System build packet or build receipt. Its flags remain false. It does not authorize a fresh compiler run. A2's actual compiled consumer, resource custody, fleet/enforcement/enrollment and all parent acceptance requirements remain open; [the master](../../../product/axiom-master-action-plan.md) is preserved.
+The seven existing signed roles can now be selected with existing System v2 APIs. Root subsequently froze actual source `2c6d47935cb858d4a78cf5efc03b09b4eeedba9e` and its real System v2 packet at `BASE/2026-11-06-stage-b-full-source-3`; the concrete next one-run build proposal is [prepared here](next-system-inputs-2/EXECUTION-REVIEW.md), with materialization excluded. [The incomplete selection](next-system-inputs-1/seven-role-evidence.json) has **no sourceRevision** and is deliberately not a System build packet or build receipt. Its flags remain false. It does not authorize a fresh compiler run. A2's actual compiled consumer, resource custody, fleet/enforcement/enrollment and all parent acceptance requirements remain open; [the master](../../../product/axiom-master-action-plan.md) is preserved.
 
 ## Exact selected evidence
 
@@ -33,9 +33,9 @@ Current committed HEAD at inspection was `795195f3820127417b7ce1eba160a97e071dd1
 Root froze `BASE/2026-11-06-stage-b-full-source-3/SOURCE.json` using a private index and exactly three explicit tracked overlays. Actual revision is `2c6d47935cb858d4a78cf5efc03b09b4eeedba9e`; main index/branch remain unchanged. Other working changes were not inventoried, untracked files excluded. Earlier scan-based freezes stopped; no retry of those source paths is proposed. Coordinates below are the next intended API inputs; no build run is created or executed by this plan:
 
 ```text
-REPO = /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion
+REPO = BASE/2026-11-06-stage-b-lab-source-1/repo
 REV = 2c6d47935cb858d4a78cf5efc03b09b4eeedba9e
-RUN = BASE/2026-11-06-stage-b-system-build-1
+RUN = BASE/2026-11-06-stage-b-system-build-2
 STAGE = RUN/stage
 BOUND = RUN/engine-inputs
 GEN = RUN/generation-run
@@ -61,3 +61,7 @@ NPM = /Users/samirahmed/.nvm/versions/node/v24.21.0/lib/node_modules/npm/bin/npm
 Already covered ordinary work: reading/hashing original files, selecting canonical new references while retaining original records, regenerating saved-file observations, preparing this incomplete evidence and exact review/source/packet data. This work ran no System recorder, generation, npm, Node, Next, materializer, signing, native helper, database, provider or network operation.
 
 A fresh one-attempt offline dependency/generation/full-build bundle still needs its own concrete reviewed execution decision, including any materializer host/static observations and outer budget/cleanup scope. The earlier Stage A, four-helper and broker/guard grants are consumed. They do not authorize a full Stage B compiler run. No more native compilation/signing or permissive validator is required by this plan. Actual customer installation/custody/SAME-consumer qualification and full A2 acceptance remain separate.
+
+## Subsequent source-placement correction
+
+The first separately approved full-build attempt stopped at live MAIN source `input_changed` before generation/compiler. Its grant/run remain consumed. Exact2c6d source now has a self-contained owned Lab placement: [actual ordinary source report](next-system-inputs-2/SOURCE-PLACEMENT-REPORT.md). The new source-only driver/controller retain identical function ASTs and use Lab helper/source paths plus a fresh run2. [New exact execution review](next-system-inputs-2/EXECUTION-REVIEW.md) requires a new decision; no System recorder or build was rerun. Original source3/System packet/signing/preparation/sourceArtifact records remain intact.

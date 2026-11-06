@@ -1,0 +1,49 @@
+# Fresh owned-source Stage B build — prepared; new decision required
+
+## Concrete entry and frozen inputs
+
+Proposed entry, **do not run before the separate execution decision**:
+
+```text
+/usr/bin/python3 -B /Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/next-system-inputs-2/prepared-stage-b-build-controller.py
+```
+
+[Exact driver/controller/helper/input bindings](build-source-bindings.json) freeze this source-only preparation.
+
+Frozen driver SHA256 `c69bd0c34693d23f51b66cdf6b3809c9eb4a74ffcb2459e7b11373beccc80a7c`; controller SHA256 `acb790b2568e41b7654e031976f1151b0824e0c3a8cb06a7c5aa91d9b5b3442e`. Both are mode0600. Binding-file SHA256 `ad93ea5b4ae4b882b441a77771bf6d870e054cfbcd9398b87fe3ec743da055c2`. The new controller changes only driver path/hash and control path constants. Both new driver and controller function ASTs equal those of the consumed bundle; syntax parsing passed. Neither new file was executed and no build test was run.
+
+- Actual source revision: `2c6d47935cb858d4a78cf5efc03b09b4eeedba9e`, tree `6c836d5beeb9d6009dab999d109c0218a83dedfd`, parent `795195f3820127417b7ce1eba160a97e071dd197`. The original `BASE/2026-11-06-stage-b-full-source-3/SOURCE.json` records three explicit tracked overlays (master `e99a61a3…`, Docs `472b6bac…`, board `c4ce0f14…`), unchanged original index, other working changes not inventoried and untracked excluded. Earlier scan/index freezes stopped and are not relabeled successful. Exact Git archive uses this real commit; no new repository-wide status/diff/add-u scan or replacement revision is selected.
+- System v2 packet: `BASE/2026-11-06-stage-b-full-source-3/system-build-packet.json`, SHA256 `055d8749370c44d358a96923d76fdea5bb3d3edb7a75bbe3010f25890aa0409f`, size35687. It selects the seven existing signed roles, four canonical preparation references and actual four-leaf observations. Old raw state-bearing proofs/results remain unchanged; no sourceArtifact dictionary normalization.
+- Build tool: original `/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node`, SHA256 `e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b`, plus existing pinned npm11.19.0. This is distinct from signed runtime Node1aa6, which is copied as source data only.
+- Query: exact signed `BASE/2026-11-06-detached-query-compat-3/query-review-copy.node`, SHA256 `d9113d36ac4cfea42e5a0e329d70160b7bb5559b4cbcbd32b233bf7715d884f2`, mode0600. Existing original schema compiler: `BASE/2026-11-05-real-system-build-0b0e8b48/engine-inputs/schema-engine`, SHA256 `57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a`. The cached/original e0 query is **not** the selected engine source. Company signing does not establish upstream authenticity, which remains unavailable.
+- Accepted fixture schema SQL/binding/seed: existing exact2c archived files under `BASE/2026-11-06-stage-b-lab-source-1/repo/docs/recovery/2026-11-05/governance-fixture-recipe-local/`, SHA/size equal the accepted MAIN evidence and actual archive modes bound; they will be copied into new private mode0600 files without rerunning SQL export or applying SQL.
+
+`BASE=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab`. Fresh run: `BASE/2026-11-06-stage-b-system-build-2`; fresh controller output: `BASE/2026-11-06-stage-b-system-build-controller-2`. Both refuse pre-existing paths. Neither is created by this preparation.
+
+## Consumed first run and changed source coordinate
+
+The separately approved first bundle stopped after13.256seconds with `input_changed` in `system_build_inputs._observe` line109 while snapshotting native source in the live MAIN checkout. Offline extraction/npm succeeded; no generation/full compiler/signing/materialization ran. Its original controller reaped its driver with no monitor/persistence error. Original run, result, source3 record and packet, driver and approval remain untouched/consumed. The traceback did not identify the exact failed file; zero-block metadata observations on two source paths do not establish a cause.
+
+Authorized ordinary local Git/file preparation then created exact source at `BASE/2026-11-06-stage-b-lab-source-1/repo`. Its **self-contained shallow Git object store and complete worktree**, not MAIN working bodies, supply the same2c6d commit. All11240 regular archive file bodies/member modes and73 native receipt source hashes match; mastere99/Docs472/boardc4ce match. Local file transport ran with network denial; no remote/hook/alternate/hardlinked object remains. Exact commands/logs and limitations are bound by the new `BASE/2026-11-06-stage-b-lab-source-1/SOURCE.json` and adjacent `preparation-result.json`/`source-file-manifest.json`.
+
+This NEW procedure imports all frozen helpers from that same owned Lab source. Their SHA/size equal the consumed procedure's helpers; newly selected archive modes are0664 versus original MAIN working modes0644. Archive modes are retained inside private0700Lab roots and bound as actually present; no `_snapshot` or binding rule changed. The earlier source-coordinate comparison stopped at that mode distinction before writing a new driver, then the explicit actual-mode selection was reviewed and applied. Driver/controller function ASTs remain unchanged; only fixed source/helper/source-record/fresh-run coordinates and hashes differ. Original MAIN remains provenance only; no live MAIN native source body is selected by the new driver.
+
+This source-only adaptation did **not** invoke System recording or any build phase. A new execution decision is required before creating fresh run2; the source-placement permission does not authorize another full build.
+
+## Requested single ordered bundle
+
+1. Recheck existing helper/input/source/packet bindings, claim the new run once, and preserve all failures. Archive exact source through existing `prepare_optional_probe`: local cached offline npm installation, ignored lifecycle scripts, no audit/fund/network fallback/retry or added dependencies. Require actual succeeded outcome. Existing npm child limit60seconds; Git archive helper limit60seconds. Existing version-probe limits are not strengthened by this wrapper; outer controller remains the overall bound.
+2. Create new empty `build-run` and invoke existing `record_system_inputs` on the fresh extracted stage. Its complete source/header/config/seven-role/signing/profile/peer checks must pass before it writes its new source record and copies saved guard/bootstrap bytes. No native helper is compiled, signed or executed.
+3. Copy only signed d911 query to `RUN/engine-source/libquery-engine` and pinned schema compiler to `RUN/engine-source/schema-engine`. Invoke existing `bind_local_engines` on that source directory, obtaining `RUN/engine-inputs`; require exact selected hashes. Original inputs remain unchanged. Native reads here are existing ordinary Mach-O/linkage parsing, not Security/signing calls.
+4. Run one existing matching `execute_generation(...,timeout=120)` with original build Node and selected bound engine pair, synthetic build environment and existing network-denial profile. This invokes the existing schema compiler for generation/format comparisons; no database connection/application, emitted producer or signed runtime/helper is launched. Generation must retain the signed d911 query in its generated-client outputs.
+5. While `.next` is absent, write the exact fixed fixture packet referencing this fresh generation run/bound engine/cache, accepted copied resources and System runtime Node, then `record_fixture_delivery_inputs`. No schema pin or native fixture tool pin is changed.
+6. Run one existing `execute_build(...,timeout=600)`: original Node version, fixed contract checker, `next build --webpack` (including production compiler/types), fixture private-bootstrap emission and fixture-producer emission. Existing kernel network denial, synthetic/no-live environment, source/currentness checks and protected writes remain as implemented. No additional network/read allowance is added by this driver. The fresh producer must equal accepted Stage A SHA256 `681a5b12c7e16bf5e84022b98ac0be00a12942d20ec210f5091ae2bf2f451fbf`.
+7. Observe completed build only after actual successful original result and verified outputs, recheck after-build inputs against recorded attempt, write completed observation and terminal summary, and stop. A mismatch/unknown fails the entire attempt; never rerun, reset, substitute source or restamp old receipts.
+
+## Bounds and exclusions
+
+The unchanged proven controller owns only its direct driver's original process group:1800seconds wall, shared1MiB stdout/stderr, at most5seconds original-child cleanup wait, no numeric-group signal after reaping, no generic process discovery. Existing phase limits remain. It does not prove descendant quiescence, complete process containment, universal preemption or secret-read isolation. Logs/results preserve failure/unknown; no automatic retry.
+
+**No materialization in this bundle.** No mode map applied to a package, host `sw_vers`/`diskutil` prerequisite observation, app/image assembly/seal, mounting, installation, account/service/root/Keychain action, additional company signing, direct signed runtime/query/helper/addon load, QueryEngine/PrismaClient method/query, emitted producer execution, database/SQL connection, provider/customer/AI action, CI/deployment or spending. No full Governance, operational identity, custody, SAME-consumer/fleet/enrollment or activation claim follows success. All flags remain false; the master/board are preserved.
+
+Prior native and Stage A grants are consumed. This is a concrete fresh offline full-build proposal using existing APIs; it needs its own reviewed execution decision. Preparing these files did not grant or perform that execution.
