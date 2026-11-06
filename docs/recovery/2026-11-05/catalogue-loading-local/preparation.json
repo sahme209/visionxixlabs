@@ -1,0 +1,100 @@
+{
+  "format": "axiom.catalogue-isolated-test-preparation/1",
+  "root": "/private/tmp/axiom-catalogue-isolated-9uy2v02f",
+  "source": "/private/tmp/axiom-catalogue-isolated-9uy2v02f/source",
+  "head": "09203ea10c5af71c4866c1c454a534bd96d82eac",
+  "dependencyStage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-signin-current-build-999658d6-kyr6nbqq/stage",
+  "criticalBindings": [
+    {
+      "path": "package.json",
+      "sha256": "3f484e77eedd0eede93df152b8c1c4fedd139072b72dfa52957257d8d5a2e4d1",
+      "size": 3891,
+      "cloneDev": 16777232,
+      "cloneInode": 18081260,
+      "sourceDev": 16777232,
+      "sourceInode": 16441926,
+      "mode": "0o644"
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+      "size": 547921,
+      "cloneDev": 16777232,
+      "cloneInode": 18081259,
+      "sourceDev": 16777232,
+      "sourceInode": 16441925,
+      "mode": "0o644"
+    },
+    {
+      "path": "node_modules/vitest/package.json",
+      "sha256": "a28126d97bcaf567da5bed69443b7f3bcd9a7a8c38c8b66e554686b6bb2c10e0",
+      "size": 5932,
+      "cloneDev": 16777232,
+      "cloneInode": 18121247,
+      "sourceDev": 16777232,
+      "sourceInode": 16470599,
+      "mode": "0o644"
+    },
+    {
+      "path": "node_modules/vite/package.json",
+      "sha256": "fd3af4eaf4eecb2069f3e2715d6aaa2137d084a8a95097389523f52213c08094",
+      "size": 5082,
+      "cloneDev": 16777232,
+      "cloneInode": 18158271,
+      "sourceDev": 16777232,
+      "sourceInode": 16464257,
+      "mode": "0o644"
+    },
+    {
+      "path": "node_modules/react/package.json",
+      "sha256": "c383aced6a67c8d06f02996015c0a163e78532a330a96dff1ccfd107b00ab326",
+      "size": 1248,
+      "cloneDev": 16777232,
+      "cloneInode": 18174347,
+      "sourceDev": 16777232,
+      "sourceInode": 16458916,
+      "mode": "0o644"
+    },
+    {
+      "path": "node_modules/react-dom/package.json",
+      "sha256": "d926f158e1be15885aaeac259c39567a46f6525fbdd14c380528486c31459996",
+      "size": 3063,
+      "cloneDev": 16777232,
+      "cloneInode": 18154719,
+      "sourceDev": 16777232,
+      "sourceInode": 16474038,
+      "mode": "0o644"
+    },
+    {
+      "path": "node_modules/.package-lock.json",
+      "sha256": "42a4502ffb2cd63b21b0e8bf846f85e1279df2a86ba432d280e3c2e4924aff82",
+      "size": 501516,
+      "cloneDev": 16777232,
+      "cloneInode": 18157153,
+      "sourceDev": 16777232,
+      "sourceInode": 16541245,
+      "mode": "0o644"
+    }
+  ],
+  "candidateBindings": [
+    {
+      "path": "desktop/src/views/PluginsSkillsView.tsx",
+      "sha256": "9fbe878d62eea6d678fa3ffbe3cc0d9bbe2477c239b33a7735d5c49cbe920461"
+    },
+    {
+      "path": "lib/desktop/__tests__/pluginsSkillsLifecycle.test.ts",
+      "sha256": "a1db3428726edd678e724670dad28a0887030635a9a5a14103990e1a66fa9212"
+    }
+  ],
+  "dependencySymlinks": 53,
+  "allLinksWithinIsolatedSource": true,
+  "copyMethod": "APFS cp -cR; distinct critical inodes verified",
+  "testsRun": false,
+  "proposedArgv": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "scripts/run-vitest.mjs",
+    "lib/desktop/__tests__/pluginsSkillsLifecycle.test.ts",
+    "-t",
+    "distinguishes pending|failed skills response|true empty skills"
+  ]
+}

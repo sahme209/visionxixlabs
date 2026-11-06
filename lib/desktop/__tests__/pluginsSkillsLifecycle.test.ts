@@ -14,6 +14,39 @@ function show(canManage = true) {return render(createElement(PluginsSkillsView, 
 function changeContext() {m.client.config = {}; m.revision++; for (const fn of m.listeners) fn();}
 beforeEach(() => {vi.resetAllMocks(); m.client.config = {}; m.revision++; m.client.listAgentSkills.mockResolvedValue(ok({skills: [skill], storageAvailable: true})); m.client.integrationStatus.mockResolvedValue(ok({configuration: {github: true, slack: false, teams: false, linear: false}, github: {status: "not_connected", repositorySelection: "selected"}, cloud: [], collaboration: []})); m.client.airflowConnection.mockResolvedValue(ok({status: "not_connected"}));});
 afterEach(cleanup);
+it("distinguishes pending skill results without changing search focus or Apps view", async () => {
+  const pending=deferred(); m.client.listAgentSkills.mockReturnValueOnce(pending.promise);
+  show(false);
+  const views=within(screen.getByRole("group",{name:"Choose catalogue view"}));
+  const search=screen.getByRole("searchbox",{name:"Search apps and skills"}) as HTMLInputElement;
+  fireEvent.change(search,{target:{value:"Safe"}});
+  fireEvent.click(views.getByRole("button",{name:"Apps"}));
+  expect(screen.queryByText("Loading skills…")).toBeNull();
+  fireEvent.click(views.getByRole("button",{name:"Enabled"})); search.focus();
+  expect(screen.getByText("Loading skills…").getAttribute("role")).toBe("status");
+  expect(screen.queryByText("No matching capabilities")).toBeNull();
+  await act(async()=>{pending.resolve(ok({skills:[{...skill,status:"enabled"}],storageAvailable:true}));});
+  expect(screen.getByText("Safe change")).toBeTruthy();
+  expect(screen.queryByText("Loading skills…")).toBeNull();
+  expect(search.value).toBe("Safe"); expect(document.activeElement).toBe(search);
+  expect(m.client.updateAgentSkill).not.toHaveBeenCalled(); expect(m.client.startIntegrationConnection).not.toHaveBeenCalled();
+});
+it("does not label a failed skills response as an empty search", async () => {
+  m.client.listAgentSkills.mockRejectedValueOnce(new Error("unavailable")); show();
+  fireEvent.click(within(screen.getByRole("group",{name:"Choose catalogue view"})).getByRole("button",{name:"Enabled"}));
+  await screen.findByText(/Skills could not be loaded right now/);
+  expect(screen.queryByText("Loading skills…")).toBeNull();
+  expect(screen.queryByText("No matching capabilities")).toBeNull();
+  expect(screen.getByRole("button",{name:"Retry"})).toBeTruthy();
+});
+it("shows a true empty skills result only after the response settles", async () => {
+  const pending=deferred();m.client.listAgentSkills.mockReturnValueOnce(pending.promise);show();
+  fireEvent.click(within(screen.getByRole("group",{name:"Choose catalogue view"})).getByRole("button",{name:"Disabled"}));
+  expect(screen.queryByText("No matching capabilities")).toBeNull();
+  await act(async()=>{pending.resolve(ok({skills:[],storageAvailable:true}));});
+  expect(screen.getByText("No matching capabilities")).toBeTruthy();
+  expect(screen.queryByText("Loading skills…")).toBeNull();
+});
 it("uses one catalogue view while preserving search and read-only action guards", async () => {
   m.client.listAgentSkills.mockResolvedValue(ok({skills:[{...skill,status:"enabled"},{...skill,id:"other",name:"Release guidance",status:"disabled"}],storageAvailable:true}));
   show(false); await screen.findByText("Safe change");

@@ -1,0 +1,7 @@
+# Catalogue pending/failure/empty rendering — local verification
+
+The final empty rendering branch now distinguishes pending skills (neutral status), failed skills (existing warning/Retry, no false empty), and settled successful empty. Apps-only views never show skills loading. Source review confirms fetches/query/focus/ownership/permissions/action handlers unchanged.
+
+Original runner startup failures are preserved in the visual lane/startup diagnosis and are not behavior RED. To avoid changing original dependencies, prepared a new owned source tree from09203ea1 plus the exact two candidate files and independent APFS-cloned dependencies from matching-lock retained999stage. Seven critical file bytes match; critical inodes differ; all53dependency links resolve within the new tree. This is local test preparation, not a dependency install or full upstream authenticity claim.
+
+ONE pinnedNode24 existing-wrapper invocation selected the three new mocked lifecycle cases. Session50678 exited0:3passed,32skipped in0.673s (0.089s tests). Existing Vite native-config warning retained. Exact candidate hashes match both current worktree and tested copy. No fresh full suite, browser/AT/native, provider/session, application build/signing or production acceptance. Test environment cleared credentials; no kernel-network-isolation claim. Root reviewed actual tests and render-only diff independently of author. New GitHub/Vercel/installer publication is not performed.
