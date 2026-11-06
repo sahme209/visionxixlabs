@@ -1,0 +1,18 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS actual final signed guard; batch static checkpoint only",
+  "bindingsMatched": 23,
+  "staticCommandsExitZero": 3,
+  "guardSha256": "e269e5bdfd9ffd845b824118db143ffb5b19e7e64b88225e065b50622ba9cfe3",
+  "guardBytes": 112000,
+  "guardCdHash": "b24dc29ce5381317909ac9382af70505ce9db536",
+  "entitlementSlots": [
+    0,
+    2,
+    65536
+  ],
+  "unsignedPreimageUnchanged": true,
+  "sixStageBatchConsumed": true,
+  "targetExecuted": false,
+  "runtimeQualified": false
+}

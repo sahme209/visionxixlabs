@@ -1,0 +1,27 @@
+{
+  "sourceRevision": "bd3648b634edf1d3881c283d8c088afbd3bcc37d",
+  "preview": "http://127.0.0.1:5282/",
+  "method": "actual CUA browser screenshot and Inspect button interaction",
+  "viewportObserved": [
+    907,
+    847
+  ],
+  "findings": [
+    "Selected lower record remains occluded by upper records",
+    "Figure outlines too faint for intended emphasis",
+    "At natural viewport hero object is below first fold"
+  ],
+  "visualAccepted": false,
+  "images": [
+    {
+      "path": "axiom-evidence-assembly-home-bd364.jpg",
+      "sha256": "34961468fce4310fd144e57a3cb6829be1b7f3c211f267632a0c89f00eae712d",
+      "bytes": 55639
+    },
+    {
+      "path": "axiom-evidence-assembly-inspect-bd364.jpg",
+      "sha256": "fa578d6bb8fda16ebd0853107842714b1853f7d3a573e466a056b4de33cc6ffe",
+      "bytes": 60266
+    }
+  ]
+}
