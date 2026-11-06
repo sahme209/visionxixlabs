@@ -1,0 +1,62 @@
+{
+  "format": "axiom.peer-source-currentness/1",
+  "sourceOnly": true,
+  "compilerChildrenInvoked": 0,
+  "testChildrenInvoked": 0,
+  "bindings": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/RECIPES.json",
+      "sha256": "eca85d4158044e7464978793ddf81a1850640dea9ff2519601a31f768b385e0d",
+      "size": 12377,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/run_step.py",
+      "sha256": "b477a934d33bdc7237bcfae411e04bf809ecf341971c53275926578e1be726b5",
+      "size": 8757,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/binary_guard.py",
+      "sha256": "d872679b32ddafb05535fd4f1e7ddf12af8b592db748aec3ee5f0f1e2ca4fa3b",
+      "size": 3147,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/SOURCE-CLOSURE.json",
+      "sha256": "b80a9789542be3ea38134f0093f3b86ee8601bc2e358fa56821a438b397e2161",
+      "size": 1878,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/CALLGRAPH-AUDIT.json",
+      "sha256": "4a17a34461a8cf2029a5c619d7cb358def394803fb18190511d278d13a25fce0",
+      "size": 1862,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/PROPOSAL.md",
+      "sha256": "befbd3a389feed1bd77cef31b8047e044cbffb4e35d4f68bf7abd89c0929f8d5",
+      "size": 5583,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/before-controller-stdout.c",
+      "sha256": "d5da6556d3bf261cf735fb41bf39c158ca81b47a00ba76cdf30d750b0bd1b692",
+      "size": 11578,
+      "mode": 420
+    }
+  ],
+  "finalRootReviewPending": true,
+  "sdkAliasBinding": {
+    "kind": "sdk-system-link",
+    "linkLiteral": "libSystem.B.tbd",
+    "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/libSystem.tbd",
+    "target": {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/usr/lib/libSystem.B.tbd",
+      "sha256": "20cfce043f11a083e2eb6111efe3579919a8082fa4cc912a7bd839af2010ec57",
+      "size": 334178
+    }
+  }
+}

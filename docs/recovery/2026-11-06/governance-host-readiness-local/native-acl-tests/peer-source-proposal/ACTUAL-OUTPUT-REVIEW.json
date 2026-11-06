@@ -1,0 +1,47 @@
+{
+  "binary": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/peer/peer-test",
+  "sha256": "be663fc133d9ae417eb58d58b889bc8fc6fe8e3063187e5543561fd4ce0c17d6",
+  "size": 71208,
+  "imports": [
+    "_CC_SHA256",
+    "___assert_rtn",
+    "___error",
+    "___memcpy_chk",
+    "___memset_chk",
+    "___snprintf_chk",
+    "___stack_chk_fail",
+    "___stack_chk_guard",
+    "___strcpy_chk",
+    "_bzero",
+    "_free",
+    "_malloc",
+    "_memcmp",
+    "_memcpy",
+    "_memset",
+    "_puts",
+    "_strchr",
+    "_strcmp",
+    "_strlen",
+    "_strstr",
+    "_strtok_r"
+  ],
+  "mapSha256": "0611801ae2a4620ba71953701d0ce7ac7c124c9c5527397db8c8991d33204b9d",
+  "mapBytes": 13976,
+  "executed": false,
+  "guardAccepted": false,
+  "independentReviewer": "offline_diagnostic_review",
+  "result": "PASS_OUTPUT_FOR_NARROW_GUARD_AND_PINNING_NOT_EXECUTION",
+  "all28ProtectedCallsAnd7GlobalsDefinedInFixture": true,
+  "realFrameworkOrProtectedFunctionImports": false,
+  "narrowAllowedAdditionalImport": "___memcpy_chk only for two peer targets",
+  "sdkFortifiedCopy": {
+    "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h",
+    "sha256": "66ece2d83b7528b0eb85a1f82c8aab0465cbd074397ea1aa6155706a0244cc67",
+    "lines": [
+      125,
+      127,
+      232,
+      234
+    ]
+  }
+}

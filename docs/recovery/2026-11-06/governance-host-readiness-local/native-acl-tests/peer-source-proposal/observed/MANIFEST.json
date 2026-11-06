@@ -1,0 +1,66 @@
+{
+  "files": [
+    {
+      "name": "attempt-15.claim.json",
+      "sha256": "238789ca66f33b125a22e78f6dd7b76e8107584622423fe16b6e30dac77e75bf",
+      "size": 1316
+    },
+    {
+      "name": "attempt-15.terminal.json",
+      "sha256": "5379f17724316ce2c9808ddd086891d3f7877c374a55ff856a89a67f9bae87c4",
+      "size": 357
+    },
+    {
+      "name": "attempt-15.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-15.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-16.claim.json",
+      "sha256": "04deb57e2949470b2b0085183d84e50523074037458619c8ff5e1c2f2aea2bdc",
+      "size": 1141
+    },
+    {
+      "name": "attempt-16.terminal.json",
+      "sha256": "ac77c387774476276f0427d29ba7afcbe26e50ad7635760882296ef03295d9f6",
+      "size": 361
+    },
+    {
+      "name": "attempt-16.stdout.log",
+      "sha256": "34e416aadebe6aa4076932c67502f41927926528a7c24f9ac5550faeed8d6140",
+      "size": 113
+    },
+    {
+      "name": "attempt-16.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-17.claim.json",
+      "sha256": "9a95c5be7fc8136611fef1c46141833cb62bc30c2f8010138af2625f9950d2a4",
+      "size": 1169
+    },
+    {
+      "name": "attempt-17.terminal.json",
+      "sha256": "8bddf6a5b9565845d09fa1fc84ba3380bbd85dafe990dc950ef11b9f67434cf2",
+      "size": 375
+    },
+    {
+      "name": "attempt-17.stdout.log",
+      "sha256": "d75ddcca6b3a8a8cfc0d75ac932bf5ae4fb5e05823a3cf7778789e0c686802c4",
+      "size": 101
+    },
+    {
+      "name": "attempt-17.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "copiesMatchActualOwnedResults": true,
+  "actualSecurityAndOsObservationsWereFakes": true
+}

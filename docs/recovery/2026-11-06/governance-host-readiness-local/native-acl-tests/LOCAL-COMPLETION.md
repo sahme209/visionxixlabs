@@ -21,3 +21,7 @@ The paragraphs above retain the initial8-invocation checkpoint. A later extensio
 ## Subsequent readiness/context extension
 
 The same original allowance later compiled and passed the actual readiness/supplier-context bodies against inert platform observations, including opaque mismatch and both input/reference cleanup refusals through supplier and maintenance contexts. [Readiness receipts](readiness-source-proposal/observed/README.md) retain attempts13/14 and14whole-unit invocations. This is not real platform/ACL qualification; prior checkpoint text remains historical.
+
+## Subsequent full-peer-source extension
+
+A separately reviewed isolated C fixture includes the entire actual peer implementation and shared helper. Default and controller cases passed with every protected OS/ACL/CF/Sec call and seven Security globals supplied by fixture definitions; only keyless SHA256 over a synthetic128byte image and reviewed memory/string operations are real. [Peer receipts](peer-source-proposal/observed/README.md) retain compile15 and tests16/17, bringing the original unit to17/32invocations. The source audit corrected the assumption that including Security type headers necessarily requires a Security runtime dependency; actual maps/imports prove this fixture needs no framework. Objective-C framework-dependent fixtures remain unrun; no actual platform signature/ACL/custody claim follows.

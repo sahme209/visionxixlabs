@@ -1,0 +1,275 @@
+{
+  "aggregateActiveSecondsEntireUnit": 480,
+  "artifactBytesEach": 1048576,
+  "bindings": [
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/compiler-test.sb",
+      "sha256": "392f725ba4e405a2f94f97949de774dd522fe18a6680998081b86efe254397eb",
+      "size": 257
+    },
+    {
+      "mode": 493,
+      "path": "/Library/Developer/CommandLineTools/usr/bin/clang",
+      "sha256": "1220c0afafa12a6ae599d097ee7cf8b87c6b4d8e3fbb9783cee6b319a80683ba",
+      "size": 290664032
+    },
+    {
+      "mode": 493,
+      "path": "/Library/Developer/CommandLineTools/usr/bin/ld",
+      "sha256": "765e5fa4e30980ddf2803c8a973b20fcc63e403098d2dd9b6cefa38e0cde3c2e",
+      "size": 4953232
+    },
+    {
+      "mode": 493,
+      "path": "/usr/bin/sandbox-exec",
+      "sha256": "10cf4a46a575e4747d2419cf343800db0d11ae6e6e9b8415998d3d8f336b2a92",
+      "size": 135136
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/SDKSettings.json",
+      "sha256": "f8d005f09381389167f9e0aeaa169bc9e7dff162ef22ca2fd8e98df7ff1acafe",
+      "size": 7774
+    },
+    {
+      "mode": 292,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/acl.h",
+      "sha256": "9511f84f0abe1e108e10979900d4fea8567534aef78f0984f7050c49f6c29ff7",
+      "size": 8877
+    },
+    {
+      "mode": 292,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stat.h",
+      "sha256": "31c8f252b05785343ca577c007657c0fbab45a182b60fc5b73994c621dc318d4",
+      "size": 20575
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/mach-o/loader.h",
+      "sha256": "5862aeb7fbf183453080bc887c0d502fe25a86ff5bd81291bbcc408bd7fe6e74",
+      "size": 74809
+    },
+    {
+      "kind": "sdk-system-link",
+      "linkLiteral": "libSystem.B.tbd",
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib/libSystem.tbd",
+      "target": {
+        "mode": 420,
+        "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk/usr/lib/libSystem.B.tbd",
+        "sha256": "20cfce043f11a083e2eb6111efe3579919a8082fa4cc912a7bd839af2010ec57",
+        "size": 334178
+      }
+    },
+    {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/system_peer_binding_test.c",
+      "sha256": "7c22173a9062c8430fba72ad528ea7b4571662995d118c3e8e8b1af9b06756bc",
+      "size": 11687
+    },
+    {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/system_peer_binding.c",
+      "sha256": "18dda50bd867271c107c368f97fec836a4d762a849e793a9fe6952162afefbe1",
+      "size": 8068
+    },
+    {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/system_peer_binding.h",
+      "sha256": "872863e8df51aab674254cd6224feec4385b5ad951802db38f59f4f2799fe199",
+      "size": 729
+    },
+    {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_config.h",
+      "sha256": "45d11a75cd5d283b0e841164211d5523e679d95d7e642b40601a3a2e4dec5245",
+      "size": 1383
+    },
+    {
+      "mode": 420,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_contract.h",
+      "sha256": "fd88568de48140ef62d269d14a3582bcf495dd409756979c535dd556abf8057f",
+      "size": 2942
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/protected_acl_empty.h",
+      "sha256": "688fe24d8865b9c1a210c395effefdf52471eb64e871e641207659138ddd9f0c",
+      "size": 1120
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/CommonCrypto/CommonDigest.h",
+      "sha256": "83a9705bbc8d44f27ee61801064ee99288496a038d623f152aa30db6819e9ca6",
+      "size": 11970
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/Security.h",
+      "sha256": "ded1b27eeb5c03146e595e091c6a69c2acbc753b324ac74a2c9d3305c3abcfcd",
+      "size": 3682
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecCode.h",
+      "sha256": "47a0cf42f3babd16f5f8523464f9895cc2302650c35e401e1d9923d6c30769db",
+      "size": 28300
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecStaticCode.h",
+      "sha256": "4647531b672952064d7d014057c5147722babb29aa0ab6d11b8fbd45b3fde532",
+      "size": 10344
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/System/Library/Frameworks/Security.framework/Headers/SecRequirement.h",
+      "sha256": "22a9a97d3cedd92d8fe15fc9bec73c201632a3b0f1e19b2cf12e5b2051cbba08",
+      "size": 5719
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/binary_guard.py",
+      "sha256": "d872679b32ddafb05535fd4f1e7ddf12af8b592db748aec3ee5f0f1e2ca4fa3b",
+      "size": 3147
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/SOURCE-CLOSURE.json",
+      "sha256": "b80a9789542be3ea38134f0093f3b86ee8601bc2e358fa56821a438b397e2161",
+      "size": 1878
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/peer-source-proposal/CALLGRAPH-AUDIT.json",
+      "sha256": "4a17a34461a8cf2029a5c619d7cb358def394803fb18190511d278d13a25fce0",
+      "size": 1862
+    },
+    {
+      "mode": 292,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/errno.h",
+      "sha256": "109ace10e79b9467dee3b8c7890f1d5bea1102d982c521922e9d372ab9863c97",
+      "size": 13086
+    },
+    {
+      "mode": 292,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h",
+      "sha256": "66ece2d83b7528b0eb85a1f82c8aab0465cbd074397ea1aa6155706a0244cc67",
+      "size": 9919
+    },
+    {
+      "mode": 292,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_stdio.h",
+      "sha256": "78633fd545a6a80e6e6c863e767936aed80009b92145e7db78c44441c71b92c3",
+      "size": 4070
+    }
+  ],
+  "childCleanupSeconds": 5,
+  "childCoreLimit": 0,
+  "childSeconds": 30,
+  "childSharedOutputBytes": 65536,
+  "compilerInvoked": false,
+  "executionAuthorized": false,
+  "format": "axiom.fixed-native-acl-peer-source-proposal/1",
+  "installationReady": false,
+  "maxInvocationsEntireUnit": 32,
+  "networkAllowed": false,
+  "phase": "SOURCE_ONLY_PENDING_ROOT_REVIEW",
+  "preparationTestAccounting": {
+    "commands": [
+      [
+        "python3",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/test_sdk_link_binding.py"
+      ],
+      [
+        "python3",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/test_sdk_link_binding.py"
+      ]
+    ],
+    "compilerChildren": 0,
+    "conservativeChargedActiveSeconds": 2,
+    "distinctPythonUnittestChildren": 2,
+    "exactChildActiveTimingAvailable": false,
+    "format": "axiom.native-acl-preparation-test-accounting/1",
+    "furtherAgentChildInvocationsAllowed": false,
+    "nativeTestChildren": 0,
+    "noFurtherPreparationTestsInvoked": true,
+    "outcomes": [
+      "RED_three_missing_verifier_failures",
+      "GREEN_three_pass"
+    ],
+    "performedBeforeIntendedIndependentFirstTestReview": true,
+    "proceduralDeviation": "Two Python test children ran before the intended independent first-test review gate. This is preserved as a procedural miss, not retroactive preapproval.",
+    "remainingActiveSeconds": 478,
+    "remainingInvocationBudget": 30,
+    "reportedToolWallSecondsApproximately": [
+      0.2,
+      0.2
+    ],
+    "reservedInvocations": 2
+  },
+  "priorReadinessPinnedPacket": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/readiness-source-proposal/RECIPES.json",
+    "sha256": "a150123c7fa641261126e5f60db7754d441013be88648364ad944116ce43dbe4",
+    "size": 13085
+  },
+  "priorReadinessPinnedRunner": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/readiness-source-proposal/run_step.py",
+    "sha256": "b6759b96a84d0bf5fb4dc48c8cbe92f5f1323b225d37e0d32aca36ae4db158d6",
+    "size": 8880
+  },
+  "reviewedMaps": {},
+  "sameExistingUnitRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1",
+  "sdkRoot": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+  "steps": {
+    "peer-compile": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/compiler-test.sb",
+        "/Library/Developer/CommandLineTools/usr/bin/clang",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fno-modules",
+        "-arch",
+        "arm64",
+        "-mmacosx-version-min=13.0",
+        "-isysroot",
+        "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+        "-I/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/system_peer_binding_test.c",
+        "-Wl,-map,/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/peer/peer-test.map",
+        "-o",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/peer/peer-test"
+      ],
+      "expectedExit": 0
+    },
+    "peer-controller-test": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/compiler-test.sb",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/peer/peer-test",
+        "fixed-controller-case"
+      ],
+      "expectedExit": 0,
+      "expectedStdoutUtf8": "actual protected peer controller positive/currentness/tamper/refusal with inert platform mocks: PASS\n"
+    },
+    "peer-default-test": {
+      "argv": [
+        "/usr/bin/sandbox-exec",
+        "-f",
+        "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/compiler-test.sb",
+        "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/peer/peer-test"
+      ],
+      "expectedExit": 0,
+      "expectedStdoutUtf8": "actual protected peer helper: positive2 and bounded rejection/currentness cases passed with inert platform mocks\n"
+    }
+  },
+  "testBinaryPinsPending": true,
+  "testInvoked": false
+}

@@ -1,0 +1,8 @@
+{
+  "result": "PASS_ONE_FIXED_PEER_COMPILE",
+  "independentReviewer": "offline_diagnostic_review",
+  "runtimeBindingsVerified": 26,
+  "nextWholeUnitInvocation": 15,
+  "actualProtectedEffectsAllowed": false,
+  "testsAllowedYet": false
+}

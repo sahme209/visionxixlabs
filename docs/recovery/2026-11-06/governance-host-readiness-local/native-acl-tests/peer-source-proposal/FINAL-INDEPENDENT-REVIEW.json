@@ -1,0 +1,17 @@
+{
+  "result": "PASS_FULL_PEER_SOURCE_STUB_CASES_ONLY",
+  "reviewer": "offline_diagnostic_review",
+  "attempts": [
+    15,
+    16,
+    17
+  ],
+  "exactPassOutputsAndEmptyStderr": true,
+  "actualOwnedCopiesVerified": 12,
+  "wholeUnitInvocations": 17,
+  "chargedActiveSeconds": 3.142710417,
+  "allActualChildrenReaped": true,
+  "actualPlatformQualified": false,
+  "frameworkDependentObjectiveCFixturesUnrun": true,
+  "furtherScopeInitiated": false
+}

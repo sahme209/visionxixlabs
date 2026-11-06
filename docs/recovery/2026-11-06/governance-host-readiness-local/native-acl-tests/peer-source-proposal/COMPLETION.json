@@ -1,0 +1,24 @@
+{
+  "result": "FULL_PEER_SOURCE_STUB_CASES_PASSED",
+  "compileAttempt": 15,
+  "testAttempts": [
+    16,
+    17
+  ],
+  "sourceRolesCovered": [
+    "owner",
+    "broker",
+    "controller"
+  ],
+  "tamperMetadataRevocationAndRefusalAssertionsPassed": true,
+  "allProtectedOsCfSecurityAndAclCallsStubbed": true,
+  "realSha256Input": "synthetic128bytefixture",
+  "wholeUnitInvocationsUsed": 17,
+  "maximumInvocations": 32,
+  "chargedActiveSecondsIncludingPreparation": 3.142710417,
+  "maximumActiveSeconds": 480,
+  "allActualChildrenReaped": true,
+  "realPlatformOrCustodyQualified": false,
+  "deploymentInstalledOrSigned": false,
+  "frameworkDependentObjectiveCFixturesStillUnrun": true
+}

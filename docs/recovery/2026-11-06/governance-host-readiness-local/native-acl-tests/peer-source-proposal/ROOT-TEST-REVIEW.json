@@ -1,0 +1,11 @@
+{
+  "result": "PASS_TWO_DISTINCT_PEER_STUB_CASES",
+  "independentReviewer": "offline_diagnostic_review",
+  "runtimeBindingsVerified": 30,
+  "nextWholeUnitInvocations": [
+    16,
+    17
+  ],
+  "newBudgetOrActualProtectedApiAuthority": false,
+  "requiresExactStdoutExitZeroAndEmptyStderr": true
+}

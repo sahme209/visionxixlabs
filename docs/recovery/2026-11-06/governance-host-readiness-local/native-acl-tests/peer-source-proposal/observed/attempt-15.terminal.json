@@ -1,0 +1,1 @@
+{"activeSeconds": 0.096100875, "cleanup": "reaped_original_child", "descendantQuiescence": "unavailable", "executionAuthorized": false, "exit": 0, "expectedExit": 0, "installationReady": false, "matchedExpectedOutcome": true, "retryAuthorized": false, "state": "completed", "step": "peer-compile", "totalWallSeconds": 0.09629491700000001, "unknown": false}

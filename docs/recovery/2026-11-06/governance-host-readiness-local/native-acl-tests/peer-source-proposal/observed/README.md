@@ -1,0 +1,7 @@
+# Actual full-peer-source stub qualification
+
+Fixed compile15 and two DISTINCT case invocations16/17 exited0 with exact PASS stdout, empty stderr, matched outcomes and reaped children. Default case exercises owner/broker positives, malformed/hash/profile/metadata/refusal and byte-tamper/currentness paths. The separate controller case exercises controller positive/currentness, tamper and wrong-ID refusal. This is not a retry of a failed case. Actual shared helper and entire peer implementation are included, while all28 protected OS/ACL/CF/Sec functions and seven Security globals resolve to fixture definitions. The real SHA256 algorithm processes only a synthetic128byte image.
+
+Independent source/actual binary/map review confirmed solelibSystem/dyld/noRPATH and only finite reviewed memory/hash/string/assert/stdio/errno-TLS imports. Only the observed SDK fortified-copy import ___memcpy_chk was added to TWO peer target sets, never a global allowance. Actual binary/map pins and currentness review preceded runtime. No Security framework or original protected function was imported.
+
+Same original allowance/ROOT ledger now17of32 formal invocations including two transparently charged preparation children; aggregate timing is in COMPLETION.json. Exact actual receipts/log hashes are adjacent. No real platform ACL, signature validation, installation, custody, provider/database/network or production action is established. Other framework-dependent Objective-C fixtures remain unrun. Pending memory-only real-API and directory-shape decisions remain separate.
