@@ -88,7 +88,7 @@ def _observe(stage,repo,revision,run,build_node,packet_path,after_build=False):
  _need(not((stage/'_axiom_native_overlay.json').exists()or(stage/'_axiom_native_overlay.json').is_symlink()),'mixed_native_profiles_refused')
  _need(re.fullmatch('[a-f0-9]{40}',revision) is not None,'source_revision_required')
  packet_binding=binding(packet_path);packet=_json_bound(packet_binding)
- _need(packet.get('format')=='axiom.system-build-packet/1' and packet.get('generation')==prep.GENERATION and packet.get('sourceRevision')==revision,'system_packet_revision_generation_required')
+ _need(packet.get('format')in('axiom.system-build-packet/1','axiom.system-build-packet/2') and packet.get('generation')==prep.GENERATION and packet.get('sourceRevision')==revision,'system_packet_revision_generation_required')
  _need(packet.get('layout')==LAYOUT and packet.get('executionAuthorized')is False and packet.get('installationReady')is False,'fixed_closed_system_layout_required')
  roles=packet.get('roles');_need(isinstance(roles,dict) and set(roles)==set(ROLE_IDENTIFIERS),'complete_system_roles_required')
  receipts=packet.get('preparationReceipts');_need(isinstance(receipts,list) and 1<=len(receipts)<=8,'preparation_receipts_required')
@@ -175,21 +175,28 @@ def _observe(stage,repo,revision,run,build_node,packet_path,after_build=False):
   for key,req in c['requirements'].items():
    role={'node':'node','controller':'controller','brokerForGuard':'broker'}[key]
    _need(req=='cdhash H"'+cdhashes[role]+'"','preparation_requirement_role_mismatch')
- supplement=_json_bound(packet['guardSupplement'])
- _need(supplement.get('format')=='axiom.saved-static-profile-supplement/1' and supplement.get('historicalBatchAccepted')is False and supplement.get('allFourRepresentationsObserved')is True and all(supplement.get(k)is False for k in ('executionAuthorized','installationReady','cryptographicSignatureVerifiedHere')),'unpromoted_guard_supplement_required')
- historical=_json_bound(packet['guardHistoricalResult'])
- _need(historical.get('allFourStaticSequencesAccepted')is False and supplement.get('historicalResultSha256')==packet['guardHistoricalResult']['sha256'],'historical_result_chain_mismatch')
- representations=supplement.get('representations',[])
- _need(len(representations)==4 and {x.get('role')for x in representations}=={'owner','maintenance','bootstrap','guard'} and all(x.get('artifactSha256')==artifacts[x['role']]['sha256']for x in representations),'guard_supplement_artifact_mismatch')
+ if packet['format']=='axiom.system-build-packet/2':
+  _need('guardSupplement'not in packet and 'guardHistoricalResult'not in packet and isinstance(packet.get('profileObservations'),dict),'explicit_v2_profile_observations_required')
+  from .system_role_profiles import observe_role_profiles
+  observed=_json_bound(packet['profileObservations'])
+  expected=observe_role_profiles({role:roles[role]for role in ('owner','maintenance','bootstrap','guard')},preparations)
+  _need(canonical(observed)==canonical(expected),'same_role_profile_observations_mismatch')
+ else:
+  supplement=_json_bound(packet['guardSupplement'])
+  _need(supplement.get('format')=='axiom.saved-static-profile-supplement/1' and supplement.get('historicalBatchAccepted')is False and supplement.get('allFourRepresentationsObserved')is True and all(supplement.get(k)is False for k in ('executionAuthorized','installationReady','cryptographicSignatureVerifiedHere')),'unpromoted_guard_supplement_required')
+  historical=_json_bound(packet['guardHistoricalResult'])
+  _need(historical.get('allFourStaticSequencesAccepted')is False and supplement.get('historicalResultSha256')==packet['guardHistoricalResult']['sha256'],'historical_result_chain_mismatch')
+  representations=supplement.get('representations',[])
+  _need(len(representations)==4 and {x.get('role')for x in representations}=={'owner','maintenance','bootstrap','guard'} and all(x.get('artifactSha256')==artifacts[x['role']]['sha256']for x in representations),'guard_supplement_artifact_mismatch')
+  for representation in representations:
+   obs=representation.get('observation',{});role=representation['role'];proof=roles[role]['provenance']
+   _need(supplement.get('packetSha256')==proof['signingPacket']['sha256'] and representation.get('commandsSha256')==proof['savedCommands']['sha256'],'supplement_provenance_chain_mismatch')
+   saved=_json_bound(proof['savedCommands']);record=_json_bound(roles[role]['resultReceipt'])
+   _need(saved==record.get('results',record.get('actualCommandsCompleted')),'supplement_saved_commands_mismatch')
+   _need(obs.get('executionAuthorized')is False and obs.get('installationReady')is False,'closed_profile_observation_required')
+   if role=='guard':_need(obs.get('representation')=='no_encoded_entitlement_payload_observed' and obs.get('cdhash')==cdhashes['guard'] and obs.get('cryptographicSignatureVerifiedHere')is False,'exact_guard_representation_required')
+   else:_need(obs.get('representation')=='explicit_empty_dictionary_observed','exact_empty_dictionary_observation_required')
  _need(configs[0]['node']['sha256']==artifacts['node']['sha256'],'prepared_runtime_node_mismatch')
- for representation in representations:
-  obs=representation.get('observation',{});role=representation['role'];proof=roles[role]['provenance']
-  _need(supplement.get('packetSha256')==proof['signingPacket']['sha256'] and representation.get('commandsSha256')==proof['savedCommands']['sha256'],'supplement_provenance_chain_mismatch')
-  saved=_json_bound(proof['savedCommands']);record=_json_bound(roles[role]['resultReceipt'])
-  _need(saved==record.get('results',record.get('actualCommandsCompleted')),'supplement_saved_commands_mismatch')
-  _need(obs.get('executionAuthorized')is False and obs.get('installationReady')is False,'closed_profile_observation_required')
-  if role=='guard':_need(obs.get('representation')=='no_encoded_entitlement_payload_observed' and obs.get('cdhash')==cdhashes['guard'] and obs.get('cryptographicSignatureVerifiedHere')is False,'exact_guard_representation_required')
-  else:_need(obs.get('representation')=='explicit_empty_dictionary_observed','exact_empty_dictionary_observation_required')
  generated={}
  for name,role in zip(GENERATED_STAGE,('guard','bootstrap')):
   p=stage/name

@@ -18,3 +18,7 @@ This new conditional compile/key-use permission must be explicitly approved. No 
 ## Review hold — discovered before operations
 
 Existing System reader requires the four leaf observations to share one old signing-packet hash and an actual historical failure. The proposed controller/three-leaf grouping cannot currently join later guard evidence without re-signing or fabricating history. No compilation/signing is authorized or performed. Resolve the separately reviewed PER-ROLE-PROFILE-PROPOSAL.md first; do not present this old batch proposal as directly consumable inputs.
+
+## Later local resolution
+
+The separately approved explicit v2 per-role observer/reader is now locally implemented with actual composed reader tests and independent review (PER-ROLE-LOCAL-COMPLETION.md). It preserves each helper’s actual packet/preimage/commands/result/current bytes and keeps v1 history intact. This resolves the composition hold at source level; no actual native compilation/signing is authorized by that code approval. The same four fixed source recipes/targets may now be proposed as a conditional unit using v2 receipts, without fabricating a merged historical packet.

@@ -1,0 +1,53 @@
+{
+  "scope": "local source and synthetic owned-file tests only",
+  "sourceFiles": {
+    "scripts/governance_local_issuer/system_build_inputs.py": {
+      "sha256": "0961b52f2d4b525ac47ec8b34e66ca7f840a0b02da18fa70d3db422c4cb75c0e",
+      "size": 21477
+    },
+    "scripts/governance_local_issuer/system_role_profiles.py": {
+      "sha256": "5acae3be191e3534e356d03523ec9b642afb79abc308033cd1128f8237b65c24",
+      "size": 5777
+    },
+    "scripts/governance_local_issuer/tests/test_system_role_profiles.py": {
+      "sha256": "818c4feb5005db3fd61f4eae87dfe9610a76305955d0f5975fcdb600613304a0",
+      "size": 7301
+    },
+    "scripts/governance_local_issuer/tests/test_system_role_profile_composition.py": {
+      "sha256": "5bb48b5396b630f2577bde5453d90f57d2e0b55868d284c904f8e32d0217e724",
+      "size": 5566
+    }
+  },
+  "parentObservedRuns": [
+    {
+      "command": "python3 scripts/governance_local_issuer/tests/test_system_role_profile_composition.py",
+      "passed": 7,
+      "failures": 0,
+      "coverage": "actual record/verify reader with synthetic distinct packet/preimage/guard files"
+    },
+    {
+      "command": "python3 scripts/governance_local_issuer/tests/test_system_build_inputs.py",
+      "passed": 21,
+      "failures": 0,
+      "coverage": "legacy reader regressions"
+    },
+    {
+      "command": "python3 scripts/governance_local_issuer/tests/test_sourcebuilder_system_inputs.py",
+      "passed": 6,
+      "failures": 0,
+      "coverage": "source-builder System integration"
+    }
+  ],
+  "workerReportedRun": {
+    "command": "python3 scripts/governance_local_issuer/tests/test_system_role_profiles.py",
+    "passed": 11,
+    "coverage": "pure observer with real synthetic provenance joins"
+  },
+  "syntaxCompilation": "passed",
+  "rawLogReplayClaimed": false,
+  "nativeCompilation": false,
+  "signing": false,
+  "targetExecution": false,
+  "production": false,
+  "governanceQualified": false
+}
