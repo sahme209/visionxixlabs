@@ -1,0 +1,3 @@
+# Independent source-only diagnosis
+
+Reviewer system_assembler confirmed CPython DEVNULL opens read/write before child execution, matching a concrete inherited-policy conflict. A second reachable site exists in builder.git_bytes stderr=DEVNULL, so repairing supervisor stdin alone would be incomplete. Empty logs/no stage are consistent but do not prove a captured live errno. Preferred local correction preserves the sandbox: fixed read-only EOF stdin plus separate private bounded Git stderr spool, never archive stdout merging or unbounded PIPE capture. Retain sanitized error class/errno at exact launch phase. No OS-log/global-data read, sandbox experiment, vendor/native/SQL call, source edit or retry by reviewer.

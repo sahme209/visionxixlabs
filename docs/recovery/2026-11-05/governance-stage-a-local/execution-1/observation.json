@@ -1,0 +1,43 @@
+{
+  "format": "axiom.stage-a-execution-observation/1",
+  "toolSession": 52067,
+  "toolExit": 1,
+  "procedureInvocations": 1,
+  "status": "refused",
+  "driverPhase": "offline",
+  "driverReason": "artifact_phase_unavailable",
+  "causeConfirmed": false,
+  "offlineStageExists": false,
+  "offlineReceiptExists": false,
+  "generationAttemptExists": false,
+  "emissionAttemptExists": false,
+  "files": {
+    "execution-authorization.json": {
+      "sha256": "209796548b086f1a349fb34c6aff050dcb8af3df2c4b23f331ff81f1d6f4d74a",
+      "size": 360
+    },
+    "attempt.json": {
+      "sha256": "3a2f83dacff42b9e5f1c6ca9e8544e4c239aa7b958e51d1a1c70194db1ca249b",
+      "size": 435
+    },
+    "result.json": {
+      "sha256": "80041fd71d9146793c51b9f6004532849042a830e57790aa86c66ced107747b5",
+      "size": 183
+    },
+    "outer.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    "work/driver-result.json": {
+      "sha256": "61fe1ce046d35f7b58f24f26ae6e7bf9c3e2ec5bf4a095ab3a81eac5e19707ff",
+      "size": 280
+    },
+    "work/offline/outer.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  },
+  "automaticRetryAuthorized": false,
+  "runtimeQualification": "unavailable",
+  "descendantQuiescence": "unavailable"
+}

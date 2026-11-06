@@ -13,7 +13,7 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 1. ~~Fixed packet, offline child, generation/emission driver and parent reconciliation implemented~~ ([source evidence](../recovery/2026-11-05/governance-stage-a-local/README.md)).
 2. ~~Nine finite mocked/file-only tests passed; independent closing source review passed~~. The joined test invokes actual driver/parent and file-evidence checks; Git/npm/Prisma/emitter/supervision boundaries remain simulated. Original unknowns stay consumed; no automatic replay.
 3. ~~Fresh isolated source a1e6099a and exact nonsecret packet prepared~~ ([review](../recovery/2026-11-05/governance-stage-a-local/EXECUTION-REVIEW.md)); main index/user master edits preserved. Packet3dd616d2 binds53source/9recipe inputs and declared-optional copied cache. Independent file-only packet review passed; no artifact procedure was run.
-4. **Pending separate exact authorization:** real offline artifact procedure; no runtime/System/custody/SQL/provider/production acceptance inferred.
+4. ~~One exact real artifact procedure authorized and attempted~~ ([preserved refusal](../recovery/2026-11-05/governance-stage-a-local/execution-1/README.md)): terminal refusal in offline prelaunch path, empty logs/no stage or generation/emission marker. Approval consumed; never reset/retry this packet. **In Progress:** local I/O compatibility repair and sanitized launch diagnostics. Pure source/mock evidence supports nested DEVNULL read/write versus inherited write denial, but live errno was not retained. Sandbox stays unchanged; any new actual attempt needs a fresh exact packet/decision. No runtime/System/custody/SQL/provider/production acceptance inferred.
 
 ## Canonical generation join — reviewed local correction
 

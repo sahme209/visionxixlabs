@@ -1,0 +1,1 @@
+{"stdlib": "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/subprocess.py", "openCalls": [{"path": "/dev/null", "flags": 2}], "executeChildCalls": 0, "mechanism": "DEVNULL opens write-capable descriptor before child launch", "scope": "all os.open calls mocked; no process launched"}

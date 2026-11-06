@@ -1,0 +1,3 @@
+# Consumed one-run attempt
+
+The user explicitly approved packet3dd616d2/sourcea1e6099a. One procedure invocation52067 exited1 with parent refused/driver_refused and driver offline/artifact_phase_unavailable. Both captured logs are empty; no offline stage/result, generation attempt or emission attempt was present at observation. The actual underlying exception was not retained by the bounded generic diagnostic, so its cause is unconfirmed. No automatic retry, reset, adoption or mutation of this attempt is permitted. Preserve the complete original Lab directory. Runtime/custody/descendant quiescence remain unavailable; no Governance acceptance is inferred.
