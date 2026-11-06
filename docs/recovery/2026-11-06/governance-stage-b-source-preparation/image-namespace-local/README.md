@@ -1,0 +1,9 @@
+# Fixed image namespace compatibility — local source complete
+
+The legacy fixed November5 image root remains. One explicit fresh November6 image root is added. A private resolver selects only exact canonical image paths and refuses lexical/symlink aliases before an operation; attach argv, bounded runner, device selection, live inspector and recorded verifier use that same fixed root. No public selector/API/receipt schema, time/cap/device/readonly/ownership/cleanup rule changes.
+
+Recorded command/log bindings must use their already-existing _save_command producer coordinates under the selected root. Actual retained legacy receipt/raw-log paths were inspected before adding this check, and the unchanged actual legacy recorded proof then passed the saved-data verifier. This is not a new image/static signature operation or runtime acceptance.
+
+The new fixed-attach test was observed RED, then28 focused pure/mocked cases passed. They cover both full saved profiles and the actual container reader's old/new path; cross-root mismatches include identical empty log bytes with a wrong path. Existing failure/unknown/mountownership/readonly/namespace/bounds cases remain. Real bounded-runner code runs only against mocked child/selector interfaces; no actual process/mount/host/statvfs call runs in tests. Synthetic package file checks are ordinary owned-file reads, not the real package or runtime.
+
+Only image_inspection.py and its existing test file changed. Accepted package64eca, all artifact/signing/source/history receipts and old experiments remain intact. Future image procedure must separately bind this procedural helper source and gain exact operation approval; no Next/package rebuild is needed just for this coordinate compatibility. No image creation/mount, real native/Node/helper, signing, provider/database/install/service operation ran.

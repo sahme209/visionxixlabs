@@ -3,6 +3,7 @@ from pathlib import Path
 import json,os,plistlib,re,selectors,signal,stat,subprocess,time
 from . import system_preparation as prep,manifest
 RUN_ROOT=Path('/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1')
+FRESH_RUN_ROOT=Path('/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1')
 CAP=256*1024
 class InspectionStopped(ValueError):
  def __init__(self,reason,possible_mounted_image=True):super().__init__(reason);self.possible_mounted_image=possible_mounted_image
@@ -10,9 +11,18 @@ def _need(value,reason):
  if not value:raise ValueError(reason)
 def _device(value):
  _need(type(value)is str and value.isascii()and len(value)<=128 and re.fullmatch(r'/dev/disk[0-9]+(?:s[0-9]+)*',value)is not None,'literal_device_required');return value
-def _attach_argv(image):return ['/usr/bin/hdiutil','attach','-readonly','-nobrowse','-noautoopen','-plist','-mountpoint',str(RUN_ROOT/'mount'),str(image)]
+def _root_for_image(image):
+ _need(isinstance(image,(str,Path)),'fixed_inspection_image_required')
+ path=Path(image);_need(str(path)==str(image),'canonical_inspection_image_required')
+ roots=[root for root in (RUN_ROOT,FRESH_RUN_ROOT)if path==root/'image/issuer-package.dmg']
+ _need(len(roots)==1,'fixed_inspection_image_required');prep._path(path);return roots[0]
+def _attach_argv(image):
+ root=_root_for_image(image);return ['/usr/bin/hdiutil','attach','-readonly','-nobrowse','-noautoopen','-plist','-mountpoint',str(root/'mount'),str(image)]
 def _run(argv,seconds):
- valid_attach=argv==_attach_argv(RUN_ROOT/'image/issuer-package.dmg')and seconds==90
+ valid_attach=False
+ if type(argv)is list and len(argv)==9 and seconds==90:
+  try:valid_attach=argv==_attach_argv(argv[-1])
+  except ValueError:pass
  valid_detach=type(argv)is list and len(argv)==3 and argv[:2]==['/usr/bin/hdiutil','detach']and seconds==60
  if valid_detach:_device(argv[2])
  _need(valid_attach or valid_detach,'fixed_image_command_required')
@@ -50,11 +60,12 @@ def _run(argv,seconds):
    except BaseException as exc:error=error or type(exc).__name__
  return {'argv':argv,'state':state,'exit':p.returncode if p is not None else None,'stdout':bytes(data['stdout']),'stderr':bytes(data['stderr']),'cleanup':'reaped_original_child'if p is not None and p.returncode is not None else'unknown','errorType':error}
 def _success(record):return record.get('state')=='completed'and type(record.get('exit'))is int and record['exit']==0 and record.get('cleanup')=='reaped_original_child'and record.get('errorType')is None
-def _select_device(data):
+def _select_device(data,root=None):
+ root=RUN_ROOT if root is None else root;_need(root in (RUN_ROOT,FRESH_RUN_ROOT),'fixed_inspection_root_required')
  _need(type(data)is bytes and len(data)<=CAP,'bounded_attach_plist_required');value=plistlib.loads(data)
  _need(type(value)is dict and type(value.get('system-entities'))is list and 1<=len(value['system-entities'])<=32 and all(type(x)is dict for x in value['system-entities']),'attach_entities_required')
  mounted=[x for x in value['system-entities']if type(x)is dict and 'mount-point'in x]
- _need(len(mounted)==1 and mounted[0].get('mount-point')==str(RUN_ROOT/'mount'),'single_exact_mount_required');return _device(mounted[0].get('dev-entry'))
+ _need(len(mounted)==1 and mounted[0].get('mount-point')==str(root/'mount'),'single_exact_mount_required');return _device(mounted[0].get('dev-entry'))
 def _mount_identity(mount):
  p=prep._path(Path(mount));s=p.lstat();_need(stat.S_ISDIR(s.st_mode),'mounted_directory_required');v=os.statvfs(p)
  return {'stDev':s.st_dev,'stIno':s.st_ino,'readOnly':bool(v.f_flag&os.ST_RDONLY)}
@@ -78,7 +89,7 @@ def _save_command(root,name,record):
  path=root/(name+'-command.json');_write(path,result);return binding(path)
 def inspect_image(image_binding,package):
  from .container_assembly import binding,_bound
- cp=RUN_ROOT;prep._path(cp);_need(cp.is_dir()and stat.S_IMODE(cp.stat().st_mode)==0o700,'private_inspection_run_required')
+ cp=_root_for_image(image_binding.get('path'));prep._path(cp);_need(cp.is_dir()and stat.S_IMODE(cp.stat().st_mode)==0o700,'private_inspection_run_required')
  image=cp/'image/issuer-package.dmg';_need(image_binding.get('path')==str(image),'fixed_inspection_image_required');before=_bound(image_binding)
  root=cp/'inspection';root.mkdir(mode=0o700);_need(stat.S_IMODE(root.stat().st_mode)==0o700,'private_inspection_output_required')
  mount=cp/'mount';mount.mkdir(mode=0o700);_need(stat.S_IMODE(mount.stat().st_mode)==0o700,'private_inspection_mount_required')
@@ -86,7 +97,7 @@ def inspect_image(image_binding,package):
  attach=None;detach=None;owned=False;detached=False;identity=None;device=None;content=None;failure=None
  try:
   record=_run(_attach_argv(image),90);attach=_save_command(root,'attach',record);_need(_success(record),'attach_unknown_or_failed')
-  device=_select_device(record['stdout']);identity=_mount_identity(mount)
+  device=_select_device(record['stdout'],cp);identity=_mount_identity(mount)
   _need(all(type(identity.get(k))is int and identity[k]>0 for k in ('stDev','stIno')),'mount_identity_required')
   _need({k:identity[k]for k in ('stDev','stIno')}!=empty,'mounted_namespace_not_observed');owned=True
   _need(identity.get('readOnly')is True,'mount_not_readonly')
@@ -110,20 +121,21 @@ def inspect_image(image_binding,package):
 
 def verify_recorded_inspection(bound,image,package):
  from .container_assembly import _json_bound,_bound
- proof=_json_bound(bound)
+ root=_root_for_image(image.get('path'));proof=_json_bound(bound)
  _need(proof.get('format')=='axiom.readonly-image-inspection/1'and proof.get('state')=='content_verified_detached'and proof.get('possibleMountedImage')is False and proof.get('detachNamespaceRestored')is True and proof.get('failure')is None,'completed_detached_inspection_required')
  _need(all(proof.get(k)is False for k in ('executionAuthorized','installationReady','activationAllowed'))and proof.get('runtimeIdentity')=='unavailable','unqualified_inspection_required')
- _need(proof.get('imageBefore')==image and proof.get('imageAfter')==image and proof.get('package')==package and proof.get('mountPath')==str(RUN_ROOT/'mount'),'inspection_image_package_join_required')
+ _need(proof.get('imageBefore')==image and proof.get('imageAfter')==image and proof.get('package')==package and proof.get('mountPath')==str(root/'mount'),'inspection_image_package_join_required')
  device=_device(proof.get('device'));empty=proof.get('emptyMountIdentity',{});_need(set(empty)=={'stDev','stIno'}and all(type(empty[k])is int and empty[k]>0 for k in empty),'recorded_empty_namespace_required')
  identity=proof.get('mountIdentity',{});_need({k:identity.get(k)for k in ('stDev','stIno')}!=empty,'recorded_mounted_namespace_required');_need(identity.get('readOnly')is True and all(type(identity.get(k))is int and identity[k]>0 for k in ('stDev','stIno')),'recorded_readonly_identity_required')
  for key,argv in (('attachRecord',_attach_argv(Path(image['path']))),('detachRecord',['/usr/bin/hdiutil','detach',device])):
+  name='attach'if key=='attachRecord'else'detach';_need(proof[key].get('path')==str(root/'inspection'/(name+'-command.json')),'recorded_command_namespace_mismatch')
   record=_json_bound(proof[key]);_need(record.get('argv')==argv and _success(record),'recorded_image_command_required')
   raw=[]
   for stream in ('stdout','stderr'):
-   b=record[stream];_need(type(b.get('size'))is int and 0<=b['size']<=CAP,'recorded_log_bound')
+   b=record[stream];_need(b.get('path')==str(root/'inspection'/(name+'-'+stream+'.log')),'recorded_log_namespace_mismatch');_need(type(b.get('size'))is int and 0<=b['size']<=CAP,'recorded_log_bound')
    data,current=prep._snapshot(Path(b['path']),CAP)
    mode=int(b['mode'],8)if isinstance(b['mode'],str)else b['mode']
    _need(current['sha256']==b['sha256']and current['size']==b['size']and current['mode']==mode,'recorded_log_changed');raw.append(data)
   _need(sum(map(len,raw))<=CAP,'recorded_log_bound')
-  if key=='attachRecord':_need(_select_device(raw[0])==device,'recorded_device_join_required')
+  if key=='attachRecord':_need(_select_device(raw[0],root)==device,'recorded_device_join_required')
  content=proof.get('content',{});_need(content.get('qualification')=='package_file_set_verified'and all(content.get(k)==package[k]for k in ('packageDigest','manifestSha256','sourceRevision')),'recorded_content_join_required');return proof

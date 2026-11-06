@@ -1,0 +1,56 @@
+{
+  "acceptedPackageOrBuildModified": false,
+  "actualLegacyProducerCoordinatesChecked": true,
+  "actualLegacyRecordedProof": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1/inspection/result.json",
+    "sha256": "2256d954a5b32c4e6c52957eed3de2986542613a217837be3d7f825d995b9bd4",
+    "size": 2388
+  },
+  "actualLegacyRecordedVerifierResult": "content_verified_detached",
+  "actualLegacyVerificationKind": "ordinary saved JSON/raw-log reads only; no image bytes, package verification, OS mount/host/child operation",
+  "boundsChanged": false,
+  "coverage": [
+    "legacy and fresh complete saved proofs",
+    "direct actual container_assembly._inputs consumer old/new positive",
+    "unknown path and lexical alias refusal",
+    "known-root/image symlink refusal before command",
+    "cross-root image/mount/command/device/log refusal",
+    "identical empty log SHA with wrong producer namespace refuses",
+    "fresh mismatched attach mount stays unknown without speculative detach",
+    "fresh known-owned nonreadonly mount detached but not accepted",
+    "real bounded runner body exercised with mocked child and matching fresh argv",
+    "legacy readonly/singlemount/deviceownership/namespace restoration/unknown/bounds regressions retained"
+  ],
+  "executionAuthorized": false,
+  "freshRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1",
+  "globalMutationInProduction": false,
+  "green": {
+    "command": [
+      "python3",
+      "scripts/governance_local_issuer/tests/test_image_inspection.py"
+    ],
+    "durationSeconds": 0.081,
+    "exit": 0,
+    "passed": 28,
+    "rawOutputFilesCreated": false
+  },
+  "hostMetadataInvoked": false,
+  "imageOrMountInvoked": false,
+  "installationReady": false,
+  "legacyRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1",
+  "proceduralHelperSeparateFromAcceptedPackage": true,
+  "publicApiChanged": false,
+  "realNativeOrNodeInvoked": false,
+  "receiptSchemaChanged": false,
+  "red": {
+    "exit": 1,
+    "reason": "legacy mount incorrectly selected for fresh image",
+    "test": "FixedImageNamespaceTests.test_fresh_fixed_attach_uses_its_matching_mount"
+  },
+  "sourceBindings": {
+    "scripts/governance_local_issuer/image_inspection.py": "142d9a5f1b34e3b81b5ccb0fea27888d60297310c4dd192bab0aadf679522905",
+    "scripts/governance_local_issuer/tests/test_image_inspection.py": "fe0fa4c313e10401a2c2e3b772213aa86c1717b75fd17ab90e1f0d57e516d77a"
+  },
+  "status": "fixed_new_image_namespace_locally_verified"
+}
